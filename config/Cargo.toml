@@ -1,6 +1,6 @@
 [package]
 name = "xvc-config"
-version = "0.2.3-alpha.0"
+version = "0.3.0"
 edition = "2021"
 
 [lib]
