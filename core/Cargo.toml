@@ -1,0 +1,88 @@
+[package]
+name = "xvc-core"
+version = "0.2.7"
+edition = "2021"
+
+[lib]
+name = "xvc_core"
+crate-type = ["rlib"]
+
+
+[dependencies]
+xvc-config = { path = "../config" }
+xvc-logging = { path = "../logging" }
+xvc-ecs = { path = "../ecs" }
+xvc-walker = { path = "../walker" }
+
+## Cli and config
+clap = {version = "^3.1", features=["derive"]}
+configparser = "^3.0"
+directories-next = "2.0"
+
+## Hashing
+seahash = "^4.1"
+byteorder = "^1.4"
+blake3 = "^1.2"
+blake2 = "0.10.4"
+sha2 = "0.10.2"
+sha3 = "0.10.1"
+
+## Serialization
+serde = { version = "^1.0", features = ["derive"] }
+serde-big-array = "^0.3"
+serde_yaml = "^0.8"
+serde_json = "^1.0"
+rmp = "^0.8"
+rmp-serde = "1.0.0"
+toml = "^0.5"
+
+## Caching
+sled = "^0.34"
+
+## Parallelization
+rayon = "^1.5"
+crossbeam-channel = "^0.5"
+crossbeam = "^0.8"
+
+## File system
+jwalk = "^0.6"
+walkdir = "^2.3"
+scan_dir = "^0.3"
+reflink = "^0.1"
+relative-path = { version = "^1.5", features = ["serde"] }
+path-absolutize = "^3.0"
+glob = "^0.3"
+tempdir = "^0.3"
+
+## Logging and errors
+thiserror = "^1.0"
+anyhow = "^1.0"
+log = "^0.4"
+### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
+fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+
+## UI
+comfy-table = "5.0.1"
+
+## macros
+paste = "1.0"
+quote = "1.0"
+syn = { version = "1.0", features = ["full", "fold"] }
+
+## Misc
+regex = "^1.5"
+chrono = "^0.4"
+strum = "0.24.0"
+strum_macros = "0.24.0"
+rand = "^0.8"
+lazy_static = "^1.4"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+hex = { version = "^0.4", features = ["serde"] }
+url = { version = "^2.2", features = ["serde"] }
+cached = "0.32.0"
+derive_more = "^0.99"
+
+[dev-dependencies]
+proptest = "^1.0"
+test-case = "^2.0"
+xvc-test-helper = { path = "../test_helper/" }

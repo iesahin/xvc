@@ -1,0 +1,16 @@
+[book]
+authors = ["Emre Sahin"]
+language = "en"
+multilingual = false
+src = "src"
+title = "The Xvc Book"
+
+[preprocessor]
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[output]
+
+[output.html]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]

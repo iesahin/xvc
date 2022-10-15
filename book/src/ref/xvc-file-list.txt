@@ -1,0 +1,15 @@
+xvc-file-list 
+List files tracked with XVC
+
+USAGE:
+    xvc file list [OPTIONS] [TARGET]
+
+ARGS:
+    <TARGET>    Files/directories to list
+
+OPTIONS:
+    -a, --actual                           Show actual data instead of recorded
+    -c, --columns <COLUMNS>                Columns to show
+    -h, --help                             Print help information
+    -R, --recursive                        Show directory contents
+    -s, --sort-criteria <SORT_CRITERIA>    Sort by column

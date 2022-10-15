@@ -1,0 +1,114 @@
+[package]
+name = "xvc-lib"
+version = "0.2.7"
+edition = "2021"
+
+[lib]
+name = "xvc"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "xvc"
+path = "src/main.rs"
+
+
+[dependencies]
+xvc-config = { path = "../config" }
+xvc-core = { path = "../core" }
+xvc-logging = { path = "../logging" }
+xvc-ecs = { path = "../ecs" }
+xvc-file = { path = "../file" }
+xvc-pipeline = { path = "../pipeline" }
+xvc-walker = { path = "../walker" }
+xvc-remote = { path = "../remote" }
+
+
+## Cli and config
+configparser = "^3.0"
+clap = {version = "^3.1", features=["derive"]}
+directories-next = "2.0"
+
+## Hashing
+seahash = "^4.1"
+byteorder = "^1.4"
+blake3 = "^1.2"
+blake2 = "0.10.4"
+sha2 = "0.10.2"
+sha3 = "0.10.1"
+
+## Serialization
+serde = { version = "^1.0", features = ["derive"] }
+serde-big-array = "^0.3"
+serde_yaml = "^0.8"
+serde_json = "^1.0"
+rmp = "^0.8"
+rmp-serde = "1.0.0"
+toml = "^0.5"
+
+## Caching
+sled = "^0.34"
+
+## Parallelization
+rayon = "^1.5"
+crossbeam-channel = "^0.5"
+crossbeam = "^0.8"
+
+## File system
+subprocess = "^0.2"
+reflink = "^0.1"
+relative-path = { version = "^1.5", features = ["serde"] }
+path-absolutize = "^3.0"
+glob = "^0.3"
+fs_extra = "^1.2"
+
+## Logging and errors
+thiserror = "^1.0"
+log = "^0.4"
+### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
+fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+anyhow = "^1.0"
+
+## UI
+comfy-table = "5.0.1"
+
+## macros
+paste = "1.0"
+quote = "1.0"
+syn = { version = "1.0", features = ["full", "fold"] }
+
+## Misc
+regex = "^1.5"
+chrono = "^0.4"
+strum = "0.24.0"
+strum_macros = "0.24.0"
+rand = "^0.8"
+lazy_static = "^1.4"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+hex = { version = "^0.4", features = ["serde"] }
+url = { version = "^2.2", features = ["serde"] }
+
+[features]
+default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
+s3 = ["xvc-remote/s3"]
+minio = ["xvc-remote/minio"]
+r2 = ["xvc-remote/r2"]
+gcs = ["xvc-remote/gcs"]
+wasabi = ["xvc-remote/wasabi"]
+digital-ocean = ["xvc-remote/digital-ocean"]
+test-s3 = ["s3"]
+test-minio = ["minio"]
+test-digital-ocean=["digital-ocean"]
+test-wasabi=["wasabi"]
+test-gcs =["gcs"]
+test-r2 = ["r2"]
+
+
+
+[dev-dependencies]
+proptest = "^1.0"
+test-case = "^2.0"
+xvc-test-helper = {path = "../test_helper/"}
+globset = "^0.4"
+
+shellfn = "^0.1"
+jwalk = "^0.6"

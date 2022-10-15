@@ -1,0 +1,11 @@
+xvc-pipeline-export 
+Export the pipeline to a YAML, TOML or JSON file
+
+USAGE:
+    xvc pipeline export [OPTIONS]
+
+OPTIONS:
+        --file <FILE>        File to write the pipeline. Writes to stdin if not set.
+        --format <FORMAT>    Format for output to stdout.
+    -h, --help               Print help information
+    -n, --name <NAME>        Name of the pipeline this command applies to

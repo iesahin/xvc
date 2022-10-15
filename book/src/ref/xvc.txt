@@ -1,0 +1,29 @@
+xvc-lib 
+Xvc Main Command-line Interface
+
+USAGE:
+    xvc [OPTIONS] <SUBCOMMAND>
+
+OPTIONS:
+    -c, --config <CONFIG>      Configuration options set from the command line in the form
+                               section.key=value You can use multiple times
+    -C <WORKDIR>               Set working directory for the command. It doesn't create a new shell,
+                               or change the directory [default: .]
+    -h, --help                 Print help information
+        --no-env-config        Ignore configuration options gathered from environment variables
+        --no-local-config      Ignore local (gitignored) configuration file (.xvc/config.local)
+        --no-project-config    Ignore project configuration file (.xvc/config)
+        --no-system-config     Ignore system configuration file
+        --no-user-config       Ignore user configuration file
+        --quiet                Suppress all output
+    -v, --verbose              Output verbosity. Use multiple times to increase emitted logs. TODO:
+                               Setting this option here turns off progress bars
+
+SUBCOMMANDS:
+    check-ignore    Check whether files are ignored with `.xvcignore`
+    file            File and directory management commands
+    help            Print this message or the help of the given subcommand(s)
+    init            Initialize an Xvc project
+    pipeline        Pipeline management commands
+    remote          Remote (cloud) management commands
+    root            Find the root directory of a project

@@ -1,0 +1,9 @@
+xvc-root 
+Find the root directory of a project
+
+USAGE:
+    xvc root [OPTIONS]
+
+OPTIONS:
+        --absolute    Show absolute path instead of relative
+    -h, --help        Print help information

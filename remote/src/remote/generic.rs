@@ -1,0 +1,332 @@
+use std::{collections::HashMap, env, fs, path::Path};
+
+use anyhow::anyhow;
+use crossbeam_channel::Sender;
+use regex::Regex;
+use relative_path::RelativePath;
+use serde::{Deserialize, Serialize};
+use subprocess::Exec;
+use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_ecs::R1NStore;
+use xvc_logging::{watch, XvcOutputLine};
+
+use crate::{Error, Result, XvcRemote, XvcRemoteEvent, XvcRemoteGuid, XvcRemoteOperations};
+
+use super::{
+    XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
+    XvcRemoteReceiveEvent, XvcRemoteSendEvent, XVC_REMOTE_GUID_FILENAME,
+};
+
+pub fn cmd_remote_new_generic(
+    input: std::io::StdinLock,
+    output_snd: Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    name: String,
+    url: Option<String>,
+    remote_dir: Option<String>,
+    max_processes: usize,
+    init_command: String,
+    list_command: String,
+    download_command: String,
+    upload_command: String,
+    delete_command: String,
+) -> Result<()> {
+    let remote = XvcGenericRemote {
+        guid: XvcRemoteGuid::new(),
+        name,
+        url,
+        remote_dir,
+        init_command,
+        list_command,
+        upload_command,
+        download_command,
+        delete_command,
+        max_processes,
+    };
+
+    watch!(remote);
+
+    let init_event = remote.init(output_snd.clone(), xvc_root)?;
+
+    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcRemote, XvcRemoteEvent>| {
+        let store_e = xvc_root.new_entity();
+        let event_e = xvc_root.new_entity();
+        store.insert(
+            store_e,
+            XvcRemote::Generic(remote.clone()),
+            event_e,
+            XvcRemoteEvent::Init(init_event.clone()),
+        );
+        Ok(())
+    })?;
+
+    Ok(())
+}
+
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
+pub struct XvcGenericRemote {
+    pub guid: XvcRemoteGuid,
+    pub name: String,
+    pub url: Option<String>,
+    pub remote_dir: Option<String>,
+    pub init_command: String,
+    pub list_command: String,
+    pub upload_command: String,
+    pub download_command: String,
+    pub delete_command: String,
+    pub max_processes: usize,
+}
+
+impl XvcGenericRemote {
+    /// Replace keys with values in `template` using `hash_map`
+    fn replace_map_elements(template: &str, hash_map: &HashMap<&str, String>) -> String {
+        let mut out = template.to_string();
+        for (pat, val) in hash_map {
+            out = out.replace(pat, val);
+        }
+        out
+    }
+    /// returns a hash map that contains keys and values of address elements in commands
+    /// - `{URL}` : The content of `--url` option. (default "")
+    /// - `{REMOTE_DIR}` Content of `--remote-dir`  option. (default "")
+    fn address_map(&self) -> HashMap<&str, String> {
+        let hm = HashMap::from([
+            ("{URL}", self.url.clone().unwrap_or_else(|| "".to_string())),
+            (
+                "{REMOTE_DIR}",
+                self.remote_dir.clone().unwrap_or_else(|| "".to_string()),
+            ),
+        ]);
+        hm
+    }
+
+    /// returns a map that contains keys and values for path elements in commands
+    /// - `{XVC_GUID}`: The repository GUID used in remote paths.
+    /// - `{RELATIVE_CACHE_PATH}` The portion of the cache path after `.xvc/`.
+    /// - `{ABSOLUTE_CACHE_PATH}` The absolute local path for the cache element
+    /// - `{RELATIVE_CACHE_DIR}` The portion of directory that contains the file after `.xvc/`
+    /// - `{ABSOLUTE_CACHE_DIR}` The portion of the local directory that contains the file after `.xvc`
+    /// - `{FULL_REMOTE_PATH}`: Concatenation of `{URL}{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}`
+    /// - `{FULL_REMOTE_DIR}`: Concatenation of `{URL}{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}`
+    fn path_map(&self, xvc_root: &XvcRoot, cache_path: &XvcCachePath) -> HashMap<&str, String> {
+        let xvc_guid = xvc_root.config().guid().unwrap();
+        let relative_cache_path = cache_path.to_string();
+        let relative_cache_dir = cache_path
+            .as_ref()
+            .parent()
+            .unwrap_or_else(|| RelativePath::new(""))
+            .to_string();
+        let absolute_cache_path = cache_path
+            .to_absolute_path(xvc_root)
+            .to_string_lossy()
+            .to_string();
+        let absolute_cache_dir = cache_path
+            .to_absolute_path(xvc_root)
+            .parent()
+            .unwrap_or(Path::new(""))
+            .to_string_lossy()
+            .to_string();
+        let url = self.url.clone().unwrap_or_else(|| "".to_string());
+        let remote_dir = self.remote_dir.clone().unwrap_or_else(|| "".to_string());
+
+        let full_remote_path = format!("{url}{remote_dir}{xvc_guid}/{relative_cache_path}");
+        let full_remote_dir = format!("{url}{remote_dir}{xvc_guid}/{relative_cache_dir}");
+
+        let hm = HashMap::from([
+            ("{XVC_GUID}", xvc_guid),
+            ("{RELATIVE_CACHE_PATH}", relative_cache_path),
+            ("{ABSOLUTE_CACHE_PATH}", absolute_cache_path),
+            ("{RELATIVE_CACHE_DIR}", relative_cache_dir),
+            ("{ABSOLUTE_CACHE_DIR}", absolute_cache_dir),
+            ("{FULL_REMOTE_PATH}", full_remote_path),
+            ("{FULL_REMOTE_DIR}", full_remote_dir),
+        ]);
+
+        hm
+    }
+
+    fn run_for_paths(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+        prepared_cmd: &str,
+        paths: &[XvcCachePath],
+    ) -> Vec<XvcRemotePath> {
+        let mut remote_paths = Vec::<XvcRemotePath>::with_capacity(paths.len());
+        // TODO: Create a thread/process pool here
+        // TODO: Refactor to use XvcRemotePath and XvcCachePath in replacements
+        paths.iter().for_each(|cache_path| {
+            let pm = self.path_map(xvc_root, cache_path);
+            watch!(pm);
+            let cmd = Self::replace_map_elements(prepared_cmd, &pm);
+            watch!(cmd);
+            let cmd_output = Exec::shell(cmd).capture();
+            match cmd_output {
+                Ok(cmd_output) => {
+                    let stdout_str = cmd_output.stdout_str();
+                    let stderr_str = cmd_output.stderr_str();
+                    watch!(stdout_str);
+                    watch!(stderr_str);
+
+                    if cmd_output.success() {
+                        output.send(XvcOutputLine::Info(stdout_str)).unwrap();
+                        output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                        let remote_path = XvcRemotePath::new(xvc_root, cache_path);
+                        remote_paths.push(remote_path);
+                    } else {
+                        output.send(XvcOutputLine::Error(stderr_str)).unwrap();
+                        output.send(XvcOutputLine::Warn(stdout_str)).unwrap();
+                    }
+                }
+
+                Err(err) => {
+                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                }
+            }
+        });
+
+        remote_paths
+    }
+}
+
+impl XvcRemoteOperations for XvcGenericRemote {
+    /// Run self.init_command
+    ///
+    /// The command should have {LOCAL_GUID_FILE_PATH}  and {REMOTE_GUID_FILE_PATH} fields to
+    /// upload the guid file.
+    fn init(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+    ) -> Result<super::XvcRemoteInitEvent> {
+        let mut address_map = self.address_map();
+        watch!(address_map);
+        let local_guid_path = env::temp_dir().join(self.guid.to_string());
+        watch!(local_guid_path);
+
+        fs::write(&local_guid_path, format!("{}", self.guid))?;
+
+        address_map.insert(
+            "{LOCAL_GUID_FILE_PATH}",
+            local_guid_path.clone().to_string_lossy().to_string(),
+        );
+
+        let remote_guid_file_path = format!(
+            "{}{}",
+            address_map["{REMOTE_DIR}"], XVC_REMOTE_GUID_FILENAME
+        );
+
+        address_map.insert("{REMOTE_GUID_FILE_PATH}", remote_guid_file_path);
+
+        let prepared_init_cmd = Self::replace_map_elements(&self.init_command, &address_map);
+        watch!(prepared_init_cmd);
+        let init_output = Exec::shell(prepared_init_cmd.clone())
+            .capture()?
+            .stdout_str();
+
+        watch!(init_output);
+
+        output.send(XvcOutputLine::Info(format!(
+            "Run init command:\n{}\n{}\n",
+            prepared_init_cmd, init_output,
+        )))?;
+
+        fs::remove_file(&local_guid_path)?;
+
+        Ok(XvcRemoteInitEvent {
+            guid: self.guid.clone(),
+        })
+    }
+
+    /// ⚠️  The output of the command should list all files.
+    ///
+    /// This command filters all relevant directories with the following conditions using a
+    /// template.
+    ///
+    /// {XVC_GUID}/[a-zA-Z][0-9]/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{58}/0
+    ///
+    fn list(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+    ) -> Result<XvcRemoteListEvent> {
+        let address_map = self.address_map();
+        let prepared_cmd = Self::replace_map_elements(&self.list_command, &address_map);
+        let cmd_output = Exec::shell(prepared_cmd).capture()?.stdout_str();
+        let xvc_guid = xvc_root.config().guid().unwrap();
+        let re = Regex::new(&format!(
+            "{xvc_guid}/{cp}/{d3}/{d3}/{d58}/0\\..*$",
+            cp = r#"[a-zA-Z][0-9]"#,
+            d3 = r#"[0-9A-Fa-f]{3}"#,
+            d58 = r#"[0-9A-Fa-f]{58}"#
+        ))
+        .unwrap();
+
+        let paths = cmd_output
+            .lines()
+            .filter_map(|l| if re.is_match(l) { Some(l) } else { None })
+            .map(|l| XvcRemotePath::from(String::from(l)))
+            .collect();
+
+        Ok(XvcRemoteListEvent {
+            guid: self.guid.clone(),
+            paths,
+        })
+    }
+
+    fn send(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+        paths: &[XvcCachePath],
+        _force: bool,
+    ) -> Result<XvcRemoteSendEvent> {
+        let address_map = self.address_map();
+        watch!(address_map);
+        let prepared_cmd = Self::replace_map_elements(&self.upload_command, &address_map);
+        watch!(prepared_cmd);
+        let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
+        watch!(remote_paths);
+
+        Ok(XvcRemoteSendEvent {
+            guid: self.guid.clone(),
+            paths: remote_paths,
+        })
+    }
+
+    fn receive(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+        paths: &[XvcCachePath],
+        force: bool,
+    ) -> Result<XvcRemoteReceiveEvent> {
+        let address_map = self.address_map();
+        watch!(address_map);
+        let prepared_cmd = Self::replace_map_elements(&self.download_command, &address_map);
+        watch!(prepared_cmd);
+        let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
+        watch!(remote_paths);
+
+        Ok(XvcRemoteReceiveEvent {
+            guid: self.guid.clone(),
+            paths: remote_paths,
+        })
+    }
+
+    fn delete(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+        paths: &[XvcCachePath],
+    ) -> Result<XvcRemoteDeleteEvent> {
+        let address_map = self.address_map();
+        let prepared_cmd = Self::replace_map_elements(&self.delete_command, &address_map);
+        let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
+
+        Ok(XvcRemoteDeleteEvent {
+            guid: self.guid.clone(),
+            paths: remote_paths,
+        })
+    }
+}

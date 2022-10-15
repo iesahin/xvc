@@ -1,0 +1,26 @@
+xvc-remote-new-minio 
+Add a new Minio remote
+
+USAGE:
+    xvc remote new minio [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
+
+OPTIONS:
+        --bucket-name <BUCKET_NAME>
+            Bucket name
+
+        --endpoint <ENDPOINT>
+            Minio server url in the form https://myserver.example.com:9090
+
+    -h, --help
+            Print help information
+
+    -n, --name <NAME>
+            Name of the remote
+            
+            This must be unique among all remotes of the project
+
+        --region <REGION>
+            Region of the server
+
+        --remote-prefix <REMOTE_PREFIX>
+            You can set a directory in the bucket with this prefix

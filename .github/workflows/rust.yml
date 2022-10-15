@@ -1,0 +1,215 @@
+name: Rust-CI
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 17 * * *"
+  pull_request:
+  push:
+    branches:
+      - ci
+    tags:
+      - "v*.*.*"
+
+jobs:
+  coverage:
+    name: Test and Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+
+    strategy:
+      matrix:
+        build: [nightly]
+        include:
+          # - build: stable
+          #   benches: true
+          # - build: beta
+          #   rust: beta
+          - build: nightly
+            rust: nightly
+              # test-args: --all-features --no-fail-fast
+            test-args: --all-features
+            benches: true
+            coverage: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install required packages
+        run: sudo apt install -y inotify-tools
+
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust || 'stable' }}
+          profile: minimal
+          components: llvm-tools-preview
+          override: true
+
+      - name: Build debug
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: ${{ matrix.build-args }}
+        env:
+          RUSTFLAGS: "-A dead_code"
+
+      - name: Test
+        if: matrix.coverage
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: ${{ matrix.test-args }}
+        env:
+          CARGO_INCREMENTAL: "0"
+          RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
+          RUSTDOCFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
+      - name: Coverage
+        id: coverage
+        if: matrix.coverage
+        uses: actions-rs/grcov@v0.1
+      - name: Test all benches
+        if: matrix.benches
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --benches ${{ matrix.features }}
+
+      - name: Upload to codecov.io
+        if: matrix.coverage
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ steps.coverage.outputs.report }}
+
+  deploy-linux:
+    name: deploy-linux
+    needs: [coverage]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target:
+          [
+            x86_64-unknown-linux-gnu
+          ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          target: ${{ matrix.target }}
+
+      - name: Build target
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: false
+          command: build
+          args: --release --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          #strip target/${{ matrix.target }}/release/xvc
+          cd target/${{ matrix.target }}/release
+          tar czvf ../../../xvc-${{ matrix.target }}.tar.gz xvc
+          cd -
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        # TODO: if any of the build step fails, the release should be deleted.
+        with:
+          files: "xvc*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-windows:
+    name: deploy-windows
+    needs: [coverage]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        target:
+          [
+            x86_64-pc-windows-gnu
+          ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          target: ${{ matrix.target }}
+
+      - name: Build target
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: false
+          command: build
+          args: --release --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          #strip target/${{ matrix.target }}/release/xvc
+          cd target/${{ matrix.target }}/release
+          tar czvf ../../../xvc-${{ matrix.target }}.tar.gz xvc
+          cd -
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        # TODO: if any of the build step fails, the release should be deleted.
+        with:
+          files: "xvc*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy-macos:
+    name: deploy-macos
+    needs: [coverage]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        target:
+          [
+            x86_64-apple-darwin
+          ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+          target: ${{ matrix.target }}
+
+      - name: Build target
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: false
+          command: build
+          args: --release --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          #strip target/${{ matrix.target }}/release/xvc
+          cd target/${{ matrix.target }}/release
+          tar czvf ../../../xvc-${{ matrix.target }}.tar.gz xvc
+          cd -
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        # TODO: if any of the build step fails, the release should be deleted.
+        with:
+          files: "xvc*"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

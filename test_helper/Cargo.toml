@@ -1,0 +1,18 @@
+[package]
+name = "xvc-test-helper"
+version = "0.2.5"
+edition = "2021"
+
+[lib]
+name = "xvc_test_helper"
+type = ["rlib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+xvc-logging = {path = "../logging/" }
+
+rand = "^0.8"
+log = "^0.4"
+anyhow = "^1.0"
+

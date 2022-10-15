@@ -1,0 +1,9 @@
+xvc-pipeline-run 
+Run a pipeline
+
+USAGE:
+    xvc pipeline run [OPTIONS]
+
+OPTIONS:
+    -h, --help           Print help information
+    -n, --name <NAME>    Name of the pipeline this command applies to

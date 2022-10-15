@@ -1,0 +1,58 @@
+#![doc = include_str!("../../../book/src/ref/xvc-root.md")]
+
+use crate::error::Result;
+use crate::types::xvcroot::XvcRoot;
+use clap::Parser;
+use crossbeam_channel::Sender;
+use path_absolutize::Absolutize;
+use relative_path::RelativePath;
+use xvc_logging::XvcOutputLine;
+
+#[derive(Debug, Parser)]
+#[clap(name = "root")]
+/// Get the XVC root directory for the current project
+pub struct RootCLI {
+    #[clap(long)]
+    /// Show absolute path instead of relative
+    absolute: bool,
+}
+
+/// Entry point for xvc root
+///
+/// # Arguments
+///
+/// - `output`: Buffer to write the result
+/// - `xvc_root`: The root of the current project
+/// - `opts`: [CLI options][RootCLI]
+///
+/// # Errors and Panics
+///
+/// - It returns an error when `output` can't be written by `writeln!`
+///   This probably leads to panic! in caller.
+/// - It returns an error when `xvc_root` cannot be converted to absolute path
+///   This should never happen if `xvc_root` properly constructed.
+pub fn run(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: RootCLI) -> Result<()> {
+    if opts.absolute {
+        output_snd.send(XvcOutputLine::Output(format!(
+            "{}",
+            xvc_root.absolute_path().to_string_lossy()
+        )))?;
+    } else {
+        let current_dir = xvc_root
+            .config()
+            .current_dir
+            .option
+            .absolutize()?
+            .to_path_buf();
+
+        let rel_dir = RelativePath::new(&current_dir.to_string_lossy()).relative(
+            RelativePath::new(&xvc_root.absolute_path().to_string_lossy()),
+        );
+        if rel_dir == "" {
+            output_snd.send(XvcOutputLine::Output(".".into()))?;
+        } else {
+            output_snd.send(XvcOutputLine::Output(format!("{}", rel_dir)))?;
+        }
+    }
+    Ok(())
+}

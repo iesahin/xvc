@@ -1,0 +1,13 @@
+xvc-file-fetch 
+Fetch files from remote
+
+USAGE:
+    xvc file fetch [OPTIONS] --remote <REMOTE> [TARGETS]...
+
+ARGS:
+    <TARGETS>...    targets to push to remote
+
+OPTIONS:
+        --force              force even if the files are already present
+    -h, --help               Print help information
+    -r, --remote <REMOTE>    remote name or guid to send the files

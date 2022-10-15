@@ -1,0 +1,11 @@
+xvc-pipeline-dag 
+Generate mermaid diagram for the pipeline
+
+USAGE:
+    xvc pipeline dag [OPTIONS]
+
+OPTIONS:
+        --file <FILE>        File to write the pipeline. Writes to stdin if not set.
+        --format <FORMAT>    Format for graph
+    -h, --help               Print help information
+    -n, --name <NAME>        Name of the pipeline this command applies to

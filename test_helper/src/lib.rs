@@ -1,0 +1,200 @@
+use log::LevelFilter;
+use rand::distributions::Alphanumeric;
+use rand::Rng;
+use rand::RngCore;
+use rand::SeedableRng;
+use std::cmp;
+use std::env;
+use std::{
+    fs::{self, File},
+    process::Command,
+};
+use std::{
+    io::{self, BufWriter, Write},
+    path::{Path, PathBuf},
+};
+
+use anyhow::Result;
+use xvc_logging::{setup_logging, watch};
+
+#[cfg(unix)]
+use std::os::unix::fs as unix_fs;
+#[cfg(windows)]
+use std::os::windows::fs as windows_fs;
+
+pub fn test_logging(level: LevelFilter) {
+    setup_logging(Some(level), Some(LevelFilter::Trace));
+}
+
+pub fn random_dir_name(prefix: &str, seed: Option<u64>) -> String {
+    let mut rng = if let Some(seed) = seed {
+        rand::rngs::StdRng::seed_from_u64(seed)
+    } else {
+        rand::rngs::StdRng::from_entropy()
+    };
+
+    let rand: u32 = rng.next_u32();
+    format!("{}-{}", prefix, rand)
+}
+
+/// Return the name of a random directory under $TMPDIR
+pub fn random_temp_dir(prefix: Option<&str>) -> PathBuf {
+    let mut temp_dir = env::temp_dir();
+    loop {
+        let cand = temp_dir.join(Path::new(&random_dir_name(
+            prefix.unwrap_or("xvc-repo"),
+            None,
+        )));
+        if !cand.exists() {
+            temp_dir = cand;
+            break;
+        }
+    }
+
+    temp_dir
+}
+
+/// Return a temp directory which may exist already
+pub fn seeded_temp_dir(prefix: &str, seed: Option<u64>) -> PathBuf {
+    let temp_dir = env::temp_dir();
+    temp_dir.join(Path::new(&random_dir_name(prefix, seed)))
+}
+
+/// Create a random named temp directory under $TMPDIR
+pub fn create_temp_dir() -> PathBuf {
+    let temp_dir = random_temp_dir(None);
+
+    fs::create_dir_all(&temp_dir).expect("Cannot create directory.");
+    temp_dir
+}
+
+const XVC_LAST_TEST_SYMLINK_TARGET: &str = "xvc-last-test";
+
+pub fn create_xvc_last_test_link(target: &Path) -> Result<()> {
+    let symlink_from = target
+        .parent()
+        .unwrap_or(&env::temp_dir())
+        .join(XVC_LAST_TEST_SYMLINK_TARGET);
+
+    if symlink_from.exists() {
+        fs::remove_file(symlink_from.clone())?;
+    }
+    make_symlink(&target, &symlink_from)?;
+    Ok(())
+}
+
+/// Create a temporary dir under $TMPDIR and cd to it
+pub fn run_in_temp_dir() -> PathBuf {
+    let temp_dir = create_temp_dir();
+    watch!(temp_dir);
+    create_xvc_last_test_link(&temp_dir).expect("Cannot create symlink");
+    env::set_current_dir(&temp_dir).expect("Cannot change directory");
+    temp_dir
+}
+
+/// Create an empty temporary Git repository without XVC_DIR
+pub fn run_in_temp_git_dir() -> PathBuf {
+    let temp_dir = run_in_temp_dir();
+    let output = Command::new("git")
+        .arg("init")
+        .output()
+        .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
+    watch!(output);
+    temp_dir
+}
+
+pub fn temp_git_dir() -> PathBuf {
+    let temp_dir = create_temp_dir();
+    watch!(temp_dir);
+    Command::new("git")
+        .arg("-C")
+        .arg(&temp_dir.as_os_str())
+        .arg("init")
+        .output()
+        .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
+    temp_dir
+}
+
+/// Generate a random binary file
+pub fn generate_random_file(filename: &Path, size: usize) {
+    let f = File::create(filename).unwrap();
+    let mut writer = BufWriter::new(f);
+
+    let mut rng = rand::thread_rng();
+    let mut buffer = [0u8; 1024];
+    let mut remaining_size = size;
+
+    while remaining_size > 0 {
+        let to_write = cmp::min(remaining_size, buffer.len());
+        let buffer = &mut buffer[0..to_write];
+        rng.fill(buffer);
+        writer.write_all(buffer).unwrap();
+
+        remaining_size -= to_write;
+    }
+}
+
+/// Creates a file filled with byte
+pub fn generate_filled_file(filename: &Path, size: usize, byte: u8) {
+    let f = File::create(filename).unwrap();
+    let mut writer = BufWriter::new(f);
+    let buffer = [byte; 1024];
+    let mut remaining_size = size;
+    while remaining_size > 0 {
+        let to_write = cmp::min(remaining_size, buffer.len());
+        let buffer = &buffer[0..to_write];
+        writer.write_all(buffer).unwrap();
+        remaining_size -= to_write;
+    }
+}
+
+/// Generate a random text file composed of alphanumerics
+pub fn generate_random_text_file(filename: &Path, num_lines: usize) {
+    let mut f = File::create(filename).unwrap();
+    let rng = rand::thread_rng();
+    let line_length = 100;
+    for _ in 0..num_lines {
+        let line: String = rng
+            .clone()
+            .sample_iter(&Alphanumeric)
+            .take(line_length)
+            .map(char::from)
+            .collect();
+        writeln!(f, "{}\n", line).expect("Could not write to file.");
+    }
+}
+
+// TODO: Write some tests for complex test helpers
+
+pub fn create_directory_tree(
+    root: &Path,
+    n_dirs: usize,
+    n_files_per_dir: usize,
+) -> Result<Vec<PathBuf>> {
+    let mut paths = Vec::<PathBuf>::with_capacity(n_dirs * n_files_per_dir);
+    let dirs: Vec<String> = (1..=n_dirs).map(|i| format!("dir-{:04}", i)).collect();
+    let files: Vec<(String, usize)> = (1..=n_files_per_dir)
+        .map(|i| (format!("file-{:04}.bin", i), i + 1000))
+        .collect();
+    for dir in dirs {
+        std::fs::create_dir_all(root.join(Path::new(&dir)))?;
+        for (name, size) in &files {
+            let filename = PathBuf::from(&format!("{}/{}/{}", root.to_string_lossy(), dir, name));
+            generate_random_file(&filename, *size);
+            paths.push(filename);
+        }
+    }
+    Ok(paths)
+}
+
+#[cfg(unix)]
+/// Creates a symlink from target to original
+pub fn make_symlink<P: AsRef<Path>, Q: AsRef<Path>>(original: P, target: Q) -> io::Result<()> {
+    unix_fs::symlink(original, target)
+}
+
+#[cfg(windows)]
+/// Creates a file symlink from target to original
+pub fn make_symlink<P: AsRef<Path>, Q: AsRef<Path>>(original: P, target: Q) -> io::Result<()> {
+    windows_fs::symlink_file(original, target)
+}
