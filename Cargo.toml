@@ -9,6 +9,7 @@ members = [
     "logging",
     "walker",
     "test_helper",
+    "workflow_tests",
     "remote",
 ]
 
