@@ -11,8 +11,8 @@ use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
 use crate::remote::XVC_REMOTE_GUID_FILENAME;
-use crate::{Error, Result, XvcRemote, XvcRemoteEvent};
-use crate::{XvcRemoteGuid, XvcRemoteOperations};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent};
+use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
@@ -29,7 +29,7 @@ pub fn cmd_new_s3(
     remote_prefix: String,
 ) -> Result<()> {
     let remote = XvcS3Remote {
-        guid: XvcRemoteGuid::new(),
+        guid: XvcStorageGuid::new(),
         name,
         region,
         bucket_name,
@@ -41,14 +41,14 @@ pub fn cmd_new_s3(
     let init_event = remote.init(output_snd.clone(), xvc_root)?;
     watch!(init_event);
 
-    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcRemote, XvcRemoteEvent>| {
+    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcRemote::S3(remote.clone()),
+            XvcStorage::S3(remote.clone()),
             event_e,
-            XvcRemoteEvent::Init(init_event.clone()),
+            XvcStorageEvent::Init(init_event.clone()),
         );
         Ok(())
     })?;
@@ -58,7 +58,7 @@ pub fn cmd_new_s3(
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcS3Remote {
-    pub guid: XvcRemoteGuid,
+    pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
     pub bucket_name: String,
@@ -292,7 +292,7 @@ impl XvcS3Remote {
     }
 }
 
-impl XvcRemoteOperations for XvcS3Remote {
+impl XvcStorageOperations for XvcS3Remote {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

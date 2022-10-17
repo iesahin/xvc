@@ -23,11 +23,11 @@ use std::{
 
 use derive_more::{Display, FromStr};
 pub use event::{
-    XvcRemoteDeleteEvent, XvcRemoteEvent, XvcRemoteInitEvent, XvcRemoteListEvent,
-    XvcRemoteReceiveEvent, XvcRemoteSendEvent,
+    XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemoteReceiveEvent,
+    XvcRemoteSendEvent, XvcStorageEvent,
 };
 
-pub use local::XvcLocalRemote;
+pub use local::XvcLocalStorage;
 
 use anyhow::anyhow;
 use crossbeam_channel::Sender;
@@ -42,12 +42,12 @@ use subprocess::Exec;
 use xvc_core::{XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{persist, Storable, XvcEntity, XvcStore};
 
-use self::generic::XvcGenericRemote;
+use self::generic::XvcGenericStorage;
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub enum XvcRemote {
-    Local(XvcLocalRemote),
-    Generic(XvcGenericRemote),
+pub enum XvcStorage {
+    Local(XvcLocalStorage),
+    Generic(XvcGenericStorage),
     // Ssh(XvcSshRemote),
     #[cfg(feature = "s3")]
     S3(s3::XvcS3Remote),
@@ -62,12 +62,12 @@ pub enum XvcRemote {
     #[cfg(feature = "digital-ocean")]
     DigitalOcean(digital_ocean::XvcDigitalOceanRemote),
 }
-persist!(XvcRemote, "remote");
+persist!(XvcStorage, "remote");
 
-impl Display for XvcRemote {
+impl Display for XvcStorage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            XvcRemote::Local(lr) => {
+            XvcStorage::Local(lr) => {
                 write!(
                     f,
                     "Local:   {}\t{}\t{}",
@@ -76,7 +76,7 @@ impl Display for XvcRemote {
                     lr.path.to_string_lossy()
                 )
             }
-            XvcRemote::Generic(gr) => write!(
+            XvcStorage::Generic(gr) => write!(
                 f,
                 "Generic: {}\t{}\t{}{}",
                 gr.name,
@@ -86,37 +86,37 @@ impl Display for XvcRemote {
             ),
 
             #[cfg(feature = "s3")]
-            XvcRemote::S3(s3r) => write!(
+            XvcStorage::S3(s3r) => write!(
                 f,
                 "S3:      {}\t{}\t{}.{}/{}",
                 s3r.name, s3r.guid, s3r.region, s3r.bucket_name, s3r.remote_prefix
             ),
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(mr) => write!(
+            XvcStorage::Minio(mr) => write!(
                 f,
                 "Minio:   {}\t{}\t{}.{}/{}",
                 mr.name, mr.guid, mr.endpoint, mr.bucket_name, mr.remote_prefix
             ),
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r2r) => write!(
+            XvcStorage::R2(r2r) => write!(
                 f,
                 "R2:      {}\t{}\t{} {}/{}",
                 r2r.name, r2r.guid, r2r.account_id, r2r.bucket_name, r2r.remote_prefix
             ),
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(gcsr) => write!(
+            XvcStorage::Gcs(gcsr) => write!(
                 f,
                 "GCS:     {}\t{}\t{}.{}/{}",
                 gcsr.name, gcsr.guid, gcsr.region, gcsr.bucket_name, gcsr.remote_prefix
             ),
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(wr) => write!(
+            XvcStorage::Wasabi(wr) => write!(
                 f,
                 "Wasabi:  {}\t{}\t{}.{}/{}",
                 wr.name, wr.guid, wr.region, wr.bucket_name, wr.remote_prefix
             ),
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(dor) => write!(
+            XvcStorage::DigitalOcean(dor) => write!(
                 f,
                 "DO:      {}\t{}\t{}.{}/{}",
                 dor.name, dor.guid, dor.region, dor.bucket_name, dor.remote_prefix
@@ -125,7 +125,7 @@ impl Display for XvcRemote {
     }
 }
 
-pub trait XvcRemoteOperations {
+pub trait XvcStorageOperations {
     fn init(&self, output: Sender<XvcOutputLine>, xvc_root: &XvcRoot)
         -> Result<XvcRemoteInitEvent>;
     fn list(&self, output: Sender<XvcOutputLine>, xvc_root: &XvcRoot)
@@ -152,27 +152,27 @@ pub trait XvcRemoteOperations {
     ) -> Result<XvcRemoteDeleteEvent>;
 }
 
-impl XvcRemoteOperations for XvcRemote {
+impl XvcStorageOperations for XvcStorage {
     fn init(
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<XvcRemoteInitEvent> {
         match self {
-            XvcRemote::Local(lr) => lr.init(output, xvc_root),
-            XvcRemote::Generic(gr) => gr.init(output, xvc_root),
+            XvcStorage::Local(lr) => lr.init(output, xvc_root),
+            XvcStorage::Generic(gr) => gr.init(output, xvc_root),
             #[cfg(feature = "s3")]
-            XvcRemote::S3(s3r) => s3r.init(output, xvc_root),
+            XvcStorage::S3(s3r) => s3r.init(output, xvc_root),
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(mr) => mr.init(output, xvc_root),
+            XvcStorage::Minio(mr) => mr.init(output, xvc_root),
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r) => r.init(output, xvc_root),
+            XvcStorage::R2(r) => r.init(output, xvc_root),
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(r) => r.init(output, xvc_root),
+            XvcStorage::Gcs(r) => r.init(output, xvc_root),
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(r) => r.init(output, xvc_root),
+            XvcStorage::Wasabi(r) => r.init(output, xvc_root),
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(r) => r.init(output, xvc_root),
+            XvcStorage::DigitalOcean(r) => r.init(output, xvc_root),
         }
     }
 
@@ -182,20 +182,20 @@ impl XvcRemoteOperations for XvcRemote {
         xvc_root: &XvcRoot,
     ) -> Result<XvcRemoteListEvent> {
         match self {
-            XvcRemote::Local(lr) => lr.list(output, xvc_root),
-            XvcRemote::Generic(gr) => gr.list(output, xvc_root),
+            XvcStorage::Local(lr) => lr.list(output, xvc_root),
+            XvcStorage::Generic(gr) => gr.list(output, xvc_root),
             #[cfg(feature = "s3")]
-            XvcRemote::S3(s3r) => s3r.list(output, xvc_root),
+            XvcStorage::S3(s3r) => s3r.list(output, xvc_root),
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(mr) => mr.list(output, xvc_root),
+            XvcStorage::Minio(mr) => mr.list(output, xvc_root),
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r) => r.list(output, xvc_root),
+            XvcStorage::R2(r) => r.list(output, xvc_root),
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(r) => r.list(output, xvc_root),
+            XvcStorage::Gcs(r) => r.list(output, xvc_root),
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(r) => r.list(output, xvc_root),
+            XvcStorage::Wasabi(r) => r.list(output, xvc_root),
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(r) => r.list(output, xvc_root),
+            XvcStorage::DigitalOcean(r) => r.list(output, xvc_root),
         }
     }
 
@@ -207,20 +207,20 @@ impl XvcRemoteOperations for XvcRemote {
         force: bool,
     ) -> Result<XvcRemoteSendEvent> {
         match self {
-            XvcRemote::Local(lr) => lr.send(output, xvc_root, paths, force),
-            XvcRemote::Generic(gr) => gr.send(output, xvc_root, paths, force),
+            XvcStorage::Local(lr) => lr.send(output, xvc_root, paths, force),
+            XvcStorage::Generic(gr) => gr.send(output, xvc_root, paths, force),
             #[cfg(feature = "s3")]
-            XvcRemote::S3(s3r) => s3r.send(output, xvc_root, paths, force),
+            XvcStorage::S3(s3r) => s3r.send(output, xvc_root, paths, force),
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(mr) => mr.send(output, xvc_root, paths, force),
+            XvcStorage::Minio(mr) => mr.send(output, xvc_root, paths, force),
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r) => r.send(output, xvc_root, paths, force),
+            XvcStorage::R2(r) => r.send(output, xvc_root, paths, force),
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(r) => r.send(output, xvc_root, paths, force),
+            XvcStorage::Gcs(r) => r.send(output, xvc_root, paths, force),
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(r) => r.send(output, xvc_root, paths, force),
+            XvcStorage::Wasabi(r) => r.send(output, xvc_root, paths, force),
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(r) => r.send(output, xvc_root, paths, force),
+            XvcStorage::DigitalOcean(r) => r.send(output, xvc_root, paths, force),
         }
     }
 
@@ -232,20 +232,20 @@ impl XvcRemoteOperations for XvcRemote {
         force: bool,
     ) -> Result<XvcRemoteReceiveEvent> {
         match self {
-            XvcRemote::Local(lr) => lr.receive(output, xvc_root, paths, force),
-            XvcRemote::Generic(gr) => gr.receive(output, xvc_root, paths, force),
+            XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
+            XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
             #[cfg(feature = "s3")]
-            XvcRemote::S3(s3r) => s3r.receive(output, xvc_root, paths, force),
+            XvcStorage::S3(s3r) => s3r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(mr) => mr.receive(output, xvc_root, paths, force),
+            XvcStorage::Minio(mr) => mr.receive(output, xvc_root, paths, force),
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r) => r.receive(output, xvc_root, paths, force),
+            XvcStorage::R2(r) => r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(r) => r.receive(output, xvc_root, paths, force),
+            XvcStorage::Gcs(r) => r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(r) => r.receive(output, xvc_root, paths, force),
+            XvcStorage::Wasabi(r) => r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(r) => r.receive(output, xvc_root, paths, force),
+            XvcStorage::DigitalOcean(r) => r.receive(output, xvc_root, paths, force),
         }
     }
 
@@ -256,20 +256,20 @@ impl XvcRemoteOperations for XvcRemote {
         paths: &[XvcCachePath],
     ) -> Result<XvcRemoteDeleteEvent> {
         match self {
-            XvcRemote::Local(lr) => lr.delete(output, xvc_root, paths),
-            XvcRemote::Generic(gr) => gr.delete(output, xvc_root, paths),
+            XvcStorage::Local(lr) => lr.delete(output, xvc_root, paths),
+            XvcStorage::Generic(gr) => gr.delete(output, xvc_root, paths),
             #[cfg(feature = "s3")]
-            XvcRemote::S3(s3r) => s3r.delete(output, xvc_root, paths),
+            XvcStorage::S3(s3r) => s3r.delete(output, xvc_root, paths),
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(mr) => mr.delete(output, xvc_root, paths),
+            XvcStorage::Minio(mr) => mr.delete(output, xvc_root, paths),
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r) => r.delete(output, xvc_root, paths),
+            XvcStorage::R2(r) => r.delete(output, xvc_root, paths),
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(r) => r.delete(output, xvc_root, paths),
+            XvcStorage::Gcs(r) => r.delete(output, xvc_root, paths),
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(r) => r.delete(output, xvc_root, paths),
+            XvcStorage::Wasabi(r) => r.delete(output, xvc_root, paths),
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(r) => r.delete(output, xvc_root, paths),
+            XvcStorage::DigitalOcean(r) => r.delete(output, xvc_root, paths),
         }
     }
 }
@@ -313,16 +313,16 @@ impl XvcRemotePath {
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize, Display)]
-pub struct XvcRemoteGuid(Uuid);
+pub struct XvcStorageGuid(Uuid);
 
-impl XvcRemoteGuid {
+impl XvcStorageGuid {
     pub fn new() -> Self {
         let guid = uuid::Uuid::new_v4();
         Self(guid)
     }
 }
 
-impl FromStr for XvcRemoteGuid {
+impl FromStr for XvcStorageGuid {
     type Err = crate::Error;
 
     fn from_str(s: &str) -> Result<Self> {
@@ -330,7 +330,7 @@ impl FromStr for XvcRemoteGuid {
     }
 }
 
-impl From<Uuid> for XvcRemoteGuid {
+impl From<Uuid> for XvcStorageGuid {
     fn from(uuid: Uuid) -> Self {
         Self(uuid)
     }
@@ -342,40 +342,40 @@ pub fn get_remote_from_store(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     identifier: &RemoteIdentifier,
-) -> Result<XvcRemote> {
-    let store: XvcStore<XvcRemote> = xvc_root.load_store()?;
+) -> Result<XvcStorage> {
+    let store: XvcStore<XvcStorage> = xvc_root.load_store()?;
     let remote_store = store.filter(|_, r| match identifier {
         RemoteIdentifier::Name(ref n) => match r {
-            XvcRemote::Local(r) => r.name == *n,
-            XvcRemote::Generic(r) => r.name == *n,
+            XvcStorage::Local(r) => r.name == *n,
+            XvcStorage::Generic(r) => r.name == *n,
             #[cfg(feature = "s3")]
-            XvcRemote::S3(r) => r.name == *n,
+            XvcStorage::S3(r) => r.name == *n,
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(r) => r.name == *n,
+            XvcStorage::Minio(r) => r.name == *n,
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r) => r.name == *n,
+            XvcStorage::R2(r) => r.name == *n,
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(r) => r.name == *n,
+            XvcStorage::Gcs(r) => r.name == *n,
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(r) => r.name == *n,
+            XvcStorage::Wasabi(r) => r.name == *n,
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(r) => r.name == *n,
+            XvcStorage::DigitalOcean(r) => r.name == *n,
         },
         RemoteIdentifier::Uuid(ref id) => match r {
-            XvcRemote::Local(lr) => lr.guid == (*id).into(),
-            XvcRemote::Generic(gr) => gr.guid == (*id).into(),
+            XvcStorage::Local(lr) => lr.guid == (*id).into(),
+            XvcStorage::Generic(gr) => gr.guid == (*id).into(),
             #[cfg(feature = "s3")]
-            XvcRemote::S3(s3r) => s3r.guid == (*id).into(),
+            XvcStorage::S3(s3r) => s3r.guid == (*id).into(),
             #[cfg(feature = "minio")]
-            XvcRemote::Minio(mr) => mr.guid == (*id).into(),
+            XvcStorage::Minio(mr) => mr.guid == (*id).into(),
             #[cfg(feature = "r2")]
-            XvcRemote::R2(r) => r.guid == (*id).into(),
+            XvcStorage::R2(r) => r.guid == (*id).into(),
             #[cfg(feature = "gcs")]
-            XvcRemote::Gcs(r) => r.guid == (*id).into(),
+            XvcStorage::Gcs(r) => r.guid == (*id).into(),
             #[cfg(feature = "wasabi")]
-            XvcRemote::Wasabi(r) => r.guid == (*id).into(),
+            XvcStorage::Wasabi(r) => r.guid == (*id).into(),
             #[cfg(feature = "digital-ocean")]
-            XvcRemote::DigitalOcean(r) => r.guid == (*id).into(),
+            XvcStorage::DigitalOcean(r) => r.guid == (*id).into(),
         },
     });
 

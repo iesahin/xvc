@@ -8,7 +8,7 @@ use xvc_core::{ContentDigest, XvcCachePath, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::XvcOutputLine;
 use xvc_remote::{
-    remote::{get_remote_from_store, XvcRemote, XvcRemoteGuid, XvcRemoteOperations},
+    remote::{get_remote_from_store, XvcStorage, XvcStorageGuid, XvcStorageOperations},
     RemoteIdentifier,
 };
 use xvc_walker::Glob;

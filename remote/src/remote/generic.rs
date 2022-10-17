@@ -10,7 +10,7 @@ use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
-use crate::{Error, Result, XvcRemote, XvcRemoteEvent, XvcRemoteGuid, XvcRemoteOperations};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
@@ -31,8 +31,8 @@ pub fn cmd_remote_new_generic(
     upload_command: String,
     delete_command: String,
 ) -> Result<()> {
-    let remote = XvcGenericRemote {
-        guid: XvcRemoteGuid::new(),
+    let remote = XvcGenericStorage {
+        guid: XvcStorageGuid::new(),
         name,
         url,
         remote_dir,
@@ -48,14 +48,14 @@ pub fn cmd_remote_new_generic(
 
     let init_event = remote.init(output_snd.clone(), xvc_root)?;
 
-    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcRemote, XvcRemoteEvent>| {
+    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcRemote::Generic(remote.clone()),
+            XvcStorage::Generic(remote.clone()),
             event_e,
-            XvcRemoteEvent::Init(init_event.clone()),
+            XvcStorageEvent::Init(init_event.clone()),
         );
         Ok(())
     })?;
@@ -64,8 +64,8 @@ pub fn cmd_remote_new_generic(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcGenericRemote {
-    pub guid: XvcRemoteGuid,
+pub struct XvcGenericStorage {
+    pub guid: XvcStorageGuid,
     pub name: String,
     pub url: Option<String>,
     pub remote_dir: Option<String>,
@@ -77,7 +77,7 @@ pub struct XvcGenericRemote {
     pub max_processes: usize,
 }
 
-impl XvcGenericRemote {
+impl XvcGenericStorage {
     /// Replace keys with values in `template` using `hash_map`
     fn replace_map_elements(template: &str, hash_map: &HashMap<&str, String>) -> String {
         let mut out = template.to_string();
@@ -189,7 +189,7 @@ impl XvcGenericRemote {
     }
 }
 
-impl XvcRemoteOperations for XvcGenericRemote {
+impl XvcStorageOperations for XvcGenericStorage {
     /// Run self.init_command
     ///
     /// The command should have {LOCAL_GUID_FILE_PATH}  and {REMOTE_GUID_FILE_PATH} fields to

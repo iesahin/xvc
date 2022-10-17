@@ -10,8 +10,8 @@ use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
 use crate::remote::XVC_REMOTE_GUID_FILENAME;
-use crate::{Error, Result, XvcRemote, XvcRemoteEvent};
-use crate::{XvcRemoteGuid, XvcRemoteOperations};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent};
+use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
@@ -28,7 +28,7 @@ pub(crate) fn cmd_new_wasabi(
     remote_prefix: String,
 ) -> Result<()> {
     let remote = XvcWasabiRemote {
-        guid: XvcRemoteGuid::new(),
+        guid: XvcStorageGuid::new(),
         name,
         region,
         bucket_name,
@@ -40,14 +40,14 @@ pub(crate) fn cmd_new_wasabi(
     let init_event = remote.init(output_snd.clone(), xvc_root)?;
     watch!(init_event);
 
-    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcRemote, XvcRemoteEvent>| {
+    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcRemote::Wasabi(remote.clone()),
+            XvcStorage::Wasabi(remote.clone()),
             event_e,
-            XvcRemoteEvent::Init(init_event.clone()),
+            XvcStorageEvent::Init(init_event.clone()),
         );
         Ok(())
     })?;
@@ -57,7 +57,7 @@ pub(crate) fn cmd_new_wasabi(
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcWasabiRemote {
-    pub guid: XvcRemoteGuid,
+    pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
     pub bucket_name: String,
@@ -290,7 +290,7 @@ impl XvcWasabiRemote {
     }
 }
 
-impl XvcRemoteOperations for XvcWasabiRemote {
+impl XvcStorageOperations for XvcWasabiRemote {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

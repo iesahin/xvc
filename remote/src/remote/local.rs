@@ -10,11 +10,11 @@ use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
 use super::{
-    XvcCachePath, XvcRemoteDeleteEvent, XvcRemoteGuid, XvcRemoteInitEvent, XvcRemoteListEvent,
-    XvcRemoteOperations, XvcRemotePath, XvcRemoteReceiveEvent, XvcRemoteSendEvent,
+    XvcCachePath, XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
+    XvcRemoteReceiveEvent, XvcRemoteSendEvent, XvcStorageGuid, XvcStorageOperations,
     XVC_REMOTE_GUID_FILENAME,
 };
-use crate::{Result, XvcRemote, XvcRemoteEvent};
+use crate::{Result, XvcStorage, XvcStorageEvent};
 
 pub fn cmd_remote_new_local(
     input: std::io::StdinLock,
@@ -23,21 +23,21 @@ pub fn cmd_remote_new_local(
     path: PathBuf,
     name: String,
 ) -> Result<()> {
-    let remote = XvcLocalRemote {
-        guid: XvcRemoteGuid::new(),
+    let remote = XvcLocalStorage {
+        guid: XvcStorageGuid::new(),
         name,
         path,
     };
     let init_event = remote.init(output_snd, xvc_root)?;
 
-    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcRemote, XvcRemoteEvent>| {
+    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcRemote::Local(remote.clone()),
+            XvcStorage::Local(remote.clone()),
             event_e,
-            XvcRemoteEvent::Init(init_event.clone()),
+            XvcStorageEvent::Init(init_event.clone()),
         );
         Ok(())
     })?;
@@ -46,13 +46,13 @@ pub fn cmd_remote_new_local(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcLocalRemote {
-    pub guid: XvcRemoteGuid,
+pub struct XvcLocalStorage {
+    pub guid: XvcStorageGuid,
     pub name: String,
     pub path: PathBuf,
 }
 
-impl XvcRemoteOperations for XvcLocalRemote {
+impl XvcStorageOperations for XvcLocalStorage {
     fn init(
         &self,
         output: Sender<XvcOutputLine>,

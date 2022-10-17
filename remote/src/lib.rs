@@ -9,11 +9,9 @@ use clap::{Parser, Subcommand};
 
 use crossbeam_channel::Sender;
 use derive_more::Display;
-use remote::generic::XvcGenericRemote;
-use remote::minio::XvcMinioRemote;
-#[cfg(feature = "s3")]
-use remote::s3::XvcS3Remote;
-pub use remote::{XvcLocalRemote, XvcRemote, XvcRemoteEvent, XvcRemoteGuid, XvcRemoteOperations};
+pub use remote::{
+    XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
+};
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_ecs::{self, persist, R1NStore, XvcEntity};
 use xvc_ecs::{R11Store, XvcStore};
@@ -403,7 +401,7 @@ fn cmd_remote_list(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
 ) -> Result<()> {
-    let store: XvcStore<XvcRemote> = xvc_root.load_store()?;
+    let store: XvcStore<XvcStorage> = xvc_root.load_store()?;
 
     for (_, s) in store.iter() {
         output_snd.send(XvcOutputLine::Output(format!("{}\n", s)))?;
