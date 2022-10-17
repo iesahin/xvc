@@ -10,8 +10,8 @@ use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
 use super::{
-    XvcCachePath, XvcRemotePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent,
-    XvcStorageListEvent, XvcStorageOperations, XvcStorageReceiveEvent, XvcStorageSendEvent,
+    XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStorageOperations, XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent,
     XVC_REMOTE_GUID_FILENAME,
 };
 use crate::{Result, XvcStorage, XvcStorageEvent};
@@ -97,11 +97,11 @@ impl XvcStorageOperations for XvcLocalStorage {
             .config()
             .guid()
             .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-        let mut copied_paths = Vec::<XvcRemotePath>::new();
+        let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = XvcRemotePath::from(format!("{}/{}", repo_guid, cache_path));
+            let remote_path = XvcStoragePath::from(format!("{}/{}", repo_guid, cache_path));
             watch!(remote_path);
             let abs_remote_path = remote_path.as_ref().to_logical_path(&self.path);
             watch!(abs_remote_path);
@@ -141,11 +141,11 @@ impl XvcStorageOperations for XvcLocalStorage {
             .config()
             .guid()
             .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-        let mut copied_paths = Vec::<XvcRemotePath>::new();
+        let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = XvcRemotePath::from(format!("{}/{}", repo_guid, cache_path));
+            let remote_path = XvcStoragePath::from(format!("{}/{}", repo_guid, cache_path));
             watch!(remote_path);
             let abs_remote_path = remote_path.as_ref().to_logical_path(&self.path);
             watch!(abs_remote_path);

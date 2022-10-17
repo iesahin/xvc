@@ -281,15 +281,15 @@ impl XvcStorageOperations for XvcStorage {
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcRemotePath(RelativePathBuf);
-persist!(XvcRemotePath, "remote-path");
+pub struct XvcStoragePath(RelativePathBuf);
+persist!(XvcStoragePath, "remote-path");
 
-impl From<String> for XvcRemotePath {
+impl From<String> for XvcStoragePath {
     fn from(p: String) -> Self {
         Self(RelativePathBuf::from(p))
     }
 }
-impl FromStr for XvcRemotePath {
+impl FromStr for XvcStoragePath {
     fn from_str(p: &str) -> Result<Self> {
         Ok(Self(RelativePathBuf::from(p.to_string())))
     }
@@ -297,13 +297,13 @@ impl FromStr for XvcRemotePath {
     type Err = crate::Error;
 }
 
-impl AsRef<RelativePath> for XvcRemotePath {
+impl AsRef<RelativePath> for XvcStoragePath {
     fn as_ref(&self) -> &RelativePath {
         self.0.as_ref()
     }
 }
 
-impl XvcRemotePath {
+impl XvcStoragePath {
     /// The remote path of a cache path is like {guid}/{cache-path}
     /// ⚠️  The separator between {guid} and {cache-path} is always /
     pub fn new(xvc_root: &XvcRoot, local: &XvcCachePath) -> Self {

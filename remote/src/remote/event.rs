@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use xvc_ecs::persist;
 
-use super::{XvcRemotePath, XvcStorageGuid};
+use super::{XvcStorageGuid, XvcStoragePath};
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcStorageInitEvent {
@@ -11,25 +11,25 @@ pub struct XvcStorageInitEvent {
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcStorageListEvent {
     pub guid: XvcStorageGuid,
-    pub paths: Vec<XvcRemotePath>,
+    pub paths: Vec<XvcStoragePath>,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcStorageSendEvent {
     pub guid: XvcStorageGuid,
-    pub paths: Vec<XvcRemotePath>,
+    pub paths: Vec<XvcStoragePath>,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcStorageReceiveEvent {
     pub guid: XvcStorageGuid,
-    pub paths: Vec<XvcRemotePath>,
+    pub paths: Vec<XvcStoragePath>,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcStorageDeleteEvent {
     pub guid: XvcStorageGuid,
-    pub paths: Vec<XvcRemotePath>,
+    pub paths: Vec<XvcStoragePath>,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]

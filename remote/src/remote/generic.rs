@@ -13,7 +13,7 @@ use xvc_logging::{watch, XvcOutputLine};
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
-    XvcRemotePath, XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
     XvcStorageReceiveEvent, XvcStorageSendEvent, XVC_REMOTE_GUID_FILENAME,
 };
 
@@ -151,8 +151,8 @@ impl XvcGenericStorage {
         xvc_root: &XvcRoot,
         prepared_cmd: &str,
         paths: &[XvcCachePath],
-    ) -> Vec<XvcRemotePath> {
-        let mut remote_paths = Vec::<XvcRemotePath>::with_capacity(paths.len());
+    ) -> Vec<XvcStoragePath> {
+        let mut remote_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         // TODO: Create a thread/process pool here
         // TODO: Refactor to use XvcRemotePath and XvcCachePath in replacements
         paths.iter().for_each(|cache_path| {
@@ -171,7 +171,7 @@ impl XvcGenericStorage {
                     if cmd_output.success() {
                         output.send(XvcOutputLine::Info(stdout_str)).unwrap();
                         output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
-                        let remote_path = XvcRemotePath::new(xvc_root, cache_path);
+                        let remote_path = XvcStoragePath::new(xvc_root, cache_path);
                         remote_paths.push(remote_path);
                     } else {
                         output.send(XvcOutputLine::Error(stderr_str)).unwrap();
@@ -265,7 +265,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         let paths = cmd_output
             .lines()
             .filter_map(|l| if re.is_match(l) { Some(l) } else { None })
-            .map(|l| XvcRemotePath::from(String::from(l)))
+            .map(|l| XvcStoragePath::from(String::from(l)))
             .collect();
 
         Ok(XvcStorageListEvent {

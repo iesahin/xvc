@@ -15,7 +15,7 @@ use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::{
-    XvcRemotePath, XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
@@ -150,7 +150,7 @@ impl XvcDigitalOceanRemote {
                     .iter()
                     .filter_map(|e| {
                         if re.is_match(e.name.as_ref()) {
-                            Some(XvcRemotePath::from_str(&e.name).unwrap())
+                            Some(XvcStoragePath::from_str(&e.name).unwrap())
                         } else {
                             None
                         }
@@ -170,8 +170,8 @@ impl XvcDigitalOceanRemote {
         }
     }
 
-    fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcRemotePath {
-        let remote_path = XvcRemotePath::from(format!(
+    fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
+        let remote_path = XvcStoragePath::from(format!(
             "{}/{}/{}",
             self.remote_prefix, repo_guid, cache_path
         ));
@@ -190,7 +190,7 @@ impl XvcDigitalOceanRemote {
             .config()
             .guid()
             .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-        let mut copied_paths = Vec::<XvcRemotePath>::new();
+        let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         let bucket = self.get_bucket()?;
 
@@ -242,7 +242,7 @@ impl XvcDigitalOceanRemote {
             .config()
             .guid()
             .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-        let mut copied_paths = Vec::<XvcRemotePath>::new();
+        let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         let bucket = self.get_bucket()?;
 
