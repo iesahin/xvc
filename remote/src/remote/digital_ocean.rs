@@ -28,7 +28,7 @@ pub fn cmd_new_digital_ocean(
     region: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcDigitalOceanRemote {
+    let remote = XvcDigitalOceanStorage {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -56,7 +56,7 @@ pub fn cmd_new_digital_ocean(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcDigitalOceanRemote {
+pub struct XvcDigitalOceanStorage {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
@@ -64,7 +64,7 @@ pub struct XvcDigitalOceanRemote {
     pub remote_prefix: String,
 }
 
-impl XvcDigitalOceanRemote {
+impl XvcDigitalOceanStorage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -293,7 +293,7 @@ impl XvcDigitalOceanRemote {
     }
 }
 
-impl XvcStorageOperations for XvcDigitalOceanRemote {
+impl XvcStorageOperations for XvcDigitalOceanStorage {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

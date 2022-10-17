@@ -60,7 +60,7 @@ pub enum XvcStorage {
     #[cfg(feature = "wasabi")]
     Wasabi(wasabi::XvcWasabiRemote),
     #[cfg(feature = "digital-ocean")]
-    DigitalOcean(digital_ocean::XvcDigitalOceanRemote),
+    DigitalOcean(digital_ocean::XvcDigitalOceanStorage),
 }
 persist!(XvcStorage, "remote");
 
