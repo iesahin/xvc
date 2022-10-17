@@ -95,12 +95,6 @@ r2 = ["xvc-remote/r2"]
 gcs = ["xvc-remote/gcs"]
 wasabi = ["xvc-remote/wasabi"]
 digital-ocean = ["xvc-remote/digital-ocean"]
-test-s3 = ["s3"]
-test-minio = ["minio"]
-test-digital-ocean=["digital-ocean"]
-test-wasabi=["wasabi"]
-test-gcs =["gcs"]
-test-r2 = ["r2"]
 
 
 
