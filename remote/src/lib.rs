@@ -25,13 +25,13 @@ use xvc_logging::{watch, XvcOutputLine};
 #[clap(name = "remote", about = "")]
 pub struct RemoteCLI {
     #[clap(subcommand)]
-    pub subcommand: RemoteSubCommand,
+    pub subcommand: StorageSubCommand,
 }
 
 /// Remote subcommands
 #[derive(Debug, Clone, Parser)]
-#[clap(about = "Remote subcommands")]
-pub enum RemoteSubCommand {
+#[clap(about = "Manage storages containing tracked file content")]
+pub enum StorageSubCommand {
     /// list all remotes
     #[clap()]
     List,
@@ -44,13 +44,13 @@ pub enum RemoteSubCommand {
     },
 
     #[clap(subcommand)]
-    New(RemoteNewSubCommand),
+    New(StorageNewSubCommand),
 }
 
 /// Add new remotes
 #[derive(Debug, Clone, Subcommand)]
 #[clap(about = "add new remotes")]
-pub enum RemoteNewSubCommand {
+pub enum StorageNewSubCommand {
     /// add a new local remote
     #[clap()]
     Local {
@@ -229,12 +229,12 @@ pub enum RemoteNewSubCommand {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Display)]
-pub enum RemoteIdentifier {
+pub enum StorageIdentifier {
     Name(String),
     Uuid(uuid::Uuid),
 }
 
-impl FromStr for RemoteIdentifier {
+impl FromStr for StorageIdentifier {
     fn from_str(s: &str) -> Result<Self> {
         match uuid::Uuid::parse_str(s) {
             Ok(uuid) => Ok(Self::Uuid(uuid)),
@@ -245,16 +245,16 @@ impl FromStr for RemoteIdentifier {
     type Err = crate::Error;
 }
 
-pub fn cmd_remote(
+pub fn cmd_storage(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     opts: RemoteCLI,
 ) -> Result<()> {
     match opts.subcommand {
-        RemoteSubCommand::List => cmd_remote_list(input, output_snd, xvc_root),
-        RemoteSubCommand::Remove { name } => cmd_remote_remove(input, output_snd, xvc_root, name),
-        RemoteSubCommand::New(new) => cmd_remote_new(input, output_snd, xvc_root, new),
+        StorageSubCommand::List => cmd_storage_list(input, output_snd, xvc_root),
+        StorageSubCommand::Remove { name } => cmd_storage_remove(input, output_snd, xvc_root, name),
+        StorageSubCommand::New(new) => cmd_remote_new(input, output_snd, xvc_root, new),
     }
 }
 
@@ -262,13 +262,13 @@ fn cmd_remote_new(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    sc: RemoteNewSubCommand,
+    sc: StorageNewSubCommand,
 ) -> Result<()> {
     match sc {
-        RemoteNewSubCommand::Local { path, name } => {
-            remote::local::cmd_remote_new_local(input, output_snd, xvc_root, path, name)
+        StorageNewSubCommand::Local { path, name } => {
+            remote::local::cmd_storage_new_local(input, output_snd, xvc_root, path, name)
         }
-        RemoteNewSubCommand::Generic {
+        StorageNewSubCommand::Generic {
             name,
             init_command,
             list_command,
@@ -278,7 +278,7 @@ fn cmd_remote_new(
             max_processes,
             url,
             remote_dir,
-        } => remote::generic::cmd_remote_new_generic(
+        } => remote::generic::cmd_storage_new_generic(
             input,
             output_snd,
             xvc_root,
@@ -293,7 +293,7 @@ fn cmd_remote_new(
             delete_command,
         ),
         #[cfg(feature = "s3")]
-        RemoteNewSubCommand::S3 {
+        StorageNewSubCommand::S3 {
             name,
             remote_prefix,
             bucket_name,
@@ -308,7 +308,7 @@ fn cmd_remote_new(
             remote_prefix,
         ),
         #[cfg(feature = "minio")]
-        RemoteNewSubCommand::Minio {
+        StorageNewSubCommand::Minio {
             name,
             endpoint,
             bucket_name,
@@ -325,7 +325,7 @@ fn cmd_remote_new(
             remote_prefix,
         ),
         #[cfg(feature = "digital-ocean")]
-        RemoteNewSubCommand::DigitalOcean {
+        StorageNewSubCommand::DigitalOcean {
             name,
             bucket_name,
             region,
@@ -340,7 +340,7 @@ fn cmd_remote_new(
             remote_prefix,
         ),
         #[cfg(feature = "r2")]
-        RemoteNewSubCommand::R2 {
+        StorageNewSubCommand::R2 {
             name,
             account_id,
             bucket_name,
@@ -355,7 +355,7 @@ fn cmd_remote_new(
             remote_prefix,
         ),
         #[cfg(feature = "gcs")]
-        RemoteNewSubCommand::Gcs {
+        StorageNewSubCommand::Gcs {
             name,
             bucket_name,
             region,
@@ -370,7 +370,7 @@ fn cmd_remote_new(
             remote_prefix,
         ),
         #[cfg(feature = "wasabi")]
-        RemoteNewSubCommand::Wasabi {
+        StorageNewSubCommand::Wasabi {
             name,
             bucket_name,
             region,
@@ -387,7 +387,7 @@ fn cmd_remote_new(
     }
 }
 
-fn cmd_remote_remove(
+fn cmd_storage_remove(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
@@ -396,7 +396,7 @@ fn cmd_remote_remove(
     todo!()
 }
 
-fn cmd_remote_list(
+fn cmd_storage_list(
     _input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,

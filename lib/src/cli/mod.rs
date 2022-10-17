@@ -202,7 +202,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 XvcSubCommand::Remote(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
-                    Ok(remote::cmd_remote(
+                    Ok(remote::cmd_storage(
                         input,
                         output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
@@ -339,7 +339,7 @@ pub fn test_dispatch(
                     let stdin = io::stdin();
                     let input = stdin.lock();
 
-                    Ok(remote::cmd_remote(
+                    Ok(remote::cmd_storage(
                         input,
                         output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,

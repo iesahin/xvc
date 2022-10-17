@@ -35,7 +35,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use xvc_logging::XvcOutputLine;
 
-use crate::{Error, RemoteIdentifier, Result};
+use crate::{Error, Result, StorageIdentifier};
 use log::{debug, trace};
 use relative_path::{RelativePath, RelativePathBuf};
 use subprocess::Exec;
@@ -347,11 +347,11 @@ pub const XVC_REMOTE_GUID_FILENAME: &str = ".xvc-guid";
 pub fn get_remote_from_store(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    identifier: &RemoteIdentifier,
+    identifier: &StorageIdentifier,
 ) -> Result<XvcStorage> {
     let store: XvcStore<XvcStorage> = xvc_root.load_store()?;
     let remote_store = store.filter(|_, r| match identifier {
-        RemoteIdentifier::Name(ref n) => match r {
+        StorageIdentifier::Name(ref n) => match r {
             XvcStorage::Local(r) => r.name == *n,
             XvcStorage::Generic(r) => r.name == *n,
             #[cfg(feature = "s3")]
@@ -367,7 +367,7 @@ pub fn get_remote_from_store(
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(r) => r.name == *n,
         },
-        RemoteIdentifier::Uuid(ref id) => match r {
+        StorageIdentifier::Uuid(ref id) => match r {
             XvcStorage::Local(lr) => lr.guid == (*id).into(),
             XvcStorage::Generic(gr) => gr.guid == (*id).into(),
             #[cfg(feature = "s3")]

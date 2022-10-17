@@ -16,7 +16,7 @@ use super::{
 };
 use crate::{Result, XvcStorage, XvcStorageEvent};
 
-pub fn cmd_remote_new_local(
+pub fn cmd_storage_new_local(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,

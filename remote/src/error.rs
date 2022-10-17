@@ -9,7 +9,7 @@ use std::io;
 use std::path::PathBuf;
 use thiserror::Error as ThisError;
 
-use crate::RemoteIdentifier;
+use crate::StorageIdentifier;
 
 #[derive(ThisError, Debug)]
 pub enum Error {
@@ -63,7 +63,7 @@ pub enum Error {
     NoRepositoryGuidFound,
 
     #[error("Cannot find remote with identifier: {identifier}")]
-    CannotFindRemoteWithIdentifier { identifier: RemoteIdentifier },
+    CannotFindRemoteWithIdentifier { identifier: StorageIdentifier },
 
     #[error("Process Exec Error: {source}")]
     ProcessExecError {

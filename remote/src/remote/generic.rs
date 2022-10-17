@@ -17,7 +17,7 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent, XVC_REMOTE_GUID_FILENAME,
 };
 
-pub fn cmd_remote_new_generic(
+pub fn cmd_storage_new_generic(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
