@@ -10,8 +10,8 @@ use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
 use super::{
-    XvcCachePath, XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
-    XvcRemoteReceiveEvent, XvcRemoteSendEvent, XvcStorageGuid, XvcStorageOperations,
+    XvcCachePath, XvcRemotePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent,
+    XvcStorageListEvent, XvcStorageOperations, XvcStorageReceiveEvent, XvcStorageSendEvent,
     XVC_REMOTE_GUID_FILENAME,
 };
 use crate::{Result, XvcStorage, XvcStorageEvent};
@@ -57,7 +57,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcRemoteInitEvent> {
+    ) -> Result<XvcStorageInitEvent> {
         // Check if there is no directory as `self.path`
         if self.path.exists() {
             return Err(anyhow::anyhow!("Remote should point to a blank directory").into());
@@ -73,7 +73,7 @@ impl XvcStorageOperations for XvcLocalStorage {
             self.guid,
         )));
 
-        Ok(XvcRemoteInitEvent {
+        Ok(XvcStorageInitEvent {
             guid: self.guid.clone(),
         })
     }
@@ -82,7 +82,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcRemoteListEvent> {
+    ) -> Result<XvcStorageListEvent> {
         todo!()
     }
 
@@ -92,7 +92,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteSendEvent> {
+    ) -> Result<XvcStorageSendEvent> {
         let repo_guid = xvc_root
             .config()
             .guid()
@@ -124,7 +124,7 @@ impl XvcStorageOperations for XvcLocalStorage {
                 .unwrap();
         }
 
-        Ok(XvcRemoteSendEvent {
+        Ok(XvcStorageSendEvent {
             guid: self.guid.clone(),
             paths: copied_paths,
         })
@@ -136,7 +136,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteReceiveEvent> {
+    ) -> Result<XvcStorageReceiveEvent> {
         let repo_guid = xvc_root
             .config()
             .guid()
@@ -168,7 +168,7 @@ impl XvcStorageOperations for XvcLocalStorage {
                 .unwrap();
         }
 
-        Ok(XvcRemoteReceiveEvent {
+        Ok(XvcStorageReceiveEvent {
             guid: self.guid.clone(),
             paths: copied_paths,
         })
@@ -179,7 +179,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-    ) -> Result<XvcRemoteDeleteEvent> {
+    ) -> Result<XvcStorageDeleteEvent> {
         todo!()
     }
     // fn init(&self) -> Result<XvcRemoteInitEvent> {

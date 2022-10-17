@@ -23,8 +23,8 @@ use std::{
 
 use derive_more::{Display, FromStr};
 pub use event::{
-    XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemoteReceiveEvent,
-    XvcRemoteSendEvent, XvcStorageEvent,
+    XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
 pub use local::XvcLocalStorage;
@@ -126,30 +126,36 @@ impl Display for XvcStorage {
 }
 
 pub trait XvcStorageOperations {
-    fn init(&self, output: Sender<XvcOutputLine>, xvc_root: &XvcRoot)
-        -> Result<XvcRemoteInitEvent>;
-    fn list(&self, output: Sender<XvcOutputLine>, xvc_root: &XvcRoot)
-        -> Result<XvcRemoteListEvent>;
+    fn init(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+    ) -> Result<XvcStorageInitEvent>;
+    fn list(
+        &self,
+        output: Sender<XvcOutputLine>,
+        xvc_root: &XvcRoot,
+    ) -> Result<XvcStorageListEvent>;
     fn send(
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteSendEvent>;
+    ) -> Result<XvcStorageSendEvent>;
     fn receive(
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteReceiveEvent>;
+    ) -> Result<XvcStorageReceiveEvent>;
     fn delete(
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-    ) -> Result<XvcRemoteDeleteEvent>;
+    ) -> Result<XvcStorageDeleteEvent>;
 }
 
 impl XvcStorageOperations for XvcStorage {
@@ -157,7 +163,7 @@ impl XvcStorageOperations for XvcStorage {
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcRemoteInitEvent> {
+    ) -> Result<XvcStorageInitEvent> {
         match self {
             XvcStorage::Local(lr) => lr.init(output, xvc_root),
             XvcStorage::Generic(gr) => gr.init(output, xvc_root),
@@ -180,7 +186,7 @@ impl XvcStorageOperations for XvcStorage {
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcRemoteListEvent> {
+    ) -> Result<XvcStorageListEvent> {
         match self {
             XvcStorage::Local(lr) => lr.list(output, xvc_root),
             XvcStorage::Generic(gr) => gr.list(output, xvc_root),
@@ -205,7 +211,7 @@ impl XvcStorageOperations for XvcStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteSendEvent> {
+    ) -> Result<XvcStorageSendEvent> {
         match self {
             XvcStorage::Local(lr) => lr.send(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.send(output, xvc_root, paths, force),
@@ -230,7 +236,7 @@ impl XvcStorageOperations for XvcStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteReceiveEvent> {
+    ) -> Result<XvcStorageReceiveEvent> {
         match self {
             XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
@@ -254,7 +260,7 @@ impl XvcStorageOperations for XvcStorage {
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-    ) -> Result<XvcRemoteDeleteEvent> {
+    ) -> Result<XvcStorageDeleteEvent> {
         match self {
             XvcStorage::Local(lr) => lr.delete(output, xvc_root, paths),
             XvcStorage::Generic(gr) => gr.delete(output, xvc_root, paths),

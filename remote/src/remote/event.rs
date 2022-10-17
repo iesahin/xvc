@@ -4,40 +4,40 @@ use xvc_ecs::persist;
 use super::{XvcRemotePath, XvcStorageGuid};
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcRemoteInitEvent {
+pub struct XvcStorageInitEvent {
     pub guid: XvcStorageGuid,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcRemoteListEvent {
-    pub guid: XvcStorageGuid,
-    pub paths: Vec<XvcRemotePath>,
-}
-
-#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcRemoteSendEvent {
+pub struct XvcStorageListEvent {
     pub guid: XvcStorageGuid,
     pub paths: Vec<XvcRemotePath>,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcRemoteReceiveEvent {
+pub struct XvcStorageSendEvent {
     pub guid: XvcStorageGuid,
     pub paths: Vec<XvcRemotePath>,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcRemoteDeleteEvent {
+pub struct XvcStorageReceiveEvent {
+    pub guid: XvcStorageGuid,
+    pub paths: Vec<XvcRemotePath>,
+}
+
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
+pub struct XvcStorageDeleteEvent {
     pub guid: XvcStorageGuid,
     pub paths: Vec<XvcRemotePath>,
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub enum XvcStorageEvent {
-    Init(XvcRemoteInitEvent),
-    List(XvcRemoteListEvent),
-    Send(XvcRemoteSendEvent),
-    Receive(XvcRemoteReceiveEvent),
-    Delete(XvcRemoteDeleteEvent),
+    Init(XvcStorageInitEvent),
+    List(XvcStorageListEvent),
+    Send(XvcStorageSendEvent),
+    Receive(XvcStorageReceiveEvent),
+    Delete(XvcStorageDeleteEvent),
 }
 persist!(XvcStorageEvent, "remote-event");

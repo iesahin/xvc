@@ -13,8 +13,8 @@ use xvc_logging::{watch, XvcOutputLine};
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
-    XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
-    XvcRemoteReceiveEvent, XvcRemoteSendEvent, XVC_REMOTE_GUID_FILENAME,
+    XvcRemotePath, XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XVC_REMOTE_GUID_FILENAME,
 };
 
 pub fn cmd_remote_new_generic(
@@ -198,7 +198,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<super::XvcRemoteInitEvent> {
+    ) -> Result<super::XvcStorageInitEvent> {
         let mut address_map = self.address_map();
         watch!(address_map);
         let local_guid_path = env::temp_dir().join(self.guid.to_string());
@@ -233,7 +233,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         fs::remove_file(&local_guid_path)?;
 
-        Ok(XvcRemoteInitEvent {
+        Ok(XvcStorageInitEvent {
             guid: self.guid.clone(),
         })
     }
@@ -249,7 +249,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         &self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcRemoteListEvent> {
+    ) -> Result<XvcStorageListEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.list_command, &address_map);
         let cmd_output = Exec::shell(prepared_cmd).capture()?.stdout_str();
@@ -268,7 +268,7 @@ impl XvcStorageOperations for XvcGenericStorage {
             .map(|l| XvcRemotePath::from(String::from(l)))
             .collect();
 
-        Ok(XvcRemoteListEvent {
+        Ok(XvcStorageListEvent {
             guid: self.guid.clone(),
             paths,
         })
@@ -280,7 +280,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         _force: bool,
-    ) -> Result<XvcRemoteSendEvent> {
+    ) -> Result<XvcStorageSendEvent> {
         let address_map = self.address_map();
         watch!(address_map);
         let prepared_cmd = Self::replace_map_elements(&self.upload_command, &address_map);
@@ -288,7 +288,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
         watch!(remote_paths);
 
-        Ok(XvcRemoteSendEvent {
+        Ok(XvcStorageSendEvent {
             guid: self.guid.clone(),
             paths: remote_paths,
         })
@@ -300,7 +300,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteReceiveEvent> {
+    ) -> Result<XvcStorageReceiveEvent> {
         let address_map = self.address_map();
         watch!(address_map);
         let prepared_cmd = Self::replace_map_elements(&self.download_command, &address_map);
@@ -308,7 +308,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
         watch!(remote_paths);
 
-        Ok(XvcRemoteReceiveEvent {
+        Ok(XvcStorageReceiveEvent {
             guid: self.guid.clone(),
             paths: remote_paths,
         })
@@ -319,12 +319,12 @@ impl XvcStorageOperations for XvcGenericStorage {
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-    ) -> Result<XvcRemoteDeleteEvent> {
+    ) -> Result<XvcStorageDeleteEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.delete_command, &address_map);
         let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
 
-        Ok(XvcRemoteDeleteEvent {
+        Ok(XvcStorageDeleteEvent {
             guid: self.guid.clone(),
             paths: remote_paths,
         })

@@ -15,8 +15,8 @@ use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::{
-    XvcRemoteDeleteEvent, XvcRemoteInitEvent, XvcRemoteListEvent, XvcRemotePath,
-    XvcRemoteReceiveEvent, XvcRemoteSendEvent,
+    XvcRemotePath, XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
 pub fn cmd_new_r2(
@@ -91,7 +91,7 @@ impl XvcR2Remote {
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<XvcRemoteInitEvent> {
+    ) -> Result<XvcStorageInitEvent> {
         let bucket = self.get_bucket()?;
         let guid = self.guid.clone();
         let guid_str = self.guid.to_string();
@@ -109,7 +109,7 @@ impl XvcR2Remote {
             .await;
 
         match res_response {
-            Ok(_) => Ok(XvcRemoteInitEvent { guid }),
+            Ok(_) => Ok(XvcStorageInitEvent { guid }),
             Err(err) => {
                 output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
                 Err(Error::S3Error { source: err })
@@ -121,7 +121,7 @@ impl XvcR2Remote {
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<XvcRemoteListEvent> {
+    ) -> Result<XvcStorageListEvent> {
         let bucket = self.get_bucket()?;
         let xvc_guid = xvc_root.config().guid().unwrap();
         let prefix = self.remote_prefix.clone();
@@ -155,7 +155,7 @@ impl XvcR2Remote {
                     })
                     .collect();
 
-                Ok(XvcRemoteListEvent {
+                Ok(XvcStorageListEvent {
                     guid: self.guid.clone(),
                     paths,
                 })
@@ -183,7 +183,7 @@ impl XvcR2Remote {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> crate::Result<super::XvcRemoteSendEvent> {
+    ) -> crate::Result<super::XvcStorageSendEvent> {
         let repo_guid = xvc_root
             .config()
             .guid()
@@ -223,7 +223,7 @@ impl XvcR2Remote {
             }
         }
 
-        Ok(XvcRemoteSendEvent {
+        Ok(XvcStorageSendEvent {
             guid: self.guid.clone(),
             paths: copied_paths,
         })
@@ -235,7 +235,7 @@ impl XvcR2Remote {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> Result<XvcRemoteReceiveEvent> {
+    ) -> Result<XvcStorageReceiveEvent> {
         let repo_guid = xvc_root
             .config()
             .guid()
@@ -275,7 +275,7 @@ impl XvcR2Remote {
             }
         }
 
-        Ok(XvcRemoteReceiveEvent {
+        Ok(XvcStorageReceiveEvent {
             guid: self.guid.clone(),
             paths: copied_paths,
         })
@@ -286,7 +286,7 @@ impl XvcR2Remote {
         output: crossbeam_channel::Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
-    ) -> Result<XvcRemoteDeleteEvent> {
+    ) -> Result<XvcStorageDeleteEvent> {
         todo!();
     }
 }
@@ -296,7 +296,7 @@ impl XvcStorageOperations for XvcR2Remote {
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<XvcRemoteInitEvent> {
+    ) -> Result<XvcStorageInitEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;
@@ -309,7 +309,7 @@ impl XvcStorageOperations for XvcR2Remote {
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
-    ) -> crate::Result<super::XvcRemoteListEvent> {
+    ) -> crate::Result<super::XvcStorageListEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
@@ -323,7 +323,7 @@ impl XvcStorageOperations for XvcR2Remote {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> crate::Result<super::XvcRemoteSendEvent> {
+    ) -> crate::Result<super::XvcStorageSendEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
@@ -337,7 +337,7 @@ impl XvcStorageOperations for XvcR2Remote {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> crate::Result<super::XvcRemoteReceiveEvent> {
+    ) -> crate::Result<super::XvcStorageReceiveEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
@@ -350,7 +350,7 @@ impl XvcStorageOperations for XvcR2Remote {
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
-    ) -> crate::Result<super::XvcRemoteDeleteEvent> {
+    ) -> crate::Result<super::XvcStorageDeleteEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
