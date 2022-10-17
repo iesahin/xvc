@@ -1,5 +1,5 @@
 pub mod error;
-pub mod remote;
+pub mod storage;
 
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -9,21 +9,20 @@ use clap::{Parser, Subcommand};
 
 use crossbeam_channel::Sender;
 use derive_more::Display;
-pub use remote::{
+pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
-use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
-use xvc_ecs::{self, persist, R1NStore, XvcEntity};
-use xvc_ecs::{R11Store, XvcStore};
 
-use xvc_core::XvcPath;
+use xvc_ecs::XvcStore;
+use xvc_ecs::{self};
+
 use xvc_core::XvcRoot;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::XvcOutputLine;
 
-/// Remote (cloud) management commands
+/// Storage (on the cloud) management commands
 #[derive(Debug, Parser)]
-#[clap(name = "remote", about = "")]
-pub struct RemoteCLI {
+#[clap(name = "storage", about = "")]
+pub struct StorageCLI {
     #[clap(subcommand)]
     pub subcommand: StorageSubCommand,
 }
@@ -249,7 +248,7 @@ pub fn cmd_storage(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    opts: RemoteCLI,
+    opts: StorageCLI,
 ) -> Result<()> {
     match opts.subcommand {
         StorageSubCommand::List => cmd_storage_list(input, output_snd, xvc_root),
@@ -266,7 +265,7 @@ fn cmd_remote_new(
 ) -> Result<()> {
     match sc {
         StorageNewSubCommand::Local { path, name } => {
-            remote::local::cmd_storage_new_local(input, output_snd, xvc_root, path, name)
+            storage::local::cmd_storage_new_local(input, output_snd, xvc_root, path, name)
         }
         StorageNewSubCommand::Generic {
             name,
@@ -278,7 +277,7 @@ fn cmd_remote_new(
             max_processes,
             url,
             remote_dir,
-        } => remote::generic::cmd_storage_new_generic(
+        } => storage::generic::cmd_storage_new_generic(
             input,
             output_snd,
             xvc_root,
@@ -298,7 +297,7 @@ fn cmd_remote_new(
             remote_prefix,
             bucket_name,
             region,
-        } => remote::s3::cmd_new_s3(
+        } => storage::s3::cmd_new_s3(
             input,
             output_snd,
             xvc_root,
@@ -314,7 +313,7 @@ fn cmd_remote_new(
             bucket_name,
             remote_prefix,
             region,
-        } => remote::minio::cmd_new_minio(
+        } => storage::minio::cmd_new_minio(
             input,
             output_snd,
             xvc_root,
@@ -330,7 +329,7 @@ fn cmd_remote_new(
             bucket_name,
             region,
             remote_prefix,
-        } => remote::digital_ocean::cmd_new_digital_ocean(
+        } => storage::digital_ocean::cmd_new_digital_ocean(
             input,
             output_snd,
             xvc_root,
@@ -345,7 +344,7 @@ fn cmd_remote_new(
             account_id,
             bucket_name,
             remote_prefix,
-        } => remote::r2::cmd_new_r2(
+        } => storage::r2::cmd_new_r2(
             input,
             output_snd,
             xvc_root,
@@ -360,7 +359,7 @@ fn cmd_remote_new(
             bucket_name,
             region,
             remote_prefix,
-        } => remote::gcs::cmd_new_gcs(
+        } => storage::gcs::cmd_new_gcs(
             input,
             output_snd,
             xvc_root,
@@ -375,7 +374,7 @@ fn cmd_remote_new(
             bucket_name,
             region,
             remote_prefix,
-        } => remote::wasabi::cmd_new_wasabi(
+        } => storage::wasabi::cmd_new_wasabi(
             input,
             output_snd,
             xvc_root,

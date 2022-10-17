@@ -20,7 +20,7 @@ xvc-ecs = { path = "../ecs" }
 xvc-file = { path = "../file" }
 xvc-pipeline = { path = "../pipeline" }
 xvc-walker = { path = "../walker" }
-xvc-remote = { path = "../remote" }
+xvc-storage = { path = "../storage" }
 
 
 ## Cli and config
@@ -89,12 +89,12 @@ url = { version = "^2.2", features = ["serde"] }
 
 [features]
 default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
-s3 = ["xvc-remote/s3"]
-minio = ["xvc-remote/minio"]
-r2 = ["xvc-remote/r2"]
-gcs = ["xvc-remote/gcs"]
-wasabi = ["xvc-remote/wasabi"]
-digital-ocean = ["xvc-remote/digital-ocean"]
+s3 = ["xvc-storage/s3"]
+minio = ["xvc-storage/minio"]
+r2 = ["xvc-storage/r2"]
+gcs = ["xvc-storage/gcs"]
+wasabi = ["xvc-storage/wasabi"]
+digital-ocean = ["xvc-storage/digital-ocean"]
 
 
 

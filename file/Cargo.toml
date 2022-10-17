@@ -19,7 +19,7 @@ xvc-config = { path = "../config" }
 xvc-core = { path = "../core" }
 xvc-ecs = { path = "../ecs" }
 xvc-walker = { path = "../walker" }
-xvc-remote = { path = "../remote" }
+xvc-storage = { path = "../storage" }
 
 
 ## Cli and config

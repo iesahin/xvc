@@ -1,40 +1,45 @@
+use std::io::Write;
 use std::str::FromStr;
 use std::{env, fs};
 
+use crossbeam_channel::Sender;
+use futures::executor::block_on;
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use xvc_core::XvcCachePath;
+use tokio;
+use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
-use crate::remote::XVC_REMOTE_GUID_FILENAME;
+use crate::storage::XvcStorageReceiveEvent;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent,
+    XvcStorageSendEvent, XVC_REMOTE_GUID_FILENAME,
 };
 
-pub fn cmd_new_gcs(
+pub fn cmd_new_minio(
     input: std::io::StdinLock,
-    output_snd: crossbeam_channel::Sender<XvcOutputLine>,
-    xvc_root: &xvc_core::XvcRoot,
+    output_snd: Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
     name: String,
+    endpoint: String,
     bucket_name: String,
     region: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcGcsRemote {
+    let remote = XvcMinioRemote {
         guid: XvcStorageGuid::new(),
         name,
         region,
         bucket_name,
         remote_prefix,
+        endpoint,
     };
-
     watch!(remote);
 
     let init_event = remote.init(output_snd.clone(), xvc_root)?;
@@ -45,7 +50,7 @@ pub fn cmd_new_gcs(
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::Gcs(remote.clone()),
+            XvcStorage::Minio(remote.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -56,15 +61,16 @@ pub fn cmd_new_gcs(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcGcsRemote {
+pub struct XvcMinioRemote {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
     pub bucket_name: String,
     pub remote_prefix: String,
+    pub endpoint: String,
 }
 
-impl XvcGcsRemote {
+impl XvcMinioRemote {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -77,14 +83,14 @@ impl XvcGcsRemote {
     }
 
     fn get_bucket(&self) -> Result<Bucket> {
+        // We'll just put guid file to endpoint/bucket/prefix/XVC_GUID_FILENAME
         let credentials = self.credentials()?;
         let region = Region::Custom {
-            region: self.region.to_owned(),
-            endpoint: "https://storage.googleapis.com".to_owned(),
+            region: self.region.clone(),
+            endpoint: self.endpoint.clone(),
         };
-        let mut bucket = Bucket::new(&self.bucket_name, region, credentials)?;
-        bucket.set_listobjects_v1();
-        Ok(bucket)
+        let bucket = Bucket::new(&self.bucket_name, region, credentials)?;
+        Ok(bucket.with_path_style())
     }
 
     async fn a_init(
@@ -296,7 +302,7 @@ impl XvcGcsRemote {
     }
 }
 
-impl XvcStorageOperations for XvcGcsRemote {
+impl XvcStorageOperations for XvcMinioRemote {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

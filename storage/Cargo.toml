@@ -1,10 +1,10 @@
 [package]
-name = "xvc-remote"
+name = "xvc-storage"
 version = "0.3.0"
 edition = "2021"
 
 [lib]
-name = "xvc_remote"
+name = "xvc_storage"
 crate-type = ["rlib"]
 
 

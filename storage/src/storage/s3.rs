@@ -1,15 +1,16 @@
 use std::str::FromStr;
 use std::{env, fs};
 
+use crossbeam_channel::Sender;
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use xvc_core::XvcCachePath;
+use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
-use crate::remote::XVC_REMOTE_GUID_FILENAME;
+use crate::storage::XVC_REMOTE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
@@ -18,16 +19,16 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
-pub(crate) fn cmd_new_wasabi(
+pub fn cmd_new_s3(
     input: std::io::StdinLock,
-    output_snd: crossbeam_channel::Sender<XvcOutputLine>,
-    xvc_root: &xvc_core::XvcRoot,
+    output_snd: Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
     name: String,
-    bucket_name: String,
     region: String,
+    bucket_name: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcWasabiRemote {
+    let remote = XvcS3Remote {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -45,7 +46,7 @@ pub(crate) fn cmd_new_wasabi(
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::Wasabi(remote.clone()),
+            XvcStorage::S3(remote.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -56,7 +57,7 @@ pub(crate) fn cmd_new_wasabi(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcWasabiRemote {
+pub struct XvcS3Remote {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
@@ -64,7 +65,7 @@ pub struct XvcWasabiRemote {
     pub remote_prefix: String,
 }
 
-impl XvcWasabiRemote {
+impl XvcS3Remote {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -79,9 +80,7 @@ impl XvcWasabiRemote {
     fn get_bucket(&self) -> Result<Bucket> {
         // We'll just put guid file to endpoint/bucket/prefix/XVC_GUID_FILENAME
         let credentials = self.credentials()?;
-        let region: Region = format!("wa-{}", self.region)
-            .parse()
-            .expect("Cannot parse region name");
+        let region: Region = self.region.parse().expect("Cannot parse region name");
         let bucket = Bucket::new(&self.bucket_name, region, credentials)?;
         Ok(bucket)
     }
@@ -89,7 +88,7 @@ impl XvcWasabiRemote {
     async fn a_init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
-        xvc_root: &xvc_core::XvcRoot,
+        _xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageInitEvent> {
         let bucket = self.get_bucket()?;
         let guid = self.guid.clone();
@@ -102,7 +101,10 @@ impl XvcWasabiRemote {
 
         let res_response = bucket
             .put_object(
-                format!("{}/{}", self.remote_prefix, XVC_REMOTE_GUID_FILENAME),
+                format!(
+                    "{}/{}/{}",
+                    self.bucket_name, self.remote_prefix, XVC_REMOTE_GUID_FILENAME
+                ),
                 guid_bytes,
             )
             .await;
@@ -169,8 +171,8 @@ impl XvcWasabiRemote {
 
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
         let remote_path = XvcStoragePath::from(format!(
-            "{}/{}/{}",
-            self.remote_prefix, repo_guid, cache_path
+            "{}/{}/{}/{}",
+            self.bucket_name, self.remote_prefix, repo_guid, cache_path
         ));
 
         remote_path
@@ -181,7 +183,7 @@ impl XvcWasabiRemote {
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> crate::Result<super::XvcStorageSendEvent> {
         let repo_guid = xvc_root
             .config()
@@ -233,7 +235,7 @@ impl XvcWasabiRemote {
         output: crossbeam_channel::Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> Result<XvcStorageReceiveEvent> {
         let repo_guid = xvc_root
             .config()
@@ -290,7 +292,7 @@ impl XvcWasabiRemote {
     }
 }
 
-impl XvcStorageOperations for XvcWasabiRemote {
+impl XvcStorageOperations for XvcS3Remote {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

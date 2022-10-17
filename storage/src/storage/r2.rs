@@ -10,7 +10,7 @@ use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
-use crate::remote::XVC_REMOTE_GUID_FILENAME;
+use crate::storage::XVC_REMOTE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
