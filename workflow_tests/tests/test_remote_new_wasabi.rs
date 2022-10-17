@@ -9,7 +9,7 @@ use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::remote::XVC_REMOTE_GUID_FILENAME;
+use xvc_remote::storage::XVC_REMOTE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn write_s3cmd_config(access_key: &str, secret_key: &str) -> Result<String> {

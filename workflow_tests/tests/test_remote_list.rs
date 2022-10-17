@@ -8,7 +8,7 @@ use regex::Regex;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::remote::XVC_REMOTE_GUID_FILENAME;
+use xvc_remote::storage::XVC_REMOTE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
