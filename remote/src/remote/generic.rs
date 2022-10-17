@@ -154,7 +154,7 @@ impl XvcGenericStorage {
     ) -> Vec<XvcStoragePath> {
         let mut remote_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         // TODO: Create a thread/process pool here
-        // TODO: Refactor to use XvcRemotePath and XvcCachePath in replacements
+        // TODO: Refactor to use XvcStoragePath and XvcCachePath in replacements
         paths.iter().for_each(|cache_path| {
             let pm = self.path_map(xvc_root, cache_path);
             watch!(pm);
