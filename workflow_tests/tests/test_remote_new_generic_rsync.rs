@@ -30,6 +30,7 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
+#[cfg_attr(not(feature = "test-rsync"), ignore)]
 fn test_storage_new_generic_rsync() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
@@ -40,7 +41,6 @@ fn test_storage_new_generic_rsync() -> Result<()> {
     let test_host = "iex@one.emresult.com";
     let url = format!("{test_host}");
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
-    let local_test_dir_str = local_test_dir.to_string_lossy().to_string();
 
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];

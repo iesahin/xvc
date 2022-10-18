@@ -49,6 +49,7 @@ test-digital-ocean=["digital-ocean"]
 test-wasabi=["wasabi"]
 test-gcs =["gcs"]
 test-r2 = ["r2"]
+test-rsync = []
 
 
 
