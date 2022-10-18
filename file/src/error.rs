@@ -33,10 +33,10 @@ pub enum Error {
         #[from]
         source: xvc_ecs::error::Error,
     },
-    #[error("Remote Error: {source}")]
-    RemoteError {
+    #[error("Storage Error: {source}")]
+    StorageError {
         #[from]
-        source: xvc_remote::error::Error,
+        source: xvc_storage::error::Error,
     },
     // #[error("Jwalk Error: {source}")]
     // JwalkError {

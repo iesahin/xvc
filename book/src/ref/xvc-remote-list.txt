@@ -1,8 +1,0 @@
-xvc-remote-list 
-list all remotes
-
-USAGE:
-    xvc remote list
-
-OPTIONS:
-    -h, --help    Print help information

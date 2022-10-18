@@ -1,0 +1,19 @@
+xvc-storage-new 
+add new remotes
+
+USAGE:
+    xvc storage new <SUBCOMMAND>
+
+OPTIONS:
+    -h, --help    Print help information
+
+SUBCOMMANDS:
+    digital-ocean    Add a new Digital Ocean remote
+    gcs              Add a new Google Cloud Storage remote
+    generic          add a new generic remote
+    help             Print this message or the help of the given subcommand(s)
+    local            add a new local remote
+    minio            Add a new Minio remote
+    r2               Add a new R2 remote
+    s3               Add a new S3 remote
+    wasabi           Add a new Wasabi remote

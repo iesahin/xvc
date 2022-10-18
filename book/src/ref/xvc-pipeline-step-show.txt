@@ -1,0 +1,9 @@
+xvc-pipeline-step-show 
+Print step configuration
+
+USAGE:
+    xvc pipeline step show --step-name <STEP_NAME>
+
+OPTIONS:
+    -h, --help                     Print help information
+    -s, --step-name <STEP_NAME>    Name of the step

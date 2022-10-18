@@ -7,9 +7,9 @@ use derive_more::Display;
 use xvc_core::{ContentDigest, XvcCachePath, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::XvcOutputLine;
-use xvc_remote::{
-    remote::{get_remote_from_store, XvcRemote, XvcRemoteGuid, XvcRemoteOperations},
-    RemoteIdentifier,
+use xvc_storage::{
+    storage::{get_remote_from_store, XvcStorage, XvcStorageGuid, XvcStorageOperations},
+    StorageIdentifier,
 };
 use xvc_walker::Glob;
 
@@ -18,7 +18,7 @@ use xvc_walker::Glob;
 pub struct FetchCLI {
     /// remote name or guid to send the files
     #[clap(long, short, alias = "from")]
-    pub remote: RemoteIdentifier,
+    pub remote: StorageIdentifier,
     /// force even if the files are already present
     #[clap(long)]
     pub force: bool,

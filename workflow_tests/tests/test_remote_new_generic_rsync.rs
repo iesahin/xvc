@@ -9,7 +9,7 @@ use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::remote::XVC_REMOTE_GUID_FILENAME;
+use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -30,14 +30,17 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
-fn test_remote_new_generic_rsync() -> Result<()> {
+#[cfg_attr(not(feature = "test-rsync"), ignore)]
+fn test_storage_new_generic_rsync() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let remote_dir_name = format!("/tmp/{}/", common::random_dir_name("xvc-remote", Some(111)));
+    let storage_dir_name = format!(
+        "/tmp/{}/",
+        common::random_dir_name("xvc-storage", Some(111))
+    );
     let test_host = "iex@one.emresult.com";
     let url = format!("{test_host}");
-    let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-remote-copy", None));
-    let local_test_dir_str = local_test_dir.to_string_lossy().to_string();
+    let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
 
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];
@@ -47,51 +50,51 @@ fn test_remote_new_generic_rsync() -> Result<()> {
     };
 
     watch!(url);
-    watch!(remote_dir_name);
+    watch!(storage_dir_name);
     let delete_dir = sh(format!(
-        "ssh {url} 'test -e {remote_dir_name} && rm -rf {remote_dir_name}'"
+        "ssh {url} 'test -e {storage_dir_name} && rm -rf {storage_dir_name}'"
     ));
     watch!(delete_dir);
 
     let out = x(&[
-        "remote",
+        "storage",
         "new",
         "generic",
         "--name",
-        "generic-remote",
+        "generic-storage",
         "--url",
         &url,
-        "--remote-dir",
-        &remote_dir_name,
+        "--storage-dir",
+        &storage_dir_name,
         "--init",
-        "ssh {URL} 'mkdir -p {REMOTE_DIR}' ; rsync -av {LOCAL_GUID_FILE_PATH} {URL}:{REMOTE_GUID_FILE_PATH}",
+        "ssh {URL} 'mkdir -p {STORAGE_DIR}' ; rsync -av {LOCAL_GUID_FILE_PATH} {URL}:{STORAGE_GUID_FILE_PATH}",
         "--list",
-        "ssh {URL} 'ls -1 {REMOTE_DIR}'",
+        "ssh {URL} 'ls -1 {STORAGE_DIR}'",
         "--upload",
-        "ssh {URL} 'mkdir -p {REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}' ; rsync -av {ABSOLUTE_CACHE_PATH} {URL}:{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}",
+        "ssh {URL} 'mkdir -p {STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}' ; rsync -av {ABSOLUTE_CACHE_PATH} {URL}:{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}",
         "--download",
-        "mkdir -p {ABSOLUTE_CACHE_DIR} ; rsync -av {URL}:{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH} {ABSOLUTE_CACHE_PATH}",
+        "mkdir -p {ABSOLUTE_CACHE_DIR} ; rsync -av {URL}:{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH} {ABSOLUTE_CACHE_PATH}",
         "--delete",
-        "ssh {URL} 'rm {REMOTE_DIR}{RELATIVE_CACHE_PATH}'",
+        "ssh {URL} 'rm {STORAGE_DIR}{RELATIVE_CACHE_PATH}'",
         "--processes",
         "4",
     ])?;
 
     watch!(out);
 
-    let remote_list = sh(format!(
-        "ssh {url} 'ls -l {remote_dir_name}{XVC_REMOTE_GUID_FILENAME}'"
+    let storage_list = sh(format!(
+        "ssh {url} 'ls -l {storage_dir_name}{XVC_STORAGE_GUID_FILENAME}'"
     ));
 
-    watch!(remote_list);
-    assert!(remote_list.len() > 0);
+    watch!(storage_list);
+    assert!(storage_list.len() > 0);
 
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
     watch!(file_track_result);
 
-    let n_remote_files_before = jwalk::WalkDir::new(&local_test_dir)
+    let n_storage_files_before = jwalk::WalkDir::new(&local_test_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()
@@ -99,22 +102,22 @@ fn test_remote_new_generic_rsync() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "push", "--to", "generic-remote", the_file])?;
+    let push_result = x(&["file", "push", "--to", "generic-storage", the_file])?;
     watch!(push_result);
 
-    let file_list = sh(format!("ssh {url} 'ls -1R {remote_dir_name} | grep bin'"));
+    let file_list = sh(format!("ssh {url} 'ls -1R {storage_dir_name} | grep bin'"));
     watch!(file_list);
 
     // The file should be in:
-    // - remote_dir/REPO_ID/b3/ABCD...123/0.bin
+    // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
 
-    let n_remote_files_after = file_list.lines().count();
+    let n_storage_files_after = file_list.lines().count();
 
     assert!(
-        n_remote_files_before + 1 == n_remote_files_after,
+        n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
-        n_remote_files_before,
-        n_remote_files_after
+        n_storage_files_before,
+        n_storage_files_after
     );
 
     // remove all cache
@@ -122,7 +125,7 @@ fn test_remote_new_generic_rsync() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "generic-remote"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "generic-storage"])?;
 
     watch!(fetch_result);
 
@@ -135,13 +138,13 @@ fn test_remote_new_generic_rsync() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_fetch);
+    assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "generic-remote"])?;
+    let pull_result = x(&["file", "pull", "--from", "generic-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -153,7 +156,7 @@ fn test_remote_new_generic_rsync() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_pull);
+    assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
     Ok(())

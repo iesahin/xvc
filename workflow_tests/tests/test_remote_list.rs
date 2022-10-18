@@ -8,7 +8,7 @@ use regex::Regex;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::remote::XVC_REMOTE_GUID_FILENAME;
+use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -24,10 +24,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 #[test]
-fn test_remote_list() -> Result<()> {
+fn test_storage_list() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let remote_dir = common::random_temp_dir(Some("xvc-remote"));
+    let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];
@@ -37,18 +37,18 @@ fn test_remote_list() -> Result<()> {
     };
 
     let out = x(&[
-        "remote",
+        "storage",
         "new",
         "local",
         "--name",
-        "local-remote",
+        "local-storage",
         "--path",
-        &remote_dir.to_string_lossy().to_string(),
+        &storage_dir.to_string_lossy().to_string(),
     ])?;
 
     watch!(out);
 
-    let list_out = x(&["remote", "list"])?;
+    let list_out = x(&["storage", "list"])?;
 
     watch!(list_out);
 
@@ -56,10 +56,10 @@ fn test_remote_list() -> Result<()> {
     // - name
     // - guid
     // - path (or URL)
-    // These can be put to Display implementation of remote
+    // These can be put to Display implementation of storage
     let line_regex = Regex::new(&format!(
-        "^Local:[ ]*local-remote.*{}\n",
-        remote_dir.to_string_lossy()
+        "^Local:[ ]*local-storage.*{}\n",
+        storage_dir.to_string_lossy()
     ))
     .expect("Regex error");
     assert!(line_regex.is_match(&list_out));

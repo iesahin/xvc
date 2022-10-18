@@ -20,7 +20,7 @@ xvc-ecs = { path = "../ecs" }
 xvc-file = { path = "../file" }
 xvc-pipeline = { path = "../pipeline" }
 xvc-walker = { path = "../walker" }
-xvc-remote = { path = "../remote" }
+xvc-storage = { path = "../storage" }
 
 ## packages for testing
 clap = {version = "^3.1", features=["derive"]}
@@ -37,18 +37,19 @@ rand = "^0.8"
 
 [features]
 default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
-s3 = ["xvc-remote/s3"]
-minio = ["xvc-remote/minio"]
-r2 = ["xvc-remote/r2"]
-gcs = ["xvc-remote/gcs"]
-wasabi = ["xvc-remote/wasabi"]
-digital-ocean = ["xvc-remote/digital-ocean"]
+s3 = ["xvc-storage/s3"]
+minio = ["xvc-storage/minio"]
+r2 = ["xvc-storage/r2"]
+gcs = ["xvc-storage/gcs"]
+wasabi = ["xvc-storage/wasabi"]
+digital-ocean = ["xvc-storage/digital-ocean"]
 test-s3 = ["s3"]
 test-minio = ["minio"]
 test-digital-ocean=["digital-ocean"]
 test-wasabi=["wasabi"]
 test-gcs =["gcs"]
 test-r2 = ["r2"]
+test-rsync = []
 
 
 

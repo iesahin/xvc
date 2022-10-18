@@ -6,8 +6,9 @@ use derive_more::Display;
 use xvc_core::{ContentDigest, XvcCachePath, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::XvcOutputLine;
-use xvc_remote::{
-    remote::get_remote_from_store, RemoteIdentifier, XvcRemote, XvcRemoteGuid, XvcRemoteOperations,
+use xvc_storage::{
+    storage::get_remote_from_store, StorageIdentifier, XvcStorage, XvcStorageGuid,
+    XvcStorageOperations,
 };
 use xvc_walker::Glob;
 
@@ -16,7 +17,7 @@ use xvc_walker::Glob;
 pub struct PushCLI {
     /// remote name or guid to send the files
     #[clap(long, short, alias = "to")]
-    remote: RemoteIdentifier,
+    remote: StorageIdentifier,
     /// force even if the files are already present
     #[clap(long)]
     force: bool,

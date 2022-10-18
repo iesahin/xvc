@@ -1,0 +1,12 @@
+xvc-pipeline-step-output 
+Add an output to a step in the pipeline
+
+USAGE:
+    xvc pipeline step output [OPTIONS] --step-name <STEP_NAME>
+
+OPTIONS:
+    -h, --help                       Print help information
+        --output-file <FILES>        Add a file output to the step. Can be used multiple times.
+        --output-image <IMAGES>      Add an image output to the step. Can be used multiple times.
+        --output-metric <METRICS>    Add a metrics output to the step. Can be used multiple times.
+    -s, --step-name <STEP_NAME>      Name of the step

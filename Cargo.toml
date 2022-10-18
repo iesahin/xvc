@@ -6,11 +6,11 @@ members = [
     "file",
     "lib",
     "pipeline",
+    "storage",
     "logging",
     "walker",
     "test_helper",
     "workflow_tests",
-    "remote",
 ]
 
 [workspace.metadata.workspaces]

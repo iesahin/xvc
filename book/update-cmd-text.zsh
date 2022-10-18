@@ -8,7 +8,7 @@ OUT="${HERE}/src/ref/"
 
 $XVC --help > ${OUT}/xvc.txt
 
-for cmd in check-ignore file init pipeline root remote ; do
+for cmd in check-ignore file init pipeline root storage ; do
     $XVC $cmd --help > ${OUT}/xvc-${cmd}.txt
 done
 
@@ -22,10 +22,14 @@ for pipecmd in dag delete export import list new run step update ; do
     $XVC pipeline $pipecmd --help > ${OUT}/xvc-pipeline-${pipecmd}.txt
 done
 
-for remotecmd in list new remove ; do
-    $XVC remote $remotecmd --help  > ${OUT}/xvc-remote-${remotecmd}.txt
+for pipestepcmd in dependency new output show update ; do
+    $XVC pipeline step $pipestepcmd --help > ${OUT}/xvc-pipeline-step-${pipestepcmd}.txt
 done
 
-for remotenewcmd in local generic s3 r2 minio gcs wasabi digital-ocean  ; do
-    $XVC remote new $remotenewcmd --help > ${OUT}/xvc-remote-new-${remotenewcmd}.txt
+for storagecmd in list new remove ; do
+    $XVC storage $storagecmd --help  > ${OUT}/xvc-storage-${storagecmd}.txt
+done
+
+for storagenewcmd in $(echo "local generic s3 r2 minio gcs wasabi digital-ocean") ; do
+    $XVC storage new $storagenewcmd --help > ${OUT}/xvc-storage-new-${storagenewcmd}.txt
 done

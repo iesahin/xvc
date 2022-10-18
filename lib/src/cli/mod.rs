@@ -21,7 +21,7 @@ use xvc_file as file;
 use xvc_logging::setup_logging;
 use xvc_logging::watch;
 use xvc_pipeline as pipeline;
-use xvc_remote as remote;
+use xvc_storage as storage;
 use xvc_walker::AbsolutePath;
 
 use crate::cli;
@@ -89,8 +89,8 @@ pub enum XvcSubCommand {
     Init(crate::init::InitCLI),
     /// Pipeline management commands
     Pipeline(xvc_pipeline::PipelineCLI),
-    /// Remote (cloud) management commands
-    Remote(xvc_remote::RemoteCLI),
+    /// Storage (cloud) management commands
+    Storage(xvc_storage::StorageCLI),
 }
 
 /// Runs the supplied xvc command.
@@ -199,10 +199,10 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         opts,
                     )?)
                 }
-                XvcSubCommand::Remote(opts) => {
+                XvcSubCommand::Storage(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
-                    Ok(remote::cmd_remote(
+                    Ok(storage::cmd_storage(
                         input,
                         output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
@@ -335,11 +335,11 @@ pub fn test_dispatch(
                         opts,
                     )?)
                 }
-                XvcSubCommand::Remote(opts) => {
+                XvcSubCommand::Storage(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
 
-                    Ok(remote::cmd_remote(
+                    Ok(storage::cmd_storage(
                         input,
                         output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,

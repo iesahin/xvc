@@ -1,9 +1,0 @@
-xvc-remote-remove 
-Remove a remote
-
-USAGE:
-    xvc remote remove --name <NAME>
-
-OPTIONS:
-    -h, --help           Print help information
-        --name <NAME>    Name of the remote to be deleted

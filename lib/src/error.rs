@@ -51,10 +51,10 @@ pub enum Error {
         source: xvc_walker::error::Error,
     },
 
-    #[error("Remote Error: {source}")]
-    RemoteError {
+    #[error("Storage Error: {source}")]
+    StorageError {
         #[from]
-        source: xvc_remote::Error,
+        source: xvc_storage::Error,
     },
 
     #[error("Environment Variable Error: {source}")]

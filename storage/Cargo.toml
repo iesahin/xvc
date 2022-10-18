@@ -1,0 +1,111 @@
+[package]
+name = "xvc-storage"
+version = "0.3.0"
+edition = "2021"
+
+[lib]
+name = "xvc_storage"
+crate-type = ["rlib"]
+
+
+[dependencies]
+xvc-logging = { path = "../logging" }
+xvc-config = { path = "../config" }
+xvc-core = { path = "../core" }
+xvc-ecs = { path = "../ecs" }
+xvc-walker = { path = "../walker" }
+
+## Cli and config
+clap = {version = "^3.1", features=["derive"]}
+configparser = "^3.0"
+directories-next = "2.0"
+
+## Hashing
+seahash = "^4.1"
+byteorder = "^1.4"
+blake3 = "^1.2"
+blake2 = "0.10.4"
+sha2 = "0.10.2"
+sha3 = "0.10.1"
+
+## Serialization
+serde = { version = "^1.0", features = ["derive"] }
+serde-big-array = "^0.3"
+serde_yaml = "^0.8"
+serde_json = "^1.0"
+rmp = "^0.8"
+rmp-serde = "1.0.0"
+toml = "^0.5"
+
+## Caching
+sled = "^0.34"
+
+## Parallelization
+rayon = "^1.5"
+crossbeam-channel = "^0.5"
+crossbeam = "^0.8"
+dashmap = {version = "^5", features= ["serde", "rayon", "send_guard"]}
+
+## File system
+jwalk = "^0.6"
+walkdir = "^2.3"
+scan_dir = "^0.3"
+reflink = "^0.1"
+relative-path = { version = "^1.5", features = ["serde"] }
+path-absolutize = "^3.0"
+glob = "^0.3"
+
+## Logging and errors
+thiserror = "^1.0"
+log = "^0.4"
+anyhow = "^1.0"
+### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
+fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+
+
+## UI
+comfy-table = "5.0.1"
+
+## macros
+paste = "1.0"
+quote = "1.0"
+syn = { version = "1.0", features = ["full", "fold"] }
+
+## Misc
+subprocess = "^0.2"
+regex = "^1.5"
+chrono = "^0.4"
+strum = "0.24.0"
+strum_macros = "0.24.0"
+rand = "^0.8"
+lazy_static = "^1.4"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+hex = { version = "^0.4", features = ["serde"] }
+url = { version = "^2.2", features = ["serde"] }
+itertools = "^0.10"
+derive_more = "^0.99"
+tempfile = "^3.3"
+
+## Networking & Async
+
+tokio = {version = "^1.21", optional=true}
+rust-s3 = {version = "^0.32", optional = true}
+futures = { version= "^0.3", optional= true}
+
+
+
+
+[features]
+default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean"]
+s3 = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+minio = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+gcs = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+wasabi = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+r2 = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+digital-ocean = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+
+
+
+[dev-dependencies]
+xvc-test-helper = {path = "../test_helper/"}
+shellfn = "^0.1"
