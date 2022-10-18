@@ -1,13 +1,13 @@
-# xvc remote remove
+# xvc storage remove
 
 ## Purpose
 
-Remove unused or inaccessible remotes from the configuration
+Remove unused or inaccessible storages from the configuration
 
 ## Synopsis 
 
 ```text
-{{#include xvc-remote-remove.txt}}
+{{#include xvc-storage-remove.txt}}
 ```
 
 ## Caveats
