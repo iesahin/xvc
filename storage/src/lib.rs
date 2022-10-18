@@ -100,7 +100,7 @@ pub enum StorageNewSubCommand {
         url: Option<String>,
         /// You can set a string to replace {DIR} placeholder in commands
         #[clap(long)]
-        remote_dir: Option<String>,
+        storage_dir: Option<String>,
     },
 
     #[cfg(feature = "s3")]
@@ -276,7 +276,7 @@ fn cmd_remote_new(
             delete_command,
             max_processes,
             url,
-            remote_dir,
+            storage_dir: remote_dir,
         } => storage::generic::cmd_storage_new_generic(
             input,
             output_snd,
