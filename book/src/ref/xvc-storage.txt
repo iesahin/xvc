@@ -1,8 +1,8 @@
-xvc-remote 
-Remote (cloud) management commands
+xvc-storage 
+Storage (cloud) management commands
 
 USAGE:
-    xvc remote <SUBCOMMAND>
+    xvc storage <SUBCOMMAND>
 
 OPTIONS:
     -h, --help    Print help information

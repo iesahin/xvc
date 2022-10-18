@@ -25,5 +25,5 @@ SUBCOMMANDS:
     help            Print this message or the help of the given subcommand(s)
     init            Initialize an Xvc project
     pipeline        Pipeline management commands
-    remote          Remote (cloud) management commands
     root            Find the root directory of a project
+    storage         Storage (cloud) management commands

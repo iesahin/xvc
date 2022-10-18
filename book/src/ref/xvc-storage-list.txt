@@ -1,8 +1,8 @@
-xvc-remote-list 
+xvc-storage-list 
 list all remotes
 
 USAGE:
-    xvc remote list
+    xvc storage list
 
 OPTIONS:
     -h, --help    Print help information

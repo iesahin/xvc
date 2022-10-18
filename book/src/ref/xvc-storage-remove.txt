@@ -1,8 +1,8 @@
-xvc-remote-remove 
+xvc-storage-remove 
 Remove a remote
 
 USAGE:
-    xvc remote remove --name <NAME>
+    xvc storage remove --name <NAME>
 
 OPTIONS:
     -h, --help           Print help information

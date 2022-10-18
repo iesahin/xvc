@@ -1,8 +1,8 @@
-xvc-remote-new-local 
+xvc-storage-new-local 
 add a new local remote
 
 USAGE:
-    xvc remote new local --path <PATH> --name <NAME>
+    xvc storage new local --path <PATH> --name <NAME>
 
 OPTIONS:
     -h, --help           Print help information

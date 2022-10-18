@@ -1,8 +1,8 @@
-xvc-remote-new-generic 
+xvc-storage-new-generic 
 add a new generic remote
 
 USAGE:
-    xvc remote new generic [OPTIONS] --name <NAME> --init <INIT_COMMAND> --list <LIST_COMMAND> --download <DOWNLOAD_COMMAND> --upload <UPLOAD_COMMAND> --delete <DELETE_COMMAND>
+    xvc storage new generic [OPTIONS] --name <NAME> --init <INIT_COMMAND> --list <LIST_COMMAND> --download <DOWNLOAD_COMMAND> --upload <UPLOAD_COMMAND> --delete <DELETE_COMMAND>
 
 OPTIONS:
     -d, --download <DOWNLOAD_COMMAND>

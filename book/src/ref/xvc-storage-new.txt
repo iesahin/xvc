@@ -1,8 +1,8 @@
-xvc-remote-new 
+xvc-storage-new 
 add new remotes
 
 USAGE:
-    xvc remote new <SUBCOMMAND>
+    xvc storage new <SUBCOMMAND>
 
 OPTIONS:
     -h, --help    Print help information

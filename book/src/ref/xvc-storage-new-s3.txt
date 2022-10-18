@@ -1,15 +1,12 @@
-xvc-remote-new-digital-ocean 
-Add a new Digital Ocean remote
+xvc-storage-new-s3 
+Add a new S3 remote
 
 USAGE:
-    xvc remote new digital-ocean [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
+    xvc storage new s3 [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME> --region <REGION>
 
 OPTIONS:
         --bucket-name <BUCKET_NAME>
-            Bucket name
-
-        --endpoint <ENDPOINT>
-            Minio server url in the form https://myserver.example.com:9090
+            S3 bucket name
 
     -h, --help
             Print help information
@@ -20,7 +17,9 @@ OPTIONS:
             This must be unique among all remotes of the project
 
         --region <REGION>
-            Region of the server
+            AWS region
 
         --remote-prefix <REMOTE_PREFIX>
             You can set a directory in the bucket with this prefix
+            
+            [default: ]

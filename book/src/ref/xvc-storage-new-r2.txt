@@ -1,15 +1,15 @@
-xvc-remote-new-r2 
+xvc-storage-new-r2 
 Add a new R2 remote
 
 USAGE:
-    xvc remote new r2 [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
+    xvc storage new r2 [OPTIONS] --name <NAME> --account-id <ACCOUNT_ID> --bucket-name <BUCKET_NAME>
 
 OPTIONS:
+        --account-id <ACCOUNT_ID>
+            R2 account ID
+
         --bucket-name <BUCKET_NAME>
             Bucket name
-
-        --endpoint <ENDPOINT>
-            Minio server url in the form https://myserver.example.com:9090
 
     -h, --help
             Print help information
@@ -19,8 +19,7 @@ OPTIONS:
             
             This must be unique among all remotes of the project
 
-        --region <REGION>
-            Region of the server
-
         --remote-prefix <REMOTE_PREFIX>
             You can set a directory in the bucket with this prefix
+            
+            [default: ]

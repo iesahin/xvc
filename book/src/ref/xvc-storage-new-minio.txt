@@ -1,8 +1,8 @@
-xvc-remote-new-minio 
+xvc-storage-new-minio 
 Add a new Minio remote
 
 USAGE:
-    xvc remote new minio [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
+    xvc storage new minio [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
 
 OPTIONS:
         --bucket-name <BUCKET_NAME>
@@ -24,3 +24,5 @@ OPTIONS:
 
         --remote-prefix <REMOTE_PREFIX>
             You can set a directory in the bucket with this prefix
+            
+            [default: ]
