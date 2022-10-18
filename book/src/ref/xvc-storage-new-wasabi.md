@@ -1,13 +1,13 @@
-# xvc remote new wasabi
+# xvc storage new wasabi
 
 ## Purpose
 
-Configure [Wasabi](https://wasabi.com/) storage service as an Xvc remote. 
+Configure a [Wasabi](https://wasabi.com/) service as an Xvc storage. 
 
 ## Synopsis 
 
 ```text
-{{#include xvc-remote-new-wasabi.txt}}
+{{#include xvc-storage-new-wasabi.txt}}
 ```
 
 ## Examples
