@@ -2,6 +2,14 @@
 name = "xvc-logging"
 version = "0.3.0"
 edition = "2021"
+description = "Logging crate for Xvc"
+authors = ["Emre Şahin <contact@emresahin.net>"]
+license = "GPL-3.0"
+homepage = "https://xvc.dev"
+repository = "https://github.com/iesahin/xvc"
+categories = ["command-line-utilities", "development-tools"]
+keywords = ["file", "devops", "git", "versioning", "mlops"]
+
 
 [lib]
 name = "xvc_logging"

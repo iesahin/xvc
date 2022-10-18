@@ -40,8 +40,8 @@ fn test_storage_new_minio() -> Result<()> {
     let region = "us-east-1";
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
     let local_test_dir_str = local_test_dir.to_string_lossy().to_string();
-    let access_key = "p72gzfXIvSoumMn3";
-    let secret_key = "OIeCyHeAklxQk5BtK3LZtL2gNQ9NJQUz";
+    let access_key = env::var("MINIO_ACCESS_KEY_ID")?;
+    let secret_key = env::var("MINIO_SECRET_ACCESS_KEY")?;
 
     let mc_alias = "one";
 

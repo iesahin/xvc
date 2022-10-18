@@ -2,6 +2,14 @@
 name = "xvc-core"
 version = "0.3.0"
 edition = "2021"
+description = "Xvc core for common elements for all commands"
+authors = ["Emre Şahin <contact@emresahin.net>"]
+license = "GPL-3.0"
+homepage = "https://xvc.dev"
+repository = "https://github.com/iesahin/xvc"
+categories = ["command-line-utilities", "development-tools"]
+keywords = ["file", "devops", "git", "versioning", "mlops"]
+
 
 [lib]
 name = "xvc_core"
@@ -9,10 +17,10 @@ crate-type = ["rlib"]
 
 
 [dependencies]
-xvc-config = { path = "../config" }
-xvc-logging = { path = "../logging" }
-xvc-ecs = { path = "../ecs" }
-xvc-walker = { path = "../walker" }
+xvc-config = { version = "^0.3", path = "../config" }
+xvc-logging = {version = "^0.3",  path = "../logging" }
+xvc-ecs = {version = "^0.3",  path = "../ecs" }
+xvc-walker = {version = "^0.3",  path = "../walker" }
 
 ## Cli and config
 clap = {version = "^3.1", features=["derive"]}
