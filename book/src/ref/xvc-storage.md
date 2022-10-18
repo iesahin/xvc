@@ -1,4 +1,4 @@
-# Remote management commands (`xvc remote`)
+# Storage management commands (`xvc storage`)
 
 ## Purpose
 
