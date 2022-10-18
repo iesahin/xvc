@@ -9,6 +9,7 @@ homepage = "https://xvc.dev"
 repository = "https://github.com/iesahin/xvc"
 categories = ["command-line-utilities", "development-tools"]
 keywords = ["xvc", "ecs", "entity-component-system", "mlops", "artificial-intelligence", "data-pipelines", "machine-learning", "make", "file", "backup", "devops", "git", "data"]
+keywords = ["file", "devops", "git", "versioning", "mlops"]
 
 
 [lib]

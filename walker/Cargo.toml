@@ -4,11 +4,12 @@ version = "0.3.0"
 edition = "2021"
 description = "Xvc parallel file system walker with ignore features"
 authors = ["Emre Şahin <contact@emresahin.net>"]
-license = "GPL-3"
+license = "GPL-3.0"
 homepage = "https://xvc.dev"
 repository = "https://github.com/iesahin/xvc"
 categories = ["command-line-utilities", "development-tools"]
 keywords = ["xvc", "walker", "file system", "mlops", "artificial-intelligence", "data-pipelines", "machine-learning", "make", "file", "backup", "devops", "git", "data"]
+keywords = ["file", "devops", "git", "versioning", "mlops"]
 
 
 [lib]
