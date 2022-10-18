@@ -3,7 +3,7 @@ name = "xvc"
 version = "0.3.1"
 edition = "2021"
 description = "An MLOps tool to manage data files and pipelines on top of Git"
-authors = "Emre Şahin <contact@emresahin.net>"
+authors = ["Emre Şahin <contact@emresahin.net>"]
 license = "GPL-3"
 homepage = "https://xvc.dev"
 repository = "https://github.com/iesahin/xvc"
@@ -20,14 +20,14 @@ path = "src/main.rs"
 
 
 [dependencies]
-xvc-config = { path = "../config" }
-xvc-core = { path = "../core" }
-xvc-logging = { path = "../logging" }
-xvc-ecs = { path = "../ecs" }
-xvc-file = { path = "../file" }
-xvc-pipeline = { path = "../pipeline" }
-xvc-walker = { path = "../walker" }
-xvc-storage = { path = "../storage" }
+xvc-config = { version = "^0.3", path = "../config" }
+xvc-core = { version = "^0.3",  path = "../core" }
+xvc-logging = { version = "^0.3",  path = "../logging" }
+xvc-ecs = {  version = "^0.3", path = "../ecs" }
+xvc-file = {  version = "^0.3", path = "../file" }
+xvc-pipeline = { version = "^0.3",  path = "../pipeline" }
+xvc-walker = {  version = "^0.3", path = "../walker" }
+xvc-storage = {  version = "^0.3", path = "../storage" }
 
 
 ## Cli and config

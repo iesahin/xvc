@@ -3,7 +3,7 @@ name = "xvc-storage"
 version = "0.3.1"
 edition = "2021"
 description = "Xvc remote (and local) storage management"
-authors = "Emre Şahin <contact@emresahin.net>"
+authors = ["Emre Şahin <contact@emresahin.net>"]
 license = "GPL-3"
 homepage = "https://xvc.dev"
 repository = "https://github.com/iesahin/xvc"
@@ -17,11 +17,11 @@ crate-type = ["rlib"]
 
 
 [dependencies]
-xvc-logging = { path = "../logging" }
-xvc-config = { path = "../config" }
-xvc-core = { path = "../core" }
-xvc-ecs = { path = "../ecs" }
-xvc-walker = { path = "../walker" }
+xvc-logging = { version = "^0.3", path = "../logging" }
+xvc-config = { version = "^0.3", path = "../config" }
+xvc-core = {version = "^0.3",  path = "../core" }
+xvc-ecs = {version = "^0.3",  path = "../ecs" }
+xvc-walker = { version = "^0.3", path = "../walker" }
 
 ## Cli and config
 clap = {version = "^3.1", features=["derive"]}

@@ -3,7 +3,7 @@ name = "xvc-config"
 version = "0.3.0"
 edition = "2021"
 description = "Xvc configuration management"
-authors = "Emre Şahin <contact@emresahin.net>"
+authors = ["Emre Şahin <contact@emresahin.net>"]
 license = "GPL-3"
 homepage = "https://xvc.dev"
 repository = "https://github.com/iesahin/xvc"
@@ -17,8 +17,8 @@ crate-type = ["rlib"]
 
 
 [dependencies]
-xvc-logging = {path = "../logging" }
-xvc-walker = {path = "../walker" }
+xvc-logging = {version = "^0.3", path = "../logging" }
+xvc-walker = {version = "^0.3", path = "../walker" }
 
 
 
