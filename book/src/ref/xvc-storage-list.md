@@ -1,26 +1,26 @@
-# xvc remote list
+# xvc storage list
 
 ## Purpose
 
-List all configured remotes with their names and guids. 
+List all configured storages with their names and guids. 
 
 ## Synopsis 
 
 ```text
-{{#include xvc-remote-list.txt}}
+{{#include xvc-storage-list.txt}}
 ```
 
 ## Examples
 
-List all remotes in the repository:
+List all storages in the repository:
 
 ```shell
-$ xvc remote list 
+$ xvc storage list 
 ```
 
 ## Caveats
 
-This one uses the local configuration and doesn't try to connect remotes.
-If it's listed here, it doesn't mean it's guaranteed to work. 
+This one uses the local configuration and doesn't try to connect storages.
+If it's listed with the command, it doesn't mean it's guaranteed to be able to pull or push. 
 
 
