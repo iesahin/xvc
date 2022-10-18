@@ -1,13 +1,13 @@
-# xvc remote new gcs
+# xvc storage new gcs
 
 ## Purpose
 
-Configure an [Google Cloud Storage](https://cloud.google.com/storage) service as an Xvc remote. 
+Configure an [Google Cloud Storage](https://cloud.google.com/storage) service as an Xvc storage. 
 
 ## Synopsis 
 
 ```text
-{{#include xvc-remote-new-gcs.txt}}
+{{#include xvc-storage-new-gcs.txt}}
 ```
 
 ## Examples
