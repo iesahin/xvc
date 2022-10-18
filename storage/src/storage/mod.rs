@@ -342,7 +342,7 @@ impl From<Uuid> for XvcStorageGuid {
     }
 }
 
-pub const XVC_REMOTE_GUID_FILENAME: &str = ".xvc-guid";
+pub const XVC_STORAGE_GUID_FILENAME: &str = ".xvc-guid";
 
 pub fn get_remote_from_store(
     output_snd: Sender<XvcOutputLine>,

@@ -14,7 +14,7 @@ use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStora
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XVC_REMOTE_GUID_FILENAME,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XVC_STORAGE_GUID_FILENAME,
 };
 
 pub fn cmd_storage_new_generic(
@@ -213,7 +213,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         let remote_guid_file_path = format!(
             "{}{}",
-            address_map["{REMOTE_DIR}"], XVC_REMOTE_GUID_FILENAME
+            address_map["{REMOTE_DIR}"], XVC_STORAGE_GUID_FILENAME
         );
 
         address_map.insert("{REMOTE_GUID_FILE_PATH}", remote_guid_file_path);

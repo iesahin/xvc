@@ -7,7 +7,7 @@ use common::run_in_temp_xvc_dir;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::storage::XVC_REMOTE_GUID_FILENAME;
+use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -23,10 +23,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 #[test]
-fn test_remote_new_local() -> Result<()> {
+fn test_storage_new_local() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let remote_dir = common::random_temp_dir(Some("xvc-remote"));
+    let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];
@@ -36,16 +36,16 @@ fn test_remote_new_local() -> Result<()> {
     };
 
     let out = x(&[
-        "remote",
+        "storage",
         "new",
         "local",
         "--name",
-        "local-remote",
+        "local-storage",
         "--path",
-        &remote_dir.to_string_lossy().to_string(),
+        &storage_dir.to_string_lossy().to_string(),
     ])?;
 
-    assert!(remote_dir.join(XVC_REMOTE_GUID_FILENAME).exists());
+    assert!(storage_dir.join(XVC_STORAGE_GUID_FILENAME).exists());
     watch!(out);
 
     let the_file = "file-0000.bin";
@@ -53,7 +53,7 @@ fn test_remote_new_local() -> Result<()> {
     let file_track_result = x(&["file", "track", the_file])?;
     watch!(file_track_result);
 
-    let n_remote_files_before = jwalk::WalkDir::new(&remote_dir)
+    let n_storage_files_before = jwalk::WalkDir::new(&storage_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()
@@ -62,13 +62,13 @@ fn test_remote_new_local() -> Result<()> {
         })
         .count();
 
-    let push_result = x(&["file", "push", "--to", "local-remote", the_file])?;
+    let push_result = x(&["file", "push", "--to", "local-storage", the_file])?;
     watch!(push_result);
 
     // The file should be in:
-    // - remote_dir/REPO_ID/b3/ABCD...123/0.bin
+    // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
 
-    let n_remote_files_after = jwalk::WalkDir::new(&remote_dir)
+    let n_storage_files_after = jwalk::WalkDir::new(&storage_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()
@@ -78,10 +78,10 @@ fn test_remote_new_local() -> Result<()> {
         .count();
 
     assert!(
-        n_remote_files_before + 1 == n_remote_files_after,
+        n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
-        n_remote_files_before,
-        n_remote_files_after
+        n_storage_files_before,
+        n_storage_files_after
     );
 
     // remove all cache
@@ -89,7 +89,7 @@ fn test_remote_new_local() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "local-remote"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "local-storage"])?;
 
     watch!(fetch_result);
 
@@ -102,13 +102,13 @@ fn test_remote_new_local() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_fetch);
+    assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "local-remote"])?;
+    let pull_result = x(&["file", "pull", "--from", "local-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -120,7 +120,7 @@ fn test_remote_new_local() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_pull);
+    assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
     Ok(())

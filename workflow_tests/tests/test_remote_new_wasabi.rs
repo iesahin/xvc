@@ -9,7 +9,7 @@ use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::storage::XVC_REMOTE_GUID_FILENAME;
+use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn write_s3cmd_config(access_key: &str, secret_key: &str) -> Result<String> {
@@ -133,11 +133,11 @@ fn sh(cmd: String) -> String {
 
 #[test]
 #[cfg_attr(not(feature = "test-wasabi"), ignore)]
-fn test_remote_new_wasabi() -> Result<()> {
+fn test_storage_new_wasabi() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";
-    let remote_prefix = common::random_dir_name("xvc-remote", None);
+    let storage_prefix = common::random_dir_name("xvc-storage", None);
 
     let access_key = env::var("WASABI_ACCESS_KEY_ID")?;
     let secret_key = env::var("WASABI_SECRET_ACCESS_KEY")?;
@@ -161,19 +161,19 @@ fn test_remote_new_wasabi() -> Result<()> {
     };
 
     // Set the password in the environment
-    env::set_var("XVC_REMOTE_ACCESS_KEY_ID", access_key.clone());
-    env::set_var("XVC_REMOTE_SECRET_KEY", secret_key.clone());
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key.clone());
+    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key.clone());
 
     let out = x(&[
-        "remote",
+        "storage",
         "new",
         "wasabi",
         "--name",
-        "do-remote",
+        "do-storage",
         "--bucket-name",
         bucket_name,
-        "--remote-prefix",
-        &remote_prefix,
+        "--storage-prefix",
+        &storage_prefix,
         "--region",
         &region,
     ])?;
@@ -181,7 +181,7 @@ fn test_remote_new_wasabi() -> Result<()> {
     watch!(out);
     let s3_bucket_list = s3cmd(
         &format!("ls --recursive 's3://{bucket_name}/'"),
-        &format!("| rg {remote_prefix} | rg {XVC_REMOTE_GUID_FILENAME}"),
+        &format!("| rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
     watch!(s3_bucket_list);
     assert!(s3_bucket_list.len() > 0);
@@ -195,35 +195,35 @@ fn test_remote_new_wasabi() -> Result<()> {
 
     let file_list_before = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
-        &format!("| rg {remote_prefix} | rg 0.bin"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     watch!(file_list_before);
-    let n_remote_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "push", "--to", "do-remote", the_file])?;
+    let n_storage_files_before = file_list_before.lines().count();
+    let push_result = x(&["file", "push", "--to", "do-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
-        &format!("| rg {remote_prefix} | rg 0.bin"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     watch!(file_list_after);
 
     // The file should be in:
-    // - remote_dir/REPO_ID/b3/ABCD...123/0.bin
+    // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
 
-    let n_remote_files_after = file_list_after.lines().count();
+    let n_storage_files_after = file_list_after.lines().count();
 
     assert!(
-        n_remote_files_before + 1 == n_remote_files_after,
+        n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
-        n_remote_files_before,
-        n_remote_files_after
+        n_storage_files_before,
+        n_storage_files_after
     );
 
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "do-remote"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "do-storage"])?;
 
     watch!(fetch_result);
 
@@ -236,13 +236,13 @@ fn test_remote_new_wasabi() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_fetch);
+    assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "do-remote"])?;
+    let pull_result = x(&["file", "pull", "--from", "do-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -254,7 +254,7 @@ fn test_remote_new_wasabi() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_pull);
+    assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
     Ok(())

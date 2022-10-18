@@ -19,7 +19,7 @@ use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageSendEvent, XVC_REMOTE_GUID_FILENAME,
+    XvcStorageSendEvent, XVC_STORAGE_GUID_FILENAME,
 };
 
 pub fn cmd_new_minio(
@@ -109,7 +109,7 @@ impl XvcMinioRemote {
 
         let res_response = bucket
             .put_object(
-                format!("{}/{}", self.remote_prefix, XVC_REMOTE_GUID_FILENAME),
+                format!("{}/{}", self.remote_prefix, XVC_STORAGE_GUID_FILENAME),
                 guid_bytes,
             )
             .await;

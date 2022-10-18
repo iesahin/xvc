@@ -8,7 +8,7 @@ use rand;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::storage::XVC_REMOTE_GUID_FILENAME;
+use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -24,10 +24,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 #[test]
-fn test_remote_new_generic_fs() -> Result<()> {
+fn test_storage_new_generic_fs() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let remote_dir_name = format!("{}/", common::random_dir_name("xvc-remote", None));
+    let storage_dir_name = format!("{}/", common::random_dir_name("xvc-storage", None));
     let temp_directory = format!("{}/", env::temp_dir().to_string_lossy());
 
     let x = |cmd: &[&str]| {
@@ -38,44 +38,44 @@ fn test_remote_new_generic_fs() -> Result<()> {
     };
 
     let out = x(&[
-        "remote",
+        "storage",
         "new",
         "generic",
         "--name",
-        "generic-remote",
+        "generic-storage",
         "--url",
         &temp_directory,
-        "--remote-dir",
-        &remote_dir_name,
+        "--storage-dir",
+        &storage_dir_name,
         "--init",
-        "mkdir -p {URL}/{REMOTE_DIR} ; cp {LOCAL_GUID_FILE_PATH} {URL}/{REMOTE_GUID_FILE_PATH}",
+        "mkdir -p {URL}/{STORAGE_DIR} ; cp {LOCAL_GUID_FILE_PATH} {URL}/{STORAGE_GUID_FILE_PATH}",
         "--list",
-        "ls -1 {URL}{REMOTE_DIR}",
+        "ls -1 {URL}{STORAGE_DIR}",
         "--download",
-        "mkdir -p {ABSOLUTE_CACHE_DIR} ; cp {FULL_REMOTE_PATH} {ABSOLUTE_CACHE_PATH}",
+        "mkdir -p {ABSOLUTE_CACHE_DIR} ; cp {FULL_STORAGE_PATH} {ABSOLUTE_CACHE_PATH}",
         "--upload",
-        "mkdir -p {FULL_REMOTE_DIR} ; cp {ABSOLUTE_CACHE_PATH} {FULL_REMOTE_PATH}",
+        "mkdir -p {FULL_STORAGE_DIR} ; cp {ABSOLUTE_CACHE_PATH} {FULL_STORAGE_PATH}",
         "--delete",
-        "rm {FULL_REMOTE_PATH} ; rmdir {FULL_REMOTE_DIR}",
+        "rm {FULL_STORAGE_PATH} ; rmdir {FULL_STORAGE_DIR}",
         "--processes",
         "4",
     ])?;
 
-    let remote_dir = PathBuf::from(temp_directory).join(remote_dir_name);
+    let storage_dir = PathBuf::from(temp_directory).join(storage_dir_name);
 
-    watch!(remote_dir);
+    watch!(storage_dir);
     watch!(out);
 
-    assert!(remote_dir.exists());
+    assert!(storage_dir.exists());
 
-    assert!(remote_dir.join(XVC_REMOTE_GUID_FILENAME).exists());
+    assert!(storage_dir.join(XVC_STORAGE_GUID_FILENAME).exists());
 
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
     watch!(file_track_result);
 
-    let n_remote_files_before = jwalk::WalkDir::new(&remote_dir)
+    let n_storage_files_before = jwalk::WalkDir::new(&storage_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()
@@ -84,13 +84,13 @@ fn test_remote_new_generic_fs() -> Result<()> {
         })
         .count();
 
-    let push_result = x(&["file", "push", "--to", "generic-remote", the_file])?;
+    let push_result = x(&["file", "push", "--to", "generic-storage", the_file])?;
     watch!(push_result);
 
     // The file should be in:
-    // - remote_dir/REPO_ID/b3/ABCD...123/0.bin
+    // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
 
-    let n_remote_files_after = jwalk::WalkDir::new(&remote_dir)
+    let n_storage_files_after = jwalk::WalkDir::new(&storage_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()
@@ -100,10 +100,10 @@ fn test_remote_new_generic_fs() -> Result<()> {
         .count();
 
     assert!(
-        n_remote_files_before + 1 == n_remote_files_after,
+        n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
-        n_remote_files_before,
-        n_remote_files_after
+        n_storage_files_before,
+        n_storage_files_after
     );
 
     // remove all cache
@@ -111,7 +111,7 @@ fn test_remote_new_generic_fs() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "generic-remote"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "generic-storage"])?;
 
     watch!(fetch_result);
 
@@ -124,13 +124,13 @@ fn test_remote_new_generic_fs() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_fetch);
+    assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "generic-remote"])?;
+    let pull_result = x(&["file", "pull", "--from", "generic-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -142,7 +142,7 @@ fn test_remote_new_generic_fs() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_pull);
+    assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
     Ok(())

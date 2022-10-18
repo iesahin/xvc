@@ -7,7 +7,7 @@ use common::run_in_temp_xvc_dir;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::storage::XVC_REMOTE_GUID_FILENAME;
+use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -23,10 +23,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 #[test]
-fn test_remote_new_local() -> Result<()> {
+fn test_storage_new_local() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let remote_dir = common::random_temp_dir(Some("xvc-remote"));
+    let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];

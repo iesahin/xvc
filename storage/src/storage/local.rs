@@ -12,7 +12,7 @@ use xvc_logging::{watch, XvcOutputLine};
 use super::{
     XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent, XvcStorageListEvent,
     XvcStorageOperations, XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent,
-    XVC_REMOTE_GUID_FILENAME,
+    XVC_STORAGE_GUID_FILENAME,
 };
 use crate::{Result, XvcStorage, XvcStorageEvent};
 
@@ -65,7 +65,7 @@ impl XvcStorageOperations for XvcLocalStorage {
             create_dir_all(&self.path)?;
         }
 
-        let guid_filename = self.path.join(XVC_REMOTE_GUID_FILENAME);
+        let guid_filename = self.path.join(XVC_STORAGE_GUID_FILENAME);
         fs::write(guid_filename, format!("{}", self.guid))?;
         output.send(XvcOutputLine::Info(format!(
             "Created local remote directory {} with guid: {}",

@@ -10,7 +10,7 @@ use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
-use crate::storage::XVC_REMOTE_GUID_FILENAME;
+use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
@@ -100,7 +100,7 @@ impl XvcDigitalOceanStorage {
 
         let res_response = bucket
             .put_object(
-                format!("{}/{}", self.remote_prefix, XVC_REMOTE_GUID_FILENAME),
+                format!("{}/{}", self.remote_prefix, XVC_STORAGE_GUID_FILENAME),
                 guid_bytes,
             )
             .await;

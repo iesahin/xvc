@@ -9,7 +9,7 @@ use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_remote::storage::XVC_REMOTE_GUID_FILENAME;
+use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -31,14 +31,14 @@ fn sh(cmd: String) -> String {
 
 #[test]
 #[cfg_attr(not(feature = "test-minio"), ignore)]
-fn test_remote_new_minio() -> Result<()> {
+fn test_storage_new_minio() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let endpoint = "http://emresult.com:9000";
     let bucket_name = "one";
-    let remote_prefix = common::random_dir_name("xvc", None);
+    let storage_prefix = common::random_dir_name("xvc", None);
     let region = "us-east-1";
-    let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-remote-copy", None));
+    let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
     let local_test_dir_str = local_test_dir.to_string_lossy().to_string();
     let access_key = "p72gzfXIvSoumMn3";
     let secret_key = "OIeCyHeAklxQk5BtK3LZtL2gNQ9NJQUz";
@@ -60,21 +60,21 @@ fn test_remote_new_minio() -> Result<()> {
     watch!(mc_create_bucket);
 
     // Set the password in the environment
-    env::set_var("XVC_REMOTE_ACCESS_KEY_ID", access_key);
-    env::set_var("XVC_REMOTE_SECRET_KEY", secret_key);
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key);
 
     let out = x(&[
-        "remote",
+        "storage",
         "new",
         "minio",
         "--name",
-        "minio-remote",
+        "minio-storage",
         "--endpoint",
         endpoint,
         "--bucket-name",
         bucket_name,
-        "--remote-prefix",
-        &remote_prefix,
+        "--storage-prefix",
+        &storage_prefix,
         "--region",
         region,
     ])?;
@@ -90,7 +90,7 @@ fn test_remote_new_minio() -> Result<()> {
     let file_track_result = x(&["file", "track", the_file])?;
     watch!(file_track_result);
 
-    let n_remote_files_before = jwalk::WalkDir::new(&local_test_dir)
+    let n_storage_files_before = jwalk::WalkDir::new(&local_test_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()
@@ -98,22 +98,22 @@ fn test_remote_new_minio() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "push", "--to", "minio-remote", the_file])?;
+    let push_result = x(&["file", "push", "--to", "minio-storage", the_file])?;
     watch!(push_result);
 
-    let file_list = sh(format!("mc ls -r xvc/one/{remote_prefix} | rg 0.bin"));
+    let file_list = sh(format!("mc ls -r xvc/one/{storage_prefix} | rg 0.bin"));
     watch!(file_list);
 
     // The file should be in:
-    // - remote_dir/REPO_ID/b3/ABCD...123/0.bin
+    // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
 
-    let n_remote_files_after = file_list.lines().count();
+    let n_storage_files_after = file_list.lines().count();
 
     assert!(
-        n_remote_files_before + 1 == n_remote_files_after,
+        n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
-        n_remote_files_before,
-        n_remote_files_after
+        n_storage_files_before,
+        n_storage_files_after
     );
 
     // remove all cache
@@ -121,7 +121,7 @@ fn test_remote_new_minio() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "minio-remote"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "minio-storage"])?;
 
     watch!(fetch_result);
 
@@ -134,13 +134,13 @@ fn test_remote_new_minio() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_fetch);
+    assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "minio-remote"])?;
+    let pull_result = x(&["file", "pull", "--from", "minio-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -152,7 +152,7 @@ fn test_remote_new_minio() -> Result<()> {
         })
         .count();
 
-    assert!(n_remote_files_after == n_local_files_after_pull);
+    assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
     Ok(())

@@ -10,7 +10,7 @@ use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
-use crate::storage::XVC_REMOTE_GUID_FILENAME;
+use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
@@ -103,7 +103,7 @@ impl XvcS3Remote {
             .put_object(
                 format!(
                     "{}/{}/{}",
-                    self.bucket_name, self.remote_prefix, XVC_REMOTE_GUID_FILENAME
+                    self.bucket_name, self.remote_prefix, XVC_STORAGE_GUID_FILENAME
                 ),
                 guid_bytes,
             )
