@@ -23,7 +23,7 @@ pub fn cmd_storage_new_generic(
     xvc_root: &XvcRoot,
     name: String,
     url: Option<String>,
-    remote_dir: Option<String>,
+    storage_dir: Option<String>,
     max_processes: usize,
     init_command: String,
     list_command: String,
@@ -31,11 +31,11 @@ pub fn cmd_storage_new_generic(
     upload_command: String,
     delete_command: String,
 ) -> Result<()> {
-    let remote = XvcGenericStorage {
+    let storage = XvcGenericStorage {
         guid: XvcStorageGuid::new(),
         name,
         url,
-        remote_dir,
+        storage_dir,
         init_command,
         list_command,
         upload_command,
@@ -44,16 +44,16 @@ pub fn cmd_storage_new_generic(
         max_processes,
     };
 
-    watch!(remote);
+    watch!(storage);
 
-    let init_event = remote.init(output_snd.clone(), xvc_root)?;
+    let init_event = storage.init(output_snd.clone(), xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::Generic(remote.clone()),
+            XvcStorage::Generic(storage.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -68,7 +68,7 @@ pub struct XvcGenericStorage {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub url: Option<String>,
-    pub remote_dir: Option<String>,
+    pub storage_dir: Option<String>,
     pub init_command: String,
     pub list_command: String,
     pub upload_command: String,
@@ -88,26 +88,26 @@ impl XvcGenericStorage {
     }
     /// returns a hash map that contains keys and values of address elements in commands
     /// - `{URL}` : The content of `--url` option. (default "")
-    /// - `{REMOTE_DIR}` Content of `--remote-dir`  option. (default "")
+    /// - `{STORAGE_DIR}` Content of `--storage-dir`  option. (default "")
     fn address_map(&self) -> HashMap<&str, String> {
         let hm = HashMap::from([
             ("{URL}", self.url.clone().unwrap_or_else(|| "".to_string())),
             (
-                "{REMOTE_DIR}",
-                self.remote_dir.clone().unwrap_or_else(|| "".to_string()),
+                "{STORAGE_DIR}",
+                self.storage_dir.clone().unwrap_or_else(|| "".to_string()),
             ),
         ]);
         hm
     }
 
     /// returns a map that contains keys and values for path elements in commands
-    /// - `{XVC_GUID}`: The repository GUID used in remote paths.
+    /// - `{XVC_GUID}`: The repository GUID used in storage paths.
     /// - `{RELATIVE_CACHE_PATH}` The portion of the cache path after `.xvc/`.
     /// - `{ABSOLUTE_CACHE_PATH}` The absolute local path for the cache element
     /// - `{RELATIVE_CACHE_DIR}` The portion of directory that contains the file after `.xvc/`
     /// - `{ABSOLUTE_CACHE_DIR}` The portion of the local directory that contains the file after `.xvc`
-    /// - `{FULL_REMOTE_PATH}`: Concatenation of `{URL}{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}`
-    /// - `{FULL_REMOTE_DIR}`: Concatenation of `{URL}{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}`
+    /// - `{FULL_STORAGE_PATH}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}`
+    /// - `{FULL_STORAGE_DIR}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}`
     fn path_map(&self, xvc_root: &XvcRoot, cache_path: &XvcCachePath) -> HashMap<&str, String> {
         let xvc_guid = xvc_root.config().guid().unwrap();
         let relative_cache_path = cache_path.to_string();
@@ -127,10 +127,10 @@ impl XvcGenericStorage {
             .to_string_lossy()
             .to_string();
         let url = self.url.clone().unwrap_or_else(|| "".to_string());
-        let remote_dir = self.remote_dir.clone().unwrap_or_else(|| "".to_string());
+        let storage_dir = self.storage_dir.clone().unwrap_or_else(|| "".to_string());
 
-        let full_remote_path = format!("{url}{remote_dir}{xvc_guid}/{relative_cache_path}");
-        let full_remote_dir = format!("{url}{remote_dir}{xvc_guid}/{relative_cache_dir}");
+        let full_storage_path = format!("{url}{storage_dir}{xvc_guid}/{relative_cache_path}");
+        let full_storage_dir = format!("{url}{storage_dir}{xvc_guid}/{relative_cache_dir}");
 
         let hm = HashMap::from([
             ("{XVC_GUID}", xvc_guid),
@@ -138,8 +138,8 @@ impl XvcGenericStorage {
             ("{ABSOLUTE_CACHE_PATH}", absolute_cache_path),
             ("{RELATIVE_CACHE_DIR}", relative_cache_dir),
             ("{ABSOLUTE_CACHE_DIR}", absolute_cache_dir),
-            ("{FULL_REMOTE_PATH}", full_remote_path),
-            ("{FULL_REMOTE_DIR}", full_remote_dir),
+            ("{FULL_STORAGE_PATH}", full_storage_path),
+            ("{FULL_STORAGE_DIR}", full_storage_dir),
         ]);
 
         hm
@@ -152,7 +152,7 @@ impl XvcGenericStorage {
         prepared_cmd: &str,
         paths: &[XvcCachePath],
     ) -> Vec<XvcStoragePath> {
-        let mut remote_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
+        let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         // TODO: Create a thread/process pool here
         // TODO: Refactor to use XvcStoragePath and XvcCachePath in replacements
         paths.iter().for_each(|cache_path| {
@@ -171,8 +171,8 @@ impl XvcGenericStorage {
                     if cmd_output.success() {
                         output.send(XvcOutputLine::Info(stdout_str)).unwrap();
                         output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
-                        let remote_path = XvcStoragePath::new(xvc_root, cache_path);
-                        remote_paths.push(remote_path);
+                        let storage_path = XvcStoragePath::new(xvc_root, cache_path);
+                        storage_paths.push(storage_path);
                     } else {
                         output.send(XvcOutputLine::Error(stderr_str)).unwrap();
                         output.send(XvcOutputLine::Warn(stdout_str)).unwrap();
@@ -185,14 +185,14 @@ impl XvcGenericStorage {
             }
         });
 
-        remote_paths
+        storage_paths
     }
 }
 
 impl XvcStorageOperations for XvcGenericStorage {
     /// Run self.init_command
     ///
-    /// The command should have {LOCAL_GUID_FILE_PATH}  and {REMOTE_GUID_FILE_PATH} fields to
+    /// The command should have {LOCAL_GUID_FILE_PATH}  and {STORAGE_GUID_FILE_PATH} fields to
     /// upload the guid file.
     fn init(
         &self,
@@ -211,12 +211,12 @@ impl XvcStorageOperations for XvcGenericStorage {
             local_guid_path.clone().to_string_lossy().to_string(),
         );
 
-        let remote_guid_file_path = format!(
+        let storage_guid_file_path = format!(
             "{}{}",
-            address_map["{REMOTE_DIR}"], XVC_STORAGE_GUID_FILENAME
+            address_map["{STORAGE_DIR}"], XVC_STORAGE_GUID_FILENAME
         );
 
-        address_map.insert("{REMOTE_GUID_FILE_PATH}", remote_guid_file_path);
+        address_map.insert("{STORAGE_GUID_FILE_PATH}", storage_guid_file_path);
 
         let prepared_init_cmd = Self::replace_map_elements(&self.init_command, &address_map);
         watch!(prepared_init_cmd);
@@ -285,12 +285,12 @@ impl XvcStorageOperations for XvcGenericStorage {
         watch!(address_map);
         let prepared_cmd = Self::replace_map_elements(&self.upload_command, &address_map);
         watch!(prepared_cmd);
-        let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
-        watch!(remote_paths);
+        let storage_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
+        watch!(storage_paths);
 
         Ok(XvcStorageSendEvent {
             guid: self.guid.clone(),
-            paths: remote_paths,
+            paths: storage_paths,
         })
     }
 
@@ -305,12 +305,12 @@ impl XvcStorageOperations for XvcGenericStorage {
         watch!(address_map);
         let prepared_cmd = Self::replace_map_elements(&self.download_command, &address_map);
         watch!(prepared_cmd);
-        let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
-        watch!(remote_paths);
+        let storage_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
+        watch!(storage_paths);
 
         Ok(XvcStorageReceiveEvent {
             guid: self.guid.clone(),
-            paths: remote_paths,
+            paths: storage_paths,
         })
     }
 
@@ -322,11 +322,11 @@ impl XvcStorageOperations for XvcGenericStorage {
     ) -> Result<XvcStorageDeleteEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.delete_command, &address_map);
-        let remote_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
+        let storage_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
 
         Ok(XvcStorageDeleteEvent {
             guid: self.guid.clone(),
-            paths: remote_paths,
+            paths: storage_paths,
         })
     }
 }

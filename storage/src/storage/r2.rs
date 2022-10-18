@@ -28,7 +28,7 @@ pub fn cmd_new_r2(
     bucket_name: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcR2Remote {
+    let remote = XvcR2Storage {
         guid: XvcStorageGuid::new(),
         name,
         account_id,
@@ -57,7 +57,7 @@ pub fn cmd_new_r2(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcR2Remote {
+pub struct XvcR2Storage {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub account_id: String,
@@ -65,7 +65,7 @@ pub struct XvcR2Remote {
     pub remote_prefix: String,
 }
 
-impl XvcR2Remote {
+impl XvcR2Storage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -291,7 +291,7 @@ impl XvcR2Remote {
     }
 }
 
-impl XvcStorageOperations for XvcR2Remote {
+impl XvcStorageOperations for XvcR2Storage {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

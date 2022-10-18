@@ -32,7 +32,7 @@ pub fn cmd_new_minio(
     region: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcMinioRemote {
+    let remote = XvcMinioStorage {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -61,7 +61,7 @@ pub fn cmd_new_minio(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcMinioRemote {
+pub struct XvcMinioStorage {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
@@ -70,7 +70,7 @@ pub struct XvcMinioRemote {
     pub endpoint: String,
 }
 
-impl XvcMinioRemote {
+impl XvcMinioStorage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -302,7 +302,7 @@ impl XvcMinioRemote {
     }
 }
 
-impl XvcStorageOperations for XvcMinioRemote {
+impl XvcStorageOperations for XvcMinioStorage {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

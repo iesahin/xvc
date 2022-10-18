@@ -27,7 +27,7 @@ pub(crate) fn cmd_new_wasabi(
     region: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcWasabiRemote {
+    let remote = XvcWasabiStorage {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -56,7 +56,7 @@ pub(crate) fn cmd_new_wasabi(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcWasabiRemote {
+pub struct XvcWasabiStorage {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
@@ -64,7 +64,7 @@ pub struct XvcWasabiRemote {
     pub remote_prefix: String,
 }
 
-impl XvcWasabiRemote {
+impl XvcWasabiStorage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -290,7 +290,7 @@ impl XvcWasabiRemote {
     }
 }
 
-impl XvcStorageOperations for XvcWasabiRemote {
+impl XvcStorageOperations for XvcWasabiStorage {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

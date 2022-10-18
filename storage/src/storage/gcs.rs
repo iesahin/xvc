@@ -27,7 +27,7 @@ pub fn cmd_new_gcs(
     region: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcGcsRemote {
+    let remote = XvcGcsStorage {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -56,7 +56,7 @@ pub fn cmd_new_gcs(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcGcsRemote {
+pub struct XvcGcsStorage {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
@@ -64,7 +64,7 @@ pub struct XvcGcsRemote {
     pub remote_prefix: String,
 }
 
-impl XvcGcsRemote {
+impl XvcGcsStorage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -296,7 +296,7 @@ impl XvcGcsRemote {
     }
 }
 
-impl XvcStorageOperations for XvcGcsRemote {
+impl XvcStorageOperations for XvcGcsStorage {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

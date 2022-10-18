@@ -48,17 +48,16 @@ use self::generic::XvcGenericStorage;
 pub enum XvcStorage {
     Local(XvcLocalStorage),
     Generic(XvcGenericStorage),
-    // Ssh(XvcSshRemote),
     #[cfg(feature = "s3")]
-    S3(s3::XvcS3Remote),
+    S3(s3::XvcS3Storage),
     #[cfg(feature = "r2")]
-    R2(r2::XvcR2Remote),
+    R2(r2::XvcR2Storage),
     #[cfg(feature = "gcs")]
-    Gcs(gcs::XvcGcsRemote),
+    Gcs(gcs::XvcGcsStorage),
     #[cfg(feature = "minio")]
-    Minio(minio::XvcMinioRemote),
+    Minio(minio::XvcMinioStorage),
     #[cfg(feature = "wasabi")]
-    Wasabi(wasabi::XvcWasabiRemote),
+    Wasabi(wasabi::XvcWasabiStorage),
     #[cfg(feature = "digital-ocean")]
     DigitalOcean(digital_ocean::XvcDigitalOceanStorage),
 }
@@ -82,7 +81,7 @@ impl Display for XvcStorage {
                 gr.name,
                 gr.guid,
                 gr.url.as_ref().unwrap_or(&String::new()),
-                gr.remote_dir.as_ref().unwrap_or(&String::new())
+                gr.storage_dir.as_ref().unwrap_or(&String::new())
             ),
 
             #[cfg(feature = "s3")]

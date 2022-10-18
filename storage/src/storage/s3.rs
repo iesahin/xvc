@@ -28,7 +28,7 @@ pub fn cmd_new_s3(
     bucket_name: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcS3Remote {
+    let remote = XvcS3Storage {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -57,7 +57,7 @@ pub fn cmd_new_s3(
 }
 
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcS3Remote {
+pub struct XvcS3Storage {
     pub guid: XvcStorageGuid,
     pub name: String,
     pub region: String,
@@ -65,7 +65,7 @@ pub struct XvcS3Remote {
     pub remote_prefix: String,
 }
 
-impl XvcS3Remote {
+impl XvcS3Storage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
@@ -292,7 +292,7 @@ impl XvcS3Remote {
     }
 }
 
-impl XvcStorageOperations for XvcS3Remote {
+impl XvcStorageOperations for XvcS3Storage {
     fn init(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
