@@ -1,124 +1,126 @@
-# xvc remote new-generic
+# xvc storage new generic
 
 ## Purpose
 
-Create a new remote that uses shell commands to store and retrieve cache files. 
-It allows to keep tracked files in any kind of service that allows to command line access. 
+Create a new storage that uses shell commands to send and retrieve cache files. 
+It allows to keep tracked files in any kind of service that can be used command line.
 
 ## Synopsis 
 
 ```text
-{{#include xvc-remote-new-generic.txt}}
+{{#include xvc-storage-new-generic.txt}}
 ```
 
 You can use the following placeholders in your commands. 
 These are replaced with the actual paths in runtime and commands are run with concrete paths. 
 
 - `{URL}` : The content of `--url` option. (default "")
-- `{REMOTE_DIR}` Content of `--remote-dir`  option. (default "")
+- `{STORAGE_DIR}` Content of `--storage-dir`  option. (default "")
 - `{RELATIVE_CACHE_PATH}` The portion of the cache path after `.xvc/`. 
 - `{ABSOLUTE_CACHE_PATH}` The absolute local path for the cache element. 
 - `{RELATIVE_CACHE_DIR}` The portion of directory that contains the file after `.xvc/`.
 - `{ABSOLUTE_CACHE_DIR}` The portion of the local directory that contains the file after `.xvc`.
-- `{XVC_GUID}`: Repository GUID used in remotes to differ repository elements
-- `{FULL_REMOTE_PATH}`: Concatenation of `{URL}{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}` 
-- `{FULL_REMOTE_DIR}`: Concatenation of `{URL}{REMOTE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}`
-- `{LOCAL_GUID_FILE_PATH}`: The path that contains guid of the remote locally. Used only in `--init` option. 
-- `{REMOTE_GUID_FILE_PATH}`: The path that should have guid of the remote, in remote. Used only in `--init` option. 
+- `{XVC_GUID}`: Repository GUID used in storages to differ repository elements
+- `{FULL_STORAGE_PATH}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}` 
+- `{FULL_STORAGE_DIR}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}`
+- `{LOCAL_GUID_FILE_PATH}`: The path that contains guid of the storage locally. Used only in `--init` option. 
+- `{STORAGE_GUID_FILE_PATH}`: The path that should have guid of the storage, in storage. Used only in `--init` option. 
 
 ## Examples
 
-### Create a generic remote in the same filesystem
+### Create a generic storage in the same filesystem
 
-You can create a remote that's using shell commands to store files in another location in the file system. 
+You can create a storage that's using shell commands to send and receive files to another location in the file system. 
 
 There are two variables that you can use in the commands. 
-For a remote in the same file system, `--url` could be blank and `--remote-dir` could be the location you want to define. 
+For a storage in the same file system, `--url` could be blank and `--storage-dir` could be the location you want to define. 
 
 ```shell
-$ xvc remote new-generic
+$ xvc storage new-generic
     --url ""
-    --remote-dir $HOME/my-xvc-remote
+    --storage-dir $HOME/my-xvc-storage
     ...
 ```
 
 You need to specify the commands for the following operations: 
 
-- `init`: The command that's used to create the directory that will be used as a remote. 
-It should also copy `XVC_REMOTE_GUID_FILENAME` (currently `.xvc-guid`) to that location. 
-This file is used to identify the location as an Xvc remote. 
+- `init`: The command that's used to create the directory that will be used as a storage. 
+It should also copy `XVC_STORAGE_GUID_FILENAME` (currently `.xvc-guid`) to that location. 
+This file is used to identify the location as an Xvc storage. 
 
 ```shell
-$ xvc remote new-generic
+$ xvc storage new-generic
       ...
-      --init 'mkdir -p {REMOTE_DIR} ; cp {LOCAL_GUID_FILE_PATH} {REMOTE_GUID_FILE_PATH}'
+      --init 'mkdir -p {STORAGE_DIR} ; cp {LOCAL_GUID_FILE_PATH} {STORAGE_GUID_FILE_PATH}'
       ...
 ```
 
-Note that if the command doesn't contain `{LOCAL_GUID_FILE_PATH}` and `{REMOTE_GUID_FILE_PATH}` variables, the command won't be run. 
+Note that if the command doesn't contain `{LOCAL_GUID_FILE_PATH}` and `{STORAGE_GUID_FILE_PATH}` variables, it won't be run and Xvc will report an error.
 
-- `list`: This operation should list all files under `{URL}{REMOTE_DIR}`.
-The list is filtered through a regex that matches the repository and format of the paths. 
+- `list`: This operation should list all files under `{URL}{STORAGE_DIR}`.
+The list is filtered through a regex that matches the format of the paths. 
+Hence, even the command lists all files in the storage, Xvc will consider only the relevant paths.
+
 All paths should be listed in separate lines. 
 
 ```shell
-$ xvc remote new-generic
+$ xvc storage new-generic
         ...
-        --list 'ls -1 {URL}{REMOTE_DIR}'
+        --list 'ls -1 {URL}{STORAGE_DIR}'
         ...
 ```
 
-- `upload`: The command that will copy a file from local cache to the remote. 
-Normally it use `{ABSOLUTE_CACHE_PATH}` variable.
+- `upload`: The command that will copy a file from local cache to the storage. 
+Normally, it uses `{ABSOLUTE_CACHE_PATH}` variable.
 For the local file system, we also need to create a directory before copying. 
 
 ```shell
-$ xvc remote new-generic
+$ xvc storage new-generic
      ...
-     --upload 'mkdir -p {FULL_REMOTE_DIR} && cp {ABSOLUTE_CACHE_PATH} {FULL_REMOTE_PATH}'
+     --upload 'mkdir -p {FULL_STORAGE_DIR} && cp {ABSOLUTE_CACHE_PATH} {FULL_STORAGE_PATH}'
      ...
 ```
 
-- `download`: This command will be used to copy from remote to the local cache. 
+- `download`: This command will be used to copy from storage to the local cache. 
 It must create local cache directory as well. 
 
 ```shell
-$ xvc remote new-generic
+$ xvc storage new-generic
     ...
-    --download 'mkdir -p {ABSOLUTE_CACHE_DIR} && cp {FULL_REMOTE_PATH} {ABSOLUTE_CACHE_PATH}'
+    --download 'mkdir -p {ABSOLUTE_CACHE_DIR} && cp {FULL_STORAGE_PATH} {ABSOLUTE_CACHE_PATH}'
     ...
 ```
 
-- `delete`: This operation is used to delete the _remote_ file. 
+- `delete`: This operation is used to delete the _storage_ file. 
 It shouldn't touch the local file in any way, otherwise you may lose data. 
 
 ```shell
-$ xvc remote new-generic
+$ xvc storage new-generic
     ...
-    --delete 'rm -f {FULL_REMOTE_PATH} ; rmdir {FULL_REMOTE_DIR}'
+    --delete 'rm -f {FULL_STORAGE_PATH} ; rmdir {FULL_STORAGE_DIR}'
     ...
 ```
 
 In total, the command you write is the following. 
-It defines all operations of this remote. 
+It defines all operations of this storage. 
 
 ```shell
-$ xvc remote new-generic
+$ xvc storage new-generic
     --url ""
-    --remote-dir $HOME/my-xvc-remote
-    --init 'mkdir -p {REMOTE_DIR} ; cp {LOCAL_GUID_FILE_PATH} {REMOTE_GUID_FILE_PATH}'
-    --list 'ls -1 {URL}{REMOTE_DIR}'
-    --upload 'mkdir -p {FULL_REMOTE_DIR} && cp {ABSOLUTE_CACHE_PATH} {FULL_REMOTE_PATH}'
-    --download 'mkdir -p {ABSOLUTE_CACHE_DIR} && cp {FULL_REMOTE_PATH} {ABSOLUTE_CACHE_PATH}'
-    --delete 'rm -f {FULL_REMOTE_PATH} ; rmdir {FULL_REMOTE_DIR}'
+    --storage-dir $HOME/my-xvc-storage
+    --init 'mkdir -p {STORAGE_DIR} ; cp {LOCAL_GUID_FILE_PATH} {STORAGE_GUID_FILE_PATH}'
+    --list 'ls -1 {URL}{STORAGE_DIR}'
+    --upload 'mkdir -p {FULL_STORAGE_DIR} && cp {ABSOLUTE_CACHE_PATH} {FULL_STORAGE_PATH}'
+    --download 'mkdir -p {ABSOLUTE_CACHE_DIR} && cp {FULL_STORAGE_PATH} {ABSOLUTE_CACHE_PATH}'
+    --delete 'rm -f {FULL_STORAGE_PATH} ; rmdir {FULL_STORAGE_DIR}'
 ```
 
-### Create a remote using rclone
+### Create a storage using rclone
 
-### Create a remote using rsync
+### Create a storage using rsync
 
 Rsync is found for all popular platforms to copy file contents. 
-Xvc can use it to maintain a remote if you already have a working rsync setup.
+Xvc can use it to maintain a storage if you already have a working rsync setup.
 
 We need to define operations for `init`, `upload`, `download`, `list` and `delete` with rsync or ssh. 
 Some of the commands need `ssh` to perform operations, like creating a directory. 
@@ -127,35 +129,31 @@ We'll use placeholders for paths.
 As rsync URL format is slightly different than SSH, we will define the commands verbosely. 
 
 Suppose you want to use your account at `user@example.com` to store your Xvc files. 
-You want to store the files under `/home/user/my-xvc-remote`. 
+You want to store the files under `/home/user/my-xvc-storage`. 
 
 We assume you have configured public key authentication for your account. 
-Xvc doesn't receive user input during remote operations, and can't receive your password during runs. 
+Xvc doesn't receive user input during storage operations, and can't receive your password during runs. 
 
-We first define these as our `--url` and `--remote-dir` options. 
+We first define these as our `--url` and `--storage-dir` options. 
 
 ```shell
 $ xvc --url user@example.com 
-        --remote-dir '/home/user/my-xvc-remote'
+        --storage-dir '/home/user/my-xvc-storage'
         ...
 ```
 
-Initialization command must create this directory and copy the remote GUID file to its respective location. 
+Initialization command must create this directory and copy the storage GUID file to its respective location. 
 
 ```shell
 $ xvc 
   ...
-  --init "ssh {URL} 'mkdir -p {REMOTE_DIR}' ; rsync -av '{LOCAL_GUID_FILE_PATH}' '{URL}:{REMOTE_GUID_FILE_PATH}'"
+  --init "ssh {URL} 'mkdir -p {STORAGE_DIR}' ; rsync -av '{LOCAL_GUID_FILE_PATH}' '{URL}:{STORAGE_GUID_FILE_PATH}'"
 ```
 
 Note the use of `:` in `rsync` command. 
 As it doesn't support `ssh://` URLs currently, we are using a form that's compatible with both ssh and rsync as URL.
 It may be possible to use `&&` between `ssh` and `rsync` commands, but if the first command fails (e.g. the directory already exists), we still want to copy the guid file. 
 
-
-
-
-### Create a remote with s5cmd
 
 ## Caveats
 
