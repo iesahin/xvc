@@ -2,6 +2,14 @@
 name = "xvc-core"
 version = "0.3.0"
 edition = "2021"
+description = "Xvc core for common elements for all commands"
+authors = "Emre Şahin <contact@emresahin.net>"
+license = "GPL-3"
+homepage = "https://xvc.dev"
+repository = "https://github.com/iesahin/xvc"
+categories = ["command-line-utilities", "development-tools"]
+keywords = ["xvc", "mlops", "artificial-intelligence", "data-pipelines", "machine-learning", "make", "file", "backup", "devops", "git", "data"]
+
 
 [lib]
 name = "xvc_core"
