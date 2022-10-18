@@ -1,13 +1,13 @@
-# xvc remote new s3
+# xvc storage new s3
 
 ## Purpose
 
-Configure an S3 (or a compatible) service as an Xvc remote. 
+Configure an S3 (or a compatible) service as an Xvc storage. 
 
 ## Synopsis 
 
 ```text
-{{#include xvc-remote-new-s3.txt}}
+{{#include xvc-storage-new-s3.txt}}
 ```
 
 ## Examples
