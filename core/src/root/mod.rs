@@ -1,5 +1,3 @@
-#![doc = include_str!("../../../book/src/ref/xvc-root.md")]
-
 use crate::error::Result;
 use crate::types::xvcroot::XvcRoot;
 use clap::Parser;
