@@ -1,1 +1,1 @@
-# xvc remote new
+# xvc storage new
