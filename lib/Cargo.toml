@@ -9,6 +9,7 @@ homepage = "https://xvc.dev"
 repository = "https://github.com/iesahin/xvc"
 categories = ["command-line-utilities", "development-tools"]
 keywords = ["file", "devops", "git", "versioning", "mlops"]
+readme = "../README.md"
 
 [lib]
 name = "xvc"
