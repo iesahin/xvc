@@ -169,7 +169,7 @@ fn test_storage_new_wasabi() -> Result<()> {
         "new",
         "wasabi",
         "--name",
-        "do-storage",
+        "wasabi-storage",
         "--bucket-name",
         bucket_name,
         "--storage-prefix",
@@ -199,7 +199,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "push", "--to", "do-storage", the_file])?;
+    let push_result = x(&["file", "push", "--to", "wasabi-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -223,7 +223,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "do-storage"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "wasabi-storage"])?;
 
     watch!(fetch_result);
 
@@ -242,7 +242,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "do-storage"])?;
+    let pull_result = x(&["file", "pull", "--from", "wasabi-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
