@@ -141,7 +141,7 @@ fn test_storage_new_wasabi() -> Result<()> {
 
     let access_key = env::var("WASABI_ACCESS_KEY_ID")?;
     let secret_key = env::var("WASABI_SECRET_ACCESS_KEY")?;
-    let region = "eu-central-1";
+    let endpoint = "s3.wasabisys.com";
 
     let config_file_name = write_s3cmd_config(&access_key, &secret_key)?;
     watch!(config_file_name);
@@ -153,16 +153,16 @@ fn test_storage_new_wasabi() -> Result<()> {
         sh(sh_cmd)
     };
 
+    // Set the password in the environment
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key.clone());
+    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key.clone());
+
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];
         c.extend(cmd);
         watch!(cmd);
         xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
     };
-
-    // Set the password in the environment
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key.clone());
-    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key.clone());
 
     let out = x(&[
         "storage",
@@ -174,8 +174,8 @@ fn test_storage_new_wasabi() -> Result<()> {
         bucket_name,
         "--storage-prefix",
         &storage_prefix,
-        "--region",
-        &region,
+        "--endpoint",
+        &endpoint,
     ])?;
 
     watch!(out);
