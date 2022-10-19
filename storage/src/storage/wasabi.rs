@@ -24,15 +24,15 @@ pub(crate) fn cmd_new_wasabi(
     xvc_root: &xvc_core::XvcRoot,
     name: String,
     bucket_name: String,
-    region: String,
-    remote_prefix: String,
+    endpoint: String,
+    storage_prefix: String,
 ) -> Result<()> {
     let remote = XvcWasabiStorage {
         guid: XvcStorageGuid::new(),
         name,
-        region,
+        endpoint,
         bucket_name,
-        remote_prefix,
+        storage_prefix,
     };
 
     watch!(remote);
@@ -59,19 +59,24 @@ pub(crate) fn cmd_new_wasabi(
 pub struct XvcWasabiStorage {
     pub guid: XvcStorageGuid,
     pub name: String,
-    pub region: String,
+    pub endpoint: String,
     pub bucket_name: String,
-    pub remote_prefix: String,
+    pub storage_prefix: String,
 }
 
 impl XvcWasabiStorage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
-            Some(&env::var("XVC_REMOTE_SECRET_KEY").unwrap()),
-            env::var("XVC_REMOTE_SECURITY_TOKEN").as_deref().ok(),
-            env::var("XVC_REMOTE_SESSION_TOKEN").as_deref().ok(),
-            env::var("XVC_REMOTE_PROFILE").as_deref().ok(),
+            Some(
+                &env::var("XVC_STORAGE_ACCESS_KEY_ID")
+                    .expect("XVC_STORAGE_ACCESS_KEY_ID is not defined"),
+            ),
+            Some(
+                &env::var("XVC_STORAGE_SECRET_KEY").expect("XVC_STORAGE_SECRET_KEY is not defined"),
+            ),
+            env::var("XVC_STORAGE_SECURITY_TOKEN").as_deref().ok(),
+            env::var("XVC_STORAGE_SESSION_TOKEN").as_deref().ok(),
+            env::var("XVC_STORAGE_PROFILE").as_deref().ok(),
         )
         .map_err(|e| e.into())
     }
@@ -79,10 +84,13 @@ impl XvcWasabiStorage {
     fn get_bucket(&self) -> Result<Bucket> {
         // We'll just put guid file to endpoint/bucket/prefix/XVC_GUID_FILENAME
         let credentials = self.credentials()?;
-        let region: Region = format!("wa-{}", self.region)
-            .parse()
-            .expect("Cannot parse region name");
+        let region: Region = Region::Custom {
+            region: "".to_string(),
+            endpoint: self.endpoint.clone(),
+        };
+
         let bucket = Bucket::new(&self.bucket_name, region, credentials)?;
+        watch!(bucket);
         Ok(bucket)
     }
 
@@ -102,7 +110,7 @@ impl XvcWasabiStorage {
 
         let res_response = bucket
             .put_object(
-                format!("{}/{}", self.remote_prefix, XVC_STORAGE_GUID_FILENAME),
+                format!("{}/{}", self.storage_prefix, XVC_STORAGE_GUID_FILENAME),
                 guid_bytes,
             )
             .await;
@@ -123,11 +131,11 @@ impl XvcWasabiStorage {
     ) -> Result<XvcStorageListEvent> {
         let bucket = self.get_bucket()?;
         let xvc_guid = xvc_root.config().guid().unwrap();
-        let prefix = self.remote_prefix.clone();
+        let prefix = self.storage_prefix.clone();
 
         let res_list = bucket
             .list(
-                format!("{}/{}", self.remote_prefix, xvc_guid),
+                format!("{}/{}", self.storage_prefix, xvc_guid),
                 Some("/".to_string()),
             )
             .await;
@@ -170,7 +178,7 @@ impl XvcWasabiStorage {
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
         let remote_path = XvcStoragePath::from(format!(
             "{}/{}/{}",
-            self.remote_prefix, repo_guid, cache_path
+            self.storage_prefix, repo_guid, cache_path
         ));
 
         remote_path
@@ -303,7 +311,7 @@ impl XvcStorageOperations for XvcWasabiStorage {
         rt.block_on(self.a_init(output, xvc_root))
     }
 
-    /// List the bucket contents that start with `self.remote_prefix`
+    /// List the bucket contents that start with `self.storage_prefix`
     fn list(
         &self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,

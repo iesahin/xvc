@@ -218,12 +218,14 @@ pub enum StorageNewSubCommand {
         /// Bucket name
         #[clap(long)]
         bucket_name: String,
-        /// Region of the server
-        #[clap(long)]
-        region: String,
+        /// Endpoint for the server, complete with the region if there is
+        ///
+        /// e.g. for eu-central-1 region, use s3.eu-central-1.wasabisys.com as the endpoint.
+        #[clap(long, default_value = "s3.wasabisys.com")]
+        endpoint: String,
         /// You can set a directory in the bucket with this prefix
         #[clap(long, default_value = "")]
-        remote_prefix: String,
+        storage_prefix: String,
     },
 }
 
@@ -372,16 +374,16 @@ fn cmd_remote_new(
         StorageNewSubCommand::Wasabi {
             name,
             bucket_name,
-            region,
-            remote_prefix,
+            endpoint,
+            storage_prefix,
         } => storage::wasabi::cmd_new_wasabi(
             input,
             output_snd,
             xvc_root,
             name,
             bucket_name,
-            region,
-            remote_prefix,
+            endpoint,
+            storage_prefix,
         ),
     }
 }

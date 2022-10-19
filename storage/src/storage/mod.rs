@@ -112,7 +112,7 @@ impl Display for XvcStorage {
             XvcStorage::Wasabi(wr) => write!(
                 f,
                 "Wasabi:  {}\t{}\t{}.{}/{}",
-                wr.name, wr.guid, wr.region, wr.bucket_name, wr.remote_prefix
+                wr.name, wr.guid, wr.endpoint, wr.bucket_name, wr.storage_prefix
             ),
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(dor) => write!(
