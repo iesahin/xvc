@@ -198,7 +198,7 @@ pub enum StorageNewSubCommand {
         /// Bucket name
         #[clap(long)]
         bucket_name: String,
-        /// Region of the server
+        /// Region of the server, e.g., europe-west3
         #[clap(long)]
         region: String,
         /// You can set a directory in the bucket with this prefix
