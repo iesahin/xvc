@@ -68,11 +68,11 @@ pub struct XvcS3Storage {
 impl XvcS3Storage {
     fn credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var("XVC_REMOTE_ACCESS_KEY_ID").unwrap()),
-            Some(&env::var("XVC_REMOTE_SECRET_KEY").unwrap()),
-            env::var("XVC_REMOTE_SECURITY_TOKEN").as_deref().ok(),
-            env::var("XVC_REMOTE_SESSION_TOKEN").as_deref().ok(),
-            env::var("XVC_REMOTE_PROFILE").as_deref().ok(),
+            Some(&env::var("XVC_STORAGE_ACCESS_KEY_ID").unwrap()),
+            Some(&env::var("XVC_STORAGE_SECRET_KEY").unwrap()),
+            env::var("XVC_STORAGE_SECURITY_TOKEN").as_deref().ok(),
+            env::var("XVC_STORAGE_SESSION_TOKEN").as_deref().ok(),
+            env::var("XVC_STORAGE_PROFILE").as_deref().ok(),
         )
         .map_err(|e| e.into())
     }
