@@ -1,4 +1,5 @@
 #![warn(missing_docs)]
+#![forbid(unsafe_code)]
 pub mod bstore;
 pub mod event;
 pub mod hstore;
