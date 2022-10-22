@@ -1,3 +1,10 @@
+#![allow(missing_docs)]
+/// A store to associate [XvcEntity] with any component implementing [serde::Serialize] and
+/// [serde::Deserialize].
+/// It uses [BTreeMap] underneath.
+///
+/// This is deprecated because [XvcStore] provides an inverse map for lookup as well.
+/// This will be removed sometime later.
 use super::event::Event;
 use super::event::EventLog;
 use super::*;
