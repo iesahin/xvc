@@ -23,7 +23,7 @@ access_key = {access_key}
 access_token =
 add_encoding_exts =
 add_headers =
-bucket_location = europe-west3
+bucket_location = auto
 ca_certs_file =
 cache_file =
 check_ssl_certificate = True
@@ -54,7 +54,7 @@ gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passph
 gpg_passphrase =
 guess_mime_type = True
 host_base = {account_id}.r2.cloudflarestorage.com
-host_bucket = {account_id}.r2.cloudflarestorage.com/%(bucket)s
+host_bucket = {account_id}.r2.cloudflarestorage.com/%(bucket)s/
 human_readable_sizes = False
 invalidate_default_index_on_cf = False
 invalidate_default_index_root_on_cf = True
@@ -132,24 +132,24 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
-#[cfg_attr(not(feature = "test-gcs"), ignore)]
-fn test_storage_new_gcs() -> Result<()> {
+#[cfg_attr(not(feature = "test-r2"), ignore)]
+fn test_storage_new_r2() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";
     let remote_prefix = common::random_dir_name("xvc-storage", None);
 
-    let access_key = env::var("GCS_ACCESS_KEY_ID")?;
-    let secret_key = env::var("GCS_SECRET_ACCESS_KEY")?;
-    let region = "europe-west3";
+    let access_key = env::var("R2_ACCESS_KEY_ID")?;
+    let secret_key = env::var("R2_SECRET_ACCESS_KEY")?;
+    let account_id = env::var("R2_ACCOUNT_ID")?;
 
-    let config_file_name = write_s3cmd_config(&access_key, &secret_key)?;
+    let config_file_name = write_s3cmd_config(&account_id, &access_key, &secret_key)?;
     watch!(config_file_name);
 
     let s3cmd = |cmd: &str, append: &str| -> String {
         let acc = access_key.clone();
         let sec = secret_key.clone();
-        let sh_cmd = format!("s3cmd --config {config_file_name} {cmd} {append}");
+        let sh_cmd = format!("s3cmd --no-check-md5 --config {config_file_name} {cmd} {append}");
         sh(sh_cmd)
     };
 
@@ -167,15 +167,15 @@ fn test_storage_new_gcs() -> Result<()> {
     let out = x(&[
         "storage",
         "new",
-        "gcs",
+        "r2",
         "--name",
-        "gcs-storage",
+        "r2-storage",
         "--bucket-name",
         bucket_name,
         "--remote-prefix",
         &remote_prefix,
-        "--region",
-        &region,
+        "--account-id",
+        &account_id,
     ])?;
 
     watch!(out);
@@ -199,7 +199,7 @@ fn test_storage_new_gcs() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "push", "--to", "gcs-storage", the_file])?;
+    let push_result = x(&["file", "push", "--to", "r2-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -223,7 +223,7 @@ fn test_storage_new_gcs() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "gcs-storage"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "r2-storage"])?;
 
     watch!(fetch_result);
 
@@ -242,7 +242,7 @@ fn test_storage_new_gcs() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "gcs-storage"])?;
+    let pull_result = x(&["file", "pull", "--from", "r2-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
