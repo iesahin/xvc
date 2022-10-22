@@ -4,7 +4,7 @@
 
 Define an output (file, metrics or plots) to an already existing step in the pipeline.
 
-## Synopsis 
+## Synopsis
 
 ```text
 {{#include xvc-pipeline-step-output.txt}}
@@ -13,5 +13,3 @@ Define an output (file, metrics or plots) to an already existing step in the pip
 ## Examples
 
 ## Caveats
-
-
