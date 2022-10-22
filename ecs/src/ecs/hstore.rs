@@ -1,3 +1,6 @@
+//! A component store for ephemeral operations based on [HashMap].
+//! Unlike [XvcStore], it doesn't require `T` to be serializable.
+//! It's supposed to be used operations that don't require final result to be recorded to disk.
 use super::*;
 use crate::error::{Error, Result};
 use crate::Storable;
