@@ -1,3 +1,10 @@
+//! Xvc Entity Component System allows arbitrary [serializable][Storable] components associated
+//! with [entities][XvcEntities] of integers.
+//! It's used instead of _object-oriented_ architecture for flexible and maintainable features.
+//!
+//! In Xvc-ECS, each entity is a plain integer.
+//! Components are arbitrary structs implementing [Storable], and [stores][XvcStore] are systems
+//! that we use to represent associations between entity and components, and between entities.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod bstore;
@@ -110,6 +117,7 @@ impl XvcEntityGenerator {
         Self { current }
     }
 
+    /// Returns the next element by atomically incresing the current value.
     pub fn next_element(&self) -> XvcEntity {
         XvcEntity(self.current.fetch_add(1, Ordering::SeqCst))
     }
@@ -127,7 +135,7 @@ impl XvcEntityGenerator {
         }
     }
 
-    /// saves current_value to `path`
+    /// Saves the current XvcEntity value to path.
     pub fn save(&self, dir: &Path) -> XvcResult<()> {
         let u: usize = self.next_element().into();
         if !dir.exists() {
@@ -140,6 +148,7 @@ impl XvcEntityGenerator {
 }
 
 /// Returns a timestamp string to be used in file names.
+/// This is used to generate sortable unique file names in event logs.
 pub fn timestamp() -> String {
     let now = SystemTime::now();
     let since = now
@@ -164,7 +173,7 @@ pub fn sorted_files(dir: &Path) -> XvcResult<Vec<PathBuf>> {
         files.sort_unstable();
         Ok(files)
     } else {
-        fs::create_dir_all(dir);
+        fs::create_dir_all(dir)?;
         Ok(vec![])
     }
 }
@@ -222,7 +231,7 @@ mod tests {
     use log::LevelFilter;
     use rand;
     use tempdir::TempDir;
-    use xvc_logging::{setup_logging, watch};
+    use xvc_logging::setup_logging;
 
     #[test]
     fn test_init() -> XvcResult<()> {
