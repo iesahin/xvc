@@ -1,3 +1,4 @@
+//! Contains [Storable] trait that marks a type suitable to use in [crate::XvcStore].
 use serde::{Deserialize, Serialize};
 
 /// Marks the traits as storable in XvcStore
@@ -10,6 +11,12 @@ use serde::{Deserialize, Serialize};
 pub trait Storable:
     Serialize + for<'lt> Deserialize<'lt> + Clone + std::fmt::Debug + Ord + PartialEq
 {
+    /// A string representation for the type.
+    ///
+    /// By convention this should be in kebab-case, like `xvc-path` for [xvc-core::XvcPath].
+    /// Xvc uses this to create filenames in serialization.
+    ///
+    /// See [crate::persist] macro to specify this representation conveniently.
     fn type_description() -> String;
 }
 
