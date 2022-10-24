@@ -1,3 +1,13 @@
+//! Stores arbitrarliy interrelated elements.
+//!
+//! This is not used in Xvc at the moment.
+//! It uses `XvcStore<ChildEntity<T, U>>` and `XvcStore<ChildEntity<U, T>>` to specify two
+//! [crate::R1NStore] 's that keep each other's relationship. It can be deprecated if there seems
+//! not to be a use case.
+//!
+//! A possible use case might be in experiments. Experiments vs files may have M-N relationships,
+//! each file can be affected by multiple experiments and each experiment may be affecting multiple
+//! files. I'll wait to deprecate this until all major features are implemented.
 use std::fmt::Debug;
 use std::path::Path;
 
