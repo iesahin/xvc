@@ -68,6 +68,8 @@ pub enum XvcDependency {
     // TODO: S3 { url } to specify S3 buckets
     // TODO: REST { url } to make Rest queries
     // TODO: Bitcoin { wallet } to check Bitcoin wallets
+    // TODO: JupyterNotebook { file, cell }
+    // TODO: EnvironmentVariable { name }
 }
 
 persist!(XvcDependency, "xvc-dependency");
