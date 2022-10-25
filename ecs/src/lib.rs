@@ -1,7 +1,6 @@
 pub mod ecs;
 pub mod error;
 
-pub use ecs::bstore::BStore;
 pub use ecs::hstore::HStore;
 pub use ecs::init_generator;
 pub use ecs::load_generator;
