@@ -50,7 +50,7 @@
   - [Utilities](./ref/utilities.md)
     - [xvc root](./ref/xvc-root.md)
     - [xvc check-ignore](./ref/xvc-check-ignore.md)
-- [Rust API](./06-api.md)
+- [Rust API](https://docs.rs/releases/search?query=xvc)
 - [Python API](./07-python-api.md)
 - [Architecture](./arch/index.md)
   - [Arc42](./arch/arc42.md)
