@@ -4,7 +4,7 @@
 
 Print the steps of a pipeline.
 
-## Synopsis 
+## Synopsis
 
 ```text
 {{#include xvc-pipeline-step-show.txt}}
@@ -13,5 +13,3 @@ Print the steps of a pipeline.
 ## Examples
 
 ## Caveats
-
-

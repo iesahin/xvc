@@ -4,7 +4,7 @@
 
 Update the name, running condition, or command of a step.
 
-## Synopsis 
+## Synopsis
 
 ```text
 {{#include xvc-pipeline-step-update.txt}}
@@ -13,5 +13,3 @@ Update the name, running condition, or command of a step.
 ## Examples
 
 ## Caveats
-
-

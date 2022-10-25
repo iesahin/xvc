@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Create a new step in the pipeline. 
+Create a new step in the pipeline.
 
-## Synopsis 
+## Synopsis
 
 ```text
 {{#include xvc-pipeline-step-new.txt}}
@@ -13,5 +13,3 @@ Create a new step in the pipeline.
 ## Examples
 
 ## Caveats
-
-

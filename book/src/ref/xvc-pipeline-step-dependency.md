@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Define a dependency to an existing step in the pipeline. 
+Define a dependency to an existing step in the pipeline.
 
-## Synopsis 
+## Synopsis
 
 ```text
 {{#include xvc-pipeline-step-dependency.txt}}
@@ -13,5 +13,3 @@ Define a dependency to an existing step in the pipeline.
 ## Examples
 
 ## Caveats
-
-
