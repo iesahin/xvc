@@ -6,7 +6,7 @@ use common::*;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcPath;
-use xvc_ecs::{BStore, R11Store, R1NStore, XvcEntity, XvcStore};
+use xvc_ecs::{R11Store, R1NStore, XvcEntity, XvcStore};
 use xvc_logging::watch;
 use xvc_pipeline::{
     XvcDependency, XvcMetricsFormat, XvcOutput, XvcParamFormat, XvcPipeline, XvcStep,

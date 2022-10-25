@@ -1,6 +1,6 @@
 use crate::error::Error;
 use xvc_core::{util::serde::to_json, XvcRoot};
-use xvc_ecs::{BStore, R1NStore};
+use xvc_ecs::{R1NStore, XvcStore};
 
 use crate::{
     pipeline::XvcStepInvalidate, XvcDependency, XvcOutput, XvcPipeline, XvcStep, XvcStepCommand,
@@ -21,7 +21,7 @@ pub fn cmd_step_show(
     let bs_invalidate = xvc_root.load_store::<XvcStepInvalidate>()?;
     let invalidate = bs_invalidate.get(&step_e).cloned().unwrap_or_default();
 
-    let mut deps: BStore<XvcDependency> = BStore::new();
+    let mut deps: XvcStore<XvcDependency> = XvcStore::new();
     xvc_root.with_r1nstore(|rs: &R1NStore<XvcStep, XvcDependency>| {
         for (dep_e, dep) in rs.children_of(&step_e)?.iter() {
             deps.insert(*dep_e, dep.clone());
@@ -29,7 +29,7 @@ pub fn cmd_step_show(
         Ok(())
     })?;
 
-    let mut outs: BStore<XvcOutput> = BStore::new();
+    let mut outs: XvcStore<XvcOutput> = XvcStore::new();
     xvc_root.with_r1nstore(|rs: &R1NStore<XvcStep, XvcOutput>| {
         for (out_e, out) in rs.children_of(&step_e)?.iter() {
             outs.insert(*out_e, out.clone());

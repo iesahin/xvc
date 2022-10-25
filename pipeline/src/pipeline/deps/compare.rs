@@ -7,7 +7,7 @@ use xvc_core::{
     CollectionDigest, ContentDigest, HashAlgorithm, MetadataDigest, TextOrBinary, XvcFileType,
     XvcMetadata, XvcPath, XvcRoot,
 };
-use xvc_ecs::{BStore, R11Store, R1NStore, XvcStore};
+use xvc_ecs::{R11Store, R1NStore, XvcStore};
 
 use super::digest::{
     dependency_content_digest, paths_collection_digest, paths_metadata_digest,
