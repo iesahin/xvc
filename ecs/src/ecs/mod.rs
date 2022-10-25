@@ -7,7 +7,6 @@
 //! that we use to represent associations between entity and components, and between entities.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
-pub mod bstore;
 pub mod event;
 pub mod hstore;
 pub mod r11store;
