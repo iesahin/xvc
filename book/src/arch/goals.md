@@ -1,4 +1,4 @@
-# Introduction and Goals
+# Goals
 
 <!-- Describes the relevant requirements and the driving forces that software -->
 <!-- architects and development team must consider. These include -->
