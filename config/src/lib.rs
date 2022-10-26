@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+#![forbid(unsafe_code)]
 pub mod error;
 use directories_next::{BaseDirs, ProjectDirs, UserDirs};
 use lazy_static::lazy_static;

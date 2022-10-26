@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+#![forbid(unsafe_code)]
 use log::LevelFilter;
 use log::{error, info};
 use std::env;
