@@ -160,4 +160,3 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 - Really use xvc, tell me how it works for you, read the documentation, report bugs, dream about features. The greatest contribution might be this now.
 - Write a new test with your workflow to increase testing coverage. They are under `lib/tests/` now but I'm planning to move them to a separate crate.
 - [Be my guest](https://www.airbnb.com/users/show/3595069) when you visit Bursa. I usually don't have time to meet with every guest in person but if you let me know _you_ are coming, I'd like to arrange something. Also, when you visit Galata tower in İstanbul, which is close to where I live, you can buy me a coffee.
--
