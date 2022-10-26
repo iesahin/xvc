@@ -1,6 +1,6 @@
 # Storages
 
-Xvc uses _storages_ to store content of the files.  
+Xvc uses _storages_ to store content of the files.
 These storages are different from Git remotes.
 They don't contain Git history of a repository, but they _can_ store contents of the files tracked by Xvc.
 
