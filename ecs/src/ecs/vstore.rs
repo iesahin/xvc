@@ -1,3 +1,5 @@
+//! [VStore] and its implementation allows [Storable] types to be processed with [std::vector].
+//! It's better suited when duplicate elements with the same `XvcEntity` may occur.
 use super::event::{Event, EventLog};
 use super::hstore::HStore;
 use crate::error::{Error, Result};
@@ -37,6 +39,7 @@ impl<T> VStore<T>
 where
     T: Storable,
 {
+    /// Create an empty [VStore] with empty logs and vector.
     pub fn new() -> Self {
         Self {
             vec: Vec::<(XvcEntity, T)>::new(),
@@ -45,6 +48,7 @@ where
         }
     }
 
+    /// Create the vector with the given capacity to reduce later memory expansions.
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             vec: Vec::<(XvcEntity, T)>::with_capacity(capacity),
@@ -69,6 +73,8 @@ where
         vec
     }
 
+    /// Loads the store from the given `dir`.
+    /// It loads the [event log][EventLog]  and builds ([`XvcEntity`], `T`) by replaying it.
     pub fn from_dir(dir: &Path) -> Result<Self> {
         let previous = EventLog::<T>::from_dir(dir)?;
         let vec = Self::build_vec(&previous);
@@ -80,10 +86,18 @@ where
         })
     }
 
+    /// Saves the event log to a directory.
+    /// It only saves the events added after the last load.
     pub fn to_dir(&self, dir: &Path) -> Result<()> {
         self.current.to_dir(dir)
     }
 
+    /// Get all elements associated with an [`XvcEntity`].
+    ///
+    /// Conventionally each entity is associated with a single component type, but in some cases an
+    /// entity (e.g. a triangle) may be associated with multiple components. (e.g. points.)
+    /// Nevertheless, in such cases, we recommend to use [R1NStore] to mark the relationship
+    /// clearly.
     pub fn values_of(&self, parent: &XvcEntity) -> Vec<T> {
         self.vec
             .iter()
@@ -91,11 +105,17 @@ where
             .collect()
     }
 
+    /// Insert an entity to the store.
+    /// It also inserts an event to the log.
     pub fn insert(&mut self, entity: XvcEntity, value: T) {
         self.current.add(entity, value.clone());
         self.vec.push((entity, value))
     }
 
+    /// Convert to an [XvcStore].
+    /// It inserts all elements in this vector with XvcStore::insert.
+    ///
+    /// TODO: This is buggy. See https://github.com/iesahin/xvc/issues/45
     pub fn to_store(&self) -> Result<XvcStore<T>> {
         let mut store = XvcStore::<T>::new();
         self.vec.iter().for_each(|(e, v)| {
@@ -116,31 +136,6 @@ where
     }
 }
 
-// impl<T> From<Vec<(XvcEntity, T)>> for VStore<T>
-// where
-//     T: Serialize + for<'lt> Deserialize<'lt> + Clone,
-// {
-//     fn from(vec: Vec<(XvcEntity, T)>) -> Self {
-//         Self { vec }
-//     }
-// }
-//
-
-// impl<T> From<BStore<T>> for VStore<T>
-// where
-//     T: Storable,
-// {
-//     fn from(store: BStore<T>) -> Self {
-//         match store.to_vstore() {
-//             Ok(vs) => vs,
-//             Err(_) => {
-//                 Error::StoreConversionError.error();
-//                 Self::new()
-//             }
-//         }
-//     }
-// }
-//
 impl<T> From<HStore<T>> for VStore<T>
 where
     T: Storable,
@@ -177,11 +172,15 @@ where
         store_root.join(format!("{}-vstore", <T as Storable>::type_description()))
     }
 
+    /// Loads a store by appending `T`'s type name (see [Storable::type_description]) to
+    /// `store_root.`
     pub fn load_vstore(store_root: &Path) -> Result<VStore<T>> {
         let dir = Self::vstore_path(store_root);
         VStore::<T>::from_dir(&dir)
     }
 
+    /// Saves a store by appending `T`'s type name (see [Storable::type_description]) to
+    /// `store_root.`
     pub fn save_vstore(&self, store_root: &Path) -> Result<()> {
         let dir = Self::vstore_path(store_root);
         self.to_dir(&dir)

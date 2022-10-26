@@ -1,3 +1,5 @@
+//! Represents 1-N (parent-child) relationships.
+//! Each child has a one parent but each parent can have multiple children.
 use super::XvcEntity;
 use crate::error::{Error, Result};
 use crate::{Storable, XvcStore};

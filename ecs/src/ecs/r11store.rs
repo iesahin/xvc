@@ -1,17 +1,23 @@
+//! R11Store is 1-1 RelationStore.
+//! We store relationships with identical entities.
+//! It doesn't have any semantics except binding two components with a single entity.
 use std::path::Path;
 
 use crate::{error::Result, XvcStore};
 use crate::{Storable, XvcEntity};
 use std::fmt::Debug;
-/// R11Store is 1-1 RelationStore, where we store relationships with identical entities. It doesn't have any semantics except binding two components with a single entity.
-///
+
+/// Associates two [XvcStore]s with two different type of components with a single [XvcEntity].
+/// It's like using the same primary key in two database tables.
 #[derive(Debug, Clone)]
 pub struct R11Store<T, U>
 where
     T: Storable,
     U: Storable,
 {
+    /// The first XvcStore to be associated
     pub left: XvcStore<T>,
+    /// The second XvcStore to be associated
     pub right: XvcStore<U>,
 }
 
@@ -21,6 +27,10 @@ where
     U: Storable,
 {
     /// Creates an empty R11Store
+    ///
+    /// The following creates two new stores: `XvcStore<String>` and `XvcStore<i32>` that can be
+    /// used in parallel with the same [`XvcEntity`] keys.
+    ///
     /// ```
     /// use xvc_ecs::R11Store;
     /// let rs = R11Store::<String, i32>::new();
@@ -34,6 +44,10 @@ where
     }
 
     /// inserts an element to both left and right
+    ///
+    /// Having a R11Store<String, String>, the following code inserts "left component" and "right
+    /// component" with the same `XvcEntity(100)`.
+    ///
     /// ```
     /// # use xvc_ecs::{R11Store, XvcEntity};
     /// # let mut rs = R11Store::<String, String>::new();
@@ -46,17 +60,20 @@ where
     }
 
     /// returns the right element in L-R pair
+    ///
     /// ```
     /// # use xvc_ecs::{R11Store, XvcEntity};
     /// # let mut rs = R11Store::<String, String>::new();
     /// let entity: XvcEntity = 100usize.into();
     /// rs.insert(&entity, "left component".into(), "right component".to_string());
     /// ```
+
     pub fn left_to_right(&self, entity: &XvcEntity) -> Option<(&XvcEntity, &U)> {
         self.right.get_key_value(entity)
     }
 
     /// returns the left element in L-R pair
+    ///
     /// ```
     /// # use xvc_ecs::{R11Store, XvcEntity};
     /// # let mut rs = R11Store::<String, String>::new();
@@ -110,6 +127,7 @@ where
         self.right.remove(entity);
     }
 
+    /// merges another store by appending its stores with [XvcStore::append]
     pub fn append(&mut self, other: &R11Store<T, U>) -> Result<()> {
         self.left.append(&other.left)?;
         self.right.append(&other.right)
@@ -121,14 +139,15 @@ where
     T: Storable,
     U: Storable,
 {
+    /// Creates a 1-1 store by loading member stores with [XvcStore::load_store]
     pub fn load_r11store(store_root: &Path) -> Result<R11Store<T, U>> {
         let left = XvcStore::<T>::load_store(store_root)?;
-
         let right = XvcStore::<U>::load_store(store_root)?;
 
         Ok(R11Store { left, right })
     }
 
+    /// Records a store by recording the member stores with [XvcStore::save].
     pub fn save_r11store(&self, store_root: &Path) -> Result<()> {
         self.left.save(store_root)?;
         self.right.save(store_root)

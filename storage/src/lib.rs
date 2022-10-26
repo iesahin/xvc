@@ -13,8 +13,8 @@ pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
 
+use xvc_ecs;
 use xvc_ecs::XvcStore;
-use xvc_ecs::{self};
 
 use xvc_core::XvcRoot;
 use xvc_logging::XvcOutputLine;

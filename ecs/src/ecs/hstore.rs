@@ -1,3 +1,6 @@
+//! A component store for ephemeral operations based on [HashMap].
+//! Unlike [XvcStore], it doesn't require `T` to be serializable.
+//! It's supposed to be used operations that don't require final result to be recorded to disk.
 use super::*;
 use crate::error::{Error, Result};
 use crate::Storable;
@@ -11,7 +14,6 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::iter::{FromIterator, Iterator};
 
-use super::bstore::BStore;
 use super::vstore::VStore;
 
 use std::ops::{Deref, DerefMut};
@@ -43,21 +45,6 @@ impl<T> From<HashMap<XvcEntity, T>> for HStore<T> {
     }
 }
 
-impl<T> From<BStore<T>> for HStore<T>
-where
-    T: Storable,
-{
-    fn from(store: BStore<T>) -> Self {
-        match store.to_hstore() {
-            Ok(hs) => hs,
-            Err(_) => {
-                Error::StoreConversionError.error();
-                Self::new()
-            }
-        }
-    }
-}
-
 impl<T> FromIterator<(XvcEntity, T)> for HStore<T> {
     fn from_iter<I: IntoIterator<Item = (XvcEntity, T)>>(iter: I) -> Self {
         Self {
@@ -84,15 +71,6 @@ impl<T> HStore<T>
 where
     T: Storable,
 {
-    /// Convert to [BStore]
-    pub fn to_bstore(&self) -> Result<BStore<T>> {
-        let mut store = BStore::new();
-        for (k, v) in self.map.iter() {
-            store.insert(*k, v.clone());
-        }
-        Ok(store)
-    }
-
     /// Convert to [VStore]
     pub fn to_vstore(&self) -> Result<VStore<T>> {
         let mut store = VStore::new();

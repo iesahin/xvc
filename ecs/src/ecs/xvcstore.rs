@@ -1,3 +1,6 @@
+//! The basic store type used across Xvc.
+//!
+//! It's used to store and retrieve a [crate::Storable] type to text files.
 use super::event::Event;
 use super::event::EventLog;
 use super::*;
