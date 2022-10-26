@@ -1,6 +1,6 @@
 [package]
 name = "xvc"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 description = "An MLOps tool to manage data files and pipelines on top of Git"
 authors = ["Emre Şahin <contact@emresahin.net>"]

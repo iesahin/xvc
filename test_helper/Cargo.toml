@@ -1,6 +1,6 @@
 [package]
 name = "xvc-test-helper"
-version = "0.3.0"
+version = "0.3.2"
 edition = "2021"
 description = "Unit test helper functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
