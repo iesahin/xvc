@@ -55,17 +55,18 @@
   - [xvc root](./ref/xvc-root.md)
   - [xvc check-ignore](./ref/xvc-check-ignore.md)
 
-# API
+# API 
 
-- [xvc](https://docs.rs/xvc/)
-- [xvc-config](https://docs.rs/xvc-config/)
-- [xvc-core](https://docs.rs/xvc-core/)
-- [xvc-ecs](https://docs.rs/xvc-core/)
-- [xvc-file](https://docs.rs/xvc-file/)
-- [xvc-logging](https://docs.rs/xvc-logging/)
-- [xvc-pipeline](https://docs.rs/xvc-pipeline/)
-- [xvc-storage](https://docs.rs/xvc-storage/)
-- [xvc-walker](https://docs.rs/xvc-walker/)
+- [`xvc`](./api/xvc.md)
+- [`xvc-config`](./api/xvc-config.md)
+- [`xvc-core`](./api/xvc-core.md)
+- [`xvc-ecs`](./api/xvc-ecs.md)
+- [`xvc-file`](./api/xvc-file.md)
+- [`xvc-logging`](./api/xvc-logging.md)
+- [`xvc-pipeline`](./api/xvc-pipeline.md)
+- [`xvc-storage`](./api/xvc-storage.md)
+- [`xvc-walker`](./api/xvc-walker.md)
+
 
 # Architecture
 
