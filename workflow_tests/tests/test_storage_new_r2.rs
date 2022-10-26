@@ -54,7 +54,7 @@ gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passph
 gpg_passphrase =
 guess_mime_type = True
 host_base = {account_id}.r2.cloudflarestorage.com
-host_bucket = {account_id}.r2.cloudflarestorage.com/%(bucket)s/
+host_bucket = %(bucket)s.{account_id}.r2.cloudflarestorage.com
 human_readable_sizes = False
 invalidate_default_index_on_cf = False
 invalidate_default_index_root_on_cf = True
@@ -140,15 +140,16 @@ fn test_storage_new_r2() -> Result<()> {
     let remote_prefix = common::random_dir_name("xvc-storage", None);
 
     let access_key = env::var("R2_ACCESS_KEY_ID")?;
+    let access_key = access_key.trim();
     let secret_key = env::var("R2_SECRET_ACCESS_KEY")?;
+    let secret_key = secret_key.trim();
     let account_id = env::var("R2_ACCOUNT_ID")?;
+    let account_id = account_id.trim();
 
     let config_file_name = write_s3cmd_config(&account_id, &access_key, &secret_key)?;
     watch!(config_file_name);
 
     let s3cmd = |cmd: &str, append: &str| -> String {
-        let acc = access_key.clone();
-        let sec = secret_key.clone();
         let sh_cmd = format!("s3cmd --no-check-md5 --config {config_file_name} {cmd} {append}");
         sh(sh_cmd)
     };
@@ -180,7 +181,7 @@ fn test_storage_new_r2() -> Result<()> {
 
     watch!(out);
     let s3_bucket_list = s3cmd(
-        &format!("ls --recursive 's3://{bucket_name}/'"),
+        &format!("ls --recursive 's3://{bucket_name}'"),
         &format!("| rg {remote_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
     watch!(s3_bucket_list);
