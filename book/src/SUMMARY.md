@@ -55,7 +55,7 @@
   - [xvc root](./ref/xvc-root.md)
   - [xvc check-ignore](./ref/xvc-check-ignore.md)
 
-# API 
+# API
 
 - [xvc](https://docs.rs/xvc/)
 - [xvc-config](https://docs.rs/xvc-config/)
@@ -66,7 +66,6 @@
 - [xvc-pipeline](https://docs.rs/xvc-pipeline/)
 - [xvc-storage](https://docs.rs/xvc-storage/)
 - [xvc-walker](https://docs.rs/xvc-walker/)
-
 
 # Architecture
 
