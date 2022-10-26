@@ -1,7 +1,7 @@
 # xvc
 
 [![codecov](https://codecov.io/gh/iesahin/xvc/branch/master/graph/badge.svg?token=yrcNOA4RTy)](https://codecov.io/gh/iesahin/xvc)
-[![build](https://img.shields.io/github/workflow/status/iesahin/xvc/Rust-CI](https://github.com/iesahin/xvc/actions/workflows/rust.yml)]
+[![build](https://img.shields.io/github/workflow/status/iesahin/xvc/Rust-CI)](https://github.com/iesahin/xvc/actions/workflows/rust.yml)]
 [![crates.io](https://img.shields.io/crates/v/xvc)](https://crates.io/crates/xvc)
 [![docs.rs](https://img.shields.io/docsrs/xvc)](https://docs.rs/xvc/)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
