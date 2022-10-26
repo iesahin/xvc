@@ -1,4 +1,4 @@
-# Introduction and Goals
+# Goals
 
 <!-- Describes the relevant requirements and the driving forces that software -->
 <!-- architects and development team must consider. These include -->
@@ -13,19 +13,19 @@
 <!--  -->
 <!-- -   relevant stakeholders and their expectations -->
 
-Xvc is an CLI MLOps tool to track file, data, pipeline, experiment, model versions. 
+Xvc is an CLI MLOps tool to track file, data, pipeline, experiment, model versions.
 
-It has the following goals: 
+It has the following goals:
 
-- Enable to track non-textual files like data and models in Git. 
-- Enable to get subset of these files. 
+- Enable to track non-textual files like data and models in Git.
+- Enable to get subset of these files.
 - Enable to remove files from workspace temporarily, and retrieve them from cache.
-- Enable to upload and download these files to/from a central server. 
-- Enable users to run pipelines composed of commands. 
-- Be able to invalidate pipelines partially. 
-- Enable to run a pipeline or arbitrary commands as experiments, and store and retrieve them. 
+- Enable to upload and download these files to/from a central server.
+- Enable users to run pipelines composed of commands.
+- Be able to invalidate pipelines partially.
+- Enable to run a pipeline or arbitrary commands as experiments, and store and retrieve them.
 
-## Requirements Overview {#_requirements_overview}
+## Requirements Overview {#\_requirements_overview}
 
 **Contents**
 
@@ -39,9 +39,9 @@ It has the following goals:
 <!-- From the point of view of the end users a system is created or modified -->
 <!-- to improve support of a business activity and/or improve the quality. -->
 
-Xvc users are data and machine learning professionals that need to track large amounts of data. 
-They also want to run arbitrary commands on this data when it changes. 
-Their goal is to produce better machine learning models and better suited data for their problems. 
+Xvc users are data and machine learning professionals that need to track large amounts of data.
+They also want to run arbitrary commands on this data when it changes.
+Their goal is to produce better machine learning models and better suited data for their problems.
 
 **Form**
 
@@ -56,7 +56,7 @@ Their goal is to produce better machine learning models and better suited data f
 <!-- arc42 documentation. -->
 <!--  -->
 
-## Quality Goals {#_quality_goals}
+## Quality Goals {#\_quality_goals}
 
 **Contents**
 
@@ -74,9 +74,9 @@ Their goal is to produce better machine learning models and better suited data f
 
 We have three quality goals:
 
-- Robustness: The system should be robust for basic operations. 
-- Performance: The overall system performance must be within the ballpark of usual commands like `b3sum` or `cp`. 
-- Availability: The system must run on all major operating systems. 
+- Robustness: The system should be robust for basic operations.
+- Performance: The overall system performance must be within the ballpark of usual commands like `b3sum` or `cp`.
+- Availability: The system must run on all major operating systems.
 
 **Motivation**
 
@@ -85,8 +85,8 @@ We have three quality goals:
 <!-- to be very concrete about these qualities, avoid buzzwords. If you as an -->
 <!-- architect do not know how the quality of your work will be judged... -->
 
-Xvc users work with large amounts of data. 
-They want to depend on Xvc for basic operations like tracking file versions, and uploading these to a central location. 
+Xvc users work with large amounts of data.
+They want to depend on Xvc for basic operations like tracking file versions, and uploading these to a central location.
 
 They don't want to wait too long for these operations on common hardware.
 
@@ -96,7 +96,7 @@ They would like to download their data to any system running various operating s
 
 <!-- A table with quality goals and concrete scenarios, ordered by priorities -->
 
-## Stakeholders {#_stakeholders}
+## Stakeholders {#\_stakeholders}
 
 **Contents**
 
@@ -114,8 +114,8 @@ They would like to download their data to any system running various operating s
 <!-- -   have to come up with decisions about the system or its development -->
 <!--  -->
 
-This software is free. 
-There are two main stakeholders: Users and developers. 
+This software is free.
+There are two main stakeholders: Users and developers.
 
 **Motivation**
 
