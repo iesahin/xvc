@@ -73,7 +73,7 @@
 - [Goals](./arch/goals.md)
 - [Xvc ECS](./arch/ecs.md)
 - [Comparisons](./arch/delta.md)
-- [Remotes](./arch/remotes.md)
+- [Storages](./arch/storages.md)
 - [Concepts](./concepts/index.md)
   - [Digest](./concepts/digest.md)
   - [Associated Digest](./concepts/associated-digest.md)
