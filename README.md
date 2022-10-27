@@ -36,7 +36,7 @@ Alternatively, if you have Rust [installed], you can build xvc:
 $ cargo install xvc
 ```
 
-## Quick Start
+## 🏃🏾 Quick Start
 
 Xvc tracks your files and directories on top of Git. To start run the following command in the repository.
 
@@ -61,7 +61,7 @@ It also copies files to content addressed directories under `.xvc/b3`
 Define a file storage to share the files you added.
 
 ```shell
-$ xvc remote new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
+$ xvc storage new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
 ```
 
 You can push the files you added to this remote.
@@ -104,7 +104,7 @@ The above commands define a new step in the pipeline that depends on files in `m
 $ xvc pipeline run --name my-data-update
 ```
 
-You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. More dependency types like database queries, content from URLs, S3 (and compatible) buckets, Bitcoin (or other) wallets, REST and GraphQL results are in the mental backlog.
+You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. More dependency types like database queries, content from URLs, S3 (and compatible) buckets, Bitcoin (or other) wallets, REST and GraphQL results are in my mental backlog.
 
 Please see [xvc.netlify.app](https://xvc.netlify.app) for documentation.
 
