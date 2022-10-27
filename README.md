@@ -10,11 +10,11 @@ A Fast and Robust MLOps Swiss-Army Knife in Rust
 
 ## ⌛ When to use xvc?
 
-- Machine Learning Engineers: When you manage large quantities of _unstructured_ data, like images, documents, audio files. When you create data pipelines on top of this data and want to run these pipelines when the data, code or other dependencies change.
-- Data Engineers: When you want to version data files, and want to track versions across datasets. When you have to provide this data in multiple remote locations, like S3 or local files.
-- Data Scientists: When you want to track which subset of the data you're working with, and how it changes by your operations.
-- Software Engineers: When you have binary artifacts that you use as dependencies and would like to have a `make` alternative that considers _content changes_ rather than timestamps.
-- Everyone: When you have photo, audio, document files to backup on Git, but don't want to copy that huge data to all Git clones. When you want to run a command when any member of these files change.
+- **Machine Learning Engineers**: When you manage large quantities of _unstructured_ data, like images, documents, audio files. When you create data pipelines on top of this data and want to run these pipelines when the data, code or other dependencies change.
+- **Data Engineers**: When you want to version data files, and want to track versions across datasets. When you have to provide this data in multiple remote locations, like S3 or local files.
+- **Data Scientists**: When you want to track which subset of the data you're working with, and how it changes by your operations.
+- **Software Engineers**: When you have binary artifacts that you use as dependencies and would like to have a `make` alternative that considers _content changes_ rather than timestamps.
+- **Everyone**: When you have photo, audio, media, document files to backup on Git, but don't want to copy that huge data to all Git clones. When you want to run a command when any of these files change.
 
 ## ✳️ What is xvc for?
 
@@ -28,13 +28,15 @@ A Fast and Robust MLOps Swiss-Army Knife in Rust
 
 ## 🔽 Installation
 
-You can get the binary files for Linux, macOS and Windows from [releases] page. Copy the file to your path.
+You can get the binary files for Linux, macOS and Windows from [releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and copy the file to your $PATH.
 
 Alternatively, if you have Rust [installed], you can build xvc:
 
 ```shell
 $ cargo install xvc
 ```
+
+[installed]: https://www.rust-lang.org/tools/install
 
 ## 🏃🏾 Quick Start
 
@@ -160,6 +162,4 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 ## ⚠️ Disclaimer
 
 This software is fresh and ambitious. Although I use it and test it close to real world conditions, it didn't go under test of time yet. **Xvc can eat your files and spit them to eternal void!**
-
-Also, the current _bus factor_ is 1. I cannot guarantee _eternal maintenance_ as a mere mortal. 
 
