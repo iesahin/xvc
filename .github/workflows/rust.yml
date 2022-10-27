@@ -119,7 +119,7 @@ jobs:
         run: |
           #strip target/${{ matrix.target }}/release/xvc
           cd target/${{ matrix.target }}/release
-          tar czvf ../../../xvc-${{ matrix.target }}.tar.gz xvc
+          tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
           cd -
       - name: Publish
         uses: softprops/action-gh-release@v1
@@ -163,7 +163,7 @@ jobs:
         run: |
           #strip target/${{ matrix.target }}/release/xvc
           cd target/${{ matrix.target }}/release
-          tar czvf ../../../xvc-${{ matrix.target }}.tar.gz xvc
+          tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
           cd -
       - name: Publish
         uses: softprops/action-gh-release@v1
@@ -206,7 +206,7 @@ jobs:
         run: |
           #strip target/${{ matrix.target }}/release/xvc
           cd target/${{ matrix.target }}/release
-          tar czvf ../../../xvc-${{ matrix.target }}.tar.gz xvc
+          tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
           cd -
       - name: Publish
         uses: softprops/action-gh-release@v1
