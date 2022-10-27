@@ -38,7 +38,7 @@ $ cargo install xvc
 
 [installed]: https://www.rust-lang.org/tools/install
 
-## 🏃🏾 Quick Start
+## 🏃🏾 Quick Star
 
 Xvc tracks your files and directories on top of Git. To start run the following command in the repository.
 
@@ -84,31 +84,28 @@ When you want to access this data later, you can clone the repository and get ba
 $ xvc file pull my-data/
 ```
 
-If you have commands that depend on data or code elements, create a pipeline.
-
-```shell
-$ xvc pipeline new --name update-data
-```
-
-Then define a step in this pipeline to depend on other files.
+If you have commands that depend on data or code elements, Xvc allows to define steps to its default pipeline.
 
 ```shell
 $ xvc pipeline step new --name my-data-update --command 'python3 preprocess.py'
-$ xvc pipeline step dependency --step my-data-update --files my-data/ --files preprocess.py
-$ xvc pipeline step dependency --step my-data-update --regex 'names.txt:/^Name:'
-$ xvc pipeline step dependency --step my-data-update --lines a-long-file.csv::-1000
+$ xvc pipeline step dependency --step my-data-update --files my-data/ \
+                                                     --files preprocess.py \
+                                                     --regex 'names.txt:/^Name:' \
+                                                     --lines a-long-file.csv::-1000
 $ xvc pipeline step output --step-name my-data-update --output-file preprocessed-data.npz
 ```
 
-The above commands define a new step in the pipeline that depends on files in `my-data/` directory, and `preprocess.py`; lines that start with `Name:` in `names.txt`; and the first 1000 lines in `a-long-file.csv`. When _any_ of these conditions change, the step command (`python3 preprocess.py`) will run.
+The above commands define a new step in the `default` pipeline that depends on files in `my-data/` directory, and `preprocess.py`; lines that start with `Name:` in `names.txt`; and the first 1000 lines in `a-long-file.csv`. When _any_ of these change, or the output is missing, the step command (`python3 preprocess.py`) will run.
 
 ```shell
-$ xvc pipeline run --name my-data-update
+$ xvc pipeline run
 ```
 
-You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. More dependency types like database queries, content from URLs, S3 (and compatible) buckets, Bitcoin (or other) wallets, REST and GraphQL results are in my mental backlog.
+If none of the dependencies change, and the output is available the above command will do nothing.
 
-Please see [xvc.netlify.app](https://xvc.netlify.app) for documentation.
+You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. More dependency types like database queries, content from URLs, S3 (and compatible) buckets, REST and GraphQL results are in my mental backlog.
+
+Please check [xvc.netlify.app](https://xvc.netlify.app) for documentation.
 
 ## 🤟 Big Thanks
 
@@ -119,11 +116,11 @@ xvc stands on the following (giant) crates:
 - Xvc uses [rayon] to calculate content hashes of millions of files in parallel.
 - Thanks to [strum], Xvc uses enums extensively and converts almost everything to typed values from strings.
 - Xvc has a deep CLI that has subcommands of subcommands like `xvc storage new s3`, and all these work with minimum bugs thanks to [clap].
-- Xvc uses [rust-s3] to connect to S3 and compatible storage services.
+- Xvc uses [rust-s3] to connect to S3 and compatible storage services. It employs excellent [tokio] for fast async Rust. These cloud storage features can be turned off thanks to Rust conditional compilation. 
 - Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust [crypto] crate, Xvc couldn't detect file changes so fast.
 - Many thanks to small and well built crates, [reflink], [relative-path], [path-absolutize], [glob] and [wax] for file system and glob handling.
-- Thanks to [sad_machine] for providing a State Machine implementation that I used in `xvc pipeline run`. State machine made running pipeline steps in parallel with a clean separation of process states.
-- Thanks to [thiserror] and [anyhow] for making error handling a breeze. These two crates make me feel I'm doing something good for the humanity while handling errors.
+- Thanks to [sad_machine] for providing a State Machine implementation that I used in `xvc pipeline run`. A DAG composed of State Machines made running pipeline steps in parallel with a clean separation of process states.
+- Thanks to [thiserror] and [anyhow] for making error handling a breeze. These two crates make me feel I'm doing something good for the humanity when handling errors.
 - Xvc is split into many crates and owes this organization to [cargo workspaces].
 
 [crossbeam]: https://docs.rs/crossbeam/latest/crossbeam/
@@ -144,6 +141,7 @@ xvc stands on the following (giant) crates:
 [anyhow]: https://docs.rs/anyhow/1.0.66/anyhow/
 [rust-s3]: https://docs.rs/rust-s3/0.32.3/s3/
 [`xvc-ecs`]: https://docs.rs/xvc-ecs/
+[tokio]: https://tokio.rs
 
 And, biggest thanks to Rust designers, developers and contributors. Although I can't see myself expert to appreciate it all, it's a fabulous language and environment to work with.
 
@@ -161,5 +159,5 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 
 ## ⚠️ Disclaimer
 
-This software is fresh and ambitious. Although I use it and test it close to real world conditions, it didn't go under test of time yet. **Xvc can eat your files and spit them to eternal void!**
+This software is fresh and ambitious. Although I use it and test it close to real world conditions, it didn't go under test of time. **Xvc can eat your files and spit them to eternal void!**
 
