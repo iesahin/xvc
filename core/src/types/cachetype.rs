@@ -20,7 +20,7 @@ use xvc_ecs::persist;
 /// Cache type is set at the file level.
 /// You can configure one file to use copy if it will be written, and a set of directories as
 /// symlink if they will be read only.
-/// `xvc data add` and `xvc data checkout` has options to denote cache type.
+/// `xvc file add` and `xvc file checkout` has options to denote cache type.
 ///
 /// Default [CacheType]  can be configured with `cache.type` option.
 /// [CacheType]s for files are stored in `cache-type` BStore.

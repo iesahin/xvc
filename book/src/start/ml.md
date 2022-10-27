@@ -62,10 +62,10 @@ $ cd machine-learning-project
 $ xvc init
 ```
 
-She was able to track data files. 
+She was able to track files. 
 
 ```shell
-$ xvc data track data/
+$ xvc file track data/
 ```
 
 She decided to create a preprocessing pipeline for all data she has.
@@ -94,7 +94,7 @@ $ xvc pipeline run
 When this command is run to get an updated `data/preprocessed` directory, she commits the changes in all data.
 
 ```shell
-$ xvc data commit
+$ xvc file commit
 ```
 
 Without any parameters, all changed data files are cached. 
