@@ -108,9 +108,9 @@ text_or_binary = "auto"
 no_parallel = false
 
 [data.list]
-# columns for xvc data list command. you can reorder or remove columns
+# columns for xvc file list command. you can reorder or remove columns
 columns = "cache-type,cache-status,timestamp,size,name,content-hash"
-# order for xvc data list. one of name, size, timestamp with asc or desc.
+# order for xvc file list. one of name, size, timestamp with asc or desc.
 sort = "name-desc"
 
 [pipeline]

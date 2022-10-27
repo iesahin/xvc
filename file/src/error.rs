@@ -5,11 +5,13 @@ use std::io;
 use std::path::PathBuf;
 use thiserror::Error as ThisError;
 
+/// Error messages for xvc-file
+#[allow(missing_docs)]
 #[derive(ThisError, Debug)]
 pub enum Error {
     #[error("Sorry. {0} is not implemented yet")]
     Todo(&'static str),
-    #[error("General Xvc Data Error. {source}")]
+    #[error("General Xvc File Error. {source}")]
     AnyhowError {
         #[from]
         source: anyhow::Error,
