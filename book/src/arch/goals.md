@@ -28,4 +28,3 @@ They want to depend on Xvc for basic operations like tracking file versions, and
 They don't want to wait too long for these operations on common hardware.
 
 They would like to download their data to any system running various operating systems.
-
