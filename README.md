@@ -104,13 +104,9 @@ The above commands define a new step in the pipeline that depends on files in `m
 $ xvc pipeline run --name my-data-update
 ```
 
-You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. More dependency types like database queries, content from URLs, S3 (or compatible) buckets, Bitcoin (or other) wallets, REST and GraphQL results are in the backlog.
+You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. More dependency types like database queries, content from URLs, S3 (and compatible) buckets, Bitcoin (or other) wallets, REST and GraphQL results are in the mental backlog.
 
-Please see [docs.xvc.ai] for documentation.
-
-## ⚠️ Disclaimer
-
-This software is fresh and ambitious. Although I use it and test it close to real world conditions, it didn't go under test of time yet. **Xvc can eat your files and spit it to eternal void!**
+Please see [xvc.netlify.app](https://xvc.netlify.app) for documentation.
 
 ## 🤟 Big Thanks
 
@@ -145,7 +141,7 @@ xvc stands on the following (giant) crates:
 [thiserror]: https://docs.rs/thiserror/latest/thiserror/
 [anyhow]: https://docs.rs/anyhow/1.0.66/anyhow/
 [rust-s3]: https://docs.rs/rust-s3/0.32.3/s3/
-[`xvc-ecs`]: https://docs.rs/xvc-ecs/0.3.0/xvc_ecs/
+[`xvc-ecs`]: https://docs.rs/xvc-ecs/
 
 And, biggest thanks to Rust designers, developers and contributors. Although I can't see myself expert to appreciate it all, it's a fabulous language and environment to work with.
 
@@ -158,5 +154,12 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 
 - Star this repo. I feel very happy for five minutes for every star and send my best wishes to you.
 - Really use xvc, tell me how it works for you, read the documentation, report bugs, dream about features. The greatest contribution might be this now.
-- Write a new test with your workflow to increase testing coverage. They are under `lib/tests/` now but I'm planning to move them to a separate crate.
+- Write a new test with your workflow to increase testing coverage. They are under `workflow_tests` crate.
 - [Be my guest](https://www.airbnb.com/users/show/3595069) when you visit Bursa. I usually don't have time to meet with every guest in person but if you let me know _you_ are coming, I'd like to arrange something. Also, when you visit Galata tower in İstanbul, which is close to where I live, you can buy me a coffee.
+
+## ⚠️ Disclaimer
+
+This software is fresh and ambitious. Although I use it and test it close to real world conditions, it didn't go under test of time yet. **Xvc can eat your files and spit them to eternal void!**
+
+Also, the current _bus factor_ is 1. I cannot guarantee _eternal maintenance_ as a mere mortal. 
+
