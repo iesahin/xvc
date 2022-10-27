@@ -1,4 +1,5 @@
 #![warn(missing_docs)]
+#![forbid(unsafe_code)]
 //! The main dispatching functions for the entire XVC CLI
 use config::XvcVerbosity;
 use xvc_core::XvcRoot;

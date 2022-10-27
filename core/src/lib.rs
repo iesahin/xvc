@@ -1,4 +1,5 @@
 #![warn(missing_docs)]
+#![forbid(unsafe_code)]
 //! Xvc Core Library for common operations
 pub mod check_ignore;
 pub mod error;

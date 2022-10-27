@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+#![forbid(unsafe_code)]
 mod common;
 
 pub mod checkout;

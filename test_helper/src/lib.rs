@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+#![forbid(unsafe_code)]
 use log::LevelFilter;
 use rand::distributions::Alphanumeric;
 use rand::Rng;
