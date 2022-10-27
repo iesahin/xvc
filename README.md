@@ -38,7 +38,7 @@ $ cargo install xvc
 
 [installed]: https://www.rust-lang.org/tools/install
 
-## 🏃🏾 Quick Star
+## 🏃🏾 Quick Start
 
 Xvc tracks your files and directories on top of Git. To start run the following command in the repository.
 
