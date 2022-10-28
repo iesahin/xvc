@@ -4,10 +4,10 @@
 - [Installation](./02-installation.md)
   - [Configuration](./021-configuration.md)
 - [Get Started](./start/index.md)
+  - [Xvc for Everyone](./start/everyone.md)
   - [Xvc for Data](./start/data.md)
   - [Xvc for Machine Learning](./start/ml.md)
   - [Xvc for Software Developers](./start/developer.md)
-  - [Xvc for Everyone](./start/everyone.md)
 
 # Guides
 
@@ -28,8 +28,8 @@
   - [xvc pipeline new](./ref/xvc-pipeline-new.md)
   - [xvc pipeline list](./ref/xvc-pipeline-list.md)
   - [xvc pipeline step](./ref/xvc-pipeline-step.md)
-    - [xvc pipeline step dependency](./ref/xvc-pipeline-step-dependency.md)
     - [xvc pipeline step new](./ref/xvc-pipeline-step-new.md)
+    - [xvc pipeline step dependency](./ref/xvc-pipeline-step-dependency.md)
     - [xvc pipeline step output](./ref/xvc-pipeline-step-output.md)
     - [xvc pipeline step show](./ref/xvc-pipeline-step-show.md)
     - [xvc pipeline step update](./ref/xvc-pipeline-step-update.md)
