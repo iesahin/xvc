@@ -82,9 +82,10 @@ pub fn default_project_config(use_git: bool) -> String {
 [core]
 # The repository id. Please do not delete or change it. (XVC)
 guid = "{guid}"
+# default verbosity level
+verbosity = "error"
 # whether to integrate with Git
 use_git = {use_git}
-verbosity = "error"
 
 [cache]
 # The cache type for XVC. It may take copy, hardlink, softlink, reflink as values
@@ -93,9 +94,9 @@ location = "{guid}"
 algorithm = "blake3"
 path = "cache"
 
-[data]
+[file]
 
-[data.add]
+[file.add]
 # true => don't store the file content in cache when added
 no_commit = false
 # true => don't cache the file hash results for quick retrieval
@@ -107,7 +108,7 @@ text_or_binary = "auto"
 # whether to add files/directories serial only
 no_parallel = false
 
-[data.list]
+[file.list]
 # columns for xvc file list command. you can reorder or remove columns
 columns = "cache-type,cache-status,timestamp,size,name,content-hash"
 # order for xvc file list. one of name, size, timestamp with asc or desc.
