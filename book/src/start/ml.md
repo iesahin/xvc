@@ -2,23 +2,41 @@
 
 _Xvc Getting Started pages are written as stories and dialogues between tortoise (🐢) and hare (🐇)._
 
-Ah, hello tortoise. How are you? I began to work as an machine learning engineer, you know?
+🐇  Ah, hello tortoise. How are you? I began to work as an machine learning engineer, you know?
 
-You're quick as always, hare. How is your job going?
+🐢 You're quick as always, hare. How is your job going?
 
-It's good. We have lots and lots of data. We have models. We have script to create those models. We have notebooks that we make experiments. That's all good stuff. We'll solve the hare intelligence problem.
+🐇 It's good. We have lots and lots of data. We have models. We have script to create those models. We have notebooks that we make experiments. That's all good stuff. We'll solve the hare intelligence problem.
 
-That sounds cool. Aren't you losing yourself in all these, though?
+🐢 That sounds cool. Aren't you losing yourself in all these, though?
 
-Yeah, time to time we have those moments. Some models work with some data, some experiments require some kind of preprocessing, some data changed since we started to work with it and now we have multiple versions. All looks cool until you zoom in.
+🐇 Yeah, time to time we have those moments. Some models work with some data, some experiments require some kind of preprocessing, some data changed since we started to work with it and now we have multiple versions. All looks cool until you zoom in.
 
-Ah, I see. I recently heard a tool called Xvc. It may be of use to you.
+🐢 Ah, I see. I recently heard a tool called Xvc. It may be of use to you.
 
-What does it do?
+🐇 What does it do?
 
-It keeps track of all these stuff you mentioned. Data, models, scripts. It also can detect when data changed and run the scripts associated with that data.
+🐢 It keeps track of all these stuff you mentioned. Data, models, scripts. It also can detect when data changed and run the scripts associated with that data.
 
-That sound something we need. My boss wanted me to build a pipeline for cat pictures. He likes to see the cats that resemble rabbits. Every time a
+🐇 That sound something we need. My boss wanted me to build a pipeline for cat pictures. He likes to see the cats that resemble rabbits. Every time he finds a new cat picture he likes, we have to update the model. 
+
+🐢 He must have lots of cat pictures. 
+
+🐇 Ah, yeah. He has. He sometimes find higher resolution ones and updates the older pictures. He has terabytes of cat pictures. 
+
+🐢 How do you keep track of those versions?
+
+🐇 We don't. We have a disk for cat pictures. He puts everything there and we train models with it. 
+
+🐢 You can use Xvc to version those files. You can go back and forth in time if you use Git. 
+
+🐇 I know, but Git is for code files, right?
+
+🐢 Yeah, it keeps all history in its objects, so better to keep that terabytes of images away from Git. But Xvc helps there. It tracks contents of data files separately from Git. 
+
+🐇 You know, I'm not interested in details. Tell me how this works.
+
+🐢 Ok, come 
 
 Once upon a time there was a machine learning engineer.
 She was creating models with her data.
