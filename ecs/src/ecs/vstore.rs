@@ -113,14 +113,10 @@ where
     }
 
     /// Convert to an [XvcStore].
-    /// It inserts all elements in this vector with XvcStore::insert.
-    ///
-    /// TODO: This is buggy. See https://github.com/iesahin/xvc/issues/45
+    /// Uses [XvcStore::from_event_logs] to create a new store self.previous and self.current
+    /// clones.
     pub fn to_store(&self) -> Result<XvcStore<T>> {
-        let mut store = XvcStore::<T>::new();
-        self.vec.iter().for_each(|(e, v)| {
-            store.insert(*e, v.clone());
-        });
+        let store = XvcStore::from_event_logs(self.previous.clone(), self.current.clone());
         Ok(store)
     }
 }

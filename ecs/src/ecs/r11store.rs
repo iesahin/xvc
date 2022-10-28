@@ -126,12 +126,6 @@ where
         self.left.remove(entity);
         self.right.remove(entity);
     }
-
-    /// merges another store by appending its stores with [XvcStore::append]
-    pub fn append(&mut self, other: &R11Store<T, U>) -> Result<()> {
-        self.left.append(&other.left)?;
-        self.right.append(&other.right)
-    }
 }
 
 impl<T, U> R11Store<T, U>

@@ -69,15 +69,32 @@ where
 {
     /// Creates an empty store with empty maps and event logs.
     pub fn new() -> Self {
+        Self::from_event_logs(EventLog::<T>::new(), EventLog::<T>::new())
+    }
+
+    /// Creates a store from previous and current [EventLog].
+    ///
+    /// This is used when conversions between stores are required.
+    /// When elements are inserted with [XvcStore::insert], they are added to `current` and
+    /// serialized to disk over and over.
+    /// See https://github.com/iesahin/xvc/issues/45
+    ///
+    pub fn from_event_logs(previous: EventLog<T>, current: EventLog<T>) -> Self {
+        let map = Self::build_map(&previous, &current);
+        let entity_index = Self::build_index(&map);
         Self {
-            map: BTreeMap::<XvcEntity, T>::new(),
-            entity_index: BTreeMap::new(),
-            previous: EventLog::<T>::new(),
-            current: EventLog::<T>::new(),
+            map,
+            entity_index,
+            previous,
+            current,
         }
     }
 
     /// Inserts an entity into the current event log, the map and the index.
+    ///
+    /// Note that this shouldn't be used in store conversions (from [crate::VStore] or
+    /// [crate::HStore]). This function adds events to `current` set, and these are serialized.
+    /// See https://github.com/iesahin/xvc/issues/45
     pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
         self.current.add(entity, value.clone());
 
@@ -118,21 +135,17 @@ where
         Option::<T>::None
     }
 
-    /// Adds the `other` store to this by iterating over elements.
-    ///
-    /// It uses [Self::insert] for inserting all elements.
-    /// This means all elements will have distinct [Event::Add] values.
-    pub fn append(&mut self, other: &Self) -> Result<()> {
-        other.iter().for_each(|(e, v)| {
-            self.insert(*e, v.clone());
-        });
-        Ok(())
-    }
-
-    fn build_map(events: &EventLog<T>) -> BTreeMap<XvcEntity, T> {
+    fn build_map(previous: &EventLog<T>, current: &EventLog<T>) -> BTreeMap<XvcEntity, T> {
         let mut map = BTreeMap::<XvcEntity, T>::new();
 
-        for event in events.iter() {
+        for event in previous.iter() {
+            match event {
+                Event::Add { entity, value } => map.insert(*entity, value.clone()),
+                Event::Remove { entity } => map.remove(&entity),
+            };
+        }
+
+        for event in current.iter() {
             match event {
                 Event::Add { entity, value } => map.insert(*entity, value.clone()),
                 Event::Remove { entity } => map.remove(&entity),
@@ -161,15 +174,8 @@ where
     /// Loads the timestamp named [EventLog] files from `dir` and replays them to build maps.
     pub fn from_dir(dir: &Path) -> Result<Self> {
         let previous = EventLog::<T>::from_dir(dir)?;
-        let map = Self::build_map(&previous);
-        let entity_index = Self::build_index(&map);
-
-        Ok(Self {
-            map,
-            entity_index,
-            previous,
-            current: EventLog::new(),
-        })
+        let current = EventLog::<T>::new();
+        Ok(Self::from_event_logs(previous, current))
     }
 
     /// Saves the current [EventLog] to the directory.
