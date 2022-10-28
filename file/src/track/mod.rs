@@ -62,7 +62,7 @@ use xvc_ecs::{R11Store, Storable};
     Copy,
 )]
 pub struct DataTextOrBinary(TextOrBinary);
-conf!(DataTextOrBinary, "data.add.text_or_binary");
+conf!(DataTextOrBinary, "file.add.text_or_binary");
 persist!(DataTextOrBinary, "data-text-or-binary");
 
 impl DataTextOrBinary {
@@ -102,9 +102,9 @@ impl UpdateFromXvcConfig for TrackCLI {
         let cache_type = self
             .cache_type
             .unwrap_or_else(|| CacheType::from_conf(conf));
-        let no_commit = self.no_commit || conf.get_bool("data.add.no_commit")?.option;
-        let force = self.force || conf.get_bool("data.add.force")?.option;
-        let no_parallel = self.no_parallel || conf.get_bool("data.add.no_parallel")?.option;
+        let no_commit = self.no_commit || conf.get_bool("file.add.no_commit")?.option;
+        let force = self.force || conf.get_bool("file.add.force")?.option;
+        let no_parallel = self.no_parallel || conf.get_bool("file.add.no_parallel")?.option;
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(
             || Some(DataTextOrBinary::from_conf(conf)),
             |v| Some(v.to_owned()),

@@ -44,7 +44,7 @@ impl FromStr for ListColumns {
     }
 }
 
-conf!(ListColumns, "data.list.columns");
+conf!(ListColumns, "file.list.columns");
 
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
 #[strum(serialize_all = "kebab-case")]
@@ -57,7 +57,7 @@ enum ListSortCriteria {
     TimestampAsc,
     TimestampDesc,
 }
-conf!(ListSortCriteria, "data.list.sort");
+conf!(ListSortCriteria, "file.list.sort");
 
 #[derive(Debug, Clone)]
 struct ListRow {

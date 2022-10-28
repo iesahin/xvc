@@ -55,7 +55,7 @@ impl UpdateFromXvcConfig for CheckoutCLI {
         let cache_type = self
             .cache_type
             .unwrap_or_else(|| CacheType::from_conf(conf));
-        let no_parallel = self.no_parallel || conf.get_bool("data.add.no_parallel")?.option;
+        let no_parallel = self.no_parallel || conf.get_bool("file.add.no_parallel")?.option;
 
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(
             || Some(DataTextOrBinary::from_conf(conf)),
