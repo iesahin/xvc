@@ -15,6 +15,7 @@ on:
 jobs:
   coverage:
     name: Test and Coverage
+    if: github.actor == 'iesahin'
     runs-on: ubuntu-latest
     timeout-minutes: 50
 
@@ -28,9 +29,9 @@ jobs:
           #   rust: beta
           - build: nightly
             rust: nightly
-              # test-args: --all-features --no-fail-fast
-            # we don't use --all-features, remote tests are run with feature flags
-            test-args: --no-fail-fast
+            test-args: --all-features --no-fail-fast
+            ## for submitters other than me, I'll add another job here.
+              ## test-args: --no-fail-fast
             benches: true
             coverage: true
 
