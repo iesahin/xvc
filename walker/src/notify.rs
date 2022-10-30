@@ -1,3 +1,9 @@
+//! A libnotify based file system notification module that considers ignore rules.
+//!
+//! This module uses [notify] crate to watch file system events.
+//! It filters relevant events, and also ignores the events from ignored paths.
+//! It defines [PathEvent] as a simple version of [notify::EventKind].
+//! It defines [PathEventHandler] that handles events from [notify::EventHandler].
 use crate::{
     check_ignore,
     error::{Error, Result},
@@ -11,11 +17,29 @@ use xvc_logging::watch;
 use crossbeam_channel::{bounded, Receiver, Sender};
 use log::{debug, warn};
 
+/// An walker-relevant event for changes in a directory.
+/// It packs newer [std::fs::Metadata] if there is.
 #[derive(Debug)]
 pub enum PathEvent {
-    Create { path: PathBuf, metadata: Metadata },
-    Update { path: PathBuf, metadata: Metadata },
-    Delete { path: PathBuf },
+    /// Emitted when a new `path` is created with `metadata`.
+    Create {
+        /// The created path
+        path: PathBuf,
+        /// The new metadata
+        metadata: Metadata,
+    },
+    /// Emitted after a new write to `path`.
+    Update {
+        /// Updated path
+        path: PathBuf,
+        /// New metadata
+        metadata: Metadata,
+    },
+    /// Emitted when [PathBuf] is deleted.
+    Delete {
+        /// Deleted path
+        path: PathBuf,
+    },
 }
 
 struct PathEventHandler {
