@@ -34,6 +34,20 @@ jobs:
               ## test-args: --no-fail-fast
             benches: true
             coverage: true
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DIGITAL_OCEAN_ACCESS_KEY_ID: ${{ secrets.DIGITAL_OCEAN_ACCESS_KEY_ID }}
+      DIGITAL_OCEAN_SECRET_ACCESS_KEY: ${{secrets.DIGITAL_OCEAN_SECRET_ACCESS_KEY }}
+      WASABI_ACCESS_KEY_ID: ${{ secrets.WASABI_ACCESS_KEY_ID }}
+      WASABI_SECRET_ACCESS_KEY: ${{ secrets.WASABI_SECRET_ACCESS_KEY }}
+      GCS_ACCESS_KEY_ID: ${{ secrets.GCS_ACCESS_KEY_ID }}
+      GCS_SECRET_ACCESS_KEY: ${{ GCS_SECRET_ACCESS_KEY }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+      MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
 
     steps:
       - name: Checkout
