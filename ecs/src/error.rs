@@ -100,5 +100,5 @@ impl Error {
     }
 }
 
-/// Result type for Xvc ECS types, that may return [Error]
+/// Result type for Xvc ECS functions that may return [Error]
 pub type Result<T> = std::result::Result<T, Error>;
