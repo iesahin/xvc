@@ -36,7 +36,7 @@ fn test_storage_new_minio() -> Result<()> {
     let xvc_root = create_directory_hierarchy()?;
     let endpoint = "http://emresult.com:9000";
     let bucket_name = "one";
-    let storage_prefix = common::random_dir_name("xvc", None);
+    let remote_prefix = common::random_dir_name("xvc", None);
     let region = "us-east-1";
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
     let local_test_dir_str = local_test_dir.to_string_lossy().to_string();
@@ -73,8 +73,8 @@ fn test_storage_new_minio() -> Result<()> {
         endpoint,
         "--bucket-name",
         bucket_name,
-        "--storage-prefix",
-        &storage_prefix,
+        "--remote-prefix",
+        &remote_prefix,
         "--region",
         region,
     ])?;
