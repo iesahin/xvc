@@ -101,7 +101,7 @@ fn test_storage_new_minio() -> Result<()> {
     let push_result = x(&["file", "push", "--to", "minio-storage", the_file])?;
     watch!(push_result);
 
-    let file_list = sh(format!("mc ls -r xvc/one/{storage_prefix} | rg 0.bin"));
+    let file_list = sh(format!("mc ls -r xvc/one/{remote_prefix} | rg 0.bin"));
     watch!(file_list);
 
     // The file should be in:

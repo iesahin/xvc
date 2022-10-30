@@ -71,7 +71,7 @@ fn test_storage_new_s3() -> Result<()> {
 
     watch!(out);
 
-    let s3_bucket_list = sh(format!("aws s3 ls --recursive 's3://{bucket_name}/' | rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"));
+    let s3_bucket_list = sh(format!("aws s3 ls --recursive 's3://{bucket_name}/' | rg {remote_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"));
     watch!(s3_bucket_list);
     assert!(s3_bucket_list.len() > 0);
 
@@ -83,7 +83,7 @@ fn test_storage_new_s3() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
     let file_list_before = sh(format!(
-        "aws s3 ls --recursive {bucket_name} | rg {storage_prefix} | rg 0.bin"
+        "aws s3 ls --recursive {bucket_name} | rg {remote_prefix} | rg 0.bin"
     ));
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
@@ -91,7 +91,7 @@ fn test_storage_new_s3() -> Result<()> {
     watch!(push_result);
 
     let file_list_after = sh(format!(
-        "aws s3 ls --recursive {bucket_name} | rg {storage_prefix} | rg 0.bin"
+        "aws s3 ls --recursive {bucket_name} | rg {remote_prefix} | rg 0.bin"
     ));
     watch!(file_list_after);
 
