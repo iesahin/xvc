@@ -1,8 +1,10 @@
+//! An absolute path type to ensure that we don't use relative paths.
 use std::ffi::OsString;
 use std::fmt::Display;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 
+/// A specialized path type for absolute paths.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct AbsolutePath(PathBuf);
 
@@ -29,10 +31,12 @@ impl Display for AbsolutePath {
 }
 
 impl AbsolutePath {
+    /// Convert to OsString by cloning the inner value
     pub fn into_os_string(&self) -> OsString {
         self.0.clone().as_os_str().to_os_string()
     }
 
+    /// Get reference to inner value
     pub fn as_path(&self) -> &Path {
         &self.0
     }
