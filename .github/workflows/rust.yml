@@ -54,7 +54,7 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Install required packages
-        run: sudo apt install -y inotify-tools ripgrep
+        run: sudo apt install -y inotify-tools ripgrep s3cmd
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
