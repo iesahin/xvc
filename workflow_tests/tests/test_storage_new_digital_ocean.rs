@@ -35,7 +35,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc";
-    let storage_prefix = common::random_dir_name("xvc-storage", None);
+    let remote_prefix = common::random_dir_name("xvc-storage", None);
 
     let access_key = env::var("DIGITAL_OCEAN_ACCESS_KEY_ID")?;
     let secret_key = env::var("DIGITAL_OCEAN_SECRET_ACCESS_KEY")?;
@@ -67,8 +67,8 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         "do-storage",
         "--bucket-name",
         bucket_name,
-        "--storage-prefix",
-        &storage_prefix,
+        "--remote-prefix",
+        &remote_prefix,
         "--region",
         &region,
     ])?;
