@@ -1,4 +1,6 @@
-//! Error codes and messages for the Xvc ECS crate
+//! Error codes and messages for Xvc ECS
+//!
+//! You can use [Error] values for various types of errors.
 use log::{debug, error, info, trace, warn};
 
 use std::ffi::OsString;
@@ -63,7 +65,6 @@ pub enum Error {
     CannotFindKeyInStore { key: usize },
     #[error("Internal Store Conversion Error")]
     StoreConversionError,
-    //
     #[error("Can initialize {object} only once")]
     CanInitializeOnlyOnce { object: String },
 }
