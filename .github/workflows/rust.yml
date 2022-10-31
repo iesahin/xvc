@@ -29,9 +29,10 @@ jobs:
           #   rust: beta
           - build: nightly
             rust: nightly
-            test-args: --all-features --no-fail-fast
+            ## test-args: --all-features --no-fail-fast
             ## for submitters other than me, I'll add another job here.
-              ## test-args: --no-fail-fast
+            ## test-args: --no-fail-fast
+            test-args: --all-features
             benches: true
             coverage: true
     env:
@@ -60,7 +61,7 @@ jobs:
       - name: Write the private key file for one.emresult.com connection
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
       - name: Write an ssh config to allow connection
-        run: echo "Host *\n\tStrictHostKeyChecking no" >> ~/.ssh/config && chmod 400 ~/.ssh/config
+        run: echo "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config && chmod 400 ~/.ssh/config
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
