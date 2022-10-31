@@ -4,7 +4,6 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use common::run_in_temp_xvc_dir;
-use rand;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
