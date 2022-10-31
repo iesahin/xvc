@@ -49,12 +49,9 @@ fn test_storage_new_generic_rsync() -> Result<()> {
         xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
     };
 
-    watch!(url);
-    watch!(storage_dir_name);
     let delete_dir = sh(format!(
         "ssh {url} 'test -e {storage_dir_name} && rm -rf {storage_dir_name}'"
     ));
-    watch!(delete_dir);
 
     let out = x(&[
         "storage",
