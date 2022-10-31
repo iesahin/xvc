@@ -39,7 +39,7 @@ fn test_storage_new_s3() -> Result<()> {
 
     let access_key = env::var("AWS_ACCESS_KEY_ID")?;
     let secret_key = env::var("AWS_SECRET_ACCESS_KEY")?;
-    let region = env::var("AWS_DEFAULT_REGION").unwrap_or("us-east-1".to_string());
+    let region = "eu-central-1";
 
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];
@@ -66,7 +66,7 @@ fn test_storage_new_s3() -> Result<()> {
         "--remote-prefix",
         &remote_prefix,
         "--region",
-        &region,
+        region,
     ])?;
 
     watch!(out);
