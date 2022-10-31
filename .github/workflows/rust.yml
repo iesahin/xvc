@@ -48,6 +48,7 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
       MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+      XVC_TEST_ONE_EMRESULT_COM_KEY: $ {{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
 
     steps:
       - name: Checkout
@@ -55,6 +56,9 @@ jobs:
 
       - name: Install required packages
         run: sudo apt install -y inotify-tools ripgrep s3cmd
+
+      - name: Write the private key file for one.emresult.com connection
+        run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
