@@ -29,10 +29,10 @@ jobs:
           #   rust: beta
           - build: nightly
             rust: nightly
-            ## test-args: --all-features --no-fail-fast
+            test-args: --all-features --no-fail-fast
             ## for submitters other than me, I'll add another job here.
-            ## test-args: --no-fail-fast
-            test-args: --all-features
+            # test-args: --no-fail-fast
+            # test-args: --all-features
             benches: true
             coverage: true
     env:
@@ -64,8 +64,8 @@ jobs:
         run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; chmod 400 $HOME/.ssh/config
       - name: List .ssh contents
         run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
-      - name: Test the connection
-        run: ssh xvc-test@emresult.com 'ls'
+      # - name: Test the connection
+      #   run: ssh xvc-test@emresult.com 'ls'
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
