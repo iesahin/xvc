@@ -42,6 +42,7 @@ pub enum PathEvent {
     },
 }
 
+/// A struct that handles [notify::Event]s considering also [IgnoreRules]
 struct PathEventHandler {
     sender: Sender<PathEvent>,
     ignore_rules: IgnoreRules,
@@ -136,18 +137,20 @@ impl PathEventHandler {
     }
 }
 
+/// Create a [notify::RecommendedWatcher] and a [crossbeam_channel::Receiver] to receive
+/// [PathEvent]s. It creates the channel and [PathEventHandler] with its [Sender], then returns the
+/// [Receiver] for consumption.
+///
+/// Paths ignored by `ignore_rules` do not emit any events.
 pub fn make_watcher(
     ignore_rules: IgnoreRules,
 ) -> Result<(RecommendedWatcher, Receiver<PathEvent>)> {
     let (sender, receiver) = bounded(10000);
     let root = ignore_rules.root.clone();
-    watch!(ignore_rules);
     let mut watcher = notify::recommended_watcher(PathEventHandler {
         ignore_rules,
         sender,
     })?;
     watcher.watch(&root, RecursiveMode::Recursive)?;
-    watch!(watcher);
-    watch!(receiver);
     Ok((watcher, receiver))
 }
