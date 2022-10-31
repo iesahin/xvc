@@ -62,6 +62,8 @@ jobs:
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
       - name: Write an ssh config to allow connection
         run: echo 'Host *\n\tStrictHostKeyChecking no\n' >> $HOME/.ssh/config && chmod 400 $HOME/.ssh/config
+      - name: Test the connection
+        run: ssh xvc-test@emresult.com 'ls'
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
