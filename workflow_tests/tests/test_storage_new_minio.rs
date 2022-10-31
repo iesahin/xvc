@@ -15,7 +15,7 @@ use xvc_test_helper::{create_directory_tree, generate_filled_file};
 fn write_s3cmd_config(access_key: &str, secret_key: &str) -> Result<String> {
     let config_file_name = env::temp_dir().join(format!(
         "{}.cfg",
-        common::random_dir_name("wasabi-config", None)
+        common::random_dir_name("minio-config", None)
     ));
     let config = format!(
         r#"[default]
