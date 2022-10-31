@@ -61,7 +61,7 @@ jobs:
       - name: Write the private key file for one.emresult.com connection
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
       - name: Write an ssh config to allow connection
-        run: echo 'Host *' >> $HOME/.ssh/config ; echo "\tStrictHostKeyChecking no\n" >> $HOME/.ssh/config ; chmod 400 $HOME/.ssh/config
+        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; chmod 400 $HOME/.ssh/config
       - name: List .ssh contents
         run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
       - name: Test the connection
