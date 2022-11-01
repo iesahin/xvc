@@ -1,6 +1,6 @@
+//! Xvc Core Library for common operations
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
-//! Xvc Core Library for common operations
 pub mod aliases;
 pub mod check_ignore;
 pub mod error;

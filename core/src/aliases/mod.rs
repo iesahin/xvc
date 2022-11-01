@@ -1,8 +1,7 @@
-use crate::error::{Error, Result};
+//! Print command aliases to be sourced in shells.
+use crate::error::Result;
 use clap::Parser;
 use crossbeam_channel::Sender;
-use path_absolutize::Absolutize;
-use relative_path::RelativePath;
 use xvc_logging::XvcOutputLine;
 
 #[derive(Debug, Parser)]
@@ -12,13 +11,13 @@ use xvc_logging::XvcOutputLine;
 ///
 /// You can use
 ///
-/// ```
+/// ```shell
 /// $(xvc aliases)
 /// ```
 ///
 /// in these files, or edit after redirecting like
 ///
-/// ```
+/// ```shell
 /// $ xvc alias >> ~/.zsh_aliases
 ///
 /// ```
