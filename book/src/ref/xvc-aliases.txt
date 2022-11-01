@@ -1,4 +1,4 @@
-xvc-aliases 
+xvc-aliases
 Print command aliases to be sourced in shell files
 
 USAGE:

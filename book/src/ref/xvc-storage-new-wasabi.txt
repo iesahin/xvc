@@ -1,4 +1,4 @@
-xvc-storage-new-wasabi 
+xvc-storage-new-wasabi
 Add a new Wasabi remote
 
 USAGE:
@@ -10,9 +10,9 @@ OPTIONS:
 
         --endpoint <ENDPOINT>
             Endpoint for the server, complete with the region if there is
-            
+
             e.g. for eu-central-1 region, use s3.eu-central-1.wasabisys.com as the endpoint.
-            
+
             [default: s3.wasabisys.com]
 
     -h, --help
@@ -20,10 +20,10 @@ OPTIONS:
 
     -n, --name <NAME>
             Name of the remote
-            
+
             This must be unique among all remotes of the project
 
         --storage-prefix <STORAGE_PREFIX>
             You can set a directory in the bucket with this prefix
-            
+
             [default: ]
