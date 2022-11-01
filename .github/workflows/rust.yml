@@ -31,16 +31,41 @@ jobs:
             rust: nightly
             test-args: --all-features --no-fail-fast
             ## for submitters other than me, I'll add another job here.
-              ## test-args: --no-fail-fast
+            # test-args: --no-fail-fast
+            # test-args: --all-features
             benches: true
             coverage: true
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DIGITAL_OCEAN_ACCESS_KEY_ID: ${{ secrets.DIGITAL_OCEAN_ACCESS_KEY_ID }}
+      DIGITAL_OCEAN_SECRET_ACCESS_KEY: ${{ secrets.DIGITAL_OCEAN_SECRET_ACCESS_KEY }}
+      WASABI_ACCESS_KEY_ID: ${{ secrets.WASABI_ACCESS_KEY_ID }}
+      WASABI_SECRET_ACCESS_KEY: ${{ secrets.WASABI_SECRET_ACCESS_KEY }}
+      GCS_ACCESS_KEY_ID: ${{ secrets.GCS_ACCESS_KEY_ID }}
+      GCS_SECRET_ACCESS_KEY: ${{ secrets.GCS_SECRET_ACCESS_KEY }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+      MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+      XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v1
 
       - name: Install required packages
-        run: sudo apt install -y inotify-tools
+        run: sudo apt install -y inotify-tools ripgrep s3cmd
+
+      - name: Write the private key file for one.emresult.com connection
+        run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
+      - name: Write an ssh config to allow connection
+        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; chmod 400 $HOME/.ssh/config
+      - name: List .ssh contents
+        run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
+      # - name: Test the connection
+      #   run: ssh xvc-test@emresult.com 'ls'
 
       - name: Install rust
         uses: actions-rs/toolchain@v1

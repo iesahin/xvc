@@ -4,7 +4,6 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use common::run_in_temp_xvc_dir;
-use rand;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -147,8 +146,6 @@ fn test_storage_new_wasabi() -> Result<()> {
     watch!(config_file_name);
 
     let s3cmd = |cmd: &str, append: &str| -> String {
-        let acc = access_key.clone();
-        let sec = secret_key.clone();
         let sh_cmd = format!("s3cmd --config {config_file_name} {cmd} {append}");
         sh(sh_cmd)
     };
