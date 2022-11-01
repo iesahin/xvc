@@ -12,7 +12,6 @@ use crate::{
 use notify::{Event, EventHandler, RecommendedWatcher, RecursiveMode, Watcher};
 use std::fs::Metadata;
 use std::path::PathBuf;
-use xvc_logging::watch;
 
 use crossbeam_channel::{bounded, Receiver, Sender};
 use log::{debug, warn};

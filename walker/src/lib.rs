@@ -1,3 +1,11 @@
+//! Xvc walker traverses directory trees with ignore rules.
+//!
+//! Ignore rules are similar to [.gitignore](https://git-scm.com/docs/gitignore) and child
+//! directories are not traversed if ignored.
+//!
+//! [walk_parallel] function is the most useful element in this module.
+//! It walks and sends [PathMetadata] through a channel, also updating the ignore rules and sending
+//! them.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod abspath;
@@ -345,6 +353,12 @@ pub fn directory_list(dir: &Path) -> Result<Vec<Result<PathMetadata>>> {
     Ok(child_paths)
 }
 
+/// Walk all child paths under `dir` and send non-ignored paths to `path_sender`.
+/// Newly found ignore rules are sent through `ignore_sender`.
+/// The ignore file name (`.xvcignore`, `.gitignore`, `.ignore`, ...) is set by `walk_options`.
+///
+/// It lists elements of a file, then creates a new crossbeam scope for each child directory and
+/// calls itself recursively. It may not be feasible for small directories to create threads.
 pub fn walk_parallel(
     ignore_rules: IgnoreRules,
     dir: &Path,
@@ -427,6 +441,13 @@ pub fn walk_parallel(
     Ok(())
 }
 
+/// Walk `dir` with `walk_options`, with the given _initial_ `ignore_rules`.
+/// Note that ignore rules are expanded with the rules given in the `ignore_filename` in
+/// `walk_options`.
+/// The result is added to given `res_paths` to reduce the number of memory inits for vec.
+///
+/// It collects all [`PathMetadata`] of the child paths.
+/// Filters paths with the rules found in child directories and the given `ignore_rules`.
 pub fn walk_serial(
     ignore_rules: IgnoreRules,
     dir: &Path,
@@ -507,6 +528,12 @@ pub fn walk_serial(
     Ok(merged)
 }
 
+/// merge ignore rules in a single set of ignore rules.
+///
+/// - if the list is empty, it's an error.
+/// - the `root` of the result is the `root` of the first element.
+/// - it collects all rules in a single `Vec<GlobPattern>` and recompiles `whitelist` and `ignore`
+/// globsets.
 pub fn merge_ignores(ignore_rules: &Vec<IgnoreRules>) -> Result<IgnoreRules> {
     if ignore_rules.is_empty() {
         Err(Error::CannotMergeEmptyIgnoreRules)
@@ -654,6 +681,9 @@ fn patterns_from_file(
     ))
 }
 
+/// convert a set of rules in `content` to glob patterns.
+/// patterns may come from `source`.
+/// the root directory of all search is in `ignore_root`.
 pub fn content_to_patterns(
     ignore_root: &Path,
     source: Option<&Path>,
@@ -783,8 +813,8 @@ fn build_pattern(source: Source, original: &str) -> Pattern<String> {
 
     pattern
 }
-//
-// Check whether path is whitelisted or ignored with the current rules
+
+/// Check whether `path` is whitelisted or ignored with `ignore_rules`
 pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     let is_abs = path.is_absolute();
     // strip_prefix eats the final slash, and ends_with behave differently than str, so we work
