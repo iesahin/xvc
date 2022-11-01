@@ -1,4 +1,4 @@
-xvc-storage-new-gcs 
+xvc-storage-new-gcs
 Add a new Google Cloud Storage remote
 
 USAGE:
@@ -13,7 +13,7 @@ OPTIONS:
 
     -n, --name <NAME>
             Name of the remote
-            
+
             This must be unique among all remotes of the project
 
         --region <REGION>
@@ -21,5 +21,5 @@ OPTIONS:
 
         --remote-prefix <REMOTE_PREFIX>
             You can set a directory in the bucket with this prefix
-            
+
             [default: ]

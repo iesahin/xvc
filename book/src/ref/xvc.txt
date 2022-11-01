@@ -1,4 +1,4 @@
-xvc 
+xvc
 Xvc Main Command-line Interface
 
 USAGE:
