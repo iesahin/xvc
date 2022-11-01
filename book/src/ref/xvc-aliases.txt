@@ -1,0 +1,8 @@
+xvc-aliases 
+Print command aliases to be sourced in shell files
+
+USAGE:
+    xvc aliases
+
+OPTIONS:
+    -h, --help    Print help information

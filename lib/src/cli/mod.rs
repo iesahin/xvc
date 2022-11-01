@@ -12,6 +12,7 @@ use xvc_logging::XvcOutputLine;
 
 use std::path::Path;
 use xvc_config::{XvcConfigInitParams, XvcVerbosity};
+use xvc_core::aliases;
 use xvc_core::check_ignore;
 use xvc_core::default_project_config;
 use xvc_core::root;
@@ -81,16 +82,18 @@ pub struct XvcCLI {
 pub enum XvcSubCommand {
     /// File and directory management commands
     File(xvc_file::XvcFileCLI),
-    /// Find the root directory of a project
-    Root(xvc_core::root::RootCLI),
-    /// Check whether files are ignored with `.xvcignore`
-    CheckIgnore(xvc_core::check_ignore::CheckIgnoreCLI),
     /// Initialize an Xvc project
     Init(crate::init::InitCLI),
     /// Pipeline management commands
     Pipeline(xvc_pipeline::PipelineCLI),
     /// Storage (cloud) management commands
     Storage(xvc_storage::StorageCLI),
+    /// Find the root directory of a project
+    Root(xvc_core::root::RootCLI),
+    /// Check whether files are ignored with `.xvcignore`
+    CheckIgnore(xvc_core::check_ignore::CheckIgnoreCLI),
+    /// Print command aliases to be sourced in shell files
+    Aliases(xvc_core::aliases::AliasesCLI),
 }
 
 /// Runs the supplied xvc command.
@@ -163,6 +166,8 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                     init::run(xvc_root_opt.as_ref(), opts)?;
                     Result::Ok(())
                 }
+
+                XvcSubCommand::Aliases(opts) => Ok(aliases::run(output_snd, opts)?),
 
                 // following commands can only be run inside a repository
                 XvcSubCommand::Root(opts) => Ok(root::run(
@@ -301,6 +306,8 @@ pub fn test_dispatch(
                     init::run(xvc_root_opt_res, opts)?;
                     Result::Ok(())
                 }
+
+                XvcSubCommand::Aliases(opts) => Ok(aliases::run(output_snd, opts)?),
 
                 // following commands can only be run inside a repository
                 XvcSubCommand::Root(opts) => Ok(root::run(

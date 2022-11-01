@@ -17,7 +17,7 @@ OPTIONS:
             This must be unique among all remotes of the project
 
         --region <REGION>
-            Region of the server
+            Region of the server, e.g., europe-west3
 
         --remote-prefix <REMOTE_PREFIX>
             You can set a directory in the bucket with this prefix

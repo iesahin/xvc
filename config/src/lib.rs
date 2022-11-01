@@ -17,9 +17,6 @@ use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
 
 use crate::error::{Error, Result};
 use toml::Value as TomlValue;
-// pub const LOCAL_CONFIG_FILENAME: MetadataFileLocation =
-//     MetadataFileLocation::DotXvc("config.local");
-// pub const PROJECT_CONFIG_FILENAME: MetadataFileLocation = MetadataFileLocation::DotXvc("config");
 
 lazy_static! {
     pub static ref SYSTEM_CONFIG_DIRS: Option<ProjectDirs> =
@@ -282,7 +279,7 @@ impl XvcConfig {
         }
     }
 
-    fn system_config_file() -> Result<PathBuf> {
+    pub fn system_config_file() -> Result<PathBuf> {
         Ok(SYSTEM_CONFIG_DIRS
             .to_owned()
             .ok_or(Error::CannotDetermineSystemConfigurationPath)?
@@ -290,7 +287,7 @@ impl XvcConfig {
             .to_path_buf())
     }
 
-    fn user_config_file() -> Result<PathBuf> {
+    pub fn user_config_file() -> Result<PathBuf> {
         Ok(USER_CONFIG_DIRS
             .to_owned()
             .ok_or(Error::CannotDetermineUserConfigurationPath)?

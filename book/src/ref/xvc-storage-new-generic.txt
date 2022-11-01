@@ -39,7 +39,7 @@ OPTIONS:
             
             This must be unique among all remotes of the project
 
-        --remote-dir <REMOTE_DIR>
+        --storage-dir <STORAGE_DIR>
             You can set a string to replace {DIR} placeholder in commands
 
     -u, --upload <UPLOAD_COMMAND>

@@ -133,6 +133,9 @@ pub enum Error {
         #[from]
         source: xvc_walker::globset::Error,
     },
+
+    #[error("Cannot find parent path")]
+    CannotFindParentPath { path: PathBuf },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

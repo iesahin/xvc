@@ -8,7 +8,7 @@ OUT="${HERE}/src/ref/"
 
 $XVC --help > ${OUT}/xvc.txt
 
-for cmd in $(echo "check-ignore file init pipeline root storage alias") ; do
+for cmd in $(echo "check-ignore file init pipeline root storage aliases") ; do
     $XVC $cmd --help > ${OUT}/xvc-${cmd}.txt
 done
 
