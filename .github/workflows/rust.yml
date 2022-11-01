@@ -5,7 +5,7 @@ on:
   # schedule:
   #   - cron: "17 17 * * *"
   pull_request:
-    types: [review_requested]
+    types: [labeled, review_requested]
     paths:
       - '**.rs'
       - '**.toml'
