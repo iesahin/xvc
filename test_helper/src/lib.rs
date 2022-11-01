@@ -1,3 +1,6 @@
+//! Helper functions to create random temporary directories, random binary or text files, and set logging in unit/integration
+//! tests.
+//! The directories may be initialized as Git or Xvc repositories.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 use log::LevelFilter;
@@ -24,10 +27,15 @@ use std::os::unix::fs as unix_fs;
 #[cfg(windows)]
 use std::os::windows::fs as windows_fs;
 
+/// Turn on logging for testing purposes.
+/// Testing always send traces to `$TMPDIR/xvc.log`.
+/// The `level` here determines whether these are sent to `stdout`.
 pub fn test_logging(level: LevelFilter) {
     setup_logging(Some(level), Some(LevelFilter::Trace));
 }
 
+/// Generates a random name with `prefix` and a random number generated from `seed`.
+/// If `seed` is `None`, a random number `from_entropy` is used.
 pub fn random_dir_name(prefix: &str, seed: Option<u64>) -> String {
     let mut rng = if let Some(seed) = seed {
         rand::rngs::StdRng::seed_from_u64(seed)
@@ -39,7 +47,8 @@ pub fn random_dir_name(prefix: &str, seed: Option<u64>) -> String {
     format!("{}-{}", prefix, rand)
 }
 
-/// Return the name of a random directory under $TMPDIR
+/// Return name of a random directory under $TMPDIR.
+/// It doesn't create the directory, just returns the path.
 pub fn random_temp_dir(prefix: Option<&str>) -> PathBuf {
     let mut temp_dir = env::temp_dir();
     loop {
@@ -56,7 +65,9 @@ pub fn random_temp_dir(prefix: Option<&str>) -> PathBuf {
     temp_dir
 }
 
-/// Return a temp directory which may exist already
+/// Return a temp directory created with a seed.
+/// If the `seed` is `None`, it creates a random directory name.
+/// This function doesn't create the directory.
 pub fn seeded_temp_dir(prefix: &str, seed: Option<u64>) -> PathBuf {
     let temp_dir = env::temp_dir();
     temp_dir.join(Path::new(&random_dir_name(prefix, seed)))
@@ -72,6 +83,8 @@ pub fn create_temp_dir() -> PathBuf {
 
 const XVC_LAST_TEST_SYMLINK_TARGET: &str = "xvc-last-test";
 
+/// Link to the last test directory.
+/// It's called by [`run_in_temp_dir`].
 pub fn create_xvc_last_test_link(target: &Path) -> Result<()> {
     let symlink_from = target
         .parent()
@@ -105,6 +118,7 @@ pub fn run_in_temp_git_dir() -> PathBuf {
     temp_dir
 }
 
+/// Create a random directory and run `git init` in it.
 pub fn temp_git_dir() -> PathBuf {
     let temp_dir = create_temp_dir();
     watch!(temp_dir);
@@ -168,6 +182,8 @@ pub fn generate_random_text_file(filename: &Path, num_lines: usize) {
 
 // TODO: Write some tests for complex test helpers
 
+/// Build a directory tree containing `n_dirs` under `root`.
+/// Each of these directories contain `n_files_per_dir` random binary files.
 pub fn create_directory_tree(
     root: &Path,
     n_dirs: usize,
