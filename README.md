@@ -1,6 +1,6 @@
 # xvc
 
-[![codecov](https://codecov.io/gh/iesahin/xvc/branch/master/graph/badge.svg?token=yrcNOA4RTy)](https://codecov.io/gh/iesahin/xvc)
+[![codecov](https://codecov.io/gh/iesahin/xvc/branch/main/graph/badge.svg?token=xa3ru5KhRq)](https://codecov.io/gh/iesahin/xvc)
 [![build](https://img.shields.io/github/workflow/status/iesahin/xvc/Rust-CI)](https://github.com/iesahin/xvc/actions/workflows/rust.yml)
 [![crates.io](https://img.shields.io/crates/v/xvc)](https://crates.io/crates/xvc)
 [![docs.rs](https://img.shields.io/docsrs/xvc)](https://docs.rs/xvc/)
@@ -116,7 +116,7 @@ xvc stands on the following (giant) crates:
 - Xvc uses [rayon] to calculate content hashes of millions of files in parallel.
 - Thanks to [strum], Xvc uses enums extensively and converts almost everything to typed values from strings.
 - Xvc has a deep CLI that has subcommands of subcommands like `xvc storage new s3`, and all these work with minimum bugs thanks to [clap].
-- Xvc uses [rust-s3] to connect to S3 and compatible storage services. It employs excellent [tokio] for fast async Rust. These cloud storage features can be turned off thanks to Rust conditional compilation. 
+- Xvc uses [rust-s3] to connect to S3 and compatible storage services. It employs excellent [tokio] for fast async Rust. These cloud storage features can be turned off thanks to Rust conditional compilation.
 - Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust [crypto] crate, Xvc couldn't detect file changes so fast.
 - Many thanks to small and well built crates, [reflink], [relative-path], [path-absolutize], [glob] and [wax] for file system and glob handling.
 - Thanks to [sad_machine] for providing a State Machine implementation that I used in `xvc pipeline run`. A DAG composed of State Machines made running pipeline steps in parallel with a clean separation of process states.
@@ -160,4 +160,3 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 ## ⚠️ Disclaimer
 
 This software is fresh and ambitious. Although I use it and test it close to real world conditions, it didn't go under test of time. **Xvc can eat your files and spit them to eternal void!**
-

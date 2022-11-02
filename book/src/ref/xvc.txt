@@ -1,4 +1,4 @@
-xvc-lib 
+xvc
 Xvc Main Command-line Interface
 
 USAGE:
@@ -20,6 +20,7 @@ OPTIONS:
                                Setting this option here turns off progress bars
 
 SUBCOMMANDS:
+    aliases         Print command aliases to be sourced in shell files
     check-ignore    Check whether files are ignored with `.xvcignore`
     file            File and directory management commands
     help            Print this message or the help of the given subcommand(s)
