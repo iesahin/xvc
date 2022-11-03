@@ -1,3 +1,29 @@
+//! Provides a general solution to maintain configuration spanned across different sources.
+//!
+//! The configuration options can be set in various levels of increasing priority:
+//!
+//! - Default Values
+//! - System configuration
+//! - User configuration
+//! - Public project configuration (tracked by Git)
+//! - Private (local) project configuration (not tracked by Git)
+//! - Environment variables
+//! - Command line options
+//!
+//!
+//! The configuration keys are string.
+//! Configuration values can be:
+//! - string
+//! - bool
+//! - int
+//! - float
+//!
+//! Configuration files are in TOML.
+//!
+//! Options can be nested like `group.name = value`.
+//!
+//! Each option can be tracked to its source via [XvcConfigOption].
+//!
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod error;
@@ -19,74 +45,132 @@ use crate::error::{Error, Result};
 use toml::Value as TomlValue;
 
 lazy_static! {
+    /// System specific configuration directory.
+    /// see [directories_next::ProjectDirs].
     pub static ref SYSTEM_CONFIG_DIRS: Option<ProjectDirs> =
         ProjectDirs::from("com", "emresult", "xvc");
+
+    /// User configuration directories.
+    /// See [directories_next::BaseDirs].
     pub static ref USER_CONFIG_DIRS: Option<BaseDirs> = BaseDirs::new();
+
+    /// User directories.
+    /// see [directories_next::UserDirs].
     pub static ref USER_DIRS: Option<UserDirs> = UserDirs::new();
 }
 
+/// Define the source where an option is obtained
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, IntoStaticStr, Serialize, Deserialize)]
 #[strum(serialize_all = "lowercase")]
 pub enum XvcConfigOptionSource {
+    /// Default value defined in source code
     Default,
+    /// System-wide configuration value from [SYSTEM_CONFIG_DIRS]
     System,
+    /// User's configuration value from [USER_CONFIG_DIRS]
     Global,
+    /// Project specific configuration that can be shared
     Project,
+    /// Project specific configuration that's not meant to be shared (personal/local)
     Local,
+    /// Options obtained from the command line
     CommandLine,
+    /// Options from environment variables
     Environment,
+    /// Options set while running the software, automatically.
     Runtime,
 }
 
+/// The option and its source.
 #[derive(Debug, Copy, Clone)]
 pub struct XvcConfigOption<T> {
+    /// Where did we get this option?
     pub source: XvcConfigOptionSource,
+    /// The key and value
     pub option: T,
 }
 
+/// Verbosity levels for Xvc CLI
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, IntoStaticStr)]
 pub enum XvcVerbosity {
+    /// Do not print anything
     #[strum(serialize = "quiet", serialize = "0")]
     Quiet,
+    /// Print default output and errors
     #[strum(serialize = "default", serialize = "1")]
     Default,
+    /// Print default output, warnings and errors
     #[strum(serialize = "warn", serialize = "2")]
     Warn,
+    /// Print default output, info, warnings and errors
     #[strum(serialize = "info", serialize = "3")]
     Info,
+    /// Print default output, errors, warnings, info and debug output
     #[strum(serialize = "debug", serialize = "4")]
     Debug,
+    /// Print default output, errors, warnings, info, debug and tracing output
     #[strum(serialize = "trace", serialize = "5")]
     Trace,
 }
 
+/// A configuration value with its source
 #[derive(Debug, Clone)]
 pub struct XvcConfigValue {
+    /// Where did we get this value?
     pub source: XvcConfigOptionSource,
+    /// The value itself
     pub value: TomlValue,
 }
 
 impl XvcConfigValue {
+    /// Create a new XvcConfigValue
     pub fn new(source: XvcConfigOptionSource, value: TomlValue) -> Self {
         Self { source, value }
     }
 }
 
+/// A set of options defined as a TOML document from a single [XvcConfigOptionSource]
 #[derive(Debug, Clone)]
 pub struct XvcConfigMap {
+    /// Where does these option come from?
     pub source: XvcConfigOptionSource,
+    /// The key-value map for the options
     pub map: HashMap<String, TomlValue>,
 }
 
+/// How should we initialize the configuration?
+///
+/// It's possible to ignore certain sources by supplying `None` to their values here.
 #[derive(Debug, Clone)]
 pub struct XvcConfigInitParams {
+    /// The default configuration for the project.
+    /// It should contain all default values as a TOML document.
+    /// Xvc produces this in [xvc_core::default_configuration].
     pub default_configuration: String,
+    /// The directory where the application runs.
+    /// This can be set by various Options.
+    /// It affects how paths are handled in general.
     pub current_dir: AbsolutePath,
+    /// Should we include system configuration?
+    /// If `true`, it's read from [SYSTEM_CONFIG_DIRS].
     pub include_system_config: bool,
+    /// Should the user's (home) config be included.
+    /// If `true`, it's read from [USER_CONFIG_DIRS].
     pub include_user_config: bool,
+    /// Where should we load the project's (public) configuration?
+    /// If `None`, it's ignored.
     pub project_config_path: Option<PathBuf>,
+    /// Where should we load the project's (private) configuration?
+    /// If `None`, it's ignored.
     pub local_config_path: Option<PathBuf>,
+    /// Should we include configuration from the environment.
+    /// If `true`, look for all variables in the form
+    ///
+    /// `XVC_group.key=value`
+    ///
+    /// from the environment and put them into the configuration.
     pub include_environment_config: bool,
+    /// Command line configuration
     pub command_line_config: Option<Vec<String>>,
 }
 
