@@ -18,6 +18,8 @@ use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
 use fetch::FetchCLI;
 use list::ListCLI;
+use log::info;
+use log::warn;
 use log::{error, LevelFilter};
 use std::io;
 use std::io::Write;
@@ -203,10 +205,10 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
             while let Ok(output_line) = output_rec.recv() {
                 match output_line {
                     XvcOutputLine::Output(m) => writeln!(output, "{}", m).unwrap(),
-                    XvcOutputLine::Info(m) => writeln!(output, "[INFO] {}", m).unwrap(),
-                    XvcOutputLine::Warn(m) => writeln!(output, "[WARN] {}", m).unwrap(),
-                    XvcOutputLine::Error(m) => writeln!(output, "[ERROR] {}", m).unwrap(),
-                    XvcOutputLine::Panic(m) => writeln!(output, "[PANIC] {}", m).unwrap(),
+                    XvcOutputLine::Info(m) => info!("[INFO] {}", m),
+                    XvcOutputLine::Warn(m) => warn!("[WARN] {}", m),
+                    XvcOutputLine::Error(m) => error!("[ERROR] {}", m),
+                    XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                     XvcOutputLine::Tick(_) => {}
                 }
             }
