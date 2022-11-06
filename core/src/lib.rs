@@ -85,8 +85,24 @@ pub fn default_project_config(use_git: bool) -> String {
 guid = "{guid}"
 # default verbosity level
 verbosity = "error"
+
+[git]
 # whether to integrate with Git
+# turning this off causes all git operations, including adding paths added to Xvc to be added to `.gitignore` or staging committing to Git after Xvc operations to be turned off.
+# not recommended unless you're really not using Git
 use_git = {use_git}
+# git command to use when running git.
+# set this to an absolute path to specify an executable
+# if set to a non-absolute path, it will be searched in $PATH and run.
+command = "git"
+
+# commit any changes in .xvc/ directory after the commands
+# you can handle git manually
+auto_commit = true
+
+# stage any changes in .xvc/ directory without committing
+# if you want to commit after multiple Xvc commands, but don't want to stage after each operation you can turn auto-commit off and turn auto-stage on.
+auto_stage = false
 
 [cache]
 # The cache type for XVC. It may take copy, hardlink, softlink, reflink as values
