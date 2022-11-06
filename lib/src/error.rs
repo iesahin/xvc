@@ -51,6 +51,12 @@ pub enum Error {
         source: xvc_walker::error::Error,
     },
 
+    #[error("Configuration Error: {source}")]
+    ConfigError {
+        #[from]
+        source: xvc_config::error::Error,
+    },
+
     #[error("Storage Error: {source}")]
     StorageError {
         #[from]
@@ -99,6 +105,11 @@ pub enum Error {
     CannotParseInteger {
         #[from]
         source: ParseIntError,
+    },
+    #[error("Cannot Find Executable: {source}")]
+    WhichError {
+        #[from]
+        source: which::Error,
     },
 }
 
