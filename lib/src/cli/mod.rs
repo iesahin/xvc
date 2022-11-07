@@ -296,60 +296,62 @@ fn handle_git_automation(xvc_root: &XvcRoot, xvc_cmd: &str) -> Result<()> {
 
             info!("Using Git: {git_cmd}");
 
-            let exec_cmd = |cmd_str| {
+            let exec_git = |args_str_vec: &[&str]| {
+                let mut args = vec!["-C", directory];
+                args.extend(args_str_vec);
+                let args: Vec<OsString> = args
+                    .iter()
+                    .map(|s| OsString::from_str(s).unwrap())
+                    .collect();
+                watch!(args);
+                let proc_res = Exec::cmd(&git_cmd).args(&args).capture()?;
 
+                match proc_res.exit_status {
+                    subprocess::ExitStatus::Exited(0) => Ok(proc_res.stdout_str()),
+                    subprocess::ExitStatus::Exited(_) => Err(Error::GitProcessError {
+                        stdout: proc_res.stdout_str(),
+                        stderr: proc_res.stderr_str(),
+                    }),
+                    subprocess::ExitStatus::Signaled(_)
+                    | subprocess::ExitStatus::Other(_)
+                    | subprocess::ExitStatus::Undetermined => Err(Error::GitProcessError {
+                        stdout: proc_res.stdout_str(),
+                        stderr: proc_res.stderr_str(),
+                    }),
+                }
+            };
 
             // Do we have user staged files?
-            let cmd_git_diff_staged = format!("{git_cmd} -C {directory} diff --name-only --cached");
-            let res_git_diff_staged = Exec::cmd(git_cmd)
-                .args(
-                    ["-C", directory, "diff", "--name-only", "--cached"]
-                        .iter()
-                        .map(OsString::from)
-                        .collect(),
-                )
-                .capture()
-                .unwrap()
-                .stdout_str();
-            // TODO: Check the return code and handle any non-zero
-            watch!(res_git_diff_staged);
+            let git_diff_staged_out = exec_git(&["diff", "--name-only", "--cached"])?;
+            watch!(git_diff_staged_out);
 
             // If so stash them
-            if res_git_diff_staged.trim().len() > 0 {
-                info!("Stashing user staged files: {res_git_diff_staged}");
-                let cmd_git_stash_staged = format!("{git_cmd} -C {directory} stash push --staged");
-                let res_cmd_git_stash_staged = Exec::cmd(cmd_git_stash_staged)
-                    .capture()
-                    .unwrap()
-                    .stdout_str();
-                info!("Stashed user staged files: {res_cmd_git_stash_staged}");
+            if git_diff_staged_out.trim().len() > 0 {
+                info!("Stashing user staged files: {git_diff_staged_out}");
+                let stash_out = exec_git(&["stash", "push", "--staged"])?;
+                info!("Stashed user staged files: {stash_out}");
             }
 
             // Add and commit `.xvc`
             let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-            let cmd_git_add = format!("{git_cmd} -C {directory} add {xvc_dir}");
-            let cmd_git_commit =
-                format!("{git_cmd} -C {directory} commit -m 'Xvc auto-commit after {xvc_cmd}");
-
-            let res_git_add = Exec::cmd(cmd_git_add).capture().unwrap().stdout_str();
+            let res_git_add = exec_git(&["add", &xvc_dir])?;
             info!("Adding .xvc/ to git: {res_git_add}");
-            let res_git_commit = Exec::cmd(cmd_git_commit).capture().unwrap().stdout_str();
+            let res_git_commit = exec_git(&[
+                "commit",
+                "-m",
+                &format!("Xvc auto-commit after '{xvc_cmd}'"),
+            ])?;
             info!("Committing .xvc/ to git: {res_git_commit}");
 
             // Pop the stash if there were files we stashed
 
-            if res_git_diff_staged.trim().len() > 0 {
-                info!("Unstashing user staged files: {res_git_diff_staged}");
-                let cmd_git_stash_staged = format!("{git_cmd} -C {directory} stash pop --index");
-                let res_cmd_git_stash_pop = Exec::cmd(cmd_git_stash_staged)
-                    .capture()
-                    .unwrap()
-                    .stdout_str();
-                info!("Unstashed user staged files: {res_cmd_git_stash_pop}");
+            if git_diff_staged_out.trim().len() > 0 {
+                info!("Unstashing user staged files: {git_diff_staged_out}");
+                let res_git_stash_pop = exec_git(&["stash", "pop", "--index"])?;
+                info!("Unstashed user staged files: {res_git_stash_pop}");
             } else if config.get_bool("git.auto-stage")?.option {
                 let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-                let cmd_git_add = format!("{git_cmd} -C {directory} add {xvc_dir}");
-                let res_git_add = Exec::cmd(cmd_git_add).capture().unwrap().stdout_str();
+                let res_git_add = exec_git(&["add", xvc_dir])?;
                 info!("Staging .xvc/ to git: {res_git_add}");
             }
         }
