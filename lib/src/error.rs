@@ -111,6 +111,9 @@ pub enum Error {
         #[from]
         source: which::Error,
     },
+
+    #[error("Git Process Error: \nSTDOUT: {stdout}\nSTDERR: {stderr}")]
+    GitProcessError { stdout: String, stderr: String },
 }
 
 impl Error {
