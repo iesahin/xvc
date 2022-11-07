@@ -334,7 +334,7 @@ fn handle_git_automation(xvc_root: &XvcRoot, xvc_cmd: &str) -> Result<()> {
 
             // Add and commit `.xvc`
             let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-            let res_git_add = exec_git(&["add", &xvc_dir])?;
+            let res_git_add = exec_git(&["add", &xvc_dir, "*.gitignore", "*.xvcignore"])?;
             info!("Adding .xvc/ to git: {res_git_add}");
             let res_git_commit = exec_git(&[
                 "commit",
@@ -351,7 +351,7 @@ fn handle_git_automation(xvc_root: &XvcRoot, xvc_cmd: &str) -> Result<()> {
                 info!("Unstashed user staged files: {res_git_stash_pop}");
             } else if config.get_bool("git.auto-stage")?.option {
                 let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-                let res_git_add = exec_git(&["add", xvc_dir])?;
+                let res_git_add = exec_git(&["add", xvc_dir, "*.gitignore", "*.xvcignore"])?;
                 info!("Staging .xvc/ to git: {res_git_add}");
             }
         }

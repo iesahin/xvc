@@ -178,5 +178,17 @@ fn test_file_track_serial() -> Result<()> {
         "{gs_xvc:?} shouldn't contain any `.xvc/` lines."
     );
 
+    let gs_gitignore = line_captures(&git_status_res, r#".* \.gitignore"#);
+    assert!(
+        gs_gitignore.is_empty(),
+        "{gs_gitignore:?} shouldn't contain any `.gitignore` lines."
+    );
+
+    let gs_xvcignore = line_captures(&git_status_res, r#".* \.xvcignore"#);
+    assert!(
+        gs_xvcignore.is_empty(),
+        "{gs_xvcignore:?} shouldn't contain any `.xvcignore` lines."
+    );
+
     Ok(())
 }
