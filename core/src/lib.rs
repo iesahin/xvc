@@ -61,13 +61,14 @@ pub const XVCIGNORE_INITIAL_CONTENT: &str = "
 /// This is not expected to change for some time.
 pub const GIT_DIR: &str = ".git";
 
-/// The initial content for `.xvc/.gitignore` to hide Xvc fs structures
+/// The initial content for `.xvc/.gitignore` to hide files in .xvc/
 ///
-/// Note that most elements are not hidden.
+/// We ignore all, and just track the store, entity counter and the configuration
 pub const GITIGNORE_INITIAL_CONTENT: &str = "
-/config.local
-/tmp
-/cache
+.xvc/*
+!.xvc/store/
+!.xvc/ec/
+!.xvc/config.toml
 ";
 
 /// Creates a new project configuration by writing all default values.
