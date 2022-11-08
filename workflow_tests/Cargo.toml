@@ -1,6 +1,6 @@
 [package]
 name = "xvc-workflow-tests"
-version = "0.3.2"
+version = "0.3.3"
 edition = "2021"
 description = "Integration test suite for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
