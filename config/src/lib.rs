@@ -408,7 +408,6 @@ impl XvcConfig {
             .join("xvc"))
     }
 
-
     /// Load all keys from the environment that starts with `XVC_` and build a hash map with them.
     ///
     /// The resulting hash map has `key: value` elements for environment variables in the form `XVC_key=value`.
@@ -593,7 +592,7 @@ impl XvcConfig {
 ///
 /// When a CLI struct like [xvc_pipeline::PipelineCLI] implements this trait, it reads the configuration and updates values not set in the command line accordingly.
 pub trait UpdateFromXvcConfig {
-    /// Update the implementing struct from the configuration. 
+    /// Update the implementing struct from the configuration.
     /// Reading the relevant keys and values of the config is in implementor's responsibility.
     ///
     /// This is used to abstract away CLI structs and crate options.
@@ -637,7 +636,7 @@ macro_rules! conf {
 
 /// Convert a TomlValue which can be a [TomlValue::Table] or any other simple type to a hash map with keys in the hierarchical form.
 ///
-/// A `key` in TOML table `[group]` will have `group.key` in the returned hash map. 
+/// A `key` in TOML table `[group]` will have `group.key` in the returned hash map.
 /// The groups can be arbitrarily deep.
 pub fn toml_value_to_hashmap(key: String, value: TomlValue) -> HashMap<String, TomlValue> {
     let mut key_value_stack = Vec::<(String, TomlValue)>::new();
