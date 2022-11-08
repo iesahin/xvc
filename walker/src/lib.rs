@@ -1,3 +1,11 @@
+//! Xvc walker traverses directory trees with ignore rules.
+//!
+//! Ignore rules are similar to [.gitignore](https://git-scm.com/docs/gitignore) and child
+//! directories are not traversed if ignored.
+//!
+//! [walk_parallel] function is the most useful element in this module.
+//! It walks and sends [PathMetadata] through a channel, also updating the ignore rules and sending
+//! them.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod abspath;
@@ -22,57 +30,96 @@ use std::{
 
 use anyhow::{anyhow, Context};
 
+/// Combine a path and its metadata in a single struct
 #[derive(Debug, Clone)]
 pub struct PathMetadata {
+    /// path
     pub path: PathBuf,
+    /// metadata
     pub metadata: Metadata,
 }
 
+/// Show whether a path matches to a glob rule
 #[derive(Debug, Clone)]
 pub enum MatchResult {
+    /// There is no match between glob(s) and path
     NoMatch,
+    /// Path matches to ignored glob(s)
     Ignore,
+    /// Path matches to whitelisted glob(s)
     Whitelist,
 }
 
+/// Is the pattern matches anywhere or only relative to a directory?
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum PatternRelativity {
+    /// Match the path regardless of the directory prefix
     Anywhere,
-    RelativeTo { directory: String },
+    /// Match the path if it only starts with `directory`
+    RelativeTo {
+        /// The directory that the pattern must have as prefix to be considered a match
+        directory: String,
+    },
 }
 
+/// Is the path only a directory, or could it be directory or file?
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum PathKind {
+    /// Path matches to directory or file
     Any,
+    /// Path matches only to directory
     Directory,
 }
 
+/// Is this pattern a ignore or whitelist patter?
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum PatternEffect {
+    /// This is an ignore pattern
     Ignore,
+    /// This is a whitelist pattern
     Whitelist,
 }
 
+/// Do we get this pattern from a file (.gitignore, .xvcignore, ...) or specify it directly in
+/// code?
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum Source {
-    File { path: PathBuf, line: usize },
+    /// Pattern is obtained from file
+    File {
+        /// Path of the pattern file
+        path: PathBuf,
+        /// (1-based) line number the pattern retrieved
+        line: usize,
+    },
+    /// Pattern is globally defined in code
     Global,
 }
 
+/// Pattern is generic and could be an instance of String, Glob, Regex or any other object.
+/// The type is evolved by compiling.
+/// A pattern can start its life as `Pattern<String>` and can be compiled into `Pattern<Glob>` or
+/// `Pattern<Regex>`.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Pattern<T>
 where
     T: PartialEq + Hash,
 {
+    /// The pattern type
     pattern: T,
+    /// The original string that defines the pattern
     original: String,
+    /// Where did we get this pattern?
     source: Source,
+    /// Is this ignore or whitelist pattern?
     effect: PatternEffect,
+    /// Does it have an implied prefix?
     relativity: PatternRelativity,
+    /// Is the path a directory or anything?
     path_kind: PathKind,
 }
 
 impl<T: PartialEq + Hash> Pattern<T> {
+    /// Runs a function (like `compile`) on `pattern` to get a new pattern.
     pub fn map<U, F>(self, f: F) -> Pattern<U>
     where
         U: PartialEq + Hash,
@@ -90,6 +137,8 @@ impl<T: PartialEq + Hash> Pattern<T> {
 }
 
 impl<T: PartialEq + Hash> Pattern<Result<T>> {
+    /// Convert from `Pattern<Result<T>>` to `Result<Pattern<Ok>>` to get the result from
+    /// [Self::map]
     fn transpose(self) -> Result<Pattern<T>> {
         match self.pattern {
             Ok(p) => Ok(Pattern::<T> {
@@ -105,33 +154,50 @@ impl<T: PartialEq + Hash> Pattern<Result<T>> {
     }
 }
 
+/// One of the concrete types that can represent a pattern.
 type GlobPattern = Pattern<Glob>;
 
+/// What's the ignore file name and should we add directories to the result?
 #[derive(Debug, Clone)]
 pub struct WalkOptions {
+    /// The ignore filename (`.gitignore`, `.xvcignore`, `.ignore`, etc.) or `None` for not
+    /// ignoring anything.
     pub ignore_filename: Option<String>,
+    /// Should the results include directories themselves?
+    /// Note that they are always traversed, but may not be listed if we're only interested in
+    /// actual files.
     pub include_dirs: bool,
 }
 
 impl WalkOptions {
+    /// Instantiate a Git repository walker that uses `.gitignore` as ignore file name and includes
+    /// directories in results.
     pub fn gitignore() -> Self {
         Self {
             ignore_filename: Some(".gitignore".to_owned()),
             include_dirs: true,
         }
     }
+
+    /// Instantiate a Xvc repository walker that uses `.xvcignore` as ignore file name and includes
+    /// directories in results.
     pub fn xvcignore() -> Self {
         Self {
             ignore_filename: Some(".xvcignore".to_owned()),
             include_dirs: true,
         }
     }
+
+    /// Return options with `include_dirs` turned off.
+    /// `WalkOptions::xvcignore().without_dirs()` specifies a `xvcignore` walker that only lists
+    /// files.
     pub fn without_dirs(self) -> Self {
         Self {
             ignore_filename: self.ignore_filename,
             include_dirs: false,
         }
     }
+    /// Return the same option with `include_dirs` turned on.
     pub fn with_dirs(self) -> Self {
         Self {
             ignore_filename: self.ignore_filename,
@@ -140,15 +206,22 @@ impl WalkOptions {
     }
 }
 
+/// Complete set of ignore rules for a directory and its child directories.
 #[derive(Debug, Clone)]
 pub struct IgnoreRules {
+    /// The root of the ignore rules.
+    /// Typically this is the root directory of Git or Xvc repository.
     root: PathBuf,
+    /// All patterns collected from ignore files or specified in code.
     patterns: Vec<GlobPattern>,
+    /// Compiled [GlobSet] for whitelisted paths.
     whitelist_set: GlobSet,
+    /// Compiled [GlobSet] for ignored paths.
     ignore_set: GlobSet,
 }
 
 impl IgnoreRules {
+    /// An empty set of ignore rules that neither ignores nor whitelists any path.
     pub fn empty(dir: &Path) -> Self {
         IgnoreRules {
             root: PathBuf::from(dir),
@@ -158,6 +231,7 @@ impl IgnoreRules {
         }
     }
 
+    /// Compiles patterns as [Source::Global] and initializes the elements.
     pub fn try_from_patterns(root: &Path, patterns: &str) -> Result<Self> {
         let patterns = content_to_patterns(root, None, patterns)
             .into_iter()
@@ -169,6 +243,8 @@ impl IgnoreRules {
         Ok(initialized)
     }
 
+    /// Consumes `self`, adds `new_patterns` to the list of patterns and recompiles ignore and
+    /// whitelist [GlobSet]s.
     pub fn update(self, new_patterns: Vec<GlobPattern>) -> Result<Self> {
         let patterns: Vec<GlobPattern> = self
             .patterns
@@ -215,6 +291,8 @@ impl IgnoreRules {
         })
     }
 
+    /// Creates a new IgnoreRules object with the specified list of [GlobPattern]s.
+    /// It returns [Error::GlobError] if there are malformed globs in any of the files.
     pub fn new(root: &Path, patterns: Vec<GlobPattern>) -> Result<Self> {
         let patterns: Vec<GlobPattern> = patterns.into_iter().unique().collect();
         let ignore_patterns: Vec<Glob> = patterns
@@ -242,6 +320,8 @@ impl IgnoreRules {
     }
 }
 
+/// Return all childs of a directory regardless of any ignore rules
+/// If there is an error to obtain the metadata, error is added to the element instead
 pub fn directory_list(dir: &Path) -> Result<Vec<Result<PathMetadata>>> {
     let elements = dir
         .read_dir()
@@ -273,6 +353,12 @@ pub fn directory_list(dir: &Path) -> Result<Vec<Result<PathMetadata>>> {
     Ok(child_paths)
 }
 
+/// Walk all child paths under `dir` and send non-ignored paths to `path_sender`.
+/// Newly found ignore rules are sent through `ignore_sender`.
+/// The ignore file name (`.xvcignore`, `.gitignore`, `.ignore`, ...) is set by `walk_options`.
+///
+/// It lists elements of a file, then creates a new crossbeam scope for each child directory and
+/// calls itself recursively. It may not be feasible for small directories to create threads.
 pub fn walk_parallel(
     ignore_rules: IgnoreRules,
     dir: &Path,
@@ -355,6 +441,13 @@ pub fn walk_parallel(
     Ok(())
 }
 
+/// Walk `dir` with `walk_options`, with the given _initial_ `ignore_rules`.
+/// Note that ignore rules are expanded with the rules given in the `ignore_filename` in
+/// `walk_options`.
+/// The result is added to given `res_paths` to reduce the number of memory inits for vec.
+///
+/// It collects all [`PathMetadata`] of the child paths.
+/// Filters paths with the rules found in child directories and the given `ignore_rules`.
 pub fn walk_serial(
     ignore_rules: IgnoreRules,
     dir: &Path,
@@ -435,6 +528,12 @@ pub fn walk_serial(
     Ok(merged)
 }
 
+/// merge ignore rules in a single set of ignore rules.
+///
+/// - if the list is empty, it's an error.
+/// - the `root` of the result is the `root` of the first element.
+/// - it collects all rules in a single `Vec<GlobPattern>` and recompiles `whitelist` and `ignore`
+/// globsets.
 pub fn merge_ignores(ignore_rules: &Vec<IgnoreRules>) -> Result<IgnoreRules> {
     if ignore_rules.is_empty() {
         Err(Error::CannotMergeEmptyIgnoreRules)
@@ -582,6 +681,9 @@ fn patterns_from_file(
     ))
 }
 
+/// convert a set of rules in `content` to glob patterns.
+/// patterns may come from `source`.
+/// the root directory of all search is in `ignore_root`.
 pub fn content_to_patterns(
     ignore_root: &Path,
     source: Option<&Path>,
@@ -711,8 +813,8 @@ fn build_pattern(source: Source, original: &str) -> Pattern<String> {
 
     pattern
 }
-//
-// Check whether path is whitelisted or ignored with the current rules
+
+/// Check whether `path` is whitelisted or ignored with `ignore_rules`
 pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     let is_abs = path.is_absolute();
     // strip_prefix eats the final slash, and ends_with behave differently than str, so we work

@@ -1,20 +1,17 @@
+//! Error codes and messages for Xvc Walker
 use log::{debug, error, info, trace, warn};
 use std::hash::Hash;
 use thiserror::Error as ThisError;
 
+#[allow(missing_docs)]
 #[derive(ThisError, Debug)]
+/// Error type for Xvc Walker
 pub enum Error {
     #[error("General Xvc Walker Error: {source}")]
     AnyhowError {
         #[from]
         source: anyhow::Error,
     },
-    // #[error("Pattern Error: {pattern} in {dir}\n{source}")]
-    // PatternError {
-    //     pattern: String,
-    //     dir: String,
-    //     source: glob::PatternError,
-    // },
     #[error("Crossbeam Send Error for Type: {t:?} {cause:?}")]
     CrossbeamSendError { t: String, cause: String },
 
@@ -79,29 +76,36 @@ where
 }
 
 impl Error {
+    /// print [DEBUG] message for [Error]
     pub fn debug(self) -> Self {
         debug!("{}", self);
         self
     }
+    /// print [TRACE] message for [Error]
     pub fn trace(self) -> Self {
         trace!("{}", self);
         self
     }
+    /// print [WARN] message for [Error]
     pub fn warn(self) -> Self {
         warn!("{}", self);
         self
     }
+    /// print [ERROR] message for [Error]
     pub fn error(self) -> Self {
         error!("{}", self);
         self
     }
+    /// print [INFO] message for [Error]
     pub fn info(self) -> Self {
         info!("{}", self);
         self
     }
+    /// print [PANIC] message for [Error] and exit!
     pub fn panic(self) -> Self {
         panic!("{}", self);
     }
 }
 
+/// Result type for xvc-walker that may also return [Error]
 pub type Result<T> = std::result::Result<T, Error>;

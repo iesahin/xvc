@@ -1,3 +1,9 @@
+//! A libnotify based file system notification module that considers ignore rules.
+//!
+//! This module uses [notify] crate to watch file system events.
+//! It filters relevant events, and also ignores the events from ignored paths.
+//! It defines [PathEvent] as a simple version of [notify::EventKind].
+//! It defines [PathEventHandler] that handles events from [notify::EventHandler].
 use crate::{
     check_ignore,
     error::{Error, Result},
@@ -6,18 +12,36 @@ use crate::{
 use notify::{Event, EventHandler, RecommendedWatcher, RecursiveMode, Watcher};
 use std::fs::Metadata;
 use std::path::PathBuf;
-use xvc_logging::watch;
 
 use crossbeam_channel::{bounded, Receiver, Sender};
 use log::{debug, warn};
 
+/// An walker-relevant event for changes in a directory.
+/// It packs newer [std::fs::Metadata] if there is.
 #[derive(Debug)]
 pub enum PathEvent {
-    Create { path: PathBuf, metadata: Metadata },
-    Update { path: PathBuf, metadata: Metadata },
-    Delete { path: PathBuf },
+    /// Emitted when a new `path` is created with `metadata`.
+    Create {
+        /// The created path
+        path: PathBuf,
+        /// The new metadata
+        metadata: Metadata,
+    },
+    /// Emitted after a new write to `path`.
+    Update {
+        /// Updated path
+        path: PathBuf,
+        /// New metadata
+        metadata: Metadata,
+    },
+    /// Emitted when [PathBuf] is deleted.
+    Delete {
+        /// Deleted path
+        path: PathBuf,
+    },
 }
 
+/// A struct that handles [notify::Event]s considering also [IgnoreRules]
 struct PathEventHandler {
     sender: Sender<PathEvent>,
     ignore_rules: IgnoreRules,
@@ -112,18 +136,20 @@ impl PathEventHandler {
     }
 }
 
+/// Create a [notify::RecommendedWatcher] and a [crossbeam_channel::Receiver] to receive
+/// [PathEvent]s. It creates the channel and [PathEventHandler] with its [Sender], then returns the
+/// [Receiver] for consumption.
+///
+/// Paths ignored by `ignore_rules` do not emit any events.
 pub fn make_watcher(
     ignore_rules: IgnoreRules,
 ) -> Result<(RecommendedWatcher, Receiver<PathEvent>)> {
     let (sender, receiver) = bounded(10000);
     let root = ignore_rules.root.clone();
-    watch!(ignore_rules);
     let mut watcher = notify::recommended_watcher(PathEventHandler {
         ignore_rules,
         sender,
     })?;
     watcher.watch(&root, RecursiveMode::Recursive)?;
-    watch!(watcher);
-    watch!(receiver);
     Ok((watcher, receiver))
 }
