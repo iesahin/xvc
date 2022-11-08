@@ -408,7 +408,6 @@ impl XvcConfig {
             .join("xvc"))
     }
 
-
     /// Load all keys from the environment that starts with `XVC_` and build a hash map with them.
     ///
     /// The resulting hash map has `key: value` elements for environment variables in the form `XVC_key=value`.
