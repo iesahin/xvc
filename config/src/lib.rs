@@ -174,6 +174,11 @@ pub struct XvcConfigInitParams {
     pub command_line_config: Option<Vec<String>>,
 }
 
+/// Keeps track of all Xvc configuration.
+///
+/// It's created by [XvcRoot] using the options from [XvcConfigInitParams].
+/// Keeps the current directory, that can also be set manually from the command line.
+/// It loads several config maps (one for each [XvcConfigOptionSource]) and cascadingly merges them to get an actual configuration.
 #[derive(Debug, Clone)]
 pub struct XvcConfig {
     /// Current directory. It can be set with xvc -C option
@@ -190,10 +195,6 @@ pub struct XvcConfig {
 
 impl fmt::Display for XvcConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // Write strictly the first element into the supplied output
-        // stream: `f`. Returns `fmt::Result` which indicates whether the
-        // operation succeeded or failed. Note that `write!` uses syntax which
-        // is very similar to `println!`.
         writeln!(f, "\nCurrent Configuration")?;
         writeln!(
             f,
@@ -208,6 +209,9 @@ impl fmt::Display for XvcConfig {
 }
 
 impl XvcConfig {
+    /// Loads the default configuration from `p`.
+    ///
+    /// The configuration must be a valid TOML document.
     fn default_conf(p: &XvcConfigInitParams) -> Self {
         let default_conf = p
             .default_configuration
@@ -244,6 +248,9 @@ impl XvcConfig {
         }
     }
 
+    /// Returns string value for `key`.
+    ///
+    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
     pub fn get_str(&self, key: &str) -> Result<XvcConfigOption<String>> {
         let opt = self.get_toml_value(key)?;
         if let TomlValue::String(val) = opt.option {
@@ -256,6 +263,9 @@ impl XvcConfig {
         }
     }
 
+    /// Returns bool value for `key`.
+    ///
+    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
     pub fn get_bool(&self, key: &str) -> Result<XvcConfigOption<bool>> {
         let opt = self.get_toml_value(key)?;
         if let TomlValue::Boolean(val) = opt.option {
@@ -268,6 +278,9 @@ impl XvcConfig {
         }
     }
 
+    /// Returns int value for `key`.
+    ///
+    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
     pub fn get_int(&self, key: &str) -> Result<XvcConfigOption<i64>> {
         let opt = self.get_toml_value(key)?;
         if let TomlValue::Integer(val) = opt.option {
@@ -280,6 +293,9 @@ impl XvcConfig {
         }
     }
 
+    /// Returns float value for `key`.
+    ///
+    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
     pub fn get_float(&self, key: &str) -> Result<XvcConfigOption<f64>> {
         let opt = self.get_toml_value(key)?;
         if let TomlValue::Float(val) = opt.option {
@@ -292,6 +308,9 @@ impl XvcConfig {
         }
     }
 
+    /// Returns [TOML value][TomlValue] corresponding to key.
+    ///
+    /// It's returned _without parsing_ from [`self.the_config`]
     pub fn get_toml_value(&self, key: &str) -> Result<XvcConfigOption<TomlValue>> {
         let value = self
             .the_config
@@ -305,6 +324,9 @@ impl XvcConfig {
         })
     }
 
+    /// Updates [`self.the_config`]  with the values found in `new_map`.
+    ///
+    /// The configuration source for all values in `new_map` is set to be `new_source`.
     fn update_from_hash_map(
         &self,
         new_map: HashMap<String, TomlValue>,
@@ -335,6 +357,10 @@ impl XvcConfig {
         })
     }
 
+    /// Updates [`self.the_config`] after parsing `configuration`.
+    ///
+    /// `configuration` must be a valid TOML document.
+    /// [Source][XvcConfigOptionSource] of all read values are set to `new_source`.
     fn update_from_toml(
         &self,
         configuration: String,
@@ -346,6 +372,7 @@ impl XvcConfig {
         self.update_from_hash_map(new_map, new_source)
     }
 
+    /// Reads `file_name` and calls `self.update_from_toml` with the contents.
     fn update_from_file(
         &self,
         file_name: &Path,
@@ -363,6 +390,7 @@ impl XvcConfig {
         }
     }
 
+    /// Return the system configuration file path for Xvc
     fn system_config_file() -> Result<PathBuf> {
         Ok(SYSTEM_CONFIG_DIRS
             .to_owned()
@@ -371,6 +399,7 @@ impl XvcConfig {
             .to_path_buf())
     }
 
+    /// Return the user configuration file path for Xvc
     fn user_config_file() -> Result<PathBuf> {
         Ok(USER_CONFIG_DIRS
             .to_owned()
@@ -379,6 +408,10 @@ impl XvcConfig {
             .join("xvc"))
     }
 
+
+    /// Load all keys from the environment that starts with `XVC_` and build a hash map with them.
+    ///
+    /// The resulting hash map has `key: value` elements for environment variables in the form `XVC_key=value`.
     fn env_map() -> Result<HashMap<String, TomlValue>> {
         let mut hm = HashMap::<String, String>::new();
         let env_key_re = Regex::new(r"^XVC_?(.+)")?;
@@ -399,6 +432,16 @@ impl XvcConfig {
         Ok(hm_val)
     }
 
+    /// Parses a string to most specific type that can represent it.
+    ///
+    /// The parsing order is
+    ///
+    /// bool -> int -> float -> string.
+    ///
+    /// If it's not parsed as bool, int is tried, then float.
+    /// If none of these work, return it as String.
+    /// This is used in [self.env_map] to get TOML values from environment variables.
+    /// Other documents in TOML form are using native TOML parsing.
     fn parse_to_value(v: String) -> TomlValue {
         if let Ok(b) = v.parse::<bool>() {
             TomlValue::Boolean(b)
@@ -411,6 +454,7 @@ impl XvcConfig {
         }
     }
 
+    /// Parses a vector of strings, and returns a `Vec<(key, value)>`.
     fn parse_key_value_vector(vector: Vec<String>) -> Vec<(String, TomlValue)> {
         vector
             .into_iter()
@@ -488,11 +532,19 @@ impl XvcConfig {
         Ok(config)
     }
 
+    /// Where do we run the command?
+    ///
+    /// This can be modified by options in the command line, so it's not always equal to [std::env::current_dir()]
     pub fn current_dir(&self) -> Result<&AbsolutePath> {
         let pb = &self.current_dir.option;
         Ok(pb)
     }
 
+    /// Globally Unique Identified for the Xvc Repository / Project
+    ///
+    /// It's stored in `core.guid` option.
+    /// It's created in [`XvcRoot::init`] and shouldn't be tampered with.
+    /// Storage commands use this to create different paths for different Xvc projects.
     pub fn guid(&self) -> Option<String> {
         match self.get_str("core.guid") {
             Ok(opt) => Some(opt.option),
@@ -503,6 +555,8 @@ impl XvcConfig {
         }
     }
 
+    /// The current verbosity level.
+    /// Set with `core.verbosity` option.
     pub fn verbosity(&self) -> XvcVerbosity {
         let verbosity_str = match self.get_str("core.verbosity") {
             Ok(opt) => opt.option,
@@ -521,6 +575,8 @@ impl XvcConfig {
         }
     }
 
+    /// Returns a struct (`T`) value by using its `FromStr` implementation.
+    /// It parses the string to get the value.
     pub fn get_val<T>(&self, key: &str) -> Result<T>
     where
         T: FromStr,
@@ -533,15 +589,37 @@ impl XvcConfig {
     }
 }
 
+/// Trait to update CLI options with defaults from configuration.
+///
+/// When a CLI struct like [xvc_pipeline::PipelineCLI] implements this trait, it reads the configuration and updates values not set in the command line accordingly.
 pub trait UpdateFromXvcConfig {
+    /// Update the implementing struct from the configuration. 
+    /// Reading the relevant keys and values of the config is in implementor's responsibility.
+    ///
+    /// This is used to abstract away CLI structs and crate options.
     fn update_from_conf(self, conf: &XvcConfig) -> Result<Box<Self>>;
 }
 
+/// A struct implementing this trait can instantiate itself from XvcConfig.
+///
+/// When an option should be parsed and converted to a struct, it implements this trait.
+/// The functions are basically identical, and uses [XvcConfig::get_val] to instantiate.
+/// It's used to bind a configuration key (str) "group.key" with a struct.
+///
+/// See [conf] macro below for a shortcut.
 pub trait FromConfigKey<T: FromStr> {
+    /// Create a value of type `T` from configuration.
+    /// Supposed to panic! if there is no key, or the value cannot be parsed.
     fn from_conf(conf: &XvcConfig) -> T;
+
+    /// Try to create a type `T` from the configuration.
+    /// Returns error if there is no key, or the value cannot be parsed.
     fn try_from_conf(conf: &XvcConfig) -> Result<T>;
 }
 
+/// Binds a type with a configuration key.
+///
+/// When you declare `conf!("group.subgroup.key", MyType)`, this macro writes the code necessary to create `MyType` from the configuration.
 #[macro_export]
 macro_rules! conf {
     ($type: ty, $key: literal) => {
@@ -557,6 +635,10 @@ macro_rules! conf {
     };
 }
 
+/// Convert a TomlValue which can be a [TomlValue::Table] or any other simple type to a hash map with keys in the hierarchical form.
+///
+/// A `key` in TOML table `[group]` will have `group.key` in the returned hash map. 
+/// The groups can be arbitrarily deep.
 pub fn toml_value_to_hashmap(key: String, value: TomlValue) -> HashMap<String, TomlValue> {
     let mut key_value_stack = Vec::<(String, TomlValue)>::new();
     let mut key_value_map = HashMap::<String, TomlValue>::new();
