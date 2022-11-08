@@ -28,7 +28,7 @@ pub fn dispatch(args: Vec<&str>) -> Result<()> {
         args
     };
 
-    let cli_opts = cli::XvcCLI::parse_from(args_with_binary_name);
+    let cli_opts = cli::XvcCLI::from_str_slice(&args_with_binary_name)?;
 
     cli::dispatch(cli_opts)
 }
@@ -51,7 +51,7 @@ pub fn test_dispatch(
         args
     };
 
-    let cli_opts = cli::XvcCLI::parse_from(args_with_binary_name);
+    let cli_opts = cli::XvcCLI::from_str_slice(&args_with_binary_name)?;
     watch!(cli_opts);
 
     cli::test_dispatch(xvc_root_opt, cli_opts, verbosity)

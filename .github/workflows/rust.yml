@@ -68,6 +68,9 @@ jobs:
       # - name: Test the connection
       #   run: ssh xvc-test@emresult.com 'ls'
 
+      - name: Git config for automated Git tests
+        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev'
+
       - name: Install rust
         uses: actions-rs/toolchain@v1
         with:

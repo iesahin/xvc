@@ -64,7 +64,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
             }
         }
         None => {
-            info!("No previous installation found in {:?}", path);
+            info!("No previous repository found in {:?}", path);
         }
     }
 
@@ -79,7 +79,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
             }
         }
         Some(git_root) => {
-            info!("Git installation found in: {:?}", git_root);
+            info!("Git repository found in: {:?}", git_root);
         }
     }
     let default_configuration = default_project_config(!opts.no_git);

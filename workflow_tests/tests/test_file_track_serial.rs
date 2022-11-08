@@ -7,6 +7,7 @@ use std::{fs, path::PathBuf};
 use crate::common::{run_in_example_xvc, run_in_temp_xvc_dir};
 use jwalk;
 use regex::Regex;
+use subprocess::Exec;
 use xvc::error::{Error, Result};
 use xvc::{test_dispatch, watch};
 use xvc_config::XvcVerbosity;
@@ -23,6 +24,11 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     create_directory_tree(&level_1, 10, 10)?;
 
     Ok(temp_dir)
+}
+
+fn sh(cmd: String) -> String {
+    watch!(cmd);
+    Exec::shell(cmd).capture().unwrap().stdout_str()
 }
 
 #[test]
@@ -162,6 +168,27 @@ fn test_file_track_serial() -> Result<()> {
     assert!(data_line[0].len() > 0, "{}", data_line[0]);
 
     // todo!("Test different types of cache (symlink, hardlink, copy, reflink");
+
+    //
+
+    let git_status_res = sh("git status -s".to_string());
+    let gs_xvc = line_captures(&git_status_res, r#".* \.xvc/.*"#);
+    assert!(
+        gs_xvc.is_empty(),
+        "{gs_xvc:?} shouldn't contain any `.xvc/` lines."
+    );
+
+    let gs_gitignore = line_captures(&git_status_res, r#".* \.gitignore"#);
+    assert!(
+        gs_gitignore.is_empty(),
+        "{gs_gitignore:?} shouldn't contain any `.gitignore` lines."
+    );
+
+    let gs_xvcignore = line_captures(&git_status_res, r#".* \.xvcignore"#);
+    assert!(
+        gs_xvcignore.is_empty(),
+        "{gs_xvcignore:?} shouldn't contain any `.xvcignore` lines."
+    );
 
     Ok(())
 }

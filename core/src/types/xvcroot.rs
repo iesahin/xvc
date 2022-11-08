@@ -147,7 +147,7 @@ impl XvcRoot {
                     let xvcignore_path = path.join(XVCIGNORE_FILENAME);
                     fs::write(xvcignore_path, XVCIGNORE_INITIAL_CONTENT)?;
 
-                    let use_git = config.get_bool("core.use_git")?.option;
+                    let use_git = config.get_bool("git.use_git")?.option;
                     if use_git {
                         let gitignore_path = path.join(&PathBuf::from(".gitignore"));
                         fs::write(gitignore_path, GITIGNORE_INITIAL_CONTENT)?;
