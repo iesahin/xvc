@@ -321,6 +321,9 @@ fn handle_git_automation(xvc_root: &XvcRoot, xvc_cmd: &str) -> Result<()> {
                 }
             };
 
+            let git_version = exec_git(&["--version"]);
+            watch!(git_version);
+
             // Do we have user staged files?
             let git_diff_staged_out = exec_git(&["diff", "--name-only", "--cached"])?;
             watch!(git_diff_staged_out);
