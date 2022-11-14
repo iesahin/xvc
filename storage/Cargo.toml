@@ -62,6 +62,7 @@ reflink = "^0.1"
 relative-path = { version = "^1.5", features = ["serde"] }
 path-absolutize = "^3.0"
 glob = "^0.3"
+which = "^4.3"
 
 ## Logging and errors
 thiserror = "^1.0"

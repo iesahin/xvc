@@ -71,6 +71,15 @@ pub enum Error {
         source: subprocess::PopenError,
     },
 
+    #[error("Process Error.\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}")]
+    ProcessError { stdout: String, stderr: String },
+
+    #[error("Cannot Find Executable: {source}")]
+    WhichError {
+        #[from]
+        source: which::Error,
+    },
+
     #[cfg(any(feature = "s3", feature = "minio"))]
     #[error("Cloud Credentials Error: {source}")]
     CloudCredentialsError {

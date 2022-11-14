@@ -9,6 +9,7 @@ pub mod local;
 pub mod minio;
 #[cfg(feature = "r2")]
 pub mod r2;
+pub mod rsync;
 #[cfg(feature = "s3")]
 pub mod s3;
 #[cfg(feature = "wasabi")]
@@ -48,6 +49,7 @@ use self::generic::XvcGenericStorage;
 pub enum XvcStorage {
     Local(XvcLocalStorage),
     Generic(XvcGenericStorage),
+    Rsync(rsync::XvcRsyncStorage),
     #[cfg(feature = "s3")]
     S3(s3::XvcS3Storage),
     #[cfg(feature = "r2")]
@@ -82,6 +84,17 @@ impl Display for XvcStorage {
                 gr.guid,
                 gr.url.as_ref().unwrap_or(&String::new()),
                 gr.storage_dir.as_ref().unwrap_or(&String::new())
+            ),
+            XvcStorage::Rsync(r) => write!(
+                f,
+                "Rsync:   {}\t{}\t{}:{}{}",
+                r.name,
+                r.guid,
+                r.host,
+                r.port
+                    .map(|p| p.to_string())
+                    .unwrap_or_else(|| "".to_string()),
+                r.storage_dir
             ),
 
             #[cfg(feature = "s3")]
@@ -166,6 +179,7 @@ impl XvcStorageOperations for XvcStorage {
         match self {
             XvcStorage::Local(lr) => lr.init(output, xvc_root),
             XvcStorage::Generic(gr) => gr.init(output, xvc_root),
+            XvcStorage::Rsync(r) => r.init(output, xvc_root),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.init(output, xvc_root),
             #[cfg(feature = "minio")]
@@ -189,6 +203,7 @@ impl XvcStorageOperations for XvcStorage {
         match self {
             XvcStorage::Local(lr) => lr.list(output, xvc_root),
             XvcStorage::Generic(gr) => gr.list(output, xvc_root),
+            XvcStorage::Rsync(r) => r.list(output, xvc_root),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.list(output, xvc_root),
             #[cfg(feature = "minio")]
@@ -214,6 +229,7 @@ impl XvcStorageOperations for XvcStorage {
         match self {
             XvcStorage::Local(lr) => lr.send(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.send(output, xvc_root, paths, force),
+            XvcStorage::Rsync(r) => r.send(output, xvc_root, paths, force),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.send(output, xvc_root, paths, force),
             #[cfg(feature = "minio")]
@@ -239,6 +255,7 @@ impl XvcStorageOperations for XvcStorage {
         match self {
             XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
+            XvcStorage::Rsync(r) => r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "minio")]
@@ -263,6 +280,7 @@ impl XvcStorageOperations for XvcStorage {
         match self {
             XvcStorage::Local(lr) => lr.delete(output, xvc_root, paths),
             XvcStorage::Generic(gr) => gr.delete(output, xvc_root, paths),
+            XvcStorage::Rsync(r) => r.delete(output, xvc_root, paths),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.delete(output, xvc_root, paths),
             #[cfg(feature = "minio")]
@@ -353,6 +371,7 @@ pub fn get_remote_from_store(
         StorageIdentifier::Name(ref n) => match r {
             XvcStorage::Local(r) => r.name == *n,
             XvcStorage::Generic(r) => r.name == *n,
+            XvcStorage::Rsync(r) => r.name == *n,
             #[cfg(feature = "s3")]
             XvcStorage::S3(r) => r.name == *n,
             #[cfg(feature = "minio")]
@@ -369,6 +388,7 @@ pub fn get_remote_from_store(
         StorageIdentifier::Uuid(ref id) => match r {
             XvcStorage::Local(lr) => lr.guid == (*id).into(),
             XvcStorage::Generic(gr) => gr.guid == (*id).into(),
+            XvcStorage::Rsync(r) => r.guid == (*id).into(),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.guid == (*id).into(),
             #[cfg(feature = "minio")]
