@@ -65,6 +65,7 @@ pub const GIT_DIR: &str = ".git";
 ///
 /// We ignore all, and just track the store, entity counter and the configuration
 pub const GITIGNORE_INITIAL_CONTENT: &str = "
+## Following are required for Xvc to function correctly.
 .xvc/*
 !.xvc/store/
 !.xvc/ec/

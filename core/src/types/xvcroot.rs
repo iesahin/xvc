@@ -3,6 +3,8 @@ use log::trace;
 use path_absolutize::Absolutize;
 use std::fmt;
 use std::fs;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use xvc_ecs::ecs::timestamp;
@@ -150,7 +152,8 @@ impl XvcRoot {
                     let use_git = config.get_bool("git.use_git")?.option;
                     if use_git {
                         let gitignore_path = path.join(&PathBuf::from(".gitignore"));
-                        fs::write(gitignore_path, GITIGNORE_INITIAL_CONTENT)?;
+                        let mut out = OpenOptions::new().append(true).open(&gitignore_path)?;
+                        writeln!(out, "{}", GITIGNORE_INITIAL_CONTENT)?;
                     }
                     XvcRoot::new(&path, project_config_opts)
                 } else {
