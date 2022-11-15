@@ -30,16 +30,17 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
-#[cfg_attr(not(feature = "test-generic-rsync"), ignore)]
-fn test_storage_new_generic_rsync() -> Result<()> {
+#[cfg_attr(not(feature = "test-rsync"), ignore)]
+fn test_storage_new_rsync() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let storage_dir_name = format!(
         "/tmp/{}/",
         common::random_dir_name("xvc-storage", Some(111))
     );
-    let test_host = "xvc-test@one.emresult.com";
-    let url = format!("{test_host}");
+    let test_user = "xvc-test";
+    let test_host = "one.emresult.com";
+    let url = format!("{test_user}@{test_host}");
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
 
     let x = |cmd: &[&str]| {
@@ -56,25 +57,15 @@ fn test_storage_new_generic_rsync() -> Result<()> {
     let out = x(&[
         "storage",
         "new",
-        "generic",
+        "rsync",
         "--name",
-        "generic-storage",
-        "--url",
-        &url,
+        "rsync-storage",
+        "--host",
+        &test_host,
+        "--user",
+        &test_user,
         "--storage-dir",
         &storage_dir_name,
-        "--init",
-        "ssh {URL} 'mkdir -p {STORAGE_DIR}' ; rsync -av {LOCAL_GUID_FILE_PATH} {URL}:{STORAGE_GUID_FILE_PATH}",
-        "--list",
-        "ssh {URL} 'ls -1 {STORAGE_DIR}'",
-        "--upload",
-        "ssh {URL} 'mkdir -p {STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}' ; rsync -av {ABSOLUTE_CACHE_PATH} {URL}:{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}",
-        "--download",
-        "mkdir -p {ABSOLUTE_CACHE_DIR} ; rsync -av {URL}:{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH} {ABSOLUTE_CACHE_PATH}",
-        "--delete",
-        "ssh {URL} 'rm {STORAGE_DIR}{RELATIVE_CACHE_PATH}'",
-        "--processes",
-        "4",
     ])?;
 
     watch!(out);
@@ -99,7 +90,7 @@ fn test_storage_new_generic_rsync() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "push", "--to", "generic-storage", the_file])?;
+    let push_result = x(&["file", "push", "--to", "rsync-storage", the_file])?;
     watch!(push_result);
 
     let file_list = sh(format!("ssh {url} 'ls -1R {storage_dir_name} | grep bin'"));
@@ -122,7 +113,7 @@ fn test_storage_new_generic_rsync() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "generic-storage"])?;
+    let fetch_result = x(&["file", "fetch", "--from", "rsync-storage"])?;
 
     watch!(fetch_result);
 
@@ -130,7 +121,10 @@ fn test_storage_new_generic_rsync() -> Result<()> {
         .into_iter()
         .filter(|f| {
             f.as_ref()
-                .map(|f| f.file_type().is_file())
+                .map(|f| {
+                    watch!(f);
+                    f.file_type().is_file()
+                })
                 .unwrap_or_else(|_| false)
         })
         .count();
@@ -141,7 +135,7 @@ fn test_storage_new_generic_rsync() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "generic-storage"])?;
+    let pull_result = x(&["file", "pull", "--from", "rsync-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)

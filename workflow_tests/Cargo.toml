@@ -57,6 +57,7 @@ test-wasabi=["wasabi"]
 test-gcs =["gcs"]
 test-r2 = ["r2"]
 test-rsync = []
+test-generic-rsync = []
 
 
 

@@ -105,6 +105,31 @@ pub enum StorageNewSubCommand {
         storage_dir: Option<String>,
     },
 
+    /// add a new rsync remote
+    #[clap()]
+    Rsync {
+        /// Name of the remote
+        ///
+        /// This must be unique among all remotes of the project
+        #[clap(long = "name", short = 'n')]
+        name: String,
+        /// Hostname for the connection in the form host.example.com  (without @, : or protocol)
+        #[clap(long)]
+        host: String,
+        /// Port number for the connection in the form 22.
+        /// Doesn't add port number to connection string if not given.
+        #[clap(long)]
+        port: Option<usize>,
+        /// User name for the connection, the part before @ in user@example.com (without @,
+        /// hostname).
+        /// User name isn't included in connection strings if not given.
+        #[clap(long)]
+        user: Option<String>,
+        /// Remote directory in the host to store the files.
+        #[clap(long)]
+        storage_dir: String,
+    },
+
     #[cfg(feature = "s3")]
     /// Add a new S3 remote
     #[clap()]
@@ -386,6 +411,22 @@ fn cmd_remote_new(
             bucket_name,
             endpoint,
             storage_prefix,
+        ),
+        StorageNewSubCommand::Rsync {
+            name,
+            host,
+            port,
+            user,
+            storage_dir,
+        } => storage::rsync::cmd_new_rsync(
+            input,
+            output_snd,
+            xvc_root,
+            name,
+            host,
+            port,
+            user,
+            storage_dir,
         ),
     }
 }
