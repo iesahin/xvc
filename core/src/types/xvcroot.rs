@@ -152,7 +152,10 @@ impl XvcRoot {
                     let use_git = config.get_bool("git.use_git")?.option;
                     if use_git {
                         let gitignore_path = path.join(&PathBuf::from(".gitignore"));
-                        let mut out = OpenOptions::new().append(true).open(&gitignore_path)?;
+                        let mut out = OpenOptions::new()
+                            .create(true)
+                            .append(true)
+                            .open(&gitignore_path)?;
                         writeln!(out, "{}", GITIGNORE_INITIAL_CONTENT)?;
                     }
                     XvcRoot::new(&path, project_config_opts)

@@ -13,6 +13,8 @@ fn test_root() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let xvc_root = run_in_temp_xvc_dir()?;
 
+    watch!(xvc_root);
+
     let rel = test_dispatch(Some(&xvc_root), vec!["xvc", "root"], XvcVerbosity::Trace)?;
 
     assert!(rel.trim().to_string() == ".".to_string());
