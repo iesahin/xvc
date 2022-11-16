@@ -139,10 +139,13 @@ impl Display for XvcStorage {
 
 pub trait XvcStorageOperations {
     fn init(
-        &self,
+        self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageInitEvent>;
+    ) -> Result<(XvcStorageInitEvent, Self)>
+    where
+        Self: Sized;
+
     fn list(
         &self,
         output: Sender<XvcOutputLine>,
@@ -172,26 +175,53 @@ pub trait XvcStorageOperations {
 
 impl XvcStorageOperations for XvcStorage {
     fn init(
-        &self,
+        self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageInitEvent> {
+    ) -> Result<(XvcStorageInitEvent, Self)> {
         match self {
-            XvcStorage::Local(lr) => lr.init(output, xvc_root),
-            XvcStorage::Generic(gr) => gr.init(output, xvc_root),
-            XvcStorage::Rsync(r) => r.init(output, xvc_root),
+            XvcStorage::Local(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::Local(r)))
+            }
+            XvcStorage::Generic(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::Generic(r)))
+            }
+            XvcStorage::Rsync(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::Rsync(r)))
+            }
             #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.init(output, xvc_root),
+            XvcStorage::S3(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::S3(r)))
+            }
             #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.init(output, xvc_root),
+            XvcStorage::Minio(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::Minio(r)))
+            }
             #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.init(output, xvc_root),
+            XvcStorage::R2(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::R2(r)))
+            }
             #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.init(output, xvc_root),
+            XvcStorage::Gcs(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::Gcs(r)))
+            }
             #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.init(output, xvc_root),
+            XvcStorage::Wasabi(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::Wasabi(r)))
+            }
             #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.init(output, xvc_root),
+            XvcStorage::DigitalOcean(r) => {
+                let (e, r) = r.init(output, xvc_root)?;
+                Ok((e, XvcStorage::DigitalOcean(r)))
+            }
         }
     }
 

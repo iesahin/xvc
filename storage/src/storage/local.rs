@@ -28,7 +28,7 @@ pub fn cmd_storage_new_local(
         name,
         path,
     };
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -54,10 +54,10 @@ pub struct XvcLocalStorage {
 
 impl XvcStorageOperations for XvcLocalStorage {
     fn init(
-        &self,
+        self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageInitEvent> {
+    ) -> Result<(XvcStorageInitEvent, Self)> {
         // Check if there is no directory as `self.path`
         if self.path.exists() {
             return Err(anyhow::anyhow!("Remote should point to a blank directory").into());
@@ -73,9 +73,12 @@ impl XvcStorageOperations for XvcLocalStorage {
             self.guid,
         )));
 
-        Ok(XvcStorageInitEvent {
-            guid: self.guid.clone(),
-        })
+        Ok((
+            XvcStorageInitEvent {
+                guid: self.guid.clone(),
+            },
+            self,
+        ))
     }
 
     fn list(

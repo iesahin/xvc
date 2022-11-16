@@ -45,7 +45,7 @@ pub fn cmd_new_rsync(
 
     watch!(storage);
 
-    let init_event = storage.init(output_snd.clone(), xvc_root)?;
+    let (init_event, storage) = storage.init(output_snd.clone(), xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -245,10 +245,10 @@ impl XvcRsyncStorage {
 impl XvcStorageOperations for XvcRsyncStorage {
     /// Initialize the repository by copying guid file to remote storage directory.
     fn init(
-        &self,
+        self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<super::XvcStorageInitEvent> {
+    ) -> Result<(super::XvcStorageInitEvent, Self)> {
         // "--init",
         // "ssh {URL} 'mkdir -p {STORAGE_DIR}' ; rsync -av {LOCAL_GUID_FILE_PATH} {URL}:{STORAGE_GUID_FILE_PATH}",
         //
@@ -281,9 +281,12 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
         fs::remove_file(&local_guid_path)?;
 
-        Ok(XvcStorageInitEvent {
-            guid: self.guid.clone(),
-        })
+        Ok((
+            XvcStorageInitEvent {
+                guid: self.guid.clone(),
+            },
+            self,
+        ))
     }
 
     /// Lists all files in the remote directory that match to regex:
