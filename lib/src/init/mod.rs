@@ -93,6 +93,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         include_environment_config: true,
         command_line_config: None,
     };
+    watch!(config_opts);
 
     let xvc_root = XvcRoot::init(&path, config_opts)?;
     watch!(xvc_root);

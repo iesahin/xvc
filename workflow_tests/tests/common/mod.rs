@@ -1,8 +1,10 @@
 #![allow(dead_code)]
 
+use anyhow::anyhow;
 use std::env;
 use std::path::PathBuf;
 use std::process::Command;
+use subprocess::{CaptureData, Exec};
 use xvc::init::InitCLI;
 
 use xvc_core::XvcRoot;
@@ -125,4 +127,10 @@ pub fn run_in_temp_xvc_dir() -> Result<XvcRoot> {
     )?;
     watch!(xvc_root);
     Ok(xvc_root)
+}
+
+pub fn sh(cmd: &str) -> Result<CaptureData> {
+    Exec::shell(cmd)
+        .capture()
+        .map_err(|e| anyhow!("{}", e).into())
 }
