@@ -150,10 +150,6 @@ fn test_storage_new_wasabi() -> Result<()> {
         sh(sh_cmd)
     };
 
-    // Set the password in the environment
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key.clone());
-    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key.clone());
-
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc"];
         c.extend(cmd);
@@ -253,6 +249,15 @@ fn test_storage_new_wasabi() -> Result<()> {
 
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
+    // Set remote specific passwords and remove AWS ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_wasabi-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_wasabi-storage", secret_key);
+
+    env::remove_var("WASABI_ACCESS_KEY_ID");
+    env::remove_var("WASABI_SECRET_ACCESS_KEY");
+
+    let pull_result_2 = x(&["file", "pull", "--from", "wasabi-storage"])?;
+    watch!(pull_result_2);
 
     Ok(())
 }
