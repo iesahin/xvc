@@ -12,12 +12,13 @@ use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
+    watch!(temp_dir);
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 10, 10)?;
-    // root/dir1 may have another tree
-    let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10)?;
+    // create_directory_tree(&temp_dir, 10, 10)?;
+    // // root/dir1 may have another tree
+    // let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
+    // create_directory_tree(&level_1, 10, 10)?;
 
     Ok(temp_dir)
 }
@@ -122,6 +123,35 @@ fn test_storage_new_local() -> Result<()> {
 
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
+
+    // When we reinit with the same storage path, it shouldn't update the GUID.
+    // See https://github.com/iesahin/xvc/issues/123
+    let current_guid = fs::read_to_string(&storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
+    watch!(current_guid);
+    // We'll use a separate process to run the following tests.
+    // Entity counter cannot be loaded to the same process twice.
+    let another_xvc_root = assert_fs::TempDir::new()?;
+    watch!(another_xvc_root);
+    let mut xvc = assert_cmd::cmd::Command::cargo_bin("xvc")?;
+    watch!(xvc);
+    xvc.current_dir(&another_xvc_root);
+    xvc.arg("init").assert();
+    xvc.args(&[
+        "storage",
+        "new",
+        "local",
+        "--name",
+        "local-storage",
+        "--path",
+        &storage_dir.to_string_lossy().to_string(),
+    ])
+    .assert();
+    let reread_guid = fs::read_to_string(&storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
+
+    assert!(
+        current_guid == reread_guid,
+        "Guid Mismatch after reinit: {current_guid} - {reread_guid}"
+    );
 
     Ok(())
 }

@@ -38,7 +38,7 @@ pub fn cmd_new_r2(
 
     watch!(remote);
 
-    let init_event = remote.init(output_snd.clone(), xvc_root)?;
+    let (init_event, remote) = remote.init(output_snd.clone(), xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -88,10 +88,10 @@ impl XvcR2Storage {
     }
 
     async fn a_init(
-        &self,
+        self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<XvcStorageInitEvent> {
+    ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
         let guid = self.guid.clone();
         let guid_str = self.guid.to_string();
@@ -109,7 +109,7 @@ impl XvcR2Storage {
             .await;
 
         match res_response {
-            Ok(_) => Ok(XvcStorageInitEvent { guid }),
+            Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
             Err(err) => {
                 output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
                 Err(Error::S3Error { source: err })
@@ -293,10 +293,10 @@ impl XvcR2Storage {
 
 impl XvcStorageOperations for XvcR2Storage {
     fn init(
-        &self,
+        self,
         output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<XvcStorageInitEvent> {
+    ) -> Result<(XvcStorageInitEvent, Self)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;

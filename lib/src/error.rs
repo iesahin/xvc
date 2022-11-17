@@ -8,6 +8,9 @@ use std::io;
 use std::num::ParseIntError;
 use thiserror::Error as ThisError;
 
+use assert_cmd;
+use assert_fs;
+
 #[allow(missing_docs)]
 #[derive(ThisError, Debug)]
 /// Error codes and messages for main Xvc CLI
@@ -114,6 +117,18 @@ pub enum Error {
 
     #[error("Git Process Error: \nSTDOUT: {stdout}\nSTDERR: {stderr}")]
     GitProcessError { stdout: String, stderr: String },
+
+    #[error("Fixture Error: {source}")]
+    FixtureError {
+        #[from]
+        source: assert_fs::fixture::FixtureError,
+    },
+
+    #[error("Cargo Error: {source}")]
+    CargoError {
+        #[from]
+        source: assert_cmd::cargo::CargoError,
+    },
 }
 
 impl Error {

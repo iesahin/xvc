@@ -1,6 +1,7 @@
 use std::{
     fs::{self, create_dir_all},
     path::PathBuf,
+    str::FromStr,
 };
 
 use crossbeam_channel::Sender;
@@ -28,7 +29,7 @@ pub fn cmd_storage_new_local(
         name,
         path,
     };
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -54,18 +55,39 @@ pub struct XvcLocalStorage {
 
 impl XvcStorageOperations for XvcLocalStorage {
     fn init(
-        &self,
+        self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageInitEvent> {
-        // Check if there is no directory as `self.path`
-        if self.path.exists() {
-            return Err(anyhow::anyhow!("Remote should point to a blank directory").into());
-        } else {
+    ) -> Result<(XvcStorageInitEvent, Self)> {
+        let guid_filename = self.path.join(XVC_STORAGE_GUID_FILENAME);
+        // If guid filename exists, we can report a reinit and exit.
+        watch!(guid_filename);
+
+        if guid_filename.exists() {
+            let already_available_guid =
+                XvcStorageGuid::from_str(&fs::read_to_string(guid_filename)?)?;
+            output.send(XvcOutputLine::Info(format!(
+                "Found previous storage {} with GUID: {}",
+                self.path.to_string_lossy(),
+                already_available_guid,
+            )))?;
+
+            let new_self = XvcLocalStorage {
+                guid: already_available_guid.clone(),
+                ..self
+            };
+            return Ok((
+                XvcStorageInitEvent {
+                    guid: already_available_guid,
+                },
+                new_self,
+            ));
+        }
+
+        if !self.path.exists() {
             create_dir_all(&self.path)?;
         }
 
-        let guid_filename = self.path.join(XVC_STORAGE_GUID_FILENAME);
         fs::write(guid_filename, format!("{}", self.guid))?;
         output.send(XvcOutputLine::Info(format!(
             "Created local remote directory {} with guid: {}",
@@ -73,9 +95,12 @@ impl XvcStorageOperations for XvcLocalStorage {
             self.guid,
         )));
 
-        Ok(XvcStorageInitEvent {
-            guid: self.guid.clone(),
-        })
+        Ok((
+            XvcStorageInitEvent {
+                guid: self.guid.clone(),
+            },
+            self,
+        ))
     }
 
     fn list(

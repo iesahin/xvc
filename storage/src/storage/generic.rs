@@ -46,7 +46,7 @@ pub fn cmd_storage_new_generic(
 
     watch!(storage);
 
-    let init_event = storage.init(output_snd.clone(), xvc_root)?;
+    let (init_event, storage) = storage.init(output_snd.clone(), xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -195,10 +195,10 @@ impl XvcStorageOperations for XvcGenericStorage {
     /// The command should have {LOCAL_GUID_FILE_PATH}  and {STORAGE_GUID_FILE_PATH} fields to
     /// upload the guid file.
     fn init(
-        &self,
+        self,
         output: Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
-    ) -> Result<super::XvcStorageInitEvent> {
+    ) -> Result<(super::XvcStorageInitEvent, Self)> {
         let mut address_map = self.address_map();
         watch!(address_map);
         let local_guid_path = env::temp_dir().join(self.guid.to_string());
@@ -233,9 +233,12 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         fs::remove_file(&local_guid_path)?;
 
-        Ok(XvcStorageInitEvent {
-            guid: self.guid.clone(),
-        })
+        Ok((
+            XvcStorageInitEvent {
+                guid: self.guid.clone(),
+            },
+            self,
+        ))
     }
 
     /// ⚠️  The output of the command should list all files.
