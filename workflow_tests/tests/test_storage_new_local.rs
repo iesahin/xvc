@@ -123,5 +123,32 @@ fn test_storage_new_local() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
+    // When we reinit the same path, it shouldn't update the GUID.
+    // See https://github.com/iesahin/xvc/issues/123
+    let current_guid = fs::read_to_string(&storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
+    let another_xvc_root = create_directory_hierarchy()?;
+    let another_x = |cmd: &[&str]| {
+        let mut c = vec!["xvc"];
+        c.extend(cmd);
+        watch!(cmd);
+        xvc::test_dispatch(Some(&another_xvc_root), c, XvcVerbosity::Warn)
+    };
+    let reinit_out = another_x(&[
+        "storage",
+        "new",
+        "local",
+        "--name",
+        "local-storage",
+        "--path",
+        &storage_dir.to_string_lossy().to_string(),
+    ])?;
+
+    let reread_guid = fs::read_to_string(&storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
+
+    assert!(
+        current_guid == reread_guid,
+        "Guid Mismatch after reinit: {current_guid} - {reread_guid}"
+    );
+
     Ok(())
 }

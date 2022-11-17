@@ -96,6 +96,12 @@ uuid = { version = "0.8", features = ["serde", "v4"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.2", features = ["serde"] }
 
+## Mostly for testing
+assert_cmd = "^2.0"
+assert_fs = "^1.0"
+predicates = "^2.1"
+
+
 [features]
 default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
 s3 = ["xvc-storage/s3"]
