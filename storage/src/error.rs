@@ -1,16 +1,13 @@
 use log::{debug, error, info, trace, warn};
 
-#[cfg(feature = "s3")]
-use s3::creds::error::CredentialsError;
-
-use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
-use std::path::PathBuf;
 use thiserror::Error as ThisError;
 
 use crate::StorageIdentifier;
 
+/// Error type for xvc-storage
+#[allow(missing_docs)]
 #[derive(ThisError, Debug)]
 pub enum Error {
     #[error("Sorry. {0} is not implemented yet")]
