@@ -161,10 +161,6 @@ fn test_storage_new_s3() -> Result<()> {
     let aws_create_bucket = s3cmd(&format!("mb s3://{bucket_name}"), "");
     watch!(aws_create_bucket);
     //
-    // Set the password in the environment
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key);
-    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key);
-
     let out = x(&[
         "storage",
         "new",
@@ -259,6 +255,16 @@ fn test_storage_new_s3() -> Result<()> {
 
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
+
+    // Set remote specific passwords and remove AWS ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_s3-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_s3-storage", secret_key);
+
+    env::remove_var("AWS_ACCESS_KEY_ID");
+    env::remove_var("AWS_SECRET_ACCESS_KEY");
+
+    let pull_result_2 = x(&["file", "pull", "--from", "s3-storage"])?;
+    watch!(pull_result_2);
 
     Ok(())
 }
