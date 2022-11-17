@@ -92,6 +92,12 @@ pub enum Error {
         #[from]
         source: s3::error::S3Error,
     },
+
+    #[error("Environment Variable Error: {source}")]
+    VarError {
+        #[from]
+        source: std::env::VarError,
+    },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
