@@ -157,10 +157,6 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
     };
 
-    // Set the password in the environment
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key.clone());
-    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key.clone());
-
     let out = x(&[
         "storage",
         "new",
@@ -253,6 +249,16 @@ fn test_storage_new_digital_ocean() -> Result<()> {
 
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
+
+    // Set remote specific passwords and remove DO ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_do-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_do-storage", secret_key);
+
+    env::remove_var("DIGITAL_OCEAN_ACCESS_KEY_ID");
+    env::remove_var("DIGITAL_OCEAN_SECRET_ACCESS_KEY");
+
+    let pull_result_2 = x(&["file", "pull", "--from", "do-storage"])?;
+    watch!(pull_result_2);
 
     Ok(())
 }
