@@ -9,6 +9,8 @@ use xvc_core::XvcCachePath;
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
 
+use anyhow::anyhow;
+
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
@@ -65,14 +67,43 @@ pub struct XvcGcsStorage {
 }
 
 impl XvcGcsStorage {
-    fn credentials(&self) -> Result<Credentials> {
+    fn remote_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var("XVC_STORAGE_ACCESS_KEY_ID").unwrap()),
-            Some(&env::var("XVC_STORAGE_SECRET_KEY").unwrap()),
-            env::var("XVC_STORAGE_SECURITY_TOKEN").as_deref().ok(),
-            env::var("XVC_STORAGE_SESSION_TOKEN").as_deref().ok(),
-            env::var("XVC_STORAGE_PROFILE").as_deref().ok(),
+            Some(&env::var(&format!(
+                "XVC_STORAGE_ACCESS_KEY_ID_{}",
+                self.name
+            ))?),
+            Some(&env::var(&format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
+            None,
+            None,
+            None,
         )
+        .map_err(|e| e.into())
+    }
+
+    fn storage_type_credentials(&self) -> Result<Credentials> {
+        Credentials::new(
+            Some(&env::var("GCS_ACCESS_KEY_ID").unwrap()),
+            Some(&env::var("GCS_SECRET_ACCESS_KEY").unwrap()),
+            None,
+            None,
+            None,
+        )
+        .map_err(|e| e.into())
+    }
+
+    fn credentials(&self) -> Result<Credentials> {
+        match self.remote_specific_credentials() {
+            Ok(c) => Ok(c),
+            Err(e1) => match self.storage_type_credentials() {
+                Ok(c) => Ok(c),
+                Err(e2) => Err(anyhow!(
+                    "None of the required environment variables found for credentials: {}\n{}\n",
+                    e1,
+                    e2
+                )),
+            },
+        }
         .map_err(|e| e.into())
     }
 
