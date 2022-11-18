@@ -163,10 +163,6 @@ fn test_storage_new_minio() -> Result<()> {
 
     watch!(create_bucket_res);
 
-    // Set the password in the environment
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID", access_key);
-    env::set_var("XVC_STORAGE_SECRET_KEY", secret_key);
-
     let out = x(&[
         "storage",
         "new",
@@ -261,6 +257,16 @@ fn test_storage_new_minio() -> Result<()> {
 
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
+
+    // Set remote specific passwords and remove general ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_minio-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_minio-storage", secret_key);
+
+    env::remove_var("MINIO_ACCESS_KEY_ID");
+    env::remove_var("MINIO_SECRET_ACCESS_KEY");
+
+    let pull_result_2 = x(&["file", "pull", "--from", "minio-storage"])?;
+    watch!(pull_result_2);
 
     Ok(())
 }

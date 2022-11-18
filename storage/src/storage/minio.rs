@@ -1,9 +1,8 @@
-use std::io::Write;
 use std::str::FromStr;
 use std::{env, fs};
 
+use anyhow::anyhow;
 use crossbeam_channel::Sender;
-use futures::executor::block_on;
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
@@ -79,14 +78,43 @@ pub struct XvcMinioStorage {
 }
 
 impl XvcMinioStorage {
-    fn credentials(&self) -> Result<Credentials> {
+    fn remote_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var("XVC_STORAGE_ACCESS_KEY_ID").unwrap()),
-            Some(&env::var("XVC_STORAGE_SECRET_KEY").unwrap()),
-            env::var("XVC_STORAGE_SECURITY_TOKEN").as_deref().ok(),
-            env::var("XVC_STORAGE_SESSION_TOKEN").as_deref().ok(),
-            env::var("XVC_STORAGE_PROFILE").as_deref().ok(),
+            Some(&env::var(&format!(
+                "XVC_STORAGE_ACCESS_KEY_ID_{}",
+                self.name
+            ))?),
+            Some(&env::var(&format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
+            None,
+            None,
+            None,
         )
+        .map_err(|e| e.into())
+    }
+
+    fn storage_type_credentials(&self) -> Result<Credentials> {
+        Credentials::new(
+            Some(&env::var("MINIO_ACCESS_KEY_ID").unwrap()),
+            Some(&env::var("MINIO_SECRET_ACCESS_KEY").unwrap()),
+            None,
+            None,
+            None,
+        )
+        .map_err(|e| e.into())
+    }
+
+    fn credentials(&self) -> Result<Credentials> {
+        match self.remote_specific_credentials() {
+            Ok(c) => Ok(c),
+            Err(e1) => match self.storage_type_credentials() {
+                Ok(c) => Ok(c),
+                Err(e2) => Err(anyhow!(
+                    "None of the required environment variables found for credentials: {}\n{}\n",
+                    e1,
+                    e2
+                )),
+            },
+        }
         .map_err(|e| e.into())
     }
 
