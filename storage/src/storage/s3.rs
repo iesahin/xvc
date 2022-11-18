@@ -19,6 +19,14 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
+/// Configure a new Amazon Web Services S3 remote storage.
+///
+/// `bucket_name`, `region` and `remote_prefix` sets a URL for the storage
+/// location.
+///
+/// This creates a [XvcS3Storage], calls its
+/// [init][XvcS3Storage::init] function to create/update guid, and
+/// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_s3(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
@@ -56,12 +64,30 @@ pub fn cmd_new_s3(
     Ok(())
 }
 
+/// An AWS S3 configuration as a remote storage location
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcS3Storage {
+    /// Specifies the storage uniquely.
+    ///
+    /// This is also stored in
+    /// `bucket_name.region.s3.amazonaws.com/storage_prefix/.xvc-guid` to identify the
+    /// remote location.
     pub guid: XvcStorageGuid,
+    /// Name of the remote to be used in commands.
+    ///
+    /// It doesn't have to be unique, though in practice setting unique names is
+    /// preferred.
     pub name: String,
+
+    /// The region that the bucket resides. (e.g. us-east-1)
     pub region: String,
+
+    /// The bucket name that you created before configuring this.
     pub bucket_name: String,
+
+    /// The "directory" in the bucket that Xvc will use.
+    ///
+    /// Xvc checks the presence of Guid file before creating this folder.
     pub remote_prefix: String,
 }
 

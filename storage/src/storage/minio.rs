@@ -22,6 +22,14 @@ use super::{
     XvcStorageSendEvent, XVC_STORAGE_GUID_FILENAME,
 };
 
+/// Configure a new Minio remote storage.
+///
+/// `endpoint`, `bucket_name`, `region` and `remote_prefix` sets a URL for the
+/// storage location.
+///
+/// This creates a [XvcMinioStorage], calls its
+/// [init][XvcMinioStorage::init] function to create/update guid, and
+/// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_minio(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,

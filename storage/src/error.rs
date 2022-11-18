@@ -11,7 +11,9 @@ use thiserror::Error as ThisError;
 
 use crate::StorageIdentifier;
 
+/// Error messages for xvc-storage
 #[derive(ThisError, Debug)]
+#[allow(missing_docs)]
 pub enum Error {
     #[error("Sorry. {0} is not implemented yet")]
     Todo(&'static str),

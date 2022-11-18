@@ -18,6 +18,14 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
+/// Configure a new Google Cloud Storage remote.
+///
+/// `bucket_name`, `region` and `remote_prefix` sets a URL for the storage
+/// location.
+///
+/// This creates a [XvcGcsStorage], calls its
+/// [init][XvcGcsStorage::init] function to create/update guid, and
+/// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_gcs(
     input: std::io::StdinLock,
     output_snd: crossbeam_channel::Sender<XvcOutputLine>,

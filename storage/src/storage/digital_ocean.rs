@@ -19,6 +19,14 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
+/// Configure a new Digital Ocean Spaces remote.
+///
+/// `bucket_name`, `region` and `remote_prefix` sets a URL for the storage
+/// location.
+///
+/// This creates a [XvcDigitalOceanStorage], calls its
+/// [init][XvcDigitalOceanStorage::init] function to create/update guid, and
+/// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_digital_ocean(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,

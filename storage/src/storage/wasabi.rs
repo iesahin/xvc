@@ -18,6 +18,14 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
+/// Configure a new Wasabi storage remote.
+///
+/// `bucket_name`, `endpoint` and `storage_prefix` sets a URL for the storage
+/// location.
+///
+/// This creates a [XvcWasabiStorage], calls its
+/// [init][XvcWasabiStorage::init] function to create/update guid, and
+/// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub(crate) fn cmd_new_wasabi(
     input: std::io::StdinLock,
     output_snd: crossbeam_channel::Sender<XvcOutputLine>,
@@ -55,12 +63,33 @@ pub(crate) fn cmd_new_wasabi(
     Ok(())
 }
 
+/// A Wasabi storage configuration.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcWasabiStorage {
+    /// Specifies the storage uniquely.
+    ///
+    /// This is also stored in
+    /// `bucket_name.s3.wasabisys.com/storage_prefix/.xvc-guid` to identify the
+    /// remote location.
     pub guid: XvcStorageGuid,
+
+    /// Name of the remote to be used in commands.
+    ///
+    /// It doesn't have to be unique, though in practice setting unique names is
+    /// preferred.
     pub name: String,
+
+    /// The endpoint to communicate with the server.
+    ///
+    /// In most cases this is `s3.wasabisys.com`
     pub endpoint: String,
+
+    /// The bucket name that you created before configuring this.
     pub bucket_name: String,
+
+    /// The directory in the bucket that Xvc will use.
+    ///
+    /// Xvc checks the presence of Guid file before creating this folder.
     pub storage_prefix: String,
 }
 

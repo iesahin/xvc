@@ -256,6 +256,11 @@ pub enum StorageNewSubCommand {
     },
 }
 
+/// Specifies a storage by either a name or a GUID.
+///
+/// Name is specified with `--name` option of most of the storage types.
+/// Guid is generated or loaded in [XvcStorageOperations::init] operations and
+/// kept in Storage structs.
 #[derive(Debug, Clone, PartialEq, Eq, Display)]
 pub enum StorageIdentifier {
     Name(String),
@@ -263,6 +268,11 @@ pub enum StorageIdentifier {
 }
 
 impl FromStr for StorageIdentifier {
+    /// This tries to parse `s` as a [Uuid]. If it can't it
+    /// considers it a name.
+    ///
+    /// The only way this fails is when `s` cannot be converted to string.
+    /// That's very unlikely.
     fn from_str(s: &str) -> Result<Self> {
         match uuid::Uuid::parse_str(s) {
             Ok(uuid) => Ok(Self::Uuid(uuid)),
@@ -273,6 +283,12 @@ impl FromStr for StorageIdentifier {
     type Err = crate::Error;
 }
 
+/// Entry point for `xvc storage` group of commands.
+///
+/// It matches the subcommand in [StorageCLI::subcommand] and runs the
+/// appropriate function.
+///
+/// Other arguments are passed to subcommands.
 pub fn cmd_storage(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
@@ -282,11 +298,20 @@ pub fn cmd_storage(
     match opts.subcommand {
         StorageSubCommand::List => cmd_storage_list(input, output_snd, xvc_root),
         StorageSubCommand::Remove { name } => cmd_storage_remove(input, output_snd, xvc_root, name),
-        StorageSubCommand::New(new) => cmd_remote_new(input, output_snd, xvc_root, new),
+        StorageSubCommand::New(new) => cmd_storage_new(input, output_snd, xvc_root, new),
     }
 }
 
-fn cmd_remote_new(
+/// Configure a new storage. 
+/// 
+/// The available storages and their configuration is dependent to compilation.
+/// In minimum, it includes [local][cmd_storage_new_local] and
+/// [generic][cmd_storage_new_generic]. 
+/// 
+/// This function matches [StorageNewSubCommand] and calls the appropriate
+/// function from child modules. Most of the available options are behind 
+/// feature flags, that also guard the modules. 
+fn cmd_storage_new(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
@@ -431,6 +456,9 @@ fn cmd_remote_new(
     }
 }
 
+/// Removes a storage from the configurations. 
+/// 
+/// This doesn't remove the history associated with them. 
 fn cmd_storage_remove(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
@@ -440,6 +468,10 @@ fn cmd_storage_remove(
     todo!()
 }
 
+/// Lists all available storages. 
+/// 
+/// It runs [XvcStorage::display] and lists all elements line by line to
+/// `output_snd`. 
 fn cmd_storage_list(
     _input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,

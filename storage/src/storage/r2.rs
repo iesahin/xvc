@@ -19,6 +19,14 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
+/// Configure a new Cloudflare R2 remote storage.
+///
+/// `account_id`, `bucket_name`, and `remote_prefix` sets a URL for the
+/// storage location.
+///
+/// This creates a [XvcR2Storage], calls its
+/// [init][XvcR2Storage::init] function to create/update guid, and
+/// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_r2(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
