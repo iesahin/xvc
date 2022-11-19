@@ -1,0 +1,23 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+    authors:
+      - netlify
+      - restyled-io
+  categories:
+    - title: New Features & Enhancements 🌟
+      labels:
+        - enhancement
+    - title: Fixed Bugs 🐛
+      labels:
+        - bug
+    - title: Documentation 📚
+      labels:
+        - documentation
+    - title: Refactored 🏗️
+      labels:
+        - refactor
+    - title: Others 👽️
+      labels:
+        - "*"
