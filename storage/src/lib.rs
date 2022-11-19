@@ -23,235 +23,235 @@ use xvc_logging::XvcOutputLine;
 
 /// Storage (on the cloud) management commands
 #[derive(Debug, Parser)]
-#[clap(name = "storage", about = "")]
+#[command(name = "storage", about = "")]
 pub struct StorageCLI {
-    #[clap(subcommand)]
+    #[command(subcommand)]
     pub subcommand: StorageSubCommand,
 }
 
 /// Remote subcommands
 #[derive(Debug, Clone, Parser)]
-#[clap(about = "Manage storages containing tracked file content")]
+#[command(about = "Manage storages containing tracked file content")]
 pub enum StorageSubCommand {
     /// list all remotes
-    #[clap()]
+    #[command()]
     List,
     /// Remove a remote
-    #[clap()]
+    #[command()]
     Remove {
         /// Name of the remote to be deleted
-        #[clap(long)]
+        #[arg(long)]
         name: String,
     },
 
-    #[clap(subcommand)]
+    #[command(subcommand)]
     New(StorageNewSubCommand),
 }
 
 /// Add new remotes
 #[derive(Debug, Clone, Subcommand)]
-#[clap(about = "add new remotes")]
+#[command(about = "add new remotes")]
 pub enum StorageNewSubCommand {
     /// add a new local remote
-    #[clap()]
+    #[command()]
     Local {
         /// Directory to be set as a remote
-        #[clap(long)]
+        #[arg(long)]
         path: PathBuf,
-        #[clap(long, short)]
+        #[arg(long, short)]
         name: String,
     },
 
     /// add a new generic remote
-    #[clap()]
+    #[command()]
     Generic {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// Command to initialize the remote. This command is run once after defining the remote.
         ///
         /// You can use {URL} and {DIR}  as shortcuts.
-        #[clap(long = "init", short = 'i')]
+        #[arg(long = "init", short = 'i')]
         init_command: String,
         /// Command to list the files in remote
         ///
         /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
-        #[clap(long = "list", short = 'l')]
+        #[arg(long = "list", short = 'l')]
         list_command: String,
         /// Command to download a file from remote.
         ///
         /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
-        #[clap(long = "download", short = 'd')]
+        #[arg(long = "download", short = 'd')]
         download_command: String,
         /// Command to upload a file to remote.
         ///
         /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
-        #[clap(long = "upload", short = 'u')]
+        #[arg(long = "upload", short = 'u')]
         upload_command: String,
         /// The delete command to remove a file from remote
         /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
-        #[clap(long = "delete", short = 'D')]
+        #[arg(long = "delete", short = 'D')]
         delete_command: String,
         /// Number of maximum processes to run simultaneously
-        #[clap(long = "processes", short = 'M', default_value_t = 1)]
+        #[arg(long = "processes", short = 'M', default_value_t = 1)]
         max_processes: usize,
         /// You can set a string to replace {URL} placeholder in commands
-        #[clap(long)]
+        #[arg(long)]
         url: Option<String>,
         /// You can set a string to replace {DIR} placeholder in commands
-        #[clap(long)]
+        #[arg(long)]
         storage_dir: Option<String>,
     },
 
     /// add a new rsync remote
-    #[clap()]
+    #[command()]
     Rsync {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// Hostname for the connection in the form host.example.com  (without @, : or protocol)
-        #[clap(long)]
+        #[arg(long)]
         host: String,
         /// Port number for the connection in the form 22.
         /// Doesn't add port number to connection string if not given.
-        #[clap(long)]
+        #[arg(long)]
         port: Option<usize>,
         /// User name for the connection, the part before @ in user@example.com (without @,
         /// hostname).
         /// User name isn't included in connection strings if not given.
-        #[clap(long)]
+        #[arg(long)]
         user: Option<String>,
         /// Remote directory in the host to store the files.
-        #[clap(long)]
+        #[arg(long)]
         storage_dir: String,
     },
 
     #[cfg(feature = "s3")]
     /// Add a new S3 remote
-    #[clap()]
+    #[command()]
     S3 {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// You can set a directory in the bucket with this prefix
-        #[clap(long, default_value = "")]
+        #[arg(long, default_value = "")]
         remote_prefix: String,
         /// S3 bucket name
-        #[clap(long)]
+        #[arg(long)]
         bucket_name: String,
         /// AWS region
-        #[clap(long)]
+        #[arg(long)]
         region: String,
     },
 
     #[cfg(feature = "minio")]
     /// Add a new Minio remote
-    #[clap()]
+    #[command()]
     Minio {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// Minio server url in the form https://myserver.example.com:9090
-        #[clap(long)]
+        #[arg(long)]
         endpoint: String,
         /// Bucket name
-        #[clap(long)]
+        #[arg(long)]
         bucket_name: String,
         /// Region of the server
-        #[clap(long)]
+        #[arg(long)]
         region: String,
         /// You can set a directory in the bucket with this prefix
-        #[clap(long, default_value = "")]
+        #[arg(long, default_value = "")]
         remote_prefix: String,
     },
 
     #[cfg(feature = "digital-ocean")]
     /// Add a new Digital Ocean remote
-    #[clap()]
+    #[command()]
     DigitalOcean {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// Bucket name
-        #[clap(long)]
+        #[arg(long)]
         bucket_name: String,
         /// Region of the server
-        #[clap(long)]
+        #[arg(long)]
         region: String,
         /// You can set a directory in the bucket with this prefix
-        #[clap(long, default_value = "")]
+        #[arg(long, default_value = "")]
         remote_prefix: String,
     },
 
     #[cfg(feature = "r2")]
     /// Add a new R2 remote
-    #[clap()]
+    #[command()]
     R2 {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// R2 account ID
-        #[clap(long)]
+        #[arg(long)]
         account_id: String,
         /// Bucket name
-        #[clap(long)]
+        #[arg(long)]
         bucket_name: String,
         /// You can set a directory in the bucket with this prefix
-        #[clap(long, default_value = "")]
+        #[arg(long, default_value = "")]
         remote_prefix: String,
     },
 
     #[cfg(feature = "gcs")]
     /// Add a new Google Cloud Storage remote
-    #[clap()]
+    #[command()]
     Gcs {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// Bucket name
-        #[clap(long)]
+        #[arg(long)]
         bucket_name: String,
         /// Region of the server, e.g., europe-west3
-        #[clap(long)]
+        #[arg(long)]
         region: String,
         /// You can set a directory in the bucket with this prefix
-        #[clap(long, default_value = "")]
+        #[arg(long, default_value = "")]
         remote_prefix: String,
     },
 
     #[cfg(feature = "wasabi")]
     /// Add a new Wasabi remote
-    #[clap()]
+    #[command()]
     Wasabi {
         /// Name of the remote
         ///
         /// This must be unique among all remotes of the project
-        #[clap(long = "name", short = 'n')]
+        #[arg(long = "name", short = 'n')]
         name: String,
         /// Bucket name
-        #[clap(long)]
+        #[arg(long)]
         bucket_name: String,
         /// Endpoint for the server, complete with the region if there is
         ///
         /// e.g. for eu-central-1 region, use s3.eu-central-1.wasabisys.com as the endpoint.
-        #[clap(long, default_value = "s3.wasabisys.com")]
+        #[arg(long, default_value = "s3.wasabisys.com")]
         endpoint: String,
         /// You can set a directory in the bucket with this prefix
-        #[clap(long, default_value = "")]
+        #[arg(long, default_value = "")]
         storage_prefix: String,
     },
 }

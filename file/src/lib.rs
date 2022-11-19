@@ -42,7 +42,7 @@ use track::TrackCLI;
 use clap::Parser;
 
 #[derive(Debug, Clone, Parser)]
-#[clap(rename_all = "kebab-case")]
+#[command(rename_all = "kebab-case")]
 pub enum XvcFileSubCommand {
     Track(TrackCLI),
     Hash(HashCLI),
@@ -68,43 +68,43 @@ pub enum XvcFileSubCommand {
 ///
 /// - deleting files and all their associated cache content
 pub struct XvcFileCLI {
-    #[clap(
+    #[arg(
         long = "verbose",
         short,
         help = "Verbosity level, use multiple times to increase",
-        parse(from_occurrences)
+        action = clap::ArgAction::Count
     )]
     pub verbosity: u8,
 
-    #[clap(long, help = "Suppress error messages")]
+    #[arg(long, help = "Suppress error messages")]
     pub quiet: bool,
 
-    #[clap(short = 'C', default_value = ".")]
+    #[arg(short = 'C', default_value = ".")]
     pub workdir: String,
 
-    #[clap(
+    #[arg(
         long,
         short = 'c',
         help = "Configuration options set from the command line in the form section.key=value"
     )]
     pub config: Option<Vec<String>>,
 
-    #[clap(long, help = "Ignore system config")]
+    #[arg(long, help = "Ignore system config")]
     pub no_system_config: bool,
 
-    #[clap(long, help = "Ignore user config")]
+    #[arg(long, help = "Ignore user config")]
     pub no_user_config: bool,
 
-    #[clap(long, help = "Ignore project config (.xvc/config)")]
+    #[arg(long, help = "Ignore project config (.xvc/config)")]
     pub no_project_config: bool,
 
-    #[clap(long, help = "Ignore local config (.xvc/config.local)")]
+    #[arg(long, help = "Ignore local config (.xvc/config.local)")]
     pub no_local_config: bool,
 
-    #[clap(long, help = "Ignore configuration options from the environment")]
+    #[arg(long, help = "Ignore configuration options from the environment")]
     pub no_env_config: bool,
 
-    #[clap(subcommand)]
+    #[command(subcommand)]
     subcommand: XvcFileSubCommand,
 }
 

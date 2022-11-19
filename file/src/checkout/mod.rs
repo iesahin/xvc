@@ -26,27 +26,27 @@ use xvc_logging::{watch, XvcOutputLine};
 use xvc_walker::{check_ignore, Glob, IgnoreRules, MatchResult};
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap(about = "Add to track files using XVC", rename_all = "kebab-case")]
+#[command(about = "Add to track files using XVC", rename_all = "kebab-case")]
 pub struct CheckoutCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[clap(long)]
+    #[arg(long)]
     pub cache_type: Option<CacheType>,
 
     /// Don't use parallelism
-    #[clap(long)]
+    #[arg(long)]
     pub no_parallel: bool,
 
     /// Force the checkout even if target has not cached or no changes happened
-    #[clap(long)]
+    #[arg(long)]
     pub force: bool,
 
     /// Checkout the files as text, binary (Default: auto)
-    #[clap(long)]
+    #[arg(long)]
     pub text_or_binary: Option<DataTextOrBinary>,
     /// Files/directories to add
-    #[clap()]
+    #[arg()]
     pub targets: Vec<String>,
 }
 

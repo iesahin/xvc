@@ -37,53 +37,53 @@ use crate::cli;
 use crate::error::{Error, Result};
 
 #[derive(Debug, Parser)]
-#[clap(rename_all = "kebab-case")]
+#[command(rename_all = "kebab-case")]
 /// Xvc Main Command-line Interface
 pub struct XvcCLI {
-    #[clap(long = "verbose", short, parse(from_occurrences))]
+    #[arg(long = "verbose", short, action = clap::ArgAction::Count )]
     /// Output verbosity. Use multiple times to increase emitted logs.
     /// TODO: Setting this option here turns off progress bars.
     pub verbosity: u8,
 
-    #[clap(long)]
+    #[arg(long)]
     /// Suppress all output.
     pub quiet: bool,
 
-    #[clap(short = 'C', default_value = ".")]
+    #[arg(short = 'C', default_value = ".")]
     /// Set working directory for the command.
     /// It doesn't create a new shell, or change the directory.
     pub workdir: PathBuf,
 
-    #[clap(long, short = 'c')]
+    #[arg(long, short = 'c')]
     /// Configuration options set from the command line in the form section.key=value
     /// You can use multiple times.
     pub config: Option<Vec<String>>,
 
-    #[clap(long)]
+    #[arg(long)]
     /// Ignore system configuration file.
     pub no_system_config: bool,
 
-    #[clap(long)]
+    #[arg(long)]
     /// Ignore user configuration file.
     pub no_user_config: bool,
 
-    #[clap(long)]
+    #[arg(long)]
     /// Ignore project configuration file (.xvc/config)
     pub no_project_config: bool,
 
-    #[clap(long)]
+    #[arg(long)]
     /// Ignore local (gitignored) configuration file (.xvc/config.local)
     pub no_local_config: bool,
 
-    #[clap(long)]
+    #[arg(long)]
     /// Ignore configuration options gathered from environment variables
     pub no_env_config: bool,
 
-    #[clap(subcommand)]
+    #[command(subcommand)]
     /// The subcommand to run
     pub command: XvcSubCommand,
 
-    #[clap(skip)]
+    #[arg(skip)]
     /// The calling command for logging and documentation purposes
     pub command_string: String,
 }
@@ -103,7 +103,7 @@ impl XvcCLI {
 
 /// Xvc subcommands
 #[derive(Debug, Parser)]
-#[clap(rename_all = "kebab-case")]
+#[command(rename_all = "kebab-case")]
 pub enum XvcSubCommand {
     /// File and directory management commands
     File(xvc_file::XvcFileCLI),

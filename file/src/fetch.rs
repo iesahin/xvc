@@ -14,16 +14,16 @@ use xvc_storage::{
 use xvc_walker::Glob;
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap(about = "Fetch files from remote", rename_all = "kebab-case")]
+#[command(about = "Fetch files from remote", rename_all = "kebab-case")]
 pub struct FetchCLI {
     /// remote name or guid to send the files
-    #[clap(long, short, alias = "from")]
+    #[arg(long, short, alias = "from")]
     pub remote: StorageIdentifier,
     /// force even if the files are already present
-    #[clap(long)]
+    #[arg(long)]
     pub force: bool,
     /// targets to push to remote
-    #[clap()]
+    #[arg()]
     pub targets: Vec<String>,
 }
 

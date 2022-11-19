@@ -72,28 +72,28 @@ impl DataTextOrBinary {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap(about = "Track file versions using XVC", rename_all = "kebab-case")]
+#[command(about = "Track file versions using XVC", rename_all = "kebab-case")]
 pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[clap(long)]
+    #[arg(long)]
     cache_type: Option<CacheType>,
     /// Do not copy/link added files to the file cache
-    #[clap(long)]
+    #[arg(long)]
     no_commit: bool,
     /// Calculate digests as text or binary file without checking contents, or by automatically. (Default:
     /// auto)
-    #[clap(long)]
+    #[arg(long)]
     text_or_binary: Option<DataTextOrBinary>,
     /// Add targets even if they are already tracked
-    #[clap(long)]
+    #[arg(long)]
     force: bool,
     /// Don't use parallelism
-    #[clap(long)]
+    #[arg(long)]
     no_parallel: bool,
     /// Files/directories to add
-    #[clap()]
+    #[arg()]
     targets: Vec<PathBuf>,
 }
 

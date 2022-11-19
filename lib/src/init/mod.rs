@@ -14,16 +14,16 @@ use xvc_pipeline;
 use xvc_walker::AbsolutePath;
 
 #[derive(Debug, Clone, Parser)]
-#[clap(about = "Initialize an XVC repository")]
+#[command(about = "Initialize an XVC repository")]
 /// Initialize an XVC repository
 pub struct InitCLI {
-    #[clap(long)]
+    #[arg(long)]
     /// Path to the directory to be intialized. (default: current directory)
     pub path: Option<PathBuf>,
-    #[clap(long)]
+    #[arg(long)]
     /// Don't require Git
     pub no_git: bool,
-    #[clap(long)]
+    #[arg(long)]
     /// Create the repository even if already initialized.
     /// Overwrites the current .xvc directory
     /// Resets all data and guid, etc.

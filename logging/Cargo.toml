@@ -29,7 +29,7 @@ toml = "^0.5"
 
 
 ## Cli and config
-clap = {version = "^3.1", features=["derive"]}
+clap = {version = "^4.0", features=["derive"]}
 configparser = "^3.0"
 directories-next = "2.0"
 fs_extra = "^1.0"

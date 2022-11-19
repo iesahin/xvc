@@ -5,7 +5,7 @@ use crossbeam_channel::Sender;
 use xvc_logging::XvcOutputLine;
 
 #[derive(Debug, Parser)]
-#[clap(name = "alias")]
+#[command(name = "aliases")]
 /// Print aliases in the common format to be added to `.zsh_aliases`, `.bash_aliases` or
 /// `.profile`.
 ///

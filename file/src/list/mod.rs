@@ -376,33 +376,33 @@ impl Display for ListRows {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap(about = "List files tracked with XVC ", rename_all = "kebab-case")]
+#[command(about = "List files tracked with XVC ", rename_all = "kebab-case")]
 
 pub struct ListCLI {
     /// Columns to show
-    #[clap(long, short = 'c')]
+    #[arg(long, short = 'c')]
     columns: Option<ListColumns>,
     /// Sort by column
-    #[clap(long, short = 's', alias = "sort")]
+    #[arg(long, short = 's', alias = "sort")]
     sort_criteria: Option<ListSortCriteria>,
     /// Show directory contents
-    #[clap(long, short = 'R')]
+    #[arg(long, short = 'R')]
     recursive: bool,
     /// Show actual data instead of recorded
-    #[clap(long, short)]
+    #[arg(long, short)]
     actual: bool,
     /// Files/directories to list
-    #[clap()]
+    #[arg()]
     target: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap(about = "Push files to remote", rename_all = "kebab-case")]
+#[command(about = "Push files to remote", rename_all = "kebab-case")]
 pub struct PushCLI {
-    #[clap(long, short)]
+    #[arg(long, short)]
     remote: String,
     /// targets to push to remote
-    #[clap()]
+    #[arg()]
     targets: Vec<PathBuf>,
 }
 

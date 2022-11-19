@@ -14,18 +14,18 @@ use xvc_walker::AbsolutePath;
 use crate::common::{calc_digest, pipe_path_digest};
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap(version, author)]
+#[command(version, author)]
 /// Calculate hash of given files
 ///
 /// Note that this doesn't use .xvcignore facility and doesn't require an xvc root. It loads the
 /// configuration from xvc repository if it runs within, otherwise uses user, system or default
 /// options.
 pub struct HashCLI {
-    #[clap(short, long)]
+    #[arg(short, long)]
     /// Algorithm to calculate the hash. One of blake3, blake2, sha2, sha3. All algorithm variants produce
     /// 32-bytes digest.
     algorithm: Option<HashAlgorithm>,
-    #[clap(long)]
+    #[arg(long)]
     /// Consider the file as a text file. Otherwise uses [is_text_file] function to decide.
     text_file: bool,
     /// Files to process
