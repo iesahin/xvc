@@ -2,13 +2,12 @@
 #![forbid(unsafe_code)]
 mod common;
 
+pub mod bring;
 pub mod checkout;
 pub mod error;
-pub mod fetch;
 pub mod hash;
 pub mod list;
-pub mod pull;
-pub mod push;
+pub mod send;
 pub mod track;
 
 use crate::error::{Error, Result};
@@ -16,7 +15,6 @@ use checkout::CheckoutCLI;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
-use fetch::FetchCLI;
 use list::ListCLI;
 use log::info;
 use log::warn;
@@ -34,9 +32,9 @@ use xvc_logging::setup_logging;
 use xvc_logging::XvcOutputLine;
 use xvc_walker::AbsolutePath;
 
+use bring::BringCLI;
 use hash::HashCLI;
-use pull::PullCLI;
-use push::PushCLI;
+use send::SendCLI;
 use track::TrackCLI;
 
 use clap::Parser;
@@ -44,16 +42,20 @@ use clap::Parser;
 #[derive(Debug, Clone, Parser)]
 #[command(rename_all = "kebab-case")]
 pub enum XvcFileSubCommand {
+    /// Add file and directories to Xvc
     Track(TrackCLI),
+    /// Get digest hash of files with the supported algorithms
     Hash(HashCLI),
+    /// Get file from cache
     Checkout(CheckoutCLI),
+    /// List tracked and untracked elements in the workspace
     List(ListCLI),
-    Push(PushCLI),
-    Fetch(FetchCLI),
-    Pull(PullCLI),
+    /// Send files to external storages
+    Send(SendCLI),
+
+    Bring(BringCLI),
 }
 
-#[derive(Debug, Clone, Parser)]
 /// Operations on data files
 ///
 /// This command can be used to operate on files, like
@@ -67,43 +69,49 @@ pub enum XvcFileSubCommand {
 /// - moving files to other locations
 ///
 /// - deleting files and all their associated cache content
+#[derive(Debug, Clone, Parser)]
 pub struct XvcFileCLI {
+    /// Verbosity level. Use multiple times to increase command output detail.
     #[arg(
         long = "verbose",
         short,
-        help = "Verbosity level, use multiple times to increase",
         action = clap::ArgAction::Count
     )]
     pub verbosity: u8,
 
+    /// Don't show any messages.
     #[arg(long, help = "Suppress error messages")]
     pub quiet: bool,
 
+    /// Set the working directory to run the command as if it's in that directory.
     #[arg(short = 'C', default_value = ".")]
     pub workdir: String,
 
-    #[arg(
-        long,
-        short = 'c',
-        help = "Configuration options set from the command line in the form section.key=value"
-    )]
+    /// Configuration options set from the command line in the form section.key=value
+    #[arg(long, short = 'c')]
     pub config: Option<Vec<String>>,
 
-    #[arg(long, help = "Ignore system config")]
+    /// Ignore system config file
+    #[arg(long)]
     pub no_system_config: bool,
 
-    #[arg(long, help = "Ignore user config")]
+    /// Ignore user config file
+    #[arg(long)]
     pub no_user_config: bool,
 
-    #[arg(long, help = "Ignore project config (.xvc/config)")]
+    /// Ignore project config (.xvc/config)
+    #[arg(long)]
     pub no_project_config: bool,
 
-    #[arg(long, help = "Ignore local config (.xvc/config.local)")]
+    /// Ignore local config (.xvc/config.local)
+    #[arg(long)]
     pub no_local_config: bool,
 
-    #[arg(long, help = "Ignore configuration options from the environment")]
+    /// Ignore configuration options from the environment
+    #[arg(long)]
     pub no_env_config: bool,
 
+    /// Subcommand for xvc file
     #[command(subcommand)]
     subcommand: XvcFileSubCommand,
 }
@@ -130,17 +138,12 @@ pub fn run(
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Push(opts) => push::cmd_push(
+        XvcFileSubCommand::Send(opts) => send::cmd_send(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Fetch(opts) => fetch::cmd_fetch(
-            output_snd,
-            xvc_root.ok_or(Error::RequiresXvcRepository)?,
-            opts,
-        ),
-        XvcFileSubCommand::Pull(opts) => pull::cmd_pull(
+        XvcFileSubCommand::Bring(opts) => bring::cmd_bring(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
