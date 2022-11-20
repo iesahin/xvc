@@ -98,6 +98,9 @@ pub struct TrackCLI {
 }
 
 impl UpdateFromXvcConfig for TrackCLI {
+    /// Updates `xvc file` configuration from the configuration files.
+    /// Command line options take precedence over other sources.
+    /// If options are not given, they are supplied from [XvcConfig]
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let cache_type = self
             .cache_type
@@ -624,27 +627,11 @@ fn commit(
     Ok(())
 }
 
-// fn update_cache_type(
-//     xvc_root: &XvcRoot,
-//     xvc_path: &XvcPath,
-//     digest: &XvcDigest,
-//     cache_type: CacheType,
-// ) -> Result<()> {
-//     let cache_path = cache_path(xvc_root, xvc_path, digest);
-//     // remove actual path if cache_path exists
-//     if !cache_path.exists() {
-//         Err(Error::CannotFindFileInCache {
-//             xvc_path: xvc_path.to_string(),
-//             cache_path: cache_path.to_string_lossy().to_string(),
-//         })
-//     } else {
-//         let path = xvc_path.to_absolute_path(xvc_root);
-//         fs::remove_file(path)?;
-//         checkout_from_cache(xvc_root, xvc_path, &cache_path, cache_type)
-//     }
-// }
-
-/// Writes a file names to the .gitignore found in the same dir
+/// Write file and directory names to .gitignore found in the same dir
+///
+/// If `current_ignore` already ignores a file, it's not added separately.
+/// If the user chooses to ignore a files manually by general rules, files are not added here.
+///
 fn update_gitignores(
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
