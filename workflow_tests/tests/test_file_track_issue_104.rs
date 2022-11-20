@@ -6,6 +6,7 @@ use std::time::Duration;
 use std::{fs, path::PathBuf};
 
 use crate::common::{run_in_example_xvc, run_in_temp_xvc_dir};
+use assert_cmd::Command;
 use jwalk;
 use regex::Regex;
 use subprocess::Exec;
@@ -14,6 +15,11 @@ use xvc::{test_dispatch, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::create_directory_tree;
+
+fn sh(cmd: String) -> String {
+    watch!(cmd);
+    Exec::shell(cmd).capture().unwrap().stdout_str()
+}
 
 /// When a directory is added to projects, its child files are also ignored.
 ///
@@ -33,9 +39,15 @@ fn test_file_track_issue_104() -> Result<()> {
     create_directory_tree(&xvc_dir, 2, 10)?;
     assert!(xvc_dir.join("dir-0001").exists());
 
-    xvc.arg("track").arg("dir-0001/").assert();
+    xvc.arg("-vvvv")
+        .arg("file")
+        .arg("track")
+        .arg("dir-0001/")
+        .assert();
 
     let root_gitignore = fs::read_to_string(xvc_dir.join(".gitignore"))?;
+
+    assert!(!xvc_dir.join("dir-0001").join(".gitignore").exists());
 
     assert!(
         root_gitignore
@@ -47,6 +59,5 @@ fn test_file_track_issue_104() -> Result<()> {
         root_gitignore
     );
 
-    assert!(!xvc_dir.join("dir-0001").join(".gitignore").exists());
     Ok(())
 }
