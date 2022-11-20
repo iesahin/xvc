@@ -126,9 +126,10 @@ jobs:
         with:
           toolchain: stable
           override: true
-      - uses: katyo/publish-crates@v1
-        with:
-          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Login to crates.io
+        run: echo ${{ secrets.CARGO_REGISTRY_TOKEN }} | cargo login
+      - name: Run publish script
+        run: zsh scripts/publish-crates.sh
 
   deploy-linux:
     name: deploy-linux
