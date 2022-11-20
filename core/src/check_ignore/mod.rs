@@ -16,14 +16,14 @@ use xvc_walker::{build_ignore_rules, check_ignore, IgnoreRules, MatchResult, Wal
 // merged --all and --details, they are the same now
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap()]
+#[command()]
 /// Check whether xvcignore files ignore a path in an XVC repository
 pub struct CheckIgnoreCLI {
-    #[clap(short, long, alias = "all")]
+    #[arg(short, long, alias = "all")]
     /// Show the exclude patterns along with each target path.
     /// A series of lines are printed in this format: <path/to/.xvcignore>:<line_num>:<pattern> <target_path>
     details: bool,
-    #[clap(
+    #[arg(
         long,
         default_value = XVCIGNORE_FILENAME,
     )]
@@ -31,11 +31,11 @@ pub struct CheckIgnoreCLI {
     ///
     /// This can be set to .gitignore to test whether Git and Xvc work the same way.
     ignore_filename: String,
-    #[clap(short, long)]
+    #[arg(short, long)]
     /// Include the target paths which don’t match any pattern in the --details list.
     /// All fields in each line, except for <target_path>, will be empty. Has no effect without --details.
     non_matching: bool,
-    #[clap()]
+    #[arg()]
     /// Targets to check.
     /// If no targets are provided, they are read from stdin.
     targets: Vec<String>,

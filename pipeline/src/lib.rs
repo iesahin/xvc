@@ -41,156 +41,156 @@ pub use crate::pipeline::step::XvcStep;
 use crate::pipeline::XvcStepInvalidate;
 
 #[derive(Debug, Parser)]
-#[clap(name = "pipeline", about = "Pipeline management commands")]
+#[command(name = "pipeline", about = "Pipeline management commands")]
 pub struct PipelineCLI {
-    #[clap(long, short, help = "Name of the pipeline this command applies to")]
+    #[arg(long, short, help = "Name of the pipeline this command applies to")]
     pub name: Option<String>,
-    #[clap(subcommand)]
+    #[command(subcommand)]
     pub subcommand: PipelineSubCommand,
 }
 
 #[derive(Debug, Clone, Parser)]
-#[clap(about = "Pipeline management commands")]
+#[command(about = "Pipeline management commands")]
 pub enum PipelineSubCommand {
-    #[clap(about = "Add a new pipeline")]
+    #[command(about = "Add a new pipeline")]
     New {
-        #[clap(long, short, help = "Name of the pipeline this command applies to")]
+        #[arg(long, short, help = "Name of the pipeline this command applies to")]
         name: String,
-        #[clap(short, long, help = "default working directory")]
+        #[arg(short, long, help = "default working directory")]
         workdir: Option<PathBuf>,
-        #[clap(long, help = "set this to default")]
+        #[arg(long, help = "set this to default")]
         set_default: bool,
     },
 
-    #[clap(about = "Rename, change dir or set a pipeline default")]
+    #[command(about = "Rename, change dir or set a pipeline default")]
     Update {
-        #[clap(long, short, help = "Name of the pipeline this command applies to")]
+        #[arg(long, short, help = "Name of the pipeline this command applies to")]
         name: Option<String>,
-        #[clap(long, help = "rename this pipeline to")]
+        #[arg(long, help = "rename this pipeline to")]
         rename: Option<String>,
-        #[clap(long, help = "set the working directory to")]
+        #[arg(long, help = "set the working directory to")]
         workdir: Option<PathBuf>,
-        #[clap(long, help = "set this pipeline default")]
+        #[arg(long, help = "set this pipeline default")]
         set_default: bool,
     },
 
-    #[clap(about = "Delete a pipeline")]
+    #[command(about = "Delete a pipeline")]
     Delete {
-        #[clap(long, short, help = "Name of the pipeline to be deleted")]
+        #[arg(long, short, help = "Name of the pipeline to be deleted")]
         name: String,
     },
 
-    #[clap(about = "Run a pipeline")]
+    #[command(about = "Run a pipeline")]
     Run {
-        #[clap(long, short, help = "Name of the pipeline this command applies to")]
+        #[arg(long, short, help = "Name of the pipeline this command applies to")]
         name: Option<String>,
     },
-    #[clap(about = "List all pipelines")]
+    #[command(about = "List all pipelines")]
     List,
-    #[clap(about = "Generate mermaid diagram for the pipeline")]
+    #[command(about = "Generate mermaid diagram for the pipeline")]
     Dag {
-        #[clap(long, short, help = "Name of the pipeline this command applies to")]
+        #[arg(long, short, help = "Name of the pipeline this command applies to")]
         name: Option<String>,
-        #[clap(long, help = "File to write the pipeline. Writes to stdin if not set.")]
+        #[arg(long, help = "File to write the pipeline. Writes to stdin if not set.")]
         file: Option<PathBuf>,
-        #[clap(long, help = "Format for graph")]
+        #[arg(long, help = "Format for graph")]
         format: Option<XvcPipelineDagFormat>,
     },
-    #[clap(about = "Export the pipeline to a YAML, TOML or JSON file")]
+    #[command(about = "Export the pipeline to a YAML, TOML or JSON file")]
     Export {
-        #[clap(long, short, help = "Name of the pipeline this command applies to")]
+        #[arg(long, short, help = "Name of the pipeline this command applies to")]
         name: Option<String>,
-        #[clap(long, help = "File to write the pipeline. Writes to stdin if not set.")]
+        #[arg(long, help = "File to write the pipeline. Writes to stdin if not set.")]
         file: Option<PathBuf>,
-        #[clap(long, help = "Format for output to stdout.")]
+        #[arg(long, help = "Format for output to stdout.")]
         format: Option<XvcSchemaSerializationFormat>,
     },
-    #[clap(about = "Import the pipeline from a file")]
+    #[command(about = "Import the pipeline from a file")]
     Import {
-        #[clap(long, short, help = "Name of the pipeline this command applies to")]
+        #[arg(long, short, help = "Name of the pipeline this command applies to")]
         name: Option<String>,
-        #[clap(
+        #[arg(
             long,
             help = "File to read the pipeline. Reads from stdin if not specified."
         )]
         file: Option<PathBuf>,
-        #[clap(long, help = "Format for input from stdin.")]
+        #[arg(long, help = "Format for input from stdin.")]
         format: Option<XvcSchemaSerializationFormat>,
-        #[clap(
+        #[arg(
             long,
             help = "Whether to overwrite the current pipeline if one found with an identical name"
         )]
         overwrite: bool,
     },
-    #[clap(about = "Step management commands")]
+    #[command(about = "Step management commands")]
     Step(StepCLI),
 }
 
 #[derive(Debug, Clone, Parser)]
-#[clap(name = "step", about = "Step management commands")]
+#[command(name = "step", about = "Step management commands")]
 pub struct StepCLI {
-    #[clap(subcommand)]
+    #[command(subcommand)]
     pub subcommand: StepSubCommand,
 }
 
 #[derive(Debug, Clone, Parser)]
-#[clap(about = "Step management commands")]
+#[command(about = "Step management commands")]
 pub enum StepSubCommand {
-    #[clap(about = "Add a new step")]
+    #[command(about = "Add a new step")]
     New {
-        #[clap(long, short, help = "Name of the step")]
+        #[arg(long, short, help = "Name of the step")]
         step_name: String,
-        #[clap(long, short, help = "Command to run the step")]
+        #[arg(long, short, help = "Command to run the step")]
         command: Option<String>,
-        #[clap(long, help = "When to run the command")]
+        #[arg(long, help = "When to run the command")]
         changed: Option<XvcStepInvalidate>,
     },
 
-    #[clap(about = "Update step options")]
+    #[command(about = "Update step options")]
     Update {
-        #[clap(long, short, help = "Name of the step (that must already be added)")]
+        #[arg(long, short, help = "Name of the step (that must already be added)")]
         step_name: String,
-        #[clap(long, short, help = "Command to run the step")]
+        #[arg(long, short, help = "Command to run the step")]
         command: Option<String>,
-        #[clap(long, help = "When to run the command")]
+        #[arg(long, help = "When to run the command")]
         changed: Option<XvcStepInvalidate>,
     },
 
-    #[clap(about = "Add a dependency to a step in the pipeline")]
+    #[command(about = "Add a dependency to a step in the pipeline")]
     Dependency {
-        #[clap(long, short, help = "Name of the step")]
+        #[arg(long, short, help = "Name of the step")]
         step_name: String,
-        #[clap(
+        #[arg(
             long = "file",
             help = "Add a file dependency to the step. Can be used multiple times."
         )]
         files: Option<Vec<String>>,
-        #[clap(long = "step", help = "Add explicit step dependencies to run")]
+        #[arg(long = "step", help = "Add explicit step dependencies to run")]
         steps: Option<Vec<String>>,
-        #[clap(long = "pipeline", help = "Add explicit pipeline dependencies to run")]
+        #[arg(long = "pipeline", help = "Add explicit pipeline dependencies to run")]
         pipelines: Option<Vec<String>>,
-        #[clap(
+        #[arg(
             long = "directory",
             help = "Add a directory dependency to the step. Can be used multiple times."
         )]
         directories: Option<Vec<String>>,
-        #[clap(
+        #[arg(
             long = "glob",
             help = "Add a glob dependency to the step. Can be used multiple times."
         )]
         globs: Option<Vec<String>>,
-        #[clap(
+        #[arg(
             long = "param",
             help = "Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times."
         )]
         params: Option<Vec<String>>,
-        #[clap(
+        #[arg(
             long = "regex",
             aliases = &["regexp"],
             help = "Add a regex dependency in the form filename.txt:/^regex/"
         )]
         regexps: Option<Vec<String>>,
-        #[clap(
+        #[arg(
             long = "line",
             aliases = &["lines"],
             help = "Add a line dependency in the form filename.txt::123-234"
@@ -198,30 +198,30 @@ pub enum StepSubCommand {
         lines: Option<Vec<String>>,
     },
 
-    #[clap(about = "Add an output to a step in the pipeline")]
+    #[command(about = "Add an output to a step in the pipeline")]
     Output {
-        #[clap(long, short, help = "Name of the step")]
+        #[arg(long, short, help = "Name of the step")]
         step_name: String,
-        #[clap(
+        #[arg(
             long = "output-file",
             help = "Add a file output to the step. Can be used multiple times."
         )]
         files: Option<Vec<String>>,
-        #[clap(
+        #[arg(
             long = "output-metric",
             help = "Add a metrics output to the step. Can be used multiple times."
         )]
         metrics: Option<Vec<String>>,
-        #[clap(
+        #[arg(
             long = "output-image",
             help = "Add an image output to the step. Can be used multiple times."
         )]
         images: Option<Vec<String>>,
     },
 
-    #[clap(about = "Print step configuration")]
+    #[command(about = "Print step configuration")]
     Show {
-        #[clap(long, short, help = "Name of the step")]
+        #[arg(long, short, help = "Name of the step")]
         step_name: String,
     },
 }

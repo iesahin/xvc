@@ -19,16 +19,16 @@ use xvc_storage::{
 use xvc_walker::Glob;
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[clap(about = "Fetch files from remote", rename_all = "kebab-case")]
+#[command(about = "Fetch files from remote", rename_all = "kebab-case")]
 pub struct PullCLI {
     /// remote name or guid to send the files
-    #[clap(long, short, alias = "from")]
+    #[arg(long, short, alias = "from")]
     remote: StorageIdentifier,
     /// force even if the files are already present in the workspace
-    #[clap(long)]
+    #[arg(long)]
     force: bool,
     /// targets to push to remote
-    #[clap()]
+    #[arg()]
     targets: Vec<String>,
 }
 

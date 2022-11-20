@@ -30,7 +30,7 @@ xvc-walker = { version = "^0.3", path = "../walker" }
 xvc-storage = { version = "^0.3", path = "../storage" }
 
 ## packages for testing
-clap = {version = "^3.1", features=["derive"]}
+clap = {version = "^4.0", features=["derive"]}
 
 serde = { version = "^1.0", features = ["derive"] }
 serde-big-array = "^0.3"

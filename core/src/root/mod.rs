@@ -7,10 +7,10 @@ use relative_path::RelativePath;
 use xvc_logging::XvcOutputLine;
 
 #[derive(Debug, Parser)]
-#[clap(name = "root")]
+#[command(name = "root")]
 /// Get the XVC root directory for the current project
 pub struct RootCLI {
-    #[clap(long)]
+    #[arg(long)]
     /// Show absolute path instead of relative
     absolute: bool,
 }
