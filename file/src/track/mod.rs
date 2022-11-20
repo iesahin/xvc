@@ -639,30 +639,7 @@ fn update_gitignores(
     files: &[PathBuf],
     dirs: &[PathBuf],
 ) -> Result<()> {
-    let file_map: HashMap<PathBuf, PathBuf> = files
-        .iter()
-        .filter_map(|f| {
-                    let abs_path = current_dir.join(f);
-
-            match check_ignore(current_ignore, &abs_path) {
-                MatchResult::NoMatch => {
-
-                    Some((f.clone(),
-                          f.parent()
-                            .map(|p| p.join(".gitignore"))
-                            .unwrap_or_else(|| PathBuf::from(".gitinore"))))
-                }
-                MatchResult::Ignore => {
-                    info!("Already gitignored: {}", &abs_path.to_string_lossy());
-                    None
-                }
-                MatchResult::Whitelist => {
-                    error!("Path is whitelisted in Gitignore, please modify/remove the whitelisting rule: {}", &abs_path.to_string_lossy());
-                None
-            }}
-            })
-        .collect();
-
+    // Check if dirs are already ignored
     let dir_map: HashMap<PathBuf, PathBuf> = dirs
         .iter()
         .filter_map(|f| {
@@ -683,7 +660,7 @@ fn update_gitignores(
                     Some((f.clone(),
                           f.parent()
                             .map(|p| p.join(".gitignore"))
-                            .unwrap_or_else(|| PathBuf::from(".gitinore"))))
+                            .unwrap_or_else(|| PathBuf::from(".gitignore"))))
                 }
                 MatchResult::Whitelist => {
                     error!("Path is whitelisted in Git. Please remove/modify the whitelisting rule: {}",
@@ -691,6 +668,43 @@ fn update_gitignores(
                     None
                 }
             }}).collect();
+
+    watch!(dir_map);
+
+    // Check if files are already ignored
+    let file_map: HashMap<PathBuf, PathBuf> = files
+        .iter()
+        // filter if the directories we'll add already contains these files
+        .filter(|f| {
+            for (dir, _) in &dir_map {
+                if f.starts_with(dir) {
+                    return false }
+            }
+            true
+        })
+        .filter_map(|f| {
+                    let abs_path = current_dir.join(f);
+
+            match check_ignore(current_ignore, &abs_path) {
+                MatchResult::NoMatch => {
+
+                    Some((f.clone(),
+                          f.parent()
+                            .map(|p| p.join(".gitignore"))
+                            .unwrap_or_else(|| PathBuf::from(".gitignore"))))
+                }
+                MatchResult::Ignore => {
+                    info!("Already gitignored: {}", &abs_path.to_string_lossy());
+                    None
+                }
+                MatchResult::Whitelist => {
+                    error!("Path is whitelisted in Gitignore, please modify/remove the whitelisting rule: {}", &abs_path.to_string_lossy());
+                None
+            }}
+            })
+        .collect();
+
+    watch!(file_map);
 
     let mut changes = HashMap::<PathBuf, Vec<String>>::new();
 

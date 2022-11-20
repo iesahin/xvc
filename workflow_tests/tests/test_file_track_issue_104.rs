@@ -16,6 +16,13 @@ use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::create_directory_tree;
 
+fn create_directory_hierarchy() -> Result<XvcRoot> {
+    let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
+    // for checking the content hash
+    create_directory_tree(&temp_dir, 2, 10)?;
+    Ok(temp_dir)
+}
+
 fn sh(cmd: String) -> String {
     watch!(cmd);
     Exec::shell(cmd).capture().unwrap().stdout_str()
@@ -26,33 +33,27 @@ fn sh(cmd: String) -> String {
 #[test]
 fn test_file_track_issue_104() -> Result<()> {
     // setup::logging(LevelFilter::Trace);
-    let xvc_dir = assert_fs::TempDir::new()?;
-    let git_exec = which::which("git")?;
-    let mut git = assert_cmd::cmd::Command::from_std(std::process::Command::new(git_exec));
-    git.current_dir(&xvc_dir);
-    git.arg("init").assert();
-    let mut xvc = assert_cmd::cmd::Command::cargo_bin("xvc")?;
-    xvc.current_dir(&xvc_dir);
-    xvc.arg("init").assert();
+    let xvc_root = create_directory_hierarchy()?;
 
+    let x = |cmd: &[&str]| {
+        let mut c = vec!["xvc", "file"];
+        c.extend(cmd);
+        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+    };
+
+    let dir_1 = "dir-0001";
+    let track_dir_1 = x(&["track", dir_1, "--no-parallel"])?;
+    watch!(track_dir_1);
     // Create dir-0001 and dir-0002 with files file-0001..0010.bin inside them.
-    create_directory_tree(&xvc_dir, 2, 10)?;
-    assert!(xvc_dir.join("dir-0001").exists());
 
-    xvc.arg("-vvvv")
-        .arg("file")
-        .arg("track")
-        .arg("dir-0001/")
-        .assert();
+    let root_gitignore = fs::read_to_string(xvc_root.join(Path::new(".gitignore")))?;
 
-    let root_gitignore = fs::read_to_string(xvc_dir.join(".gitignore"))?;
-
-    assert!(!xvc_dir.join("dir-0001").join(".gitignore").exists());
+    assert!(!xvc_root.join(Path::new("dir-0001/.gitignore")).exists());
 
     assert!(
         root_gitignore
             .lines()
-            .filter(|l| l.to_string() == "dir-0001/".to_string())
+            .filter(|l| l.to_string() == "/dir-0001/".to_string())
             .count()
             == 1,
         "{}",
