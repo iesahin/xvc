@@ -1,6 +1,6 @@
 [package]
 name = "xvc-walker"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 description = "Xvc parallel file system walker with ignore features"
 authors = ["Emre Şahin <contact@emresahin.net>"]
