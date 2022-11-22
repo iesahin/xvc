@@ -241,7 +241,7 @@ fn test_storage_new_s3() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "s3-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "s3-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -263,7 +263,7 @@ fn test_storage_new_s3() -> Result<()> {
     env::remove_var("AWS_ACCESS_KEY_ID");
     env::remove_var("AWS_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "pull", "--from", "s3-storage"])?;
+    let pull_result_2 = x(&["file", "bring", "--from", "s3-storage"])?;
     watch!(pull_result_2);
 
     Ok(())

@@ -136,7 +136,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "generic-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "generic-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
