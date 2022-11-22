@@ -5,9 +5,9 @@
   - [Configuration](./021-configuration.md)
 - [Get Started](./start/index.md)
   - [Xvc for Everyone](./start/everyone.md)
-  - [Xvc for Data](./start/data.md)
+  - [Xvc for Data Versioning](./start/data.md)
   - [Xvc for Machine Learning](./start/ml.md)
-  - [Xvc for Software Developers](./start/developer.md)
+  - [Xvc for Software Development](./start/development.md)
 
 # Guides
 
