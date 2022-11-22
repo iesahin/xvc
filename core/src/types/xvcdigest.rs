@@ -62,11 +62,12 @@ impl XvcDigest {
     }
 
     /// Returns the content hash of the text file in `path` calculated by `algorithm` The
-    /// difference between `from_binary_file` function is that this function removes `CR` (13, 0x0d) from
+    /// difference between `from_binary_file` function is that this function removes `CR` (13, 0x0d) and `LF` (13, 0x0d) from
     /// the content before applying the hashing to keep the calculated value consistent across OSes
     pub fn from_text_file(path: &Path, algorithm: &HashAlgorithm) -> Result<Self> {
         let mut content = fs::read(path)?;
-        content.retain(|c| *c != 0x0d);
+        // Delete CR and LF from the content
+        content.retain(|c| !(*c == 0x0D || *c == 0x0A));
         Ok(Self::from_bytes(&content, algorithm))
     }
 

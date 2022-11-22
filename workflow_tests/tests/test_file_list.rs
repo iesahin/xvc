@@ -133,36 +133,26 @@ fn test_file_list() -> Result<()> {
 
     let list_dir_1 = x(&["list", "--sort", "size-asc", ADDED_DIR_1])?;
 
+    watch!(list_dir_1);
+
     let list_dir_1_lines: Vec<String> = list_dir_1.lines().map(|s| s.to_string()).collect();
     // file-0001 is smaller than file-0002 ...
-    re_match(&list_dir_1_lines[0], ".*gitignore.*");
+    re_match(&list_dir_1_lines[0], ".*file-0001.*");
 
     let list_dir_2 = x(&["list", "--sort", "size-desc", ADDED_DIR_1])?;
+
+    watch!(list_dir_2);
 
     let list_dir_2_lines: Vec<String> = list_dir_2.lines().map(|s| s.to_string()).collect();
     // file-0001 is smaller than file-0002 ...
     re_match(&list_dir_2_lines[0], ".*file-0005.*");
 
-    // TODO: The following tests require files to be tracked with a time period
-    // let list_data_sort_ts_asc = x(&["list", "--sort", "timestamp-asc", ADDED_DIR_1])?;
-    // let list_data_sort_ts_asc_lines: Vec<String> = list_data_sort_ts_asc
-    //     .lines()
-    //     .map(|s| s.to_string())
-    //     .collect();
-    // re_match(&list_data_sort_ts_asc_lines[0], ".*file-0001.*");
-    // let list_data_sort_ts_desc = x(&["list", "--sort", "timestamp-desc", ADDED_DIR_1])?;
-    // let list_data_sort_ts_desc_lines: Vec<String> = list_data_sort_ts_desc
-    //     .lines()
-    //     .map(|s| s.to_string())
-    //     .collect();
-    // re_match(&list_data_sort_ts_desc_lines[0], ".*file-0005.*");
-    // let list_data_sort_name_asc = x(&["list", "data", "--sort", "name-asc"])?;
     let list_data_sort_name_asc = x(&["list", "--sort", "name-asc", ADDED_DIR_1])?;
     let list_data_sort_name_asc_lines: Vec<String> = list_data_sort_name_asc
         .lines()
         .map(|s| s.to_string())
         .collect();
-    re_match(&list_data_sort_name_asc_lines[0], ".*gitignore.*");
+    re_match(&list_data_sort_name_asc_lines[0], ".*file-0001.*");
     let list_data_sort_name_desc = x(&["list", "--sort", "name-desc", ADDED_DIR_1])?;
     let list_data_sort_name_desc_lines: Vec<String> = list_data_sort_name_desc
         .lines()

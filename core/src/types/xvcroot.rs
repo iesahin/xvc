@@ -25,7 +25,6 @@ pub enum MetadataFileLocation {
     Root(String),
     DotXvc(String),
     Store(String),
-    FileCache(String),
 }
 
 #[derive(Debug)]
@@ -37,7 +36,6 @@ pub struct XvcRoot {
     local_config_path: PathBuf,
     project_config_path: PathBuf,
     entity_generator: XvcEntityGenerator,
-    absolute_file_cache_path: AbsolutePath,
 }
 
 impl fmt::Display for XvcRoot {
@@ -74,16 +72,6 @@ impl XvcRoot {
                 let config = XvcConfig::new(config_opts)?;
                 let entity_generator =
                     xvc_ecs::load_generator(&xvc_dir.join(Self::ENTITY_GENERATOR_PATH))?;
-                let file_cache_dir = PathBuf::from(config.get_str("cache.path")?.option);
-                let absolute_file_cache_path = if file_cache_dir.is_absolute() {
-                    file_cache_dir.into()
-                } else {
-                    xvc_dir
-                        .join(file_cache_dir)
-                        .absolutize()?
-                        .to_path_buf()
-                        .into()
-                };
 
                 let store_dir = xvc_dir.join(Self::STORE_PATH);
                 let xvc_root = XvcRoot {
@@ -94,7 +82,6 @@ impl XvcRoot {
                     absolute_path,
                     config,
                     entity_generator,
-                    absolute_file_cache_path,
                 };
                 Ok(xvc_root)
             }
@@ -207,7 +194,6 @@ impl XvcRoot {
             MetadataFileLocation::Store(s) => self.store_dir.join(s),
             MetadataFileLocation::Root(s) => self.absolute_path.join(s),
             MetadataFileLocation::DotXvc(s) => self.xvc_dir.join(s),
-            MetadataFileLocation::FileCache(s) => self.absolute_file_cache_path.join(s),
         }
     }
 

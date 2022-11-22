@@ -41,6 +41,7 @@ subprocess = "^0.2"
 log = "^0.4"
 regex = "^1.5"
 rand = "^0.8"
+which = "^4.3"
 
 [features]
 default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
