@@ -192,7 +192,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "push", "--to", "wasabi-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "wasabi-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(

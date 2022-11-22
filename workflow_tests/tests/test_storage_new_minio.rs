@@ -198,7 +198,7 @@ fn test_storage_new_minio() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "push", "--to", "minio-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "minio-storage", the_file])?;
     watch!(push_result);
 
     let file_list = s3cmd(

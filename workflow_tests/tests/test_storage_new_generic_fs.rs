@@ -84,7 +84,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
         })
         .count();
 
-    let push_result = x(&["file", "push", "--to", "generic-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "generic-storage", the_file])?;
     watch!(push_result);
 
     // The file should be in:

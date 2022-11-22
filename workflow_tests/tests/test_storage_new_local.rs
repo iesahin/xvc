@@ -63,7 +63,7 @@ fn test_storage_new_local() -> Result<()> {
         })
         .count();
 
-    let push_result = x(&["file", "push", "--to", "local-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "local-storage", the_file])?;
     watch!(push_result);
 
     // The file should be in:

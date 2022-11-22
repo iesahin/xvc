@@ -90,7 +90,7 @@ fn test_storage_new_rsync() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "push", "--to", "rsync-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "rsync-storage", the_file])?;
     watch!(push_result);
 
     let file_list = sh(format!("ssh {url} 'ls -1R {storage_dir_name} | grep bin'"));
