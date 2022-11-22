@@ -54,7 +54,7 @@
 - [Utilities](./ref/utilities.md)
   - [xvc root](./ref/xvc-root.md)
   - [xvc check-ignore](./ref/xvc-check-ignore.md)
-  - [xvc alias](./ref/xvc-alias.md)
+  - [xvc aliases](./ref/xvc-aliases.md)
 
 # API
 
