@@ -50,7 +50,12 @@ fn test_file_hash() -> Result<()> {
     let binary_hash = x(&["hash", "dir-0001/file-0010.bin"])?;
     let text_hash = x(&["hash", "--text-file", "dir-0001/file-0010.bin"])?;
 
-    assert!(binary_hash != text_hash);
+    assert!(
+        binary_hash != text_hash,
+        "Hashes {} and {} should not be equal",
+        binary_hash,
+        text_hash
+    );
 
     Ok(())
 }
