@@ -222,7 +222,7 @@ fn test_storage_new_s3() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "s3-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "s3-storage"])?;
 
     watch!(fetch_result);
 

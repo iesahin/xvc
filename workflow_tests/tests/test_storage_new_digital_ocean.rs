@@ -216,7 +216,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "do-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "do-storage"])?;
 
     watch!(fetch_result);
 

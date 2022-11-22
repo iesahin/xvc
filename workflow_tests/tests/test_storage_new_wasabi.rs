@@ -216,7 +216,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "wasabi-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "wasabi-storage"])?;
 
     watch!(fetch_result);
 

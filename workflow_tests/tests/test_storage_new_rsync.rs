@@ -113,7 +113,7 @@ fn test_storage_new_rsync() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "rsync-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "rsync-storage"])?;
 
     watch!(fetch_result);
 

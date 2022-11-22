@@ -219,7 +219,7 @@ fn test_storage_new_gcs() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "gcs-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "gcs-storage"])?;
 
     watch!(fetch_result);
 
