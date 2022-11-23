@@ -5,9 +5,9 @@
   - [Configuration](./021-configuration.md)
 - [Get Started](./start/index.md)
   - [Xvc for Everyone](./start/everyone.md)
-  - [Xvc for Data](./start/data.md)
+  - [Xvc for Data Versioning](./start/data.md)
   - [Xvc for Machine Learning](./start/ml.md)
-  - [Xvc for Software Developers](./start/developer.md)
+  - [Xvc for Software Development](./start/development.md)
 
 # Guides
 
@@ -54,7 +54,7 @@
 - [Utilities](./ref/utilities.md)
   - [xvc root](./ref/xvc-root.md)
   - [xvc check-ignore](./ref/xvc-check-ignore.md)
-  - [xvc alias](./ref/xvc-alias.md)
+  - [xvc aliases](./ref/xvc-aliases.md)
 
 # API
 
