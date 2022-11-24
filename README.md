@@ -6,29 +6,29 @@
 [![docs.rs](https://img.shields.io/docsrs/xvc)](https://docs.rs/xvc/)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 
-A Fast and Robust MLOps Swiss-Army Knife in Rust
+A fast and robust MLOps tool to manage data and pipelines
 
 ## ⌛ When to use xvc?
 
-- **Machine Learning Engineers**: When you manage large quantities of _unstructured_ data, like images, documents, audio files. When you create data pipelines on top of this data and want to run these pipelines when the data, code or other dependencies change.
-- **Data Engineers**: When you want to version data files, and want to track versions across datasets. When you have to provide this data in multiple remote locations, like S3 or local files.
-- **Data Scientists**: When you want to track which subset of the data you're working with, and how it changes by your operations.
-- **Software Engineers**: When you have binary artifacts that you use as dependencies and would like to have a `make` alternative that considers _content changes_ rather than timestamps.
-- **Everyone**: When you have photo, audio, media, document files to backup on Git, but don't want to copy that huge data to all Git clones. When you want to run a command when any of these files change.
+- When you manage large number of _unstructured_ data, like images, documents, audio files. 
+- When you want to version data files, and want to track versions across datasets. 
+- When you want to store this data in local, SSH-accessible or S3-compatible storages.
+- When you create data pipelines on top of this data and want to run these pipelines when the data, code or other dependencies change.
+- When you want to track which subset of the data you're working with, and how it changes by your operations.
+- When you have photo, audio, media, document files to backup on Git, but don't want to copy that huge data to all Git clones. 
+- When you have binary artifacts that you use as dependencies and would like to have a `make` alternative that considers _content changes_ rather than timestamps.
 
 ## ✳️ What is xvc for?
 
-- (for x = files) Track large files on Git, store them on the cloud, retrieve when necessary, label
-  and query for subsets
-- (for x = pipelines) Define and run data -> model pipelines whose dependencies may be files,
-  hyperparameters, regex searches, arbitrary URLs and more.
+- (for x = files) Track large files on Git, store them in the cloud, retrieve when necessary, label and query for subsets
+- (for x = pipelines) Define and run data -> model pipelines whose dependencies may be files, hyperparameters, regex searches, arbitrary URLs and more.
+- (for x = data) Annotate data and run queries and retrieve subsets of it. (Under Construction)
 - (for x = experiments) Run isolated experiments, share them and store them in Git when necessary (TODO)
-- (for x = data) Annotate data with arbitrary JSON and run queries and retrieve subsets of it. (TODO)
 - (for x = models) Associate models with datasets, metadata and features, then track, store, and deploy them (TODO)
 
 ## 🔽 Installation
 
-You can get the binary files for Linux, macOS and Windows from [releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and copy the file to your $PATH.
+You can get the binary files for Linux, macOS and Windows from [releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and copy the file to your `$PATH`.
 
 Alternatively, if you have Rust [installed], you can build xvc:
 
@@ -38,11 +38,12 @@ $ cargo install xvc
 
 [installed]: https://www.rust-lang.org/tools/install
 
-## 🏃🏾 Quick Start
+## 🏃🏾 Quicktart
 
 Xvc tracks your files and directories on top of Git. To start run the following command in the repository.
 
 ```shell
+$ git init # if you're not already in a Git repository
 $ xvc init
 ```
 
@@ -51,61 +52,111 @@ It initializes the metafiles in `.xvc/` directory and adds `.xvcignore` file in 
 Add your data files and directories for tracking.
 
 ```shell
-$ xvc file track my-data/
-$ git add .xvc
-$ git commit -m "Began to track my-data/ with Xvc"
-$ git push
+$ xvc file track my-data/ --cache-type symlink
 ```
 
 The command calculates data content hashes (with BLAKE-3, by default) and records them.
-It also copies files to content addressed directories under `.xvc/b3`
+It commits these changes to Git. 
+It also copies these files to content addressed directories under `.xvc/b3` and creates read-only symbolic links to them.
 
-Define a file storage to share the files you added.
+You can specify different types of [cache-types] specific to files and directories, for your use case. 
+If you have need to track model files that change frequently, you can set `--cache-type copy` (the default) and make all versions of models available. 
+
+```shell
+$ xvc file track my-models/ --cache-type copy
+```
+
+When you want to share them, configure a storage to share the files you added.
 
 ```shell
 $ xvc storage new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
 ```
 
-You can push the files you added to this remote.
+You can send the files you're tracking in Xvc to this storage.
 
 ```shell
-$ xvc file push --to my-remote
+$ xvc file send --to my-remote
 ```
 
-You can now delete the files.
+When you (or someone else) want to access these files later, you can clone the Git repository and get back the files from file storage.
+
+```console
+$ git clone https://example.com/my-machine-learning-project
+$ cd my-machine-learning-project
+$ xvc file bring my-data/ --from my-remote
+```
+
+(Note that, you don't have to reconfigure the storage but you need to have valid credentials to access the data.
+Xvc doesn't store any credentials.)
+
+If you have commands that depend on data or code elements, you can configure a pipeline.
+
+Create a step for each command. 
 
 ```shell
-$ rm -r my-data/
+$ xvc pipeline step new --step-name preprocess --command 'python3 preprocess.py'
+$ xvc pipeline step new --step-name train --command 'python3 train.py'
+$ xvc pipeline step new --step-name test --command 'python3 test.py'
 ```
 
-When you want to access this data later, you can clone the repository and get back the files from file storage.
+Then, configure dependencies between these steps. 
 
-```shell
-$ xvc file pull my-data/
+```console
+$ xvc pipeline step dependency --step-name preprocess --glob 'my-data/*.jpg' \
+                                                      --file preprocess.py \
+                                                      --regex 'names.txt:/^Name:' \
+                                                      --lines a-long-file.csv::-1000
+$ xvc pipeline step dependency --step-name train  --step preprocess
+$ xvc pipeline step dependency --step-name test   --file test-data.npz \
+                                                  --file my-models/model.h5
+$ xvc pipeline step output --step-name preprocess --output-file test-data.npz
+$ xvc pipeline step output --step-name train --output-file my-models/model.h5
 ```
 
-If you have commands that depend on data or code elements, Xvc allows to define steps to its default pipeline.
 
-```shell
-$ xvc pipeline step new --name my-data-update --command 'python3 preprocess.py'
-$ xvc pipeline step dependency --step my-data-update --files my-data/ \
-                                                     --files preprocess.py \
-                                                     --regex 'names.txt:/^Name:' \
-                                                     --lines a-long-file.csv::-1000
-$ xvc pipeline step output --step-name my-data-update --output-file preprocessed-data.npz
+The above commands define three steps in `default` pipeline. You can have multiple pipelines if you need. 
+
+The first is `preprocess` that depends on 'jpg' files in `my-data/` directory, lines that start with `Name:` in `names.txt`; and the first 1000 lines in `a-long-file.csv`. It also depends on the script itself, so when you make changes to the script itself, it invalidates the step. 
+The second step is called `train`. It depends on `preprocess` step directly, anything that make `preprocess` to rerun, makes `train` to run as well. 
+The `test` step depends on `train` and `preprocess` via their outputs. It's run when these outputs (`test-data.npz` and `model.h5`) are changed. 
+
+You can get the pipeline in Graphviz DOT format to convert to an image.
+
+```console
+$ xvc pipeline dag
+digraph {
+    0 [ label = "step: train (by_dependencies, python3 train.py)" ]
+    1 [ label = "step: preprocess (by_dependencies, python3 preprocess.py)" ]
+    2 [ label = "step: test (by_dependencies, python3 test.py)" ]
+    3 [ label = "file: my-models/model.h5" ]
+    4 [ label = "file: test-data.npz" ]
+    0 -> 1 [ label = "" ]
+    2 -> 3 [ label = "" ]
+    2 -> 4 [ label = "" ]
+}
 ```
 
-The above commands define a new step in the `default` pipeline that depends on files in `my-data/` directory, and `preprocess.py`; lines that start with `Name:` in `names.txt`; and the first 1000 lines in `a-long-file.csv`. When _any_ of these change, or the output is missing, the step command (`python3 preprocess.py`) will run.
+You can also export and import the pipeline to JSON to edit in your editor. 
+
+```console
+$ xvc pipeline export > my-pipeline.json
+$ nvim my-pipeline.json
+$ xvc pipeline import --file my-pipeline.json --overwrite
+```
+
+You can run the pipeline with.
 
 ```shell
 $ xvc pipeline run
 ```
 
-If none of the dependencies change, and the output is available the above command will do nothing.
+If the steps you defined doesn't depend to each other, they are run in parallel. 
 
-You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. More dependency types like database queries, content from URLs, S3 (and compatible) buckets, REST and GraphQL results are in my mental backlog.
+You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. 
+More dependency types like database queries, content from URLs, S3 (and compatible) buckets, REST and GraphQL results are in the backlog.
+Please create an issue or discussion for any other kinds of dependencies that you'd like to be included.
 
-Please check [xvc.netlify.app](https://xvc.netlify.app) for documentation.
+Please check [xvc.netlify.app](https://docs.xvc.dev) for documentation.
 
 ## 🤟 Big Thanks
 
@@ -148,14 +199,14 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 ## 🚁 Support
 
 - You can use [Discussions](https://github.com/iesahin/xvc/discussions) to ask questions. I'll answer as much as possible. Thank you.
-- For consultancy and paid support, you can [get in touch with me.](mailto:xvc@emresult.com).
+- I don't follow any other sites regularly. You can also reach me at [emre@xvc.dev](mailto:emre@xvc.dev)
 
 ## 👐 Contributing
 
-- Star this repo. I feel very happy for five minutes for every star and send my best wishes to you.
-- Really use xvc, tell me how it works for you, read the documentation, report bugs, dream about features. The greatest contribution might be this now.
-- Write a new test with your workflow to increase testing coverage. They are under `workflow_tests` crate.
-- [Be my guest](https://www.airbnb.com/users/show/3595069) when you visit Bursa. I usually don't have time to meet with every guest in person but if you let me know _you_ are coming, I'd like to arrange something. Also, when you visit Galata tower in İstanbul, which is close to where I live, you can buy me a coffee.
+- Star this repo. I feel very happy for five minutes for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks. 
+- Use xvc. Tell me how it works for you, read the [documentation](https://docs.xvc.dev), [report bugs](https://github.com/iesahin/xvc/issues), [discuss features](https://github.com/iesahin/xvc/discussions).
+- Write a new test with your workflow to increase testing coverage. They are under `workflow_tests` crate. 
+- Buy me a coffee ☕ to drink in a virtual meet. 
 
 ## ⚠️ Disclaimer
 
