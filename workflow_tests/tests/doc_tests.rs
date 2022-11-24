@@ -1,8 +1,13 @@
 use trycmd;
+use which;
+use xvc::error::Result;
 
 #[test]
-fn doc_tests() {
+fn doc_tests() -> Result<()> {
     trycmd::TestCases::new()
-        .case("docs/start/ml.md")
-        .case("docs/ref/xvc.md");
+        .register_bin("git", which::which("git")?)
+        .case("docs/start/*.md")
+        .case("docs/ref/*.md");
+
+    Ok(())
 }
