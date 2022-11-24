@@ -1,7 +1,33 @@
 # Command Reference
 
-## Synopsis 
+## Synopsis
 
-```text
-{{#include xvc.txt}}
+```console
+$ xvc --help
+Xvc CLI to manage data and ML pipelines
+
+Usage: xvc [OPTIONS] <COMMAND>
+
+Commands:
+  file          File and directory management commands
+  init          Initialize an Xvc project
+  pipeline      Pipeline management commands
+  storage       Storage (cloud) management commands
+  root          Find the root directory of a project
+  check-ignore  Check whether files are ignored with `.xvcignore`
+  aliases       Print command aliases to be sourced in shell files
+  help          Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...         Output verbosity. Use multiple times to increase emitted logs. TODO: Setting this option here turns off progress bars
+      --quiet              Suppress all output
+  -C <WORKDIR>             Set working directory for the command. It doesn't create a new shell, or change the directory [default: .]
+  -c, --config <CONFIG>    Configuration options set from the command line in the form section.key=value You can use multiple times
+      --no-system-config   Ignore system configuration file
+      --no-user-config     Ignore user configuration file
+      --no-project-config  Ignore project configuration file (.xvc/config)
+      --no-local-config    Ignore local (gitignored) configuration file (.xvc/config.local)
+      --no-env-config      Ignore configuration options gathered from environment variables
+  -h, --help               Print help information
+
 ```
