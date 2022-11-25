@@ -79,12 +79,29 @@ pub struct XvcCLI {
     /// Ignore configuration options gathered from environment variables
     pub no_env_config: bool,
 
-    #[command(subcommand)]
+    /// Don't run automated Git operations for this command.
+    /// If you want to run git commands yourself all the time, you can set `git.auto_commit` and
+    /// `git.auto_stage` options in the configuration to False.
+    #[arg(long)]
+    pub skip_git: bool,
+
+    /// Checkout the given Git reference (branch, tag, commit etc.) before performing the Xvc
+    /// operation.
+    /// This runs `git checkout <given-value>` before running the command.
+    #[arg(long, conflicts_with("skip-git"))]
+    pub from_ref: Option<String>,
+
+    /// If given, create (or checkout) the given branch before committing results of the operation.
+    /// This runs `git checkout --branch <given-value>` before committing the changes.
+    #[arg(long, conflicts_with("skip-git"))]
+    pub to_branch: Option<String>,
+
     /// The subcommand to run
+    #[command(subcommand)]
     pub command: XvcSubCommand,
 
-    #[arg(skip)]
     /// The calling command for logging and documentation purposes
+    #[arg(skip)]
     pub command_string: String,
 }
 
