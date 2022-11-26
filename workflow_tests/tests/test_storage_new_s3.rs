@@ -197,7 +197,7 @@ fn test_storage_new_s3() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "push", "--to", "s3-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "s3-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -222,7 +222,7 @@ fn test_storage_new_s3() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "s3-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "s3-storage"])?;
 
     watch!(fetch_result);
 
@@ -241,7 +241,7 @@ fn test_storage_new_s3() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "s3-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "s3-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -263,7 +263,7 @@ fn test_storage_new_s3() -> Result<()> {
     env::remove_var("AWS_ACCESS_KEY_ID");
     env::remove_var("AWS_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "pull", "--from", "s3-storage"])?;
+    let pull_result_2 = x(&["file", "bring", "--from", "s3-storage"])?;
     watch!(pull_result_2);
 
     Ok(())

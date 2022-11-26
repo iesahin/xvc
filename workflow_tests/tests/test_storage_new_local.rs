@@ -63,7 +63,7 @@ fn test_storage_new_local() -> Result<()> {
         })
         .count();
 
-    let push_result = x(&["file", "push", "--to", "local-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "local-storage", the_file])?;
     watch!(push_result);
 
     // The file should be in:
@@ -90,7 +90,7 @@ fn test_storage_new_local() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "local-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "local-storage"])?;
 
     watch!(fetch_result);
 
@@ -109,7 +109,7 @@ fn test_storage_new_local() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "local-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "local-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)

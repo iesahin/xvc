@@ -192,7 +192,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "push", "--to", "do-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "do-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -216,7 +216,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "do-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "do-storage"])?;
 
     watch!(fetch_result);
 
@@ -235,7 +235,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "do-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "do-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -257,7 +257,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     env::remove_var("DIGITAL_OCEAN_ACCESS_KEY_ID");
     env::remove_var("DIGITAL_OCEAN_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "pull", "--from", "do-storage"])?;
+    let pull_result_2 = x(&["file", "bring", "--from", "do-storage"])?;
     watch!(pull_result_2);
 
     Ok(())

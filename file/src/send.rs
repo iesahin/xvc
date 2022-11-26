@@ -7,31 +7,37 @@ use xvc_core::{ContentDigest, XvcCachePath, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::XvcOutputLine;
 use xvc_storage::{
-    storage::get_remote_from_store, StorageIdentifier, XvcStorage, XvcStorageGuid,
+    storage::get_storage_record, StorageIdentifier, XvcStorage, XvcStorageGuid,
     XvcStorageOperations,
 };
 use xvc_walker::Glob;
 
+/// Send (upload) tracked files to storage
+///
+/// When you define a new storage with [`xvc storage new`][xvc_storage::new] set of commands, you
+/// can send the tracked files with this.
+///
+/// Sent files are placed in a directory structure similar to the local cache.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[command(about = "Push files to remote", rename_all = "kebab-case")]
-pub struct PushCLI {
-    /// remote name or guid to send the files
+#[command(rename_all = "kebab-case")]
+pub struct SendCLI {
+    /// Storage name or guid to send the files
     #[arg(long, short, alias = "to")]
     remote: StorageIdentifier,
-    /// force even if the files are already present
+    /// Force even if the files are already present in the storage
     #[arg(long)]
     force: bool,
-    /// targets to push to remote
+    /// Targets to send/push/upload to storage
     #[arg()]
     targets: Vec<String>,
 }
 
-pub fn cmd_push(
+pub fn cmd_send(
     output_snd: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
     xvc_root: &XvcRoot,
-    opts: PushCLI,
+    opts: SendCLI,
 ) -> Result<()> {
-    let remote = get_remote_from_store(output_snd.clone(), xvc_root, &opts.remote)?;
+    let remote = get_storage_record(output_snd.clone(), xvc_root, &opts.remote)?;
 
     let path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
 
