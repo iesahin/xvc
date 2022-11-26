@@ -22,6 +22,13 @@ Options:
 To initialize a blank Xvc repository, initialize Git first and run `xvc init`. 
 
 ```console
+$ cd my-project-1
 $ git init
+...
 $ xvc init
+? 0
 ```
+
+The command doesn't print anything upon success.
+
+If you want to initialize 
