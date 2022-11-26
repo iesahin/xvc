@@ -207,12 +207,12 @@ pub fn create_directory_tree(
 
 #[cfg(unix)]
 /// Creates a symlink from target to original
-pub fn make_symlink<P: AsRef<Path>, Q: AsRef<Path>>(original: P, target: Q) -> io::Result<()> {
-    unix_fs::symlink(original, target)
+pub fn make_symlink<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> io::Result<()> {
+    unix_fs::symlink(original, link)
 }
 
 #[cfg(windows)]
 /// Creates a file symlink from target to original
-pub fn make_symlink<P: AsRef<Path>, Q: AsRef<Path>>(original: P, target: Q) -> io::Result<()> {
-    windows_fs::symlink_file(original, target)
+pub fn make_symlink<P: AsRef<Path>, Q: AsRef<Path>>(original: P, link: Q) -> io::Result<()> {
+    windows_fs::symlink_file(original, link)
 }
