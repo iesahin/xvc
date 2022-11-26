@@ -196,7 +196,7 @@ fn test_storage_new_r2() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "push", "--to", "r2-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "r2-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -220,7 +220,7 @@ fn test_storage_new_r2() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "r2-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "r2-storage"])?;
 
     watch!(fetch_result);
 
@@ -239,7 +239,7 @@ fn test_storage_new_r2() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "r2-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "r2-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -261,7 +261,7 @@ fn test_storage_new_r2() -> Result<()> {
     env::remove_var("R2_ACCESS_KEY_ID");
     env::remove_var("R2_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "pull", "--from", "r2-storage"])?;
+    let pull_result_2 = x(&["file", "bring", "--from", "r2-storage"])?;
     watch!(pull_result_2);
 
     Ok(())

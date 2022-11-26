@@ -90,7 +90,7 @@ fn test_storage_new_rsync() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "push", "--to", "rsync-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "rsync-storage", the_file])?;
     watch!(push_result);
 
     let file_list = sh(format!("ssh {url} 'ls -1R {storage_dir_name} | grep bin'"));
@@ -113,7 +113,7 @@ fn test_storage_new_rsync() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "fetch", "--from", "rsync-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "rsync-storage"])?;
 
     watch!(fetch_result);
 
@@ -135,7 +135,7 @@ fn test_storage_new_rsync() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "pull", "--from", "rsync-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "rsync-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)

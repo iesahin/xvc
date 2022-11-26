@@ -6,7 +6,7 @@ use std::{env, path::PathBuf};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigInitParams};
 use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
-    HashAlgorithm, XvcDigest, XvcRoot,
+    HashAlgorithm, TextOrBinary, XvcDigest, XvcRoot,
 };
 use xvc_logging::{watch, XvcOutputLine};
 use xvc_walker::AbsolutePath;
@@ -21,14 +21,18 @@ use crate::common::{calc_digest, pipe_path_digest};
 /// configuration from xvc repository if it runs within, otherwise uses user, system or default
 /// options.
 pub struct HashCLI {
-    #[arg(short, long)]
     /// Algorithm to calculate the hash. One of blake3, blake2, sha2, sha3. All algorithm variants produce
     /// 32-bytes digest.
+    #[arg(short, long)]
     algorithm: Option<HashAlgorithm>,
-    #[arg(long)]
-    /// Consider the file as a text file. Otherwise uses [is_text_file] function to decide.
-    text_file: bool,
+    /// For "text" remove line endings before calculating the digest. Keep line endings if
+    /// "binary". "auto" (default) detects the type by checking 0s in the first 8Kbytes, similar to
+    /// Git.
+    #[arg(long, default_value("auto"))]
+    text_or_binary: TextOrBinary,
+
     /// Files to process
+    #[arg()]
     targets: Vec<PathBuf>,
 }
 
@@ -39,7 +43,7 @@ impl UpdateFromXvcConfig for HashCLI {
             .unwrap_or_else(|| HashAlgorithm::from_conf(conf));
         Ok(Box::new(Self {
             algorithm: Some(algorithm),
-            text_file: self.text_file,
+            text_or_binary: self.text_or_binary,
             targets: self.targets.clone(),
         }))
     }
@@ -67,7 +71,7 @@ pub fn cmd_hash(
     let opts = opts.update_from_conf(&conf)?;
     let algorithm = opts.algorithm.unwrap_or(HashAlgorithm::Blake3);
 
-    let text_file = opts.text_file;
+    let text_or_binary = opts.text_or_binary;
     let targets = opts.targets;
     let send_output = |path: PathBuf, digest: XvcDigest| {
         output_snd
@@ -91,7 +95,7 @@ pub fn cmd_hash(
             let (filtered_path_snd, filtered_path_rec) = unbounded();
             pipe_filter_path_errors(path_rec, filtered_path_snd)?;
             let (digest_snd, digest_rec) = unbounded();
-            pipe_path_digest(filtered_path_rec, digest_snd, &algorithm, text_file)?;
+            pipe_path_digest(filtered_path_rec, digest_snd, &algorithm, text_or_binary)?;
 
             for (path, digest) in digest_rec {
                 watch!(path);
@@ -99,7 +103,7 @@ pub fn cmd_hash(
                 send_output(path, digest);
             }
         } else if t.is_file() {
-            let digest = calc_digest(&t, &algorithm, text_file)?;
+            let digest = calc_digest(&t, &algorithm, text_or_binary)?;
             send_output(t, digest);
         } else {
             warn!("Unsupported FS Type: {:?}", t);

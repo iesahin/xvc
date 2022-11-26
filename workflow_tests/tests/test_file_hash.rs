@@ -44,11 +44,16 @@ fn test_file_hash() -> Result<()> {
         &images_hash,
         "^a572622134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1\tfile-0000.bin.*",
     );
-    let images_as_text_hash = x(&["hash", "--text-file", "file-0000.bin"])?;
+    let images_as_text_hash = x(&["hash", "--text-or-binary", "text", "file-0000.bin"])?;
     assert!(images_hash == images_as_text_hash);
 
-    let binary_hash = x(&["hash", "dir-0001/file-0010.bin"])?;
-    let text_hash = x(&["hash", "--text-file", "dir-0001/file-0010.bin"])?;
+    let binary_hash = x(&[
+        "hash",
+        "--text-or-binary",
+        "binary",
+        "dir-0001/file-0010.bin",
+    ])?;
+    let text_hash = x(&["hash", "--text-or-binary", "text", "dir-0001/file-0010.bin"])?;
 
     assert!(
         binary_hash != text_hash,

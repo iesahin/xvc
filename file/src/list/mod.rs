@@ -552,13 +552,12 @@ pub fn cmd_list(
     for (xvc_path, pm) in found_paths.drain(..) {
         if let Some(xvc_entity) = pcp.xvc_path_imap.get(&xvc_path) {
             let digest = if calculate_content_hash {
-                let force_text_file = pcp
+                let text_or_binary = pcp
                     .text_or_binary_store
                     .get(xvc_entity)
                     .map(|d| d.as_inner())
-                    .unwrap_or_else(|| TextOrBinary::Auto)
-                    == TextOrBinary::Text;
-                Some(calc_digest(&pm.path, &pcp.algorithm, force_text_file)?.into())
+                    .unwrap_or_else(|| TextOrBinary::Auto);
+                Some(calc_digest(&pm.path, &pcp.algorithm, text_or_binary)?.into())
             } else {
                 None
             };
@@ -571,7 +570,7 @@ pub fn cmd_list(
             found_entities.push(xvc_entity.clone());
         } else {
             let digest = if calculate_content_hash && (pm.path.as_path().is_file()) {
-                Some(calc_digest(&pm.path, &pcp.algorithm, false)?.into())
+                Some(calc_digest(&pm.path, &pcp.algorithm, TextOrBinary::Auto)?.into())
             } else {
                 None
             };
