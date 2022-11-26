@@ -1,6 +1,6 @@
 [package]
 name = "xvc-workflow-tests"
-version = "0.3.4"
+version = "0.4.0"
 edition = "2021"
 description = "Integration test suite for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -19,15 +19,15 @@ name = "xvc_tests"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc = { version = "^0.3", path = "../lib" }
-xvc-config = {version = "^0.3",  path = "../config" }
-xvc-core = { version = "^0.3", path = "../core" }
-xvc-logging = { version = "^0.3", path = "../logging" }
-xvc-ecs = { version = "^0.3", path = "../ecs" }
-xvc-file = { version = "^0.3", path = "../file" }
-xvc-pipeline = { version = "^0.3", path = "../pipeline" }
-xvc-walker = { version = "^0.3", path = "../walker" }
-xvc-storage = { version = "^0.3", path = "../storage" }
+xvc = { version = "0.4.0", path = "../lib" }
+xvc-config = {version = "0.4.0",  path = "../config" }
+xvc-core = { version = "0.4.0", path = "../core" }
+xvc-logging = { version = "0.4.0", path = "../logging" }
+xvc-ecs = { version = "0.4.0", path = "../ecs" }
+xvc-file = { version = "0.4.0", path = "../file" }
+xvc-pipeline = { version = "0.4.0", path = "../pipeline" }
+xvc-walker = { version = "0.4.0", path = "../walker" }
+xvc-storage = { version = "0.4.0", path = "../storage" }
 
 ## packages for testing
 clap = {version = "^4.0", features=["derive"]}

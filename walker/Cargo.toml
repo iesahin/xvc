@@ -1,6 +1,6 @@
 [package]
 name = "xvc-walker"
-version = "0.3.4"
+version = "0.4.0"
 edition = "2021"
 description = "Xvc parallel file system walker with ignore features"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -18,7 +18,7 @@ crate-type = ["rlib"]
 
 [dependencies]
 globset = "^0.4"
-xvc-logging = {version = "^0.3", path = "../logging"}
+xvc-logging = {version = "0.4.0", path = "../logging"}
 
 
 ## Cli and config
