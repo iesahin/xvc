@@ -40,43 +40,42 @@ use crate::error::{Error, Result};
 #[command(rename_all = "kebab-case")]
 /// Xvc CLI to manage data and ML pipelines
 pub struct XvcCLI {
-    #[arg(long = "verbose", short, action = clap::ArgAction::Count )]
-    /// Output verbosity. Use multiple times to increase emitted logs.
-    /// TODO: Setting this option here turns off progress bars.
+    /// Output verbosity. Use multiple times to increase the output detail.
+    #[arg(long = "verbose", short, action = clap::ArgAction::Count)]
     pub verbosity: u8,
 
-    #[arg(long)]
     /// Suppress all output.
+    #[arg(long, global = true)]
     pub quiet: bool,
 
-    #[arg(short = 'C', default_value = ".")]
     /// Set working directory for the command.
     /// It doesn't create a new shell, or change the directory.
+    #[arg(short = 'C', default_value = ".")]
     pub workdir: PathBuf,
 
-    #[arg(long, short = 'c')]
     /// Configuration options set from the command line in the form section.key=value
     /// You can use multiple times.
+    #[arg(long, short = 'c')]
     pub config: Option<Vec<String>>,
 
-    #[arg(long)]
     /// Ignore system configuration file.
+    #[arg(long)]
     pub no_system_config: bool,
 
-    #[arg(long)]
     /// Ignore user configuration file.
+    #[arg(long)]
     pub no_user_config: bool,
 
-    #[arg(long)]
     /// Ignore project configuration file (.xvc/config)
+    #[arg(long)]
     pub no_project_config: bool,
 
-    #[arg(long)]
     /// Ignore local (gitignored) configuration file (.xvc/config.local)
+    #[arg(long)]
     pub no_local_config: bool,
 
+    /// Ignore configuration options obtained from environment variables.
     #[arg(long)]
-    /// Ignore configuration options gathered from environment variables
     pub no_env_config: bool,
 
     /// Don't run automated Git operations for this command.
@@ -198,6 +197,12 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         }
     };
 
+    if let Some(xvc_root) = xvc_root_opt {
+        if let Some(from_ref) = cli_opts.from_ref {
+            handle_from_ref(xvc_root, from_ref)?;
+        }
+    }
+
     thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<XvcOutputLine>(CHANNEL_BOUND);
 
@@ -246,6 +251,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         opts,
                     )?)
                 }
+
                 XvcSubCommand::Storage(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
@@ -261,7 +267,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             watch!("Before handle_git_automation");
             match xvc_root_opt.as_ref() {
                 Some(xvc_root) => {
-                    handle_git_automation(xvc_root, &cli_opts.command_string)?;
+                    handle_git_automation(xvc_root, cli_opts.to_branch.as, &cli_opts.command_string)?;
                 }
 
                 None => {
@@ -292,7 +298,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     Ok(())
 }
 
-fn handle_git_automation(xvc_root: &XvcRoot, xvc_cmd: &str) -> Result<()> {
+fn handle_git_automation(xvc_root: &XvcRoot, to_branch: Option<&str>, xvc_cmd: &str) -> Result<()> {
     let config = xvc_root.config();
     let directory = xvc_root.as_path().to_str().unwrap();
 
