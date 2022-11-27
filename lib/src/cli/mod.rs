@@ -38,12 +38,7 @@ use crate::error::{Error, Result};
 
 #[derive(Debug, Parser)]
 #[command(rename_all = "kebab-case")]
-/// Xvc Main Command-line Interface
-/// # Examples
-///
-/// ```console
-/// $ xvc file track my-directory
-/// ```
+/// Xvc CLI to manage data and ML pipelines
 pub struct XvcCLI {
     #[arg(long = "verbose", short, action = clap::ArgAction::Count )]
     /// Output verbosity. Use multiple times to increase emitted logs.

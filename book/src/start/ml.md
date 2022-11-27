@@ -40,12 +40,14 @@ _Xvc Getting Started pages are written as stories and dialogues between tortoise
 
 ```console
 $ git init
+...
 $ xvc init
+? 0
 ```
 
 🐇 No messages?
 
-🐢 Xvc is of silent type of Unix commands. It follows "no news is good news" principle. If you want more output, you can add `-v` as a flag. Increase the number of `-v`s to increase the details. 
+🐢 Xvc is of silent type of Unix commands. It follows "no news is good news" principle. We use `? 0` to indicate the command return code. 0 means success. If you want more output, you can add `-v` as a flag. Increase the number of `-v`s to increase the details. 
 
 🐇 So `-vvvvvvvvvvvvvvv` will show which atoms interact in disk while running Xvc?
 

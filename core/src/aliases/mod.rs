@@ -12,7 +12,7 @@ use xvc_logging::XvcOutputLine;
 /// You can use
 ///
 /// ```shell
-/// $(xvc aliases)
+/// . $(xvc aliases)
 /// ```
 ///
 /// in these files, or edit after redirecting like
@@ -51,8 +51,7 @@ alias xvcpd='xvc pipeline dag'
 alias xvcs='xvc storage'
 alias xvcsn='xvc storage new'
 alias xvcsl='xvc storage list'
-alias xvcsr='xvc storage remove'
-"#;
+alias xvcsr='xvc storage remove'"#;
 
 /// Print out aliases for long commands.
 /// These can be sourced in `~/.zsh_aliases`, `~/.bash_aliases` etc. like `$(xvc aliases)`.
@@ -60,6 +59,5 @@ pub fn run(output_snd: Sender<XvcOutputLine>, _opts: AliasesCLI) -> Result<()> {
     output_snd
         .send(XvcOutputLine::Output(XVC_ALIASES.to_string()))
         .unwrap();
-
     Ok(())
 }
