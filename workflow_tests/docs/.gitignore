@@ -1,0 +1,7 @@
+## These are produced in test time
+start/*
+!start/.keep
+ref/*
+!ref/.keep
+how-to/*
+!how-to/.keep
