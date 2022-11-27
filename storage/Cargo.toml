@@ -1,6 +1,6 @@
 [package]
 name = "xvc-storage"
-version = "0.4.1-alpha.0"
+version = "0.4.2-alpha.0"
 edition = "2021"
 description = "Xvc remote (and local) storage management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -18,10 +18,10 @@ crate-type = ["rlib"]
 
 [dependencies]
 xvc-logging = { version = "0.4.0", path = "../logging" }
-xvc-config = { version = "0.4.0", path = "../config" }
-xvc-core = {version = "0.4.0",  path = "../core" }
+xvc-config = { version = "0.4.2-alpha.0", path = "../config" }
+xvc-core = {version = "0.4.2-alpha.0",  path = "../core" }
 xvc-ecs = {version = "0.4.0",  path = "../ecs" }
-xvc-walker = { version = "0.4.0", path = "../walker" }
+xvc-walker = { version = "0.4.2-alpha.0", path = "../walker" }
 
 ## Cli and config
 clap = {version = "^4.0", features=["derive"]}

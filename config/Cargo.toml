@@ -1,6 +1,6 @@
 [package]
 name = "xvc-config"
-version = "0.4.0"
+version = "0.4.2-alpha.0"
 edition = "2021"
 description = "Xvc configuration management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -18,7 +18,7 @@ crate-type = ["rlib"]
 
 [dependencies]
 xvc-logging = {version = "0.4.0", path = "../logging" }
-xvc-walker = {version = "0.4.0", path = "../walker" }
+xvc-walker = {version = "0.4.2-alpha.0", path = "../walker" }
 
 
 
