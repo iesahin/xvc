@@ -1,18 +1,27 @@
 # xvc root
 
-Shows the Xvc root directory where `.xvc/` resides.
+## Purpose
+
+Shows the Xvc root project directory where `.xvc/` resides.
 
 ## Synopsis 
 
-```text
-{{#include xvc-root.txt}}
+```console
+$ xvc root --help
+Find the root directory of a project
+
+Usage: xvc root [OPTIONS]
+
+Options:
+      --absolute  Show absolute path instead of relative
+  -h, --help      Print help information
+
 ```
 
-## Purpose
-
-`xvc root` can be used in scripts to make paths relative to the Xvc project root.
 
 ## Examples
+
+`xvc root` can be used in scripts to make paths relative to the Xvc project root.
 
 By default, it shows the relative path. 
 

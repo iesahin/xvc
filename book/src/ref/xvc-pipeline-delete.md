@@ -3,6 +3,14 @@
 
 ## Synopsis 
 
-```text
-{{#include xvc-pipeline-delete.txt}}
+```console
+$ xvc pipeline delete --help
+Delete a pipeline
+
+Usage: xvc pipeline delete --name <NAME>
+
+Options:
+  -n, --name <NAME>  Name of the pipeline to be deleted
+  -h, --help         Print help information
+
 ```

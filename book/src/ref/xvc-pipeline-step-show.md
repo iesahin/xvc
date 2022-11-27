@@ -6,8 +6,16 @@ Print the steps of a pipeline.
 
 ## Synopsis
 
-```text
-{{#include xvc-pipeline-step-show.txt}}
+```console
+$ xvc pipeline step show --help
+Print step configuration
+
+Usage: xvc pipeline step show --step-name <STEP_NAME>
+
+Options:
+  -s, --step-name <STEP_NAME>  Name of the step
+  -h, --help                   Print help information
+
 ```
 
 ## Examples

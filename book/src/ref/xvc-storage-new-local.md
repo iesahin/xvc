@@ -7,8 +7,17 @@ It allows to keep tracked file contents in a different directory for backup or s
 
 ## Synopsis 
 
-```text
-{{#include xvc-storage-new-local.txt}}
+```console
+$ xvc storage new local --help
+add a new local remote
+
+Usage: xvc storage new local --path <PATH> --name <NAME>
+
+Options:
+      --path <PATH>  Directory to be set as a remote
+  -n, --name <NAME>  
+  -h, --help         Print help information
+
 ```
 
 ## Examples

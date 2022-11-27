@@ -7,8 +7,55 @@ It allows to keep tracked files in any kind of service that can be used command 
 
 ## Synopsis 
 
-```text
-{{#include xvc-storage-new-generic.txt}}
+```console
+$ xvc storage new generic --help
+add a new generic remote
+
+Usage: xvc storage new generic [OPTIONS] --name <NAME> --init <INIT_COMMAND> --list <LIST_COMMAND> --download <DOWNLOAD_COMMAND> --upload <UPLOAD_COMMAND> --delete <DELETE_COMMAND>
+
+Options:
+  -n, --name <NAME>
+          Name of the remote
+          
+          This must be unique among all remotes of the project
+
+  -i, --init <INIT_COMMAND>
+          Command to initialize the remote. This command is run once after defining the remote.
+          
+          You can use {URL} and {DIR}  as shortcuts.
+
+  -l, --list <LIST_COMMAND>
+          Command to list the files in remote
+          
+          You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+
+  -d, --download <DOWNLOAD_COMMAND>
+          Command to download a file from remote.
+          
+          You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+
+  -u, --upload <UPLOAD_COMMAND>
+          Command to upload a file to remote.
+          
+          You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+
+  -D, --delete <DELETE_COMMAND>
+          The delete command to remove a file from remote You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options
+
+  -M, --processes <MAX_PROCESSES>
+          Number of maximum processes to run simultaneously
+          
+          [default: 1]
+
+      --url <URL>
+          You can set a string to replace {URL} placeholder in commands
+
+      --storage-dir <STORAGE_DIR>
+          You can set a string to replace {DIR} placeholder in commands
+
+  -h, --help
+          Print help information (use `-h` for a summary)
+
 ```
 
 You can use the following placeholders in your commands. 

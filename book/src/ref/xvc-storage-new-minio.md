@@ -7,8 +7,35 @@ It allows to store tracked file contents in a Minio server.
 
 ## Synopsis 
 
-```text
-{{#include xvc-storage-new-minio.txt}}
+```console
+$ xvc storage new minio --help
+Add a new Minio remote
+
+Usage: xvc storage new minio [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
+
+Options:
+  -n, --name <NAME>
+          Name of the remote
+          
+          This must be unique among all remotes of the project
+
+      --endpoint <ENDPOINT>
+          Minio server url in the form https://myserver.example.com:9090
+
+      --bucket-name <BUCKET_NAME>
+          Bucket name
+
+      --region <REGION>
+          Region of the server
+
+      --remote-prefix <REMOTE_PREFIX>
+          You can set a directory in the bucket with this prefix
+          
+          [default: ]
+
+  -h, --help
+          Print help information (use `-h` for a summary)
+
 ```
 
 ## Credentials
