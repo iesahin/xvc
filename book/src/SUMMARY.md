@@ -75,6 +75,7 @@
 - [Xvc ECS](./arch/ecs.md)
 - [Comparisons](./arch/delta.md)
 - [Storages](./arch/storages.md)
+- [Git and Xvc](./arch/git-and-xvc.md)
 - [Concepts](./concepts/index.md)
   - [Digest](./concepts/digest.md)
   - [Associated Digest](./concepts/associated-digest.md)
