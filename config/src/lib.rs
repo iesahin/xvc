@@ -525,7 +525,7 @@ impl XvcConfig {
             watch!(map);
             match config.update_from_hash_map(map, XvcConfigOptionSource::CommandLine) {
                 Ok(conf) => {
-                    watch!(config);
+                    watch!(conf);
                     config = conf;
                 }
                 Err(err) => {
