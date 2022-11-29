@@ -31,3 +31,14 @@ Options:
   -h, --help               Print help information
 
 ```
+
+## Subcommands
+
+- [`file`](./xvc-file.md): File and directory management commands
+- [`init`](./xvc-init.md): Initialize an Xvc project
+- [`pipeline`](./xvc-pipeline.md): Pipeline management commands
+- [`storage`](./xvc-storage.md): Storage (cloud) management commands
+- [`root`](./xvc-root.md): Find the root directory of a project
+- [`check-ignore`](./xvc-check-ignore.md): Check whether files are ignored with `.xvcignore`
+- [`aliases`](./xvc-aliases.md) Print command aliases to be sourced in shell files
+ 

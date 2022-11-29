@@ -1,9 +1,0 @@
-xvc-pipeline-delete 
-Delete a pipeline
-
-USAGE:
-    xvc pipeline delete --name <NAME>
-
-OPTIONS:
-    -h, --help           Print help information
-    -n, --name <NAME>    Name of the pipeline to be deleted

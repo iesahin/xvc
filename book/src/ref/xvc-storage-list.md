@@ -6,8 +6,15 @@ List all configured storages with their names and guids.
 
 ## Synopsis 
 
-```text
-{{#include xvc-storage-list.txt}}
+```console
+$ xvc storage list --help
+List all configured storages
+
+Usage: xvc storage list
+
+Options:
+  -h, --help  Print help information
+
 ```
 
 ## Examples

@@ -29,69 +29,85 @@ pub struct StorageCLI {
     pub subcommand: StorageSubCommand,
 }
 
-/// Remote subcommands
+/// storage subcommands
 #[derive(Debug, Clone, Parser)]
 #[command(about = "Manage storages containing tracked file content")]
 pub enum StorageSubCommand {
-    /// list all remotes
+    /// List all configured storages
     #[command()]
     List,
-    /// Remove a remote
+    /// Remove a storage configuration.
+    ///
+    /// This doesn't delete any files in the storage.
     #[command()]
     Remove {
-        /// Name of the remote to be deleted
+        /// Name of the storage to be deleted
         #[arg(long)]
         name: String,
     },
 
+    /// Configure a new storage
     #[command(subcommand)]
     New(StorageNewSubCommand),
 }
 
-/// Add new remotes
+/// Add a new storage
 #[derive(Debug, Clone, Subcommand)]
-#[command(about = "add new remotes")]
+#[command()]
 pub enum StorageNewSubCommand {
-    /// add a new local remote
+    /// Add a new local storage
+    ///
+    /// A local storage is a directory accessible from the local file system.
+    /// Xvc will use common file operations for this directory without accessing the network.
     #[command()]
     Local {
-        /// Directory to be set as a remote
+        /// Directory (outside the repository) to be set as a storage
         #[arg(long)]
         path: PathBuf,
+        /// Name of the storage.
+        ///
+        /// Recommended to keep this name unique to refer easily.
         #[arg(long, short)]
         name: String,
     },
 
-    /// add a new generic remote
+    /// Add a new generic storage.
+    ///
+    /// ⚠️ Please note that this is an advanced method to configure storages.
+    /// You may damage your repository and local and remote files with incorrect configurations.
+    ///
+    /// Please see https://docs.xvc.dev/ref/xvc-storage-new-generic.html for examples and make
+    /// necessary backups before continuing.
     #[command()]
     Generic {
-        /// Name of the remote
+        /// Name of the storage.
         ///
-        /// This must be unique among all remotes of the project
+        /// Recommended to keep this name unique to refer easily.
         #[arg(long = "name", short = 'n')]
         name: String,
-        /// Command to initialize the remote. This command is run once after defining the remote.
+        /// Command to initialize the storage.
+        /// This command is run once after defining the storage.
         ///
-        /// You can use {URL} and {DIR}  as shortcuts.
+        /// You can use {URL} and {STORAGE_DIR}  as shortcuts.
         #[arg(long = "init", short = 'i')]
         init_command: String,
-        /// Command to list the files in remote
+        /// Command to list the files in storage
         ///
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "list", short = 'l')]
         list_command: String,
-        /// Command to download a file from remote.
+        /// Command to download a file from storage.
         ///
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "download", short = 'd')]
         download_command: String,
-        /// Command to upload a file to remote.
+        /// Command to upload a file to storage.
         ///
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "upload", short = 'u')]
         upload_command: String,
-        /// The delete command to remove a file from remote
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// The delete command to remove a file from storage
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "delete", short = 'D')]
         delete_command: String,
         /// Number of maximum processes to run simultaneously
@@ -100,17 +116,20 @@ pub enum StorageNewSubCommand {
         /// You can set a string to replace {URL} placeholder in commands
         #[arg(long)]
         url: Option<String>,
-        /// You can set a string to replace {DIR} placeholder in commands
+        /// You can set a string to replace {STORAGE_DIR} placeholder in commands
         #[arg(long)]
         storage_dir: Option<String>,
     },
 
-    /// add a new rsync remote
+    /// Add a new rsync storages
+    ///
+    /// Uses rsync in separate processes to communicate.
+    /// This can be used when you already have an SSH/Rsync connection.
     #[command()]
     Rsync {
-        /// Name of the remote
+        /// Name of the storage.
         ///
-        /// This must be unique among all remotes of the project
+        /// Recommended to keep this name unique to refer easily.
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Hostname for the connection in the form host.example.com  (without @, : or protocol)
@@ -125,23 +144,23 @@ pub enum StorageNewSubCommand {
         /// User name isn't included in connection strings if not given.
         #[arg(long)]
         user: Option<String>,
-        /// Remote directory in the host to store the files.
+        /// storage directory in the host to store the files.
         #[arg(long)]
         storage_dir: String,
     },
 
     #[cfg(feature = "s3")]
-    /// Add a new S3 remote
+    /// Add a new S3 storage
     #[command()]
     S3 {
-        /// Name of the remote
+        /// Name of the storage
         ///
-        /// This must be unique among all remotes of the project
+        /// This must be unique among all storages of the project
         #[arg(long = "name", short = 'n')]
         name: String,
         /// You can set a directory in the bucket with this prefix
         #[arg(long, default_value = "")]
-        remote_prefix: String,
+        storage_prefix: String,
         /// S3 bucket name
         #[arg(long)]
         bucket_name: String,
@@ -151,12 +170,12 @@ pub enum StorageNewSubCommand {
     },
 
     #[cfg(feature = "minio")]
-    /// Add a new Minio remote
+    /// Add a new Minio storage
     #[command()]
     Minio {
-        /// Name of the remote
+        /// Name of the storage
         ///
-        /// This must be unique among all remotes of the project
+        /// This must be unique among all storages of the project
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Minio server url in the form https://myserver.example.com:9090
@@ -170,16 +189,16 @@ pub enum StorageNewSubCommand {
         region: String,
         /// You can set a directory in the bucket with this prefix
         #[arg(long, default_value = "")]
-        remote_prefix: String,
+        storage_prefix: String,
     },
 
     #[cfg(feature = "digital-ocean")]
-    /// Add a new Digital Ocean remote
+    /// Add a new Digital Ocean storage
     #[command()]
     DigitalOcean {
-        /// Name of the remote
+        /// Name of the storage
         ///
-        /// This must be unique among all remotes of the project
+        /// This must be unique among all storages of the project
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Bucket name
@@ -190,16 +209,16 @@ pub enum StorageNewSubCommand {
         region: String,
         /// You can set a directory in the bucket with this prefix
         #[arg(long, default_value = "")]
-        remote_prefix: String,
+        storage_prefix: String,
     },
 
     #[cfg(feature = "r2")]
-    /// Add a new R2 remote
+    /// Add a new R2 storage
     #[command()]
     R2 {
-        /// Name of the remote
+        /// Name of the storage
         ///
-        /// This must be unique among all remotes of the project
+        /// This must be unique among all storages of the project
         #[arg(long = "name", short = 'n')]
         name: String,
         /// R2 account ID
@@ -210,16 +229,16 @@ pub enum StorageNewSubCommand {
         bucket_name: String,
         /// You can set a directory in the bucket with this prefix
         #[arg(long, default_value = "")]
-        remote_prefix: String,
+        storage_prefix: String,
     },
 
     #[cfg(feature = "gcs")]
-    /// Add a new Google Cloud Storage remote
+    /// Add a new Google Cloud Storage storage
     #[command()]
     Gcs {
-        /// Name of the remote
+        /// Name of the storage
         ///
-        /// This must be unique among all remotes of the project
+        /// This must be unique among all storages of the project
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Bucket name
@@ -230,16 +249,16 @@ pub enum StorageNewSubCommand {
         region: String,
         /// You can set a directory in the bucket with this prefix
         #[arg(long, default_value = "")]
-        remote_prefix: String,
+        storage_prefix: String,
     },
 
     #[cfg(feature = "wasabi")]
-    /// Add a new Wasabi remote
+    /// Add a new Wasabi storage
     #[command()]
     Wasabi {
-        /// Name of the remote
+        /// Name of the storage
         ///
-        /// This must be unique among all remotes of the project
+        /// This must be unique among all storages of the project
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Bucket name
@@ -302,15 +321,15 @@ pub fn cmd_storage(
     }
 }
 
-/// Configure a new storage. 
-/// 
+/// Configure a new storage.
+///
 /// The available storages and their configuration is dependent to compilation.
 /// In minimum, it includes [local][cmd_storage_new_local] and
-/// [generic][cmd_storage_new_generic]. 
-/// 
+/// [generic][cmd_storage_new_generic].
+///
 /// This function matches [StorageNewSubCommand] and calls the appropriate
-/// function from child modules. Most of the available options are behind 
-/// feature flags, that also guard the modules. 
+/// function from child modules. Most of the available options are behind
+/// feature flags, that also guard the modules.
 fn cmd_storage_new(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
@@ -330,14 +349,14 @@ fn cmd_storage_new(
             delete_command,
             max_processes,
             url,
-            storage_dir: remote_dir,
+            storage_dir: storage_dir,
         } => storage::generic::cmd_storage_new_generic(
             input,
             output_snd,
             xvc_root,
             name,
             url,
-            remote_dir,
+            storage_dir,
             max_processes,
             init_command,
             list_command,
@@ -348,7 +367,7 @@ fn cmd_storage_new(
         #[cfg(feature = "s3")]
         StorageNewSubCommand::S3 {
             name,
-            remote_prefix,
+            storage_prefix,
             bucket_name,
             region,
         } => storage::s3::cmd_new_s3(
@@ -358,14 +377,14 @@ fn cmd_storage_new(
             name,
             region,
             bucket_name,
-            remote_prefix,
+            storage_prefix,
         ),
         #[cfg(feature = "minio")]
         StorageNewSubCommand::Minio {
             name,
             endpoint,
             bucket_name,
-            remote_prefix,
+            storage_prefix,
             region,
         } => storage::minio::cmd_new_minio(
             input,
@@ -375,14 +394,14 @@ fn cmd_storage_new(
             endpoint,
             bucket_name,
             region,
-            remote_prefix,
+            storage_prefix,
         ),
         #[cfg(feature = "digital-ocean")]
         StorageNewSubCommand::DigitalOcean {
             name,
             bucket_name,
             region,
-            remote_prefix,
+            storage_prefix,
         } => storage::digital_ocean::cmd_new_digital_ocean(
             input,
             output_snd,
@@ -390,14 +409,14 @@ fn cmd_storage_new(
             name,
             bucket_name,
             region,
-            remote_prefix,
+            storage_prefix,
         ),
         #[cfg(feature = "r2")]
         StorageNewSubCommand::R2 {
             name,
             account_id,
             bucket_name,
-            remote_prefix,
+            storage_prefix,
         } => storage::r2::cmd_new_r2(
             input,
             output_snd,
@@ -405,14 +424,14 @@ fn cmd_storage_new(
             name,
             account_id,
             bucket_name,
-            remote_prefix,
+            storage_prefix,
         ),
         #[cfg(feature = "gcs")]
         StorageNewSubCommand::Gcs {
             name,
             bucket_name,
             region,
-            remote_prefix,
+            storage_prefix,
         } => storage::gcs::cmd_new_gcs(
             input,
             output_snd,
@@ -420,7 +439,7 @@ fn cmd_storage_new(
             name,
             bucket_name,
             region,
-            remote_prefix,
+            storage_prefix,
         ),
         #[cfg(feature = "wasabi")]
         StorageNewSubCommand::Wasabi {
@@ -456,9 +475,9 @@ fn cmd_storage_new(
     }
 }
 
-/// Removes a storage from the configurations. 
-/// 
-/// This doesn't remove the history associated with them. 
+/// Removes a storage from the configurations.
+///
+/// This doesn't remove the history associated with them.
 fn cmd_storage_remove(
     input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,
@@ -468,10 +487,10 @@ fn cmd_storage_remove(
     todo!()
 }
 
-/// Lists all available storages. 
-/// 
+/// Lists all available storages.
+///
 /// It runs [XvcStorage::display] and lists all elements line by line to
-/// `output_snd`. 
+/// `output_snd`.
 fn cmd_storage_list(
     _input: std::io::StdinLock,
     output_snd: Sender<XvcOutputLine>,

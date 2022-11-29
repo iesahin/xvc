@@ -6,27 +6,56 @@
 
 ## Synopsis 
 
-```text
-{{#include xvc-file-track.txt}}
+```console
+$ xvc file track --help
+Add file and directories to Xvc
+
+Usage: xvc file track [OPTIONS] [TARGETS]...
+
+Arguments:
+  [TARGETS]...
+          Files/directories to add
+
+Options:
+      --cache-type <CACHE_TYPE>
+          How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
+          
+          Note: Reflink uses copy if the underlying file system doesn't support it.
+
+      --no-commit
+          Do not copy/link added files to the file cache
+
+      --text-or-binary <TEXT_OR_BINARY>
+          Calculate digests as text or binary file without checking contents, or by automatically. (Default: auto)
+
+      --force
+          Add targets even if they are already tracked
+
+      --no-parallel
+          Don't use parallelism
+
+  -h, --help
+          Print help information (use `-h` for a summary)
+
 ```
 
 ## Examples
 
 By default, the command runs similar to `git add` and `git commit`. 
 
-```shell
+```console,ignore
 $ xvc file track my-large-image.jpeg
 ```
 
 You can track directories with the same command. 
 
-```shell
+```console,ignore
 $ xvc file track my-large-directory/
 ```
 
 You can specify more than one target in a single command. 
 
-```shell
+```console,ignore
 $ xvc file track my-large-image.jpeg my-large-directory
 ```
 
@@ -38,7 +67,7 @@ Links are followed and any broken links may cause errors.
 
 - Under the hood, Xvc tracks only the files, not directories. 
 Directories are considered as path collections.
-Therefore it doesn't matter if you track a directory or files in it separately. 
+It doesn't matter if you track a directory or files in it separately.
 
 ## Technical Details
 

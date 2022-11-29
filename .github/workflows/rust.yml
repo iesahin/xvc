@@ -6,9 +6,6 @@ on:
   #   - cron: "17 17 * * *"
   pull_request:
     types: [labeled, review_requested]
-    paths:
-      - '**.rs'
-      - '**.toml'
   push:
     tags:
       - "v*.*.*"

@@ -6,10 +6,22 @@ Remove unused or inaccessible storages from the configuration
 
 ## Synopsis 
 
-```text
-{{#include xvc-storage-remove.txt}}
-```
+```console
+$ xvc storage remove --help
+Remove a storage configuration.
 
+This doesn't delete any files in the storage.
+
+Usage: xvc storage remove --name <NAME>
+
+Options:
+      --name <NAME>
+          Name of the storage to be deleted
+
+  -h, --help
+          Print help information (use `-h` for a summary)
+
+```
 ## Caveats
 
 

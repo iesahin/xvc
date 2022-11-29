@@ -7,13 +7,31 @@ It allows to keep tracked file contents in a different directory for backup or s
 
 ## Synopsis 
 
-```text
-{{#include xvc-storage-new-local.txt}}
+```console
+$ xvc storage new local --help
+Add a new local storage
+
+A local storage is a directory accessible from the local file system. Xvc will use common file operations for this directory without accessing the network.
+
+Usage: xvc storage new local --path <PATH> --name <NAME>
+
+Options:
+      --path <PATH>
+          Directory (outside the repository) to be set as a storage
+
+  -n, --name <NAME>
+          Name of the storage.
+          
+          Recommended to keep this name unique to refer easily.
+
+  -h, --help
+          Print help information (use `-h` for a summary)
+
 ```
 
 ## Examples
 
-You can create a new storage by specifying the directory:
+Create a new Xvc backup storage on a path
 
 ```shell
 $ xvc storage new-local --name backup --path /media/bigdisk/backups/my-project-xvc

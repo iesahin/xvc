@@ -8,8 +8,21 @@ These can be in either local file system or the cloud.
  
 ## Synopsis 
 
-```text
-{{#include xvc-storage.txt}}
+```console
+$ xvc storage --help
+Storage (cloud) management commands
+
+Usage: xvc storage <COMMAND>
+
+Commands:
+  list    List all configured storages
+  remove  Remove a storage configuration
+  new     Configure a new storage
+  help    Print this message or the help of the given subcommand(s)
+
+Options:
+  -h, --help  Print help information
+
 ```
 
 

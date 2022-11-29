@@ -1,8 +1,0 @@
-xvc-pipeline-list 
-List all pipelines
-
-USAGE:
-    xvc pipeline list
-
-OPTIONS:
-    -h, --help    Print help information
