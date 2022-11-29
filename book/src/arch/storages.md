@@ -83,20 +83,5 @@ The user is expected to supply the value following variables:
   Example: `ssh {URL} "rm {STORAGE_DIR}{PATH}"`
 
 Generic storages use these commands to create multiple processes to send/receive/delete files.
-It's not as fast as using other types because of the overhead involved, but it's flexibility is useful.
+It's not as fast as using other types because of the overhead involved, but its flexibility is useful.
 
-## Rclone Storages
-
-Xvc can use your Rclone configuration to upload/download the data files.
-
-## SSH Storages
-
-## S3 (and compatible) storages
-
-# Operations on Storages
-
-## Creating a storage
-
-## Moving a storage
-
-## Deleting a storage
