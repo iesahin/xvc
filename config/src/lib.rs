@@ -97,7 +97,7 @@ pub enum XvcVerbosity {
     #[strum(serialize = "quiet", serialize = "0")]
     Quiet,
     /// Print default output and errors
-    #[strum(serialize = "default", serialize = "1")]
+    #[strum(serialize = "default", serialize = "error", serialize = "1")]
     Default,
     /// Print default output, warnings and errors
     #[strum(serialize = "warn", serialize = "2")]
