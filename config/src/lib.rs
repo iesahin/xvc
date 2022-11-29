@@ -460,8 +460,8 @@ impl XvcConfig {
             .into_iter()
             .map(|str| {
                 let elements: Vec<&str> = str.split('=').collect();
-                let key = elements[0].to_owned();
-                let value = Self::parse_to_value(elements[1].to_owned());
+                let key = elements[0].trim().to_owned();
+                let value = Self::parse_to_value(elements[1].trim().to_owned());
                 (key, value)
             })
             .collect()
