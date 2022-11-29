@@ -2,9 +2,9 @@
 
 When you're working with multiple branches in Git, you may ask Xvc to checkout a branch and commit to another branch. 
 These operations are performed at the beginning, and at the end of Xvc operations. 
-You can use `--from-ref` and `--to-branch` options to create multiple versions of the same data, or pipelines in the same repository. 
+You can use `--from-ref` and `--to-branch` options to checkout a Git reference before an Xvc operation, and commit the results to a certain Git branch.
 
-Git operations sandwich Xvc operations. 
+Checkout and commit operations sandwich Xvc operations. 
 
 ```mermaid
 graph LR
@@ -20,8 +20,10 @@ This is the default behavior.
 
 ```console
 $ git init --initial-branch=main
+...
 $ xvc init
-$ echo "Oh, data, my, data" > data.txt
+? 0
+$ cat "Oh, data, my, data" > data.txt
 $ xvc --to-branch data-file file track data.txt
 $ git branch
 * data-file
