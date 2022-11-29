@@ -34,7 +34,7 @@ pub fn test_dispatch(
         args
     };
 
-    let cli_opts = xvc::cli::XvcCLI::parse_from(args_with_binary_name);
+    let cli_opts = xvc::cli::XvcCLI::from_str_slice(&args_with_binary_name)?;
     watch!(cli_opts);
 
     xvc::cli::test_dispatch(xvc_root_opt, cli_opts, verbosity)
