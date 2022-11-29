@@ -9,15 +9,15 @@ It allows to store tracked file contents in a Minio server.
 
 ```console
 $ xvc storage new minio --help
-Add a new Minio remote
+Add a new Minio storage
 
 Usage: xvc storage new minio [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
 
 Options:
   -n, --name <NAME>
-          Name of the remote
+          Name of the storage
           
-          This must be unique among all remotes of the project
+          This must be unique among all storages of the project
 
       --endpoint <ENDPOINT>
           Minio server url in the form https://myserver.example.com:9090
@@ -28,14 +28,13 @@ Options:
       --region <REGION>
           Region of the server
 
-      --remote-prefix <REMOTE_PREFIX>
+      --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
           
           [default: ]
 
   -h, --help
           Print help information (use `-h` for a summary)
-
 ```
 
 ## Credentials
