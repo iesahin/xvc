@@ -403,6 +403,7 @@ fn handle_git_automation(xvc_root: &XvcRoot, to_branch: Option<&str>, xvc_cmd: &
             let git_command = get_git_command(xvc_root)?;
             info!("Using Git: {git_command}");
 
+            watch!(xvc_root.config().verbosity());
             // Report Git version for debugging purposes.
             if matches!(xvc_root.config().verbosity(), XvcVerbosity::Trace) {
                 let git_version = exec_git(&git_command, xvc_directory, &["--version"]);
