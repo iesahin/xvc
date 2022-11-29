@@ -37,6 +37,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
 };
+use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
@@ -557,7 +558,9 @@ impl XvcConfig {
     /// The current verbosity level.
     /// Set with `core.verbosity` option.
     pub fn verbosity(&self) -> XvcVerbosity {
-        let verbosity_str = match self.get_str("core.verbosity") {
+        let verbosity_str = self.get_str("core.verbosity");
+        watch!(verbosity_str);
+        let verbosity_str = match verbosity_str {
             Ok(opt) => opt.option,
             Err(err) => {
                 err.warn();
