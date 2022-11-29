@@ -295,10 +295,10 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 // output_str.push_str(&output_line);
                 match output_line {
                     XvcOutputLine::Output(m) => println!("{m}"),
-                    XvcOutputLine::Info(m) => info!("[INFO] {m}"),
-                    XvcOutputLine::Warn(m) => warn!("[WARN] {m}"),
-                    XvcOutputLine::Error(m) => error!("[ERROR] {m}"),
-                    XvcOutputLine::Panic(m) => panic!("[ERROR] {m}"),
+                    XvcOutputLine::Info(m) => info!("[INFO] {}", m.to_string()),
+                    XvcOutputLine::Warn(m) => warn!("[WARN] {}", m.to_string()),
+                    XvcOutputLine::Error(m) => error!("[ERROR] {}", m.to_string()),
+                    XvcOutputLine::Panic(m) => panic!("[ERROR] {}", m.to_string()),
                     XvcOutputLine::Tick(t) => todo!(),
                 }
             }
