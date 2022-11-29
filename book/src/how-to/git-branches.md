@@ -24,6 +24,8 @@ $ git init --initial-branch=main
 $ xvc init
 ? 0
 $ cat "Oh, data, my, data" > data.txt
+$ ls
+data.txt
 $ xvc --to-branch data-file file track data.txt
 $ git branch
 * data-file
