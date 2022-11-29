@@ -121,10 +121,7 @@ impl XvcCLI {
     /// to XvcConfig constructor.
     pub fn consolidate_config_options(&self) -> Vec<String> {
         let mut output = self.config.clone().unwrap_or_default();
-        output.push(format!(
-            "core.verbosity = \"{}\"",
-            self.verbosity.to_string()
-        ));
+        output.push(format!("core.verbosity = {}", self.verbosity.to_string()));
         output.push(format!("core.quiet = {}", self.quiet));
 
         output
