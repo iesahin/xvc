@@ -1,8 +1,0 @@
-xvc-storage-list 
-list all remotes
-
-USAGE:
-    xvc storage list
-
-OPTIONS:
-    -h, --help    Print help information

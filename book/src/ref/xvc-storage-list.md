@@ -8,13 +8,12 @@ List all configured storages with their names and guids.
 
 ```console
 $ xvc storage list --help
-list all remotes
+List all configured storages
 
 Usage: xvc storage list
 
 Options:
   -h, --help  Print help information
-
 ```
 
 ## Examples
