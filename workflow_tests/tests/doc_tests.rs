@@ -102,6 +102,7 @@ fn doc_tests() -> Result<()> {
     trycmd::TestCases::new()
         .register_bin("git", which::which("git")?)
         .register_bin("echo", Path::new("/bin/echo"))
+        .register_bin("cat", Path::new("/bin/cat"))
         .register_bin("ls", Path::new("/bin/ls"))
         .case("docs/*/*.md")
         // We skip this for the time being.
