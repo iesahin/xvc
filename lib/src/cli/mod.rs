@@ -57,7 +57,7 @@ pub struct XvcCLI {
     /// Configuration options set from the command line in the form section.key=value
     /// You can use multiple times.
     #[arg(long, short = 'c')]
-    pub config: Option<Vec<String>>,
+    config: Option<Vec<String>>,
 
     /// Ignore system configuration file.
     #[arg(long)]
@@ -115,6 +115,19 @@ impl XvcCLI {
             command_string,
             ..parsed
         })
+    }
+
+    /// Collects cli config with -c options along with direct options (like verbosity) to provide
+    /// to XvcConfig constructor.
+    pub fn consolidate_config_options(&self) -> Vec<String> {
+        let mut output = self.config.clone().unwrap_or_default();
+        output.push(format!(
+            "core.verbosity = \"{}\"",
+            self.verbosity.to_string()
+        ));
+        output.push(format!("core.quiet = {}", self.quiet));
+
+        output
     }
 }
 
@@ -186,7 +199,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         project_config_path: None,
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,
-        command_line_config: cli_opts.config.clone(),
+        command_line_config: Some(cli_opts.consolidate_config_options()),
         default_configuration: default_project_config(true),
     };
 
@@ -490,7 +503,7 @@ pub fn test_dispatch(
         project_config_path: None,
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,
-        command_line_config: cli_opts.config.clone(),
+        command_line_config: Some(cli_opts.consolidate_config_options()),
         default_configuration: default_project_config(true),
     };
 

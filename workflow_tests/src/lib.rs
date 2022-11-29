@@ -13,7 +13,6 @@ pub use xvc_pipeline as pipeline;
 
 pub use xvc_logging::watch;
 
-use clap::Parser;
 use xvc::error::Result;
 
 /// Ensures `xvc` is the first element in `args`, and runs [cli::test_dispatch] after parsing them.
