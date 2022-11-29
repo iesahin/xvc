@@ -8,15 +8,15 @@ Configure [Cloudflare R2](https://www.cloudflare.com/products/r2/) as an Xvc sto
 
 ```console
 $ xvc storage new r2 --help
-Add a new R2 remote
+Add a new R2 storage
 
 Usage: xvc storage new r2 [OPTIONS] --name <NAME> --account-id <ACCOUNT_ID> --bucket-name <BUCKET_NAME>
 
 Options:
   -n, --name <NAME>
-          Name of the remote
+          Name of the storage
           
-          This must be unique among all remotes of the project
+          This must be unique among all storages of the project
 
       --account-id <ACCOUNT_ID>
           R2 account ID
@@ -24,7 +24,7 @@ Options:
       --bucket-name <BUCKET_NAME>
           Bucket name
 
-      --remote-prefix <REMOTE_PREFIX>
+      --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
           
           [default: ]
