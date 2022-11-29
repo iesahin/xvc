@@ -33,10 +33,12 @@ pub struct StorageCLI {
 #[derive(Debug, Clone, Parser)]
 #[command(about = "Manage storages containing tracked file content")]
 pub enum StorageSubCommand {
-    /// list all storages
+    /// List all configured storages
     #[command()]
     List,
-    /// Remove a storage
+    /// Remove a storage configuration.
+    ///
+    /// This doesn't delete any files in the storage.
     #[command()]
     Remove {
         /// Name of the storage to be deleted
@@ -44,54 +46,68 @@ pub enum StorageSubCommand {
         name: String,
     },
 
+    /// Configure a new storage
     #[command(subcommand)]
     New(StorageNewSubCommand),
 }
 
-/// Add new storages
+/// Add a new storage
 #[derive(Debug, Clone, Subcommand)]
-#[command(about = "add new storages")]
+#[command()]
 pub enum StorageNewSubCommand {
-    /// add a new local storage
+    /// Add a new local storage
+    ///
+    /// A local storage is a directory accessible from the local file system.
+    /// Xvc will use common file operations for this directory without accessing the network.
     #[command()]
     Local {
-        /// Directory to be set as a storage
+        /// Directory (outside the repository) to be set as a storage
         #[arg(long)]
         path: PathBuf,
+        /// Name of the storage.
+        ///
+        /// Recommended to keep this name unique to refer easily.
         #[arg(long, short)]
         name: String,
     },
 
-    /// add a new generic storage
+    /// Add a new generic storage.
+    ///
+    /// ⚠️ Please note that this is an advanced method to configure storages.
+    /// You may damage your repository and local and remote files with incorrect configurations.
+    ///
+    /// Please see https://docs.xvc.dev/ref/xvc-storage-new-generic.html for examples and make
+    /// necessary backups before continuing.
     #[command()]
     Generic {
-        /// Name of the storage
+        /// Name of the storage.
         ///
-        /// This must be unique among all storages of the project
+        /// Recommended to keep this name unique to refer easily.
         #[arg(long = "name", short = 'n')]
         name: String,
-        /// Command to initialize the storage. This command is run once after defining the storage.
+        /// Command to initialize the storage.
+        /// This command is run once after defining the storage.
         ///
-        /// You can use {URL} and {DIR}  as shortcuts.
+        /// You can use {URL} and {STORAGE_DIR}  as shortcuts.
         #[arg(long = "init", short = 'i')]
         init_command: String,
         /// Command to list the files in storage
         ///
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "list", short = 'l')]
         list_command: String,
         /// Command to download a file from storage.
         ///
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "download", short = 'd')]
         download_command: String,
         /// Command to upload a file to storage.
         ///
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "upload", short = 'u')]
         upload_command: String,
         /// The delete command to remove a file from storage
-        /// You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+        /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
         #[arg(long = "delete", short = 'D')]
         delete_command: String,
         /// Number of maximum processes to run simultaneously
@@ -100,17 +116,20 @@ pub enum StorageNewSubCommand {
         /// You can set a string to replace {URL} placeholder in commands
         #[arg(long)]
         url: Option<String>,
-        /// You can set a string to replace {DIR} placeholder in commands
+        /// You can set a string to replace {STORAGE_DIR} placeholder in commands
         #[arg(long)]
         storage_dir: Option<String>,
     },
 
-    /// add a new rsync storage
+    /// Add a new rsync storages
+    ///
+    /// Uses rsync in separate processes to communicate.
+    /// This can be used when you already have an SSH/Rsync connection.
     #[command()]
     Rsync {
-        /// Name of the storage
+        /// Name of the storage.
         ///
-        /// This must be unique among all storages of the project
+        /// Recommended to keep this name unique to refer easily.
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Hostname for the connection in the form host.example.com  (without @, : or protocol)
