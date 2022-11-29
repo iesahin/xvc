@@ -169,6 +169,8 @@ pub fn cmd_track(
             .into_iter()
             .filter_map(|t| {
                 watch!(t);
+                watch!(t.is_file());
+                watch!(t.is_dir());
                 if t.is_file() || t.is_dir() {
                     Some(t)
                 } else {
