@@ -8,16 +8,20 @@ Remove unused or inaccessible storages from the configuration
 
 ```console
 $ xvc storage remove --help
-Remove a remote
+Remove a storage configuration.
+
+This doesn't delete any files in the storage.
 
 Usage: xvc storage remove --name <NAME>
 
 Options:
-      --name <NAME>  Name of the remote to be deleted
-  -h, --help         Print help information
+      --name <NAME>
+          Name of the storage to be deleted
+
+  -h, --help
+          Print help information (use `-h` for a summary)
 
 ```
-
 ## Caveats
 
 
