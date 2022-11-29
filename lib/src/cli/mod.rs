@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use crate::init;
+use anyhow::anyhow;
 use clap::Parser;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -87,12 +88,12 @@ pub struct XvcCLI {
     /// Checkout the given Git reference (branch, tag, commit etc.) before performing the Xvc
     /// operation.
     /// This runs `git checkout <given-value>` before running the command.
-    #[arg(long, conflicts_with("skip-git"))]
+    #[arg(long, conflicts_with("skip_git"))]
     pub from_ref: Option<String>,
 
     /// If given, create (or checkout) the given branch before committing results of the operation.
     /// This runs `git checkout --branch <given-value>` before committing the changes.
-    #[arg(long, conflicts_with("skip-git"))]
+    #[arg(long, conflicts_with("skip_git"))]
     pub to_branch: Option<String>,
 
     /// The subcommand to run
@@ -197,9 +198,9 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         }
     };
 
-    if let Some(xvc_root) = xvc_root_opt {
+    if let Some(ref xvc_root) = xvc_root_opt {
         if let Some(from_ref) = cli_opts.from_ref {
-            handle_from_ref(xvc_root, from_ref)?;
+            git_checkout_ref(xvc_root, from_ref)?;
         }
     }
 
@@ -267,7 +268,11 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             watch!("Before handle_git_automation");
             match xvc_root_opt.as_ref() {
                 Some(xvc_root) => {
-                    handle_git_automation(xvc_root, cli_opts.to_branch.as, &cli_opts.command_string)?;
+                    handle_git_automation(
+                        xvc_root,
+                        cli_opts.to_branch.as_deref(),
+                        &cli_opts.command_string,
+                    )?;
                 }
 
                 None => {
@@ -298,89 +303,146 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     Ok(())
 }
 
+fn get_git_command(xvc_root: &XvcRoot) -> Result<String> {
+    let config = xvc_root.config();
+    if config.get_bool("git.use_git")?.option {
+        let git_cmd_str = config.get_str("git.command")?.option;
+        let git_cmd_path = PathBuf::from(&git_cmd_str);
+        let git_cmd = if git_cmd_path.is_absolute() {
+            git_cmd_str
+        } else {
+            let cmd_path = which::which(git_cmd_str)?;
+            cmd_path.to_string_lossy().to_string()
+        };
+        Ok(git_cmd)
+    } else {
+        Err(anyhow!("git.use_git option is false. Git operations must be done manually.").into())
+    }
+}
+
+fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -> Result<String> {
+    let mut args = vec!["-C", xvc_directory];
+    args.extend(args_str_vec);
+    let args: Vec<OsString> = args
+        .iter()
+        .map(|s| OsString::from_str(s).unwrap())
+        .collect();
+    watch!(args);
+    let proc_res = Exec::cmd(git_command).args(&args).capture()?;
+
+    match proc_res.exit_status {
+        subprocess::ExitStatus::Exited(0) => Ok(proc_res.stdout_str()),
+        subprocess::ExitStatus::Exited(_) => Err(Error::GitProcessError {
+            stdout: proc_res.stdout_str(),
+            stderr: proc_res.stderr_str(),
+        }),
+        subprocess::ExitStatus::Signaled(_)
+        | subprocess::ExitStatus::Other(_)
+        | subprocess::ExitStatus::Undetermined => Err(Error::GitProcessError {
+            stdout: proc_res.stdout_str(),
+            stderr: proc_res.stderr_str(),
+        }),
+    }
+}
+
+fn stash_user_staged_files(git_command: &str, xvc_directory: &str) -> Result<String> {
+    // Do we have user staged files?
+    let git_diff_staged_out = exec_git(
+        git_command,
+        xvc_directory,
+        &["diff", "--name-only", "--cached"],
+    )?;
+
+    watch!(git_diff_staged_out);
+
+    // If so stash them
+    if git_diff_staged_out.trim().len() > 0 {
+        info!("Stashing user staged files: {git_diff_staged_out}");
+        let stash_out = exec_git(git_command, xvc_directory, &["stash", "push", "--staged"])?;
+        info!("Stashed user staged files: {stash_out}");
+    }
+
+    Ok(git_diff_staged_out)
+}
+
+fn unstash_user_staged_files(git_command: &str, xvc_directory: &str) -> Result<()> {
+    let res_git_stash_pop = exec_git(git_command, xvc_directory, &["stash", "pop", "--index"])?;
+    info!("Unstashed user staged files: {res_git_stash_pop}");
+    Ok(())
+}
+
+fn git_checkout_ref(xvc_root: &XvcRoot, from_ref: String) -> Result<()> {
+    let xvc_directory = xvc_root.as_path().to_str().unwrap();
+    let git_command = get_git_command(xvc_root)?;
+
+    let git_diff_staged_out = stash_user_staged_files(&git_command, xvc_directory)?;
+    exec_git(&git_command, xvc_directory, &["checkout", &from_ref])?;
+
+    if git_diff_staged_out.trim().len() > 0 {
+        info!("Unstashing user staged files: {git_diff_staged_out}");
+        unstash_user_staged_files(&git_command, xvc_directory)?;
+    }
+    Ok(())
+}
+
 fn handle_git_automation(xvc_root: &XvcRoot, to_branch: Option<&str>, xvc_cmd: &str) -> Result<()> {
     let config = xvc_root.config();
-    let directory = xvc_root.as_path().to_str().unwrap();
-
-    watch!(config.get_bool("git.use_git"));
+    let xvc_directory = xvc_root.as_path().to_str().unwrap();
 
     if config.get_bool("git.use_git")?.option {
-        watch!(config.get_bool(("git.auto_commit")));
+        watch!(config.get_bool("git.auto_commit"));
         if config.get_bool("git.auto_commit")?.option {
-            let git_cmd_str = config.get_str("git.command")?.option;
-            let git_cmd_path = PathBuf::from(&git_cmd_str);
-
-            let git_cmd = if git_cmd_path.is_absolute() {
-                git_cmd_str
-            } else {
-                let cmd_path = which::which(git_cmd_str)?;
-                cmd_path.to_string_lossy().to_string()
-            };
-
-            info!("Using Git: {git_cmd}");
-
-            let exec_git = |args_str_vec: &[&str]| {
-                let mut args = vec!["-C", directory];
-                args.extend(args_str_vec);
-                let args: Vec<OsString> = args
-                    .iter()
-                    .map(|s| OsString::from_str(s).unwrap())
-                    .collect();
-                watch!(args);
-                let proc_res = Exec::cmd(&git_cmd).args(&args).capture()?;
-
-                match proc_res.exit_status {
-                    subprocess::ExitStatus::Exited(0) => Ok(proc_res.stdout_str()),
-                    subprocess::ExitStatus::Exited(_) => Err(Error::GitProcessError {
-                        stdout: proc_res.stdout_str(),
-                        stderr: proc_res.stderr_str(),
-                    }),
-                    subprocess::ExitStatus::Signaled(_)
-                    | subprocess::ExitStatus::Other(_)
-                    | subprocess::ExitStatus::Undetermined => Err(Error::GitProcessError {
-                        stdout: proc_res.stdout_str(),
-                        stderr: proc_res.stderr_str(),
-                    }),
-                }
-            };
+            let git_command = get_git_command(xvc_root)?;
+            info!("Using Git: {git_command}");
 
             // Report Git version for debugging purposes.
             if matches!(xvc_root.config().verbosity(), XvcVerbosity::Trace) {
-                let git_version = exec_git(&["--version"]);
+                let git_version = exec_git(&git_command, xvc_directory, &["--version"]);
                 watch!(git_version);
             }
 
-            // Do we have user staged files?
-            let git_diff_staged_out = exec_git(&["diff", "--name-only", "--cached"])?;
-            watch!(git_diff_staged_out);
+            let git_diff_staged_out = stash_user_staged_files(&git_command, xvc_directory)?;
 
-            // If so stash them
-            if git_diff_staged_out.trim().len() > 0 {
-                info!("Stashing user staged files: {git_diff_staged_out}");
-                let stash_out = exec_git(&["stash", "push", "--staged"])?;
-                info!("Stashed user staged files: {stash_out}");
+            if let Some(branch) = to_branch {
+                info!("Checking out branch {branch}");
+                exec_git(
+                    &git_command,
+                    xvc_directory,
+                    &["checkout", "--branch", branch],
+                )?;
             }
 
             // Add and commit `.xvc`
             let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-            let res_git_add = exec_git(&["add", &xvc_dir, "*.gitignore", "*.xvcignore"])?;
+            let res_git_add = exec_git(
+                &git_command,
+                xvc_directory,
+                &["add", &xvc_dir, "*.gitignore", "*.xvcignore"],
+            )?;
             info!("Adding .xvc/ to git: {res_git_add}");
-            let res_git_commit = exec_git(&[
-                "commit",
-                "-m",
-                &format!("Xvc auto-commit after '{xvc_cmd}'"),
-            ])?;
+            let res_git_commit = exec_git(
+                &git_command,
+                xvc_directory,
+                &[
+                    "commit",
+                    "-m",
+                    &format!("Xvc auto-commit after '{xvc_cmd}'"),
+                ],
+            )?;
             info!("Committing .xvc/ to git: {res_git_commit}");
 
             // Pop the stash if there were files we stashed
 
             if git_diff_staged_out.trim().len() > 0 {
                 info!("Unstashing user staged files: {git_diff_staged_out}");
-                let res_git_stash_pop = exec_git(&["stash", "pop", "--index"])?;
-                info!("Unstashed user staged files: {res_git_stash_pop}");
+                unstash_user_staged_files(&git_command, xvc_directory)?;
             } else if config.get_bool("git.auto-stage")?.option {
                 let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-                let res_git_add = exec_git(&["add", xvc_dir, "*.gitignore", "*.xvcignore"])?;
+                let res_git_add = exec_git(
+                    &git_command,
+                    xvc_directory,
+                    &["add", xvc_dir, "*.gitignore", "*.xvcignore"],
+                )?;
                 info!("Staging .xvc/ to git: {res_git_add}");
             }
         }
@@ -506,7 +568,11 @@ pub fn test_dispatch(
             watch!("Before handle_git_automation");
             match xvc_root_opt.as_ref() {
                 Some(xvc_root) => {
-                    handle_git_automation(xvc_root, &cli_opts.command_string)?;
+                    handle_git_automation(
+                        xvc_root,
+                        cli_opts.to_branch.as_deref(),
+                        &cli_opts.command_string,
+                    )?;
                 }
 
                 None => {
