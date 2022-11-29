@@ -26,11 +26,12 @@ Options:
 
   -h, --help
           Print help information (use `-h` for a summary)
+
 ```
 
 ## Examples
 
-You can create a new storage by specifying the directory:
+Create a new Xvc backup storage on a path
 
 ```shell
 $ xvc storage new-local --name backup --path /media/bigdisk/backups/my-project-xvc
