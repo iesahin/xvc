@@ -9,38 +9,42 @@ It allows to keep tracked files in any kind of service that can be used command 
 
 ```console
 $ xvc storage new generic --help
-add a new generic remote
+Add a new generic storage.
+
+⚠️ Please note that this is an advanced method to configure storages. You may damage your repository and local and remote files with incorrect configurations.
+
+Please see https://docs.xvc.dev/ref/xvc-storage-new-generic.html for examples and make necessary backups before continuing.
 
 Usage: xvc storage new generic [OPTIONS] --name <NAME> --init <INIT_COMMAND> --list <LIST_COMMAND> --download <DOWNLOAD_COMMAND> --upload <UPLOAD_COMMAND> --delete <DELETE_COMMAND>
 
 Options:
   -n, --name <NAME>
-          Name of the remote
+          Name of the storage.
           
-          This must be unique among all remotes of the project
+          Recommended to keep this name unique to refer easily.
 
   -i, --init <INIT_COMMAND>
-          Command to initialize the remote. This command is run once after defining the remote.
+          Command to initialize the storage. This command is run once after defining the storage.
           
-          You can use {URL} and {DIR}  as shortcuts.
+          You can use {URL} and {STORAGE_DIR}  as shortcuts.
 
   -l, --list <LIST_COMMAND>
-          Command to list the files in remote
+          Command to list the files in storage
           
-          You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+          You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
 
   -d, --download <DOWNLOAD_COMMAND>
-          Command to download a file from remote.
+          Command to download a file from storage.
           
-          You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+          You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
 
   -u, --upload <UPLOAD_COMMAND>
-          Command to upload a file to remote.
+          Command to upload a file to storage.
           
-          You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options.
+          You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
 
   -D, --delete <DELETE_COMMAND>
-          The delete command to remove a file from remote You can use {URL} and {DIR} placeholders and define values for these with --url and --dir options
+          The delete command to remove a file from storage You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options
 
   -M, --processes <MAX_PROCESSES>
           Number of maximum processes to run simultaneously
@@ -51,11 +55,10 @@ Options:
           You can set a string to replace {URL} placeholder in commands
 
       --storage-dir <STORAGE_DIR>
-          You can set a string to replace {DIR} placeholder in commands
+          You can set a string to replace {STORAGE_DIR} placeholder in commands
 
   -h, --help
           Print help information (use `-h` for a summary)
-
 ```
 
 You can use the following placeholders in your commands. 
