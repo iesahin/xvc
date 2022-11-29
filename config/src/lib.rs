@@ -524,7 +524,10 @@ impl XvcConfig {
                 .collect();
             watch!(map);
             match config.update_from_hash_map(map, XvcConfigOptionSource::CommandLine) {
-                Ok(conf) => config = conf,
+                Ok(conf) => {
+                    watch!(config);
+                    config = conf;
+                }
                 Err(err) => {
                     err.info();
                 }
