@@ -211,7 +211,15 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             match cli_opts.command {
                 XvcSubCommand::Init(opts) => {
                     drop(output_snd);
-                    init::run(xvc_root_opt.as_ref(), opts)?;
+                    let use_git = !opts.no_git;
+                    let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
+                    if use_git {
+                        handle_git_automation(
+                            &xvc_root,
+                            cli_opts.to_branch.as_deref(),
+                            &cli_opts.command_string,
+                        )?;
+                    }
                     Result::Ok(())
                 }
 
@@ -510,7 +518,15 @@ pub fn test_dispatch(
             match cli_opts.command {
                 XvcSubCommand::Init(opts) => {
                     drop(output_snd);
-                    init::run(xvc_root_opt_res, opts)?;
+                    let use_git = !opts.no_git;
+                    let xvc_root = init::run(xvc_root_opt, opts)?;
+                    if use_git {
+                        handle_git_automation(
+                            &xvc_root,
+                            cli_opts.to_branch.as_deref(),
+                            &cli_opts.command_string,
+                        )?;
+                    }
                     Result::Ok(())
                 }
 
