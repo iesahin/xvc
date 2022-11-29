@@ -405,11 +405,7 @@ fn handle_git_automation(xvc_root: &XvcRoot, to_branch: Option<&str>, xvc_cmd: &
 
             if let Some(branch) = to_branch {
                 info!("Checking out branch {branch}");
-                exec_git(
-                    &git_command,
-                    xvc_directory,
-                    &["checkout", "--branch", branch],
-                )?;
+                exec_git(&git_command, xvc_directory, &["checkout", "-b", branch])?;
             }
 
             // Add and commit `.xvc`
