@@ -518,6 +518,7 @@ impl XvcConfig {
         }
 
         if let Some(cli_config) = p.command_line_config {
+            watch!(cli_config);
             let map: HashMap<String, TomlValue> = Self::parse_key_value_vector(cli_config)
                 .into_iter()
                 .collect();
