@@ -522,6 +522,7 @@ impl XvcConfig {
             let map: HashMap<String, TomlValue> = Self::parse_key_value_vector(cli_config)
                 .into_iter()
                 .collect();
+            watch!(map);
             match config.update_from_hash_map(map, XvcConfigOptionSource::CommandLine) {
                 Ok(conf) => config = conf,
                 Err(err) => {
