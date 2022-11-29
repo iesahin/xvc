@@ -31,6 +31,7 @@ Options:
 
   -h, --help
           Print help information (use `-h` for a summary)
+
 ```
 
 ## Examples

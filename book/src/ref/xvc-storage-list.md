@@ -14,6 +14,7 @@ Usage: xvc storage list
 
 Options:
   -h, --help  Print help information
+
 ```
 
 ## Examples

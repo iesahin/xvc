@@ -8,14 +8,29 @@ Configure a [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces)
 
 ```console
 $ xvc storage new digital-ocean --help
-error: The following required arguments were not provided:
-  --name <NAME>
-  --bucket-name <BUCKET_NAME>
-  --region <REGION>
+Add a new Digital Ocean storage
 
-Usage: xvc storage new digital-ocean --name <NAME> --bucket-name <BUCKET_NAME> --region <REGION>
+Usage: xvc storage new digital-ocean [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME> --region <REGION>
 
-For more information try '--help'
+Options:
+  -n, --name <NAME>
+          Name of the storage
+          
+          This must be unique among all storages of the project
+
+      --bucket-name <BUCKET_NAME>
+          Bucket name
+
+      --region <REGION>
+          Region of the server
+
+      --storage-prefix <STORAGE_PREFIX>
+          You can set a directory in the bucket with this prefix
+          
+          [default: ]
+
+  -h, --help
+          Print help information (use `-h` for a summary)
 
 ```
 
