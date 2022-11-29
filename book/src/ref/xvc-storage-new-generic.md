@@ -59,6 +59,7 @@ Options:
 
   -h, --help
           Print help information (use `-h` for a summary)
+
 ```
 
 You can use the following placeholders in your commands. 

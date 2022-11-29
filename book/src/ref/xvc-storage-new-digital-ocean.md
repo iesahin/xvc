@@ -7,7 +7,7 @@ Configure a [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces)
 ## Synopsis 
 
 ```console
-$ xvc storage new digital-ocean
+$ xvc storage new digital-ocean --help
 error: The following required arguments were not provided:
   --name <NAME>
   --bucket-name <BUCKET_NAME>
