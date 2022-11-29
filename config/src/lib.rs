@@ -114,6 +114,19 @@ pub enum XvcVerbosity {
     Trace,
 }
 
+impl From<u8> for XvcVerbosity {
+    fn from(v: u8) -> Self {
+        match v {
+            0 => Self::Quiet,
+            1 => Self::Default,
+            2 => Self::Warn,
+            3 => Self::Info,
+            4 => Self::Debug,
+            _ => Self::Trace,
+        }
+    }
+}
+
 /// A configuration value with its source
 #[derive(Debug, Clone)]
 pub struct XvcConfigValue {
