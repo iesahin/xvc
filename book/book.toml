@@ -4,6 +4,7 @@ language = "en"
 multilingual = false
 src = "src"
 title = "The Xvc Book"
+description = "A book that documents the tool that manages data and pipelines."
 
 [preprocessor]
 
@@ -13,4 +14,18 @@ command = "mdbook-mermaid"
 [output]
 
 [output.html]
+preferred-dark-theme = "ayu"
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
+git-repository-url = "https://github.com/iesahin/xvc"
+edit-url-template = "https://github.com/iesahin/xvc/edit/main/book/{path}"
+
+[output.html.fold]
+enable = true
+level = 2
+
+[output.html.redirect]
+## It may be possible to put Rust API links here
+# "/api/index.html" = "http://docs.rs/xvc/"
+
+
+
