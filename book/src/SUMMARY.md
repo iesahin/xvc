@@ -56,29 +56,27 @@
       - [xvc check-ignore](./ref/xvc-check-ignore.md)
       - [xvc aliases](./ref/xvc-aliases.md)
 
-# API
+- [Rust API](./api/index.md)
+    - [`xvc`](./api/xvc.md)
+    - [`xvc-config`](./api/xvc-config.md)
+    - [`xvc-core`](./api/xvc-core.md)
+    - [`xvc-ecs`](./api/xvc-ecs.md)
+    - [`xvc-file`](./api/xvc-file.md)
+    - [`xvc-logging`](./api/xvc-logging.md)
+    - [`xvc-pipeline`](./api/xvc-pipeline.md)
+    - [`xvc-storage`](./api/xvc-storage.md)
+    - [`xvc-walker`](./api/xvc-walker.md)
 
-- [`xvc`](./api/xvc.md)
-- [`xvc-config`](./api/xvc-config.md)
-- [`xvc-core`](./api/xvc-core.md)
-- [`xvc-ecs`](./api/xvc-ecs.md)
-- [`xvc-file`](./api/xvc-file.md)
-- [`xvc-logging`](./api/xvc-logging.md)
-- [`xvc-pipeline`](./api/xvc-pipeline.md)
-- [`xvc-storage`](./api/xvc-storage.md)
-- [`xvc-walker`](./api/xvc-walker.md)
-
-# Architecture
-
-- [Overview](./arch/index.md)
-- [Goals](./arch/goals.md)
-- [Xvc ECS](./arch/ecs.md)
-- [Comparisons](./arch/delta.md)
-- [Storages](./arch/storages.md)
-- [Git and Xvc](./arch/git-and-xvc.md)
-- [Concepts](./concepts/index.md)
-  - [Digest](./concepts/digest.md)
-  - [Associated Digest](./concepts/associated-digest.md)
+- [Architecture](./arch/index.md)
+    - [Goals](./arch/goals.md)
+    - [Cache](./arch/cache.md)
+    - [Xvc ECS](./arch/ecs.md)
+    - [Comparisons](./arch/delta.md)
+    - [Storages](./arch/storages.md)
+    - [Git and Xvc](./arch/git-and-xvc.md)
+    - [Concepts](./concepts/index.md)
+      - [Digest](./concepts/digest.md)
+      - [Associated Digest](./concepts/associated-digest.md)
 
 # Meta
 
