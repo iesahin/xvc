@@ -5,6 +5,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use anyhow::anyhow;
 use jwalk;
 use trycmd;
 use which;
@@ -76,7 +77,8 @@ fn link_to_docs() -> Result<()> {
             watch!(&out_dir);
             let input_template_dir = template_dir_root.join(&in_dir);
             if input_template_dir.exists() {
-                fs_extra::dir::copy(&input_template_dir, &in_dir, &CopyOptions::default())?;
+                fs_extra::dir::copy(&input_template_dir, &in_dir, &CopyOptions::default())
+                    .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
             } else {
                 fs::create_dir_all(&in_dir)?;
             }
