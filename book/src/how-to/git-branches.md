@@ -63,8 +63,9 @@ Now, we want to have this new version of data available only in `uppercase` bran
 $ xvc --from-ref data-file --to-branch uppercase pipeline run
 $ git branch
 * uppercase
-data-file
-main
+  data-file
+  main
+
 ```
 
 You can use this for experimentation. 
