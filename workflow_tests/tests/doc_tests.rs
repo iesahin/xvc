@@ -76,6 +76,7 @@ fn link_to_docs() -> Result<()> {
             let out_dir = test_collection_dir.join(&out_dir_name);
             watch!(&out_dir);
             let input_template_dir = template_dir_root.join(&in_dir);
+            println!("template_root: {:?}", template_dir_root);
             println!("{:?}", input_template_dir);
             if input_template_dir.exists() {
                 fs_extra::dir::copy(&input_template_dir, &in_dir, &CopyOptions::default())
