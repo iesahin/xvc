@@ -23,7 +23,7 @@ $ git init --initial-branch=main
 ...
 $ xvc init
 ? 0
-$ cat "Oh, data, my, data" > data.txt
+$ echo "Oh, data, my, data" > data.txt
 $ ls
   data.txt
 $ xvc --to-branch data-file file track data.txt
@@ -35,7 +35,7 @@ $ xvc file list
 C=         data.txt
 ```
 
-If you return to `main` branch, you'll see the file is tracked by neither Git, nor Xvc. 
+If you return to `main` branch, you'll see the file is tracked by neither Git nor Xvc. 
 
 ```console
 $ git checkout main
