@@ -49,13 +49,12 @@ Now, we'll add a step to the default pipeline to get an uppercase version of the
 We want this to work only in data 
 
 ```console
-$ . $(xvc aliases) # If you're not already added these. Makes shorter versions of the commands available. 
-$ xvcpsn --from-ref data-file --to-branch data-file --step-name to-uppercase --command 'cat data.txt | tr a-z A-Z > uppercase.txt'
-$ xvcpsd --step-name to-uppercase --file data.txt
-$ xvcpso --step-name to-uppercase --output-file uppercase.txt
+$ xvc --from-ref data-file --to-branch data-file pipeline step new --step-name to-uppercase --command 'cat data.txt | tr a-z A-Z > uppercase.txt'
+$ xvc pipeline step dependency --step-name to-uppercase --file data.txt pipeline
+$ xvc pipeline step output --step-name to-uppercase --output-file uppercase.txt
 ```
 
-Note that `xvcpsd` and `xvcpso` commands don't need `--from-ref` and `--to-branch` options, as they run in `data-file` branch already. 
+Note that `xvc pipeline step dependency` and `xvc pipeline step output` commands don't need `--from-ref` and `--to-branch` options, as they run in `data-file` branch already. 
 
 Now, we want to have this new version of data available only in `uppercase` branch. 
 
