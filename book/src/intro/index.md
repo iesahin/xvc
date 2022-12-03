@@ -21,7 +21,7 @@ There are many similar tools for managing large files on Git, managing machine l
 
 Similar tools for file management on Git are the following:
 
-- `git-annex`: One of the earliest and most successful projects to manage large files on Git. It supports a large number of remote storage types, as well as adding other utilities as backends, similar to [`xvc storage new generic`](./ref/xvc-storage-new-generic.md). It features an assistant aimed to make it easier for common use cases. It uses SHA-256 as the single digest option and uses symlinks as a [cache type.][cache-type] It doesn't have data pipeline features.
+- `git-annex`: One of the earliest and most successful projects to manage large files on Git. It supports a large number of remote storage types, as well as adding other utilities as backends, similar to [`xvc storage new generic`](xvc-book/ref/xvc-storage-new-generic.md). It features an assistant aimed to make it easier for common use cases. It uses SHA-256 as the single digest option and uses symlinks as a [cache type.][cache-type] It doesn't have data pipeline features.
 - `git-lfs`: It uses Git internals to track binary files. It requires server support for remote storages and allows only Git remotes to be used for binary file storage. Uses the same digest function Git uses. (By default, SHA-1). Uses `.gitattributes` mechanism to track certain files by default. It doesn't have data pipeline features.
 - `dvc`: Uses YAML files _in the working directory_ to track file content. It uses MD5 sums. It can use different [cache type][cache-type] for all the files in the repository. It has experiments tracking features, data pipelines and a [SaaS GUI.](https://studio.iterative.ai)
 
