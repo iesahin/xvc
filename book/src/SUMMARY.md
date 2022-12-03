@@ -1,8 +1,8 @@
 # Start
 
-- [Introduction](/intro/index.md)
-  - [Installation](/intro/install.md)
-  - [Configuration](/intro/configuration.md)
+- [Introduction](./intro/index.md)
+  - [Installation](./intro/install.md)
+  - [Configuration](./intro/configuration.md)
 - [Get Started](./start/index.md)
   - [Xvc for Everyone](./start/everyone.md)
   - [Xvc for Data Versioning](./start/data.md)
@@ -78,6 +78,5 @@
       - [Digest](./concepts/digest.md)
       - [Associated Digest](./concepts/associated-digest.md)
 
-# Development
-
-- [Conventions](/development/conventions.md)
+- [Development](./development/index.md)
+    - [Conventions](./development/conventions.md)
