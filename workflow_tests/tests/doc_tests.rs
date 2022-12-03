@@ -59,6 +59,8 @@ fn link_to_docs() -> Result<()> {
             })
             .collect();
 
+        fs::create_dir_all(&test_collection_dir)?;
+
         for p in book_paths {
             let basename: PathBuf = p.file_name().unwrap().into();
             let symlink_path = doc_dir.join(dir).join(&basename);
