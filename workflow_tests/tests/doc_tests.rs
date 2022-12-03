@@ -70,22 +70,15 @@ fn link_to_docs() -> Result<()> {
             // Remove previous dir and relink to new dirs
             let stem = basename.file_stem().unwrap().to_string_lossy();
             let in_dir_name = format!("{stem}.in");
-            let out_dir_name = format!("{stem}.out");
             let in_dir = test_collection_dir.join(&in_dir_name);
-            watch!(&in_dir);
-            let out_dir = test_collection_dir.join(&out_dir_name);
-            watch!(&out_dir);
             let input_template_dir = template_dir_root.join(&in_dir_name);
-            println!("template_root: {:?}", template_dir_root);
-            println!("{:?}", input_template_dir);
             if input_template_dir.exists() {
+                println!("Copying template dir: {input_template_dir:?}");
                 fs_extra::dir::copy(&input_template_dir, &in_dir, &CopyOptions::default())
                     .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
             } else {
                 fs::create_dir_all(&in_dir)?;
             }
-
-            fs::create_dir_all(&out_dir)?;
 
             let in_dir_symlink = doc_dir.join(dir).join(&in_dir_name);
             watch!(&in_dir_symlink);
@@ -94,12 +87,17 @@ fn link_to_docs() -> Result<()> {
             }
             make_symlink(&in_dir, &in_dir_symlink)?;
 
-            // TODO: If we have output snapshots, we'll create these output directories.
-            // let out_dir_symlink = doc_dir.join(dir).join(&out_dir_name);
-            // if out_dir_symlink.is_symlink() {
-            //     fs::remove_file(&out_dir_symlink)?;
-            // }
-            // make_symlink(&out_dir, &out_dir_symlink)?;
+            // Create output dir if only template dir exists
+            let out_dir_name = format!("{stem}.out");
+            let output_template_dir = template_dir_root.join(&out_dir_name);
+            if output_template_dir.exists() {
+                let out_dir = test_collection_dir.join(&out_dir_name);
+                let out_dir_symlink = doc_dir.join(dir).join(&out_dir_name);
+                if out_dir_symlink.is_symlink() {
+                    fs::remove_file(&out_dir_symlink)?;
+                }
+                make_symlink(&out_dir, &out_dir_symlink)?;
+            }
         }
     }
 
