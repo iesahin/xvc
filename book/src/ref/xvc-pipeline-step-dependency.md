@@ -15,6 +15,7 @@ Usage: xvc pipeline step dependency [OPTIONS] --step-name <STEP_NAME>
 Options:
   -s, --step-name <STEP_NAME>    Name of the step
       --file <FILES>             Add a file dependency to the step. Can be used multiple times.
+      --quiet                    Suppress all output
       --step <STEPS>             Add explicit step dependencies to run
       --pipeline <PIPELINES>     Add explicit pipeline dependencies to run
       --directory <DIRECTORIES>  Add a directory dependency to the step. Can be used multiple times.
