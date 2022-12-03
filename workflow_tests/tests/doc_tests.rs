@@ -74,9 +74,7 @@ fn link_to_docs() -> Result<()> {
             let in_dir_name = format!("{stem}.in");
             let in_dir = test_collection_dir.join(&in_dir_name);
             let cwd = env::current_dir()?;
-            let input_template_dir = cwd
-                .join(template_dir_root.join(&in_dir_name))
-                .canonicalize()?;
+            let input_template_dir = cwd.join(template_dir_root.join(&in_dir_name));
             if input_template_dir.exists() {
                 println!("Copying template dir: {input_template_dir:?} to {in_dir:?}");
                 fs_extra::dir::copy(&input_template_dir, &in_dir, &CopyOptions::default())
