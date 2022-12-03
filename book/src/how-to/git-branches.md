@@ -60,7 +60,7 @@ Note that `xvcpsd` and `xvcpso` commands don't need `--from-ref` and `--to-branc
 Now, we want to have this new version of data available only in `uppercase` branch. 
 
 ```console
-$ xvcpr --from-ref data-file --to-branch uppercase
+$ xvc --from-ref data-file --to-branch uppercase pipeline run
 $ git branch
 * uppercase
 data-file
