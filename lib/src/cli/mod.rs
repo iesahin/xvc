@@ -46,7 +46,7 @@ pub struct XvcCLI {
     pub verbosity: u8,
 
     /// Suppress all output.
-    #[arg(long, global = true)]
+    #[arg(long)]
     pub quiet: bool,
 
     /// Set working directory for the command.
