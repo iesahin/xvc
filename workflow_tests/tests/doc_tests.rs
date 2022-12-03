@@ -75,7 +75,7 @@ fn link_to_docs() -> Result<()> {
             watch!(&in_dir);
             let out_dir = test_collection_dir.join(&out_dir_name);
             watch!(&out_dir);
-            let input_template_dir = template_dir_root.join(&in_dir);
+            let input_template_dir = template_dir_root.join(&in_dir_name);
             println!("template_root: {:?}", template_dir_root);
             println!("{:?}", input_template_dir);
             if input_template_dir.exists() {
