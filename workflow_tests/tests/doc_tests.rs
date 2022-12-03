@@ -21,7 +21,7 @@ fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
     let book_dirs = vec!["ref", "start", "how-to"];
-    let template_dir_root = Path::new("./templates");
+    let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
     // It has the same structure with the docs, but for each doc.md file, a doc.in/ and doc.out/
