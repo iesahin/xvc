@@ -12,12 +12,15 @@ use xvc::error::Result;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 use xvc_tests::watch;
 
+use fs_extra::{self, dir::CopyOptions};
+
 const DOC_TEST_DIR: &str = "docs/";
 
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
     let book_dirs = vec!["ref", "start", "how-to"];
+    let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
     // It has the same structure with the docs, but for each doc.md file, a doc.in/ and doc.out/
@@ -71,9 +74,13 @@ fn link_to_docs() -> Result<()> {
             watch!(&in_dir);
             let out_dir = test_collection_dir.join(&out_dir_name);
             watch!(&out_dir);
-            // TODO: We may need to add templates to this in the future. Now just creating blank
-            // directories.
-            fs::create_dir_all(&in_dir)?;
+            let input_template_dir = template_dir_root.join(&in_dir);
+            if input_template_dir.exists() {
+                fs_extra::dir::copy(&input_template_dir, &in_dir, &CopyOptions::default())?;
+            } else {
+                fs::create_dir_all(&in_dir)?;
+            }
+
             fs::create_dir_all(&out_dir)?;
 
             let in_dir_symlink = doc_dir.join(dir).join(&in_dir_name);

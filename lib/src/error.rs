@@ -129,6 +129,13 @@ pub enum Error {
         #[from]
         source: assert_cmd::cargo::CargoError,
     },
+
+    #[cfg(test)]
+    #[error("FS Extra Error: {source}")]
+    FsExtraError {
+        #[from]
+        source: fs_extra::error::Error,
+    },
 }
 
 impl Error {
