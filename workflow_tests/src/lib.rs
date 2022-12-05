@@ -1,8 +1,9 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 //! The main dispatching functions for the entire XVC CLI
+use std::path::Path;
+
 use config::XvcVerbosity;
-use xvc_core::XvcRoot;
 
 pub use xvc_config as config;
 pub use xvc_core as core;
@@ -19,7 +20,7 @@ use xvc::error::Result;
 /// It allows to run commands out of xvc directories.
 /// For detailed logs, set `verbosity` to [XvcVerbosity::Trace]
 pub fn test_dispatch(
-    xvc_root_opt: Option<&XvcRoot>,
+    xvc_root_opt: Option<&Path>,
     args: Vec<&str>,
     verbosity: XvcVerbosity,
 ) -> Result<String> {
@@ -27,14 +28,5 @@ pub fn test_dispatch(
 
     watch!(args);
 
-    let args_with_binary_name = if !args.is_empty() && args[0] != "xvc" {
-        vec!["xvc"].into_iter().chain(args.into_iter()).collect()
-    } else {
-        args
-    };
-
-    let cli_opts = xvc::cli::XvcCLI::from_str_slice(&args_with_binary_name)?;
-    watch!(cli_opts);
-
-    xvc::cli::test_dispatch(xvc_root_opt, cli_opts, verbosity)
+    xvc::cli::test_dispatch(xvc_root_opt, &args, verbosity)
 }
