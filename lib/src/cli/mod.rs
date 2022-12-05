@@ -1,4 +1,5 @@
 //! Main CLI interface for XVC
+use std::env;
 use std::ffi::OsStr;
 use std::ffi::OsString;
 use std::path::PathBuf;
@@ -481,185 +482,38 @@ fn git_auto_stage(git_command: &str, xvc_root_str: &str, xvc_dir_str: &str) -> R
     Ok(())
 }
 
-/// Used to run commands when an already xvc_root is present and loaded.
-/// This is meant to be used in tests.
+/// Run Xvc in another process for testing.
 ///
-/// This one is similar to [dispatch] above.
-/// Differences:
-/// - It uses a possibly loaded [XvcRoot].
-///   This prevents reinit errors for those functions run [std::sync::Once].
-/// - verbosity can be set directly.
-/// - The output is sent as `String` instead of writing to stdout.
+/// `xvc_root_opt`: The Xvc directory where we run the process
+/// `args`: Params to pass the underlying process
+/// `verbosity`: Determines the `-v` flags we pass to underlying process. Nothing is passed for
+/// `XvcVerbosity::Default`
 pub fn test_dispatch(
-    xvc_root_opt: Option<&XvcRoot>,
-    cli_opts: cli::XvcCLI,
+    xvc_root_opt: Option<&Path>,
+    args: &[&str],
     verbosity: XvcVerbosity,
 ) -> Result<String> {
-    let term_log_level = match verbosity {
-        XvcVerbosity::Quiet => LevelFilter::Off,
-        XvcVerbosity::Default => LevelFilter::Error,
-        XvcVerbosity::Warn => LevelFilter::Warn,
-        XvcVerbosity::Info => LevelFilter::Info,
-        XvcVerbosity::Debug => LevelFilter::Debug,
-        XvcVerbosity::Trace => LevelFilter::Trace,
+    let verbosity_opt = match verbosity {
+        XvcVerbosity::Quiet => ["--quiet"],
+        XvcVerbosity::Default => [""],
+        XvcVerbosity::Warn => ["-v"],
+        XvcVerbosity::Info => ["-vv"],
+        XvcVerbosity::Debug => ["-vvv"],
+        XvcVerbosity::Trace => ["-vvvv"],
     };
 
-    watch!(term_log_level);
+    let current_bin = env::current_exe()?;
 
-    setup_logging(Some(term_log_level), Some(LevelFilter::Trace));
-
-    let xvc_config_params = XvcConfigInitParams {
-        current_dir: AbsolutePath::from(&cli_opts.workdir),
-        include_system_config: !cli_opts.no_system_config,
-        include_user_config: !cli_opts.no_user_config,
-        project_config_path: None,
-        local_config_path: None,
-        include_environment_config: !cli_opts.no_env_config,
-        command_line_config: Some(cli_opts.consolidate_config_options()),
-        default_configuration: default_project_config(true),
-    };
-
-    watch!(xvc_config_params.current_dir);
-
-    let xvc_root_res = Box::new(XvcRoot::new(
-        Path::new(&cli_opts.workdir),
-        xvc_config_params,
-    ));
-    let xvc_root_opt_res = if xvc_root_opt.is_none() {
-        match xvc_root_res.as_ref() {
-            Ok(r) => Some(r),
-            Err(e) => {
-                info!("{:?}", e);
-                None
-            }
-        }
-    } else {
-        xvc_root_opt
-    };
-
-    let output_str = thread::scope(move |s| {
-        let (output_snd, output_rec) = bounded::<XvcOutputLine>(CHANNEL_BOUND);
-
-        s.spawn(move |_| -> Result<()> {
-            match cli_opts.command {
-                XvcSubCommand::Init(opts) => {
-                    drop(output_snd);
-                    let use_git = !opts.no_git;
-                    let xvc_root = init::run(xvc_root_opt, opts)?;
-                    if use_git {
-                        handle_git_automation(
-                            &xvc_root,
-                            cli_opts.to_branch.as_deref(),
-                            &cli_opts.command_string,
-                        )?;
-                    }
-                    Result::Ok(())
-                }
-
-                XvcSubCommand::Aliases(opts) => Ok(aliases::run(output_snd, opts)?),
-
-                // following commands can only be run inside a repository
-                XvcSubCommand::Root(opts) => Ok(root::run(
-                    output_snd,
-                    xvc_root_opt
-                        .as_ref()
-                        .ok_or_else(|| Error::RequiresXvcRepository)?,
-                    opts,
-                )?),
-
-                XvcSubCommand::File(opts) => Ok(file::run(output_snd, xvc_root_opt, opts)?),
-
-                XvcSubCommand::Pipeline(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-                    Ok(pipeline::run(
-                        input,
-                        output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?)
-                }
-
-                XvcSubCommand::CheckIgnore(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-
-                    Ok(check_ignore::cmd_check_ignore(
-                        input,
-                        output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?)
-                }
-                XvcSubCommand::Storage(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-
-                    Ok(storage::cmd_storage(
-                        input,
-                        output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?)
-                }
-            }?;
-            watch!("Before handle_git_automation");
-            match xvc_root_opt.as_ref() {
-                Some(xvc_root) => {
-                    handle_git_automation(
-                        xvc_root,
-                        cli_opts.to_branch.as_deref(),
-                        &cli_opts.command_string,
-                    )?;
-                }
-
-                None => {
-                    info!("Xvc is outside of a project, no need to handle Git operations.");
-                }
-            }
-
-            Ok(())
-        });
-
-        watch!("Spawned match");
-
-        let output_res = s
-            .spawn(move |_| {
-                let mut output_str = String::new();
-                watch!(output_str);
-                while let Ok(output_line) = output_rec.recv() {
-                    match output_line {
-                        // TODO: We should handle ticks and other stuff here
-                        XvcOutputLine::Output(m) => output_str.push_str(&m),
-                        XvcOutputLine::Info(m) => output_str.push_str(&format!("[INFO] {m}")),
-                        XvcOutputLine::Warn(m) => output_str.push_str(&format!("[WARN] {m}")),
-                        XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {m}")),
-                        XvcOutputLine::Panic(m) => {
-                            output_str.push_str(&format!("[PANIC] {m}"));
-                            break;
-                        }
-                        XvcOutputLine::Tick(_) => {}
-                    }
-                    output_str.push('\n');
-                    watch!(output_str);
-                }
-                watch!("Exit output loop");
-                output_str
-            })
-            .join();
-
-        match output_res {
-            Ok(s) => {
-                watch!("Output returned");
-                Ok(s)
-            }
-            Err(err) => {
-                log::error!("Error in output handler");
-                Err(Error::OutputError)
-            }
-        }
-    })
-    .unwrap();
-
-    output_str
+    match xvc_root_opt {
+        Some(r) => Ok(Exec::cmd(current_bin.as_path())
+            .args(&verbosity_opt)
+            .args(args)
+            .cwd(r)
+            .capture()?
+            .stdout_str()),
+        None => Ok(Exec::cmd(current_bin.as_path())
+            .args(args)
+            .capture()?
+            .stdout_str()),
+    }
 }
