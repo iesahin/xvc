@@ -36,6 +36,7 @@ $ git branch
 $ git status -s
 $ xvc file list data.txt
 C=...data.txt	        
+...
 
 ```
 
@@ -46,6 +47,7 @@ $ git checkout main
 ...
 $ xvc file list data.txt
 M<...data.txt
+
 $ git status -s
 ?? data.txt
 ```
