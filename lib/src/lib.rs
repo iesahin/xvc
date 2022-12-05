@@ -4,8 +4,9 @@
 pub mod cli;
 pub mod error;
 pub mod init;
+use std::path::Path;
+
 use config::XvcVerbosity;
-use xvc_core::XvcRoot;
 
 pub use xvc_config as config;
 pub use xvc_core as core;
@@ -17,8 +18,6 @@ pub use xvc_pipeline as pipeline;
 pub use xvc_logging::watch;
 
 use crate::error::Result;
-
-use clap::Parser;
 
 /// Adds `xvc` as the first elements to `args` and calls [cli::dispatch] after parsing them.
 pub fn dispatch(args: Vec<&str>) -> Result<()> {
@@ -37,7 +36,7 @@ pub fn dispatch(args: Vec<&str>) -> Result<()> {
 /// It allows to run commands out of xvc directories.
 /// For detailed logs, set `verbosity` to [XvcVerbosity::Trace]
 pub fn test_dispatch(
-    xvc_root_opt: Option<&XvcRoot>,
+    xvc_root_opt: Option<&Path>,
     args: Vec<&str>,
     verbosity: XvcVerbosity,
 ) -> Result<String> {
@@ -45,14 +44,5 @@ pub fn test_dispatch(
 
     watch!(args);
 
-    let args_with_binary_name = if !args.is_empty() && args[0] != "xvc" {
-        vec!["xvc"].into_iter().chain(args.into_iter()).collect()
-    } else {
-        args
-    };
-
-    let cli_opts = cli::XvcCLI::from_str_slice(&args_with_binary_name)?;
-    watch!(cli_opts);
-
-    cli::test_dispatch(xvc_root_opt, cli_opts, verbosity)
+    cli::test_dispatch(xvc_root_opt, &args, verbosity)
 }
