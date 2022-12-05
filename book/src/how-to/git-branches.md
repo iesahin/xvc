@@ -35,7 +35,7 @@ $ git branch
 
 $ git status -s
 $ xvc file list
-C=	... 19	data.txt	        
+C=	...                                         19	data.txt	        
 M<	                    	                    	.xvcignore	        
 D 	                    	                    	.xvc	        
 M<	                    	                    	.gitignore	        
