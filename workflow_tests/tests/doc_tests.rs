@@ -69,24 +69,27 @@ fn link_to_docs() -> Result<()> {
             }
             make_symlink(Path::new("../..").join(p), &symlink_path)?;
 
-            // Remove previous dir and relink to new dirs
+            // If we have a template input directory in `templates/`, we copy it.
+            // Otherwise create a new blank directory as cwd.
             let stem = basename.file_stem().unwrap().to_string_lossy();
-            let in_dir_name = format!("{stem}.in/");
+            let in_dir_name = format!("{stem}.in");
             let in_dir = test_collection_dir.join(&in_dir_name);
             let cwd = env::current_dir()?;
             let input_template_dir = cwd.join(template_dir_root.join(&in_dir_name));
             if input_template_dir.exists() {
                 println!("Copying template dir: {input_template_dir:?} to {in_dir:?}");
-                let p = in_dir.parent().unwrap();
-                if !p.exists() {
-                    fs::create_dir_all(&p)?;
-                }
-                fs_extra::dir::copy(&input_template_dir, &in_dir, &CopyOptions::default())
-                    .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
+                fs_extra::dir::copy(
+                    &input_template_dir,
+                    &test_collection_dir,
+                    &CopyOptions::default(),
+                )
+                .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
             } else {
                 fs::create_dir(&in_dir)?;
             }
 
+            // Link to the directory TMPDIR we just created above.
+            // This is to renew test input for each run.
             let in_dir_symlink = doc_dir.join(dir).join(&in_dir_name);
             watch!(&in_dir_symlink);
             if in_dir_symlink.is_symlink() {
