@@ -16,9 +16,9 @@ pub use xvc_logging::watch;
 
 use xvc::error::Result;
 
-/// Ensures `xvc` is the first element in `args`, and runs [cli::test_dispatch] after parsing them.
-/// It allows to run commands out of xvc directories.
-/// For detailed logs, set `verbosity` to [XvcVerbosity::Trace]
+/// Run xvc in another process with `args` in `xvc_root_opt`.
+///
+/// See [xvc::cli::test_dispatch].
 pub fn test_dispatch(
     xvc_root_opt: Option<&Path>,
     args: Vec<&str>,
