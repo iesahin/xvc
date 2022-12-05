@@ -36,6 +36,7 @@ $ git branch
 $ git status -s
 $ xvc file list data.txt
 C=  ...  19	data.txt	        
+
 ```
 
 If you return to `main` branch, you'll see the file is tracked by neither Git nor Xvc. 
@@ -43,7 +44,7 @@ If you return to `main` branch, you'll see the file is tracked by neither Git no
 ```console
 $ git checkout main
 $ xvc file list
-UU        data.txt
+UU  ...      data.txt
 $ git status -s
 ?? data.txt
 ```
