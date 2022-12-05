@@ -28,9 +28,11 @@ data.txt
 
 $ xvc --to-branch data-file file track data.txt
 Switched to a new branch 'data-file'
+
 $ git branch
 * data-file
-main
+  main
+
 $ git status -s
 $ xvc file list
 C=         data.txt
