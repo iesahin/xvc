@@ -43,8 +43,9 @@ If you return to `main` branch, you'll see the file is tracked by neither Git no
 
 ```console
 $ git checkout main
-$ xvc file list
+$ xvc file list data.txt
 UU  ...      data.txt
+
 $ git status -s
 ?? data.txt
 ```
