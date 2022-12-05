@@ -34,13 +34,8 @@ $ git branch
   main
 
 $ git status -s
-$ xvc file list
+$ xvc file list data.txt
 C=	...                                         19	data.txt	        
-M<	                    	                    	.xvcignore	        
-D 	                    	                    	.xvc	        
-M<	                    	                    	.gitignore	        
-D 	                    	                    	.git	        
-
 ```
 
 If you return to `main` branch, you'll see the file is tracked by neither Git nor Xvc. 
