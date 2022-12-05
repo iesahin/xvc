@@ -49,6 +49,7 @@ M< [..]
 
 $ git status -s
 ?? data.txt
+
 ```
 
 Now, we'll add a step to the default pipeline to get an uppercase version of the data. 
