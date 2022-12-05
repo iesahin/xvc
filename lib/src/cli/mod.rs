@@ -324,21 +324,15 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     Ok(())
 }
 
-fn get_git_command(xvc_root: &XvcRoot) -> Result<String> {
-    let config = xvc_root.config();
-    if config.get_bool("git.use_git")?.option {
-        let git_cmd_str = config.get_str("git.command")?.option;
-        let git_cmd_path = PathBuf::from(&git_cmd_str);
-        let git_cmd = if git_cmd_path.is_absolute() {
-            git_cmd_str
-        } else {
-            let cmd_path = which::which(git_cmd_str)?;
-            cmd_path.to_string_lossy().to_string()
-        };
-        Ok(git_cmd)
+fn get_git_command(repo_root: &Path, git_command: &str) -> Result<String> {
+    let git_cmd_path = PathBuf::from(git_command);
+    let git_cmd = if git_cmd_path.is_absolute() {
+        git_command.to_string()
     } else {
-        Err(anyhow!("git.use_git option is false. Git operations must be done manually.").into())
-    }
+        let cmd_path = which::which(git_command)?;
+        cmd_path.to_string_lossy().to_string()
+    };
+    Ok(git_cmd)
 }
 
 fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -> Result<String> {
@@ -394,7 +388,8 @@ fn unstash_user_staged_files(git_command: &str, xvc_directory: &str) -> Result<(
 
 fn git_checkout_ref(xvc_root: &XvcRoot, from_ref: String) -> Result<()> {
     let xvc_directory = xvc_root.as_path().to_str().unwrap();
-    let git_command = get_git_command(xvc_root)?;
+    let git_command_option = xvc_root.config().get_str("git.command")?.option;
+    let git_command = get_git_command(&xvc_root, &git_command_option)?;
 
     let git_diff_staged_out = stash_user_staged_files(&git_command, xvc_directory)?;
     exec_git(&git_command, xvc_directory, &["checkout", &from_ref])?;
@@ -406,66 +401,83 @@ fn git_checkout_ref(xvc_root: &XvcRoot, from_ref: String) -> Result<()> {
     Ok(())
 }
 
-fn handle_git_automation(xvc_root: &XvcRoot, to_branch: Option<&str>, xvc_cmd: &str) -> Result<()> {
-    let config = xvc_root.config();
-    let xvc_directory = xvc_root.as_path().to_str().unwrap();
+/// This receives `xvc_root` ownership because as a final operation, it must drop the root to
+/// record the last entity counter before commit.
+fn handle_git_automation(xvc_root: XvcRoot, to_branch: Option<&str>, xvc_cmd: &str) -> Result<()> {
+    let xvc_root_dir = xvc_root.as_path().to_path_buf();
+    let xvc_root_str = xvc_root_dir.to_str().unwrap();
+    let use_git = xvc_root.config().get_bool("git.use_git")?.option;
+    let auto_commit = xvc_root.config().get_bool("git.auto_commit")?.option;
+    let auto_stage = xvc_root.config().get_bool("git.auto_stage")?.option;
+    let git_command_str = xvc_root.config().get_str("git.command")?.option;
+    let git_command = get_git_command(&xvc_root, &git_command_str)?;
+    let xvc_dir = xvc_root.xvc_dir().clone();
+    let xvc_dir_str = xvc_dir.to_str().unwrap();
 
-    if config.get_bool("git.use_git")?.option {
-        watch!(config.get_bool("git.auto_commit"));
-        if config.get_bool("git.auto_commit")?.option {
-            let git_command = get_git_command(xvc_root)?;
-            info!("Using Git: {git_command}");
+    // we drop here to record the final state
+    drop(xvc_root);
 
-            watch!(xvc_root.config().verbosity());
-            // Report Git version for debugging purposes.
-            if matches!(xvc_root.config().verbosity(), XvcVerbosity::Trace) {
-                let git_version = exec_git(&git_command, xvc_directory, &["--version"]);
-                watch!(git_version);
-            }
-
-            let git_diff_staged_out = stash_user_staged_files(&git_command, xvc_directory)?;
-
-            if let Some(branch) = to_branch {
-                info!("Checking out branch {branch}");
-                exec_git(&git_command, xvc_directory, &["checkout", "-b", branch])?;
-            }
-
-            // Add and commit `.xvc`
-            let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-            let res_git_add = exec_git(
-                &git_command,
-                xvc_directory,
-                &["add", &xvc_dir, "*.gitignore", "*.xvcignore"],
-            )?;
-            info!("Adding .xvc/ to git: {res_git_add}");
-            let res_git_commit = exec_git(
-                &git_command,
-                xvc_directory,
-                &[
-                    "commit",
-                    "-m",
-                    &format!("Xvc auto-commit after '{xvc_cmd}'"),
-                ],
-            )?;
-            info!("Committing .xvc/ to git: {res_git_commit}");
-
-            // Pop the stash if there were files we stashed
-
-            if git_diff_staged_out.trim().len() > 0 {
-                info!("Unstashing user staged files: {git_diff_staged_out}");
-                unstash_user_staged_files(&git_command, xvc_directory)?;
-            } else if config.get_bool("git.auto-stage")?.option {
-                let xvc_dir = xvc_root.xvc_dir().to_str().unwrap();
-                let res_git_add = exec_git(
-                    &git_command,
-                    xvc_directory,
-                    &["add", xvc_dir, "*.gitignore", "*.xvcignore"],
-                )?;
-                info!("Staging .xvc/ to git: {res_git_add}");
-            }
+    if use_git {
+        if auto_commit {
+            git_auto_commit(&git_command, xvc_root_str, xvc_dir_str, xvc_cmd, to_branch)?;
+        } else if auto_stage {
+            git_auto_stage(&git_command, xvc_root_str, xvc_dir_str)?;
         }
     }
 
+    Ok(())
+}
+
+fn git_auto_commit(
+    git_command: &str,
+    xvc_root_str: &str,
+    xvc_dir_str: &str,
+    xvc_cmd: &str,
+    to_branch: Option<&str>,
+) -> Result<()> {
+    info!("Using Git: {git_command}");
+
+    let git_diff_staged_out = stash_user_staged_files(&git_command, xvc_root_str)?;
+
+    if let Some(branch) = to_branch {
+        info!("Checking out branch {branch}");
+        exec_git(&git_command, xvc_root_str, &["checkout", "-b", branch])?;
+    }
+
+    // Add and commit `.xvc`
+    let res_git_add = exec_git(
+        &git_command,
+        xvc_root_str,
+        &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
+    )?;
+    info!("Adding .xvc/ to git: {res_git_add}");
+    let res_git_commit = exec_git(
+        &git_command,
+        xvc_root_str,
+        &[
+            "commit",
+            "-m",
+            &format!("Xvc auto-commit after '{xvc_cmd}'"),
+        ],
+    )?;
+    info!("Committing .xvc/ to git: {res_git_commit}");
+
+    // Pop the stash if there were files we stashed
+
+    if git_diff_staged_out.trim().len() > 0 {
+        info!("Unstashing user staged files: {git_diff_staged_out}");
+        unstash_user_staged_files(&git_command, xvc_root_str)?;
+    }
+    Ok(())
+}
+
+fn git_auto_stage(git_command: &str, xvc_root_str: &str, xvc_dir_str: &str) -> Result<()> {
+    let res_git_add = exec_git(
+        &git_command,
+        xvc_root_str,
+        &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
+    )?;
+    info!("Staging .xvc/ to git: {res_git_add}");
     Ok(())
 }
 
