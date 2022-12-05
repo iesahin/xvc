@@ -228,7 +228,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                     let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
                     if use_git {
                         handle_git_automation(
-                            &xvc_root,
+                            xvc_root,
                             cli_opts.to_branch.as_deref(),
                             &cli_opts.command_string,
                         )?;
@@ -287,7 +287,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             }?;
 
             watch!("Before handle_git_automation");
-            match xvc_root_opt.as_ref() {
+            match xvc_root_opt {
                 Some(xvc_root) => {
                     handle_git_automation(
                         xvc_root,
