@@ -9,7 +9,7 @@ use xvc::error::Result;
 #[test]
 fn test_aliases() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
-    let out = test_dispatch(None, vec!["xvc", "aliases"], XvcVerbosity::Trace)?;
+    let out = test_dispatch(None, vec!["aliases"], XvcVerbosity::Trace)?;
 
     assert!(out.len() > 0);
 
