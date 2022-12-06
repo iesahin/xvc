@@ -502,6 +502,9 @@ pub fn test_dispatch(
         XvcVerbosity::Trace => ["-vvvv"],
     };
 
+    println!("{:?}", &verbosity_opt);
+    println!("{:?}", &args);
+
     let current_bin = env::current_exe()?;
 
     match xvc_root_opt {
