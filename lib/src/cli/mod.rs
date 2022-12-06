@@ -502,19 +502,19 @@ pub fn test_dispatch(
         XvcVerbosity::Trace => ["-vvvv"],
     };
 
-    let current_bin = env::current_exe()?;
+    let current_bin = env::var("CARGO_BIN_EXE_xvc")?;
 
     println!("{:?}", &current_bin);
     println!("{:?}", &verbosity_opt);
     println!("{:?}", &args);
     match xvc_root_opt {
-        Some(r) => Ok(Exec::cmd(current_bin.as_path())
+        Some(r) => Ok(Exec::cmd(&current_bin)
             .args(&verbosity_opt)
             .args(args)
             .cwd(r)
             .capture()?
             .stdout_str()),
-        None => Ok(Exec::cmd(current_bin.as_path())
+        None => Ok(Exec::cmd(&current_bin)
             .args(&verbosity_opt)
             .args(args)
             .capture()?
