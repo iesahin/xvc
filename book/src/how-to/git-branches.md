@@ -59,7 +59,9 @@ We want this to work only in data
 
 ```console
 $ xvc --from-ref data-file pipeline step new --step-name to-uppercase --command 'cat data.txt | tr a-z A-Z > uppercase.txt'
-$ xvc pipeline step dependency --step-name to-uppercase --file data.txt pipeline
+Switched to branch 'data-file'
+
+$ xvc pipeline step dependency --step-name to-uppercase --file data.txt 
 $ xvc pipeline step output --step-name to-uppercase --output-file uppercase.txt
 ```
 
