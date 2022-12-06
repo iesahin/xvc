@@ -488,6 +488,7 @@ fn git_auto_stage(git_command: &str, xvc_root_str: &str, xvc_dir_str: &str) -> R
 /// `args`: Params to pass the underlying process
 /// `verbosity`: Determines the `-v` flags we pass to underlying process. Nothing is passed for
 /// `XvcVerbosity::Default`
+#[cfg(test)]
 pub fn test_dispatch(
     xvc_root_opt: Option<&Path>,
     args: &[&str],
