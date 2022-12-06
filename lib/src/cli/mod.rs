@@ -502,11 +502,11 @@ pub fn test_dispatch(
         XvcVerbosity::Trace => ["-vvvv"],
     };
 
-    println!("{:?}", &verbosity_opt);
-    println!("{:?}", &args);
-
     let current_bin = env::current_exe()?;
 
+    println!("{:?}", &current_bin);
+    println!("{:?}", &verbosity_opt);
+    println!("{:?}", &args);
     match xvc_root_opt {
         Some(r) => Ok(Exec::cmd(current_bin.as_path())
             .args(&verbosity_opt)
