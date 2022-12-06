@@ -512,6 +512,7 @@ pub fn test_dispatch(
             .capture()?
             .stdout_str()),
         None => Ok(Exec::cmd(current_bin.as_path())
+            .args(&verbosity_opt)
             .args(args)
             .capture()?
             .stdout_str()),
