@@ -502,7 +502,7 @@ pub fn test_dispatch(
         XvcVerbosity::Trace => ["-vvvv"],
     };
 
-    let current_bin = env::var("CARGO_BIN_EXE_xvc")?;
+    let current_bin = env!("CARGO_BIN_EXE_xvc")?;
 
     println!("{:?}", &current_bin);
     println!("{:?}", &verbosity_opt);
