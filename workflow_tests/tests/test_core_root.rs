@@ -15,13 +15,13 @@ fn test_root() -> Result<()> {
 
     watch!(xvc_root);
 
-    let rel = test_dispatch(Some(&xvc_root), vec!["xvc", "root"], XvcVerbosity::Trace)?;
+    let rel = test_dispatch(Some(&xvc_root), vec!["root"], XvcVerbosity::Trace)?;
 
     assert!(rel.trim().to_string() == ".".to_string());
 
     let abs = test_dispatch(
         Some(&xvc_root),
-        vec!["xvc", "root", "--absolute"],
+        vec!["root", "--absolute"],
         XvcVerbosity::Trace,
     )?;
     watch!(abs);
