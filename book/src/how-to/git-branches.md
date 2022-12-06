@@ -96,6 +96,3 @@ main
 The pipeline always runs, because in `data-file` branch `uppercase.txt` is always missing. 
 It's stored only in the resulting branch you give by `--to-branch`. 
 
-
-
-
