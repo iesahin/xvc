@@ -1,5 +1,8 @@
 # xvc file checkout
 
+This is an alias of [`xvc file recheck`](/ref/xvc-file-recheck.md). 
+Please see that page for examples.
+
 ## Synopsis
 
 ```console
@@ -29,5 +32,4 @@ Options:
 
   -h, --help
           Print help information (use `-h` for a summary)
-
 ```
