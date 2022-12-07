@@ -150,7 +150,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         sh(sh_cmd)
     };
 
-    let x = |cmd: &[&str]| {
+    let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc"];
         c.extend(cmd);
         watch!(cmd);

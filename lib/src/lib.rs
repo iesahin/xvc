@@ -44,7 +44,7 @@ pub fn test_dispatch(
     let args: &[&str] = if args.len() > 1 && args[0] == "xvc" {
         &args[1..]
     } else {
-        args
+        &args
     };
 
     watch!(args);

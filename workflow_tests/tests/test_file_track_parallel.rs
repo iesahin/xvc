@@ -31,7 +31,7 @@ fn test_file_track_parallel() -> Result<()> {
     let x = |cmd: &[&str]| {
         let mut c = vec!["xvc", "file"];
         c.extend(cmd);
-        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+        test_dispatch(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     let line_captures = |output: &str, pattern: &str| -> Vec<String> {
