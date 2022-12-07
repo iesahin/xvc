@@ -4,16 +4,16 @@
 
 ```console
 $ xvc file recheck --help
-Check out file from cache by a copy or link
+Get file from cache
 
 Usage: xvc file recheck [OPTIONS] [TARGETS]...
 
 Arguments:
   [TARGETS]...
-          Files/directories to recheck 
+          Files/directories to recheck
 
 Options:
-      --as <CACHE_TYPE>
+      --cache-type <CACHE_TYPE>
           How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
           
           Note: Reflink uses copy if the underlying file system doesn't support it.
@@ -22,17 +22,22 @@ Options:
           Don't use parallelism
 
       --force
-          Force the checkout even if target has not cached or no changes happened
+          Force even if target exists
 
       --text-or-binary <TEXT_OR_BINARY>
-          Checkout the files as text, binary (Default: auto)
+          Recheck files as text, binary (Default: auto)
+          
+          Text files may go OS specific line ending replacements.
 
   -h, --help
           Print help information (use `-h` for a summary)
 
+  -V, --version
+          Print version information
 ```
 
-This command is aliased to `xvc file checkout` in case you feel at home with Git nomenclature.
+
+This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if you feel at home with Git terminology.
 
 ## Examples
 
