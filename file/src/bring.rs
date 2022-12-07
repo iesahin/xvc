@@ -1,11 +1,11 @@
 //! Bring files from external storages to workspace.
 //!
-//! Uses [fetch] and [crate::checkout] to bring the file and copy/link it to the
+//! Uses [fetch] and [crate::recheck] to bring the file and copy/link it to the
 //! workspace.
 
 use crate::{
-    checkout::{cmd_checkout, RecheckCLI},
     common::cache_path,
+    recheck::{cmd_checkout, RecheckCLI},
     Result,
 };
 

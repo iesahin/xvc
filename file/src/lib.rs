@@ -130,7 +130,7 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Hash(opts) => hash::cmd_hash(output_snd, xvc_root, opts),
-        XvcFileSubCommand::Recheck(opts) => checkout::cmd_checkout(
+        XvcFileSubCommand::Recheck(opts) => recheck::cmd_checkout(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
