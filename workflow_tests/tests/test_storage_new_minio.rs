@@ -138,7 +138,7 @@ fn test_storage_new_minio() -> Result<()> {
     let xvc_root = create_directory_hierarchy()?;
     let endpoint = "http://emresult.com:9000";
     let bucket_name = "one";
-    let remote_prefix = common::random_dir_name("xvc", None);
+    let storage_prefix = common::random_dir_name("xvc", None);
     let region = "us-east-1";
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
     let access_key = env::var("MINIO_ACCESS_KEY_ID")?;
@@ -170,8 +170,8 @@ fn test_storage_new_minio() -> Result<()> {
         endpoint,
         "--bucket-name",
         bucket_name,
-        "--remote-prefix",
-        &remote_prefix,
+        "--storage-prefix",
+        &storage_prefix,
         "--region",
         region,
     ])?;
@@ -199,7 +199,7 @@ fn test_storage_new_minio() -> Result<()> {
     watch!(push_result);
 
     let file_list = s3cmd(
-        &format!("ls -r s3://one/{remote_prefix}"),
+        &format!("ls -r s3://one/{storage_prefix}"),
         &format!("| rg 0.bin"),
     );
     watch!(file_list);

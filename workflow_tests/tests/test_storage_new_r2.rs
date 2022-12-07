@@ -136,7 +136,7 @@ fn test_storage_new_r2() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";
-    let remote_prefix = common::random_dir_name("xvc-storage", None);
+    let storage_prefix = common::random_dir_name("xvc-storage", None);
 
     let access_key = env::var("R2_ACCESS_KEY_ID")?;
     let access_key = access_key.trim();
@@ -165,8 +165,8 @@ fn test_storage_new_r2() -> Result<()> {
         "r2-storage",
         "--bucket-name",
         bucket_name,
-        "--remote-prefix",
-        &remote_prefix,
+        "--storage-prefix",
+        &storage_prefix,
         "--account-id",
         &account_id,
     ])?;
@@ -174,20 +174,20 @@ fn test_storage_new_r2() -> Result<()> {
     watch!(out);
     let s3_bucket_list = s3cmd(
         &format!("ls --recursive 's3://{bucket_name}'"),
-        &format!("| rg {remote_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
+        &format!("| rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
     watch!(s3_bucket_list);
     assert!(s3_bucket_list.len() > 0);
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
+    x(&["file", "track", the_file])?;
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
     let file_list_before = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
-        &format!("| rg {remote_prefix} | rg 0.bin"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
@@ -196,7 +196,7 @@ fn test_storage_new_r2() -> Result<()> {
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
-        &format!("| rg {remote_prefix} | rg 0.bin"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     watch!(file_list_after);
 

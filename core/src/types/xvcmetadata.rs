@@ -6,7 +6,7 @@ use std::{fs, io};
 use serde::{Deserialize, Serialize};
 
 use crate::{HashAlgorithm, MetadataDigest, XvcDigest, XvcFileType};
-use xvc_ecs::{persist, Storable};
+use xvc_ecs::persist;
 
 /// Metadata associated with a `XvcPath`
 #[derive(

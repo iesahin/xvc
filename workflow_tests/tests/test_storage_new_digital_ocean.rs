@@ -139,7 +139,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc";
-    let remote_prefix = common::random_dir_name("xvc-storage", None);
+    let storage_prefix = common::random_dir_name("xvc-storage", None);
 
     let access_key = env::var("DIGITAL_OCEAN_ACCESS_KEY_ID")?;
     let secret_key = env::var("DIGITAL_OCEAN_SECRET_ACCESS_KEY")?;
@@ -162,8 +162,8 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         "do-storage",
         "--bucket-name",
         bucket_name,
-        "--remote-prefix",
-        &remote_prefix,
+        "--storage-prefix",
+        &storage_prefix,
         "--region",
         &region,
     ])?;
@@ -171,7 +171,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     watch!(out);
     let s3_bucket_list = s3cmd(
         &format!("ls --recursive 's3://{bucket_name}/'"),
-        &format!("| rg {remote_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
+        &format!("| rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
     watch!(s3_bucket_list);
     assert!(s3_bucket_list.len() > 0);
@@ -185,7 +185,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
 
     let file_list_before = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
-        &format!("| rg {remote_prefix} | rg 0.bin"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
@@ -194,7 +194,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
-        &format!("| rg {remote_prefix} | rg 0.bin"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     watch!(file_list_after);
 

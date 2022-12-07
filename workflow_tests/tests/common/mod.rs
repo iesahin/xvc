@@ -42,6 +42,9 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
         None => cmd.args(verbosity_opt).args(args).output()?,
     };
 
+    watch!(cmd);
+    watch!(output);
+
     assert!(output.status.success());
 
     let output_str = String::from_utf8(output.stdout)?;

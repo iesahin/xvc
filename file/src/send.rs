@@ -1,15 +1,10 @@
 use crate::{common::cache_path, Result};
-use std::{path::PathBuf, process::exit, str::FromStr};
 
 use clap::Parser;
-use derive_more::Display;
 use xvc_core::{ContentDigest, XvcCachePath, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, XvcStore};
+use xvc_ecs::XvcStore;
 use xvc_logging::XvcOutputLine;
-use xvc_storage::{
-    storage::get_storage_record, StorageIdentifier, XvcStorage, XvcStorageGuid,
-    XvcStorageOperations,
-};
+use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 use xvc_walker::Glob;
 
 /// Send (upload) tracked files to storage
@@ -32,6 +27,7 @@ pub struct SendCLI {
     targets: Vec<String>,
 }
 
+/// Send a targets in `opts.targets` in `xvc_root`  to `opt.remote`
 pub fn cmd_send(
     output_snd: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
     xvc_root: &XvcRoot,
