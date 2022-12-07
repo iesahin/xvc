@@ -17,7 +17,7 @@ use xvc_pipeline::{
 fn test_pipeline_import() -> Result<()> {
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc", "pipeline"];
+        let mut c = vec!["pipeline"];
         c.extend(cmd);
         run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
     };
