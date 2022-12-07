@@ -47,14 +47,14 @@ pub enum XvcFileSubCommand {
     Track(TrackCLI),
     /// Get digest hash of files with the supported algorithms
     Hash(HashCLI),
-    /// Get file from cache
+    /// Get files from cache by copy or *link
     #[command(alias = "checkout")]
     Recheck(RecheckCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
-    /// Send files to external storages
+    /// Send (push, upload) files to external storages
     Send(SendCLI),
-    /// Bring files from external storages
+    /// Bring (download, pull, fetch) files from external storages
     Bring(BringCLI),
 }
 
