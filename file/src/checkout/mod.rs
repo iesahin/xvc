@@ -18,39 +18,41 @@ use log::{error, warn};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_core::{
-    all_paths_and_metadata, util::xvcignore::COMMON_IGNORE_PATTERNS, CacheType, TextOrBinary,
-    XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot, XVCIGNORE_FILENAME,
+    CacheType, TextOrBinary, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_ecs::{XvcEntity, XvcStore};
+use xvc_ecs::XvcEntity;
 use xvc_logging::{watch, XvcOutputLine};
-use xvc_walker::{check_ignore, Glob, IgnoreRules, MatchResult};
+use xvc_walker::Glob;
 
+/// Check out file from cache by a copy or link
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[command(about = "Add to track files using XVC", rename_all = "kebab-case")]
-pub struct CheckoutCLI {
+#[command(rename_all = "kebab-case", author, version)]
+pub struct RecheckCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long)]
+    #[arg(long, alias = "as")]
     pub cache_type: Option<CacheType>,
 
     /// Don't use parallelism
     #[arg(long)]
     pub no_parallel: bool,
 
-    /// Force the checkout even if target has not cached or no changes happened
+    /// Force even if target exists
     #[arg(long)]
     pub force: bool,
 
-    /// Checkout the files as text, binary (Default: auto)
+    /// Recheck files as text, binary (Default: auto)
+    ///
+    /// Text files may go OS specific line ending replacements.
     #[arg(long)]
     pub text_or_binary: Option<DataTextOrBinary>,
-    /// Files/directories to add
+    /// Files/directories to recheck
     #[arg()]
     pub targets: Vec<String>,
 }
 
-impl UpdateFromXvcConfig for CheckoutCLI {
+impl UpdateFromXvcConfig for RecheckCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let cache_type = self
             .cache_type
@@ -78,7 +80,7 @@ const PARALLEL_THRESHOLD: usize = 47;
 pub fn cmd_checkout(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    cli_opts: CheckoutCLI,
+    cli_opts: RecheckCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
@@ -190,7 +192,7 @@ pub fn cmd_checkout(
 
         watch!(file_delta_store);
 
-        checkout_serial(
+        recheck_serial(
             output_snd,
             xvc_root,
             cache_type,
@@ -207,7 +209,7 @@ pub fn cmd_checkout(
             &file_targets,
         )?;
         watch!(file_delta_store);
-        checkout_parallel(
+        recheck_parallel(
             output_snd,
             xvc_root,
             cache_type,
@@ -218,7 +220,7 @@ pub fn cmd_checkout(
     }
 }
 
-fn checkout_inner(
+fn recheck_inner(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cache_type: CacheType,
@@ -283,7 +285,7 @@ fn checkout_inner(
     Ok(())
 }
 
-fn checkout_serial(
+fn recheck_serial(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cache_type: CacheType,
@@ -293,7 +295,7 @@ fn checkout_serial(
 ) -> Result<()> {
     watch!(file_delta_store.len());
     for (xvc_entity, path_delta) in file_delta_store.iter() {
-        checkout_inner(
+        recheck_inner(
             &output_snd,
             xvc_root,
             cache_type,
@@ -307,7 +309,7 @@ fn checkout_serial(
     Ok(())
 }
 
-fn checkout_parallel(
+fn recheck_parallel(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cache_type: CacheType,
@@ -319,7 +321,7 @@ fn checkout_parallel(
     path_delta_store
         .par_iter()
         .for_each(|(xvc_entity, path_delta)| {
-            let _ = checkout_inner(
+            let _ = recheck_inner(
                 &output_snd,
                 xvc_root,
                 cache_type,
