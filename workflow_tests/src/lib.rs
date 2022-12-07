@@ -19,6 +19,7 @@ use xvc::error::Result;
 /// Run xvc in another process with `args` in `xvc_root_opt`.
 ///
 /// See [xvc::cli::test_dispatch].
+#[cfg(test)]
 pub fn test_dispatch(
     xvc_root_opt: Option<&Path>,
     args: Vec<&str>,
