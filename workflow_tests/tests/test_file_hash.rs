@@ -40,7 +40,7 @@ fn test_file_hash() -> Result<()> {
 
     let text_hash = x(&["file", "hash", "--text-or-binary", "text", "file-0000.bin"])?;
     assert!(re_match(
-        &th,
+        &text_hash,
         "^a572622134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1\tfile-0000.bin.*"
     ));
 
