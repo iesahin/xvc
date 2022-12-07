@@ -31,23 +31,3 @@ pub fn dispatch(args: Vec<&str>) -> Result<()> {
 
     cli::dispatch(cli_opts)
 }
-
-/// For detailed logs, set `verbosity` to [XvcVerbosity::Trace]
-#[cfg(test)]
-pub fn test_dispatch(
-    xvc_root_opt: Option<&Path>,
-    args: Vec<&str>,
-    verbosity: XvcVerbosity,
-) -> Result<String> {
-    log::trace!("*********** TEST COMMAND ************");
-
-    let args: &[&str] = if args.len() > 1 && args[0] == "xvc" {
-        &args[1..]
-    } else {
-        &args
-    };
-
-    watch!(args);
-
-    cli::test_dispatch(xvc_root_opt, &args, verbosity)
-}
