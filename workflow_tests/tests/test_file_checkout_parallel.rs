@@ -27,7 +27,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 fn test_file_checkout_parallel() -> Result<()> {
     let xvc_root = create_directory_hierarchy()?;
     watch!(xvc_root);
-    let x = |cmd: &[&str]| {
+    let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc", "file"];
         c.extend(cmd);
         watch!(c);

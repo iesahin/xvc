@@ -35,7 +35,7 @@ fn test_file_track_issue_104() -> Result<()> {
     // setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
 
-    let x = |cmd: &[&str]| {
+    let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc", "file"];
         c.extend(cmd);
         test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)

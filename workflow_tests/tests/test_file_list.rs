@@ -49,7 +49,7 @@ fn test_file_list() -> Result<()> {
     test_logging(LevelFilter::Trace);
     let xvc_root = common::run_in_temp_xvc_dir()?;
     create_directory_hierarchy(&xvc_root)?;
-    let x = |cmd: &[&str]| {
+    let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc", "file"];
         c.extend(cmd);
         test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
