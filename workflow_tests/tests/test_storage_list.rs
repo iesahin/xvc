@@ -29,7 +29,7 @@ fn test_storage_list() -> Result<()> {
     let xvc_root = create_directory_hierarchy()?;
     let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
-    let x = |cmd: &[&str]| {
+    let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc"];
         c.extend(cmd);
         watch!(cmd);
