@@ -14,6 +14,7 @@
 
 - [User's Guide](./how-to/index.md)
     - [How to Compile Xvc](./how-to/compile.md)
+    - [Xvc with Git Branches](./how-to/git-branches.md)
 
 - [Command Reference](./ref/xvc.md)
     - [xvc init](./ref/xvc-init.md)

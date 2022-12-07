@@ -7,10 +7,10 @@ use xvc_config::XvcVerbosity;
 #[test]
 fn test_pipeline() -> Result<()> {
     let xvc_root = run_in_example_xvc(true)?;
-    let x = |cmd: &[&str]| {
-        let mut c = vec!["xvc", "pipeline"];
+    let x = |cmd: &[&str]| -> Result<String> {
+        let mut c = vec!["pipeline"];
         c.extend(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     x(&["new", "--name", "pipeline-1"])?;

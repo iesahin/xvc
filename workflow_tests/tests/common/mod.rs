@@ -1,11 +1,12 @@
 #![allow(dead_code)]
 
 use anyhow::anyhow;
-use std::env;
+use assert_cmd::Command;
 use std::path::PathBuf;
-use std::process::Command;
+use std::{env, path::Path};
 use subprocess::{CaptureData, Exec};
 use xvc::init::InitCLI;
+use xvc_config::XvcVerbosity;
 
 use xvc_core::XvcRoot;
 use xvc_logging::watch;
@@ -19,6 +20,34 @@ pub use xvc_test_helper::{
 };
 
 const EXAMPLE_PROJECT_NAME: &str = "example-xvc";
+
+pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Result<String> {
+    let mut cmd = Command::cargo_bin("xvc").unwrap();
+
+    let verbosity_opt = match verbosity {
+        XvcVerbosity::Quiet => ["--quiet"],
+        XvcVerbosity::Default => [""],
+        XvcVerbosity::Warn => ["-v"],
+        XvcVerbosity::Info => ["-vv"],
+        XvcVerbosity::Debug => ["-vvv"],
+        XvcVerbosity::Trace => ["-vvvv"],
+    };
+
+    let output = match cwd {
+        Some(cwd) => cmd
+            .args(verbosity_opt)
+            .args(args)
+            .current_dir(cwd)
+            .output()?,
+        None => cmd.args(verbosity_opt).args(args).output()?,
+    };
+
+    assert!(output.status.success());
+
+    let output_str = String::from_utf8(output.stdout)?;
+
+    Ok(output_str)
+}
 
 pub fn example_project_url() -> Result<String> {
     Ok(format!("http://one.emresult.com/~iex/{EXAMPLE_PROJECT_NAME}.tgz").to_string())

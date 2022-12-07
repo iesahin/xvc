@@ -8,7 +8,7 @@ use log::LevelFilter;
 use regex::Regex;
 use shellfn::shell;
 use xvc::error::Result;
-use xvc::{test_dispatch, watch};
+use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_test_helper::{create_directory_tree, test_logging};
 use xvc_walker::AbsolutePath;
@@ -49,17 +49,17 @@ fn test_file_list() -> Result<()> {
     test_logging(LevelFilter::Trace);
     let xvc_root = common::run_in_temp_xvc_dir()?;
     create_directory_hierarchy(&xvc_root)?;
-    let x = |cmd: &[&str]| {
-        let mut c = vec!["xvc", "file"];
+    let x = |cmd: &[&str]| -> Result<String> {
+        let mut c = vec!["file"];
         c.extend(cmd);
-        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     let _xd = |dir: &str, cmd: &[&str]| {
         let dir = &xvc_root.join(&PathBuf::from(dir));
-        let mut c = vec!["xvc", "-C", dir.to_str().unwrap(), "data"];
+        let mut c = vec!["-C", dir.to_str().unwrap(), "data"];
         c.extend(cmd);
-        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     let re_match = |output, regex| {

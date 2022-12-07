@@ -3,8 +3,7 @@ use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::run_in_temp_xvc_dir;
-use rand;
+use common::{run_in_temp_xvc_dir, run_xvc};
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -42,11 +41,11 @@ fn test_storage_new_generic_rsync() -> Result<()> {
     let url = format!("{test_host}");
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
 
-    let x = |cmd: &[&str]| {
+    let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc"];
         c.extend(cmd);
         watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+        run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
     };
 
     let delete_dir = sh(format!(

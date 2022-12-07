@@ -1,14 +1,13 @@
 mod common;
-use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
 use std::{fs, path::PathBuf};
 
-use crate::common::{run_in_example_xvc, run_in_temp_xvc_dir};
+use crate::common::run_in_temp_xvc_dir;
 use jwalk;
 use regex::Regex;
 use xvc::error::{Error, Result};
-use xvc::{test_dispatch, watch};
+use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
@@ -28,10 +27,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 fn test_file_track_parallel() -> Result<()> {
     // setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let x = |cmd: &[&str]| {
-        let mut c = vec!["xvc", "file"];
+    let x = |cmd: &[&str]| -> Result<String> {
+        let mut c = vec!["file"];
         c.extend(cmd);
-        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     let line_captures = |output: &str, pattern: &str| -> Vec<String> {

@@ -37,6 +37,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
 };
+use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
@@ -97,7 +98,7 @@ pub enum XvcVerbosity {
     #[strum(serialize = "quiet", serialize = "0")]
     Quiet,
     /// Print default output and errors
-    #[strum(serialize = "default", serialize = "1")]
+    #[strum(serialize = "default", serialize = "error", serialize = "1")]
     Default,
     /// Print default output, warnings and errors
     #[strum(serialize = "warn", serialize = "2")]
@@ -111,6 +112,19 @@ pub enum XvcVerbosity {
     /// Print default output, errors, warnings, info, debug and tracing output
     #[strum(serialize = "trace", serialize = "5")]
     Trace,
+}
+
+impl From<u8> for XvcVerbosity {
+    fn from(v: u8) -> Self {
+        match v {
+            0 => Self::Quiet,
+            1 => Self::Default,
+            2 => Self::Warn,
+            3 => Self::Info,
+            4 => Self::Debug,
+            _ => Self::Trace,
+        }
+    }
 }
 
 /// A configuration value with its source
@@ -459,8 +473,8 @@ impl XvcConfig {
             .into_iter()
             .map(|str| {
                 let elements: Vec<&str> = str.split('=').collect();
-                let key = elements[0].to_owned();
-                let value = Self::parse_to_value(elements[1].to_owned());
+                let key = elements[0].trim().to_owned();
+                let value = Self::parse_to_value(elements[1].trim().to_owned());
                 (key, value)
             })
             .collect()
@@ -517,11 +531,16 @@ impl XvcConfig {
         }
 
         if let Some(cli_config) = p.command_line_config {
+            watch!(cli_config);
             let map: HashMap<String, TomlValue> = Self::parse_key_value_vector(cli_config)
                 .into_iter()
                 .collect();
+            watch!(map);
             match config.update_from_hash_map(map, XvcConfigOptionSource::CommandLine) {
-                Ok(conf) => config = conf,
+                Ok(conf) => {
+                    watch!(conf);
+                    config = conf;
+                }
                 Err(err) => {
                     err.info();
                 }
@@ -557,7 +576,9 @@ impl XvcConfig {
     /// The current verbosity level.
     /// Set with `core.verbosity` option.
     pub fn verbosity(&self) -> XvcVerbosity {
-        let verbosity_str = match self.get_str("core.verbosity") {
+        let verbosity_str = self.get_str("core.verbosity");
+        watch!(verbosity_str);
+        let verbosity_str = match verbosity_str {
             Ok(opt) => opt.option,
             Err(err) => {
                 err.warn();

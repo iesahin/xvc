@@ -4,7 +4,6 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use common::run_in_temp_xvc_dir;
-use rand;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -154,11 +153,8 @@ fn test_storage_new_r2() -> Result<()> {
         sh(sh_cmd)
     };
 
-    let x = |cmd: &[&str]| {
-        let mut c = vec!["xvc"];
-        c.extend(cmd);
-        watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+    let x = |cmd: &[&str]| -> Result<String> {
+        common::run_xvc(Some(xvc_root.as_path()), cmd, XvcVerbosity::Trace)
     };
 
     let out = x(&[
@@ -186,7 +182,6 @@ fn test_storage_new_r2() -> Result<()> {
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
-    watch!(file_track_result);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 

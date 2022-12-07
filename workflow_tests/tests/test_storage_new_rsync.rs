@@ -43,11 +43,8 @@ fn test_storage_new_rsync() -> Result<()> {
     let url = format!("{test_user}@{test_host}");
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
 
-    let x = |cmd: &[&str]| {
-        let mut c = vec!["xvc"];
-        c.extend(cmd);
-        watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+    let x = |cmd: &[&str]| -> Result<String> {
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
     };
 
     let delete_dir = sh(format!(

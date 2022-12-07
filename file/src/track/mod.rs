@@ -168,6 +168,10 @@ pub fn cmd_track(
         targets
             .into_iter()
             .filter_map(|t| {
+                watch!(t);
+                watch!(t.is_file());
+                watch!(t.is_dir());
+                watch!(t.metadata());
                 if t.is_file() || t.is_dir() {
                     Some(t)
                 } else {

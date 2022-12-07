@@ -121,3 +121,11 @@ globset = "^0.4"
 
 shellfn = "^0.1"
 jwalk = "^0.6"
+fs_extra = "^1.2"
+
+# [dev-dependencies.cargo-husky]
+# version = "1"
+# default-features = false
+# features = ["run-for-all", "precommit-hook", "run-cargo-check"]
+
+
