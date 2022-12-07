@@ -4,7 +4,7 @@
 //! workspace.
 
 use crate::{
-    checkout::{cmd_checkout, CheckoutCLI},
+    checkout::{cmd_checkout, RecheckCLI},
     common::cache_path,
     Result,
 };
@@ -114,7 +114,7 @@ pub fn cmd_bring(
         let checkout_targets = opts.targets.clone();
 
         watch!(checkout_targets);
-        let checkout_opts = CheckoutCLI {
+        let checkout_opts = RecheckCLI {
             cache_type: opts.checkout_as,
             no_parallel: false,
             force: opts.force,

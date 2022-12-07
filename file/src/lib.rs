@@ -11,7 +11,7 @@ pub mod send;
 pub mod track;
 
 use crate::error::{Error, Result};
-use checkout::CheckoutCLI;
+use checkout::RecheckCLI;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
@@ -47,7 +47,7 @@ pub enum XvcFileSubCommand {
     /// Get digest hash of files with the supported algorithms
     Hash(HashCLI),
     /// Get file from cache
-    Checkout(CheckoutCLI),
+    Checkout(RecheckCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
     /// Send files to external storages
