@@ -9,7 +9,7 @@ use jwalk;
 use regex::Regex;
 use subprocess::Exec;
 use xvc::error::{Error, Result};
-use xvc::{test_dispatch, watch};
+use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
@@ -36,9 +36,9 @@ fn test_file_track_serial() -> Result<()> {
     // setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc", "file"];
+        let mut c = vec!["file"];
         c.extend(cmd);
-        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     let re_match = |output, regex| {
