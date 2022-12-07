@@ -32,13 +32,11 @@ pub fn dispatch(args: Vec<&str>) -> Result<()> {
     cli::dispatch(cli_opts)
 }
 
-/// Ensures `xvc` is the first element in `args`, and runs [cli::test_dispatch] after parsing them.
-/// It allows to run commands out of xvc directories.
 /// For detailed logs, set `verbosity` to [XvcVerbosity::Trace]
 #[cfg(test)]
 pub fn test_dispatch(
     xvc_root_opt: Option<&Path>,
-    args: &[&str],
+    args: Vec<&str>,
     verbosity: XvcVerbosity,
 ) -> Result<String> {
     log::trace!("*********** TEST COMMAND ************");
