@@ -26,7 +26,7 @@ use crate::common::compare::{
     update_path_comparison_params_with_actual_info, DeltaField, DirectoryDelta,
     DirectoryDeltaStore, FileDelta, FileDeltaStore, PathComparisonParams,
 };
-use crate::common::{cache_path, checkout_from_cache, move_to_cache};
+use crate::common::{cache_path, move_to_cache, recheck_from_cache};
 use crate::error::{Error, Result};
 
 use std::fs::{self, OpenOptions};
@@ -555,7 +555,7 @@ fn commit(
         let cache_path = cache_path(xp, &digest);
         if !cache_path.to_absolute_path(xvc_root).exists() {
             move_to_cache(xvc_root, xp, &cache_path)?;
-            checkout_from_cache(xvc_root, xp, &cache_path, cache_type)?;
+            recheck_from_cache(xvc_root, xp, &cache_path, cache_type)?;
             let _ = &output_snd.send(XvcOutputLine::Info(format!(
                 "[COMMIT] {xp} -> {}",
                 cache_path
@@ -571,7 +571,7 @@ fn commit(
             fs::remove_file(&abs_path)?;
             let _ = &output_snd.send(XvcOutputLine::Info(format!("[DELETE] {xp}")))?;
             move_to_cache(xvc_root, &xp, &cache_path)?;
-            checkout_from_cache(xvc_root, &xp, &cache_path, cache_type)?;
+            recheck_from_cache(xvc_root, &xp, &cache_path, cache_type)?;
             let _ = &output_snd.send(XvcOutputLine::Info(format!(
                 "[CHECKOUT] {xp} -> {abs_path}"
             )))?;

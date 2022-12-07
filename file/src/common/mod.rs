@@ -70,7 +70,7 @@ pub fn pipe_path_digest(
     Ok(())
 }
 
-pub fn checkout_from_cache(
+pub fn recheck_from_cache(
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,

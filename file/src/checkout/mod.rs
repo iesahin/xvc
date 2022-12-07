@@ -1,13 +1,13 @@
 use std::fs;
-use std::path::PathBuf;
 
 use crate::{
     common::{
-        cache_path, checkout_from_cache,
+        cache_path,
         compare::{
             find_file_changes_parallel, find_file_changes_serial, DeltaField, FileDelta,
             FileDeltaStore, PathComparisonParams,
         },
+        recheck_from_cache,
     },
     track::DataTextOrBinary,
     Result,
@@ -252,7 +252,7 @@ fn recheck_inner(
             if target_path.exists() {
                 fs::remove_file(target_path)?;
             }
-            checkout_from_cache(xvc_root, &xvc_path, &cache_path, cache_type)
+            recheck_from_cache(xvc_root, &xvc_path, &cache_path, cache_type)
         } else {
             error!("{} cannot found in cache", xvc_path);
             Ok(())
