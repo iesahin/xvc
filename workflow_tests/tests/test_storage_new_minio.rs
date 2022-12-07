@@ -11,6 +11,7 @@ use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
+use xvc_tests::test_dispatch;
 
 fn write_s3cmd_config(access_key: &str, secret_key: &str) -> Result<String> {
     let config_file_name = env::temp_dir().join(format!(
@@ -156,7 +157,7 @@ fn test_storage_new_minio() -> Result<()> {
         let mut c = vec!["xvc"];
         c.extend(cmd);
         watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
     };
 
     let create_bucket_res = s3cmd(&format!("mb {bucket_name}"), "");
