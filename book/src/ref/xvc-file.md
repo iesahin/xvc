@@ -12,7 +12,7 @@ Usage: xvc file [OPTIONS] <COMMAND>
 Commands:
   track     Add file and directories to Xvc
   hash      Get digest hash of files with the supported algorithms
-  checkout  Get file from cache
+  recheck   Get file from cache
   list      List tracked and untracked elements in the workspace
   send      Send files to external storages
   bring     Bring (download, pull, fetch) files from storage
