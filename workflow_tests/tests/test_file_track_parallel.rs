@@ -8,10 +8,11 @@ use crate::common::{run_in_example_xvc, run_in_temp_xvc_dir};
 use jwalk;
 use regex::Regex;
 use xvc::error::{Error, Result};
-use xvc::{test_dispatch, watch};
+use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
+use xvc_tests::test_dispatch;
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
