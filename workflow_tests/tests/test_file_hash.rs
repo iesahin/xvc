@@ -23,7 +23,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 fn test_file_hash() -> Result<()> {
     // setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let x = |cmd: &[&str]| {
+    let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc", "file"];
         c.extend(cmd);
         xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
