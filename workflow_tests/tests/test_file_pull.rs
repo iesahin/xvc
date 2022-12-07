@@ -29,10 +29,7 @@ fn test_storage_new_local() -> Result<()> {
     let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc"];
-        c.extend(cmd);
-        watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
     };
 
     Ok(())

@@ -151,10 +151,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     };
 
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc"];
-        c.extend(cmd);
-        watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
     };
 
     let out = x(&[

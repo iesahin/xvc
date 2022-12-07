@@ -1,10 +1,9 @@
 mod common;
-use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
 use std::{fs, path::PathBuf};
 
-use crate::common::{run_in_example_xvc, run_in_temp_xvc_dir};
+use crate::common::run_in_temp_xvc_dir;
 use jwalk;
 use regex::Regex;
 use xvc::error::{Error, Result};
@@ -31,6 +30,7 @@ fn test_file_track_parallel() -> Result<()> {
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["file"];
         c.extend(cmd);
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     let line_captures = |output: &str, pattern: &str| -> Vec<String> {
