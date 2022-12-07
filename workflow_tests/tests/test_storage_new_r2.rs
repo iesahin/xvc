@@ -4,7 +4,6 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use common::run_in_temp_xvc_dir;
-use rand;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -154,31 +153,23 @@ fn test_storage_new_r2() -> Result<()> {
         sh(sh_cmd)
     };
 
-    let x = |cmd: &[&str], assert_fn: fn(&str) -> bool| -> Result<String> {
-        common::assert_xvc(
-            cmd,
-            Some(xvc_root.as_path()),
-            XvcVerbosity::Trace,
-            assert_fn,
-        )
+    let x = |cmd: &[&str]| -> Result<String> {
+        common::run_xvc(Some(xvc_root.as_path()), cmd, XvcVerbosity::Trace)
     };
 
-    let out = x(
-        &[
-            "storage",
-            "new",
-            "r2",
-            "--name",
-            "r2-storage",
-            "--bucket-name",
-            bucket_name,
-            "--remote-prefix",
-            &remote_prefix,
-            "--account-id",
-            &account_id,
-        ],
-        |_| true,
-    )?;
+    let out = x(&[
+        "storage",
+        "new",
+        "r2",
+        "--name",
+        "r2-storage",
+        "--bucket-name",
+        bucket_name,
+        "--remote-prefix",
+        &remote_prefix,
+        "--account-id",
+        &account_id,
+    ])?;
 
     watch!(out);
     let s3_bucket_list = s3cmd(
@@ -190,7 +181,7 @@ fn test_storage_new_r2() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file], |_| true)?;
+    let file_track_result = x(&["file", "track", the_file])?;
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
@@ -200,7 +191,7 @@ fn test_storage_new_r2() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "r2-storage", the_file], |_| true)?;
+    let push_result = x(&["file", "send", "--to", "r2-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -224,10 +215,7 @@ fn test_storage_new_r2() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(
-        &["file", "bring", "--no-checkout", "--from", "r2-storage"],
-        |_| true,
-    )?;
+    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "r2-storage"])?;
 
     watch!(fetch_result);
 
@@ -246,7 +234,7 @@ fn test_storage_new_r2() -> Result<()> {
     fs::remove_dir_all(&cache_dir)?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "r2-storage"], |_| true)?;
+    let pull_result = x(&["file", "bring", "--from", "r2-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -268,7 +256,7 @@ fn test_storage_new_r2() -> Result<()> {
     env::remove_var("R2_ACCESS_KEY_ID");
     env::remove_var("R2_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "r2-storage"], |_| true)?;
+    let pull_result_2 = x(&["file", "bring", "--from", "r2-storage"])?;
     watch!(pull_result_2);
 
     Ok(())
