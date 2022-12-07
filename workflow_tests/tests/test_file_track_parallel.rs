@@ -12,7 +12,6 @@ use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
-use xvc_tests::test_dispatch;
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
@@ -30,9 +29,9 @@ fn test_file_track_parallel() -> Result<()> {
     // setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc", "file"];
+        let mut c = vec!["file"];
         c.extend(cmd);
-        test_dispatch(Some(&xvc_root), &c, XvcVerbosity::Trace)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     let line_captures = |output: &str, pattern: &str| -> Vec<String> {
