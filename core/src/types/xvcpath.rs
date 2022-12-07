@@ -11,7 +11,7 @@ use xvc_walker::AbsolutePath;
 use std::ops::Deref;
 
 use crate::{util::file::is_text_file, HashAlgorithm, XvcDigest};
-use xvc_ecs::{persist, Storable};
+use xvc_ecs::persist;
 
 use super::xvcroot::XvcRoot;
 

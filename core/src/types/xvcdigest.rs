@@ -1,7 +1,7 @@
 //! Xvc digest calculations
 use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
 use std::{fmt::Display, fs, path::Path};
-use xvc_ecs::{persist, Storable};
+use xvc_ecs::persist;
 
 use crate::error::Result;
 use blake2::{Blake2s, Digest};

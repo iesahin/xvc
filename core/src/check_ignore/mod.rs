@@ -4,7 +4,7 @@ use crate::util::expand_globs_to_paths;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcPath, XvcRoot, XVCIGNORE_FILENAME};
 use clap::Parser;
-use crossbeam_channel::{Receiver, Sender};
+use crossbeam_channel::Sender;
 use log::trace;
 use std::io::BufRead;
 use std::path::{Path, PathBuf};

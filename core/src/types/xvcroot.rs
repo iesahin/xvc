@@ -1,6 +1,5 @@
 use log::info;
 use log::trace;
-use path_absolutize::Absolutize;
 use std::fmt;
 use std::fs;
 use std::fs::OpenOptions;
