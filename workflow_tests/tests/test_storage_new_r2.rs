@@ -158,7 +158,7 @@ fn test_storage_new_r2() -> Result<()> {
         let mut c = vec!["xvc"];
         c.extend(cmd);
         watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+        xvc_tests::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
     };
 
     let out = x(&[
