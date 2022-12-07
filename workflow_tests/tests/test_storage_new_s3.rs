@@ -137,7 +137,7 @@ fn test_storage_new_s3() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";
-    let remote_prefix = common::random_dir_name("xvc-storage", None);
+    let storage_prefix = common::random_dir_name("xvc-storage", None);
 
     let access_key = env::var("AWS_ACCESS_KEY_ID")?;
     let secret_key = env::var("AWS_SECRET_ACCESS_KEY")?;
@@ -166,8 +166,8 @@ fn test_storage_new_s3() -> Result<()> {
         "s3-storage",
         "--bucket-name",
         bucket_name,
-        "--remote-prefix",
-        &remote_prefix,
+        "--storage-prefix",
+        &storage_prefix,
         "--region",
         region,
     ])?;
