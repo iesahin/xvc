@@ -26,52 +26,60 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 fn test_file_checkout_serial() -> Result<()> {
     // setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc", "file"];
-        c.extend(cmd);
-        test_dispatch(Some(&xvc_root), c, XvcVerbosity::Trace)
+    let x = |cmd: &[&str], assert_fn| {
+        common::assert_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace, assert_fn)
     };
 
     let file_to_add = "file-0000.bin";
-    x(&["track", file_to_add])?;
+    x(&["file", "track", file_to_add], |_| true)?;
 
     fs::remove_file(file_to_add)?;
 
-    x(&["checkout", "--no-parallel", file_to_add])?;
+    x(&["file", "checkout", "--no-parallel", file_to_add], |_| {
+        true
+    })?;
 
     assert!(PathBuf::from(file_to_add).exists());
 
-    x(&[
-        "checkout",
-        "--no-parallel",
-        "--force",
-        "--cache-type",
-        "symlink",
-        file_to_add,
-    ])?;
+    x(
+        &[
+            "file",
+            "checkout",
+            "--no-parallel",
+            "--force",
+            "--cache-type",
+            "symlink",
+            file_to_add,
+        ],
+        |_| true,
+    )?;
 
     assert!(PathBuf::from(file_to_add).is_symlink());
 
-    x(&[
-        "checkout",
-        "--no-parallel",
-        "--cache-type",
-        "hardlink",
-        file_to_add,
-    ])?;
+    x(
+        &[
+            "file",
+            "checkout",
+            "--no-parallel",
+            "--cache-type",
+            "hardlink",
+            file_to_add,
+        ],
+        |_| true,
+    )?;
 
     // No --force, it shouldn't overwrite
 
     assert!(PathBuf::from(file_to_add).is_symlink());
 
     let dir_to_add = "dir-0001/";
-    x(&["track", dir_to_add])?;
+    x(&["file", "track", dir_to_add], |_| true)?;
 
     let n_files_before = jwalk::WalkDir::new(dir_to_add).into_iter().count();
 
     fs::remove_dir_all(dir_to_add)?;
 
-    x(&["checkout", "--no-parallel", dir_to_add])?;
+    x(&["file", "checkout", "--no-parallel", dir_to_add], |_| true)?;
 
     assert!(PathBuf::from(dir_to_add).exists());
 
@@ -82,12 +90,12 @@ fn test_file_checkout_serial() -> Result<()> {
     // xvc file checkout without targets checks out all
 
     fs::remove_file(file_to_add)?;
-    x(&["checkout", "--no-parallel"])?;
+    x(&["file", "checkout", "--no-parallel"], |_| true)?;
     assert!(PathBuf::from(file_to_add).exists());
 
     // xvc file checkout accepts globs as targets
     fs::remove_file(file_to_add)?;
-    x(&["checkout", "--no-parallel", "f*"])?;
+    x(&["file", "checkout", "--no-parallel", "f*"], |_| true)?;
     assert!(PathBuf::from(file_to_add).exists());
 
     Ok(())

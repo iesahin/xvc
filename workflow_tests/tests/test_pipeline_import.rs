@@ -19,7 +19,7 @@ fn test_pipeline_import() -> Result<()> {
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["xvc", "pipeline"];
         c.extend(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+        run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
     };
 
     x(&[

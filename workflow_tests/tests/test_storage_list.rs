@@ -30,7 +30,7 @@ fn test_storage_list() -> Result<()> {
     let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
     let x = |cmd: &[&str]| -> Result<String> {
-        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
     let out = x(&[

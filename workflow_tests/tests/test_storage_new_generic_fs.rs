@@ -31,10 +31,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
     let temp_directory = format!("{}/", env::temp_dir().to_string_lossy());
 
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc"];
-        c.extend(cmd);
-        watch!(cmd);
-        xvc::test_dispatch(Some(&xvc_root), c, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
     };
 
     let out = x(&[

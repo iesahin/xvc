@@ -6,6 +6,7 @@ use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
 use std::num::ParseIntError;
+use std::string::FromUtf8Error;
 use thiserror::Error as ThisError;
 
 use assert_cmd;
@@ -135,6 +136,12 @@ pub enum Error {
     FsExtraError {
         #[from]
         source: fs_extra::error::Error,
+    },
+
+    #[error("Cannot convert to Utf-8")]
+    FromUtf8Error {
+        #[from]
+        source: FromUtf8Error,
     },
 }
 
