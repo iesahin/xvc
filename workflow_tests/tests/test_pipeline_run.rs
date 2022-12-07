@@ -122,5 +122,7 @@ fn test_pipeline_run() -> Result<()> {
     let training_files_after = fs::read_to_string("training-files.txt")?;
     assert!(!training_files_after.contains(file_to_remove));
 
+    // Could we move this to ref as trycmd?
+
     Ok(())
 }
