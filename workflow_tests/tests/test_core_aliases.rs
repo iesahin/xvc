@@ -7,5 +7,7 @@ use xvc::error::Result;
 #[test]
 fn test_aliases() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
-    assert_xvc(&["aliases"], None, XvcVerbosity::Trace, |out| out.len() > 0)
+    let out = run_xvc(None, &["aliases"], XvcVerbosity::Trace)?;
+    assert!(out.len() > 0);
+    Ok(())
 }
