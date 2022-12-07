@@ -94,7 +94,7 @@ steps:
 fn test_pipeline_run() -> Result<()> {
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc", "pipeline"];
+        let mut c = vec!["pipeline"];
         c.extend(cmd);
         run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
     };
