@@ -35,7 +35,7 @@ fn test_file_track_issue_104() -> Result<()> {
     let xvc_root = create_directory_hierarchy()?;
 
     let x = |cmd: &[&str]| -> Result<String> {
-        let mut c = vec!["xvc", "file"];
+        let mut c = vec!["file"];
         c.extend(cmd);
         run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
