@@ -29,6 +29,7 @@ Options:
       --no-local-config    Ignore local config (.xvc/config.local)
       --no-env-config      Ignore configuration options from the environment
   -h, --help               Print help information
+  -V, --version            Print version information
 
 ```
 
