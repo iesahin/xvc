@@ -19,7 +19,6 @@ use list::ListCLI;
 use log::info;
 use log::warn;
 use log::{error, LevelFilter};
-use recheck::RecheckCLI;
 use std::io;
 use std::io::Write;
 use std::path::Path;
@@ -35,6 +34,7 @@ use xvc_walker::AbsolutePath;
 
 use bring::BringCLI;
 use hash::HashCLI;
+use recheck::RecheckCLI;
 use send::SendCLI;
 use track::TrackCLI;
 
