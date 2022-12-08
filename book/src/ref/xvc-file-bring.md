@@ -4,9 +4,7 @@
 
 ```console
 $ xvc file bring --help
-Bring (download, pull, fetch) files from storage.
-
-You can configure a new storage with [`xvc storage new`][xvc_storage::new] and use it to download and upload tracked files.
+Bring (download, pull, fetch) files from external storages
 
 Usage: xvc file bring [OPTIONS] --storage <STORAGE> [TARGETS]...
 
