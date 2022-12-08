@@ -265,10 +265,14 @@ fn recheck_inner(
         DeltaField::Identical | DeltaField::Skipped => {
             if force {
                 checkout()?;
+            } else {
+                output_snd.send(XvcOutputLine::Warn(format!(
+                    "{xvc_path} already exists. Use --force to overwrite"
+                )))?;
             }
         }
         DeltaField::RecordMissing { .. } => {
-            error!("No record for {xvc_path}");
+            output_snd.send(XvcOutputLine::Error(format!("No record for {xvc_path}")))?;
         }
         DeltaField::ActualMissing { .. } => {
             checkout()?;
@@ -277,7 +281,9 @@ fn recheck_inner(
             if force {
                 checkout()?;
             } else {
-                warn!("The target content has changed, use --force to overwrite")
+                output_snd.send(XvcOutputLine::Warn(format!(
+                    "{xvc_path} has changed, use --force to overwrite"
+                )))?;
             }
         }
     }
