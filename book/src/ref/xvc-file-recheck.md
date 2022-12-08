@@ -67,6 +67,8 @@ Once you added the file to the cache, you can delete the workspace copy.
 ```console
 $ rm data.txt
 $ ls -l
+total 0
+
 ```
 
 # Then, recheck the file. By default, it makes a copy of the file.
