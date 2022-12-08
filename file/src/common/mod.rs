@@ -132,11 +132,7 @@ pub fn move_to_cache(
         message: "Cache path has no parent.".to_string(),
     })?;
     fs::create_dir_all(cache_dir)?;
-    fs::rename(&path, &cache_path)
-        .map_err(|source| Error::IoError { source })
-        .unwrap_or_else(|e| {
-            e.error();
-        });
+    fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
     let mut perm = path.metadata()?.permissions();
     perm.set_readonly(true);
     fs::set_permissions(&path, perm)?;
