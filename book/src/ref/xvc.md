@@ -32,6 +32,7 @@ Options:
       --from-ref <FROM_REF>    Checkout the given Git reference (branch, tag, commit etc.) before performing the Xvc operation. This runs `git checkout <given-value>` before running the command
       --to-branch <TO_BRANCH>  If given, create (or checkout) the given branch before committing results of the operation. This runs `git checkout --branch <given-value>` before committing the changes
   -h, --help                   Print help information
+  -V, --version                Print version information
 
 ```
 
