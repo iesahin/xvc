@@ -78,7 +78,7 @@ $ xvc file recheck data.txt
 
 $ ls -l
 total 8
--rw-r--r-- [..] data.txt
+-rw-rw-rw- [..] data.txt
 
 ```
 
