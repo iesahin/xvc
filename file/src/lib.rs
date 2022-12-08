@@ -48,7 +48,7 @@ pub enum XvcFileSubCommand {
     /// Get digest hash of files with the supported algorithms
     Hash(HashCLI),
     /// Get files from cache by copy or *link
-    #[command(alias = "checkout")]
+    #[command(alias = "checkout", alias = "recheck")]
     Recheck(RecheckCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
