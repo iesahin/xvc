@@ -89,9 +89,7 @@ $ xvc -v file recheck data.txt --as symlink
 [WARN] data.txt already exists. Use --force to overwrite
 
 $ ls -l data.txt
-total 8
 -rw-r--r-- [..] data.txt
-
 
 ```
 
