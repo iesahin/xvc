@@ -53,7 +53,7 @@ $ git init
 ...
 $ xvc init
 
-$ xvc file track data.txt
+$ xvc -vvvv file track data.txt
 
 $ ls -l
 total 8
