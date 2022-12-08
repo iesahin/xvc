@@ -131,7 +131,10 @@ pub fn move_to_cache(
     let cache_dir = cache_path.parent().ok_or(Error::InternalError {
         message: "Cache path has no parent.".to_string(),
     })?;
+    watch!(cache_dir);
     fs::create_dir_all(cache_dir)?;
+    watch!(path);
+    watch!(cache_path);
     fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
     let mut perm = path.metadata()?.permissions();
     perm.set_readonly(true);
