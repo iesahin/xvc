@@ -38,9 +38,9 @@ use xvc_walker::AbsolutePath;
 use crate::cli;
 use crate::error::{Error, Result};
 
-#[derive(Debug, Parser)]
-#[command(rename_all = "kebab-case")]
 /// Xvc CLI to manage data and ML pipelines
+#[derive(Debug, Parser)]
+#[command(rename_all = "kebab-case", author, version)]
 pub struct XvcCLI {
     /// Output verbosity. Use multiple times to increase the output detail.
     #[arg(long = "verbose", short, action = clap::ArgAction::Count)]
