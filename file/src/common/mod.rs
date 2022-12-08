@@ -136,8 +136,8 @@ pub fn move_to_cache(
     watch!(path);
     watch!(cache_path);
     fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
-    let mut perm = path.metadata()?.permissions();
+    let mut perm = cache_path.metadata()?.permissions();
     perm.set_readonly(true);
-    fs::set_permissions(&path, perm)?;
+    fs::set_permissions(&cache_path, perm)?;
     Ok(())
 }
