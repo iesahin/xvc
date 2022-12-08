@@ -7,7 +7,7 @@ Please see that page for examples.
 
 ```console
 $ xvc file checkout --help
-Get file from cache
+Get files from cache by copy or *link
 
 Usage: xvc file recheck [OPTIONS] [TARGETS]...
 
@@ -37,5 +37,4 @@ Options:
 
   -V, --version
           Print version information
-
 ```
