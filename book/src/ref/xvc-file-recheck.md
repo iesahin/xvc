@@ -71,13 +71,15 @@ total 0
 
 ```
 
-# Then, recheck the file. By default, it makes a copy of the file.
-# 
-# ```console
-# $ xvc file recheck data.txt
-# $ ls -l
-# ```
-# 
+Then, recheck the file. By default, it makes a copy of the file.
+
+```console
+$ xvc file recheck data.txt
+
+$ ls -l
+
+```
+
 # Xvc doesn't recheck a path if it exists already.
 # 
 # ```console
