@@ -57,7 +57,7 @@ $ xvc file track data.txt
 
 $ ls -l
 total 8
--rw-r--r--[..]data.txt
+-rw-r--r-- [..] data.txt
 
 ```
 
@@ -77,6 +77,8 @@ Then, recheck the file. By default, it makes a copy of the file.
 $ xvc file recheck data.txt
 
 $ ls -l
+total 8
+-rw-r--r-- [..] data.txt
 
 ```
 
