@@ -42,7 +42,7 @@ This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if yo
 
 ## Examples
 
-Rechecking is analogous to [git checkout][https://git-scm.com/docs/git-checkout]. 
+Rechecking is analogous to [git checkout](https://git-scm.com/docs/git-checkout). 
 It copies or links a cached file to the workspace. 
 
 
