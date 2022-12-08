@@ -38,11 +38,11 @@ Options:
 ```
 
 
-This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if you feel at home with Git terminology.
+This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if you feel more at home with Git terminology.
 
 ## Examples
 
-Rechecking is analogous to [git checkout]. 
+Rechecking is analogous to [git checkout][https://git-scm.com/docs/git-checkout]. 
 It copies or links a cached file to the workspace. 
 
 
