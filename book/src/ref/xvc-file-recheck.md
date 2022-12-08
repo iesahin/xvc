@@ -4,7 +4,7 @@
 
 ```console
 $ xvc file recheck --help
-Get file from cache
+Get files from cache by copy or *link
 
 Usage: xvc file recheck [OPTIONS] [TARGETS]...
 
@@ -34,7 +34,6 @@ Options:
 
   -V, --version
           Print version information
-
 ```
 
 
@@ -48,13 +47,13 @@ It copies or links a cached file to the workspace.
 
 Start by tracking a file. 
 
-# ```console
-# $ git init
-# $ xvc init
-# $ xvc file track data.txt
-# $ ls -l
-# ```
-# 
+```console
+$ git init
+$ xvc init
+$ xvc file track data.txt
+$ ls -l
+```
+
 # Once you added the file to the cache, you can delete the workspace copy.
 # 
 # 
