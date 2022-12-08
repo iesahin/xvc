@@ -1,6 +1,6 @@
 pub mod compare;
 
-use std::fs;
+use std::fs::{self, Permissions};
 use std::{
     fs::Metadata,
     path::{Path, PathBuf},
@@ -92,9 +92,15 @@ pub fn recheck_from_cache(
         }
         CacheType::Hardlink => {
             fs::hard_link(&cache_path, &path)?;
+            let mut perm = path.metadata()?.permissions();
+            perm.set_readonly(true);
+            fs::set_permissions(&path, perm)?;
         }
         CacheType::Symlink => {
             make_symlink(&cache_path, &path)?;
+            let mut perm = path.metadata()?.permissions();
+            perm.set_readonly(true);
+            fs::set_permissions(&path, perm)?;
         }
         CacheType::Reflink => {
             match reflink::reflink_or_copy(&cache_path, &path) {
