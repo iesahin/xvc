@@ -89,23 +89,25 @@ pub fn recheck_from_cache(
     match cache_type {
         CacheType::Copy => {
             fs::copy(&cache_path, &path)?;
+            let mut perm = path.metadata()?.permissions();
+            perm.set_readonly(false);
+            fs::set_permissions(&path, perm)?;
         }
         CacheType::Hardlink => {
             fs::hard_link(&cache_path, &path)?;
-            let mut perm = path.metadata()?.permissions();
-            perm.set_readonly(true);
-            fs::set_permissions(&path, perm)?;
         }
         CacheType::Symlink => {
             make_symlink(&cache_path, &path)?;
-            let mut perm = path.metadata()?.permissions();
-            perm.set_readonly(true);
-            fs::set_permissions(&path, perm)?;
         }
         CacheType::Reflink => {
             match reflink::reflink_or_copy(&cache_path, &path) {
                 Ok(None) => (),
-                Ok(Some(_)) => warn!("File system doesn't support reflink. Used copy."),
+                Ok(Some(_)) => {
+                    warn!("File system doesn't support reflink. Used copy.");
+                    let mut perm = path.metadata()?.permissions();
+                    perm.set_readonly(false);
+                    fs::set_permissions(&path, perm)?;
+                }
                 Err(source) => {
                     Error::IoError { source }.error();
                 }
@@ -135,5 +137,8 @@ pub fn move_to_cache(
         .unwrap_or_else(|e| {
             e.error();
         });
+    let mut perm = path.metadata()?.permissions();
+    perm.set_readonly(true);
+    fs::set_permissions(&path, perm)?;
     Ok(())
 }

@@ -264,6 +264,9 @@ fn recheck_inner(
     match path_delta.delta_content_digest {
         DeltaField::Identical | DeltaField::Skipped => {
             if force {
+                output_snd.send(XvcOutputLine::Info(format!(
+                    "{xvc_path} already exists. Overwriting."
+                )))?;
                 checkout()?;
             } else {
                 output_snd.send(XvcOutputLine::Warn(format!(
