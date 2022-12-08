@@ -4,7 +4,7 @@
 
 ```console
 $ xvc file send --help
-Send files to external storages
+Send (push, upload) files to external storages
 
 Usage: xvc file send [OPTIONS] --remote <REMOTE> [TARGETS]...
 
@@ -15,5 +15,4 @@ Options:
   -r, --remote <REMOTE>  Storage name or guid to send the files
       --force            Force even if the files are already present in the storage
   -h, --help             Print help information
-
 ```
