@@ -61,14 +61,14 @@ total 8
 
 ```
 
-# Once you added the file to the cache, you can delete the workspace copy.
-# 
-# 
-# ```console
-# $ rm data.txt
-# $ ls -l
-# ```
-# 
+Once you added the file to the cache, you can delete the workspace copy.
+
+
+```console
+$ rm data.txt
+$ ls -l
+```
+
 # Then, recheck the file. By default, it makes a copy of the file.
 # 
 # ```console
