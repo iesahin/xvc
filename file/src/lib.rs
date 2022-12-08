@@ -11,6 +11,7 @@ pub mod send;
 pub mod track;
 
 use crate::error::{Error, Result};
+use clap::Subcommand;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
@@ -40,7 +41,7 @@ use track::TrackCLI;
 use clap::Parser;
 
 /// xvc file subcommands
-#[derive(Debug, Clone, Parser)]
+#[derive(Debug, Clone, Subcommand)]
 #[command(author, version)]
 pub enum XvcFileSubCommand {
     /// Add file and directories to Xvc
@@ -48,7 +49,6 @@ pub enum XvcFileSubCommand {
     /// Get digest hash of files with the supported algorithms
     Hash(HashCLI),
     /// Get files from cache by copy or *link
-    #[command(alias = "checkout", alias = "recheck")]
     Recheck(RecheckCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
