@@ -101,27 +101,28 @@ $ xvc -vv file recheck data.txt --as symlink --force
 [INFO] data.txt already exists. Overwriting.
 ...
 $ ls -l data.txt
-lr--r--r-- [..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
+lrwxr-xr-x [..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
 
 ```
 
 Hardlinks look like the original file. 
 
 ```console
-$ ls -l
 $ rm data.txt
 $ xvc file recheck data.txt --as hardlink
 $ ls -l
+-r--r--r-- [..] data.txt
+
 ```
 
-# Note that, hardlinks and symlinks are read only. 
-# 
-# Reflinks are supported by Xvc, but the underlying file system should also support it. 
-# Otherwise it uses `copy`. 
-# 
-# ```console
-# $ ls -l
-# $ rm data.txt
-# $ xvc file recheck data.txt --as reflink
-# $ ls -l
-# ```
+Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
+
+Reflinks are supported by Xvc, but the underlying file system should also support it. 
+Otherwise it uses `copy`. 
+
+```console
+$ ls -l
+$ rm data.txt
+$ xvc file recheck data.txt --as reflink
+$ ls -l
+```
