@@ -87,6 +87,7 @@ Xvc doesn't recheck a path if it exists already.
 ```console
 $ xvc file recheck data.txt --as symlink
 ? 0
+$ ls -l data.txt
 ```
 
 # You can force it to do so.
