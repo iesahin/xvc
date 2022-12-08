@@ -34,6 +34,7 @@ Options:
 
   -V, --version
           Print version information
+
 ```
 
 
@@ -49,9 +50,14 @@ Start by tracking a file.
 
 ```console
 $ git init
+...
 $ xvc init
+
 $ xvc file track data.txt
+
 $ ls -l
+total 8
+-rw-r--r--[..]data.txt
 ```
 
 # Once you added the file to the cache, you can delete the workspace copy.
