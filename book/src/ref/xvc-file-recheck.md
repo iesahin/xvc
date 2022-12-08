@@ -100,18 +100,20 @@ $ xvc -vv file recheck data.txt --as symlink --force
 ...
 [INFO] data.txt already exists. Overwriting.
 ...
+$ ls -l data.txt
+-r--r--r-- [..] data.txt
 
 ```
 
-# Hardlinks look like the original file. 
-# 
-# ```console
-# $ ls -l
-# $ rm data.txt
-# $ xvc file recheck data.txt --as hardlink
-# $ ls -l
-# ```
-# 
+Hardlinks look like the original file. 
+
+```console
+$ ls -l
+$ rm data.txt
+$ xvc file recheck data.txt --as hardlink
+$ ls -l
+```
+
 # Note that, hardlinks and symlinks are read only. 
 # 
 # Reflinks are supported by Xvc, but the underlying file system should also support it. 
