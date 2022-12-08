@@ -86,16 +86,20 @@ Xvc doesn't recheck a path if it exists already.
 
 ```console
 $ xvc -v file recheck data.txt --as symlink
-? 0
+[WARN] data.txt already exists. Use --force to overwrite
+
 $ ls -l data.txt
+total 8
+-rw-r--r-- [..] data.txt
 ```
 
-# You can force it to do so.
-# 
-# ```console
-# $ xvc file recheck data.txt --as symlink --force
-# ```
-# 
+You can force it to do so.
+
+```console
+$ xvc -vv file recheck data.txt --as symlink --force
+
+```
+
 # Hardlinks look like the original file. 
 # 
 # ```console
