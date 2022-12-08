@@ -124,7 +124,6 @@ Otherwise it uses `copy`.
 ```console
 $ rm data.txt
 $ xvc file recheck data.txt --as reflink
-$ ls -l
--rw-rw-rw- [..] data.txt
-
 ```
+
+The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems. 
