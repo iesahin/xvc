@@ -82,12 +82,13 @@ total 8
 
 ```
 
-# Xvc doesn't recheck a path if it exists already.
-# 
-# ```console
-# $ xvc file recheck data.txt --as symlink
-# ```
-# 
+Xvc doesn't recheck a path if it exists already.
+
+```console
+$ xvc file recheck data.txt --as symlink
+? failure
+```
+
 # You can force it to do so.
 # 
 # ```console
