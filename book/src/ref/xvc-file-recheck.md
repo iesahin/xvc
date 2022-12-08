@@ -111,6 +111,7 @@ Hardlinks look like the original file.
 $ rm data.txt
 $ xvc file recheck data.txt --as hardlink
 $ ls -l
+total 8
 -r--r--r-- [..] data.txt
 
 ```
@@ -121,8 +122,9 @@ Reflinks are supported by Xvc, but the underlying file system should also suppor
 Otherwise it uses `copy`. 
 
 ```console
-$ ls -l
 $ rm data.txt
 $ xvc file recheck data.txt --as reflink
 $ ls -l
+-rw-rw-rw- [..] data.txt
+
 ```
