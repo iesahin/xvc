@@ -1,20 +1,14 @@
 //! Main CLI interface for XVC
-use std::env;
-use std::ffi::OsStr;
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
 use crate::init;
-use anyhow::anyhow;
 use clap::Parser;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
-use crossbeam_channel::Sender;
-use log::debug;
 use log::error;
 use log::info;
-use log::trace;
 use log::warn;
 use log::LevelFilter;
 use std::io;
@@ -369,7 +363,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     Ok(())
 }
 
-fn get_git_command(repo_root: &Path, git_command: &str) -> Result<String> {
+fn get_absolute_git_command(git_command: &str) -> Result<String> {
     let git_cmd_path = PathBuf::from(git_command);
     let git_cmd = if git_cmd_path.is_absolute() {
         git_command.to_string()
@@ -434,7 +428,7 @@ fn unstash_user_staged_files(git_command: &str, xvc_directory: &str) -> Result<(
 fn git_checkout_ref(xvc_root: &XvcRoot, from_ref: String) -> Result<()> {
     let xvc_directory = xvc_root.as_path().to_str().unwrap();
     let git_command_option = xvc_root.config().get_str("git.command")?.option;
-    let git_command = get_git_command(&xvc_root, &git_command_option)?;
+    let git_command = get_absolute_git_command(&git_command_option)?;
 
     let git_diff_staged_out = stash_user_staged_files(&git_command, xvc_directory)?;
     exec_git(&git_command, xvc_directory, &["checkout", &from_ref])?;
@@ -455,7 +449,7 @@ fn handle_git_automation(xvc_root: XvcRoot, to_branch: Option<&str>, xvc_cmd: &s
     let auto_commit = xvc_root.config().get_bool("git.auto_commit")?.option;
     let auto_stage = xvc_root.config().get_bool("git.auto_stage")?.option;
     let git_command_str = xvc_root.config().get_str("git.command")?.option;
-    let git_command = get_git_command(&xvc_root, &git_command_str)?;
+    let git_command = get_absolute_git_command(&git_command_str)?;
     let xvc_dir = xvc_root.xvc_dir().clone();
     let xvc_dir_str = xvc_dir.to_str().unwrap();
 
