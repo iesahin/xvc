@@ -1,15 +1,13 @@
 mod common;
+use common::*;
 use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::run_in_temp_xvc_dir;
-use rand;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn write_s3cmd_config(access_key: &str, secret_key: &str) -> Result<String> {
@@ -265,5 +263,5 @@ fn test_storage_new_minio() -> Result<()> {
     let pull_result_2 = x(&["file", "bring", "--from", "minio-storage"])?;
     watch!(pull_result_2);
 
-    Ok(())
+    clean_up(&xvc_root)
 }
