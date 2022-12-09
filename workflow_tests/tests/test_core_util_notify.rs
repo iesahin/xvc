@@ -95,6 +95,8 @@ fn test_notify() -> Result<()> {
         .iter()
         .any(|f| f.to_string() == "file-0001.bin".to_string()));
 
+    watch!(handle);
+
     handle.join().unwrap();
 
     Ok(())
