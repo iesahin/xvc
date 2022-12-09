@@ -101,7 +101,7 @@ $ xvc -vv file recheck data.txt --as symlink --force
 [INFO] data.txt already exists. Overwriting.
 ...
 $ ls -l data.txt
-lrwxr-xr-x [..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
+l[..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
 
 ```
 
