@@ -67,7 +67,7 @@ Once you added the file to the cache, you can delete the workspace copy.
 ```console
 $ rm data.txt
 $ ls -l
-total 0
+total[..]
 
 ```
 
@@ -77,7 +77,7 @@ Then, recheck the file. By default, it makes a copy of the file.
 $ xvc file recheck data.txt
 
 $ ls -l
-...
+total[..]
 -rw-rw-rw- [..] data.txt
 
 ```
