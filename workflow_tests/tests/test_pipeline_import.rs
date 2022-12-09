@@ -266,5 +266,5 @@ fn test_pipeline_import() -> Result<()> {
         );
     }
 
-    Ok(())
+    clean_up(&xvc_root)
 }

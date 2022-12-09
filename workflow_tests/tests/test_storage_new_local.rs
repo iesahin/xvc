@@ -3,12 +3,12 @@ use std::{fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::run_in_temp_xvc_dir;
+use common::*;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
-use xvc_test_helper::{create_directory_tree, generate_filled_file};
+use xvc_test_helper::generate_filled_file;
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
@@ -150,5 +150,5 @@ fn test_storage_new_local() -> Result<()> {
         "Guid Mismatch after reinit: {current_guid} - {reread_guid}"
     );
 
-    Ok(())
+    clean_up(&xvc_root)
 }

@@ -1,13 +1,12 @@
 mod common;
-use std::{fs, path::PathBuf};
+use common::*;
+use std::path::PathBuf;
 
 use log::LevelFilter;
 
-use common::run_in_temp_xvc_dir;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -32,5 +31,5 @@ fn test_storage_new_local() -> Result<()> {
         common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
     };
 
-    Ok(())
+    clean_up(&xvc_root)
 }

@@ -1,4 +1,5 @@
 mod common;
+use common::*;
 
 use xvc::core::{XVCIGNORE_FILENAME, XVC_DIR};
 use xvc::init::InitCLI;
@@ -22,5 +23,5 @@ fn test_init_with_git() -> Result<()> {
     assert!(xvc_root.absolute_path().join(XVCIGNORE_FILENAME).exists());
     assert!(xvc_root.absolute_path().join(".gitignore").exists());
 
-    Ok(())
+    clean_up(&xvc_root)
 }

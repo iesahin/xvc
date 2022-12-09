@@ -1,4 +1,5 @@
 mod common;
+use common::*;
 
 use std::path::Path;
 use std::thread::sleep;
@@ -182,7 +183,7 @@ fn test_file_list() -> Result<()> {
     //
     // TODO: ignored files should have `I` as second letter
 
-    Ok(())
+    clean_up(&xvc_root)
 }
 
 #[shell]

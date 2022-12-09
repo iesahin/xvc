@@ -1,4 +1,6 @@
 mod common;
+use common::*;
+
 use std::thread::sleep;
 use std::time::Duration;
 use std::{fs, path::PathBuf};
@@ -152,7 +154,5 @@ fn test_file_track_parallel() -> Result<()> {
 
     assert!(data_line[0].len() > 0, "{}", data_line[0]);
 
-    // todo!("Test different types of cache (symlink, hardlink, copy, reflink");
-
-    Ok(())
+    clean_up(&xvc_root)
 }

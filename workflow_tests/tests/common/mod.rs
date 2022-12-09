@@ -2,6 +2,7 @@
 
 use anyhow::anyhow;
 use assert_cmd::Command;
+use std::fs;
 use std::path::PathBuf;
 use std::{env, path::Path};
 use subprocess::{CaptureData, Exec};
@@ -165,4 +166,8 @@ pub fn sh(cmd: &str) -> Result<CaptureData> {
     Exec::shell(cmd)
         .capture()
         .map_err(|e| anyhow!("{}", e).into())
+}
+
+pub fn clean_up(xvc_root: &XvcRoot) -> Result<()> {
+    fs::remove_dir_all(&xvc_root.absolute_path()).map_err(|e| e.into())
 }

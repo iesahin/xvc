@@ -90,6 +90,7 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
         })
         .collect();
     watch!(paths);
+    fs::remove_dir_all(&root).unwrap();
     paths
 }
 fn new_dir_with_ignores(

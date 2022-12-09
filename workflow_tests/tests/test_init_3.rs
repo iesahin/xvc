@@ -2,13 +2,12 @@ mod common;
 
 use std::fs;
 
-use xvc::core::{XVCIGNORE_FILENAME, XVC_DIR};
 use xvc::init::InitCLI;
 
 use xvc::error::Result;
 use xvc_tests::watch;
 
-use common::sh;
+use common::*;
 
 // This tests the preexisting .gitignore rules bug
 // https://github.com/iesahin/xvc/issues/119
@@ -36,5 +35,5 @@ fn test_init_with_preexisting_git() -> Result<()> {
 
     assert!(git_status.trim().len() == 0, "{}", git_status);
 
-    Ok(())
+    clean_up(&xvc_root)
 }

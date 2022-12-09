@@ -207,5 +207,5 @@ fn test_pipeline_run() -> Result<()> {
 
     // Could we move this to ref as trycmd?
 
-    Ok(())
+    clean_up(&xvc_root)
 }

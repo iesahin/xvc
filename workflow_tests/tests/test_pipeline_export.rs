@@ -204,5 +204,5 @@ fn test_pipeline_export() -> Result<()> {
 
     assert_eq!(ps_json, ps_yaml);
 
-    Ok(())
+    clean_up(&xvc_root)
 }

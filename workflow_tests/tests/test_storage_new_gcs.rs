@@ -3,8 +3,7 @@ use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::run_in_temp_xvc_dir;
-use rand;
+use common::*;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -260,5 +259,5 @@ fn test_storage_new_gcs() -> Result<()> {
     let pull_result_2 = x(&["file", "bring", "--from", "gcs-storage"])?;
     watch!(pull_result_2);
 
-    Ok(())
+    clean_up(&xvc_root)
 }
