@@ -10,7 +10,6 @@ use xvc::error::Result;
 use subprocess::Exec;
 
 const PIPELINE_YAML: &str = r#"
----
 version: 1
 name: default
 workdir: ""
@@ -60,23 +59,10 @@ steps:
     dependencies:
       - Glob:
           glob: "*.txt"
-#      - Directory:
-#         path: data
-#     - Param:
-#         format: YAML
-#         path: params.yaml
-#         key: model.conv_units
-#     - Regex:
-#         path: requirements.txt
-#         regex: ^tensorflow
     outputs:
       - Metric:
           path: glob_dep.json
           format: JSON
-#     - File:
-#         path: def.txt
-#     - Image:
-#         path: plots/confusion.png
   - name: count_training_files
     command: wc -l training-files.txt > num-training-files.txt
     invalidate: ByDependencies
