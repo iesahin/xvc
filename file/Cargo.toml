@@ -86,7 +86,7 @@ chrono = "^0.4"
 strum = "0.24.1"
 strum_macros = "0.24.3"
 lazy_static = "^1.4"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+uuid = { version = "^1.2", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.3", features = ["serde"] }
 itertools = "^0.10"

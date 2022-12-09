@@ -73,7 +73,7 @@ regex = "^1.7"
 strum = "0.24.1"
 strum_macros = "0.24.3"
 lazy_static = "^1.4"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+uuid = { version = "^1.2", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 cached = "0.32.1"
 derive_more = "^0.99"
