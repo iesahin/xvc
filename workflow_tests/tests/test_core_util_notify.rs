@@ -33,16 +33,12 @@ fn test_notify() -> Result<()> {
 
     let handle = thread::spawn(move || {
         let mut_res_paths = res_paths.clone();
-        watch!(mut_res_paths);
         let mut res_paths = mut_res_paths.lock().unwrap();
-        watch!(res_paths);
         let mut err_counter = MAX_ERROR_COUNT;
         loop {
             let r = receiver.try_recv();
-            watch!(r);
             if let Ok(pe) = r {
                 err_counter = MAX_ERROR_COUNT;
-                watch!(pe);
                 match pe {
                     PathEvent::Create { path, metadata } => {
                         res_paths.push(Ok(PathMetadata { path, metadata }))
@@ -58,6 +54,7 @@ fn test_notify() -> Result<()> {
             } else {
                 if err_counter > 0 {
                     err_counter -= 1;
+                    watch!(err_counter);
                     sleep(Duration::from_millis(100));
                 } else {
                     break;
