@@ -3,7 +3,7 @@ use crate::{common::cache_path, Result};
 use clap::Parser;
 use xvc_core::{ContentDigest, XvcCachePath, XvcPath, XvcRoot};
 use xvc_ecs::XvcStore;
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{watch, XvcOutputLine};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 use xvc_walker::Glob;
 
@@ -34,8 +34,9 @@ pub fn cmd_send(
     opts: SendCLI,
 ) -> Result<()> {
     let remote = get_storage_record(output_snd.clone(), xvc_root, &opts.remote)?;
-
+    watch!(remote);
     let path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
+    watch!(path_store);
 
     // If the targets are empty, all paths are pushed
     let target_store = if opts.targets.is_empty() {
@@ -59,16 +60,27 @@ pub fn cmd_send(
         path_store.filter(|_, p| globset.is_match(p.to_string()))
     };
 
+    watch!(target_store);
+
     // Get all cache paths for these paths
     let content_digest_store: XvcStore<ContentDigest> = xvc_root.load_store()?;
 
+    watch!(content_digest_store);
+
     let cache_paths: Vec<XvcCachePath> = target_store
         .iter()
-        .map(|(e, xvc_path)| {
-            let content_digest = content_digest_store.get(e).unwrap();
-            cache_path(xvc_path, &content_digest)
+        .filter_map(|(e, xvc_path)| match content_digest_store.get(e) {
+            Some(content_digest) => Some(cache_path(xvc_path, content_digest)),
+            None => {
+                output_snd
+                    .send(XvcOutputLine::Warn(format!("Cannot find digest for {e}")))
+                    .unwrap();
+                None
+            }
         })
         .collect();
+
+    watch!(cache_paths);
 
     remote
         .send(output_snd.clone(), xvc_root, &cache_paths, opts.force)
