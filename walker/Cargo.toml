@@ -39,6 +39,7 @@ regex = "^1.7"
 
 [dev-dependencies]
 xvc-test-helper = { path = "../test_helper/" }
+test-case = "^2.2"
 
 [package.metadata.cargo-udeps.ignore]
-normal = ["xvc-logging"]
+normal = ["xvc-logging", "test-case"]

@@ -40,5 +40,9 @@ lazy_static = "^1.4"
 
 
 [dev-dependencies]
-
+tempdir = "^0.3"
 jwalk = "^0.6"
+rand = "^0.8"
+
+[package.metadata.cargo-udeps.ignore]
+normal = ["xvc-logging", "test-case", "tempdir"]
