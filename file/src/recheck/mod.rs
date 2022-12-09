@@ -14,7 +14,7 @@ use crate::{
 };
 use clap::Parser;
 use crossbeam_channel::Sender;
-use log::{error, warn};
+use log::error;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_core::{
@@ -77,7 +77,7 @@ impl UpdateFromXvcConfig for RecheckCLI {
 
 const PARALLEL_THRESHOLD: usize = 47;
 
-pub fn cmd_checkout(
+pub fn cmd_recheck(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cli_opts: RecheckCLI,

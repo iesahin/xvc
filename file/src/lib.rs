@@ -49,7 +49,7 @@ pub enum XvcFileSubCommand {
     /// Get digest hash of files with the supported algorithms
     Hash(HashCLI),
     /// Get files from cache by copy or *link
-    #[command(alias = "checkout")]
+    #[command(alias = "checkout")
     Recheck(RecheckCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
@@ -131,7 +131,7 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Hash(opts) => hash::cmd_hash(output_snd, xvc_root, opts),
-        XvcFileSubCommand::Recheck(opts) => recheck::cmd_checkout(
+        XvcFileSubCommand::Recheck(opts) => recheck::cmd_recheck(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

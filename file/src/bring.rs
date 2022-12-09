@@ -5,7 +5,7 @@
 
 use crate::{
     common::cache_path,
-    recheck::{cmd_checkout, RecheckCLI},
+    recheck::{cmd_recheck, RecheckCLI},
     Result,
 };
 
@@ -122,7 +122,7 @@ pub fn cmd_bring(
             targets: checkout_targets,
         };
 
-        cmd_checkout(output_snd, xvc_root, checkout_opts)?;
+        cmd_recheck(output_snd, xvc_root, checkout_opts)?;
     }
 
     Ok(())
