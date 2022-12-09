@@ -56,7 +56,7 @@ $ xvc init
 $ xvc file track data.txt
 
 $ ls -l
-total 8
+...
 -rw-rw-rw- [..] data.txt
 
 ```
@@ -77,7 +77,7 @@ Then, recheck the file. By default, it makes a copy of the file.
 $ xvc file recheck data.txt
 
 $ ls -l
-total 8
+...
 -rw-rw-rw- [..] data.txt
 
 ```
@@ -111,7 +111,7 @@ Hardlinks look like the original file.
 $ rm data.txt
 $ xvc file recheck data.txt --as hardlink
 $ ls -l
-total 8
+...
 -r--r--r-- [..] data.txt
 
 ```
