@@ -120,10 +120,11 @@ fn doc_tests() -> Result<()> {
 
     trycmd::TestCases::new()
         .register_bin("git", which::which("git")?)
-        .register_bin("echo", Path::new("/bin/echo"))
-        .register_bin("cat", Path::new("/bin/cat"))
-        .register_bin("ls", Path::new("/bin/ls"))
-        .register_bin("rm", Path::new("/bin/rm"))
+        .register_bin("echo", which::which("echo"))
+        .register_bin("cat", which::which("cat"))
+        .register_bin("ls", which::which("ls"))
+        .register_bin("rm", which::which("rm"))
+        .register_bin("sed", which::which("sed"))
         .case("docs/*/*.md")
         // We skip this for the time being.
         .skip("docs/start/ml.md");

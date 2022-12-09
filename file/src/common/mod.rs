@@ -9,15 +9,15 @@ use std::{
 use crate::error::{Error, Result};
 use crate::track::DataTextOrBinary;
 use crossbeam_channel::{Receiver, Sender};
-use log::warn;
+use log::{error, info, warn};
 use xvc_core::types::xvcpath::XvcCachePath;
 use xvc_core::util::file::make_symlink;
 use xvc_core::{util::file::is_text_file, HashAlgorithm, XvcDigest};
 use xvc_core::{CacheType, ContentDigest, TextOrBinary, XvcPath, XvcRoot};
 
 use xvc_ecs::XvcEntity;
-use xvc_logging::watch;
-use xvc_walker::PathMetadata;
+use xvc_logging::{watch, XvcOutputLine};
+use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult, PathMetadata};
 
 #[derive(Debug, Clone)]
 pub struct PathMatch {
@@ -68,6 +68,63 @@ pub fn pipe_path_digest(
         }
     }
     Ok(())
+}
+
+pub fn pathbuf_to_xvc_target(
+    output_snd: Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    xvc_ignore: &IgnoreRules,
+    current_dir: &AbsolutePath,
+    targets: &Vec<PathBuf>,
+) -> Vec<XvcPath> {
+    targets
+        .into_iter()
+        .filter_map(|t| {
+            watch!(t);
+            watch!(t.is_file());
+            watch!(t.is_dir());
+            watch!(t.metadata());
+            if t.is_file() || t.is_dir() {
+                Some(t)
+            } else {
+                output_snd
+                    .send(format!("Unsupported Target Type: {}", t.to_string_lossy()).into())
+                    .unwrap();
+                None
+            }
+        })
+        .filter(|t| {
+            let ignore_result = check_ignore(&xvc_ignore, t);
+
+            match ignore_result {
+                MatchResult::Ignore => {
+                    warn!("Ignored: {}", t.to_string_lossy());
+                    false
+                }
+                MatchResult::Whitelist => {
+                    info!("Whitelisted: {}", t.to_string_lossy());
+                    true
+                }
+                MatchResult::NoMatch => true,
+            }
+        })
+        .map(|t| XvcPath::new(xvc_root, current_dir, &t))
+        .filter_map(|res_xp| match res_xp {
+            Ok(xp) => Some(xp),
+            Err(e) => {
+                error!("{}", e);
+                None
+            }
+        })
+        .collect()
+}
+
+pub const PARALLEL_THRESHOLD: usize = 47;
+
+/// Use parallel processing if the number of targets is greater than the threshold
+/// or directories are included in the targets.
+pub fn decide_no_parallel(from_opts: bool, targets: &[PathBuf]) -> bool {
+    from_opts || (targets.iter().all(|t| t.is_file()) && targets.len() < PARALLEL_THRESHOLD)
 }
 
 pub fn recheck_from_cache(

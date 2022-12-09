@@ -73,20 +73,14 @@ impl DataTextOrBinary {
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
 #[command(about = "Track file versions using XVC", rename_all = "kebab-case")]
-pub struct TrackCLI {
-    /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
-    ///
-    /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long)]
-    cache_type: Option<CacheType>,
-    /// Do not copy/link added files to the file cache
-    #[arg(long)]
-    no_commit: bool,
+pub struct CarryInCLI {
     /// Calculate digests as text or binary file without checking contents, or by automatically. (Default:
     /// auto)
     #[arg(long)]
     text_or_binary: Option<DataTextOrBinary>,
-    /// Add targets even if they are already tracked
+    /// Carry in targets even their content digests are not changed.
+    ///
+    /// This removes the file in cache and re-adds it.
     #[arg(long)]
     force: bool,
     /// Don't use parallelism
@@ -97,17 +91,13 @@ pub struct TrackCLI {
     targets: Vec<PathBuf>,
 }
 
-impl UpdateFromXvcConfig for TrackCLI {
+impl UpdateFromXvcConfig for CarryInCLI {
     /// Updates `xvc file` configuration from the configuration files.
     /// Command line options take precedence over other sources.
     /// If options are not given, they are supplied from [XvcConfig]
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
-        let cache_type = self
-            .cache_type
-            .unwrap_or_else(|| CacheType::from_conf(conf));
-        let no_commit = self.no_commit || conf.get_bool("file.add.no_commit")?.option;
-        let force = self.force || conf.get_bool("file.add.force")?.option;
-        let no_parallel = self.no_parallel || conf.get_bool("file.add.no_parallel")?.option;
+        let force = self.force || conf.get_bool("file.carry-in.force")?.option;
+        let no_parallel = self.no_parallel || conf.get_bool("file.carry-in.no_parallel")?.option;
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(
             || Some(DataTextOrBinary::from_conf(conf)),
             |v| Some(v.to_owned()),
@@ -115,18 +105,16 @@ impl UpdateFromXvcConfig for TrackCLI {
 
         Ok(Box::new(Self {
             targets: self.targets.clone(),
-            cache_type: Some(cache_type),
-            no_commit,
             force,
             no_parallel,
             text_or_binary,
         }))
     }
 }
-
-const PARALLEL_THRESHOLD: usize = 47;
-
-/// ## The pipeline
+/// Entry point for `xvc file carry-in` command.
+///
+///
+/// ## Pipeline
 ///
 /// ```mermaid
 /// graph LR
@@ -134,78 +122,31 @@ const PARALLEL_THRESHOLD: usize = 47;
 ///     Target -->|Directory| Dir
 ///     Dir --> |File| Path
 ///     Dir --> |Directory| Dir
-///     Path --> Ignored{Is this ignored?}
-///     Ignored --> |Yes| Ignore
-///     Ignored --> |No| XvcPath
+///     Path --> Tracked {Do we track this path?}
+///     Tracked --> |Yes| XvcPath
+///     Tracked --> |No| Ignore
 ///     XvcPath --> |Force| XvcDigest
 ///     XvcPath --> Filter{Is this changed?}
+///     XvcPath --> Filter{Is the source a regular file?}
 ///     Filter -->|Yes| XvcDigest
 ///     Filter -->|No| Ignore
 ///     XvcDigest --> CacheLocation
-///     CacheLocation --> CacheType{What's the cache type?}
-///     CacheType --> |Copy| Copy
-///     CacheType --> |Symlink| Symlink
-///     CacheType --> |Hardlink| Hardlink
-///     CacheType --> |Reflink| Reflink
+///     
 /// ```
-pub fn cmd_track(
+pub fn cmd_carry_in(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    cli_opts: TrackCLI,
+    cli_opts: CarryInCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
     let targets: Vec<PathBuf> = opts.targets.iter().map(|t| current_dir.join(t)).collect();
-    let cache_type = opts.cache_type.unwrap_or_default();
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
 
-    let no_parallel = decide_no_parallel(opts.no_parallel, targets);
+    let no_parallel = decide_no_parallel(opts.no_parallel, opts.targets.as_slice());
 
     let (xpmm, xvc_ignore) = all_paths_and_metadata(xvc_root);
-    let to_xvc_target = |targets: &Vec<PathBuf>| -> Vec<XvcPath> {
-        targets
-            .into_iter()
-            .filter_map(|t| {
-                watch!(t);
-                watch!(t.is_file());
-                watch!(t.is_dir());
-                watch!(t.metadata());
-                if t.is_file() || t.is_dir() {
-                    Some(t)
-                } else {
-                    output_snd
-                        .send(format!("Unsupported Target Type: {}", t.to_string_lossy()).into())
-                        .unwrap();
-                    None
-                }
-            })
-            .filter(|t| {
-                let ignore_result = check_ignore(&xvc_ignore, t);
-
-                match ignore_result {
-                    MatchResult::Ignore => {
-                        warn!("Ignored: {}", t.to_string_lossy());
-                        false
-                    }
-                    MatchResult::Whitelist => {
-                        info!("Whitelisted: {}", t.to_string_lossy());
-                        true
-                    }
-                    MatchResult::NoMatch => true,
-                }
-            })
-            .map(|t| XvcPath::new(xvc_root, current_dir, &t))
-            .filter_map(|res_xp| match res_xp {
-                Ok(xp) => Some(xp),
-                Err(e) => {
-                    error!("{}", e);
-                    None
-                }
-            })
-            .collect()
-    };
-
     let xvc_targets = to_xvc_target(&targets);
     let mut given_dir_targets = XvcPathMetadataMap::new();
     let mut file_targets = XvcPathMetadataMap::new();

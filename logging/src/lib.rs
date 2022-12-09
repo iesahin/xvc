@@ -5,7 +5,6 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 use log::LevelFilter;
-use log::{error, info};
 use std::env;
 use std::path::Path;
 use std::sync::Once;
@@ -20,6 +19,108 @@ macro_rules! watch {
             )*
         }
     };
+}
+
+/// Either send a [XvcOutputLine::Error] value to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! error {
+    ( $channel:ident, $fmt:literal, $( $x:tt ),* ) => {
+        {
+            $channel.send(XvcOutputLine::Error(format!($fmt, $($x),*))).unwrap();
+        }
+    };
+    ($fmt:literal, $( $x:tt ),* ) => {
+        {
+            ::log::error!($fmt, $($x),*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Info] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! info {
+    ( $channel:ident, $fmt:literal, $( $x:tt ),* ) => {
+        {
+            $channel.send(XvcOutputLine::Info(format!($fmt, $($x),*))).unwrap();
+        }
+    };
+    ($fmt:literal, $( $x:tt ),* ) => {
+        {
+            ::log::info!($fmt, $($x),*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Warn] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! warn {
+    ( $channel:ident, $fmt:literal, $( $x:tt ),* ) => {
+        {
+            $channel.send(XvcOutputLine::Warn(format!($fmt, $($x),*))).unwrap();
+        }
+    };
+    ($fmt:literal, $( $x:tt ),* ) => {
+        {
+            ::log::warn!($fmt, $($x),*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Debug] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! debug {
+    ( $channel:ident, $fmt:literal, $( $x:tt ),* ) => {
+        {
+            $channel.send(XvcOutputLine::Debug(format!($fmt, $($x),*))).unwrap();
+        }
+    };
+    ($fmt:literal, $( $x:tt ),* ) => {
+        {
+            ::log::debug!($fmt, $($x),*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Output] to the given channel, or print to stdout
+#[macro_export]
+macro_rules! output {
+    ( $channel:ident, $fmt:literal, $( $x:tt ),* ) => {
+        {
+            $channel.send(XvcOutputLine::Output(format!($fmt, $($x),*))).unwrap();
+        }
+    };
+    ($fmt:literal, $( $x:tt ),* ) => {
+        {
+            ::std::println!($fmt, $($x),*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Panic] to the given channel, or print to stdout
+#[macro_export]
+macro_rules! panic {
+    ( $channel:ident, $fmt:literal, $( $x:tt ),* ) => {
+        {
+            $channel.send(XvcOutputLine::Panic(format!($fmt, $($x),*))).unwrap();
+        }
+    };
+    ($fmt:literal, $( $x:tt ),* ) => {
+        {
+            ::std::panic!($fmt, $($x),*);
+        }
+    };
+}
+/// Either send [XvcOutputLine::Tick] to the given channel, or print dots to stdout
+#[macro_export]
+macro_rules! tick {
+    ( $channel:ident, $n:literal) => {{
+        $channel.send(XvcOutputLine::Tick($n)).unwrap();
+    }};
+    ($n:literal) => {{
+        for _ in 0..$n {
+            ::std::print!(".");
+        }
+    }};
 }
 
 /// Logging Initializer

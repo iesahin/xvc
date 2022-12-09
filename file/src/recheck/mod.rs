@@ -133,8 +133,7 @@ pub fn cmd_recheck(
 
         path_store.filter(|_, p| globset.is_match(p.to_string()))
     };
-
-    let no_parallel = opts.no_parallel || target_store.len() < PARALLEL_THRESHOLD;
+    let no_parallel = opts.no_parallel || target_store.len() < crate::common::PARALLEL_THRESHOLD;
 
     let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
     let text_or_binary = opts

@@ -3,6 +3,7 @@
 mod common;
 
 pub mod bring;
+pub mod carry_in;
 pub mod error;
 pub mod hash;
 pub mod list;
