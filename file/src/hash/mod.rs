@@ -1,3 +1,7 @@
+//! Data structures and functions for `xvc file hash`.
+//!
+//! - [HashCLI] defines the command line options.
+//! - [cmd_hash] is the entry point for the command.
 use crate::error::{Error, Result};
 use clap::Parser;
 use crossbeam_channel::{unbounded, Sender};

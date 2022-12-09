@@ -1,6 +1,9 @@
 //! Bring files from external storages to workspace.
 //!
-//! Uses [fetch] and [crate::recheck] to bring the file and copy/link it to the
+//! - [BringCLI] defines the command line options.
+//!
+//! - [cmd_bring]  is the entry point for the command.
+//! Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
 //! workspace.
 
 use crate::{

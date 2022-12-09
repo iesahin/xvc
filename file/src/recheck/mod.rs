@@ -1,3 +1,7 @@
+//! Data structures and functions for `xvc file recheck`.
+//!
+//! - [RecheckCLI] describes the command line options.
+//! - [cmd_recheck] is the entry point for the command line.
 use std::fs;
 
 use crate::{

@@ -1,3 +1,7 @@
+//! Data structures and functions specific to `xvc file list`
+//!
+//! - [ListCLI] defines the command line options
+//! - [cmd_list]  is the entry point to run the command
 use crate::common::calc_digest;
 use crate::common::compare::PathComparisonParams;
 use crate::Result;
@@ -394,16 +398,6 @@ pub struct ListCLI {
     /// Files/directories to list
     #[arg()]
     target: Option<PathBuf>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[command(about = "Push files to remote", rename_all = "kebab-case")]
-pub struct PushCLI {
-    #[arg(long, short)]
-    remote: String,
-    /// targets to push to remote
-    #[arg()]
-    targets: Vec<PathBuf>,
 }
 
 impl UpdateFromXvcConfig for ListCLI {
