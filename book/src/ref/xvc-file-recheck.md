@@ -111,7 +111,7 @@ Hardlinks look like the original file.
 $ rm data.txt
 $ xvc file recheck data.txt --as hardlink
 $ ls -l
-...
+total[..]
 -r--r--r-- [..] data.txt
 
 ```
