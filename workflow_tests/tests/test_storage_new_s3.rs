@@ -1,10 +1,9 @@
 mod common;
+use common::*;
 use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::run_in_temp_xvc_dir;
-use rand;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -263,5 +262,5 @@ fn test_storage_new_s3() -> Result<()> {
     let pull_result_2 = x(&["file", "bring", "--from", "s3-storage"])?;
     watch!(pull_result_2);
 
-    Ok(())
+    clean_up(&xvc_root)
 }
