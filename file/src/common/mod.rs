@@ -1,6 +1,6 @@
 pub mod compare;
 
-use std::fs;
+use std::fs::{self, Permissions};
 use std::{
     fs::Metadata,
     path::{Path, PathBuf},
@@ -70,7 +70,7 @@ pub fn pipe_path_digest(
     Ok(())
 }
 
-pub fn checkout_from_cache(
+pub fn recheck_from_cache(
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,
@@ -89,6 +89,9 @@ pub fn checkout_from_cache(
     match cache_type {
         CacheType::Copy => {
             fs::copy(&cache_path, &path)?;
+            let mut perm = path.metadata()?.permissions();
+            perm.set_readonly(false);
+            fs::set_permissions(&path, perm)?;
         }
         CacheType::Hardlink => {
             fs::hard_link(&cache_path, &path)?;
@@ -99,7 +102,12 @@ pub fn checkout_from_cache(
         CacheType::Reflink => {
             match reflink::reflink_or_copy(&cache_path, &path) {
                 Ok(None) => (),
-                Ok(Some(_)) => warn!("File system doesn't support reflink. Used copy."),
+                Ok(Some(_)) => {
+                    warn!("File system doesn't support reflink. Used copy.");
+                    let mut perm = path.metadata()?.permissions();
+                    perm.set_readonly(false);
+                    fs::set_permissions(&path, perm)?;
+                }
                 Err(source) => {
                     Error::IoError { source }.error();
                 }
@@ -123,11 +131,13 @@ pub fn move_to_cache(
     let cache_dir = cache_path.parent().ok_or(Error::InternalError {
         message: "Cache path has no parent.".to_string(),
     })?;
+    watch!(cache_dir);
     fs::create_dir_all(cache_dir)?;
-    fs::rename(&path, &cache_path)
-        .map_err(|source| Error::IoError { source })
-        .unwrap_or_else(|e| {
-            e.error();
-        });
+    watch!(path);
+    watch!(cache_path);
+    fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
+    let mut perm = cache_path.metadata()?.permissions();
+    perm.set_readonly(true);
+    fs::set_permissions(&cache_path, perm)?;
     Ok(())
 }

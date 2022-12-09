@@ -101,8 +101,8 @@ fn test_pipeline_run() -> Result<()> {
 
     let yaml_filename = "pipeline.yaml";
     fs::write(Path::new(yaml_filename), PIPELINE_YAML)?;
-    x(&["import", "--overwrite", "--file", yaml_filename])?;
-    x(&["run"])?;
+    let _import_res = x(&["import", "--overwrite", "--file", yaml_filename])?;
+    let _run_res = x(&["run"])?;
 
     assert!(Path::new("abc.txt").exists());
     assert!(Path::new("src-files.txt").exists());

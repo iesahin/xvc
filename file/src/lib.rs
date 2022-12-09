@@ -3,15 +3,15 @@
 mod common;
 
 pub mod bring;
-pub mod checkout;
 pub mod error;
 pub mod hash;
 pub mod list;
+pub mod recheck;
 pub mod send;
 pub mod track;
 
 use crate::error::{Error, Result};
-use checkout::CheckoutCLI;
+use clap::Subcommand;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
@@ -34,25 +34,28 @@ use xvc_walker::AbsolutePath;
 
 use bring::BringCLI;
 use hash::HashCLI;
+use recheck::RecheckCLI;
 use send::SendCLI;
 use track::TrackCLI;
 
 use clap::Parser;
 
-#[derive(Debug, Clone, Parser)]
-#[command(rename_all = "kebab-case")]
+/// xvc file subcommands
+#[derive(Debug, Clone, Subcommand)]
+#[command(author, version)]
 pub enum XvcFileSubCommand {
     /// Add file and directories to Xvc
     Track(TrackCLI),
     /// Get digest hash of files with the supported algorithms
     Hash(HashCLI),
-    /// Get file from cache
-    Checkout(CheckoutCLI),
+    /// Get files from cache by copy or *link
+    #[command(alias = "checkout")]
+    Recheck(RecheckCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
-    /// Send files to external storages
+    /// Send (push, upload) files to external storages
     Send(SendCLI),
-
+    /// Bring (download, pull, fetch) files from external storages
     Bring(BringCLI),
 }
 
@@ -128,7 +131,7 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Hash(opts) => hash::cmd_hash(output_snd, xvc_root, opts),
-        XvcFileSubCommand::Checkout(opts) => checkout::cmd_checkout(
+        XvcFileSubCommand::Recheck(opts) => recheck::cmd_recheck(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

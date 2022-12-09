@@ -26,23 +26,19 @@ fn test_notify() -> Result<()> {
     let res_paths_copy = res_paths.clone();
     let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
     let all_rules = walk_serial(initial_rules, &xvc_root, &walk_options, &mut initial_paths)?;
-
+    watch!(all_rules);
     let (_watcher, receiver) = make_watcher(all_rules)?;
 
     const MAX_ERROR_COUNT: usize = 100;
 
-    thread::spawn(move || {
+    let handle = thread::spawn(move || {
         let mut_res_paths = res_paths.clone();
-        watch!(mut_res_paths);
         let mut res_paths = mut_res_paths.lock().unwrap();
-        watch!(res_paths);
         let mut err_counter = MAX_ERROR_COUNT;
         loop {
             let r = receiver.try_recv();
-            watch!(r);
             if let Ok(pe) = r {
                 err_counter = MAX_ERROR_COUNT;
-                watch!(pe);
                 match pe {
                     PathEvent::Create { path, metadata } => {
                         res_paths.push(Ok(PathMetadata { path, metadata }))
@@ -58,15 +54,17 @@ fn test_notify() -> Result<()> {
             } else {
                 if err_counter > 0 {
                     err_counter -= 1;
+                    watch!(err_counter);
                     sleep(Duration::from_millis(100));
                 } else {
                     break;
                 }
             }
         }
+        drop(receiver);
     });
     let files: Vec<String> = (1..10).map(|n| format!("file-000{n}.bin")).collect();
-    watch!(files);
+    watch!(files.len());
     let size1 = 10;
     files
         .iter()
@@ -90,13 +88,17 @@ fn test_notify() -> Result<()> {
         })
         .collect();
 
-    watch!(pmp_names);
+    watch!(pmp_names.len());
 
     sleep(Duration::from_millis(1000));
 
     assert!(pmp_names
         .iter()
         .any(|f| f.to_string() == "file-0001.bin".to_string()));
+
+    watch!(handle);
+
+    handle.join().unwrap();
 
     Ok(())
 }

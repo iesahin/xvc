@@ -58,7 +58,8 @@ alias xvcfl='xvc file list'
 alias xvcfs='xvc file send'
 alias xvcfb='xvc file bring'
 alias xvcfh='xvc file hash'
-alias xvcfc='xvc file checkout'
+alias xvcfco='xvc file checkout'
+alias xvcfr='xvc file recheck'
 alias xvcp='xvc pipeline'
 alias xvcpr='xvc pipeline run'
 alias xvcps='xvc pipeline step'
@@ -79,7 +80,5 @@ alias xvcsr='xvc storage remove'
 ```
 
 If there are aliases that you'd rather not use with Xvc, you can [unalias](https://man7.org/linux/man-pages/man1/unalias.1p.html) them.
-
-
 
 

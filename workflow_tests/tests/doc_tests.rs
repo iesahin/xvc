@@ -123,6 +123,7 @@ fn doc_tests() -> Result<()> {
         .register_bin("echo", Path::new("/bin/echo"))
         .register_bin("cat", Path::new("/bin/cat"))
         .register_bin("ls", Path::new("/bin/ls"))
+        .register_bin("rm", Path::new("/bin/rm"))
         .case("docs/*/*.md")
         // We skip this for the time being.
         .skip("docs/start/ml.md");

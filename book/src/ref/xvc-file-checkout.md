@@ -1,16 +1,19 @@
 # xvc file checkout
 
+This is an alias of [`xvc file recheck`](/ref/xvc-file-recheck.md). 
+Please see that page for examples.
+
 ## Synopsis
 
 ```console
 $ xvc file checkout --help
-Get file from cache
+Get files from cache by copy or *link
 
-Usage: xvc file checkout [OPTIONS] [TARGETS]...
+Usage: xvc file recheck [OPTIONS] [TARGETS]...
 
 Arguments:
   [TARGETS]...
-          Files/directories to add
+          Files/directories to recheck
 
 Options:
       --cache-type <CACHE_TYPE>
@@ -22,12 +25,17 @@ Options:
           Don't use parallelism
 
       --force
-          Force the checkout even if target has not cached or no changes happened
+          Force even if target exists
 
       --text-or-binary <TEXT_OR_BINARY>
-          Checkout the files as text, binary (Default: auto)
+          Recheck files as text, binary (Default: auto)
+          
+          Text files may go OS specific line ending replacements.
 
   -h, --help
           Print help information (use `-h` for a summary)
+
+  -V, --version
+          Print version information
 
 ```

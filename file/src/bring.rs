@@ -1,11 +1,14 @@
 //! Bring files from external storages to workspace.
 //!
-//! Uses [fetch] and [crate::checkout] to bring the file and copy/link it to the
+//! - [BringCLI] defines the command line options.
+//!
+//! - [cmd_bring]  is the entry point for the command.
+//! Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
 //! workspace.
 
 use crate::{
-    checkout::{cmd_checkout, CheckoutCLI},
     common::cache_path,
+    recheck::{cmd_recheck, RecheckCLI},
     Result,
 };
 
@@ -114,7 +117,7 @@ pub fn cmd_bring(
         let checkout_targets = opts.targets.clone();
 
         watch!(checkout_targets);
-        let checkout_opts = CheckoutCLI {
+        let checkout_opts = RecheckCLI {
             cache_type: opts.checkout_as,
             no_parallel: false,
             force: opts.force,
@@ -122,7 +125,7 @@ pub fn cmd_bring(
             targets: checkout_targets,
         };
 
-        cmd_checkout(output_snd, xvc_root, checkout_opts)?;
+        cmd_recheck(output_snd, xvc_root, checkout_opts)?;
     }
 
     Ok(())
