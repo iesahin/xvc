@@ -1,4 +1,5 @@
 mod common;
+use common::*;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::thread::{self, sleep};
@@ -100,5 +101,5 @@ fn test_notify() -> Result<()> {
 
     handle.join().unwrap();
 
-    Ok(())
+    clean_up(&xvc_root)
 }
