@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.4.2-alpha.7"
+version = "0.4.2-alpha.8"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]

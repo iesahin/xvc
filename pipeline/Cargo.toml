@@ -1,6 +1,6 @@
 [package]
 name = "xvc-pipeline"
-version = "0.4.2-alpha.7"
+version = "0.4.2-alpha.8"
 edition = "2021"
 description = "Xvc data pipeline management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
