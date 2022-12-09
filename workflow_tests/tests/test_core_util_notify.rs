@@ -99,5 +99,7 @@ fn test_notify() -> Result<()> {
 
     handle.join().unwrap();
 
+    watch!("After join");
+
     Ok(())
 }
