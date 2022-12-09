@@ -32,7 +32,6 @@ xvc-storage = {version = "0.4.2-alpha.0",  path = "../storage" }
 
 ## Cli and config
 clap = {version = "^4.0", features=["derive"]}
-configparser = "^3.0"
 directories-next = "2.0"
 
 ## Hashing
@@ -45,7 +44,6 @@ sha3 = "0.10.1"
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }
-serde-big-array = "^0.3"
 serde_yaml = "^0.8"
 serde_json = "^1.0"
 rmp = "^0.8"
@@ -64,7 +62,6 @@ dashmap = {version = "^5", features= ["serde", "rayon", "send_guard"]}
 ## File system
 jwalk = "^0.6"
 walkdir = "^2.3"
-scan_dir = "^0.3"
 reflink = "^0.1"
 relative-path = { version = "^1.5", features = ["serde"] }
 path-absolutize = "^3.0"
@@ -78,13 +75,9 @@ anyhow = "^1.0"
 fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
 
 
-## UI
-comfy-table = "5.0.1"
 
 ## macros
 paste = "1.0"
-quote = "1.0"
-syn = { version = "1.0", features = ["full", "fold"] }
 
 ## Misc
 subprocess = "^0.2"
@@ -92,7 +85,6 @@ regex = "^1.5"
 chrono = "^0.4"
 strum = "0.24.0"
 strum_macros = "0.24.0"
-rand = "^0.8"
 lazy_static = "^1.4"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 hex = { version = "^0.4", features = ["serde"] }

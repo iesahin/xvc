@@ -32,7 +32,6 @@ xvc-storage = {  version = "0.4.2-alpha.0", path = "../storage" }
 
 
 ## Cli and config
-configparser = "^3.0"
 clap = {version = "^4.0", features=["derive"]}
 directories-next = "2.0"
 
@@ -46,7 +45,6 @@ sha3 = "0.10.1"
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }
-serde-big-array = "^0.3"
 serde_yaml = "^0.8"
 serde_json = "^1.0"
 rmp = "^0.8"
@@ -67,7 +65,6 @@ reflink = "^0.1"
 relative-path = { version = "^1.5", features = ["serde"] }
 path-absolutize = "^3.0"
 glob = "^0.3"
-fs_extra = "^1.2"
 which = "^4.3"
 
 ## Logging and errors
@@ -82,15 +79,12 @@ comfy-table = "5.0.1"
 
 ## macros
 paste = "1.0"
-quote = "1.0"
-syn = { version = "1.0", features = ["full", "fold"] }
 
 ## Misc
 regex = "^1.5"
 chrono = "^0.4"
 strum = "0.24.0"
 strum_macros = "0.24.0"
-rand = "^0.8"
 lazy_static = "^1.4"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 hex = { version = "^0.4", features = ["serde"] }
@@ -121,7 +115,6 @@ globset = "^0.4"
 
 shellfn = "^0.1"
 jwalk = "^0.6"
-fs_extra = "^1.2"
 
 # [dev-dependencies.cargo-husky]
 # version = "1"
