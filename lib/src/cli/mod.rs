@@ -315,7 +315,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Info(_) => {}
                         XvcOutputLine::Warn(_) => {}
                         XvcOutputLine::Error(_) => {}
-                        XvcOutputLine::Panic(m) => println!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                     LevelFilter::Error => match output_line {
@@ -323,14 +323,14 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Info(_) => {}
                         XvcOutputLine::Warn(_) => {}
                         XvcOutputLine::Error(m) => println!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => println!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                     LevelFilter::Warn => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
                         XvcOutputLine::Warn(m) => println!("[WARN] {}", m.to_string()),
                         XvcOutputLine::Error(m) => println!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => println!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Info(_) => {}
                         XvcOutputLine::Tick(_) => todo!(),
                     },
@@ -339,23 +339,23 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Info(m) => println!("[INFO] {}", m.to_string()),
                         XvcOutputLine::Warn(m) => println!("[WARN] {}", m.to_string()),
                         XvcOutputLine::Error(m) => println!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => println!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                     LevelFilter::Debug => match output_line {
-                        XvcOutputLine::Output(m) => debug!("{m}"),
-                        XvcOutputLine::Info(m) => debug!("[INFO] {}", m.to_string()),
-                        XvcOutputLine::Warn(m) => debug!("[WARN] {}", m.to_string()),
-                        XvcOutputLine::Error(m) => debug!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => debug!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Output(m) => println!("{m}"),
+                        XvcOutputLine::Info(m) => info!("[INFO] {}", m.to_string()),
+                        XvcOutputLine::Warn(m) => warn!("[WARN] {}", m.to_string()),
+                        XvcOutputLine::Error(m) => error!("[ERROR] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                     LevelFilter::Trace => match output_line {
-                        XvcOutputLine::Output(m) => trace!("{m}"),
-                        XvcOutputLine::Info(m) => trace!("[INFO] {}", m.to_string()),
-                        XvcOutputLine::Warn(m) => trace!("[WARN] {}", m.to_string()),
-                        XvcOutputLine::Error(m) => trace!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => trace!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Output(m) => println!("{m}"),
+                        XvcOutputLine::Info(m) => info!("[INFO] {}", m.to_string()),
+                        XvcOutputLine::Warn(m) => warn!("[WARN] {}", m.to_string()),
+                        XvcOutputLine::Error(m) => error!("[ERROR] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                 }
