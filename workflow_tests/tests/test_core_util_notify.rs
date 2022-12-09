@@ -61,6 +61,7 @@ fn test_notify() -> Result<()> {
                 }
             }
         }
+        drop(receiver);
     });
     let files: Vec<String> = (1..10).map(|n| format!("file-000{n}.bin")).collect();
     watch!(files.len());
@@ -98,8 +99,6 @@ fn test_notify() -> Result<()> {
     watch!(handle);
 
     handle.join().unwrap();
-
-    watch!("After join");
 
     Ok(())
 }
