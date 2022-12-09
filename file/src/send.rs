@@ -64,9 +64,14 @@ pub fn cmd_send(
 
     let cache_paths: Vec<XvcCachePath> = target_store
         .iter()
-        .map(|(e, xvc_path)| {
-            let content_digest = content_digest_store.get(e).unwrap();
-            cache_path(xvc_path, &content_digest)
+        .filter_map(|(e, xvc_path)| match content_digest_store.get(e) {
+            Some(content_digest) => Some(cache_path(xvc_path, content_digest)),
+            None => {
+                output_snd
+                    .send(XvcOutputLine::Warn(format!("Cannot find digest for {e}")))
+                    .unwrap();
+                None
+            }
         })
         .collect();
 
