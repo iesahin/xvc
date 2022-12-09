@@ -1,6 +1,6 @@
 [package]
 name = "xvc-ecs"
-version = "0.4.2-alpha.6"
+version = "0.4.2-alpha.7"
 edition = "2021"
 description = "Entity-Component System for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
