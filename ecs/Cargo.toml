@@ -23,10 +23,10 @@ xvc-logging = {version = "0.4.0", path = "../logging"}
 serde = { version = "^1.0", features=["derive"] }
 serde_json = "^1.0"
 rmp = "^0.8"
-rmp-serde = "1.0.0"
+rmp-serde = "1.1.1"
 
 ## Parallelization
-rayon = "^1.5"
+rayon = "^1.6"
 crossbeam-channel = "^0.5"
 
 ## Logging and errors

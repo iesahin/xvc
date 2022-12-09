@@ -44,7 +44,7 @@ log = "^0.4"
 fern = { version = "^0.6", features = ["colored"] }
 
 ## Misc
-regex = "^1.5"
-strum = "0.24.0"
-strum_macros = "0.24.0"
+regex = "^1.7"
+strum = "0.24.1"
+strum_macros = "0.24.3"
 lazy_static = "^1.4"
