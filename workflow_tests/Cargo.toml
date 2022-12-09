@@ -1,6 +1,6 @@
 [package]
 name = "xvc-workflow-tests"
-version = "0.4.2-alpha.3"
+version = "0.4.2-alpha.6"
 edition = "2021"
 description = "Integration test suite for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -22,8 +22,8 @@ crate-type = ["rlib"]
 xvc = { version = "0.4.2-alpha.0", path = "../lib" }
 xvc-config = {version = "0.4.2-alpha.0",  path = "../config" }
 xvc-core = { version = "0.4.2-alpha.0", path = "../core" }
-xvc-logging = { version = "0.4.0", path = "../logging" }
-xvc-ecs = { version = "0.4.0", path = "../ecs" }
+xvc-logging = { version = "0.4.2-alpha.6", path = "../logging" }
+xvc-ecs = { version = "0.4.2-alpha.6", path = "../ecs" }
 xvc-file = { version = "0.4.2-alpha.0", path = "../file" }
 xvc-pipeline = { version = "0.4.2-alpha.0", path = "../pipeline" }
 xvc-walker = { version = "0.4.2-alpha.0", path = "../walker" }
