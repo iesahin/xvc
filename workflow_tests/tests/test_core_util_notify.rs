@@ -63,7 +63,7 @@ fn test_notify() -> Result<()> {
         }
     });
     let files: Vec<String> = (1..10).map(|n| format!("file-000{n}.bin")).collect();
-    watch!(files);
+    watch!(files.len());
     let size1 = 10;
     files
         .iter()
@@ -87,7 +87,7 @@ fn test_notify() -> Result<()> {
         })
         .collect();
 
-    watch!(pmp_names);
+    watch!(pmp_names.len());
 
     sleep(Duration::from_millis(1000));
 
