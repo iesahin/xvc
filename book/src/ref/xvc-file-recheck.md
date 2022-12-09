@@ -56,7 +56,7 @@ $ xvc init
 $ xvc file track data.txt
 
 $ ls -l
-...
+total[..]
 -rw-rw-rw- [..] data.txt
 
 ```
