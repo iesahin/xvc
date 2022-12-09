@@ -81,6 +81,12 @@ impl UpdateFromXvcConfig for RecheckCLI {
 
 const PARALLEL_THRESHOLD: usize = 47;
 
+/// Run `xvc file recheck` command on the repository `xvc_root` with `cli_opts` options.
+///
+/// If [`RecheckCLI.targets`] is empty, uses all paths in the repository as targets.
+///
+/// Uses [PathComparisonParams] to get the overview of all elements in the repository.
+/// After getting the list of file targets, runs either [recheck_serial] or [recheck_parallel].
 pub fn cmd_recheck(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
