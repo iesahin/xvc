@@ -1,9 +1,9 @@
 mod common;
+use common::*;
 use std::{fs, path::PathBuf};
 
-use crate::common::run_in_temp_xvc_dir;
 use jwalk;
-use xvc::error::{Error, Result};
+use xvc::error::Result;
 use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
@@ -78,5 +78,5 @@ fn test_file_checkout_parallel() -> Result<()> {
     x(&["file", "checkout", "f*"])?;
     assert!(PathBuf::from(file_to_add).exists());
 
-    Ok(())
+    clean_up(&xvc_root)
 }
