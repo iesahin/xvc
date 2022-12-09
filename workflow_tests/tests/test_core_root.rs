@@ -24,5 +24,5 @@ fn test_root() -> Result<()> {
 
     watch!(abs);
     assert!(AbsolutePath::from(abs.trim().to_string()) == xvc_root.absolute_path().clone());
-    Ok(())
+    clean_up(&xvc_root)
 }
