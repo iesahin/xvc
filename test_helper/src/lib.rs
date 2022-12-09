@@ -81,28 +81,10 @@ pub fn create_temp_dir() -> PathBuf {
     temp_dir
 }
 
-const XVC_LAST_TEST_SYMLINK_TARGET: &str = "xvc-last-test";
-
-/// Link to the last test directory.
-/// It's called by [`run_in_temp_dir`].
-pub fn create_xvc_last_test_link(target: &Path) -> Result<()> {
-    let symlink_from = target
-        .parent()
-        .unwrap_or(&env::temp_dir())
-        .join(XVC_LAST_TEST_SYMLINK_TARGET);
-
-    if symlink_from.exists() {
-        fs::remove_file(symlink_from.clone())?;
-    }
-    make_symlink(&target, &symlink_from)?;
-    Ok(())
-}
-
 /// Create a temporary dir under $TMPDIR and cd to it
 pub fn run_in_temp_dir() -> PathBuf {
     let temp_dir = create_temp_dir();
     watch!(temp_dir);
-    create_xvc_last_test_link(&temp_dir).expect("Cannot create symlink");
     env::set_current_dir(&temp_dir).expect("Cannot change directory");
     temp_dir
 }

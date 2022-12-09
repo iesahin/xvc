@@ -1,6 +1,6 @@
 mod common;
 
-use std::path::Path;
+use std::{fs, path::Path};
 
 use xvc::core::util::*;
 
@@ -8,7 +8,7 @@ use xvc::core::util::*;
 fn test_is_text_file() {
     // setup::logging(LevelFilter::Trace);
     use file::is_text_file;
-    let _repo_dir = common::run_in_temp_dir();
+    let repo_dir = common::run_in_temp_dir();
 
     for i in 1..10 {
         let bin_fn = format!("test-{}.bin", i);
@@ -28,4 +28,6 @@ fn test_is_text_file() {
             text_p
         )
     }
+
+    fs::remove_dir_all(&repo_dir).unwrap();
 }

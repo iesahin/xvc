@@ -1,10 +1,10 @@
 mod common;
-use std::env;
+use common::*;
+
 use std::thread::sleep;
 use std::time::Duration;
 use std::{fs, path::PathBuf};
 
-use crate::common::{run_in_example_xvc, run_in_temp_xvc_dir};
 use jwalk;
 use regex::Regex;
 use subprocess::Exec;
@@ -190,5 +190,5 @@ fn test_file_track_serial() -> Result<()> {
         "{gs_xvcignore:?} shouldn't contain any `.xvcignore` lines."
     );
 
-    Ok(())
+    clean_up(&xvc_root)
 }

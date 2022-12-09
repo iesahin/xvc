@@ -3,7 +3,7 @@ use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::{run_in_temp_xvc_dir, run_xvc};
+use common::*;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -156,5 +156,5 @@ fn test_storage_new_generic_rsync() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
-    Ok(())
+    clean_up(&xvc_root)
 }

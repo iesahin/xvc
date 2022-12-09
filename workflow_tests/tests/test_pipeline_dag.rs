@@ -108,5 +108,5 @@ fn test_pipeline_dag() -> Result<()> {
     x(&["import", "--overwrite", "--file", yaml_filename])?;
     x(&["dag", "--file", "dag.out"])?;
 
-    Ok(())
+    clean_up(&xvc_root)
 }

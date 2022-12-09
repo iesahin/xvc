@@ -1,14 +1,13 @@
 mod common;
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 
 use log::LevelFilter;
 
-use common::run_in_temp_xvc_dir;
+use common::*;
 use regex::Regex;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
-use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -61,5 +60,5 @@ fn test_storage_list() -> Result<()> {
     .expect("Regex error");
     assert!(line_regex.is_match(&list_out));
 
-    Ok(())
+    clean_up(&xvc_root)
 }

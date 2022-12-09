@@ -55,5 +55,5 @@ fn test_walk() -> Result<()> {
         assert!(pmp2[&p] == m)
     }
 
-    Ok(())
+    clean_up(&xvc_root)
 }

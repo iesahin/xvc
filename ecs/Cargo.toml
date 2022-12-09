@@ -21,23 +21,13 @@ xvc-logging = {version = "0.4.0", path = "../logging"}
 
 ## Serialization
 serde = { version = "^1.0", features=["derive"] }
-serde-big-array = "^0.3"
-serde_yaml = "^0.8"
 serde_json = "^1.0"
 rmp = "^0.8"
-rmp-serde = "1.0.0"
-toml = "^0.5"
-
-# File system
-tempdir = "^0.3"
-
-## Caching
-sled = "^0.34"
+rmp-serde = "1.1.1"
 
 ## Parallelization
-rayon = "^1.5"
+rayon = "^1.6"
 crossbeam-channel = "^0.5"
-crossbeam = "^0.8"
 
 ## Logging and errors
 log = "^0.4"
@@ -46,18 +36,13 @@ fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
 thiserror = "^1.0"
 
 ## Misc
-dashmap = {version = "^5", features= ["serde", "rayon", "send_guard"]}
-regex = "^1.5"
-chrono = "^0.4"
-strum = "0.24.0"
-strum_macros = "0.24.0"
-rand = "^0.8"
 lazy_static = "^1.4"
-uuid = { version = "0.8", features = ["serde", "v4"] }
-hex = { version = "^0.4", features = ["serde"] }
-url = {version = "^2.2", features = ["serde"] }
 
 
 [dev-dependencies]
-
+tempdir = "^0.3"
 jwalk = "^0.6"
+rand = "^0.8"
+
+[package.metadata.cargo-udeps.ignore]
+normal = ["xvc-logging", "test-case", "tempdir"]

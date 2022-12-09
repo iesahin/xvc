@@ -8,90 +8,11 @@ use xvc_config::XvcVerbosity;
 use xvc::error::Result;
 
 use subprocess::Exec;
-
-const PIPELINE_YAML: &str = r#"
----
-version: 1
-name: default
-workdir: ""
-steps:
-  - name: hello
-    command: echo "hello xvc!"
-    invalidate: Always
-    dependencies: []
-    outputs: []
-  - name: step1
-    command: touch abc.txt
-    invalidate: ByDependencies
-    dependencies: []
-    outputs:
-      - File:
-          path: abc.txt
-  - name: step_dep
-    command: touch step_dep.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Step:
-          name: step1
-    outputs:
-      - File:
-          path: step_dep.txt
-  - name: txt_files
-    command: find . -name '*.py' > src-files.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Glob:
-          glob: "*/*.py"
-    outputs:
-      - File:
-          path: src-files.txt
-  - name: training-files
-    command: find data/images/train -name '*.png' > training-files.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Directory:
-          path: data/images/train
-    outputs:
-      - File:
-          path: training-files.txt
-  - name: glob_dep
-    command: touch glob_dep.json
-    invalidate: ByDependencies
-    dependencies:
-      - Glob:
-          glob: "*.txt"
-#      - Directory:
-#         path: data
-#     - Param:
-#         format: YAML
-#         path: params.yaml
-#         key: model.conv_units
-#     - Regex:
-#         path: requirements.txt
-#         regex: ^tensorflow
-    outputs:
-      - Metric:
-          path: glob_dep.json
-          format: JSON
-#     - File:
-#         path: def.txt
-#     - Image:
-#         path: plots/confusion.png
-  - name: count_training_files
-    command: wc -l training-files.txt > num-training-files.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Lines:
-          path: training-files.txt
-          begin: 1
-          end: 1000000
-    outputs:
-      - File:
-          path: num-training-files.txt
-"#;
+use xvc_tests::watch;
 
 #[test]
 fn test_pipeline_run() -> Result<()> {
+    test_logging(log::LevelFilter::Trace);
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
@@ -99,9 +20,171 @@ fn test_pipeline_run() -> Result<()> {
         run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
     };
 
-    let yaml_filename = "pipeline.yaml";
-    fs::write(Path::new(yaml_filename), PIPELINE_YAML)?;
-    let _import_res = x(&["import", "--overwrite", "--file", yaml_filename])?;
+    let create_pipeline = || -> Result<()> {
+        watch!(x(&[
+            "step",
+            "new",
+            "--step-name",
+            "hello",
+            "--command",
+            "echo 'hello xvc!'",
+            "--changed",
+            "always",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "new",
+            "--step-name",
+            "step1",
+            "--command",
+            "touch abc.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "output",
+            "--step-name",
+            "step1",
+            "--output-file",
+            "abc.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "new",
+            "--step-name",
+            "step_dep",
+            "--command",
+            "touch step_dep.txt",
+        ])?);
+        watch!(x(&[
+            "step",
+            "dependency",
+            "--step-name",
+            "step_dep",
+            "--step",
+            "step1",
+        ])?);
+        watch!(x(&[
+            "step",
+            "output",
+            "--step-name",
+            "step_dep",
+            "--output-file",
+            "step_dep.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "new",
+            "--step-name",
+            "txt_files",
+            "--command",
+            "find . -name '*.py' > src-files.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "dependency",
+            "--step-name",
+            "txt_files",
+            "--glob",
+            "*/*.py",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "output",
+            "--step-name",
+            "txt_files",
+            "--output-file",
+            "src-files.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "new",
+            "--step-name",
+            "training_files",
+            "--command",
+            "find data/images/train -name '*.png' > training-files.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "dependency",
+            "--step-name",
+            "training_files",
+            "--directory",
+            "data/images/train",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "output",
+            "--step-name",
+            "training_files",
+            "--output-file",
+            "training-files.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "new",
+            "--step-name",
+            "glob_dep",
+            "--command",
+            "touch glob_dep.json",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "dependency",
+            "--step-name",
+            "glob_dep",
+            "--glob",
+            "*.txt",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "output",
+            "--step-name",
+            "glob_dep",
+            "--output-metric",
+            "glob_dep.json",
+        ])?);
+
+        watch!(x(&[
+            "step",
+            "new",
+            "--step-name",
+            "count_training_files",
+            "--command",
+            "wc -l training-files.txt > num-training-files.txt",
+        ])?);
+        watch!(x(&[
+            "step",
+            "dependency",
+            "--step-name",
+            "count_training_files",
+            "--lines",
+            "training-files.txt::-1000000",
+        ])?);
+        watch!(x(&[
+            "step",
+            "output",
+            "--step-name",
+            "count_training_files",
+            "--output-file",
+            "num-training-files.txt",
+        ])?);
+
+        Ok(())
+    };
+
+    create_pipeline()?;
     let _run_res = x(&["run"])?;
 
     assert!(Path::new("abc.txt").exists());
@@ -124,5 +207,5 @@ fn test_pipeline_run() -> Result<()> {
 
     // Could we move this to ref as trycmd?
 
-    Ok(())
+    clean_up(&xvc_root)
 }

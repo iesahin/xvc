@@ -1,15 +1,9 @@
 mod common;
+use common::*;
+use std::fs;
 use std::path::Path;
-use std::thread::sleep;
-use std::time::Duration;
-use std::{fs, path::PathBuf};
 
-use crate::common::{run_in_example_xvc, run_in_temp_xvc_dir, run_xvc};
-use assert_cmd::Command;
-use jwalk;
-use regex::Regex;
-use subprocess::Exec;
-use xvc::error::{Error, Result};
+use xvc::error::Result;
 use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
@@ -20,11 +14,6 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     // for checking the content hash
     create_directory_tree(&temp_dir, 2, 10)?;
     Ok(temp_dir)
-}
-
-fn sh(cmd: String) -> String {
-    watch!(cmd);
-    Exec::shell(cmd).capture().unwrap().stdout_str()
 }
 
 /// When a directory is added to projects, its child files are also ignored.
@@ -59,5 +48,5 @@ fn test_file_track_issue_104() -> Result<()> {
         root_gitignore
     );
 
-    Ok(())
+    clean_up(&xvc_root)
 }

@@ -122,5 +122,5 @@ fn test_pipeline() -> Result<()> {
         "requirements.txt::-100",
     ])?;
 
-    Ok(())
+    clean_up(&xvc_root)
 }

@@ -18,37 +18,8 @@ crate-type = ["rlib"]
 
 [dependencies]
 
-## Serialization
-serde = { version = "^1.0", features = ["derive"] }
-serde-big-array = "^0.3"
-serde_yaml = "^0.8"
-serde_json = "^1.0"
-rmp = "^0.8"
-rmp-serde = "1.0.0"
-toml = "^0.5"
-
-
-## Cli and config
-clap = {version = "^4.0", features=["derive"]}
-configparser = "^3.0"
-directories-next = "2.0"
-fs_extra = "^1.0"
-
 ## Logging and errors
-thiserror = "^1.0"
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
 fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
 
-sled = "0.34"
-relative-path = { version = "^1.5", features = ["serde"] }
-crossbeam-channel = "^0.5"
-jwalk = "^0.6"
-regex = "1.5.5"
-glob = "^0.3"
-strum = "0.24.0"
-scan_dir = "^0.3"
-
-chrono = "^0.4"
-
-subprocess = "^0.2"

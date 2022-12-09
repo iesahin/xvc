@@ -135,6 +135,9 @@ impl XvcParamPair {
                     YamlValue::Mapping(_) => {
                         current_scope = serde_yaml::from_value(current_value.clone())?;
                     }
+                    YamlValue::Tagged(tv) => {
+                        current_scope = serde_yaml::from_value(tv.value.clone())?
+                    }
                     YamlValue::String(_)
                     | YamlValue::Number(_)
                     | YamlValue::Bool(_)

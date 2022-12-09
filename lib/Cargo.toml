@@ -32,42 +32,39 @@ xvc-storage = {  version = "0.4.2-alpha.0", path = "../storage" }
 
 
 ## Cli and config
-configparser = "^3.0"
 clap = {version = "^4.0", features=["derive"]}
 directories-next = "2.0"
 
 ## Hashing
 seahash = "^4.1"
 byteorder = "^1.4"
-blake3 = "^1.2"
-blake2 = "0.10.4"
-sha2 = "0.10.2"
-sha3 = "0.10.1"
+blake3 = "^1.3"
+blake2 = "0.10.5"
+sha2 = "0.10.6"
+sha3 = "0.10.6"
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }
-serde-big-array = "^0.3"
-serde_yaml = "^0.8"
+serde_yaml = "^0.9"
 serde_json = "^1.0"
 rmp = "^0.8"
-rmp-serde = "1.0.0"
+rmp-serde = "1.1.1"
 toml = "^0.5"
 
 ## Caching
 sled = "^0.34"
 
 ## Parallelization
-rayon = "^1.5"
+rayon = "^1.6"
 crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
 ## File system
 subprocess = "^0.2"
 reflink = "^0.1"
-relative-path = { version = "^1.5", features = ["serde"] }
+relative-path = { version = "^1.7", features = ["serde"] }
 path-absolutize = "^3.0"
 glob = "^0.3"
-fs_extra = "^1.2"
 which = "^4.3"
 
 ## Logging and errors
@@ -78,23 +75,20 @@ fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
 anyhow = "^1.0"
 
 ## UI
-comfy-table = "5.0.1"
+comfy-table = "6.1.3"
 
 ## macros
 paste = "1.0"
-quote = "1.0"
-syn = { version = "1.0", features = ["full", "fold"] }
 
 ## Misc
-regex = "^1.5"
+regex = "^1.7"
 chrono = "^0.4"
-strum = "0.24.0"
-strum_macros = "0.24.0"
-rand = "^0.8"
+strum = "0.24.1"
+strum_macros = "0.24.3"
 lazy_static = "^1.4"
-uuid = { version = "0.8", features = ["serde", "v4"] }
+uuid = { version = "^1.2", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
-url = { version = "^2.2", features = ["serde"] }
+url = { version = "^2.3", features = ["serde"] }
 
 ## Mostly for testing
 assert_cmd = "^2.0"
@@ -114,18 +108,12 @@ digital-ocean = ["xvc-storage/digital-ocean"]
 
 
 [dev-dependencies]
-proptest = "^1.0"
-test-case = "^2.0"
-xvc-test-helper = {path = "../test_helper/"}
-globset = "^0.4"
-
-shellfn = "^0.1"
-jwalk = "^0.6"
 fs_extra = "^1.2"
-
-# [dev-dependencies.cargo-husky]
-# version = "1"
-# default-features = false
-# features = ["run-for-all", "precommit-hook", "run-cargo-check"]
+globset = "^0.4"
+jwalk = "^0.6"
+proptest = "^1.0"
+shellfn = "^0.1"
+test-case = "^2.2"
+xvc-test-helper = {path = "../test_helper/"}
 
 

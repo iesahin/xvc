@@ -2,6 +2,7 @@
 
 use anyhow::anyhow;
 use assert_cmd::Command;
+use std::fs;
 use std::path::PathBuf;
 use std::{env, path::Path};
 use subprocess::{CaptureData, Exec};
@@ -14,9 +15,8 @@ use xvc_logging::watch;
 use xvc::error::{Error, Result};
 
 pub use xvc_test_helper::{
-    create_directory_tree, create_xvc_last_test_link, generate_random_file,
-    generate_random_text_file, random_dir_name, random_temp_dir, run_in_temp_dir,
-    run_in_temp_git_dir, test_logging,
+    create_directory_tree, generate_random_file, generate_random_text_file, random_dir_name,
+    random_temp_dir, run_in_temp_dir, run_in_temp_git_dir, test_logging,
 };
 
 const EXAMPLE_PROJECT_NAME: &str = "example-xvc";
@@ -109,7 +109,6 @@ pub fn run_in_example_project() -> Result<PathBuf> {
             &random_example_dir.to_string_lossy(),
         ])
         .output()?;
-    create_xvc_last_test_link(&random_example_dir).expect("Cannot create symlink");
     env::set_current_dir(&random_example_dir).expect("Cannot change directory");
 
     Ok(random_example_dir)
@@ -165,4 +164,8 @@ pub fn sh(cmd: &str) -> Result<CaptureData> {
     Exec::shell(cmd)
         .capture()
         .map_err(|e| anyhow!("{}", e).into())
+}
+
+pub fn clean_up(xvc_root: &XvcRoot) -> Result<()> {
+    fs::remove_dir_all(&xvc_root.absolute_path()).map_err(|e| e.into())
 }
