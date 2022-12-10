@@ -57,14 +57,14 @@ pub fn dependency_metadata_digest(
     let digest = match dependency {
         XvcDependency::Pipeline { .. } => MetadataDigest(None),
         XvcDependency::Step { .. } => MetadataDigest(None),
-        XvcDependency::File { path } => (xvc_path_metadata_digest(params, path)?),
-        XvcDependency::Glob { glob } => (glob_metadata_digest(params, glob)?),
-        XvcDependency::Directory { path } => (directory_metadata_digest(params, path)?),
-        XvcDependency::Url { url } => (url_metadata_digest(params, url)?),
-        XvcDependency::Import { url, .. } => (url_metadata_digest(params, url)?),
-        XvcDependency::Param { path, .. } => (xvc_path_metadata_digest(params, path)?),
-        XvcDependency::Regex { path, .. } => (xvc_path_metadata_digest(params, path)?),
-        XvcDependency::Lines { path, .. } => (xvc_path_metadata_digest(params, path)?),
+        XvcDependency::File { path } => xvc_path_metadata_digest(params, path)?,
+        XvcDependency::Glob { glob } => glob_metadata_digest(params, glob)?,
+        XvcDependency::Directory { path } => directory_metadata_digest(params, path)?,
+        XvcDependency::Url { url } => url_metadata_digest(params, url)?,
+        XvcDependency::Import { url, .. } => url_metadata_digest(params, url)?,
+        XvcDependency::Param { path, .. } => xvc_path_metadata_digest(params, path)?,
+        XvcDependency::Regex { path, .. } => xvc_path_metadata_digest(params, path)?,
+        XvcDependency::Lines { path, .. } => xvc_path_metadata_digest(params, path)?,
     };
     Ok(digest)
 }
@@ -78,15 +78,15 @@ pub fn dependency_content_digest(
     let digest = match dependency {
         XvcDependency::Pipeline { .. } => ContentDigest(None),
         XvcDependency::Step { .. } => ContentDigest(None),
-        XvcDependency::File { path } => (xvc_path_content_digest(params, path)?),
-        XvcDependency::Glob { glob } => (glob_content_digest(params, glob)?),
-        XvcDependency::Directory { path } => (directory_content_digest(params, path)?),
-        XvcDependency::Url { url } => (url_content_digest(params, url)?),
-        XvcDependency::Import { url, path: _ } => (url_content_digest(params, url)?),
+        XvcDependency::File { path } => xvc_path_content_digest(params, path)?,
+        XvcDependency::Glob { glob } => glob_content_digest(params, glob)?,
+        XvcDependency::Directory { path } => directory_content_digest(params, path)?,
+        XvcDependency::Url { url } => url_content_digest(params, url)?,
+        XvcDependency::Import { url, path: _ } => url_content_digest(params, url)?,
         XvcDependency::Param { format, path, key } => {
             params_content_digest(params, path, format, key)?
         }
-        XvcDependency::Regex { path, regex } => (regex_content_digest(params, path, regex)?),
+        XvcDependency::Regex { path, regex } => regex_content_digest(params, path, regex)?,
         XvcDependency::Lines { path, begin, end } => {
             lines_content_digest(params, path, *begin, *end)?
         }
