@@ -13,13 +13,16 @@ use xvc_core::types::xvcpath::XvcCachePath;
 use xvc_core::util::file::make_symlink;
 use xvc_core::{util::file::is_text_file, HashAlgorithm, XvcDigest};
 use xvc_core::{
-    CacheType, ContentDigest, TextOrBinary, XvcFileType, XvcPath, XvcPathMetadataMap, XvcRoot,
+    CacheType, CollectionDigest, ContentDigest, MetadataDigest, TextOrBinary, XvcFileType,
+    XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 use xvc_logging::{error, info, warn, watch};
 
-use xvc_ecs::XvcEntity;
+use xvc_ecs::{HStore, Storable, XvcEntity, XvcStore};
 use xvc_logging::XvcOutputLine;
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult, PathMetadata};
+
+use self::compare::{DeltaField, DirectoryDelta, FileDeltaStore};
 
 #[derive(Debug, Clone)]
 pub struct PathMatch {
@@ -264,10 +267,6 @@ pub fn recheck_from_cache(
         }
     }
     Ok(())
-}
-
-pub fn cache_path(xvc_path: &XvcPath, content_digest: &ContentDigest) -> XvcCachePath {
-    XvcCachePath::new(xvc_path, content_digest).unwrap()
 }
 
 pub fn move_to_cache(

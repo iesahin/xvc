@@ -479,6 +479,15 @@ pub fn find_file_changes_serial(
     Ok(path_delta_store)
 }
 
+/// Find changes in `targets` w.r.t. `path_comparison_params`.
+/// Any changes in `cache_type` and `text_or_binary` is also checked.
+/// This is used to determine whether the paths are different from the records
+/// in store or not.
+///
+/// The output contains an entry for each of the elements in `targets`. The
+/// value of these entries are [`FileDelta`]s.
+///
+/// This is the parallel version. For serial version see [`find_file_changes_serial`].
 pub fn find_file_changes_parallel(
     xvc_root: &XvcRoot,
     path_comparison_params: &PathComparisonParams,

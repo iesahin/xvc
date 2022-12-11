@@ -24,12 +24,12 @@ macro_rules! watch {
 /// Either send a [XvcOutputLine::Error] value to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! error {
-    ( $channel:ident, $fmt:literal $(, $x:tt )* ) => {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
             $channel.send(XvcOutputLine::Error(format!($fmt $(, $x)*))).unwrap();
         }
     };
-    ($fmt:literal $(, $x:tt )* ) => {
+    ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::error!($fmt $(,$x)*);
         }
@@ -39,12 +39,12 @@ macro_rules! error {
 /// Either send [XvcOutputLine::Info] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! info {
-    ( $channel:ident, $fmt:literal $(, $x:tt )* ) => {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
             $channel.send(XvcOutputLine::Info(format!($fmt $(,$x)*))).unwrap();
         }
     };
-    ($fmt:literal $(, $x:tt )* ) => {
+    ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::info!($fmt $(, $x)*);
         }
@@ -54,12 +54,12 @@ macro_rules! info {
 /// Either send [XvcOutputLine::Warn] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! warn {
-    ( $channel:ident, $fmt:literal $(, $x:tt )* ) => {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
             $channel.send(XvcOutputLine::Warn(format!($fmt $(,$x)*))).unwrap();
         }
     };
-    ($fmt:literal $(, $x:tt )* ) => {
+    ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::warn!($fmt $(, $x)*);
         }
@@ -69,12 +69,12 @@ macro_rules! warn {
 /// Either send [XvcOutputLine::Debug] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! debug {
-    ( $channel:ident, $fmt:literal $(, $x:tt ),* ) => {
+    ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
         {
             $channel.send(XvcOutputLine::Debug(format!($fmt $(, $x)*))).unwrap();
         }
     };
-    ($fmt:literal $(, $x:tt ),* ) => {
+    ($fmt:literal $(, $x:expr ),* ) => {
         {
             ::log::debug!($fmt $(, $x)*);
         }
@@ -84,12 +84,12 @@ macro_rules! debug {
 /// Either send [XvcOutputLine::Output] to the given channel, or print to stdout
 #[macro_export]
 macro_rules! output {
-    ( $channel:ident, $fmt:literal $(, $x:tt )* ) => {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
             $channel.send(XvcOutputLine::Output(format!($fmt $(, $x)*))).unwrap();
         }
     };
-    ($fmt:literal $(, $x:tt )* ) => {
+    ($fmt:literal $(, $x:expr )* ) => {
         {
             ::std::println!($fmt $(, $x)*);
         }
@@ -99,17 +99,19 @@ macro_rules! output {
 /// Either send [XvcOutputLine::Panic] to the given channel, or print to stdout
 #[macro_export]
 macro_rules! panic {
-    ( $channel:ident, $fmt:literal $(, $x:tt )* ) => {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
             $channel.send(XvcOutputLine::Panic(format!($fmt $(, $x)*))).unwrap();
+            ::std::panic!($fmt $(, $x)*);
         }
     };
-    ($fmt:literal $(, $x:tt )* ) => {
+    ($fmt:literal $(, $x:expr )* ) => {
         {
             ::std::panic!($fmt $(, $x)*);
         }
     };
 }
+
 /// Either send [XvcOutputLine::Tick] to the given channel, or print dots to stdout
 #[macro_export]
 macro_rules! tick {
@@ -119,6 +121,41 @@ macro_rules! tick {
     ($n:literal) => {{
         for _ in 0..$n {
             ::std::print!(".");
+        }
+    }};
+}
+
+/// Unwrap the result of an expression, and if it is an error, send it to the given channel
+/// and panic.
+/// This is mostly to be used in `for_each` blocks, where the error is not propagated.
+#[macro_export]
+macro_rules! uwr {
+    ( $e:expr, $channel:ident ) => {{
+        match $e {
+            Ok(v) => v,
+            Err(e) => {
+                $channel
+                    .send(XvcOutputLine::Panic(format!("{:?}", e)))
+                    .unwrap();
+                ::std::panic!("{:?}", e);
+            }
+        }
+    }};
+}
+
+/// Unwrap an option, and if it is an error, send it to the given channel
+/// and panic.
+/// This is mostly to be used in `for_each` blocks, where the error is not propagated.
+#[macro_export]
+macro_rules! uwo {
+    ( $e:expr, $channel:ident ) => {{
+        match $e {
+            Some(v) => v,
+            None => {
+                let msg = format!("None from the expression: {}", stringify!($e));
+                $channel.send(XvcOutputLine::Panic(msg)).unwrap();
+                ::std::panic!("{}", msg);
+            }
         }
     }};
 }

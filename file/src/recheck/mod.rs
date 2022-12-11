@@ -303,7 +303,7 @@ fn recheck_inner(
     Ok(())
 }
 
-fn recheck_serial(
+pub fn recheck_serial(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cache_type: CacheType,
@@ -327,7 +327,7 @@ fn recheck_serial(
     Ok(())
 }
 
-fn recheck_parallel(
+pub fn recheck_parallel(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cache_type: CacheType,

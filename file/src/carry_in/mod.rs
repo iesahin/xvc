@@ -1,7 +1,6 @@
 use chrono::Utc;
 use crossbeam_channel::{bounded, Sender};
 use derive_more::{AsRef, Deref, Display, From, FromStr};
-use log::{debug, error, info, warn};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -16,7 +15,7 @@ use xvc_core::{
 };
 use xvc_core::{CollectionDigest, ContentDigest, HashAlgorithm};
 use xvc_core::{XvcRoot, XVCIGNORE_FILENAME};
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{error, info, output, warn, watch, XvcOutputLine};
 use xvc_walker::{
     check_ignore, walk_parallel, AbsolutePath, IgnoreRules, MatchResult, WalkOptions,
 };
@@ -28,9 +27,10 @@ use crate::common::compare::{
 };
 use crate::common::{
     cache_path, decide_no_parallel, expanded_xvc_dir_file_targets, move_to_cache,
-    pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets,
+    pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets, update_file_records,
 };
 use crate::error::{Error, Result};
+use crate::recheck::recheck_serial;
 
 use std::fs::{self, OpenOptions};
 
@@ -197,12 +197,6 @@ pub fn cmd_carry_in(
         )?
     };
 
-    // TODO: Update the dir changes function with parallel version
-    // Used serial version because it works with in memory data without making IO
-    let path_comparison_params =
-        update_path_comparison_params_with_actual_info(path_comparison_params, &file_delta_store);
-
-    update_file_records(xvc_root, &file_delta_store)?;
     carry_in(
         output_snd,
         xvc_root,
@@ -210,12 +204,14 @@ pub fn cmd_carry_in(
         &file_delta_store,
         opts.force,
         !opts.no_parallel,
-        algorithm,
-        &text_or_binary,
-        cache_type,
-    )
+    )?;
+
+    update_file_records(xvc_root, &file_delta_store)?;
 }
 
+/// Move targets to the cache if there are any content changes, or if `force` is true.
+/// Returns the store of carried in elements. These should be rechecked to the
+/// remote.
 fn carry_in(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
@@ -223,103 +219,48 @@ fn carry_in(
     path_delta_store: &FileDeltaStore,
     force: bool,
     parallel: bool,
-) -> Result<()> {
-
+) -> Result<HStore<XvcPath>> {
     let carry_in_paths = if force {
         path_delta_store
             .iter()
-            .map(|(xp, _)| xp.clone())
-            .collect::<Vec<_>>()
+            .map(|(xe, pd)| {
+                let xp = path_comparison_params.xvc_path_store.get(xe)?.clone();
+                (xe, xp)
+            })
+            .collect::<HStore<XvcPath>>()
     } else {
         path_delta_store
             .iter()
-            .filter_map(|(xp, delta)| {
+            .filter_map(|(xe, delta)| {
                 if delta.is_changed() {
-                    Some(xp.clone())
+                    let xp = path_comparison_params.xvc_path_store.get(xe)?.clone();
+                    Some((xe, xp))
                 } else {
                     None
                 }
             })
-            .collect::<Vec<_>>()
-    };
-    }
-
-    let checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> {
-        let cache_path = cache_path(xp, &digest);
-        if !cache_path.to_absolute_path(xvc_root).exists() {
-            move_to_cache(xvc_root, xp, &cache_path)?;
-            recheck_from_cache(xvc_root, xp, &cache_path, cache_type)?;
-            let _ = &output_snd.send(XvcOutputLine::Info(format!(
-                "[COMMIT] {xp} -> {}",
-                cache_path
-            )))?;
-        }
-        Ok(())
+            .collect::<HStore<XvcPath>>()
     };
 
-    let force_checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> {
-        let cache_path = cache_path(&xp, &digest);
-        if !cache_path.to_absolute_path(xvc_root).exists() {
-            let abs_path = xp.to_absolute_path(xvc_root);
-            fs::remove_file(&abs_path)?;
-            let _ = &output_snd.send(XvcOutputLine::Info(format!("[DELETE] {xp}")))?;
-            move_to_cache(xvc_root, &xp, &cache_path)?;
-            recheck_from_cache(xvc_root, &xp, &cache_path, cache_type)?;
-            let _ = &output_snd.send(XvcOutputLine::Info(format!(
-                "[CHECKOUT] {xp} -> {abs_path}"
-            )))?;
-        }
-        Ok(())
-    };
-
-    let inner = |(xe, pd): (&XvcEntity, &FileDelta)| -> Result<()> {
-        let xp = path_comparison_params.xvc_path_store[xe].clone();
-        match pd.delta_content_digest {
-            DeltaField::Identical | DeltaField::Skipped => {
-                let record_digest = path_comparison_params.content_digest_store[xe];
-
-                match pd.delta_cache_type {
-                    DeltaField::Identical | DeltaField::Skipped => {
-                        debug!("No change to checkout: {}", xp);
-                        Ok(())
-                    }
-                    // We assume the record is created before, in update records.
-                    // So this is actually no "RecordMissing"
-                    DeltaField::RecordMissing { .. } => force_checkout(&xp, &record_digest),
-                    DeltaField::ActualMissing { .. } => force_checkout(&xp, &record_digest),
-                    DeltaField::Different { .. } => force_checkout(&xp, &record_digest),
-                }
-            }
-            // We assume the record is created before, in update records.
-            // So this is actually no "RecordMissing"
-            DeltaField::RecordMissing { actual } => checkout(&xp, &actual),
-            DeltaField::ActualMissing { record } => checkout(&xp, &record),
-            DeltaField::Different { record, .. } => {
-                if force {
-                    force_checkout(&xp, &record)
-                } else {
-                    output_snd.send(XvcOutputLine::Error(format!(
-                        "Changes in {xp} are not cached. Use --force to overwrite"
-                    )))?;
-                    Ok(())
-                }
-            }
-        }
+    let copy_path_to_cache_and_recheck = |xe, xp| {
+        let content_digest = path_comparison_params.delta_store.get(xe)?;
+        let cp = cache_path(xp, content_digest);
+        move_to_cache(xvc_root, xp, cache_path)?;
+        let cache_type = path_comparison_params.cache_type_store.get(xe)?;
+        info!(output_snd, "[CARRY] {xp} -> {cp}");
+        recheck_from_cache(xvc_root, xp, cache_path, cache_type);
+        info!(output_snd, "[RECHECK] {cp} -> {xp}");
     };
 
     if parallel {
-        path_delta_store.par_iter().for_each(|p| {
-            inner(p)
-                .map_err(|e| Error::from(e).error())
-                .unwrap_or_else(|_| ());
+        carry_in_paths.par_iter().for_each(|(xe, xp)| {
+            copy_path_to_cache_and_recheck(xe, xp)?;
         });
     } else {
-        path_delta_store.iter().for_each(|p| {
-            inner(p)
-                .map_err(|e| Error::from(e).error())
-                .unwrap_or_else(|_| ());
+        carry_in_paths.iter().for_each(|(xe, xp)| {
+            copy_path_to_cache_and_recheck(xe, xp)?;
         });
     }
 
-    Ok(())
+    Ok(carry_in_paths)
 }

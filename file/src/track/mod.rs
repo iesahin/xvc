@@ -1,7 +1,6 @@
 use chrono::Utc;
 use crossbeam_channel::{bounded, Sender};
 use derive_more::{AsRef, Deref, Display, From, FromStr};
-use log::{debug, error, info, warn};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -12,15 +11,17 @@ use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::{
-    all_paths_and_metadata, MetadataDigest, XvcFileType, XvcPathMetadataMap, CHANNEL_BOUND,
+    all_paths_and_metadata, MetadataDigest, XvcCachePath, XvcFileType, XvcPathMetadataMap,
+    CHANNEL_BOUND,
 };
 use xvc_core::{CollectionDigest, ContentDigest, HashAlgorithm};
 use xvc_core::{XvcRoot, XVCIGNORE_FILENAME};
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{error, info, output, uwo, uwr, warn, watch, XvcOutputLine};
 use xvc_walker::{
     check_ignore, walk_parallel, AbsolutePath, IgnoreRules, MatchResult, WalkOptions,
 };
 
+use crate::carry_in::carry_in;
 use crate::common::compare::{
     find_dir_changes_serial, find_file_changes_parallel, find_file_changes_serial,
     update_path_comparison_params_with_actual_info, DeltaField, DirectoryDelta,
@@ -29,6 +30,7 @@ use crate::common::compare::{
 use crate::common::{
     cache_path, decide_no_parallel, expand_directory_targets, expanded_xvc_dir_file_targets,
     move_to_cache, pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets,
+    update_dir_records, update_file_records,
 };
 use crate::error::{Error, Result};
 
@@ -220,13 +222,12 @@ pub fn cmd_track(
         )?
     };
 
-    // TODO: Update the dir changes function with parallel version
-    // Used serial version because it works with in memory data without making IO
     let path_comparison_params =
         update_path_comparison_params_with_actual_info(path_comparison_params, &file_delta_store);
 
+    // Used serial version because it works with in memory data without making IO
     let dir_delta_store: DirectoryDeltaStore =
-        find_dir_changes_serial(xvc_root, &path_comparison_params, &given_dir_targets)?;
+        find_dir_changes_serial(xvc_root, &path_comparison_params, &dir_targets)?;
 
     update_file_records(xvc_root, &file_delta_store)?;
     update_dir_records(xvc_root, &dir_delta_store)?;
@@ -242,7 +243,7 @@ pub fn cmd_track(
             .map(|(xp, _)| xp.to_absolute_path(xvc_root).to_path_buf())
             .collect::<Vec<PathBuf>>()
             .as_ref(),
-        given_dir_targets
+        dir_targets
             .iter()
             .map(|(xp, _)| xp.to_absolute_path(xvc_root).to_path_buf())
             .collect::<Vec<PathBuf>>()
@@ -250,276 +251,109 @@ pub fn cmd_track(
     )?;
 
     if !opts.no_commit {
-        commit(
+        carry_in(
             output_snd,
             xvc_root,
             &path_comparison_params,
             &file_delta_store,
             opts.force,
             !opts.no_parallel,
-            algorithm,
-            &text_or_binary,
-            cache_type,
         )?;
     }
     Ok(())
 }
 
-/// Record store records checking their DeltaField status
-fn update_store_records<T>(xvc_root: &XvcRoot, delta_store: HStore<&DeltaField<T>>) -> Result<()>
-where
-    T: Storable,
-{
-    xvc_root.with_store_mut(|store: &mut XvcStore<T>| {
-        for (xe, dd) in delta_store.iter() {
-            match dd {
-                DeltaField::Identical | DeltaField::Skipped => {
-                    info!("Not changed: {:?}", xe);
-                }
-
-                DeltaField::RecordMissing { actual } => {
-                    store.insert(*xe, actual.clone());
-                }
-                DeltaField::ActualMissing { .. } => {
-                    info!("Record not changed. {}", xe);
-                }
-                DeltaField::Different { actual, .. } => {
-                    store.insert(*xe, actual.clone());
-                }
-            }
-        }
-        Ok(())
-    })?;
-
-    Ok(())
-}
-
-fn update_dir_records(xvc_root: &XvcRoot, dir_delta_store: &HStore<DirectoryDelta>) -> Result<()> {
-    let collection_delta_store: HStore<&DeltaField<CollectionDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_collection_digest))
-        .collect();
-    update_store_records(xvc_root, collection_delta_store)?;
-
-    let metadata_digest_delta_store: HStore<&DeltaField<MetadataDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_metadata_digest))
-        .collect();
-    update_store_records(xvc_root, metadata_digest_delta_store)?;
-
-    let content_delta_store: HStore<&DeltaField<ContentDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_content_digest))
-        .collect();
-    update_store_records(xvc_root, content_delta_store)?;
-
-    let metadata_delta_store: HStore<&DeltaField<XvcMetadata>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_xvc_metadata))
-        .collect();
-    update_store_records(xvc_root, metadata_delta_store)?;
-
-    Ok(())
-}
-
-/// Record changes in `path_delta_store` to various stores in `xvc_root`
-/// TODO: Refactor using [update_store_records]
-fn update_file_records(xvc_root: &XvcRoot, path_delta_store: &FileDeltaStore) -> Result<()> {
-    xvc_root.with_r11store_mut(|xp_md_r11s: &mut R11Store<XvcPath, XvcMetadata>| {
-        for (xe, pd) in path_delta_store.iter() {
-            let xp = xp_md_r11s.left[xe].clone();
-            match pd.delta_md {
-                DeltaField::Identical | DeltaField::Skipped => {
-                    info!("Not changed: {}", xp);
-                }
-                DeltaField::RecordMissing { actual } => {
-                    xp_md_r11s.insert(&xe, xp, actual);
-                }
-                // TODO: Think about changing XvcMetadata to `RecordOnly` in this case.
-                DeltaField::ActualMissing { .. } => {
-                    info!("File not found. {} Record not changed.", xp);
-                }
-                DeltaField::Different { actual, .. } => {
-                    xp_md_r11s.insert(&xe, xp, actual);
-                }
-            }
-        }
-        Ok(())
-    })?;
-
-    xvc_root.with_r11store_mut(
-        |xp_content_digest_r11s: &mut R11Store<XvcPath, ContentDigest>| {
-            for (xe, pd) in path_delta_store.iter() {
-                let xp = xp_content_digest_r11s.left[xe].clone();
-                match pd.delta_content_digest {
-                    DeltaField::Identical | DeltaField::Skipped => {
-                        info!("Not changed: {}", xp);
-                    }
-                    DeltaField::RecordMissing { actual } => {
-                        xp_content_digest_r11s.insert(&xe, xp, actual);
-                    }
-                    // TODO: Think about deleting the record in this case.
-                    DeltaField::ActualMissing { .. } => {
-                        info!("File not found. {} Record not changed.", xp);
-                    }
-                    DeltaField::Different { actual, .. } => {
-                        xp_content_digest_r11s.insert(&xe, xp, actual);
-                    }
-                }
-            }
-            Ok(())
-        },
-    )?;
-
-    xvc_root.with_r11store_mut(
-        |xp_metadata_digest_r11s: &mut R11Store<XvcPath, MetadataDigest>| {
-            for (xe, pd) in path_delta_store.iter() {
-                let xp = xp_metadata_digest_r11s.left[xe].clone();
-                match pd.delta_metadata_digest {
-                    DeltaField::Identical | DeltaField::Skipped => {
-                        info!("Not changed: {}", xp);
-                    }
-                    DeltaField::RecordMissing { actual } => {
-                        xp_metadata_digest_r11s.insert(&xe, xp, actual);
-                    }
-                    // TODO: Think about deleting the record in this case.
-                    DeltaField::ActualMissing { .. } => {
-                        info!("File not found. {} Record not changed.", xp);
-                    }
-                    DeltaField::Different { actual, .. } => {
-                        xp_metadata_digest_r11s.insert(&xe, xp, actual);
-                    }
-                }
-            }
-            Ok(())
-        },
-    )?;
-
-    xvc_root.with_r11store_mut(|xp_ct_r11s: &mut R11Store<XvcPath, CacheType>| {
-        for (xe, pd) in path_delta_store.iter() {
-            let xp = xp_ct_r11s.left[xe].clone();
-            match pd.delta_cache_type {
-                DeltaField::ActualMissing { .. } | DeltaField::Identical | DeltaField::Skipped => {}
-                DeltaField::RecordMissing { actual } => {
-                    xp_ct_r11s.insert(xe, xp.to_owned(), actual);
-                }
-                DeltaField::Different { actual, .. } => {
-                    xp_ct_r11s.insert(xe, xp.to_owned(), actual);
-                }
-            }
-        }
-        Ok(())
-    })?;
-
-    xvc_root.with_r11store_mut(|xp_tb_r11s: &mut R11Store<XvcPath, DataTextOrBinary>| {
-        for (xe, pd) in path_delta_store.iter() {
-            let xp = xp_tb_r11s.left[xe].clone();
-            match pd.delta_text_or_binary {
-                DeltaField::ActualMissing { .. } | DeltaField::Identical | DeltaField::Skipped => {}
-                DeltaField::RecordMissing { actual } => {
-                    xp_tb_r11s.insert(xe, xp.to_owned(), actual);
-                }
-                DeltaField::Different { actual, .. } => {
-                    xp_tb_r11s.insert(xe, xp.to_owned(), actual);
-                }
-            }
-        }
-        Ok(())
-    })?;
-    Ok(())
-}
-
-fn commit(
-    output_snd: Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    path_comparison_params: &PathComparisonParams,
-    path_delta_store: &FileDeltaStore,
-    force: bool,
-    parallel: bool,
-    algorithm: HashAlgorithm,
-    text_or_binary: &DataTextOrBinary,
-    cache_type: CacheType,
-) -> Result<()> {
-    let checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> {
-        let cache_path = cache_path(xp, &digest);
-        if !cache_path.to_absolute_path(xvc_root).exists() {
-            move_to_cache(xvc_root, xp, &cache_path)?;
-            recheck_from_cache(xvc_root, xp, &cache_path, cache_type)?;
-            let _ = &output_snd.send(XvcOutputLine::Info(format!(
-                "[COMMIT] {xp} -> {}",
-                cache_path
-            )))?;
-        }
-        Ok(())
-    };
-
-    let force_checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> {
-        let cache_path = cache_path(&xp, &digest);
-        if !cache_path.to_absolute_path(xvc_root).exists() {
-            let abs_path = xp.to_absolute_path(xvc_root);
-            fs::remove_file(&abs_path)?;
-            let _ = &output_snd.send(XvcOutputLine::Info(format!("[DELETE] {xp}")))?;
-            move_to_cache(xvc_root, &xp, &cache_path)?;
-            recheck_from_cache(xvc_root, &xp, &cache_path, cache_type)?;
-            let _ = &output_snd.send(XvcOutputLine::Info(format!(
-                "[CHECKOUT] {xp} -> {abs_path}"
-            )))?;
-        }
-        Ok(())
-    };
-
-    let inner = |(xe, pd): (&XvcEntity, &FileDelta)| -> Result<()> {
-        let xp = path_comparison_params.xvc_path_store[xe].clone();
-        match pd.delta_content_digest {
-            DeltaField::Identical | DeltaField::Skipped => {
-                let record_digest = path_comparison_params.content_digest_store[xe];
-
-                match pd.delta_cache_type {
-                    DeltaField::Identical | DeltaField::Skipped => {
-                        debug!("No change to checkout: {}", xp);
-                        Ok(())
-                    }
-                    // We assume the record is created before, in update records.
-                    // So this is actually no "RecordMissing"
-                    DeltaField::RecordMissing { .. } => force_checkout(&xp, &record_digest),
-                    DeltaField::ActualMissing { .. } => force_checkout(&xp, &record_digest),
-                    DeltaField::Different { .. } => force_checkout(&xp, &record_digest),
-                }
-            }
-            // We assume the record is created before, in update records.
-            // So this is actually no "RecordMissing"
-            DeltaField::RecordMissing { actual } => checkout(&xp, &actual),
-            DeltaField::ActualMissing { record } => checkout(&xp, &record),
-            DeltaField::Different { record, .. } => {
-                if force {
-                    force_checkout(&xp, &record)
-                } else {
-                    output_snd.send(XvcOutputLine::Error(format!(
-                        "Changes in {xp} are not cached. Use --force to overwrite"
-                    )))?;
-                    Ok(())
-                }
-            }
-        }
-    };
-
-    if parallel {
-        path_delta_store.par_iter().for_each(|p| {
-            inner(p)
-                .map_err(|e| Error::from(e).error())
-                .unwrap_or_else(|_| ());
-        });
-    } else {
-        path_delta_store.iter().for_each(|p| {
-            inner(p)
-                .map_err(|e| Error::from(e).error())
-                .unwrap_or_else(|_| ());
-        });
-    }
-
-    Ok(())
-}
-
+/* fn commit( */
+/*     output_snd: Sender<XvcOutputLine>, */
+/*     xvc_root: &XvcRoot, */
+/*     path_comparison_params: &PathComparisonParams, */
+/*     path_delta_store: &FileDeltaStore, */
+/*     force: bool, */
+/*     parallel: bool, */
+/*     algorithm: HashAlgorithm, */
+/*     text_or_binary: &DataTextOrBinary, */
+/*     cache_type: CacheType, */
+/* ) -> Result<()> { */
+/*     let checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> { */
+/*         let cache_path = cache_path(xp, &digest); */
+/*         if !cache_path.to_absolute_path(xvc_root).exists() { */
+/*             move_to_cache(xvc_root, xp, &cache_path)?; */
+/*             recheck_from_cache(xvc_root, xp, &cache_path, cache_type)?; */
+/*             let _ = &output_snd.send(XvcOutputLine::Info(format!( */
+/*                 "[COMMIT] {xp} -> {}", */
+/*                 cache_path */
+/*             )))?; */
+/*         } */
+/*         Ok(()) */
+/*     }; */
+/*  */
+/*     let force_checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> { */
+/*         let cache_path = cache_path(&xp, &digest); */
+/*         if !cache_path.to_absolute_path(xvc_root).exists() { */
+/*             let abs_path = xp.to_absolute_path(xvc_root); */
+/*             fs::remove_file(&abs_path)?; */
+/*             let _ = &output_snd.send(XvcOutputLine::Info(format!("[DELETE] {xp}")))?; */
+/*             move_to_cache(xvc_root, &xp, &cache_path)?; */
+/*             recheck_from_cache(xvc_root, &xp, &cache_path, cache_type)?; */
+/*             let _ = &output_snd.send(XvcOutputLine::Info(format!( */
+/*                 "[CHECKOUT] {xp} -> {abs_path}" */
+/*             )))?; */
+/*         } */
+/*         Ok(()) */
+/*     }; */
+/*  */
+/*     let inner = |(xe, pd): (&XvcEntity, &FileDelta)| -> Result<()> { */
+/*         let xp = path_comparison_params.xvc_path_store[xe].clone(); */
+/*         match pd.delta_content_digest { */
+/*             DeltaField::Identical | DeltaField::Skipped => { */
+/*                 let record_digest = path_comparison_params.content_digest_store[xe]; */
+/*  */
+/*                 match pd.delta_cache_type { */
+/*                     DeltaField::Identical | DeltaField::Skipped => { */
+/*                         debug!("No change to checkout: {}", xp); */
+/*                         Ok(()) */
+/*                     } */
+/*                     // We assume the record is created before, in update records. */
+/*                     // So this is actually no "RecordMissing" */
+/*                     DeltaField::RecordMissing { .. } => force_checkout(&xp, &record_digest), */
+/*                     DeltaField::ActualMissing { .. } => force_checkout(&xp, &record_digest), */
+/*                     DeltaField::Different { .. } => force_checkout(&xp, &record_digest), */
+/*                 } */
+/*             } */
+/*             // We assume the record is created before, in update records. */
+/*             // So this is actually no "RecordMissing" */
+/*             DeltaField::RecordMissing { actual } => checkout(&xp, &actual), */
+/*             DeltaField::ActualMissing { record } => checkout(&xp, &record), */
+/*             DeltaField::Different { record, .. } => { */
+/*                 if force { */
+/*                     force_checkout(&xp, &record) */
+/*                 } else { */
+/*                     output_snd.send(XvcOutputLine::Error(format!( */
+/*                         "Changes in {xp} are not cached. Use --force to overwrite" */
+/*                     )))?; */
+/*                     Ok(()) */
+/*                 } */
+/*             } */
+/*         } */
+/*     }; */
+/*  */
+/*     if parallel { */
+/*         path_delta_store.par_iter().for_each(|p| { */
+/*             inner(p) */
+/*                 .map_err(|e| Error::from(e).error()) */
+/*                 .unwrap_or_else(|_| ()); */
+/*         }); */
+/*     } else { */
+/*         path_delta_store.iter().for_each(|p| { */
+/*             inner(p) */
+/*                 .map_err(|e| Error::from(e).error()) */
+/*                 .unwrap_or_else(|_| ()); */
+/*         }); */
+/*     } */
+/*  */
+/*     Ok(()) */
+/* } */
+/*  */
 /// Write file and directory names to .gitignore found in the same dir
 ///
 /// If `current_ignore` already ignores a file, it's not added separately.
