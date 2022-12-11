@@ -26,7 +26,10 @@ use crate::common::compare::{
     update_path_comparison_params_with_actual_info, DeltaField, DirectoryDelta,
     DirectoryDeltaStore, FileDelta, FileDeltaStore, PathComparisonParams,
 };
-use crate::common::{cache_path, decide_no_parallel, move_to_cache, recheck_from_cache};
+use crate::common::{
+    cache_path, decide_no_parallel, expanded_xvc_dir_file_targets, move_to_cache,
+    pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets,
+};
 use crate::error::{Error, Result};
 
 use std::fs::{self, OpenOptions};
@@ -71,8 +74,9 @@ impl DataTextOrBinary {
     }
 }
 
+/// Carry in (commit) changed files/directories to the cache.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[command(about = "Track file versions using XVC", rename_all = "kebab-case")]
+#[command(rename_all = "kebab-case", version, author)]
 pub struct CarryInCLI {
     /// Calculate digests as text or binary file without checking contents, or by automatically. (Default:
     /// auto)
@@ -146,120 +150,42 @@ pub fn cmd_carry_in(
 
     let no_parallel = decide_no_parallel(opts.no_parallel, opts.targets.as_slice());
 
-    let (xpmm, xvc_ignore) = all_paths_and_metadata(xvc_root);
-    let xvc_targets = to_xvc_target(&targets);
-    let mut given_dir_targets = XvcPathMetadataMap::new();
-    let mut file_targets = XvcPathMetadataMap::new();
+    let (dir_targets, file_targets) = expanded_xvc_dir_file_targets(output_snd, xvc_root, targets);
+    // Check if we're actually tracking the target
+    // Otherwise we inform the user and skip it
 
-    for xvc_target in xvc_targets {
-        if let Some(xmd) = xpmm.get(&xvc_target) {
-            match xmd.file_type {
-                XvcFileType::RecordOnly => {
-                    output_snd
-                        .send(XvcOutputLine::Error(format!(
-                            "Target not found: {xvc_target}"
-                        )))
-                        .unwrap();
-                }
-                XvcFileType::File => {
-                    file_targets.insert(xvc_target, xmd.clone());
-                }
-                XvcFileType::Directory => {
-                    given_dir_targets.insert(xvc_target, xmd.clone());
-                }
-                XvcFileType::Symlink => output_snd
-                    .send(XvcOutputLine::Error(format!(
-                        "Symlinks are not supported: {xvc_target}"
-                    )))
-                    .unwrap(),
-                XvcFileType::Hardlink => output_snd
-                    .send(XvcOutputLine::Error(format!(
-                        "Hardlinks are not supported: {xvc_target}"
-                    )))
-                    .unwrap(),
-                XvcFileType::Reflink => output_snd
-                    .send(XvcOutputLine::Error(format!(
-                        "Reflinks are not supported: {xvc_target}"
-                    )))
-                    .unwrap(),
-            }
-        } else {
-            output_snd
-                .send(XvcOutputLine::Warn(format!(
-                    "Ignored or not found: {xvc_target}"
-                )))
-                .unwrap();
-        }
-    }
-
-    // Add all paths under directory targets
-
-    let mut dir_targets = XvcPathMetadataMap::new();
-
-    for (dir_target, dir_md) in &given_dir_targets {
-        for (xvc_path, xvc_md) in &xpmm {
-            if xvc_path.starts_with(&dir_target) && *xvc_path != *dir_target {
-                match xvc_md.file_type {
-                    XvcFileType::Directory => {
-                        dir_targets.insert(xvc_path.clone(), xvc_md.clone());
-                    }
-                    XvcFileType::File => {
-                        file_targets.insert(xvc_path.clone(), xvc_md.clone());
-                    }
+    let tracked_file_targets: HashMap<XvcPath, XvcMetadata> = file_targets
+        .iter()
+        .filter_map(|(xvc_path, xvc_md)| {
+            if let (ft) = xvc_md.file_type() {
+                match ft {
+                    ft::File => Some((xvc_path.clone(), xvc_md.clone())),
                     _ => {
-                        output_snd.send(XvcOutputLine::Error(format!(
-                            "Unsupported Target: {xvc_path}"
-                        )));
+                        info!(
+                            output_snd,
+                            "Only regular files are carried into the cache: {}", xvc_path
+                        );
+                        None
                     }
                 }
+            } else {
+                error!(output_snd, "Not tracking file: {}", xvc_path);
+                None
             }
-        }
-        dir_targets.insert(dir_target.clone(), dir_md.clone());
-    }
-
-    // create entities for new paths
-    //
-    // NOTE: We don't create metadata records here, otherwise FileDelta and DirectoryDelta
-    // operations doesn't catch the differences.
-    //
-    // We only create entities for paths.
-    // Their metadata components will be missing and will be caught as differences.
-
-    xvc_root.with_store_mut(|xvc_path_store: &mut XvcStore<XvcPath>| {
-        let mut xvc_path_imap = xvc_path_store.index_map()?;
-
-        for (dir_target, dir_md) in &dir_targets {
-            let opt_entity = xvc_path_imap.get(dir_target);
-            if opt_entity == None {
-                let new_target_e = xvc_root.new_entity();
-                xvc_path_store.insert(new_target_e, dir_target.to_owned().clone());
-                xvc_path_imap.insert(dir_target.to_owned().clone(), new_target_e);
-            }
-        }
-
-        for (file_target, file_md) in &file_targets {
-            let opt_entity = xvc_path_imap.get(file_target);
-            if opt_entity == None {
-                let new_target_e = xvc_root.new_entity();
-                xvc_path_store.insert(new_target_e, file_target.to_owned().clone());
-                xvc_path_imap.insert(file_target.to_owned().clone(), new_target_e);
-            }
-        }
-
-        Ok(())
-    })?;
+        })
+        .collect();
 
     let path_comparison_params = PathComparisonParams::init(xvc_root)?;
     let algorithm = (&path_comparison_params.algorithm).clone();
 
-    info!("Calculating Hashes with: {:#?}", algorithm);
+    info!(output_snd, "Calculating Hashes with: {:#?}", algorithm);
     let file_delta_store = if no_parallel {
         find_file_changes_serial(
             xvc_root,
             &path_comparison_params,
             &cache_type,
             &text_or_binary,
-            &file_targets,
+            &tracked_file_targets,
         )?
     } else {
         find_file_changes_parallel(
@@ -267,7 +193,7 @@ pub fn cmd_carry_in(
             &path_comparison_params,
             &cache_type,
             &text_or_binary,
-            &file_targets,
+            &tracked_file_targets,
         )?
     };
 
@@ -276,221 +202,48 @@ pub fn cmd_carry_in(
     let path_comparison_params =
         update_path_comparison_params_with_actual_info(path_comparison_params, &file_delta_store);
 
-    let dir_delta_store: DirectoryDeltaStore =
-        find_dir_changes_serial(xvc_root, &path_comparison_params, &given_dir_targets)?;
-
     update_file_records(xvc_root, &file_delta_store)?;
-    update_dir_records(xvc_root, &dir_delta_store)?;
-
-    let current_gitignore = build_gitignore(xvc_root)?;
-
-    update_gitignores(
+    carry_in(
+        output_snd,
         xvc_root,
-        current_dir,
-        &current_gitignore,
-        file_targets
-            .iter()
-            .map(|(xp, _)| xp.to_absolute_path(xvc_root).to_path_buf())
-            .collect::<Vec<PathBuf>>()
-            .as_ref(),
-        given_dir_targets
-            .iter()
-            .map(|(xp, _)| xp.to_absolute_path(xvc_root).to_path_buf())
-            .collect::<Vec<PathBuf>>()
-            .as_ref(),
-    )?;
-
-    if !opts.no_commit {
-        commit(
-            output_snd,
-            xvc_root,
-            &path_comparison_params,
-            &file_delta_store,
-            opts.force,
-            !opts.no_parallel,
-            algorithm,
-            &text_or_binary,
-            cache_type,
-        )?;
-    }
-    Ok(())
+        &path_comparison_params,
+        &file_delta_store,
+        opts.force,
+        !opts.no_parallel,
+        algorithm,
+        &text_or_binary,
+        cache_type,
+    )
 }
 
-/// Record store records checking their DeltaField status
-fn update_store_records<T>(xvc_root: &XvcRoot, delta_store: HStore<&DeltaField<T>>) -> Result<()>
-where
-    T: Storable,
-{
-    xvc_root.with_store_mut(|store: &mut XvcStore<T>| {
-        for (xe, dd) in delta_store.iter() {
-            match dd {
-                DeltaField::Identical | DeltaField::Skipped => {
-                    info!("Not changed: {:?}", xe);
-                }
-
-                DeltaField::RecordMissing { actual } => {
-                    store.insert(*xe, actual.clone());
-                }
-                DeltaField::ActualMissing { .. } => {
-                    info!("Record not changed. {}", xe);
-                }
-                DeltaField::Different { actual, .. } => {
-                    store.insert(*xe, actual.clone());
-                }
-            }
-        }
-        Ok(())
-    })?;
-
-    Ok(())
-}
-
-fn update_dir_records(xvc_root: &XvcRoot, dir_delta_store: &HStore<DirectoryDelta>) -> Result<()> {
-    let collection_delta_store: HStore<&DeltaField<CollectionDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_collection_digest))
-        .collect();
-    update_store_records(xvc_root, collection_delta_store)?;
-
-    let metadata_digest_delta_store: HStore<&DeltaField<MetadataDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_metadata_digest))
-        .collect();
-    update_store_records(xvc_root, metadata_digest_delta_store)?;
-
-    let content_delta_store: HStore<&DeltaField<ContentDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_content_digest))
-        .collect();
-    update_store_records(xvc_root, content_delta_store)?;
-
-    let metadata_delta_store: HStore<&DeltaField<XvcMetadata>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_xvc_metadata))
-        .collect();
-    update_store_records(xvc_root, metadata_delta_store)?;
-
-    Ok(())
-}
-
-/// Record changes in `path_delta_store` to various stores in `xvc_root`
-/// TODO: Refactor using [update_store_records]
-fn update_file_records(xvc_root: &XvcRoot, path_delta_store: &FileDeltaStore) -> Result<()> {
-    xvc_root.with_r11store_mut(|xp_md_r11s: &mut R11Store<XvcPath, XvcMetadata>| {
-        for (xe, pd) in path_delta_store.iter() {
-            let xp = xp_md_r11s.left[xe].clone();
-            match pd.delta_md {
-                DeltaField::Identical | DeltaField::Skipped => {
-                    info!("Not changed: {}", xp);
-                }
-                DeltaField::RecordMissing { actual } => {
-                    xp_md_r11s.insert(&xe, xp, actual);
-                }
-                // TODO: Think about changing XvcMetadata to `RecordOnly` in this case.
-                DeltaField::ActualMissing { .. } => {
-                    info!("File not found. {} Record not changed.", xp);
-                }
-                DeltaField::Different { actual, .. } => {
-                    xp_md_r11s.insert(&xe, xp, actual);
-                }
-            }
-        }
-        Ok(())
-    })?;
-
-    xvc_root.with_r11store_mut(
-        |xp_content_digest_r11s: &mut R11Store<XvcPath, ContentDigest>| {
-            for (xe, pd) in path_delta_store.iter() {
-                let xp = xp_content_digest_r11s.left[xe].clone();
-                match pd.delta_content_digest {
-                    DeltaField::Identical | DeltaField::Skipped => {
-                        info!("Not changed: {}", xp);
-                    }
-                    DeltaField::RecordMissing { actual } => {
-                        xp_content_digest_r11s.insert(&xe, xp, actual);
-                    }
-                    // TODO: Think about deleting the record in this case.
-                    DeltaField::ActualMissing { .. } => {
-                        info!("File not found. {} Record not changed.", xp);
-                    }
-                    DeltaField::Different { actual, .. } => {
-                        xp_content_digest_r11s.insert(&xe, xp, actual);
-                    }
-                }
-            }
-            Ok(())
-        },
-    )?;
-
-    xvc_root.with_r11store_mut(
-        |xp_metadata_digest_r11s: &mut R11Store<XvcPath, MetadataDigest>| {
-            for (xe, pd) in path_delta_store.iter() {
-                let xp = xp_metadata_digest_r11s.left[xe].clone();
-                match pd.delta_metadata_digest {
-                    DeltaField::Identical | DeltaField::Skipped => {
-                        info!("Not changed: {}", xp);
-                    }
-                    DeltaField::RecordMissing { actual } => {
-                        xp_metadata_digest_r11s.insert(&xe, xp, actual);
-                    }
-                    // TODO: Think about deleting the record in this case.
-                    DeltaField::ActualMissing { .. } => {
-                        info!("File not found. {} Record not changed.", xp);
-                    }
-                    DeltaField::Different { actual, .. } => {
-                        xp_metadata_digest_r11s.insert(&xe, xp, actual);
-                    }
-                }
-            }
-            Ok(())
-        },
-    )?;
-
-    xvc_root.with_r11store_mut(|xp_ct_r11s: &mut R11Store<XvcPath, CacheType>| {
-        for (xe, pd) in path_delta_store.iter() {
-            let xp = xp_ct_r11s.left[xe].clone();
-            match pd.delta_cache_type {
-                DeltaField::ActualMissing { .. } | DeltaField::Identical | DeltaField::Skipped => {}
-                DeltaField::RecordMissing { actual } => {
-                    xp_ct_r11s.insert(xe, xp.to_owned(), actual);
-                }
-                DeltaField::Different { actual, .. } => {
-                    xp_ct_r11s.insert(xe, xp.to_owned(), actual);
-                }
-            }
-        }
-        Ok(())
-    })?;
-
-    xvc_root.with_r11store_mut(|xp_tb_r11s: &mut R11Store<XvcPath, DataTextOrBinary>| {
-        for (xe, pd) in path_delta_store.iter() {
-            let xp = xp_tb_r11s.left[xe].clone();
-            match pd.delta_text_or_binary {
-                DeltaField::ActualMissing { .. } | DeltaField::Identical | DeltaField::Skipped => {}
-                DeltaField::RecordMissing { actual } => {
-                    xp_tb_r11s.insert(xe, xp.to_owned(), actual);
-                }
-                DeltaField::Different { actual, .. } => {
-                    xp_tb_r11s.insert(xe, xp.to_owned(), actual);
-                }
-            }
-        }
-        Ok(())
-    })?;
-    Ok(())
-}
-
-fn commit(
+fn carry_in(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     path_comparison_params: &PathComparisonParams,
     path_delta_store: &FileDeltaStore,
     force: bool,
     parallel: bool,
-    algorithm: HashAlgorithm,
-    text_or_binary: &DataTextOrBinary,
-    cache_type: CacheType,
 ) -> Result<()> {
+
+    let carry_in_paths = if force {
+        path_delta_store
+            .iter()
+            .map(|(xp, _)| xp.clone())
+            .collect::<Vec<_>>()
+    } else {
+        path_delta_store
+            .iter()
+            .filter_map(|(xp, delta)| {
+                if delta.is_changed() {
+                    Some(xp.clone())
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
+    };
+    }
+
     let checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> {
         let cache_path = cache_path(xp, &digest);
         if !cache_path.to_absolute_path(xvc_root).exists() {
@@ -566,132 +319,6 @@ fn commit(
                 .map_err(|e| Error::from(e).error())
                 .unwrap_or_else(|_| ());
         });
-    }
-
-    Ok(())
-}
-
-/// Write file and directory names to .gitignore found in the same dir
-///
-/// If `current_ignore` already ignores a file, it's not added separately.
-/// If the user chooses to ignore a files manually by general rules, files are not added here.
-///
-fn update_gitignores(
-    xvc_root: &XvcRoot,
-    current_dir: &AbsolutePath,
-    current_ignore: &IgnoreRules,
-    files: &[PathBuf],
-    dirs: &[PathBuf],
-) -> Result<()> {
-    // Check if dirs are already ignored
-    let dir_map: HashMap<PathBuf, PathBuf> = dirs
-        .iter()
-        .filter_map(|f| {
-            let abs_path = if f.ends_with("/") {
-                current_dir.join(f)
-            } else {
-                current_dir.join(format!("{}/", f.to_string_lossy()))
-            };
-
-            let ignore_res = check_ignore(current_ignore, &abs_path);
-
-            match ignore_res {
-                MatchResult::Ignore => {
-                    info!("Path is already gitignored: {}", abs_path.to_string_lossy());
-                    None
-                }
-                MatchResult::NoMatch => {
-                    Some((f.clone(),
-                          f.parent()
-                            .map(|p| p.join(".gitignore"))
-                            .unwrap_or_else(|| PathBuf::from(".gitignore"))))
-                }
-                MatchResult::Whitelist => {
-                    error!("Path is whitelisted in Git. Please remove/modify the whitelisting rule: {}",
-                        abs_path.to_string_lossy());
-                    None
-                }
-            }}).collect();
-
-    watch!(dir_map);
-
-    // Check if files are already ignored
-    let file_map: HashMap<PathBuf, PathBuf> = files
-        .iter()
-        // filter if the directories we'll add already contains these files
-        .filter(|f| {
-            for (dir, _) in &dir_map {
-                if f.starts_with(dir) {
-                    return false }
-            }
-            true
-        })
-        .filter_map(|f| {
-                    let abs_path = current_dir.join(f);
-
-            match check_ignore(current_ignore, &abs_path) {
-                MatchResult::NoMatch => {
-
-                    Some((f.clone(),
-                          f.parent()
-                            .map(|p| p.join(".gitignore"))
-                            .unwrap_or_else(|| PathBuf::from(".gitignore"))))
-                }
-                MatchResult::Ignore => {
-                    info!("Already gitignored: {}", &abs_path.to_string_lossy());
-                    None
-                }
-                MatchResult::Whitelist => {
-                    error!("Path is whitelisted in Gitignore, please modify/remove the whitelisting rule: {}", &abs_path.to_string_lossy());
-                None
-            }}
-            })
-        .collect();
-
-    watch!(file_map);
-
-    let mut changes = HashMap::<PathBuf, Vec<String>>::new();
-
-    for (f, gi) in file_map {
-        if !changes.contains_key(&gi) {
-            changes.insert(gi.clone(), Vec::<String>::new());
-        }
-
-        let path_v = changes.get_mut(&gi).unwrap();
-        path_v.push(
-            f.file_name()
-                .map(|f| format!("/{}", f.to_string_lossy()))
-                .unwrap_or_else(|| "## Path Contains final ..".to_string()),
-        );
-    }
-    for (d, gi) in dir_map {
-        if !changes.contains_key(&gi) {
-            changes.insert(gi.clone(), Vec::<String>::new());
-        }
-
-        let path_v = changes.get_mut(&gi).unwrap();
-        path_v.push(
-            d.file_name()
-                .map(|d| format!("/{}/", d.to_string_lossy()))
-                .unwrap_or_else(|| "## Path Contains final ..".to_string()),
-        );
-    }
-
-    for (gitignore_file, values) in changes {
-        let append_str = format!(
-            "### Following {} lines are added by xvc on {}\n{}",
-            values.len(),
-            Utc::now().to_rfc2822(),
-            values.join("\n")
-        );
-        let gitignore_path = xvc_root.absolute_path().join(gitignore_file);
-
-        let mut file_o = OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(gitignore_path)?;
-
-        writeln!(file_o, "{}", append_str)?;
     }
 
     Ok(())

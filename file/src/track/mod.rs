@@ -26,7 +26,10 @@ use crate::common::compare::{
     update_path_comparison_params_with_actual_info, DeltaField, DirectoryDelta,
     DirectoryDeltaStore, FileDelta, FileDeltaStore, PathComparisonParams,
 };
-use crate::common::{cache_path, decide_no_parallel, move_to_cache, recheck_from_cache};
+use crate::common::{
+    cache_path, decide_no_parallel, expand_directory_targets, expanded_xvc_dir_file_targets,
+    move_to_cache, pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets,
+};
 use crate::error::{Error, Result};
 
 use std::fs::{self, OpenOptions};
@@ -160,122 +163,9 @@ pub fn cmd_track(
     let cache_type = opts.cache_type.unwrap_or_default();
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
 
-    let no_parallel = decide_no_parallel(opts.no_parallel, targets);
+    let no_parallel = decide_no_parallel(opts.no_parallel, &targets);
 
-    let (xpmm, xvc_ignore) = all_paths_and_metadata(xvc_root);
-    let to_xvc_target = |targets: &Vec<PathBuf>| -> Vec<XvcPath> {
-        targets
-            .into_iter()
-            .filter_map(|t| {
-                watch!(t);
-                watch!(t.is_file());
-                watch!(t.is_dir());
-                watch!(t.metadata());
-                if t.is_file() || t.is_dir() {
-                    Some(t)
-                } else {
-                    output_snd
-                        .send(format!("Unsupported Target Type: {}", t.to_string_lossy()).into())
-                        .unwrap();
-                    None
-                }
-            })
-            .filter(|t| {
-                let ignore_result = check_ignore(&xvc_ignore, t);
-
-                match ignore_result {
-                    MatchResult::Ignore => {
-                        warn!("Ignored: {}", t.to_string_lossy());
-                        false
-                    }
-                    MatchResult::Whitelist => {
-                        info!("Whitelisted: {}", t.to_string_lossy());
-                        true
-                    }
-                    MatchResult::NoMatch => true,
-                }
-            })
-            .map(|t| XvcPath::new(xvc_root, current_dir, &t))
-            .filter_map(|res_xp| match res_xp {
-                Ok(xp) => Some(xp),
-                Err(e) => {
-                    error!("{}", e);
-                    None
-                }
-            })
-            .collect()
-    };
-
-    let xvc_targets = to_xvc_target(&targets);
-    let mut given_dir_targets = XvcPathMetadataMap::new();
-    let mut file_targets = XvcPathMetadataMap::new();
-
-    for xvc_target in xvc_targets {
-        if let Some(xmd) = xpmm.get(&xvc_target) {
-            match xmd.file_type {
-                XvcFileType::RecordOnly => {
-                    output_snd
-                        .send(XvcOutputLine::Error(format!(
-                            "Target not found: {xvc_target}"
-                        )))
-                        .unwrap();
-                }
-                XvcFileType::File => {
-                    file_targets.insert(xvc_target, xmd.clone());
-                }
-                XvcFileType::Directory => {
-                    given_dir_targets.insert(xvc_target, xmd.clone());
-                }
-                XvcFileType::Symlink => output_snd
-                    .send(XvcOutputLine::Error(format!(
-                        "Symlinks are not supported: {xvc_target}"
-                    )))
-                    .unwrap(),
-                XvcFileType::Hardlink => output_snd
-                    .send(XvcOutputLine::Error(format!(
-                        "Hardlinks are not supported: {xvc_target}"
-                    )))
-                    .unwrap(),
-                XvcFileType::Reflink => output_snd
-                    .send(XvcOutputLine::Error(format!(
-                        "Reflinks are not supported: {xvc_target}"
-                    )))
-                    .unwrap(),
-            }
-        } else {
-            output_snd
-                .send(XvcOutputLine::Warn(format!(
-                    "Ignored or not found: {xvc_target}"
-                )))
-                .unwrap();
-        }
-    }
-
-    // Add all paths under directory targets
-
-    let mut dir_targets = XvcPathMetadataMap::new();
-
-    for (dir_target, dir_md) in &given_dir_targets {
-        for (xvc_path, xvc_md) in &xpmm {
-            if xvc_path.starts_with(&dir_target) && *xvc_path != *dir_target {
-                match xvc_md.file_type {
-                    XvcFileType::Directory => {
-                        dir_targets.insert(xvc_path.clone(), xvc_md.clone());
-                    }
-                    XvcFileType::File => {
-                        file_targets.insert(xvc_path.clone(), xvc_md.clone());
-                    }
-                    _ => {
-                        output_snd.send(XvcOutputLine::Error(format!(
-                            "Unsupported Target: {xvc_path}"
-                        )));
-                    }
-                }
-            }
-        }
-        dir_targets.insert(dir_target.clone(), dir_md.clone());
-    }
-
+    let (dir_targets, file_targets) = expanded_xvc_dir_file_targets(output_snd, xvc_root, targets);
     // create entities for new paths
     //
     // NOTE: We don't create metadata records here, otherwise FileDelta and DirectoryDelta
