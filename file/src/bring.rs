@@ -7,7 +7,6 @@
 //! workspace.
 
 use crate::{
-    common::cache_path,
     recheck::{cmd_recheck, RecheckCLI},
     Result,
 };
@@ -16,7 +15,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use xvc_core::{CacheType, ContentDigest, XvcCachePath, XvcPath, XvcRoot};
 use xvc_ecs::XvcStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{uwo, uwr, watch, XvcOutputLine};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 use xvc_walker::Glob;
 
@@ -90,8 +89,8 @@ pub fn fetch(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: &Bring
     let cache_paths: Vec<XvcCachePath> = target_store
         .iter()
         .map(|(e, xvc_path)| {
-            let content_digest = content_digest_store.get(e).unwrap();
-            cache_path(xvc_path, &content_digest)
+            let content_digest = uwo!(content_digest_store.get(e), output_snd);
+            uwr!(XvcCachePath::new(xvc_path, content_digest), output_snd)
         })
         .collect();
 

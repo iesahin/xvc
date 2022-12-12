@@ -1,9 +1,11 @@
 //! [Error] codes and messages for xvc-file crate
 use log::{debug, error, info, trace, warn};
+use xvc_logging::XvcOutputLine;
 
 use std::fmt::Debug;
 use std::io;
 use std::path::PathBuf;
+use std::thread::panicking;
 use thiserror::Error as ThisError;
 
 /// Error messages for xvc-file
@@ -110,3 +112,4 @@ impl Error {
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
+

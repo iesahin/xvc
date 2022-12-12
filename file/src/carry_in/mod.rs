@@ -26,8 +26,8 @@ use crate::common::compare::{
     DirectoryDeltaStore, FileDelta, FileDeltaStore, PathComparisonParams,
 };
 use crate::common::{
-    cache_path, decide_no_parallel, expanded_xvc_dir_file_targets, move_to_cache,
-    pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets, update_file_records,
+    decide_no_parallel, expanded_xvc_dir_file_targets, move_to_cache, pathbuf_to_xvc_target,
+    recheck_from_cache, split_file_directory_targets, update_file_records,
 };
 use crate::error::{Error, Result};
 use crate::recheck::recheck_serial;
@@ -212,7 +212,7 @@ pub fn cmd_carry_in(
 /// Move targets to the cache if there are any content changes, or if `force` is true.
 /// Returns the store of carried in elements. These should be rechecked to the
 /// remote.
-fn carry_in(
+pub fn carry_in(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     path_comparison_params: &PathComparisonParams,
@@ -225,16 +225,16 @@ fn carry_in(
             .iter()
             .map(|(xe, pd)| {
                 let xp = path_comparison_params.xvc_path_store.get(xe)?.clone();
-                (xe, xp)
+                (*xe, xp)
             })
             .collect::<HStore<XvcPath>>()
     } else {
         path_delta_store
             .iter()
             .filter_map(|(xe, delta)| {
-                if delta.is_changed() {
+                if delta.shows_change() {
                     let xp = path_comparison_params.xvc_path_store.get(xe)?.clone();
-                    Some((xe, xp))
+                    Some((*xe, xp))
                 } else {
                     None
                 }
@@ -243,23 +243,32 @@ fn carry_in(
     };
 
     let copy_path_to_cache_and_recheck = |xe, xp| {
-        let content_digest = path_comparison_params.delta_store.get(xe)?;
-        let cp = cache_path(xp, content_digest);
-        move_to_cache(xvc_root, xp, cache_path)?;
-        let cache_type = path_comparison_params.cache_type_store.get(xe)?;
+        let content_digest = uwo!(
+            path_comparison_params.content_digest_store.get(xe),
+            output_snd
+        );
+        let cp = uwr!(XvcCachePath::new(xp, content_digest), output_snd);
+        uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
+        let cache_type = uwo!(
+            path_comparison_params.cache_type_store.get(xe).cloned(),
+            output_snd
+        );
         info!(output_snd, "[CARRY] {xp} -> {cp}");
-        recheck_from_cache(xvc_root, xp, cache_path, cache_type);
+        uwr!(
+            recheck_from_cache(xvc_root, xp, cache_path, cache_type),
+            output_snd
+        );
         info!(output_snd, "[RECHECK] {cp} -> {xp}");
     };
 
     if parallel {
-        carry_in_paths.par_iter().for_each(|(xe, xp)| {
-            copy_path_to_cache_and_recheck(xe, xp)?;
-        });
+        carry_in_paths
+            .par_iter()
+            .for_each(|(xe, xp)| copy_path_to_cache_and_recheck(xe, xp));
     } else {
-        carry_in_paths.iter().for_each(|(xe, xp)| {
-            copy_path_to_cache_and_recheck(xe, xp)?;
-        });
+        carry_in_paths
+            .iter()
+            .for_each(|(xe, xp)| copy_path_to_cache_and_recheck(xe, xp));
     }
 
     Ok(carry_in_paths)
