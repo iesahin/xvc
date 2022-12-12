@@ -68,7 +68,7 @@ impl PathComparisonParams {
 /// In some operations, some fields are not compared.
 /// In this case, they get the value Skipped.
 #[derive(Debug, PartialEq, Eq)]
-pub enum DeltaField<T> {
+pub enum Delta<T> {
     Identical,
     RecordMissing { actual: T },
     ActualMissing { record: T },
@@ -79,21 +79,21 @@ pub enum DeltaField<T> {
 /// Possible changes that could occur on a file path
 #[derive(Debug)]
 pub struct FileDelta {
-    pub delta_md: DeltaField<XvcMetadata>,
-    pub delta_content_digest: DeltaField<ContentDigest>,
-    pub delta_metadata_digest: DeltaField<MetadataDigest>,
-    pub delta_cache_type: DeltaField<CacheType>,
-    pub delta_text_or_binary: DeltaField<DataTextOrBinary>,
+    pub delta_md: Delta<XvcMetadata>,
+    pub delta_content_digest: Delta<ContentDigest>,
+    pub delta_metadata_digest: Delta<MetadataDigest>,
+    pub delta_cache_type: Delta<CacheType>,
+    pub delta_text_or_binary: Delta<DataTextOrBinary>,
 }
 
 impl FileDelta {
     /// Returns whether the denoted path has changed, by checking whether fields are None
     pub fn shows_change(&self) -> bool {
-        !(self.delta_md == DeltaField::Identical
-            && self.delta_cache_type == DeltaField::Identical
-            && self.delta_metadata_digest == DeltaField::Identical
-            && self.delta_content_digest == DeltaField::Identical
-            && self.delta_text_or_binary == DeltaField::Identical)
+        !(self.delta_md == Delta::Identical
+            && self.delta_cache_type == Delta::Identical
+            && self.delta_metadata_digest == Delta::Identical
+            && self.delta_content_digest == Delta::Identical
+            && self.delta_text_or_binary == Delta::Identical)
     }
 }
 
@@ -103,21 +103,21 @@ pub type FileDeltaStore = HStore<FileDelta>;
 #[derive(Debug)]
 pub struct DirectoryDelta {
     /// Changes in recorded [XvcMetadata]
-    pub delta_xvc_metadata: DeltaField<XvcMetadata>,
+    pub delta_xvc_metadata: Delta<XvcMetadata>,
     /// This is calculated using the sorted collection of [XvcPath] names a directory contains.
-    pub delta_collection_digest: DeltaField<CollectionDigest>,
+    pub delta_collection_digest: Delta<CollectionDigest>,
     /// The difference in the merged metadata digests.
-    pub delta_metadata_digest: DeltaField<MetadataDigest>,
+    pub delta_metadata_digest: Delta<MetadataDigest>,
     /// The difference in the merged content digests.
-    pub delta_content_digest: DeltaField<ContentDigest>,
+    pub delta_content_digest: Delta<ContentDigest>,
 }
 
 impl DirectoryDelta {
     /// Returns whether the denoted path has changed, by checking whether fields are None
     pub fn shows_change(&self) -> bool {
-        !(self.delta_collection_digest == DeltaField::Identical
-            && self.delta_collection_digest == DeltaField::Identical
-            && self.delta_collection_digest == DeltaField::Identical)
+        !(self.delta_collection_digest == Delta::Identical
+            && self.delta_collection_digest == Delta::Identical
+            && self.delta_collection_digest == Delta::Identical)
     }
 }
 
@@ -129,48 +129,48 @@ pub fn update_path_comparison_params_with_actual_info(
 ) -> PathComparisonParams {
     for (xe, fd) in file_delta_store.map.iter() {
         match fd.delta_md {
-            DeltaField::RecordMissing { actual } => {
+            Delta::RecordMissing { actual } => {
                 pcp.xvc_metadata_store.insert(*xe, actual);
             }
-            DeltaField::Different { actual, .. } => {
+            Delta::Different { actual, .. } => {
                 pcp.xvc_metadata_store.insert(*xe, actual);
             }
             _ => {}
         }
 
         match fd.delta_metadata_digest {
-            DeltaField::RecordMissing { actual } => {
+            Delta::RecordMissing { actual } => {
                 pcp.metadata_digest_store.insert(*xe, actual);
             }
-            DeltaField::Different { actual, .. } => {
+            Delta::Different { actual, .. } => {
                 pcp.metadata_digest_store.insert(*xe, actual);
             }
             _ => {}
         }
 
         match fd.delta_content_digest {
-            DeltaField::RecordMissing { actual } => {
+            Delta::RecordMissing { actual } => {
                 pcp.content_digest_store.insert(*xe, actual);
             }
-            DeltaField::Different { actual, .. } => {
+            Delta::Different { actual, .. } => {
                 pcp.content_digest_store.insert(*xe, actual);
             }
             _ => {}
         }
         match fd.delta_cache_type {
-            DeltaField::RecordMissing { actual } => {
+            Delta::RecordMissing { actual } => {
                 pcp.cache_type_store.insert(*xe, actual);
             }
-            DeltaField::Different { actual, .. } => {
+            Delta::Different { actual, .. } => {
                 pcp.cache_type_store.insert(*xe, actual);
             }
             _ => {}
         }
         match fd.delta_text_or_binary {
-            DeltaField::RecordMissing { actual } => {
+            Delta::RecordMissing { actual } => {
                 pcp.text_or_binary_store.insert(*xe, actual);
             }
-            DeltaField::Different { actual, .. } => {
+            Delta::Different { actual, .. } => {
                 pcp.text_or_binary_store.insert(*xe, actual);
             }
             _ => {}
@@ -302,11 +302,11 @@ pub fn find_dir_changes_serial(
                 .map(|xe| {
                     if let Some(dd) = dir_delta_store.get(xe) {
                         match dd.delta_metadata_digest {
-                            DeltaField::Different { actual, .. } => actual,
-                            DeltaField::RecordMissing { actual } => actual,
-                            DeltaField::Identical => pcp.metadata_digest_store[xe],
-                            DeltaField::ActualMissing { record } => MetadataDigest(None),
-                            DeltaField::Skipped => pcp.metadata_digest_store[xe],
+                            Delta::Different { actual, .. } => actual,
+                            Delta::RecordMissing { actual } => actual,
+                            Delta::Identical => pcp.metadata_digest_store[xe],
+                            Delta::ActualMissing { record } => MetadataDigest(None),
+                            Delta::Skipped => pcp.metadata_digest_store[xe],
                         }
                     } else {
                         *pcp.metadata_digest_store
@@ -332,11 +332,11 @@ pub fn find_dir_changes_serial(
                 .map(|xe| {
                     if let Some(dd) = dir_delta_store.get(xe) {
                         match dd.delta_content_digest {
-                            DeltaField::Different { actual, .. } => actual,
-                            DeltaField::RecordMissing { actual } => actual,
-                            DeltaField::Identical => pcp.content_digest_store[xe],
-                            DeltaField::ActualMissing { record } => ContentDigest(None),
-                            DeltaField::Skipped => pcp.content_digest_store[xe],
+                            Delta::Different { actual, .. } => actual,
+                            Delta::RecordMissing { actual } => actual,
+                            Delta::Identical => pcp.content_digest_store[xe],
+                            Delta::ActualMissing { record } => ContentDigest(None),
+                            Delta::Skipped => pcp.content_digest_store[xe],
                         }
                     } else {
                         *pcp.content_digest_store
@@ -371,14 +371,14 @@ pub fn find_dir_changes_serial(
             )));
 
             let delta_collection_digest = match pcp.collection_digest_store.get(&dir_xe) {
-                None => DeltaField::RecordMissing {
+                None => Delta::RecordMissing {
                     actual: new_collection_digest,
                 },
                 Some(prev_collection_digest) => {
                     if *prev_collection_digest == new_collection_digest {
-                        DeltaField::Identical
+                        Delta::Identical
                     } else {
-                        DeltaField::Different {
+                        Delta::Different {
                             record: *prev_collection_digest,
                             actual: new_collection_digest,
                         }
@@ -387,14 +387,14 @@ pub fn find_dir_changes_serial(
             };
 
             let delta_metadata_digest = match pcp.metadata_digest_store.get(&dir_xe) {
-                None => DeltaField::RecordMissing {
+                None => Delta::RecordMissing {
                     actual: new_metadata_digest,
                 },
                 Some(prev_metadata_digest) => {
                     if *prev_metadata_digest == new_metadata_digest {
-                        DeltaField::Identical
+                        Delta::Identical
                     } else {
-                        DeltaField::Different {
+                        Delta::Different {
                             record: *prev_metadata_digest,
                             actual: new_metadata_digest,
                         }
@@ -403,14 +403,14 @@ pub fn find_dir_changes_serial(
             };
 
             let delta_content_digest = match pcp.content_digest_store.get(&dir_xe) {
-                None => DeltaField::RecordMissing {
+                None => Delta::RecordMissing {
                     actual: new_content_digest,
                 },
                 Some(prev_content_digest) => {
                     if *prev_content_digest == new_content_digest {
-                        DeltaField::Identical
+                        Delta::Identical
                     } else {
-                        DeltaField::Different {
+                        Delta::Different {
                             record: *prev_content_digest,
                             actual: new_content_digest,
                         }
@@ -419,12 +419,12 @@ pub fn find_dir_changes_serial(
             };
 
             let delta_xvc_metadata = match pcp.xvc_metadata_store.get(&dir_xe) {
-                None => DeltaField::RecordMissing { actual: x_md },
+                None => Delta::RecordMissing { actual: x_md },
                 Some(prev_md) => {
                     if x_md == *prev_md {
-                        DeltaField::Identical
+                        Delta::Identical
                     } else {
-                        DeltaField::Different {
+                        Delta::Different {
                             record: *prev_md,
                             actual: x_md,
                         }
@@ -667,14 +667,14 @@ fn xvc_file_diff(
     let recorded_tob = pcp.text_or_binary_store.get(xvc_entity);
 
     let delta_text_or_binary = match recorded_tob {
-        None => DeltaField::RecordMissing {
+        None => Delta::RecordMissing {
             actual: text_or_binary.clone(),
         },
         Some(prev_tob) => {
             if *prev_tob == *text_or_binary {
-                DeltaField::Identical
+                Delta::Identical
             } else {
-                DeltaField::Different {
+                Delta::Different {
                     record: *prev_tob,
                     actual: *text_or_binary,
                 }
@@ -685,14 +685,14 @@ fn xvc_file_diff(
     let recorded_cache_type = pcp.cache_type_store.get(xvc_entity);
 
     let delta_cache_type = match recorded_cache_type {
-        None => DeltaField::RecordMissing {
+        None => Delta::RecordMissing {
             actual: *cache_type,
         },
         Some(prev_cache_type) => {
             if *prev_cache_type == *cache_type {
-                DeltaField::Identical
+                Delta::Identical
             } else {
-                DeltaField::Different {
+                Delta::Different {
                     actual: *cache_type,
                     record: *prev_cache_type,
                 }
@@ -711,7 +711,7 @@ fn xvc_file_diff(
                     path: xvc_path.to_absolute_path(xvc_root).to_path_buf(),
                 });
             } else {
-                DeltaField::RecordMissing {
+                Delta::RecordMissing {
                     actual: actual_md.clone(),
                 }
             }
@@ -719,12 +719,12 @@ fn xvc_file_diff(
 
         Some(prev_md) => {
             if actual_md.file_type == XvcFileType::RecordOnly {
-                DeltaField::<XvcMetadata>::ActualMissing { record: *prev_md }
+                Delta::<XvcMetadata>::ActualMissing { record: *prev_md }
             } else {
                 if *prev_md == *actual_md {
-                    DeltaField::<XvcMetadata>::Identical
+                    Delta::<XvcMetadata>::Identical
                 } else {
-                    DeltaField::<XvcMetadata>::Different {
+                    Delta::<XvcMetadata>::Different {
                         record: *prev_md,
                         actual: *actual_md,
                     }
@@ -733,15 +733,15 @@ fn xvc_file_diff(
         }
     };
 
-    let delta_metadata_digest: DeltaField<MetadataDigest> = match delta_md {
-        DeltaField::Identical => DeltaField::Identical,
-        DeltaField::Skipped => DeltaField::Skipped,
-        DeltaField::RecordMissing { actual } => DeltaField::RecordMissing {
+    let delta_metadata_digest: Delta<MetadataDigest> = match delta_md {
+        Delta::Identical => Delta::Identical,
+        Delta::Skipped => Delta::Skipped,
+        Delta::RecordMissing { actual } => Delta::RecordMissing {
             actual: actual.digest()?,
         },
-        DeltaField::ActualMissing { record } => {
+        Delta::ActualMissing { record } => {
             if let Some(record) = pcp.metadata_digest_store.get(xvc_entity) {
-                DeltaField::ActualMissing {
+                Delta::ActualMissing {
                     record: record.clone(),
                 }
             } else {
@@ -751,9 +751,9 @@ fn xvc_file_diff(
                 .into());
             }
         }
-        DeltaField::Different { record, actual } => {
+        Delta::Different { record, actual } => {
             if let Some(record) = pcp.metadata_digest_store.get(xvc_entity) {
-                DeltaField::Different {
+                Delta::Different {
                     record: record.clone(),
                     actual: actual.digest()?,
                 }
@@ -766,15 +766,15 @@ fn xvc_file_diff(
         }
     };
 
-    let delta_content_digest: DeltaField<ContentDigest> = match delta_md {
-        DeltaField::Identical => DeltaField::Identical,
-        DeltaField::Skipped => DeltaField::Skipped,
-        DeltaField::RecordMissing { actual } => DeltaField::RecordMissing {
+    let delta_content_digest: Delta<ContentDigest> = match delta_md {
+        Delta::Identical => Delta::Identical,
+        Delta::Skipped => Delta::Skipped,
+        Delta::RecordMissing { actual } => Delta::RecordMissing {
             actual: xvc_path.digest(xvc_root, pcp.algorithm, text_or_binary)?,
         },
-        DeltaField::ActualMissing { record } => {
+        Delta::ActualMissing { record } => {
             if let Some(record) = pcp.content_digest_store.get(xvc_entity) {
-                DeltaField::ActualMissing {
+                Delta::ActualMissing {
                     record: record.clone(),
                 }
             } else {
@@ -785,14 +785,14 @@ fn xvc_file_diff(
             }
         }
         // We check whether the content actually changed here
-        DeltaField::Different { record, actual } => {
+        Delta::Different { record, actual } => {
             if let Some(record) = pcp.content_digest_store.get(xvc_entity) {
                 let record = record.clone();
                 let actual = xvc_path.digest(xvc_root, pcp.algorithm, text_or_binary)?;
                 if record == actual {
-                    DeltaField::Identical
+                    Delta::Identical
                 } else {
-                    DeltaField::Different {
+                    Delta::Different {
                         record: record.clone(),
                         actual: xvc_path.digest(xvc_root, pcp.algorithm, text_or_binary)?,
                     }
