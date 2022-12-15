@@ -97,11 +97,7 @@ where
 
     /// This is used to create a store from actual values where the entity may
     /// or may not already be in the store.
-    pub fn from_storable<I>(
-        values: I,
-        store: &XvcStore<T>,
-        gen: &XvcEntityGenerator,
-    ) -> Result<HStore<T>>
+    pub fn from_storable<I>(values: I, store: &XvcStore<T>, gen: &XvcEntityGenerator) -> HStore<T>
     where
         I: IntoIterator<Item = T>,
     {
@@ -113,7 +109,7 @@ where
             };
             hstore.map.insert(key, value.clone());
         }
-        Ok(hstore)
+        hstore
     }
 }
 
@@ -154,19 +150,6 @@ impl<T> HStore<T> {
                 Ok(None) => break,
                 Err(err) => return Err(err),
             };
-            let key = gen.next_element();
-            hstore.map.insert(key, value);
-        }
-        Ok(hstore)
-    }
-
-    /// Creates values from `iter` and gets new entities from `gen` to create new records.
-    pub fn from_iter<I>(gen: &XvcEntityGenerator, iter: I) -> Result<HStore<T>>
-    where
-        I: IntoIterator<Item = T>,
-    {
-        let mut hstore = HStore::<T>::new();
-        for value in iter {
             let key = gen.next_element();
             hstore.map.insert(key, value);
         }
@@ -250,5 +233,24 @@ impl<T> HStore<T> {
             }
         }
         Ok(Self { map })
+    }
+}
+
+impl<T: Clone> HStore<T> {
+    /// Creates a new map by calling the `predicate` with each value.
+    ///
+    /// `predicate` must be a function or closure that returns `bool`.
+    pub fn filter<F>(&self, predicate: F) -> Self
+    where
+        F: Fn(&XvcEntity, &T) -> bool,
+    {
+        let mut m = HashMap::<XvcEntity, T>::new();
+        for (e, v) in self.map.iter() {
+            if predicate(e, v) {
+                m.insert(*e, v.clone());
+            }
+        }
+
+        Self { map: m }
     }
 }

@@ -551,7 +551,7 @@ pub fn cmd_list(
                     .get(xvc_entity)
                     .map(|d| d.as_inner())
                     .unwrap_or_else(|| TextOrBinary::Auto);
-                Some(calc_digest(&pm.path, &pcp.algorithm, text_or_binary)?.into())
+                Some(calc_digest(&pm.path, pcp.algorithm, text_or_binary)?.into())
             } else {
                 None
             };
@@ -564,7 +564,7 @@ pub fn cmd_list(
             found_entities.push(xvc_entity.clone());
         } else {
             let digest = if calculate_content_hash && (pm.path.as_path().is_file()) {
-                Some(calc_digest(&pm.path, &pcp.algorithm, TextOrBinary::Auto)?.into())
+                Some(calc_digest(&pm.path, pcp.algorithm, TextOrBinary::Auto)?.into())
             } else {
                 None
             };

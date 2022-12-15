@@ -3,7 +3,7 @@ use crossbeam_channel::{bounded, Sender};
 use derive_more::{AsRef, Deref, Display, From, FromStr};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::Write;
 
 use xvc_config::{conf, FromConfigKey};
@@ -11,8 +11,8 @@ use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::{
-    all_paths_and_metadata, MetadataDigest, XvcCachePath, XvcFileType, XvcPathMetadataMap,
-    CHANNEL_BOUND,
+    all_paths_and_metadata, Diff, Diff3, DiffStore3, MetadataDigest, XvcCachePath, XvcFileType,
+    XvcPathMetadataMap, CHANNEL_BOUND,
 };
 use xvc_core::{CollectionDigest, ContentDigest, HashAlgorithm};
 use xvc_core::{XvcRoot, XVCIGNORE_FILENAME};
@@ -23,16 +23,16 @@ use xvc_walker::{
 };
 
 use crate::common::compare::{
-    diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata, Diff, Diff3,
+    diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata,
     PathComparisonParams,
 };
 use crate::common::{
-    decide_no_parallel, expand_xvc_dir_file_targets, move_to_cache, pathbuf_to_xvc_target,
-    recheck_from_cache, split_file_directory_targets, targets_from_store, update_file_records,
+    decide_no_parallel, expand_xvc_dir_file_targets, move_to_cache, only_file_targets,
+    pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets, targets_from_store,
+    xvc_path_metadata_map_from_disk,
 };
+use crate::common::{update_store_records, FileTextOrBinary};
 use crate::error::{Error, Result};
-use crate::recheck::recheck_serial;
-use crate::track::FileTextOrBinary;
 
 use std::fs::{self, OpenOptions};
 
@@ -47,25 +47,6 @@ use xvc_ecs::XvcEntity;
 use xvc_ecs::{persist, HStore, XvcStore};
 use xvc_ecs::{R11Store, Storable};
 
-/// Represents whether a file is a text file or not
-#[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Serialize,
-    Deserialize,
-    Hash,
-    Display,
-    FromStr,
-    From,
-    AsRef,
-    Deref,
-    Default,
-    Copy,
-)]
 ///
 /// Carry in (commit) changed files/directories to the cache.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -139,56 +120,52 @@ pub fn cmd_carry_in(
 ) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
-
-    targets = targets_from_store(xvc_root, opts.targets)?;
+    let current_dir = conf.current_dir()?;
+    let targets = targets_from_store(xvc_root, current_dir, opts.targets)?;
 
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
 
-    // We only get the targets' actual metadata to see what has changed
-    // This prevents to traverse all files in the repository.
-    let target_xvc_path_metadata_map: HStore<XvcMetadata> = target_xvc_path
-        .par_iter()
-        .map(|(xe, xp)| {
-            let p = xp.to_absolute_path(xvc_root);
-            let xmd = XvcMetadata::from(p.metadata());
-            (xp.clone(), xmd)
-        })
-        .collect();
+    let xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+    let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    let target_files = only_file_targets(&xvc_path_store, &xvc_metadata_store, &targets)?;
 
-    let xvc_path_metadata_diff =
-        diff_xvc_path_metadata(&xvc_path_store, &xvc_metadata_store, &target_xvc_metadata);
+    let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
+    let xvc_path_metadata_diff = diff_xvc_path_metadata(
+        xvc_root,
+        &xvc_path_store,
+        &xvc_metadata_store,
+        &target_xvc_path_metadata_map,
+    );
 
     let stored_text_or_binary_store: XvcStore<FileTextOrBinary> = xvc_root.load_store()?;
     let text_or_binary_diff = diff_text_or_binary(
         &stored_text_or_binary_store,
-        text_or_binary,
-        HashSet::from_iter(target_xvc_path.keys().copied()),
+        &opts.text_or_binary.unwrap_or_default(),
+        &HashSet::from_iter(targets.keys().copied()),
     );
-
     let stored_content_digest_store: XvcStore<ContentDigest> = xvc_root.load_store()?;
 
-    let preprequisite_diffs = Diff3::new(
-        xvc_path_metadata_diff.0,
-        xvc_path_metadata_diff.1,
-        text_or_binary_diff,
-    );
+    let xvc_path_diff = xvc_path_metadata_diff.0;
+    let xvc_metadata_diff = xvc_path_metadata_diff.1;
+    let prerequisite_diffs = DiffStore3(xvc_path_diff, xvc_metadata_diff, text_or_binary_diff);
 
     let content_digest_diff = diff_content_digest(
+        output_snd,
         xvc_root,
-        &target_xvc_path,
+        &xvc_path_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
-        prerequisite_diffs,
-        requested_text_or_binary,
-        requested_hash_algorithm,
+        &prerequisite_diffs,
+        &opts.text_or_binary,
+        &None,
         !opts.no_parallel,
     );
 
     let xvc_paths_to_carry = if opts.force {
-        target_xvc_path
+        target_files
     } else {
-        target_xvc_path.filter(|xe, _| {
+        target_files.filter(|xe, _| {
             content_digest_diff[&xe].changed() || text_or_binary_diff[&xe].changed()
         })
     };
@@ -200,7 +177,7 @@ pub fn cmd_carry_in(
                 // use stored digest for cache path
                 info!(output_snd, "[FORCE] {xp} is identical to cached copy.");
                 let digest = stored_content_digest_store.get(xe).unwrap();
-                Some((xe, cache_path_from_digest(xvc_root, digest)))
+                Some((*xe, uwr!(XvcCachePath::new(xp, digest), output_snd)))
             }
             Diff::ActualMissing { record } => {
                 // carry-in shouldn't be used to delete files from cache
@@ -213,13 +190,14 @@ pub fn cmd_carry_in(
                 // carry-in shouldn't be used to track new files.
                 // This is a bug in the code.
                 warn!(output_snd, "Record missing for {:?}. This is a bug. Please report.", xp);
+                None
             }
             Diff::Different { actual, .. } => {
                 // use actual digest for cache path
                 info!(
                     output_snd,
                     "[CHANGED] {xp}");
-                Some((xe, cache_path_from_digest(xvc_root, actual)))
+                Some((*xe, uwr!(XvcCachePath::new(xp, &actual), output_snd)))
             }
         })
         .collect();
@@ -235,7 +213,9 @@ pub fn cmd_carry_in(
         !opts.no_parallel,
     )?;
 
-    update_file_records(xvc_root, &file_delta_store)?;
+    // We only update the records for existing paths.
+    update_store_records(xvc_root, &text_or_binary_diff, false, false)?;
+    update_store_records(xvc_root, &content_digest_diff, false, false)?;
 
     Ok(())
 }
@@ -246,31 +226,37 @@ pub fn cmd_carry_in(
 pub fn carry_in(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    xvc_paths: &XvcStore<XvcPath>,
+    xvc_paths_to_carry: &XvcStore<XvcPath>,
     cache_paths: &HStore<XvcCachePath>,
     cache_types: &XvcStore<CacheType>,
     parallel: bool,
-) -> Result<HStore<XvcPath>> {
+) -> Result<()> {
+    assert! {
+        xvc_paths_to_carry.len() == cache_paths.len(),
+        "The number of xvc paths and the number of cache paths should be the same."
+    }
+
     let copy_path_to_cache_and_recheck = |xe, xp| {
+        let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
         uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
         let cache_type = uwo!(cache_types.get(xe).cloned(), output_snd);
-        info!(output_snd, "[CARRY] {xp} -> {cp}");
+        info!(output_snd, "[CARRY] {xp} -> {cache_path}");
         uwr!(
-            recheck_from_cache(xvc_root, xp, cache_path, cache_type),
+            recheck_from_cache(output_snd, xvc_root, xp, &cache_path, cache_type),
             output_snd
         );
-        info!(output_snd, "[RECHECK] {cp} -> {xp}");
+        info!(output_snd, "[RECHECK] {cache_path} -> {xp}");
     };
 
     if parallel {
-        carry_in_paths
+        xvc_paths_to_carry
             .par_iter()
             .for_each(|(xe, xp)| copy_path_to_cache_and_recheck(xe, xp));
     } else {
-        carry_in_paths
+        xvc_paths_to_carry
             .iter()
             .for_each(|(xe, xp)| copy_path_to_cache_and_recheck(xe, xp));
     }
 
-    Ok(carry_in_paths)
+    Ok(())
 }

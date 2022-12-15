@@ -2,30 +2,27 @@
 //!
 //! - [RecheckCLI] describes the command line options.
 //! - [cmd_recheck] is the entry point for the command line.
+use std::collections::HashSet;
 use std::fs;
 
-use crate::{
-    common::{
-        cache_path,
-        compare::{
-            find_file_changes_parallel, find_file_changes_serial, Diff, FileDelta, FileDeltaStore,
-            PathComparisonParams,
-        },
-        recheck_from_cache,
-    },
-    track::FileTextOrBinary,
-    Result,
+use crate::common::compare::{
+    diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata,
 };
+use crate::common::{
+    only_file_targets, targets_from_store, update_store_records, xvc_path_metadata_map_from_disk,
+    FileTextOrBinary,
+};
+use crate::{common::recheck_from_cache, Result};
 use clap::Parser;
 use crossbeam_channel::Sender;
-use log::error;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_core::{
-    CacheType, TextOrBinary, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    apply_diff, CacheType, ContentDigest, Diff, Diff3, DiffStore, HashAlgorithm, TextOrBinary,
+    XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_ecs::XvcEntity;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_ecs::{XvcEntity, XvcStore};
+use xvc_logging::{error, warn, watch, XvcOutputLine};
 use xvc_walker::Glob;
 
 /// Check out file from cache by a copy or link
@@ -93,269 +90,147 @@ pub fn cmd_recheck(
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = opts.targets.map(|v| {
-        let r = xvc_root.absolute_path().to_str();
-        v.iter()
-            .map(|t| format!("{}{}", current_dir.strip_prefix(r), t))
-            .collect::<Vec<String>>()
-    });
+    let targets = targets_from_store(xvc_root, current_dir, opts.targets)?;
     let xvc_current_dir = XvcPath::new(xvc_root, current_dir, current_dir)?;
     watch!(xvc_current_dir);
 
-    let pcp = PathComparisonParams::init(xvc_root)?;
-    let path_store = pcp.xvc_path_store.clone();
-
-    watch!(opts.targets);
-
-    let target_store = if opts.targets.is_empty() {
-        path_store
-    } else {
-        let mut globsetb = xvc_walker::GlobSetBuilder::new();
-        for t in opts.targets.clone() {
-            let pat = format!(
-                "{xvc_current_dir}{}",
-                if t.ends_with('/') {
-                    &t[..(t.len() - 1)]
-                } else {
-                    &t
-                }
-            );
-
-            match Glob::new(&pat) {
-                Ok(g) => {
-                    globsetb.add(g);
-                }
-                Err(e) => {
-                    output_snd
-                        .send(XvcOutputLine::Warn(format!("Error in glob: {} {}", t, e)))
-                        .unwrap();
-                }
-            }
-        }
-        let globset = globsetb.build().map_err(|e| xvc_walker::Error::from(e))?;
-
-        path_store.filter(|_, p| globset.is_match(p.to_string()))
-    };
-    let no_parallel = opts.no_parallel || target_store.len() < crate::common::PARALLEL_THRESHOLD;
-
     let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
-    let text_or_binary = opts
-        .text_or_binary
-        .unwrap_or_else(|| FileTextOrBinary::from(TextOrBinary::Auto));
+    let text_or_binary = opts.text_or_binary.unwrap_or_default();
 
-    let mut file_targets = XvcPathMetadataMap::new();
-    watch!(pcp.xvc_metadata_store);
-    let xvc_targets: XvcPathMetadataMap = target_store
-        .iter()
-        .map(|(xe, xp)| {
-            watch!(xp);
-            watch!(xe);
-            (
-                xp.clone(),
-                pcp.xvc_metadata_store
-                    .get(xe)
-                    .cloned()
-                    .unwrap_or_else(|| XvcMetadata {
-                        file_type: XvcFileType::RecordOnly,
-                        size: None,
-                        modified: None,
-                    }),
-            )
-        })
-        .collect();
+    let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+    let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    let target_files = only_file_targets(&stored_xvc_path_store, &xvc_metadata_store, &targets)?;
+    let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
 
-    watch!(xvc_targets.len());
+    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
+    let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
+    let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
+    let cache_type_diff = diff_cache_type(&stored_cache_type_store, &cache_type, &entities);
+    let mut cache_type_targets = cache_type_diff.filter(|_, d| d.changed());
 
-    for (xvc_path, x_md) in xvc_targets.iter() {
-        watch!(xvc_path);
-        watch!(x_md);
-        if x_md.file_type == XvcFileType::Directory {
-            for (child_e, child_path) in pcp.xvc_path_store.iter() {
-                watch!(child_path);
-                if child_path.starts_with(xvc_path) {
-                    let child_md = pcp
-                        .xvc_metadata_store
-                        .get(child_e)
-                        .cloned()
-                        .unwrap_or_default();
-                    if child_md.file_type == XvcFileType::File {
-                        watch!(child_path);
-                        let actual_md = XvcMetadata::from(
-                            child_path.to_absolute_path(xvc_root).symlink_metadata(),
-                        );
-                        file_targets.insert(child_path.clone(), actual_md);
-                    }
-                }
-            }
-        } else if x_md.file_type == XvcFileType::File {
-            let actual_md =
-                XvcMetadata::from(xvc_path.to_absolute_path(xvc_root).symlink_metadata());
-            file_targets.insert(xvc_path.clone(), actual_md);
+    let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
+    let text_or_binary_diff = diff_text_or_binary(
+        &stored_text_or_binary_store,
+        &text_or_binary,
+        target_files.keys().copied(),
+    );
+
+    let xvc_path_metadata_diff = diff_xvc_path_metadata(
+        xvc_root,
+        &stored_xvc_path_store,
+        &xvc_metadata_store,
+        &target_xvc_path_metadata_map,
+    );
+    let xvc_path_diff: DiffStore<XvcPath> = xvc_path_metadata_diff.0;
+    let xvc_metadata_diff: DiffStore<XvcMetadata> = xvc_path_metadata_diff.1;
+
+    let prerequisite_diffs = Diff3::new(xvc_path_diff, xvc_metadata_diff, text_or_binary_diff);
+
+    let algorithm = HashAlgorithm::from_conf(conf);
+
+    let content_digest_diff = diff_content_digest(
+        xvc_root,
+        &stored_xvc_path_store,
+        &stored_xvc_path_store,
+        &stored_content_digest_store,
+        &stored_text_or_binary_store,
+        &prerequisite_diffs,
+        text_or_binary,
+        algorithm,
+        !opts.no_parallel,
+    );
+
+    cache_type_targets.retain(|xe, d| {
+        if content_digest_diff.contains_key(xe) && content_digest_diff[&xe].changed() {
+            let xp = stored_xvc_path_store[&xe];
+            warn!(
+                output_snd,
+                "{} has changed on disk. Either carry in, force, or delete the target to recheck. ",
+                xp
+            );
+            return false;
+        } else {
+            return true;
         }
-    }
+    });
 
-    watch!(opts.targets);
-    watch!(xvc_targets);
-    watch!(file_targets);
+    let missing_targets = xvc_metadata_diff.filter(|_, d| matches!(d, Diff::ActualMissing { .. }));
 
-    if no_parallel {
-        let file_delta_store =
-            find_file_changes_serial(xvc_root, &pcp, &cache_type, &text_or_binary, &file_targets)?;
+    // We recheck files
+    // - if they are not in the workspace
+    // - if their cache type is different from the current cache type
+    // - if they are in the workspace but force is set
 
-        watch!(file_delta_store);
+    let files_to_recheck = target_files.filter(|xe, _| {
+        opts.force || cache_type_targets.contains_key(xe) || missing_targets.contains_key(xe)
+    });
 
-        recheck_serial(
-            output_snd,
-            xvc_root,
-            cache_type,
-            opts.force,
-            &pcp,
-            &file_delta_store,
-        )
-    } else {
-        let file_delta_store = find_file_changes_parallel(
-            xvc_root,
-            &pcp,
-            &cache_type,
-            &text_or_binary,
-            &file_targets,
-        )?;
-        watch!(file_delta_store);
-        recheck_parallel(
-            output_snd,
-            xvc_root,
-            cache_type,
-            opts.force,
-            &pcp,
-            &file_delta_store,
-        )
-    }
+    let updated_cache_type_store =
+        apply_diff(&stored_cache_type_store, cache_type_diff, true, false)?;
+    let updated_content_digest_store = apply_diff(
+        &stored_content_digest_store,
+        content_digest_diff,
+        true,
+        false,
+    )?;
+
+    recheck(
+        &output_snd,
+        xvc_root,
+        &files_to_recheck,
+        &updated_cache_type_store,
+        &updated_content_digest_store,
+        opts.no_parallel,
+    );
+
+    xvc_root.save_store(&updated_cache_type_store)?;
+    xvc_root.save_store(&updated_content_digest_store)?;
+
+    Ok(())
 }
 
-fn recheck_inner(
+fn recheck(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    cache_type: CacheType,
-    force: bool,
-    path_comparison_params: &PathComparisonParams,
-    path_delta_store: &FileDeltaStore,
-    xvc_entity: &XvcEntity,
-    path_delta: &FileDelta,
+    files_to_recheck: &XvcStore<XvcPath>,
+    cache_type_store: &XvcStore<CacheType>,
+    content_digest_store: &XvcStore<ContentDigest>,
+    parallel: bool,
 ) -> Result<()> {
-    watch!(xvc_entity);
-    let xvc_path = &path_comparison_params.xvc_path_store[xvc_entity];
-    watch!(xvc_path);
-
-    let content_digest = path_comparison_params
-        .content_digest_store
-        .get(&xvc_entity)
-        .ok_or_else(|| xvc_ecs::Error::CannotFindKeyInStore {
-            key: usize::from(*xvc_entity),
-        })?;
-
-    watch!(content_digest);
-
-    let checkout = || -> Result<()> {
-        let cache_path = cache_path(&xvc_path, &content_digest);
+    let checkout = |xe, xvc_path| -> Result<()> {
+        let content_digest = content_digest_store[&xe];
+        let cache_path = XvcCachePath::new(&xvc_path, &content_digest)?;
         watch!(cache_path);
         if cache_path.to_absolute_path(xvc_root).exists() {
             let target_path = xvc_path.to_absolute_path(xvc_root);
             watch!(target_path);
             if target_path.exists() {
+                warn!(
+                    output_snd,
+                    "{} already exists. Removing to recheck.", xvc_path
+                );
                 fs::remove_file(target_path)?;
             }
-            recheck_from_cache(xvc_root, &xvc_path, &cache_path, cache_type)
+            let cache_type = cache_type_store[&xe];
+            recheck_from_cache(output_snd, xvc_root, &xvc_path, &cache_path, cache_type)
         } else {
-            error!("{} cannot found in cache", xvc_path);
+            error!(
+                output_snd,
+                "{} cannot found in cache: {}", xvc_path, cache_path
+            );
             Ok(())
         }
     };
 
-    watch!(path_delta.delta_content_digest);
-
-    match path_delta.delta_content_digest {
-        Diff::Identical | Diff::Skipped => {
-            if force {
-                output_snd.send(XvcOutputLine::Info(format!(
-                    "{xvc_path} already exists. Overwriting."
-                )))?;
-                checkout()?;
-            } else {
-                output_snd.send(XvcOutputLine::Warn(format!(
-                    "{xvc_path} already exists. Use --force to overwrite"
-                )))?;
-            }
-        }
-        Diff::RecordMissing { .. } => {
-            output_snd.send(XvcOutputLine::Error(format!("No record for {xvc_path}")))?;
-        }
-        Diff::ActualMissing { .. } => {
-            checkout()?;
-        }
-        Diff::Different { .. } => {
-            if force {
-                checkout()?;
-            } else {
-                output_snd.send(XvcOutputLine::Warn(format!(
-                    "{xvc_path} has changed, use --force to overwrite"
-                )))?;
-            }
-        }
-    }
-
-    Ok(())
-}
-
-pub fn recheck_serial(
-    output_snd: Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    cache_type: CacheType,
-    force: bool,
-    path_comparison_params: &PathComparisonParams,
-    file_delta_store: &FileDeltaStore,
-) -> Result<()> {
-    watch!(file_delta_store.len());
-    for (xvc_entity, path_delta) in file_delta_store.iter() {
-        recheck_inner(
-            &output_snd,
-            xvc_root,
-            cache_type,
-            force,
-            path_comparison_params,
-            file_delta_store,
-            xvc_entity,
-            path_delta,
-        )?;
-    }
-    Ok(())
-}
-
-pub fn recheck_parallel(
-    output_snd: Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    cache_type: CacheType,
-    force: bool,
-    path_comparison_params: &PathComparisonParams,
-    path_delta_store: &FileDeltaStore,
-) -> Result<()> {
-    watch!(path_delta_store);
-    path_delta_store
-        .par_iter()
-        .for_each(|(xvc_entity, path_delta)| {
-            let _ = recheck_inner(
-                &output_snd,
-                xvc_root,
-                cache_type,
-                force,
-                path_comparison_params,
-                path_delta_store,
-                xvc_entity,
-                path_delta,
-            )
-            .map_err(|e| {
-                e.warn();
-            });
+    if parallel {
+        files_to_recheck.par_iter().for_each(|(xe, xp)| {
+            checkout(xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
         });
+    } else {
+        files_to_recheck.into_iter().for_each(|(xe, xp)| {
+            checkout(xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
+        });
+    }
 
     Ok(())
 }

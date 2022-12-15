@@ -644,11 +644,11 @@ pub trait FromConfigKey<T: FromStr> {
 macro_rules! conf {
     ($type: ty, $key: literal) => {
         impl FromConfigKey<$type> for $type {
-            fn from_conf(conf: &XvcConfig) -> $type {
+            fn from_conf(conf: &::xvc_config::XvcConfig) -> $type {
                 conf.get_val::<$type>($key).unwrap()
             }
 
-            fn try_from_conf(conf: &XvcConfig) -> xvc_config::error::Result<$type> {
+            fn try_from_conf(conf: &::xvc_config::XvcConfig) -> xvc_config::error::Result<$type> {
                 conf.get_val::<$type>($key)
             }
         }

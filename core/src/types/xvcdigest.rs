@@ -34,6 +34,11 @@ impl XvcDigest {
         format!("{}", self.algorithm)
     }
 
+    /// Digest as slice of bytes
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.digest
+    }
+
     /// Converts 32-bytes digest to a hexadecimal string
     pub fn hex_str(&self) -> String {
         hex::encode(self.digest)
@@ -58,7 +63,7 @@ impl XvcDigest {
     }
 
     /// Returns the content hash of the file in `path` calculated by `algorithm`
-    pub fn from_binary_file(path: &Path, algorithm: &HashAlgorithm) -> Result<Self> {
+    pub fn from_binary_file(path: &Path, algorithm: HashAlgorithm) -> Result<Self> {
         let content = fs::read(path)?;
         Ok(Self::from_bytes(&content, algorithm))
     }
@@ -66,7 +71,7 @@ impl XvcDigest {
     /// Returns the content hash of the text file in `path` calculated by `algorithm` The
     /// difference between `from_binary_file` function is that this function removes `CR` (13, 0x0d) and `LF` (13, 0x0d) from
     /// the content before applying the hashing to keep the calculated value consistent across OSes
-    pub fn from_text_file(path: &Path, algorithm: &HashAlgorithm) -> Result<Self> {
+    pub fn from_text_file(path: &Path, algorithm: HashAlgorithm) -> Result<Self> {
         let mut content = fs::read(path)?;
         // Delete CR and LF from the content
         content.retain(|c| !(*c == 0x0D || *c == 0x0A));
@@ -74,12 +79,12 @@ impl XvcDigest {
     }
 
     /// Returns the digest of the `content` calculated by `algorithm`
-    pub fn from_content(content: &str, algorithm: &HashAlgorithm) -> Self {
+    pub fn from_content(content: &str, algorithm: HashAlgorithm) -> Self {
         Self::from_bytes(content.as_bytes(), algorithm)
     }
 
     /// Returns the digest for `bytes` with the `algorithm`.
-    pub fn from_bytes(bytes: &[u8], algorithm: &HashAlgorithm) -> Self {
+    pub fn from_bytes(bytes: &[u8], algorithm: HashAlgorithm) -> Self {
         let digest: Digest32 = match algorithm {
             HashAlgorithm::Blake3 => Self::blake3_digest(bytes),
             HashAlgorithm::Blake2s => Self::blake2s_digest(bytes),
@@ -92,10 +97,7 @@ impl XvcDigest {
             }
         };
 
-        Self {
-            algorithm: *algorithm,
-            digest,
-        }
+        Self { algorithm, digest }
     }
 
     fn blake2s_digest(bytes: &[u8]) -> Digest32 {
@@ -217,7 +219,7 @@ impl Display for CollectionDigest {
 /// Returns a stable digest of the list of paths.
 pub fn collection_digest(
     paths: &XvcPathMetadataMap,
-    algorithm: &HashAlgorithm,
+    algorithm: HashAlgorithm,
 ) -> Result<CollectionDigest> {
     let paths_str = paths.keys().fold("".to_string(), |mut s, xp| {
         s.push_str(xp.as_ref());

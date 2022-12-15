@@ -5,8 +5,8 @@ use super::event::Event;
 use super::event::EventLog;
 use super::*;
 use crate::error::{Error, Result};
-use crate::Storable;
-use std::collections::BTreeMap;
+use crate::{HStore, Storable};
+use std::collections::{BTreeMap, HashMap};
 use std::fmt::Debug;
 use std::path::Path;
 use std::path::PathBuf;
@@ -223,18 +223,20 @@ where
     /// Creates a new map by calling the `predicate` with each value.
     ///
     /// `predicate` must be a function or closure that returns `bool`.
-    pub fn filter<F>(&self, predicate: F) -> Self
+    ///
+    /// This returns [HStore] not to create a new event log.
+    pub fn filter<F>(&self, predicate: F) -> HStore<T>
     where
         F: Fn(&XvcEntity, &T) -> bool,
     {
-        let mut s = Self::new();
+        let mut s = HashMap::new();
         for (e, v) in self.map.iter() {
             if predicate(e, v) {
                 s.insert(*e, v.clone());
             }
         }
 
-        s
+        HStore::from(s)
     }
 
     /// Returns the first element of the map

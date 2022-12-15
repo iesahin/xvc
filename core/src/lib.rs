@@ -15,6 +15,21 @@ pub use types::xvcdigest::ContentDigest;
 pub use types::xvcdigest::MetadataDigest;
 pub use types::xvcdigest::XvcDigest;
 
+pub use types::diff::Diff;
+pub use types::diff::Diff2;
+pub use types::diff::Diff3;
+pub use types::diff::Diff4;
+pub use types::diff::Diff5;
+pub use types::diff::DiffStore;
+pub use types::diff::DiffStore2;
+pub use types::diff::DiffStore3;
+pub use types::diff::DiffStore4;
+pub use types::diff::DiffStore5;
+
+pub use types::diff::apply_diff;
+pub use types::diff::diff_store;
+pub use types::diff::update_with_actual;
+
 pub use types::xvcfiletype::XvcFileType;
 pub use types::xvcmetadata::XvcMetadata;
 pub use types::xvcpath::TextOrBinary;

@@ -29,7 +29,7 @@ pub enum Error {
     #[error("Walker Error: {source}")]
     WalkerError {
         #[from]
-        source: xvc_walker::error::Error,
+        source: xvc_walker::Error,
     },
     #[error("Ecs Error: {source}")]
     EcsError {
@@ -69,6 +69,12 @@ pub enum Error {
     },
     #[error("Crossbeam Send Error for Type: {t:?} {cause:?}")]
     CrossbeamSendError { t: String, cause: String },
+
+    #[error("Strip Prefix Error")]
+    StripPrefixError {
+        #[from]
+        source: std::path::StripPrefixError,
+    },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

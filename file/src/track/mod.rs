@@ -1,36 +1,23 @@
 use chrono::Utc;
 use crossbeam_channel::{bounded, Sender};
-use derive_more::{AsRef, Deref, Display, From, FromStr};
+use derive_more::{AsRef, Deref, Display, From};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::io::Write;
+use std::str::FromStr;
 
-use xvc_config::{conf, FromConfigKey};
+use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
-use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
-use xvc_core::{
-    all_paths_and_metadata, MetadataDigest, XvcCachePath, XvcFileType, XvcPathMetadataMap,
-    CHANNEL_BOUND,
-};
-use xvc_core::{CollectionDigest, ContentDigest, HashAlgorithm};
-use xvc_core::{XvcRoot, XVCIGNORE_FILENAME};
-use xvc_logging::{error, info, output, uwo, uwr, warn, watch, XvcOutputLine};
-use xvc_walker::{
-    check_ignore, walk_parallel, AbsolutePath, IgnoreRules, MatchResult, WalkOptions,
-};
+
+use xvc_core::XvcRoot;
+use xvc_logging::{error, info, watch, XvcOutputLine};
+use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
 use crate::carry_in::carry_in;
-use crate::common::compare::{
-    find_dir_changes_serial, find_file_changes_parallel, find_file_changes_serial,
-    update_path_comparison_params_with_actual_info, Diff, DirectoryDelta, DirectoryDeltaStore,
-    FileDelta, FileDeltaStore, PathComparisonParams,
-};
 use crate::common::{
-    cache_path, decide_no_parallel, expand_directory_targets, expand_xvc_dir_file_targets,
-    move_to_cache, pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets,
-    targets_from_disk, update_dir_records, update_file_records,
+    decide_no_parallel, expand_xvc_dir_file_targets, targets_from_disk, FileTextOrBinary,
 };
 use crate::error::{Error, Result};
 
@@ -40,41 +27,14 @@ use clap::Parser;
 use std::path::PathBuf;
 
 use xvc_core::CacheType;
-use xvc_core::TextOrBinary;
-use xvc_core::XvcMetadata;
 use xvc_core::XvcPath;
-use xvc_ecs::XvcEntity;
-use xvc_ecs::{persist, HStore, XvcStore};
-use xvc_ecs::{R11Store, Storable};
+use xvc_ecs::XvcStore;
 
-/// Represents whether a file is a text file or not
-#[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Serialize,
-    Deserialize,
-    Hash,
-    Display,
-    FromStr,
-    From,
-    AsRef,
-    Deref,
-    Default,
-    Copy,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Parser,
-)]
-#[command(about = "Track file versions using XVC", rename_all = "kebab-case")]
+/// Add files for tracking with Xvc
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Display, From, Parser)]
+#[command(rename_all = "kebab-case")]
 pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
-    ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long)]
     cache_type: Option<CacheType>,
