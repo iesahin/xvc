@@ -8,12 +8,12 @@ use crate::{
     common::{
         cache_path,
         compare::{
-            find_file_changes_parallel, find_file_changes_serial, DeltaField, FileDelta,
-            FileDeltaStore, PathComparisonParams,
+            find_file_changes_parallel, find_file_changes_serial, Diff, FileDelta, FileDeltaStore,
+            PathComparisonParams,
         },
         recheck_from_cache,
     },
-    track::DataTextOrBinary,
+    track::FileTextOrBinary,
     Result,
 };
 use clap::Parser;
@@ -50,10 +50,10 @@ pub struct RecheckCLI {
     ///
     /// Text files may go OS specific line ending replacements.
     #[arg(long)]
-    pub text_or_binary: Option<DataTextOrBinary>,
+    pub text_or_binary: Option<FileTextOrBinary>,
     /// Files/directories to recheck
     #[arg()]
-    pub targets: Vec<String>,
+    pub targets: Option<Vec<String>>,
 }
 
 impl UpdateFromXvcConfig for RecheckCLI {
@@ -64,7 +64,7 @@ impl UpdateFromXvcConfig for RecheckCLI {
         let no_parallel = self.no_parallel || conf.get_bool("file.add.no_parallel")?.option;
 
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(
-            || Some(DataTextOrBinary::from_conf(conf)),
+            || Some(FileTextOrBinary::from_conf(conf)),
             |v| Some(v.to_owned()),
         );
         let force = self.force;
@@ -78,8 +78,6 @@ impl UpdateFromXvcConfig for RecheckCLI {
         }))
     }
 }
-
-const PARALLEL_THRESHOLD: usize = 47;
 
 /// Run `xvc file recheck` command on the repository `xvc_root` with `cli_opts` options.
 ///
@@ -95,7 +93,12 @@ pub fn cmd_recheck(
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-
+    let targets = opts.targets.map(|v| {
+        let r = xvc_root.absolute_path().to_str();
+        v.iter()
+            .map(|t| format!("{}{}", current_dir.strip_prefix(r), t))
+            .collect::<Vec<String>>()
+    });
     let xvc_current_dir = XvcPath::new(xvc_root, current_dir, current_dir)?;
     watch!(xvc_current_dir);
 
@@ -138,7 +141,7 @@ pub fn cmd_recheck(
     let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
     let text_or_binary = opts
         .text_or_binary
-        .unwrap_or_else(|| DataTextOrBinary::from(TextOrBinary::Auto));
+        .unwrap_or_else(|| FileTextOrBinary::from(TextOrBinary::Auto));
 
     let mut file_targets = XvcPathMetadataMap::new();
     watch!(pcp.xvc_metadata_store);
@@ -271,7 +274,7 @@ fn recheck_inner(
     watch!(path_delta.delta_content_digest);
 
     match path_delta.delta_content_digest {
-        DeltaField::Identical | DeltaField::Skipped => {
+        Diff::Identical | Diff::Skipped => {
             if force {
                 output_snd.send(XvcOutputLine::Info(format!(
                     "{xvc_path} already exists. Overwriting."
@@ -283,13 +286,13 @@ fn recheck_inner(
                 )))?;
             }
         }
-        DeltaField::RecordMissing { .. } => {
+        Diff::RecordMissing { .. } => {
             output_snd.send(XvcOutputLine::Error(format!("No record for {xvc_path}")))?;
         }
-        DeltaField::ActualMissing { .. } => {
+        Diff::ActualMissing { .. } => {
             checkout()?;
         }
-        DeltaField::Different { .. } => {
+        Diff::Different { .. } => {
             if force {
                 checkout()?;
             } else {

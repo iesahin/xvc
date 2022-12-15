@@ -7,22 +7,22 @@ use std::{
 };
 
 use crate::error::{Error, Result};
-use crate::track::DataTextOrBinary;
 use crossbeam_channel::{Receiver, Sender};
+use xvc_config::{conf, FromConfigKey};
 use xvc_core::types::xvcpath::XvcCachePath;
 use xvc_core::util::file::make_symlink;
-use xvc_core::{util::file::is_text_file, HashAlgorithm, XvcDigest};
 use xvc_core::{
-    CacheType, CollectionDigest, ContentDigest, MetadataDigest, TextOrBinary, XvcFileType,
-    XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, CacheType, CollectionDigest, ContentDigest, MetadataDigest,
+    TextOrBinary, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
+use xvc_core::{util::file::is_text_file, HashAlgorithm, XvcDigest};
 use xvc_logging::{error, info, warn, watch};
 
-use xvc_ecs::{HStore, Storable, XvcEntity, XvcStore};
+use xvc_ecs::{persist, HStore, Storable, XvcEntity, XvcStore};
 use xvc_logging::XvcOutputLine;
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult, PathMetadata};
 
-use self::compare::{DeltaField, DirectoryDelta, FileDeltaStore};
+use self::compare::Diff;
 
 #[derive(Debug, Clone)]
 pub struct PathMatch {
@@ -32,27 +32,25 @@ pub struct PathMatch {
     actual_digest: Option<XvcDigest>,
 }
 
+pub struct FileTextOrBinary(TextOrBinary);
+conf!(FileTextOrBinary, "file.add.text_or_binary");
+persist!(FileTextOrBinary, "file-text-or-binary");
+
+impl FileTextOrBinary {
+    pub fn as_inner(&self) -> TextOrBinary {
+        self.0
+    }
+}
+
+
+/// Calculate the digest of a file in `path` with the given `algorithm` after removing line
+/// endings if `text_or_binary` is `TextOrBinary::Text`.
 pub fn calc_digest(
     path: &Path,
-    algorithm: &HashAlgorithm,
+    algorithm: HashAlgorithm,
     text_or_binary: TextOrBinary,
-) -> Result<XvcDigest> {
-    match text_or_binary {
-        TextOrBinary::Auto => {
-            let is_text_f = is_text_file(path).unwrap_or_else(|e| {
-                e.warn();
-                false
-            });
-
-            if is_text_f {
-                Ok(XvcDigest::from_text_file(path, algorithm)?)
-            } else {
-                Ok(XvcDigest::from_binary_file(path, algorithm)?)
-            }
-        }
-        TextOrBinary::Text => Ok(XvcDigest::from_text_file(path, algorithm)?),
-        TextOrBinary::Binary => Ok(XvcDigest::from_binary_file(path, algorithm)?),
-    }
+) -> Result<ContentDigest> {
+    ContentDigest::from_path(path, algorithm, text_or_binary)
 }
 
 pub fn pipe_path_digest(
@@ -164,6 +162,88 @@ pub fn split_file_directory_targets(
     (file_targets, dir_targets)
 }
 
+
+/// This is to convert targets given in the CLI to XvcPaths. It doesn't walk the
+/// file system. It's to be used in `xvc file carry-in` or `xvc file recheck`,
+/// where we already track the files in the store.
+/// 
+/// Just loads the stores, compiles targets as globs and checks
+/// which paths in the store matches. If the matches contain directories, all their
+/// children are also selected. 
+/// 
+/// If `targets` is `None`, all paths in the store are returned.
+pub fn targets_from_store(xvc_root: &XvcRoot, current_dir: &AbsolutePath, targets: Option<Vec<String>>) -> Result<XvcStore<XvcPath>> {
+    // If we are not in the root, we add current dir to all targets and recur.
+    if *current_dir != *xvc_root.absolute_path() {
+            let cwd = current_dir.strip_prefix(xvc_root.absolute_path())?.to_str().unwrap();
+            let targets = match targets {
+                Some(targets) => targets.iter().map(|t| format!("{cwd}{t}")).collect(),
+                None => vec![cwd.to_string()],
+            };
+
+            return targets_from_store(xvc_root, xvc_root.absolute_path(), Some(targets));
+    }
+
+    let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
+    if let Some(targets) = targets {
+    let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
+        let glob_matcher = GlobSetBuilder::new()
+            .add(targets.iter().map(|t| Glob::new(t)).collect::<Vec<_>>())
+            .build()?;
+        let mut paths = xvc_path_store.filter(|_, p| glob_matcher.is_match(p.as_ref()));
+        let mut metadata = xvc_metadata_store.subset(paths.keys().copied())?;
+        // for any directories in the targets, we add all child paths
+        let dir_md = metadata.filter(|_, md| md.file_type == Some(XvcFileType::Directory));
+        let dir_paths = paths.subset(dir_md.keys().copied())?;
+        for (xe, dir) in dir_paths.iter() {
+            let mut child_paths = xvc_path_store.filter(|_, p| p.starts_with(dir));
+            let mut child_metadata = xvc_metadata_store.subset(child_paths.keys().copied())?;
+            paths.extend(child_paths.into_iter());
+        }
+        Ok(paths)
+    } else {
+        Ok(xvc_path_store)
+    }
+}
+
+/// Converts targets to a map of XvcPaths and their metadata. It walks the file
+/// system with [`all_paths_and_metadata`]. This is aimed towards `xvc file
+/// track`, `xvc file hash` and similar commands where we work with the existing
+/// files. 
+/// 
+/// This walks all the repository. It doesn't try to optimize the walk by
+/// selecting targets first, because,
+/// - This is a premature optimization.
+/// - We need to consider ignore files and this requires to start a walk from
+///   the root. 
+/// 
+/// If some day we need to optimize first walking the ignores, then walking the
+/// directories in the targets, I'd be glad that this is used in very large
+/// repositories. 
+
+pub fn targets_from_disk(xvc_root: &XvcRoot, current_dir: &AbsolutePath, targets: Option<Vec<String>>) -> Result<XvcPathMetadataMap> {
+    // If we are not in the root, we add current dir to all targets and recur.
+    if *current_dir != *xvc_root.absolute_path() {
+            let cwd = current_dir.strip_prefix(xvc_root.absolute_path())?.to_str().unwrap();
+            let targets = match targets {
+                Some(targets) => targets.iter().map(|t| format!("{cwd}{t}")).collect(),
+                None => vec![cwd.to_string()],
+            };
+            
+            return targets_from_disk(xvc_root, xvc_root.absolute_path(), Some(targets));
+    }
+    let all_paths = all_paths_and_metadata(xvc_root);
+
+    if let Some(targets) = targets {
+        let glob_matcher = GlobSetBuilder::new()
+            .add(targets.iter().map(|t| Glob::new(t)).collect::<Vec<_>>())
+            .build()?;
+        all_paths.into_iter().filter(|(p, _)| glob_matcher.is_match(p.as_ref())).collect()
+    } else {
+        all_paths
+    }
+}
+
 pub fn expand_directory_targets(
     output_snd: Sender<XvcOutputLine>,
     xpmm: &XvcPathMetadataMap,
@@ -172,8 +252,8 @@ pub fn expand_directory_targets(
     let mut dir_targets = XvcPathMetadataMap::new();
     let mut file_targets = XvcPathMetadataMap::new();
 
-    for (dir_target, dir_md) in &given_dir_targets {
-        for (xvc_path, xvc_md) in &xpmm {
+    for (dir_target, dir_md) in &dir_targets {
+        for (xvc_path, xvc_md) in xpmm {
             if xvc_path.starts_with(&dir_target) && *xvc_path != *dir_target {
                 match xvc_md.file_type {
                     XvcFileType::Directory => {
@@ -193,9 +273,10 @@ pub fn expand_directory_targets(
     (dir_targets, file_targets)
 }
 
-pub fn expanded_xvc_dir_file_targets(
+pub fn expand_xvc_dir_file_targets(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
+    current_dir: &AbsolutePath,
     targets: Vec<PathBuf>,
 ) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
     let (xpmm, xvc_ignore) = all_paths_and_metadata(xvc_root);
@@ -291,26 +372,23 @@ pub fn move_to_cache(
 }
 
 /// Record store records checking their DeltaField status
-pub fn update_store_records<T>(
-    xvc_root: &XvcRoot,
-    delta_store: HStore<&DeltaField<T>>,
-) -> Result<()>
+pub fn update_store_records<T>(xvc_root: &XvcRoot, delta_store: HStore<&Diff<T>>) -> Result<()>
 where
     T: Storable,
 {
     xvc_root.with_store_mut(|store: &mut XvcStore<T>| {
         for (xe, dd) in delta_store.iter() {
             match dd {
-                DeltaField::Identical | DeltaField::Skipped => {
+                Diff::Identical | Diff::Skipped => {
                     info!("Not changed: {:?}", xe);
                 }
-                DeltaField::RecordMissing { actual } => {
+                Diff::RecordMissing { actual } => {
                     store.insert(*xe, actual.clone());
                 }
-                DeltaField::ActualMissing { .. } => {
+                Diff::ActualMissing { .. } => {
                     info!("Record not changed. {}", xe);
                 }
-                DeltaField::Different { actual, .. } => {
+                Diff::Different { actual, .. } => {
                     store.insert(*xe, actual.clone());
                 }
             }
@@ -322,69 +400,70 @@ where
 }
 
 /// Record updated directory records to various stores
-pub fn update_dir_records(
-    xvc_root: &XvcRoot,
-    dir_delta_store: &HStore<DirectoryDelta>,
-) -> Result<()> {
-    let collection_delta_store: HStore<&DeltaField<CollectionDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_collection_digest))
-        .collect();
-    update_store_records(xvc_root, collection_delta_store)?;
-
-    let metadata_digest_delta_store: HStore<&DeltaField<MetadataDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_metadata_digest))
-        .collect();
-    update_store_records(xvc_root, metadata_digest_delta_store)?;
-
-    let content_delta_store: HStore<&DeltaField<ContentDigest>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_content_digest))
-        .collect();
-    update_store_records(xvc_root, content_delta_store)?;
-
-    let metadata_delta_store: HStore<&DeltaField<XvcMetadata>> = dir_delta_store
-        .iter()
-        .map(|(xe, dd)| (*xe, &dd.delta_xvc_metadata))
-        .collect();
-    update_store_records(xvc_root, metadata_delta_store)?;
-
-    Ok(())
-}
-
-/// Record changes in `path_delta_store` to various stores in `xvc_root`
-pub fn update_file_records(xvc_root: &XvcRoot, path_delta_store: &FileDeltaStore) -> Result<()> {
-    let xvc_metadata_delta_store: HStore<&DeltaField<XvcMetadata>> = path_delta_store
-        .iter()
-        .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_md))
-        .collect();
-    update_store_records(xvc_root, xvc_metadata_delta_store)?;
-
-    let content_digest_delta_store: HStore<&DeltaField<ContentDigest>> = path_delta_store
-        .iter()
-        .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_content_digest))
-        .collect();
-    update_store_records(xvc_root, content_digest_delta_store)?;
-
-    let metadata_digest_delta_store: HStore<&DeltaField<MetadataDigest>> = path_delta_store
-        .iter()
-        .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_metadata_digest))
-        .collect();
-    update_store_records(xvc_root, metadata_digest_delta_store)?;
-
-    let cache_type_delta_store: HStore<&DeltaField<CacheType>> = path_delta_store
-        .iter()
-        .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_cache_type))
-        .collect();
-    update_store_records(xvc_root, cache_type_delta_store)?;
-
-    let data_text_or_binary_delta_store: HStore<&DeltaField<DataTextOrBinary>> = path_delta_store
-        .iter()
-        .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_text_or_binary))
-        .collect();
-
-    update_store_records(xvc_root, data_text_or_binary_delta_store)?;
-
-    Ok(())
-}
+/* pub fn update_dir_records( */
+/*     xvc_root: &XvcRoot, */
+/*     dir_delta_store: &HStore<DirectoryDelta>, */
+/* ) -> Result<()> { */
+/*     let collection_delta_store: HStore<&Diff<CollectionDigest>> = dir_delta_store */
+/*         .iter() */
+/*         .map(|(xe, dd)| (*xe, &dd.delta_collection_digest)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, collection_delta_store)?; */
+/*  */
+/*     let metadata_digest_delta_store: HStore<&Diff<MetadataDigest>> = dir_delta_store */
+/*         .iter() */
+/*         .map(|(xe, dd)| (*xe, &dd.delta_metadata_digest)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, metadata_digest_delta_store)?; */
+/*  */
+/*     let content_delta_store: HStore<&Diff<ContentDigest>> = dir_delta_store */
+/*         .iter() */
+/*         .map(|(xe, dd)| (*xe, &dd.delta_content_digest)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, content_delta_store)?; */
+/*  */
+/*     let metadata_delta_store: HStore<&Diff<XvcMetadata>> = dir_delta_store */
+/*         .iter() */
+/*         .map(|(xe, dd)| (*xe, &dd.delta_xvc_metadata)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, metadata_delta_store)?; */
+/*  */
+/*     Ok(()) */
+/* } */
+/*  */
+/* /// Record changes in `path_delta_store` to various stores in `xvc_root` */
+/* pub fn update_file_records(xvc_root: &XvcRoot, path_delta_store: &FileDeltaStore) -> Result<()> { */
+/*     let xvc_metadata_delta_store: HStore<&Diff<XvcMetadata>> = path_delta_store */
+/*         .iter() */
+/*         .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_md)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, xvc_metadata_delta_store)?; */
+/*  */
+/*     let content_digest_delta_store: HStore<&Diff<ContentDigest>> = path_delta_store */
+/*         .iter() */
+/*         .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_content_digest)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, content_digest_delta_store)?; */
+/*  */
+/*     let metadata_digest_delta_store: HStore<&Diff<MetadataDigest>> = path_delta_store */
+/*         .iter() */
+/*         .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_metadata_digest)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, metadata_digest_delta_store)?; */
+/*  */
+/*     let cache_type_delta_store: HStore<&Diff<CacheType>> = path_delta_store */
+/*         .iter() */
+/*         .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_cache_type)) */
+/*         .collect(); */
+/*     update_store_records(xvc_root, cache_type_delta_store)?; */
+/*  */
+/*     let data_text_or_binary_delta_store: HStore<&Diff<FileTextOrBinary>> = path_delta_store */
+/*         .iter() */
+/*         .map(|(xe, pd)| (xe.xvc_path.clone(), &pd.delta_text_or_binary)) */
+/*         .collect(); */
+/*  */
+/*     update_store_records(xvc_root, data_text_or_binary_delta_store)?; */
+/*  */
+/*     Ok(()) */
+/* } */
+/*  */

@@ -3,8 +3,9 @@ use crossbeam_channel::{bounded, Sender};
 use dashmap::DashMap;
 use log::{info, warn};
 use rayon::iter::{FromParallelIterator, IntoParallelRefIterator, ParallelIterator};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs::Metadata;
+use std::path;
 use xvc_config::FromConfigKey;
 use xvc_core::types::xvcdigest::{CollectionDigest, ContentDigest, MetadataDigest, DIGEST_LENGTH};
 use xvc_core::util::file::path_metadata_channel;
@@ -14,11 +15,11 @@ use xvc_core::{
     XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 use xvc_core::{XvcFileType, CHANNEL_BOUND};
-use xvc_ecs::{Error as EcsError, HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::watch;
+use xvc_ecs::{Error as EcsError, HStore, R11Store, Storable, XvcEntity, XvcStore};
+use xvc_logging::{uwo, watch, XvcOutputLine};
 use xvc_walker::{check_ignore, IgnoreRules, MatchResult, PathMetadata};
 
-use crate::track::DataTextOrBinary;
+use super::FileTextOrBinary;
 
 #[derive(Debug)]
 pub struct PathComparisonParams {
@@ -29,7 +30,7 @@ pub struct PathComparisonParams {
     pub metadata_digest_store: XvcStore<MetadataDigest>,
     pub collection_digest_store: XvcStore<CollectionDigest>,
     pub cache_type_store: XvcStore<CacheType>,
-    pub text_or_binary_store: XvcStore<DataTextOrBinary>,
+    pub text_or_binary_store: XvcStore<FileTextOrBinary>,
     pub algorithm: HashAlgorithm,
 }
 
@@ -44,7 +45,7 @@ impl PathComparisonParams {
         let collection_digest_store = xvc_root.load_store::<CollectionDigest>()?;
         let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
         let cache_type_store = xvc_root.load_store::<CacheType>()?;
-        let text_or_binary_store = xvc_root.load_store::<DataTextOrBinary>()?;
+        let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
 
         Ok(Self {
             algorithm,
@@ -61,125 +62,349 @@ impl PathComparisonParams {
 }
 
 /// Shows which information is identical, missing or different in diff calculations.
-/// If we have a new path, it means RecordMissing.
-/// If we have a record, but don't have the path on file system, it's ActualMissing.
-/// If both are present but differ, it's the Difference.
-/// Otherwise they are identical.
-/// In some operations, some fields are not compared.
-/// In this case, they get the value Skipped.
+///
+/// We use this to compare anything that's storable.
 #[derive(Debug, PartialEq, Eq)]
-pub enum Delta<T> {
+pub enum Diff<T: Storable> {
+    /// Both record and actual values are identical.
     Identical,
+    /// We don't have the record, but we have the actual value
     RecordMissing { actual: T },
+    /// We have the record, but we don't have the actual value
     ActualMissing { record: T },
+    /// Both record and actual values are present, but they differ
     Different { record: T, actual: T },
+    /// We skipped this comparison.
+    /// It's not an error, but it means we didn't compare this field.
+    /// It may be shortcutted, we don't care or irrelevant.
     Skipped,
 }
 
-/// Possible changes that could occur on a file path
-#[derive(Debug)]
-pub struct FileDelta {
-    pub delta_md: Delta<XvcMetadata>,
-    pub delta_content_digest: Delta<ContentDigest>,
-    pub delta_metadata_digest: Delta<MetadataDigest>,
-    pub delta_cache_type: Delta<CacheType>,
-    pub delta_text_or_binary: Delta<DataTextOrBinary>,
+type DiffStore<T> = HStore<Diff<T>>;
+
+pub fn diff_store<T: Storable>(
+    records: &XvcStore<T>,
+    actuals: &HStore<T>,
+    subset: Option<HashSet<XvcEntity>>,
+) -> DiffStore<T> {
+    let entities = if let Some(subset) = subset {
+        subset
+    } else {
+        let s = HashSet::from_iter(records.keys().copied());
+        s.extend(actuals.keys().copied());
+        s
+    };
+
+    let mut diff_store = HStore::new();
+
+    for xe in entities {
+        let record_value = records.get(&xe);
+        let actual_value = actuals.get(&xe);
+
+        match (record_value, actual_value) {
+            (None, None) => {
+                warn!("Both record and actual values are missing for {:?}", xe);
+                continue;
+            }
+            (None, Some(actual_value)) => {
+                diff_store.insert(
+                    xe,
+                    Diff::RecordMissing {
+                        actual: actual_value.clone(),
+                    },
+                );
+            }
+            (Some(record_value), None) => {
+                diff_store.insert(
+                    xe,
+                    Diff::ActualMissing {
+                        record: record_value.clone(),
+                    },
+                );
+            }
+            (Some(record_value), Some(actual_value)) => {
+                if record_value == actual_value {
+                    diff_store.insert(xe, Diff::Identical);
+                } else {
+                    diff_store.insert(
+                        xe,
+                        Diff::Different {
+                            record: record_value.clone(),
+                            actual: actual_value.clone(),
+                        },
+                    );
+                }
+            }
+        }
+    }
+    diff_store
 }
 
-impl FileDelta {
-    /// Returns whether the denoted path has changed, by checking whether fields are None
-    pub fn shows_change(&self) -> bool {
-        !(self.delta_md == Delta::Identical
-            && self.delta_cache_type == Delta::Identical
-            && self.delta_metadata_digest == Delta::Identical
-            && self.delta_content_digest == Delta::Identical
-            && self.delta_text_or_binary == Delta::Identical)
+pub fn update_with_actual<T: Storable>(
+    records: &mut XvcStore<T>,
+    diffs: DiffStore<T>,
+    add_new: bool,
+    remove_missing: bool,
+) -> Result<()> {
+    for (xe, diff) in diffs.iter() {
+        match diff {
+            Diff::Identical => {}
+            Diff::RecordMissing { actual } => {
+                if add_new {
+                    records.insert(*xe, actual.clone());
+                }
+            }
+            Diff::ActualMissing { record } => {
+                if remove_missing {
+                    records.remove(*xe);
+                }
+            }
+            Diff::Different { record, actual } => {
+                records.insert(*xe, actual.clone());
+            }
+            Diff::Skipped => {}
+        }
+    }
+    Ok(())
+}
+
+pub struct Diff2<T, U>
+where
+    T: Storable,
+    U: Storable,
+{
+    diff1: Diff<T>,
+    diff2: Diff<U>,
+}
+
+pub struct Diff3<T, U, V>
+where
+    T: Storable,
+    U: Storable,
+    V: Storable,
+{
+    diff1: Diff<T>,
+    diff2: Diff<U>,
+    diff3: Diff<V>,
+}
+
+pub struct Diff4<T, U, V, W>
+where
+    T: Storable,
+    U: Storable,
+    V: Storable,
+    W: Storable,
+{
+    pub diff1: Diff<T>,
+    pub diff2: Diff<U>,
+    pub diff3: Diff<V>,
+    pub diff4: Diff<W>,
+}
+
+pub struct Diff5<T, U, V, W, X>
+where
+    T: Storable,
+    U: Storable,
+    V: Storable,
+    W: Storable,
+    X: Storable,
+{
+    diff1: Diff<T>,
+    diff2: Diff<U>,
+    diff3: Diff<V>,
+    diff4: Diff<W>,
+    diff5: Diff<X>,
+}
+
+impl<T: Storable> Diff<T> {
+    fn changed(&self) -> bool {
+        match self {
+            Diff::Identical => false,
+            Diff::RecordMissing { .. } => true,
+            Diff::ActualMissing { .. } => true,
+            Diff::Different { .. } => true,
+            Diff::Skipped => false,
+        }
     }
 }
 
-pub type FileDeltaStore = HStore<FileDelta>;
-
-/// Possible changes that could occur on a directory
-#[derive(Debug)]
-pub struct DirectoryDelta {
-    /// Changes in recorded [XvcMetadata]
-    pub delta_xvc_metadata: Delta<XvcMetadata>,
-    /// This is calculated using the sorted collection of [XvcPath] names a directory contains.
-    pub delta_collection_digest: Delta<CollectionDigest>,
-    /// The difference in the merged metadata digests.
-    pub delta_metadata_digest: Delta<MetadataDigest>,
-    /// The difference in the merged content digests.
-    pub delta_content_digest: Delta<ContentDigest>,
-}
-
-impl DirectoryDelta {
-    /// Returns whether the denoted path has changed, by checking whether fields are None
-    pub fn shows_change(&self) -> bool {
-        !(self.delta_collection_digest == Delta::Identical
-            && self.delta_collection_digest == Delta::Identical
-            && self.delta_collection_digest == Delta::Identical)
+impl<T: Storable, U: Storable> Diff2<T, U> {
+    fn changed(&self) -> bool {
+        self.delta1.changed() || self.delta2.changed()
     }
 }
 
-pub type DirectoryDeltaStore = HStore<DirectoryDelta>;
-
-pub fn update_path_comparison_params_with_actual_info(
-    mut pcp: PathComparisonParams,
-    file_delta_store: &FileDeltaStore,
-) -> PathComparisonParams {
-    for (xe, fd) in file_delta_store.map.iter() {
-        match fd.delta_md {
-            Delta::RecordMissing { actual } => {
-                pcp.xvc_metadata_store.insert(*xe, actual);
-            }
-            Delta::Different { actual, .. } => {
-                pcp.xvc_metadata_store.insert(*xe, actual);
-            }
-            _ => {}
-        }
-
-        match fd.delta_metadata_digest {
-            Delta::RecordMissing { actual } => {
-                pcp.metadata_digest_store.insert(*xe, actual);
-            }
-            Delta::Different { actual, .. } => {
-                pcp.metadata_digest_store.insert(*xe, actual);
-            }
-            _ => {}
-        }
-
-        match fd.delta_content_digest {
-            Delta::RecordMissing { actual } => {
-                pcp.content_digest_store.insert(*xe, actual);
-            }
-            Delta::Different { actual, .. } => {
-                pcp.content_digest_store.insert(*xe, actual);
-            }
-            _ => {}
-        }
-        match fd.delta_cache_type {
-            Delta::RecordMissing { actual } => {
-                pcp.cache_type_store.insert(*xe, actual);
-            }
-            Delta::Different { actual, .. } => {
-                pcp.cache_type_store.insert(*xe, actual);
-            }
-            _ => {}
-        }
-        match fd.delta_text_or_binary {
-            Delta::RecordMissing { actual } => {
-                pcp.text_or_binary_store.insert(*xe, actual);
-            }
-            Delta::Different { actual, .. } => {
-                pcp.text_or_binary_store.insert(*xe, actual);
-            }
-            _ => {}
-        }
+impl<T: Storable, U: Storable, V: Storable> Diff3<T, U, V> {
+    fn changed(&self) -> bool {
+        self.delta1.changed() || self.delta2.changed() || self.delta3.changed()
     }
-
-    pcp
 }
 
+impl<T: Storable, U: Storable, V: Storable, W: Storable> Diff4<T, U, V, W> {
+    fn changed(&self) -> bool {
+        self.delta1.changed()
+            || self.delta2.changed()
+            || self.delta3.changed()
+            || self.delta4.changed()
+    }
+}
+
+impl<T: Storable, U: Storable, V: Storable, W: Storable, X: Storable> Diff5<T, U, V, W, X> {
+    fn changed(&self) -> bool {
+        self.delta1.changed()
+            || self.delta2.changed()
+            || self.delta3.changed()
+            || self.delta4.changed()
+            || self.delta5.changed()
+    }
+}
+
+pub struct DiffStore2<T, U>(DiffStore<T>, DiffStore<U>)
+where
+    T: Storable,
+    U: Storable;
+
+impl<T, U> DiffStore2<T, U>
+where
+    T: Storable,
+    U: Storable,
+{
+    pub fn get_diff2(&self, xe: XvcEntity) -> Diff2<T, U> {
+        Diff2 {
+            diff1: self.0.get(&xe).expect("Missing diff1"),
+            diff2: self.1.get(&xe).expect("Missing diff2"),
+        }
+    }
+}
+
+pub struct DiffStore3<T, U, V>(DiffStore<T>, DiffStore<U>, DiffStore<V>)
+where
+    T: Storable,
+    U: Storable,
+    V: Storable;
+
+impl<T, U, V> DiffStore3<T, U, V>
+where
+    T: Storable,
+    U: Storable,
+    V: Storable,
+{
+    pub fn get_diff3(&self, xe: XvcEntity) -> Diff3<T, U, V> {
+        Diff3 {
+            diff1: self.0.get(&xe).expect("Missing diff1"),
+            diff2: self.1.get(&xe).expect("Missing diff2"),
+            diff3: self.2.get(&xe).expect("Missing diff3"),
+        }
+    }
+}
+pub struct DiffStore4<T: Storable, U: Storable, V: Storable, W: Storable>(
+    DiffStore<T>,
+    DiffStore<U>,
+    DiffStore<V>,
+    DiffStore<W>,
+);
+
+impl<T: Storable, U: Storable, V: Storable, W: Storable> DiffStore4<T, U, V, W> {
+    pub fn get_diff4(&self, xe: XvcEntity) -> Diff4<T, U, V, W> {
+        Diff4 {
+            diff1: self.0.get(&xe).expect("Missing diff1"),
+            diff2: self.1.get(&xe).expect("Missing diff2"),
+            diff3: self.2.get(&xe).expect("Missing diff3"),
+            diff4: self.3.get(&xe).expect("Missing diff4"),
+        }
+    }
+}
+
+pub struct DiffStore5<T, U, V, W, X>(
+    DiffStore<T>,
+    DiffStore<U>,
+    DiffStore<V>,
+    DiffStore<W>,
+    DiffStore<X>,
+)
+where
+    T: Storable,
+    U: Storable,
+    V: Storable,
+    W: Storable,
+    X: Storable;
+
+impl<T, U, V, W, X> DiffStore5<T, U, V, W, X>
+where
+    T: Storable,
+    U: Storable,
+    V: Storable,
+    W: Storable,
+    X: Storable,
+{
+    pub fn get_diff5(&self, xe: XvcEntity) -> Diff5<T, U, V, W, X> {
+        Diff5 {
+            diff1: self.0.get(&xe).expect("Missing diff1"),
+            diff2: self.1.get(&xe).expect("Missing diff2"),
+            diff3: self.2.get(&xe).expect("Missing diff3"),
+            diff4: self.3.get(&xe).expect("Missing diff4"),
+            diff5: self.4.get(&xe).expect("Missing diff5"),
+        }
+    }
+}
+
+// pub fn update_path_comparison_params_with_actual_info(
+//     mut pcp: PathComparisonParams,
+//     file_delta_store: &FileDeltaStore,
+// ) -> PathComparisonParams {
+//     for (xe, fd) in file_delta_store.map.iter() {
+//         match fd.delta_md {
+//             Diff::RecordMissing { actual } => {
+//                 pcp.xvc_metadata_store.insert(*xe, actual);
+//             }
+//             Diff::Different { actual, .. } => {
+//                 pcp.xvc_metadata_store.insert(*xe, actual);
+//             }
+//             _ => {}
+//         }
+//
+//         match fd.delta_metadata_digest {
+//             Diff::RecordMissing { actual } => {
+//                 pcp.metadata_digest_store.insert(*xe, actual);
+//             }
+//             Diff::Different { actual, .. } => {
+//                 pcp.metadata_digest_store.insert(*xe, actual);
+//             }
+//             _ => {}
+//         }
+//
+//         match fd.delta_content_digest {
+//             Diff::RecordMissing { actual } => {
+//                 pcp.content_digest_store.insert(*xe, actual);
+//             }
+//             Diff::Different { actual, .. } => {
+//                 pcp.content_digest_store.insert(*xe, actual);
+//             }
+//             _ => {}
+//         }
+//         match fd.delta_cache_type {
+//             Diff::RecordMissing { actual } => {
+//                 pcp.cache_type_store.insert(*xe, actual);
+//             }
+//             Diff::Different { actual, .. } => {
+//                 pcp.cache_type_store.insert(*xe, actual);
+//             }
+//             _ => {}
+//         }
+//         match fd.delta_text_or_binary {
+//             Diff::RecordMissing { actual } => {
+//                 pcp.text_or_binary_store.insert(*xe, actual);
+//             }
+//             Diff::Different { actual, .. } => {
+//                 pcp.text_or_binary_store.insert(*xe, actual);
+//             }
+//             _ => {}
+//         }
+//     }
+//
+//     pcp
+// }
+//
 /// Find the changes in `targets` assuming they point to directories.
 /// A directory is considered changed when its non-ignored child paths or their metadata has changed.
 ///
@@ -221,262 +446,617 @@ pub fn update_path_comparison_params_with_actual_info(
 ///              These may include files as well.
 ///
 ///
-pub fn find_dir_changes_serial(
-    xvc_root: &XvcRoot,
-    updated_path_comparison_params: &PathComparisonParams,
-    targets: &XvcPathMetadataMap,
-) -> Result<DirectoryDeltaStore> {
-    let pcp = updated_path_comparison_params;
+// pub fn find_dir_changes_serial(
+//     os: Sender<XvcOutputLine>,
+//     xvc_root: &XvcRoot,
+//     updated_path_comparison_params: &PathComparisonParams,
+//     actual_xvc_path_store: &HStore<XvcPath>,
+//     actual_xvc_metadata_store: &HStore<XvcMetadata>,
+// ) -> Result<DirectoryDeltaStore> {
+//     let pcp = updated_path_comparison_params;
+//
+//     let path_subset: HashSet<XvcEntity> = HashSet::from_iter(actual_xvc_path_store.keys().copied());
+//
+//     let mut dir_delta_store = DirectoryDeltaStore::new();
+//
+//     let mut dir_stack = Vec::<XvcPath>::new();
+//
+//     dir_stack.extend(targets.iter().map(|(xp, xm)| xp.clone()));
+//
+//     while let Some(the_dir) = dir_stack.pop() {
+//         let dir_xe = pcp
+//             .xvc_path_store
+//             .entities_for(&the_dir)
+//             .unwrap()
+//             .get(0)
+//             .unwrap();
+//
+//         let x_md = pcp
+//             .xvc_metadata_store
+//             .get(&dir_xe)
+//             .cloned()
+//             .unwrap_or_else(|| {
+//                 let actual_md = the_dir.to_absolute_path(xvc_root).to_path_buf().metadata();
+//                 let xvc_md = XvcMetadata::from(actual_md);
+//                 xvc_md
+//             });
+//
+//         if x_md.file_type == XvcFileType::Directory {
+//             // find child paths
+//             let mut vec_child_paths =
+//                 Vec::from_iter(pcp.xvc_path_store.iter().filter_map(|(xe, xp)| {
+//                     if xp.starts_with(&the_dir) && (*xe != *dir_xe) {
+//                         Some(*xe)
+//                     } else {
+//                         None
+//                     }
+//                 }));
+//             vec_child_paths.sort();
+//             let child_metadata: HStore<XvcMetadata> = vec_child_paths
+//                 .iter()
+//                 .filter_map(|xe| pcp.xvc_metadata_store.get(xe).map(|xmd| (*xe, *xmd)))
+//                 .collect();
+//
+//             let child_dirs: Vec<XvcEntity> = child_metadata
+//                 .iter()
+//                 .filter_map(|(xe, xmd)| {
+//                     if xmd.file_type == XvcFileType::Directory {
+//                         Some(*xe)
+//                     } else {
+//                         None
+//                     }
+//                 })
+//                 .collect();
+//
+//             // if we have directories to calculate, let's dive to them first.
+//             if !child_dirs.is_empty() {
+//                 if !child_dirs.iter().all(|xe| dir_delta_store.contains_key(xe)) {
+//                     dir_stack.push(the_dir);
+//                     child_dirs
+//                         .iter()
+//                         .for_each(|xe| dir_stack.push(pcp.xvc_path_store[xe].clone()));
+//                     continue;
+//                 }
+//             }
+//
+//             let child_paths_string = vec_child_paths.iter().fold(String::new(), |mut paths, xe| {
+//                 let xvc_path_str = pcp.xvc_path_store[xe].to_string();
+//                 paths.push_str(&xvc_path_str);
+//                 paths
+//             });
+//
+//             let child_paths_bytes = child_paths_string.as_bytes();
+//             let child_metadata_digest_bytes = vec_child_paths
+//                 .iter()
+//                 .map(|xe| {
+//                     if let Some(dd) = dir_delta_store.get(xe) {
+//                         match dd.delta_metadata_digest {
+//                             Diff::Different { actual, .. } => actual,
+//                             Diff::RecordMissing { actual } => actual,
+//                             Diff::Identical => pcp.metadata_digest_store[xe],
+//                             Diff::ActualMissing { record } => MetadataDigest(None),
+//                             Diff::Skipped => pcp.metadata_digest_store[xe],
+//                         }
+//                     } else {
+//                         *pcp.metadata_digest_store
+//                             .get(xe)
+//                             .unwrap_or_else(|| &MetadataDigest(None))
+//                     }
+//                 })
+//                 .fold(
+//                     Vec::<u8>::with_capacity(vec_child_paths.len() * DIGEST_LENGTH),
+//                     |mut bytes, metadata_digest| {
+//                         let digest_bytes = match metadata_digest.0 {
+//                             Some(xvc_digest) => xvc_digest.digest,
+//                             None => [0; DIGEST_LENGTH],
+//                         };
+//
+//                         bytes.extend(digest_bytes);
+//                         bytes
+//                     },
+//                 );
+//
+//             let child_content_digest_bytes = vec_child_paths
+//                 .iter()
+//                 .map(|xe| {
+//                     if let Some(dd) = dir_delta_store.get(xe) {
+//                         match dd.delta_content_digest {
+//                             Diff::Different { actual, .. } => actual,
+//                             Diff::RecordMissing { actual } => actual,
+//                             Diff::Identical => pcp.content_digest_store[xe],
+//                             Diff::ActualMissing { record } => ContentDigest(None),
+//                             Diff::Skipped => pcp.content_digest_store[xe],
+//                         }
+//                     } else {
+//                         *pcp.content_digest_store
+//                             .get(xe)
+//                             .unwrap_or_else(|| &ContentDigest(None))
+//                     }
+//                 })
+//                 .fold(
+//                     Vec::<u8>::with_capacity(vec_child_paths.len() * DIGEST_LENGTH),
+//                     |mut bytes, content_digest| {
+//                         let digest_bytes = match content_digest.0 {
+//                             Some(xvc_digest) => xvc_digest.digest,
+//                             None => [0; DIGEST_LENGTH],
+//                         };
+//
+//                         bytes.extend(digest_bytes);
+//                         bytes
+//                     },
+//                 );
+//
+//             let new_collection_digest = CollectionDigest(Some(XvcDigest::from_bytes(
+//                 child_paths_bytes,
+//                 &pcp.algorithm,
+//             )));
+//             let new_metadata_digest = MetadataDigest(Some(XvcDigest::from_bytes(
+//                 &child_metadata_digest_bytes,
+//                 &pcp.algorithm,
+//             )));
+//             let new_content_digest = ContentDigest(Some(XvcDigest::from_bytes(
+//                 &child_content_digest_bytes,
+//                 &pcp.algorithm,
+//             )));
+//
+//             let delta_collection_digest = match pcp.collection_digest_store.get(&dir_xe) {
+//                 None => Diff::RecordMissing {
+//                     actual: new_collection_digest,
+//                 },
+//                 Some(prev_collection_digest) => {
+//                     if *prev_collection_digest == new_collection_digest {
+//                         Diff::Identical
+//                     } else {
+//                         Diff::Different {
+//                             record: *prev_collection_digest,
+//                             actual: new_collection_digest,
+//                         }
+//                     }
+//                 }
+//             };
+//
+//             let delta_metadata_digest = match pcp.metadata_digest_store.get(&dir_xe) {
+//                 None => Diff::RecordMissing {
+//                     actual: new_metadata_digest,
+//                 },
+//                 Some(prev_metadata_digest) => {
+//                     if *prev_metadata_digest == new_metadata_digest {
+//                         Diff::Identical
+//                     } else {
+//                         Diff::Different {
+//                             record: *prev_metadata_digest,
+//                             actual: new_metadata_digest,
+//                         }
+//                     }
+//                 }
+//             };
+//
+//             let delta_content_digest = match pcp.content_digest_store.get(&dir_xe) {
+//                 None => Diff::RecordMissing {
+//                     actual: new_content_digest,
+//                 },
+//                 Some(prev_content_digest) => {
+//                     if *prev_content_digest == new_content_digest {
+//                         Diff::Identical
+//                     } else {
+//                         Diff::Different {
+//                             record: *prev_content_digest,
+//                             actual: new_content_digest,
+//                         }
+//                     }
+//                 }
+//             };
+//
+//             let xvc_metadata_diff_store = diff_store(
+//                 &pcp.xvc_metadata_store,
+//                 xvc_metadata_actual_store,
+//                 Some(path_subset),
+//             );
+//
+//             let delta_xvc_metadata = match pcp.xvc_metadata_store.get(&dir_xe) {
+//                 None => Diff::RecordMissing { actual: x_md },
+//                 Some(prev_md) => {
+//                     if x_md == *prev_md {
+//                         Diff::Identical
+//                     } else {
+//                         Diff::Different {
+//                             record: *prev_md,
+//                             actual: x_md,
+//                         }
+//                     }
+//                 }
+//             };
+//
+//             let dir_delta = DirectoryDelta {
+//                 delta_xvc_metadata,
+//                 delta_collection_digest,
+//                 delta_metadata_digest,
+//                 delta_content_digest,
+//             };
+//
+//             dir_delta_store.insert(*dir_xe, dir_delta);
+//         }
+//     }
+//
+//     Ok(dir_delta_store)
+// }
+//
+/// Compare the records and the actual info from `pmm` to find the differences
+/// in paths.
+/// This is used to detect changes between actual paths and our records.
+/// New entities are created for those paths missing from the records.
+pub fn diff_xvc_path_metadata(
+    stored_xvc_path_store: &XvcStore<XvcPath>,
+    stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
+    pmm: &XvcPathMetadataMap,
+) -> DiffStore2<XvcPath, XvcMetadata> {
+    let actual_xvc_path_store = HStore::from_storable(
+        pmm.keys(),
+        stored_xvc_path_store,
+        xvc_root.entity_generator(),
+    )?;
 
-    let mut dir_delta_store = DirectoryDeltaStore::new();
+    let entities = actual_xvc_path_store.keys().collect();
 
-    let mut dir_stack = Vec::<XvcPath>::new();
+    let actual_xvc_metadata_store = actual_xvc_path_store
+        .iter()
+        .map(|(xe, xp)| (*xe, pmm[xp]))
+        .collect();
 
-    dir_stack.extend(targets.iter().map(|(xp, xm)| xp.clone()));
+    xvc_path_diff = diff_store(stored_xvc_path_store, actual_xvc_path_store, Some(entities))?;
 
-    while let Some(the_dir) = dir_stack.pop() {
-        let dir_xe = pcp
-            .xvc_path_store
-            .entities_for(&the_dir)
-            .unwrap()
-            .get(0)
-            .unwrap();
+    xvc_metadata_diff = diff_store(
+        stored_xvc_metadata_store,
+        actual_xvc_metadata_store,
+        Some(entities),
+    )?;
 
-        let x_md = pcp
-            .xvc_metadata_store
-            .get(&dir_xe)
-            .cloned()
-            .unwrap_or_else(|| {
-                let actual_md = the_dir.to_absolute_path(xvc_root).to_path_buf().metadata();
-                let xvc_md = XvcMetadata::from(actual_md);
-                xvc_md
-            });
-
-        if x_md.file_type == XvcFileType::Directory {
-            // find child paths
-            let mut vec_child_paths =
-                Vec::from_iter(pcp.xvc_path_store.iter().filter_map(|(xe, xp)| {
-                    if xp.starts_with(&the_dir) && (*xe != *dir_xe) {
-                        Some(*xe)
-                    } else {
-                        None
-                    }
-                }));
-            vec_child_paths.sort();
-            let child_metadata: HStore<XvcMetadata> = vec_child_paths
-                .iter()
-                .filter_map(|xe| pcp.xvc_metadata_store.get(xe).map(|xmd| (*xe, *xmd)))
-                .collect();
-
-            let child_dirs: Vec<XvcEntity> = child_metadata
-                .iter()
-                .filter_map(|(xe, xmd)| {
-                    if xmd.file_type == XvcFileType::Directory {
-                        Some(*xe)
-                    } else {
-                        None
-                    }
-                })
-                .collect();
-
-            // if we have directories to calculate, let's dive to them first.
-            if !child_dirs.is_empty() {
-                if !child_dirs.iter().all(|xe| dir_delta_store.contains_key(xe)) {
-                    dir_stack.push(the_dir);
-                    child_dirs
-                        .iter()
-                        .for_each(|xe| dir_stack.push(pcp.xvc_path_store[xe].clone()));
-                    continue;
-                }
-            }
-
-            let child_paths_string = vec_child_paths.iter().fold(String::new(), |mut paths, xe| {
-                let xvc_path_str = pcp.xvc_path_store[xe].to_string();
-                paths.push_str(&xvc_path_str);
-                paths
-            });
-
-            let child_paths_bytes = child_paths_string.as_bytes();
-            let child_metadata_digest_bytes = vec_child_paths
-                .iter()
-                .map(|xe| {
-                    if let Some(dd) = dir_delta_store.get(xe) {
-                        match dd.delta_metadata_digest {
-                            Delta::Different { actual, .. } => actual,
-                            Delta::RecordMissing { actual } => actual,
-                            Delta::Identical => pcp.metadata_digest_store[xe],
-                            Delta::ActualMissing { record } => MetadataDigest(None),
-                            Delta::Skipped => pcp.metadata_digest_store[xe],
-                        }
-                    } else {
-                        *pcp.metadata_digest_store
-                            .get(xe)
-                            .unwrap_or_else(|| &MetadataDigest(None))
-                    }
-                })
-                .fold(
-                    Vec::<u8>::with_capacity(vec_child_paths.len() * DIGEST_LENGTH),
-                    |mut bytes, metadata_digest| {
-                        let digest_bytes = match metadata_digest.0 {
-                            Some(xvc_digest) => xvc_digest.digest,
-                            None => [0; DIGEST_LENGTH],
-                        };
-
-                        bytes.extend(digest_bytes);
-                        bytes
-                    },
-                );
-
-            let child_content_digest_bytes = vec_child_paths
-                .iter()
-                .map(|xe| {
-                    if let Some(dd) = dir_delta_store.get(xe) {
-                        match dd.delta_content_digest {
-                            Delta::Different { actual, .. } => actual,
-                            Delta::RecordMissing { actual } => actual,
-                            Delta::Identical => pcp.content_digest_store[xe],
-                            Delta::ActualMissing { record } => ContentDigest(None),
-                            Delta::Skipped => pcp.content_digest_store[xe],
-                        }
-                    } else {
-                        *pcp.content_digest_store
-                            .get(xe)
-                            .unwrap_or_else(|| &ContentDigest(None))
-                    }
-                })
-                .fold(
-                    Vec::<u8>::with_capacity(vec_child_paths.len() * DIGEST_LENGTH),
-                    |mut bytes, content_digest| {
-                        let digest_bytes = match content_digest.0 {
-                            Some(xvc_digest) => xvc_digest.digest,
-                            None => [0; DIGEST_LENGTH],
-                        };
-
-                        bytes.extend(digest_bytes);
-                        bytes
-                    },
-                );
-
-            let new_collection_digest = CollectionDigest(Some(XvcDigest::from_bytes(
-                child_paths_bytes,
-                &pcp.algorithm,
-            )));
-            let new_metadata_digest = MetadataDigest(Some(XvcDigest::from_bytes(
-                &child_metadata_digest_bytes,
-                &pcp.algorithm,
-            )));
-            let new_content_digest = ContentDigest(Some(XvcDigest::from_bytes(
-                &child_content_digest_bytes,
-                &pcp.algorithm,
-            )));
-
-            let delta_collection_digest = match pcp.collection_digest_store.get(&dir_xe) {
-                None => Delta::RecordMissing {
-                    actual: new_collection_digest,
-                },
-                Some(prev_collection_digest) => {
-                    if *prev_collection_digest == new_collection_digest {
-                        Delta::Identical
-                    } else {
-                        Delta::Different {
-                            record: *prev_collection_digest,
-                            actual: new_collection_digest,
-                        }
-                    }
-                }
-            };
-
-            let delta_metadata_digest = match pcp.metadata_digest_store.get(&dir_xe) {
-                None => Delta::RecordMissing {
-                    actual: new_metadata_digest,
-                },
-                Some(prev_metadata_digest) => {
-                    if *prev_metadata_digest == new_metadata_digest {
-                        Delta::Identical
-                    } else {
-                        Delta::Different {
-                            record: *prev_metadata_digest,
-                            actual: new_metadata_digest,
-                        }
-                    }
-                }
-            };
-
-            let delta_content_digest = match pcp.content_digest_store.get(&dir_xe) {
-                None => Delta::RecordMissing {
-                    actual: new_content_digest,
-                },
-                Some(prev_content_digest) => {
-                    if *prev_content_digest == new_content_digest {
-                        Delta::Identical
-                    } else {
-                        Delta::Different {
-                            record: *prev_content_digest,
-                            actual: new_content_digest,
-                        }
-                    }
-                }
-            };
-
-            let delta_xvc_metadata = match pcp.xvc_metadata_store.get(&dir_xe) {
-                None => Delta::RecordMissing { actual: x_md },
-                Some(prev_md) => {
-                    if x_md == *prev_md {
-                        Delta::Identical
-                    } else {
-                        Delta::Different {
-                            record: *prev_md,
-                            actual: x_md,
-                        }
-                    }
-                }
-            };
-
-            let dir_delta = DirectoryDelta {
-                delta_xvc_metadata,
-                delta_collection_digest,
-                delta_metadata_digest,
-                delta_content_digest,
-            };
-
-            dir_delta_store.insert(*dir_xe, dir_delta);
-        }
-    }
-
-    Ok(dir_delta_store)
+    DiffStore2(xvc_path_diff, xvc_metadata_diff)
 }
 
-pub fn find_file_changes_serial(
+/// For each command, we have a single requested_cache_type.
+/// We build an actual store by repeating it for all entities we have.
+pub fn diff_cache_type(
+    stored_cache_type_store: &XvcStore<CacheType>,
+    requested_cache_type: &CacheType,
+    entities: &HashSet<XvcEntity>,
+) -> DiffStore<CacheType> {
+    let requested_cache_type_store: HStore<CacheType> = actual_xvc_path_store
+        .keys()
+        .map(|x| (*x, *requested_cache_type))
+        .into();
+    let cache_store_diff = diff_store(
+        stored_cache_type_store,
+        actual_cache_type_store,
+        Some(entities),
+    );
+
+    cache_store_diff
+}
+
+/// For each command, we have a single requested_text_or_binary.
+/// We build an actual store by repeating it for all entities we have.
+/// This is used to find when the user wants to change recheck method.
+pub fn diff_text_or_binary(
+    stored_text_or_binary_store: &XvcStore<FileTextOrBinary>,
+    requested_text_or_binary: &FileTextOrBinary,
+    entities: &HashSet<XvcEntity>,
+) -> DiffStore<FileTextOrBinary> {
+    let requested_text_or_binary_store: HStore<FileTextOrBinary> = actual_xvc_path_store
+        .keys()
+        .map(|x| (*x, *requested_text_or_binary))
+        .into();
+    let text_or_binary_diff = diff_store(
+        &stored_text_or_binary_store,
+        &requested_text_or_binary_store,
+        Some(entities),
+    );
+    text_or_binary_diff
+}
+
+pub fn diff_content_digest(
     xvc_root: &XvcRoot,
-    path_comparison_params: &PathComparisonParams,
-    cache_type: &CacheType,
-    text_or_binary: &DataTextOrBinary,
-    targets: &XvcPathMetadataMap,
-) -> Result<FileDeltaStore> {
-    let mut xvc_entity_vec = Vec::<XvcEntity>::new();
-    let mut diff_check_vec = Vec::<(XvcEntity, CoreResult<Metadata>)>::new();
+    stored_xvc_path_store: &XvcStore<XvcPath>,
+    stored_content_digest_store: &XvcStore<ContentDigest>,
+    stored_text_or_binary_store: &XvcStore<FileTextOrBinary>,
+    prerequisite_diffs: &DiffStore3<XvcPath, XvcMetadata, FileTextOrBinary>,
+    requested_text_or_binary: Option<&FileTextOrBinary>,
+    requested_hash_algorithm: Option<&HashAlgorithm>,
+    parallel: bool,
+) -> DiffStore<ContentDigest> {
+    let xvc_path_diff_store = prerequisite_diffs.0;
+    let xvc_metadata_diff_store = prerequisite_diffs.1;
+    let text_or_binary_diff_store = prerequisite_diffs.2;
+    let entities = xvc_path_diff_store.keys().collect();
 
-    let xvc_path_imap = &path_comparison_params.xvc_path_store.index_map()?;
-    let xvc_metadata_store = &path_comparison_params.xvc_metadata_store;
+    let the_closure = |xe| {
+        let xvc_path_diff = xvc_path_diff_store.get(xe).expect("xvc_path_diff.get(xe)");
+        let xvc_metadata_diff = xvc_metadata_diff_store
+            .get(xe)
+            .expect("xvc_metadata_diff.get(xe)");
 
-    let mut path_delta_store = HStore::<FileDelta>::new();
+        if prerequisite_diffs.get_diff3(*xe).changed() {
+            let stored_content_digest = stored_content_digest_store.get(xe);
+            let text_or_binary = requested_text_or_binary.unwrap_or_else(|| {
+                stored_text_or_binary_store
+                    .get(xe)
+                    .unwrap_or_else(|| &FileTextOrBinary::from_conf(xvc_root.config()))
+            });
 
-    for (xvc_path, actual_md) in targets {
-        let xvc_entity = xvc_path_imap[xvc_path];
-        let res_diff = xvc_file_diff(
-            xvc_root,
-            path_comparison_params,
-            &xvc_entity,
-            &actual_md,
-            text_or_binary,
-            cache_type,
-        );
-        if let Ok(diff) = res_diff {
-            path_delta_store.insert(xvc_entity, diff);
+            let diff_content_digest = match xvc_path_diff {
+                // We calculate the diff even the path is identical.
+                // This is because the metadata has changed as we checked above.
+                Diff::Identical | Diff::Skipped => {
+                    let xvc_path = stored_xvc_path_store
+                        .get(xe)
+                        .expect("stored_xvc_path_store.get(xe)");
+                    let path = xvc_path.to_absolute_path(xvc_root);
+                    let actual_content_digest = ContentDigest::from_path(
+                        &path,
+                        requested_hash_algorithm,
+                        text_or_binary.into(),
+                    )?;
+                    let recorded_content_digest = stored_content_digest
+                        .get(xe)
+                        .expect("stored_content_digest.get(xe)");
+                    if actual_content_digest != *recorded_content_digest {
+                        Diff::Different {
+                            record: *recorded_content_digest,
+                            actual: actual_content_digest,
+                        }
+                    } else {
+                        Diff::Identical
+                    }
+                }
+                // The path is not recorded before.
+                Diff::RecordMissing { actual } => {
+                    let path = actual.to_absolute_path(xvc_root);
+                    let actual = ContentDigest::from_path(&path, algorithm, text_or_binary.into())?;
+                    match stored_content_digest.get(xe) {
+                        Some(recorded_content_digest) => {
+                            if actual != *recorded_content_digest {
+                                Diff::Different {
+                                    record: *recorded_content_digest,
+                                    actual,
+                                }
+                            } else {
+                                Diff::Identical
+                            }
+                        }
+                        None => Diff::RecordMissing { actual },
+                    }
+                }
+                // The path is changed. This can happen after a move
+                // operation, for example.
+                Diff::Different { record, actual } => {
+                    let path = actual.to_absolute_path(xvc_root);
+                    let actual =
+                        ContentDigest::from_path(&path, algorithm, *text_or_binary.into())?;
+                    match stored_content_digest.get(xe) {
+                        Some(recorded_content_digest) => {
+                            if actual != *recorded_content_digest {
+                                Diff::Different {
+                                    record: *recorded_content_digest,
+                                    actual,
+                                }
+                            } else {
+                                Diff::Identical
+                            }
+                        }
+                        None => Diff::RecordMissing { actual },
+                    }
+                }
+                // We have a record, but the path on disk is missing.
+                // We can't calculate the digest. We'll use the recorded
+                // one.
+                Diff::ActualMissing { record } => {
+                    match stored_content_digest_store.get(xe) {
+                        Some(record) => Diff::ActualMissing { record },
+                        // if the both actual and the record are
+                        // missing, they are identical in their inexistance.
+                        // how can a man without hands clap?
+                        None => Diff::Identical,
+                    }
+                }
+            };
+
+            (*xe, diff_content_digest)
+        }
+    };
+
+    if parallel {
+        entities.par_iter().map(the_closure).collect()
+    } else {
+        entities.iter().map(the_closure).collect()
+    }
+}
+
+/// This is used to detect changes in path collections, e.g., directories or
+/// globs.
+/// When a collection list changes, for example a file added to a directory, we
+/// recalculate the collection digest to see if the collection has changed.
+pub fn diff_dir_collection_digest(
+    xvc_root: &XvcRoot,
+    stored_collection_digest: Option<&CollectionDigest>,
+    stored_xvc_path_store: &XvcStore<XvcPath>,
+    path_diffs: &DiffStore<XvcPath>,
+    sorted_entities: &[XvcEntity],
+) -> Diff<CollectionDigest> {
+    let xvc_path_diff = path_diffs.subset(sorted_entities)?;
+    let stored_xvc_paths = stored_xvc_path_store.subset(sorted_entities)?;
+    let collection_strings = Vec::<String>::new();
+
+    for xe in sorted_entities {
+        let xvc_path_diff = xvc_path_diff.get(xe).expect("xvc_path_diff.get(xe)");
+        match xvc_path_diff {
+            Diff::Identical | Diff::Skipped => {
+                let path = stored_xvc_paths.get(xe).expect("stored_xvc_paths.get(xe)");
+                collection_strings.push(path.to_string());
+            }
+            Diff::RecordMissing { actual } => {
+                collection_strings.push(actual.to_string());
+            }
+            Diff::Different { record, actual } => {
+                collection_strings.push(actual.to_string());
+            }
+            Diff::ActualMissing { record } => {
+                // We can do some weird things here, like adding a prefix or
+                // reversing the string to change the collection result. I think it's better to use an empty
+                // entity string to describe the situation.
+
+                // This is to make sure the collection digest is different when
+                // all records are missing.
+                collection_strings.push(xe.to_string());
+            }
         }
     }
 
-    Ok(path_delta_store)
+    let joined = collection_strings.join("\n");
+    let actual = CollectionDigest::from_string(&joined);
+
+    match stored_collection_digest {
+        Some(record) => {
+            if actual != *record {
+                Diff::Different {
+                    record: *record,
+                    actual,
+                }
+            } else {
+                Diff::Identical
+            }
+        }
+        None => Diff::RecordMissing { actual },
+    }
+}
+
+/// This is to detect metadata changes in collections, e.g., directories or
+/// globs. When timestamp, size or similar metadata changes, the result changes.
+/// It can be used to detect changes in directories, globs, or other collections
+/// that use [XvcMetadata] to keep individual items' metadata.
+pub fn diff_dir_metadata_digest(
+    xvc_root: &XvcRoot,
+    stored_metadata_digest: Option<&MetadataDigest>,
+    stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
+    metadata_diffs: &DiffStore<XvcMetadata>,
+    sorted_entities: &[XvcEntity],
+) -> Result<Diff<MetadataDigest>> {
+    let xvc_metadata_diff = metadata_diffs.subset(sorted_entities)?;
+    let metadata_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
+
+    for xe in sorted_entities {
+        let xvc_metadata_diff = xvc_metadata_diff
+            .get(xe)
+            .ok_or(Error::CannotFindXvcEntity(*xe))?;
+        match xvc_metadata_diff {
+            Diff::Identical | Diff::Skipped => {
+                let metadata = stored_xvc_metadata_store
+                    .get(xe)
+                    .ok_or(error::CannotFindXvcEntity(*xe))?;
+                metadata_digest_bytes.extend(metadata.digest()?);
+            }
+            Diff::RecordMissing { actual } => {
+                metadata_digest_bytes.extend(actual.digest()?);
+            }
+            Diff::Different { record, actual } => {
+                metadata_digest_bytes.extend(actual.digest()?);
+            }
+            Diff::ActualMissing { record } => {
+                // This is to make sure the metadata digest is different when
+                // all records are missing or their order has changed.
+                metadata_digest_bytes.extend(MetadataDigest::new(XvcDigest::from_bytes(
+                    *xe,
+                    &HashAlgorithm::AsIs,
+                )));
+            }
+        }
+    }
+
+    // We always use Blake3 to keep the metadata digest consistent.
+    let actual = MetadataDigest::new(XvcDigest::from_bytes(
+        &metadata_digest_bytes,
+        &HashAlgorithm::Blake3,
+    ));
+
+    let digest = match stored_metadata_digest {
+        Some(record) => {
+            if actual != *record {
+                Diff::Different {
+                    record: *record,
+                    actual,
+                }
+            } else {
+                Diff::Identical
+            }
+        }
+        None => Diff::RecordMissing { actual },
+    };
+
+    Ok(digest)
+}
+
+/// This is used to detect content changes in elements of path collections,
+/// e.g., directories or globs. When the content of these elements change, their
+/// content digests also change. We collect them together and calculate their
+/// digest to detect changes in the collection.
+pub fn diff_dir_content_digest(
+    xvc_root: &XvcRoot,
+    stored_content_digest: Option<&ContentDigest>,
+    stored_xvc_content_store: &XvcStore<ContentDigest>,
+    content_diffs: &DiffStore<ContentDigest>,
+    sorted_entities: &[XvcEntity],
+) -> Result<Diff<ContentDigest>> {
+    let xvc_content_diff = content_diffs.subset(sorted_entities)?;
+    let content_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
+
+    for xe in sorted_entities {
+        let xvc_content_diff = xvc_content_diff
+            .get(xe)
+            .ok_or(Error::CannotFindXvcEntity(*xe))?;
+        match xvc_content_diff {
+            Diff::Identical | Diff::Skipped => {
+                let content = stored_xvc_content_store
+                    .get(xe)
+                    .ok_or(error::CannotFindXvcEntity(*xe))?;
+                content_digest_bytes.extend(content.digest()?);
+            }
+            Diff::RecordMissing { actual } => {
+                content_digest_bytes.extend(actual.digest()?);
+            }
+            Diff::Different { record, actual } => {
+                content_digest_bytes.extend(actual.digest()?);
+            }
+            Diff::ActualMissing { record } => {
+                // This is to make sure the content digest is different when
+                // all records are missing or their order has changed.
+                content_digest_bytes.extend(ContentDigest::new(XvcDigest::from_bytes(
+                    *xe,
+                    &HashAlgorithm::AsIs,
+                )));
+            }
+        }
+    }
+
+    // We always use Blake3 to keep the content digest consistent.
+    let actual = ContentDigest::new(XvcDigest::from_bytes(
+        &content_digest_bytes,
+        &HashAlgorithm::Blake3,
+    ));
+
+    let digest = match stored_content_digest {
+        Some(record) => {
+            if actual != *record {
+                Diff::Different {
+                    record: *record,
+                    actual,
+                }
+            } else {
+                Diff::Identical
+            }
+        }
+        None => Diff::RecordMissing { actual },
+    };
+
+    Ok(digest)
 }
 
 /// Find changes in `targets` w.r.t. `path_comparison_params`.
@@ -492,7 +1072,7 @@ pub fn find_file_changes_parallel(
     xvc_root: &XvcRoot,
     path_comparison_params: &PathComparisonParams,
     cache_type: &CacheType,
-    text_or_binary: &DataTextOrBinary,
+    text_or_binary: &FileTextOrBinary,
     targets: &XvcPathMetadataMap,
 ) -> Result<FileDeltaStore> {
     let mut xvc_entity_vec = Vec::<XvcEntity>::new();
@@ -659,7 +1239,7 @@ fn xvc_file_diff(
     path_comparison_params: &PathComparisonParams,
     xvc_entity: &XvcEntity,
     actual_md: &XvcMetadata,
-    text_or_binary: &DataTextOrBinary,
+    text_or_binary: &FileTextOrBinary,
     cache_type: &CacheType,
 ) -> Result<FileDelta> {
     let pcp = path_comparison_params;
@@ -667,14 +1247,14 @@ fn xvc_file_diff(
     let recorded_tob = pcp.text_or_binary_store.get(xvc_entity);
 
     let delta_text_or_binary = match recorded_tob {
-        None => Delta::RecordMissing {
+        None => Diff::RecordMissing {
             actual: text_or_binary.clone(),
         },
         Some(prev_tob) => {
             if *prev_tob == *text_or_binary {
-                Delta::Identical
+                Diff::Identical
             } else {
-                Delta::Different {
+                Diff::Different {
                     record: *prev_tob,
                     actual: *text_or_binary,
                 }
@@ -685,14 +1265,14 @@ fn xvc_file_diff(
     let recorded_cache_type = pcp.cache_type_store.get(xvc_entity);
 
     let delta_cache_type = match recorded_cache_type {
-        None => Delta::RecordMissing {
+        None => Diff::RecordMissing {
             actual: *cache_type,
         },
         Some(prev_cache_type) => {
             if *prev_cache_type == *cache_type {
-                Delta::Identical
+                Diff::Identical
             } else {
-                Delta::Different {
+                Diff::Different {
                     actual: *cache_type,
                     record: *prev_cache_type,
                 }
@@ -711,7 +1291,7 @@ fn xvc_file_diff(
                     path: xvc_path.to_absolute_path(xvc_root).to_path_buf(),
                 });
             } else {
-                Delta::RecordMissing {
+                Diff::RecordMissing {
                     actual: actual_md.clone(),
                 }
             }
@@ -719,12 +1299,12 @@ fn xvc_file_diff(
 
         Some(prev_md) => {
             if actual_md.file_type == XvcFileType::RecordOnly {
-                Delta::<XvcMetadata>::ActualMissing { record: *prev_md }
+                Diff::<XvcMetadata>::ActualMissing { record: *prev_md }
             } else {
                 if *prev_md == *actual_md {
-                    Delta::<XvcMetadata>::Identical
+                    Diff::<XvcMetadata>::Identical
                 } else {
-                    Delta::<XvcMetadata>::Different {
+                    Diff::<XvcMetadata>::Different {
                         record: *prev_md,
                         actual: *actual_md,
                     }
@@ -733,15 +1313,15 @@ fn xvc_file_diff(
         }
     };
 
-    let delta_metadata_digest: Delta<MetadataDigest> = match delta_md {
-        Delta::Identical => Delta::Identical,
-        Delta::Skipped => Delta::Skipped,
-        Delta::RecordMissing { actual } => Delta::RecordMissing {
+    let delta_metadata_digest: Diff<MetadataDigest> = match delta_md {
+        Diff::Identical => Diff::Identical,
+        Diff::Skipped => Diff::Skipped,
+        Diff::RecordMissing { actual } => Diff::RecordMissing {
             actual: actual.digest()?,
         },
-        Delta::ActualMissing { record } => {
+        Diff::ActualMissing { record } => {
             if let Some(record) = pcp.metadata_digest_store.get(xvc_entity) {
-                Delta::ActualMissing {
+                Diff::ActualMissing {
                     record: record.clone(),
                 }
             } else {
@@ -751,9 +1331,9 @@ fn xvc_file_diff(
                 .into());
             }
         }
-        Delta::Different { record, actual } => {
+        Diff::Different { record, actual } => {
             if let Some(record) = pcp.metadata_digest_store.get(xvc_entity) {
-                Delta::Different {
+                Diff::Different {
                     record: record.clone(),
                     actual: actual.digest()?,
                 }
@@ -766,15 +1346,15 @@ fn xvc_file_diff(
         }
     };
 
-    let delta_content_digest: Delta<ContentDigest> = match delta_md {
-        Delta::Identical => Delta::Identical,
-        Delta::Skipped => Delta::Skipped,
-        Delta::RecordMissing { actual } => Delta::RecordMissing {
+    let delta_content_digest: Diff<ContentDigest> = match delta_md {
+        Diff::Identical => Diff::Identical,
+        Diff::Skipped => Diff::Skipped,
+        Diff::RecordMissing { actual } => Diff::RecordMissing {
             actual: xvc_path.digest(xvc_root, pcp.algorithm, text_or_binary)?,
         },
-        Delta::ActualMissing { record } => {
+        Diff::ActualMissing { record } => {
             if let Some(record) = pcp.content_digest_store.get(xvc_entity) {
-                Delta::ActualMissing {
+                Diff::ActualMissing {
                     record: record.clone(),
                 }
             } else {
@@ -785,14 +1365,14 @@ fn xvc_file_diff(
             }
         }
         // We check whether the content actually changed here
-        Delta::Different { record, actual } => {
+        Diff::Different { record, actual } => {
             if let Some(record) = pcp.content_digest_store.get(xvc_entity) {
                 let record = record.clone();
                 let actual = xvc_path.digest(xvc_root, pcp.algorithm, text_or_binary)?;
                 if record == actual {
-                    Delta::Identical
+                    Diff::Identical
                 } else {
-                    Delta::Different {
+                    Diff::Different {
                         record: record.clone(),
                         actual: xvc_path.digest(xvc_root, pcp.algorithm, text_or_binary)?,
                     }

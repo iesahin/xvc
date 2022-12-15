@@ -24,13 +24,13 @@ use xvc_walker::{
 use crate::carry_in::carry_in;
 use crate::common::compare::{
     find_dir_changes_serial, find_file_changes_parallel, find_file_changes_serial,
-    update_path_comparison_params_with_actual_info, DeltaField, DirectoryDelta,
-    DirectoryDeltaStore, FileDelta, FileDeltaStore, PathComparisonParams,
+    update_path_comparison_params_with_actual_info, Diff, DirectoryDelta, DirectoryDeltaStore,
+    FileDelta, FileDeltaStore, PathComparisonParams,
 };
 use crate::common::{
-    cache_path, decide_no_parallel, expand_directory_targets, expanded_xvc_dir_file_targets,
+    cache_path, decide_no_parallel, expand_directory_targets, expand_xvc_dir_file_targets,
     move_to_cache, pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets,
-    update_dir_records, update_file_records,
+    targets_from_disk, update_dir_records, update_file_records,
 };
 use crate::error::{Error, Result};
 
@@ -65,18 +65,12 @@ use xvc_ecs::{R11Store, Storable};
     Deref,
     Default,
     Copy,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    Parser,
 )]
-pub struct DataTextOrBinary(TextOrBinary);
-conf!(DataTextOrBinary, "file.add.text_or_binary");
-persist!(DataTextOrBinary, "data-text-or-binary");
-
-impl DataTextOrBinary {
-    pub fn as_inner(&self) -> TextOrBinary {
-        self.0
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Parser)]
 #[command(about = "Track file versions using XVC", rename_all = "kebab-case")]
 pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
@@ -90,16 +84,16 @@ pub struct TrackCLI {
     /// Calculate digests as text or binary file without checking contents, or by automatically. (Default:
     /// auto)
     #[arg(long)]
-    text_or_binary: Option<DataTextOrBinary>,
+    text_or_binary: Option<FileTextOrBinary>,
     /// Add targets even if they are already tracked
     #[arg(long)]
     force: bool,
     /// Don't use parallelism
     #[arg(long)]
     no_parallel: bool,
-    /// Files/directories to add
+    /// Files/directories to track
     #[arg()]
-    targets: Vec<PathBuf>,
+    targets: Option<Vec<String>>,
 }
 
 impl UpdateFromXvcConfig for TrackCLI {
@@ -114,7 +108,7 @@ impl UpdateFromXvcConfig for TrackCLI {
         let force = self.force || conf.get_bool("file.add.force")?.option;
         let no_parallel = self.no_parallel || conf.get_bool("file.add.no_parallel")?.option;
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(
-            || Some(DataTextOrBinary::from_conf(conf)),
+            || Some(FileTextOrBinary::from_conf(conf)),
             |v| Some(v.to_owned()),
         );
 
@@ -161,13 +155,12 @@ pub fn cmd_track(
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets: Vec<PathBuf> = opts.targets.iter().map(|t| current_dir.join(t)).collect();
+    let targets = targets_from_disk(xvc_root, current_dir, opts.targets)?;
     let cache_type = opts.cache_type.unwrap_or_default();
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
-
     let no_parallel = decide_no_parallel(opts.no_parallel, &targets);
 
-    let (dir_targets, file_targets) = expanded_xvc_dir_file_targets(output_snd, xvc_root, targets);
+    let (dir_targets, file_targets) = expand_xvc_dir_file_targets(output_snd, xvc_root, targets);
     // create entities for new paths
     //
     // NOTE: We don't create metadata records here, otherwise FileDelta and DirectoryDelta
