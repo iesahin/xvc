@@ -3,7 +3,7 @@
 //! It's supposed to be used operations that don't require final result to be recorded to disk.
 use super::*;
 use crate::error::{Error, Result};
-use crate::Storable;
+use crate::{Storable, XvcStore};
 use log::debug;
 use rayon::iter::{FromParallelIterator, ParallelIterator};
 
@@ -93,6 +93,27 @@ where
     /// Return a mutable value for `entity`
     pub fn get_mut(&mut self, entity: &XvcEntity) -> Option<&mut T> {
         self.map.get_mut(entity)
+    }
+
+    /// This is used to create a store from actual values where the entity may
+    /// or may not already be in the store.
+    pub fn from_storable<I>(
+        values: I,
+        store: &XvcStore<T>,
+        gen: &XvcEntityGenerator,
+    ) -> Result<HStore<T>>
+    where
+        I: IntoIterator<Item = T>,
+    {
+        let mut hstore = HStore::<T>::new();
+        for value in values {
+            let key = match store.entity_by_value(&value) {
+                Some(e) => e,
+                None => gen.next_element(),
+            };
+            hstore.map.insert(key, value.clone());
+        }
+        Ok(hstore)
     }
 }
 
