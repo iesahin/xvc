@@ -38,7 +38,7 @@ pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;
 /// NOTE:
 ///     This function doesn't ignore any files under `start_dir`.
 ///     It doesn't check any ignore files.
-///     It even return `.git` and `.xvc` directory contents.
+///     It even returns `.git` and `.xvc` directory contents.
 pub fn path_metadata_channel(
     sender: Sender<XvcResult<PathMetadata>>,
     start_dir: &Path,

@@ -1,4 +1,6 @@
 //! Xvc digest calculations
+use crate::util::file::is_text_file;
+use crate::TextOrBinary;
 use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
 use std::{fmt::Display, fs, path::Path};
 use xvc_ecs::persist;
@@ -157,6 +159,27 @@ persist!(ContentDigest, "content-digest");
 impl From<XvcDigest> for ContentDigest {
     fn from(xd: XvcDigest) -> Self {
         Self(Some(xd))
+    }
+}
+
+impl ContentDigest {
+    pub fn from_path(
+        path: &Path,
+        algorithm: HashAlgorithm,
+        text_or_binary: TextOrBinary,
+    ) -> Result<Self> {
+        let digest = match text_or_binary {
+            TextOrBinary::Binary => XvcDigest::from_binary_file(path, algorithm)?,
+            TextOrBinary::Text => XvcDigest::from_text_file(path, algorithm)?,
+            TextOrBinary::Auto => {
+                if is_text_file(path)? {
+                    XvcDigest::from_text_file(path, algorithm)?
+                } else {
+                    XvcDigest::from_binary_file(path, algorithm)?
+                }
+            }
+        };
+        Ok(Self(Some(digest)))
     }
 }
 
