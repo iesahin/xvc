@@ -4,7 +4,7 @@ use crate::Result;
 use clap::Parser;
 use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::watch;
+use xvc_logging::{error, watch};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 
 /// Send (upload) tracked files to storage
@@ -59,7 +59,17 @@ pub fn cmd_send(
 
     let cache_paths: HStore<XvcCachePath> = target_content_digests
         .iter()
-        .map(|xe, cd| (xe, XvcCachePath::new(xvc_root, cd)))
+        .filter_map(|(xe, content_digest)| {
+            target_files.get(xe).and_then(|xvc_path| {
+                XvcCachePath::new(xvc_path, content_digest)
+                    .map_err(|e| {
+                        error!(output_snd, "{e}");
+                        e
+                    })
+                    .ok()
+                    .and_then(|cache_path| Some((*xe, cache_path)))
+            })
+        })
         .collect();
 
     watch!(cache_paths);
@@ -69,7 +79,7 @@ pub fn cmd_send(
             output_snd.clone(),
             xvc_root,
             // TODO: Change interface of XvcStorage to get an HStore instead of Vec
-            &cache_paths.values().cloned().collect(),
+            cache_paths.values().cloned().collect().as_slice(),
             opts.force,
         )
         .map_err(|e| xvc_core::Error::from(anyhow::anyhow!("Remote error: {}", e)))?;

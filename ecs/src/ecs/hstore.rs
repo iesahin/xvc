@@ -119,6 +119,13 @@ impl<T> Default for HStore<T> {
     }
 }
 
+impl<T: Storable> From<XvcStore<T>> for HStore<T> {
+    fn from(store: XvcStore<T>) -> Self {
+        let map = HashMap::from_iter(store.iter().map(|(k, v)| (*k, v.clone())));
+        Self { map }
+    }
+}
+
 impl<T> HStore<T> {
     /// Create an empty HStore.
     ///
@@ -234,23 +241,38 @@ impl<T> HStore<T> {
         }
         Ok(Self { map })
     }
-}
-
-impl<T: Clone> HStore<T> {
     /// Creates a new map by calling the `predicate` with each value.
     ///
     /// `predicate` must be a function or closure that returns `bool`.
-    pub fn filter<F>(&self, predicate: F) -> Self
+    ///
+    /// It doesn't clone the values.
+    pub fn filter<F>(&self, predicate: F) -> HStore<&T>
     where
         F: Fn(&XvcEntity, &T) -> bool,
     {
-        let mut m = HashMap::<XvcEntity, T>::new();
+        let mut m = HashMap::<XvcEntity, &T>::new();
         for (e, v) in self.map.iter() {
             if predicate(e, v) {
-                m.insert(*e, v.clone());
+                m.insert(*e, v);
             }
         }
 
-        Self { map: m }
+        HStore::from(m)
+    }
+
+    /// Returns the first element of the map.
+    pub fn first(&self) -> Option<(&XvcEntity, &T)> {
+        self.map.iter().next()
+    }
+}
+
+impl<T: Clone> HStore<&T> {
+    /// Returns a new map by cloning the values.
+    pub fn cloned(&self) -> HStore<T> {
+        let mut map = HashMap::<XvcEntity, T>::with_capacity(self.len());
+        for (e, v) in self.iter() {
+            map.insert(*e, (*v).clone());
+        }
+        HStore::from(map)
     }
 }

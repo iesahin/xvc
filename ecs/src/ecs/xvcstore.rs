@@ -205,14 +205,14 @@ where
     /// A subset of this maps identified by `XvcEntity` elements of the iterator.
     ///
     /// This can be used to split the map arbitrarily.
-    pub fn subset<I>(&self, keys: I) -> Result<Self>
+    pub fn subset<I>(&self, keys: I) -> Result<HStore<T>>
     where
         I: Iterator<Item = XvcEntity>,
     {
-        let mut store = XvcStore::<T>::new();
+        let mut store = HStore::<T>::new();
         for e in keys {
             if let Some(v) = self.map.get(&e) {
-                store.insert(e, v.clone());
+                store.map.insert(e, v.clone());
             } else {
                 Error::CannotFindKeyInStore { key: e.0 }.warn();
             }

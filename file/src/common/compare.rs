@@ -438,7 +438,7 @@ pub fn diff_xvc_path_metadata(
 /// We build an actual store by repeating it for all entities we have.
 pub fn diff_cache_type(
     stored_cache_type_store: &XvcStore<CacheType>,
-    requested_cache_type: &CacheType,
+    requested_cache_type: CacheType,
     entities: &HashSet<XvcEntity>,
 ) -> DiffStore<CacheType> {
     let requested_cache_type_store: HStore<CacheType> =
@@ -458,7 +458,7 @@ pub fn diff_cache_type(
 /// This is used to find when the user wants to change recheck method.
 pub fn diff_text_or_binary(
     stored_text_or_binary_store: &XvcStore<FileTextOrBinary>,
-    requested_text_or_binary: &FileTextOrBinary,
+    requested_text_or_binary: FileTextOrBinary,
     entities: &HashSet<XvcEntity>,
 ) -> DiffStore<FileTextOrBinary> {
     let requested_text_or_binary_store: HStore<FileTextOrBinary> = entities
@@ -484,8 +484,8 @@ pub fn diff_content_digest(
     stored_content_digest_store: &XvcStore<ContentDigest>,
     stored_text_or_binary_store: &XvcStore<FileTextOrBinary>,
     prerequisite_diffs: &DiffStore3<XvcPath, XvcMetadata, FileTextOrBinary>,
-    requested_text_or_binary: &Option<FileTextOrBinary>,
-    requested_hash_algorithm: &Option<HashAlgorithm>,
+    requested_text_or_binary: Option<FileTextOrBinary>,
+    requested_hash_algorithm: Option<HashAlgorithm>,
     parallel: bool,
 ) -> DiffStore<ContentDigest> {
     let xvc_path_diff_store = prerequisite_diffs.0;
@@ -595,10 +595,13 @@ pub fn diff_content_digest(
     if parallel {
         entities
             .par_iter()
-            .map(uwr!(the_closure, output_snd))
+            .map(|e| uwr!(the_closure(e), output_snd))
             .collect()
     } else {
-        entities.iter().map(uwr!(the_closure, output_snd)).collect()
+        entities
+            .iter()
+            .map(|e| uwr!(the_closure(e), output_snd))
+            .collect()
     }
 }
 

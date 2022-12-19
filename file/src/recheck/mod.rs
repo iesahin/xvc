@@ -18,10 +18,10 @@ use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_core::{
-    apply_diff, CacheType, ContentDigest, Diff, Diff3, DiffStore, HashAlgorithm, TextOrBinary,
-    XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    apply_diff, CacheType, ContentDigest, Diff, Diff3, DiffStore, DiffStore3, HashAlgorithm,
+    TextOrBinary, XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_ecs::{XvcEntity, XvcStore};
+use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::{error, warn, watch, XvcOutputLine};
 use xvc_walker::Glob;
 
@@ -95,7 +95,7 @@ pub fn cmd_recheck(
     watch!(xvc_current_dir);
 
     let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
-    let text_or_binary = opts.text_or_binary.unwrap_or_default();
+    let text_or_binary = opts.text_or_binary;
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
@@ -111,8 +111,8 @@ pub fn cmd_recheck(
     let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
     let text_or_binary_diff = diff_text_or_binary(
         &stored_text_or_binary_store,
-        &text_or_binary,
-        target_files.keys().copied(),
+        &text_or_binary.unwrap_or_default(),
+        &target_files.keys().copied().collect(),
     );
 
     let xvc_path_metadata_diff = diff_xvc_path_metadata(
@@ -124,19 +124,23 @@ pub fn cmd_recheck(
     let xvc_path_diff: DiffStore<XvcPath> = xvc_path_metadata_diff.0;
     let xvc_metadata_diff: DiffStore<XvcMetadata> = xvc_path_metadata_diff.1;
 
-    let prerequisite_diffs = Diff3::new(xvc_path_diff, xvc_metadata_diff, text_or_binary_diff);
+    let prerequisite_diffs = DiffStore3::<XvcPath, XvcMetadata, FileTextOrBinary>(
+        xvc_path_diff,
+        xvc_metadata_diff,
+        text_or_binary_diff,
+    );
 
     let algorithm = HashAlgorithm::from_conf(conf);
 
     let content_digest_diff = diff_content_digest(
+        output_snd,
         xvc_root,
-        &stored_xvc_path_store,
         &stored_xvc_path_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
         &prerequisite_diffs,
-        text_or_binary,
-        algorithm,
+        &text_or_binary,
+        &Some(algorithm),
         !opts.no_parallel,
     );
 
@@ -166,16 +170,16 @@ pub fn cmd_recheck(
     });
 
     let updated_cache_type_store =
-        apply_diff(&stored_cache_type_store, cache_type_diff, true, false)?;
+        apply_diff(&stored_cache_type_store, &cache_type_diff, true, false)?;
     let updated_content_digest_store = apply_diff(
         &stored_content_digest_store,
-        content_digest_diff,
+        &content_digest_diff,
         true,
         false,
     )?;
 
     recheck(
-        &output_snd,
+        output_snd,
         xvc_root,
         &files_to_recheck,
         &updated_cache_type_store,
@@ -190,14 +194,14 @@ pub fn cmd_recheck(
 }
 
 fn recheck(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    files_to_recheck: &XvcStore<XvcPath>,
+    files_to_recheck: &HStore<&XvcPath>,
     cache_type_store: &XvcStore<CacheType>,
     content_digest_store: &XvcStore<ContentDigest>,
     parallel: bool,
 ) -> Result<()> {
-    let checkout = |xe, xvc_path| -> Result<()> {
+    let checkout = |xe, xvc_path: &XvcPath| -> Result<()> {
         let content_digest = content_digest_store[&xe];
         let cache_path = XvcCachePath::new(&xvc_path, &content_digest)?;
         watch!(cache_path);
@@ -212,7 +216,7 @@ fn recheck(
                 fs::remove_file(target_path)?;
             }
             let cache_type = cache_type_store[&xe];
-            recheck_from_cache(output_snd, xvc_root, &xvc_path, &cache_path, cache_type)
+            recheck_from_cache(output_snd, xvc_root, xvc_path, &cache_path, cache_type)
         } else {
             error!(
                 output_snd,
@@ -224,11 +228,11 @@ fn recheck(
 
     if parallel {
         files_to_recheck.par_iter().for_each(|(xe, xp)| {
-            checkout(xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
+            checkout(*xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
         });
     } else {
-        files_to_recheck.into_iter().for_each(|(xe, xp)| {
-            checkout(xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
+        files_to_recheck.iter().for_each(|(xe, xp)| {
+            checkout(*xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
         });
     }
 

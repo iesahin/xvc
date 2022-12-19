@@ -198,7 +198,7 @@ pub fn targets_from_store(
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     targets: Option<Vec<String>>,
-) -> Result<XvcStore<XvcPath>> {
+) -> Result<HStore<XvcPath>> {
     // If we are not in the root, we add current dir to all targets and recur.
     if *current_dir != *xvc_root.absolute_path() {
         let cwd = current_dir
@@ -235,7 +235,7 @@ pub fn targets_from_store(
         }
         Ok(paths)
     } else {
-        Ok(xvc_path_store)
+        Ok(xvc_path_store.into())
     }
 }
 
@@ -293,8 +293,8 @@ pub fn targets_from_disk(
 pub fn only_file_targets(
     xvc_path_store: &XvcStore<XvcPath>,
     xvc_metadata_store: &XvcStore<XvcMetadata>,
-    targets: &XvcStore<XvcPath>,
-) -> Result<XvcStore<XvcPath>> {
+    targets: &HStore<XvcPath>,
+) -> Result<HStore<XvcPath>> {
     let target_metadata = xvc_metadata_store.subset(targets.keys().copied())?;
 
     assert! {
@@ -317,7 +317,7 @@ pub fn only_file_targets(
 /// metadata, it may be better to use [all_paths_and_metadata].
 pub fn xvc_path_metadata_map_from_disk(
     xvc_root: &XvcRoot,
-    targets: &XvcStore<XvcPath>,
+    targets: &HStore<XvcPath>,
 ) -> XvcPathMetadataMap {
     targets
         .par_iter()

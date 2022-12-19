@@ -3,7 +3,7 @@ use crossbeam_channel::{bounded, Sender};
 use derive_more::{AsRef, Deref, Display, From};
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::Write;
 use std::str::FromStr;
 
@@ -11,13 +11,19 @@ use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
-use xvc_core::XvcRoot;
+use xvc_core::{
+    ContentDigest, DiffStore3, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot,
+};
 use xvc_logging::{error, info, watch, XvcOutputLine};
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
 use crate::carry_in::carry_in;
+use crate::common::compare::{
+    diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata,
+};
 use crate::common::{
-    decide_no_parallel, expand_xvc_dir_file_targets, targets_from_disk, FileTextOrBinary,
+    decide_no_parallel, expand_xvc_dir_file_targets, targets_from_disk, update_store_records,
+    FileTextOrBinary,
 };
 use crate::error::{Error, Result};
 
@@ -28,16 +34,17 @@ use std::path::PathBuf;
 
 use xvc_core::CacheType;
 use xvc_core::XvcPath;
-use xvc_ecs::XvcStore;
+use xvc_ecs::{HStore, XvcEntity, XvcStore};
 
 /// Add files for tracking with Xvc
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Display, From, Parser)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
 #[command(rename_all = "kebab-case")]
 pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long)]
     cache_type: Option<CacheType>,
+
     /// Do not copy/link added files to the file cache
     #[arg(long)]
     no_commit: bool,
@@ -83,8 +90,6 @@ impl UpdateFromXvcConfig for TrackCLI {
     }
 }
 
-const PARALLEL_THRESHOLD: usize = 47;
-
 /// ## The pipeline
 ///
 /// ```mermaid
@@ -116,74 +121,116 @@ pub fn cmd_track(
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
     let targets = targets_from_disk(xvc_root, current_dir, opts.targets)?;
-    let cache_type = opts.cache_type.unwrap_or_default();
+    let requested_cache_type = opts.cache_type.unwrap_or_default();
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
-    let no_parallel = decide_no_parallel(opts.no_parallel, &targets);
+    let no_parallel = opts.no_parallel;
 
-    let (dir_targets, file_targets) = expand_xvc_dir_file_targets(output_snd, xvc_root, targets);
-    // create entities for new paths
-    //
-    // NOTE: We don't create metadata records here, otherwise FileDelta and DirectoryDelta
-    // operations doesn't catch the differences.
-    //
-    // We only create entities for paths.
-    // Their metadata components will be missing and will be caught as differences.
+    let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+    let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
 
-    xvc_root.with_store_mut(|xvc_path_store: &mut XvcStore<XvcPath>| {
-        let mut xvc_path_imap = xvc_path_store.index_map()?;
+    let xvc_path_metadata_diff = diff_xvc_path_metadata(
+        xvc_root,
+        &stored_xvc_path_store,
+        &stored_xvc_metadata_store,
+        &targets,
+    );
 
-        for (dir_target, dir_md) in &dir_targets {
-            let opt_entity = xvc_path_imap.get(dir_target);
-            if opt_entity == None {
-                let new_target_e = xvc_root.new_entity();
-                xvc_path_store.insert(new_target_e, dir_target.to_owned().clone());
-                xvc_path_imap.insert(dir_target.to_owned().clone(), new_target_e);
+    let xvc_path_diff = xvc_path_metadata_diff.0;
+    let xvc_metadata_diff = xvc_path_metadata_diff.1;
+
+    let changed_entities: HashSet<XvcEntity> =
+        xvc_path_diff
+            .iter()
+            .filter_map(|(xe, xpd)| if xpd.changed() { Some(*xe) } else { None })
+            .chain(xvc_metadata_diff.iter().filter_map(|(xe, xpd)| {
+                if xpd.changed() {
+                    Some(*xe)
+                } else {
+                    None
+                }
+            }))
+            .collect();
+
+    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
+    let cache_type_diff = diff_cache_type(
+        &stored_cache_type_store,
+        requested_cache_type,
+        &changed_entities,
+    );
+
+    let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
+    let text_or_binary_diff = diff_text_or_binary(
+        &stored_text_or_binary_store,
+        text_or_binary,
+        &changed_entities,
+    );
+
+    let hash_algorithm = HashAlgorithm::from_conf(conf);
+
+    let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
+    let prerequisite_diffs = DiffStore3::<XvcPath, XvcMetadata, FileTextOrBinary>(
+        xvc_path_diff,
+        xvc_metadata_diff,
+        text_or_binary_diff,
+    );
+    let content_digest_diff = diff_content_digest(
+        output_snd,
+        xvc_root,
+        &stored_xvc_path_store,
+        &stored_content_digest_store,
+        &stored_text_or_binary_store,
+        &prerequisite_diffs,
+        opts.text_or_binary,
+        None,
+        !no_parallel,
+    );
+
+    update_store_records(xvc_root, &xvc_path_diff, true, false);
+    update_store_records(xvc_root, &xvc_metadata_diff, true, false);
+    update_store_records(xvc_root, &cache_type_diff, true, false);
+    update_store_records(xvc_root, &text_or_binary_diff, true, false);
+    update_store_records(xvc_root, &content_digest_diff, true, false);
+
+    // We reload to get the latest file types
+    let current_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+
+    let file_entities = changed_entities.iter().filter_map(|xe| {
+        current_xvc_metadata_store.get(xe).and_then(|md| {
+            if md.file_type == XvcFileType::File {
+                Some(*xe)
+            } else {
+                None
             }
-        }
+        })
+    });
 
-        for (file_target, file_md) in &file_targets {
-            let opt_entity = xvc_path_imap.get(file_target);
-            if opt_entity == None {
-                let new_target_e = xvc_root.new_entity();
-                xvc_path_store.insert(new_target_e, file_target.to_owned().clone());
-                xvc_path_imap.insert(file_target.to_owned().clone(), new_target_e);
+    let directory_entities = changed_entities.iter().filter_map(|xe| {
+        current_xvc_metadata_store.get(xe).and_then(|md| {
+            if md.file_type == XvcFileType::Directory {
+                Some(*xe)
+            } else {
+                None
             }
-        }
+        })
+    });
 
-        Ok(())
-    })?;
+    let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
 
-    let path_comparison_params = PathComparisonParams::init(xvc_root)?;
-    let algorithm = (&path_comparison_params.algorithm).clone();
+    let file_targets: Vec<PathBuf> = file_entities
+        .filter_map(|xe| {
+            current_xvc_path_store
+                .get(&xe)
+                .and_then(|xp| Some(xp.to_absolute_path(xvc_root).to_path_buf()))
+        })
+        .collect();
 
-    info!("Calculating Hashes with: {:#?}", algorithm);
-    let file_delta_store = if no_parallel {
-        find_file_changes_serial(
-            xvc_root,
-            &path_comparison_params,
-            &cache_type,
-            &text_or_binary,
-            &file_targets,
-        )?
-    } else {
-        find_file_changes_parallel(
-            xvc_root,
-            &path_comparison_params,
-            &cache_type,
-            &text_or_binary,
-            &file_targets,
-        )?
-    };
-
-    let path_comparison_params =
-        update_path_comparison_params_with_actual_info(path_comparison_params, &file_delta_store);
-
-    // Used serial version because it works with in memory data without making IO
-    let dir_delta_store: DirectoryDeltaStore =
-        find_dir_changes_serial(xvc_root, &path_comparison_params, &dir_targets)?;
-
-    update_file_records(xvc_root, &file_delta_store)?;
-    update_dir_records(xvc_root, &dir_delta_store)?;
+    let dir_targets: Vec<PathBuf> = directory_entities
+        .filter_map(|xe| {
+            current_xvc_path_store
+                .get(&xe)
+                .and_then(|xp| Some(xp.to_absolute_path(xvc_root).to_path_buf()))
+        })
+        .collect();
 
     let current_gitignore = build_gitignore(xvc_root)?;
 
@@ -191,26 +238,44 @@ pub fn cmd_track(
         xvc_root,
         current_dir,
         &current_gitignore,
-        file_targets
-            .iter()
-            .map(|(xp, _)| xp.to_absolute_path(xvc_root).to_path_buf())
-            .collect::<Vec<PathBuf>>()
-            .as_ref(),
-        dir_targets
-            .iter()
-            .map(|(xp, _)| xp.to_absolute_path(xvc_root).to_path_buf())
-            .collect::<Vec<PathBuf>>()
-            .as_ref(),
+        &file_targets,
+        &dir_targets,
     )?;
 
     if !opts.no_commit {
+        let updated_content_digest_store: HStore<ContentDigest> = content_digest_diff
+            .into_iter()
+            .filter_map(|(xe, cdd)| match cdd {
+                xvc_core::Diff::Identical => None,
+                xvc_core::Diff::RecordMissing { actual } => Some((xe, actual)),
+                xvc_core::Diff::ActualMissing { record } => None,
+                xvc_core::Diff::Different { record, actual } => Some((xe, actual)),
+                xvc_core::Diff::Skipped => None,
+            })
+            .collect();
+
+        let xvc_paths_to_carry =
+            current_xvc_path_store.subset(updated_content_digest_store.keys().cloned())?;
+
+        let cache_paths = updated_content_digest_store
+            .iter()
+            .filter_map(|(xe, cd)| {
+                current_xvc_path_store
+                    .get(&xe)
+                    .and_then(|xp| XvcCachePath::new(xp, cd).ok())
+                    .and_then(|cp| Some((*xe, cp)))
+            })
+            .collect();
+
+        let cache_type_store = xvc_root.load_store::<CacheType>()?;
+
         carry_in(
             output_snd,
             xvc_root,
-            &path_comparison_params,
-            &file_delta_store,
-            opts.force,
-            !opts.no_parallel,
+            &xvc_paths_to_carry,
+            &cache_paths,
+            &cache_type_store,
+            !no_parallel,
         )?;
     }
     Ok(())

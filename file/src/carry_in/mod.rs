@@ -165,9 +165,11 @@ pub fn cmd_carry_in(
     let xvc_paths_to_carry = if opts.force {
         target_files
     } else {
-        target_files.filter(|xe, _| {
-            content_digest_diff[&xe].changed() || text_or_binary_diff[&xe].changed()
-        })
+        target_files
+            .filter(|xe, _| {
+                content_digest_diff[&xe].changed() || text_or_binary_diff[&xe].changed()
+            })
+            .cloned()
     };
 
     let cache_paths_to_carry: HStore<XvcCachePath> = xvc_paths_to_carry
@@ -226,7 +228,7 @@ pub fn cmd_carry_in(
 pub fn carry_in(
     output_snd: Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    xvc_paths_to_carry: &XvcStore<XvcPath>,
+    xvc_paths_to_carry: &HStore<XvcPath>,
     cache_paths: &HStore<XvcCachePath>,
     cache_types: &XvcStore<CacheType>,
     parallel: bool,
