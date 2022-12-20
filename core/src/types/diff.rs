@@ -14,11 +14,22 @@ pub enum Diff<T: Storable> {
     /// Both record and actual values are identical.
     Identical,
     /// We don't have the record, but we have the actual value
-    RecordMissing { actual: T },
+    RecordMissing {
+        /// The actual value found (probably) in workspace
+        actual: T,
+    },
     /// We have the record, but we don't have the actual value
-    ActualMissing { record: T },
+    ActualMissing {
+        /// The record value found in the stores
+        record: T,
+    },
     /// Both record and actual values are present, but they differ
-    Different { record: T, actual: T },
+    Different {
+        /// The value found in store
+        record: T,
+        /// The value found in workspace
+        actual: T,
+    },
     /// We skipped this comparison.
     /// It's not an error, but it means we didn't compare this field.
     /// It may be shortcutted, we don't care or irrelevant.
@@ -37,6 +48,10 @@ where
 /// Keeping track of differences between two stores of the same type.
 pub type DiffStore<T> = HStore<Diff<T>>;
 
+/// Compare `records` with `actuals` and return the missing or changed values.
+/// This is used find out when something changes in the workspace.
+///
+/// If `subset` is `None`, we compare all entities in both stores. Otherwise we only compare the entities in `subset`.
 pub fn diff_store<T: Storable>(
     records: &XvcStore<T>,
     actuals: &HStore<T>,
@@ -46,7 +61,7 @@ pub fn diff_store<T: Storable>(
     let entities = if let Some(subset) = subset {
         subset
     } else {
-        all_entities = HashSet::from_iter(records.keys().chain(actuals.keys()).copied());
+        all_entities.extend(records.keys().chain(actuals.keys()).copied());
         &all_entities
     };
 

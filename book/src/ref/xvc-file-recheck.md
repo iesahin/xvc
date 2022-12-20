@@ -45,7 +45,6 @@ This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if yo
 Rechecking is analogous to [git checkout](https://git-scm.com/docs/git-checkout). 
 It copies or links a cached file to the workspace. 
 
-
 Start by tracking a file. 
 
 ```console
@@ -74,10 +73,10 @@ total[..]
 Then, recheck the file. By default, it makes a copy of the file.
 
 ```console
-$ xvc file recheck data.txt
+$ xvc -vvvv file recheck data.txt
 
 $ ls -l
-total[..]
+total
 -rw-rw-rw- [..] data.txt
 
 ```
@@ -85,8 +84,8 @@ total[..]
 Xvc doesn't recheck a path if it exists already.
 
 ```console
-$ xvc -v file recheck data.txt --as symlink
-[WARN] data.txt already exists. Use --force to overwrite
+$ xvc file recheck data.txt --as symlink
+[ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
 $ ls -l data.txt
 -rw-rw-rw- [..] data.txt
@@ -98,8 +97,9 @@ You can force it to do so.
 ```console
 $ xvc -vv file recheck data.txt --as symlink --force
 ...
-[INFO] data.txt already exists. Overwriting.
+[INFO] [SYMLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
 ...
+
 $ ls -l data.txt
 l[..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
 
@@ -108,8 +108,12 @@ l[..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
 Hardlinks look like the original file. 
 
 ```console
-$ rm data.txt
-$ xvc file recheck data.txt --as hardlink
+$ xvc -vv file recheck data.txt --as hardlink --force
+...
+[WARN] data.txt already exists. Removing to recheck.
+[INFO] [HARDLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
+...
+
 $ ls -l
 total[..]
 -r--r--r-- [..] data.txt
@@ -122,8 +126,9 @@ Reflinks are supported by Xvc, but the underlying file system should also suppor
 Otherwise it uses `copy`. 
 
 ```console
-$ rm data.txt
+$ rm -f data.txt
 $ xvc file recheck data.txt --as reflink
+
 ```
 
 The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems. 

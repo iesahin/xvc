@@ -275,20 +275,21 @@ impl XvcPipeline {
     }
 }
 
-// this is run during repository initialization
+/// Initialize pipeline stores and save them.
+///
+/// This is to run during `xvc init`.
 pub fn init(xvc_root: &XvcRoot) -> Result<()> {
     let conf = xvc_root.config();
     let mut pipeline_store = XvcStore::<XvcPipeline>::new();
     // If there is a system config for default pipeline name, adhere to it
-    let first_name = if let Ok(config_opt) = conf.get_str("pipeline.default") {
+    let initial_name = if let Ok(config_opt) = conf.get_str("pipeline.default") {
         config_opt.option
     } else {
         "default".to_string()
     };
 
-    pipeline_store.insert(xvc_root.new_entity(), XvcPipeline { name: first_name });
+    pipeline_store.insert(xvc_root.new_entity(), XvcPipeline { name: initial_name });
 
-    // We don't add anything to rundir_store, it's run in xvc_root
     xvc_root.save_store(&pipeline_store)?;
     xvc_root.save_store(&XvcStore::<XvcPipelineRunDir>::new())?;
 

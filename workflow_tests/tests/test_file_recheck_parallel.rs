@@ -22,7 +22,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 #[test]
-fn test_file_checkout_parallel() -> Result<()> {
+fn test_file_recheck_parallel() -> Result<()> {
     let xvc_root = create_directory_hierarchy()?;
     watch!(xvc_root);
     let x = |cmd: &[&str]| common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace);
@@ -32,13 +32,13 @@ fn test_file_checkout_parallel() -> Result<()> {
 
     fs::remove_file(file_to_add)?;
 
-    x(&["file", "checkout", file_to_add])?;
+    x(&["file", "recheck", file_to_add])?;
 
     assert!(PathBuf::from(file_to_add).exists());
 
     x(&[
         "file",
-        "checkout",
+        "recheck",
         "--force",
         "--cache-type",
         "symlink",
@@ -47,7 +47,7 @@ fn test_file_checkout_parallel() -> Result<()> {
 
     assert!(PathBuf::from(file_to_add).is_symlink());
 
-    x(&["file", "checkout", "--cache-type", "hardlink", file_to_add])?;
+    x(&["file", "recheck", "--cache-type", "hardlink", file_to_add])?;
 
     // No --force, it shouldn't overwrite
 
@@ -60,7 +60,7 @@ fn test_file_checkout_parallel() -> Result<()> {
 
     fs::remove_dir_all(dir_to_add)?;
 
-    x(&["file", "checkout", dir_to_add])?;
+    x(&["file", "recheck", dir_to_add])?;
 
     assert!(PathBuf::from(dir_to_add).exists());
 
@@ -68,14 +68,14 @@ fn test_file_checkout_parallel() -> Result<()> {
 
     assert!(n_files_after == n_files_before);
 
-    // xvc file checkout without targets checks out all
+    // xvc file recheck without targets checks out all
 
     fs::remove_file(file_to_add)?;
-    x(&["file", "checkout"])?;
+    x(&["file", "recheck"])?;
     assert!(PathBuf::from(file_to_add).exists());
-    // xvc file checkout accepts globs as targets
+    // xvc file recheck accepts globs as targets
     fs::remove_file(file_to_add)?;
-    x(&["file", "checkout", "f*"])?;
+    x(&["file", "recheck", "f*"])?;
     assert!(PathBuf::from(file_to_add).exists());
 
     clean_up(&xvc_root)

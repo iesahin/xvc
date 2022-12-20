@@ -45,8 +45,6 @@ pub use util::file::{
     XvcPathMetadataMap,
 };
 
-pub use types::xvcroot::MetadataFileLocation;
-
 /// Channel size for [crossbeam_channel::bounded] used across the library.
 /// TODO: This can be configurable for smaller/larger RAM sizes.
 pub const CHANNEL_BOUND: usize = 1000000;

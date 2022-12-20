@@ -41,6 +41,7 @@ use xvc_ecs::{HStore, XvcEntity, XvcStore};
 #[command(rename_all = "kebab-case")]
 pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
+    ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long)]
     cache_type: Option<CacheType>,

@@ -14,7 +14,7 @@ Usage: xvc file track [OPTIONS] [TARGETS]...
 
 Arguments:
   [TARGETS]...
-          Files/directories to add
+          Files/directories to track
 
 Options:
       --cache-type <CACHE_TYPE>

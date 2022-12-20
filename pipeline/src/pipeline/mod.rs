@@ -467,7 +467,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                 PathEvent::Delete { path } => {
                     let xvc_path = XvcPath::new(xvc_root, xvc_root, &path)?;
                     let xvc_md = XvcMetadata {
-                        file_type: XvcFileType::RecordOnly,
+                        file_type: XvcFileType::Missing,
                         size: None,
                         modified: None,
                     };
@@ -672,7 +672,7 @@ fn s_checking_missing_dependencies(
             match pmm.get(&xvc_path) {
                 None => return Ok(s.has_missing_dependencies()),
                 Some(xvc_md) => {
-                    if xvc_md.file_type == XvcFileType::RecordOnly {
+                    if xvc_md.file_type == XvcFileType::Missing {
                         return Ok(s.has_missing_dependencies());
                     }
                 }

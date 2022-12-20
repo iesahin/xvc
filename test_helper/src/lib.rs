@@ -66,7 +66,7 @@ pub fn random_temp_dir(prefix: Option<&str>) -> PathBuf {
 }
 
 /// Return a temp directory created with a seed.
-/// If the `seed` is `None`, it creates a random directory name.
+/// If `seed` is `None`, it creates a random directory name.
 /// This function doesn't create the directory.
 pub fn seeded_temp_dir(prefix: &str, seed: Option<u64>) -> PathBuf {
     let temp_dir = env::temp_dir();

@@ -1,5 +1,4 @@
 use crate::error::{Error, Result};
-use log::debug;
 use std::time::SystemTime;
 use std::{fs, io};
 
@@ -57,14 +56,11 @@ impl XvcMetadata {
 impl From<io::Result<fs::Metadata>> for XvcMetadata {
     fn from(r_md: io::Result<fs::Metadata>) -> Self {
         match r_md {
-            Err(e) => {
-                debug!("{}", e);
-                Self {
-                    file_type: XvcFileType::RecordOnly,
-                    size: None,
-                    modified: None,
-                }
-            }
+            Err(e) => Self {
+                file_type: XvcFileType::Missing,
+                size: None,
+                modified: None,
+            },
             Ok(md) => {
                 let file_type = XvcFileType::from(&md);
                 let size = md.len();
@@ -82,45 +78,14 @@ impl From<io::Result<fs::Metadata>> for XvcMetadata {
     }
 }
 
-// impl From<Result<fs::Metadata, ignore::Error>> for XvcMetadata {
-//     fn from(r_md: Result<fs::Metadata, ignore::Error>) -> Self {
-//         match r_md {
-//             Err(e) => {
-//                 debug!("{}", e);
-//                 Self {
-//                     file_type: XvcFileType::RecordOnly,
-//                     size: None,
-//                     modified: None,
-//                 }
-//             }
-//             Ok(md) => {
-//                 let file_type = XvcFileType::from(&md);
-//                 let size = md.len();
-//                 let modified = md
-//                     .modified()
-//                     .map_err(|source| Error::IoError { source }.debug())
-//                     .ok();
-//                 Self {
-//                     file_type,
-//                     size: Some(size),
-//                     modified,
-//                 }
-//             }
-//         }
-//     }
-// }
-//
 impl From<std::result::Result<fs::Metadata, jwalk::Error>> for XvcMetadata {
     fn from(r_md: std::result::Result<fs::Metadata, jwalk::Error>) -> Self {
         match r_md {
-            Err(e) => {
-                debug!("{}", e);
-                Self {
-                    file_type: XvcFileType::RecordOnly,
-                    size: None,
-                    modified: None,
-                }
-            }
+            Err(e) => Self {
+                file_type: XvcFileType::Missing,
+                size: None,
+                modified: None,
+            },
             Ok(md) => {
                 let file_type = XvcFileType::from(&md);
                 let size = md.len();

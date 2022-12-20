@@ -157,7 +157,7 @@ pub fn split_file_directory_targets(
     for xvc_target in xvc_targets {
         if let Some(xmd) = xpmm.get(&xvc_target) {
             match xmd.file_type {
-                XvcFileType::RecordOnly => {
+                XvcFileType::Missing => {
                     error!(output_snd, "Target not found: {}", xvc_target);
                 }
                 XvcFileType::File => {

@@ -91,10 +91,12 @@ pub fn cmd_recheck(
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
     let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    watch!(targets);
     let xvc_current_dir = XvcPath::new(xvc_root, current_dir, current_dir)?;
     watch!(xvc_current_dir);
 
     let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
+    watch!(cache_type);
     let text_or_binary = opts.text_or_binary;
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -148,7 +150,7 @@ pub fn cmd_recheck(
         if content_digest_diff.contains_key(xe) && content_digest_diff[&xe].changed() {
             let output_snd = output_snd.clone();
             let xp = &stored_xvc_path_store[&xe];
-            warn!(
+            error!(
                 output_snd,
                 "{} has changed on disk. Either carry in, force, or delete the target to recheck. ",
                 xp

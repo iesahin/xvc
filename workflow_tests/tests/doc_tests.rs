@@ -124,7 +124,7 @@ fn doc_tests() -> Result<()> {
         .register_bin("cat", which::which("cat"))
         .register_bin("ls", which::which("ls"))
         .register_bin("rm", which::which("rm"))
-        .register_bin("sed", which::which("sed"))
+        .register_bin("perl", which::which("perl"))
         .case("docs/*/*.md")
         // We skip this for the time being.
         .skip("docs/start/ml.md");

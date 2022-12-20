@@ -1,3 +1,4 @@
+//! Get the Xvc root directory for the current project
 use crate::error::Result;
 use crate::types::xvcroot::XvcRoot;
 use clap::Parser;

@@ -18,14 +18,21 @@ use crate::XVCIGNORE_FILENAME;
 use crate::XVCIGNORE_INITIAL_CONTENT;
 use crate::XVC_DIR;
 
-/// Location of a path
-#[derive(Debug)]
-pub enum MetadataFileLocation {
-    Root(String),
-    DotXvc(String),
-    Store(String),
-}
-
+/// The primary data structure for Xvc repository.
+///
+/// It's created from `.xvc` directory and the config. It contains all the
+/// information about the repository.
+///
+/// It loads [entity generator][XvcEntityGenerator] from `.xvc/ec/` files. This
+/// is the place it's initialized and there can only be a single instance of it.
+///
+/// It contains the [configuration][XvcConfig] loaded from `.xvc/config.toml`
+/// and other sources.
+///
+/// It contains the [store][XvcStore] which is the main data structure for Xvc.
+/// [Storable] structs are used in these directories.
+///
+/// Almost all operations receive a reference to this structure.
 #[derive(Debug)]
 pub struct XvcRoot {
     absolute_path: AbsolutePath,
@@ -186,14 +193,6 @@ impl XvcRoot {
 
     fn entity_generator_path(&self) -> PathBuf {
         self.xvc_dir().join(Self::ENTITY_GENERATOR_PATH)
-    }
-
-    pub fn get_metafile_path(&self, mf: &MetadataFileLocation) -> PathBuf {
-        match mf {
-            MetadataFileLocation::Store(s) => self.store_dir.join(s),
-            MetadataFileLocation::Root(s) => self.absolute_path.join(s),
-            MetadataFileLocation::DotXvc(s) => self.xvc_dir.join(s),
-        }
     }
 
     const XVC_DIR: &'static str = ".xvc";

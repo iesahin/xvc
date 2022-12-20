@@ -12,6 +12,7 @@ pub mod send;
 pub mod track;
 
 use crate::error::{Error, Result};
+use carry_in::CarryInCLI;
 use clap::Subcommand;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -52,6 +53,9 @@ pub enum XvcFileSubCommand {
     /// Get files from cache by copy or *link
     #[command(alias = "checkout")]
     Recheck(RecheckCLI),
+    /// Carry (commit) changed files to cache
+    #[command(alias = "commit")]
+    CarryIn(CarryInCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
     /// Send (push, upload) files to external storages
@@ -132,6 +136,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Hash(opts) => hash::cmd_hash(output_snd, xvc_root, opts),
+        XvcFileSubCommand::CarryIn(opts) => carry_in::cmd_carry_in(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
         XvcFileSubCommand::Recheck(opts) => recheck::cmd_recheck(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,

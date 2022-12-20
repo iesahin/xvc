@@ -4,10 +4,12 @@ use std::{fs, path::PathBuf};
 
 use crate::common::run_in_temp_xvc_dir;
 use jwalk;
+use log::LevelFilter;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
+use xvc_tests::watch;
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
@@ -22,23 +24,23 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 #[test]
-fn test_file_checkout_serial() -> Result<()> {
-    // setup::logging(LevelFilter::Trace);
+fn test_file_recheck_serial() -> Result<()> {
+    xvc_test_helper::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let x = |cmd: &[&str]| common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace);
 
     let file_to_add = "file-0000.bin";
-    x(&["file", "track", file_to_add])?;
+    watch!(x(&["file", "track", file_to_add])?);
 
     fs::remove_file(file_to_add)?;
 
-    x(&["file", "checkout", "--no-parallel", file_to_add])?;
+    watch!(x(&["file", "recheck", "--no-parallel", file_to_add])?);
 
     assert!(PathBuf::from(file_to_add).exists());
 
     x(&[
         "file",
-        "checkout",
+        "recheck",
         "--no-parallel",
         "--force",
         "--cache-type",
@@ -50,7 +52,7 @@ fn test_file_checkout_serial() -> Result<()> {
 
     x(&[
         "file",
-        "checkout",
+        "recheck",
         "--no-parallel",
         "--cache-type",
         "hardlink",
@@ -68,7 +70,7 @@ fn test_file_checkout_serial() -> Result<()> {
 
     fs::remove_dir_all(dir_to_add)?;
 
-    x(&["file", "checkout", "--no-parallel", dir_to_add])?;
+    x(&["file", "recheck", "--no-parallel", dir_to_add])?;
 
     assert!(PathBuf::from(dir_to_add).exists());
 
@@ -76,15 +78,15 @@ fn test_file_checkout_serial() -> Result<()> {
 
     assert!(n_files_after == n_files_before);
 
-    // xvc file checkout without targets checks out all
+    // xvc file recheck without targets checks out all
 
     fs::remove_file(file_to_add)?;
-    x(&["file", "checkout", "--no-parallel"])?;
+    x(&["file", "recheck", "--no-parallel"])?;
     assert!(PathBuf::from(file_to_add).exists());
 
-    // xvc file checkout accepts globs as targets
+    // xvc file recheck accepts globs as targets
     fs::remove_file(file_to_add)?;
-    x(&["file", "checkout", "--no-parallel", "f*"])?;
+    x(&["file", "recheck", "--no-parallel", "f*"])?;
     assert!(PathBuf::from(file_to_add).exists());
 
     Ok(())

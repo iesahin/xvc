@@ -1,7 +1,7 @@
 #![warn(missing_docs)]
 //! The entry point for xvc cli
 use clap::Parser;
-use xvc::error::Result;
+use xvc::{error::Result, watch};
 
 /// The entry point of the `xvc` cli.
 ///
@@ -9,5 +9,6 @@ use xvc::error::Result;
 ///
 fn main() -> Result<()> {
     let cli_opts = xvc::cli::XvcCLI::parse();
+    watch!(cli_opts);
     xvc::cli::dispatch(cli_opts)
 }

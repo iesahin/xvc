@@ -75,6 +75,8 @@ pub enum Error {
         #[from]
         source: std::path::StripPrefixError,
     },
+    #[error("Xvc does not support content digest for symlink: {path}")]
+    ContentDigestNotSupported { path: PathBuf },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
