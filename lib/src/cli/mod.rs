@@ -233,11 +233,11 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                     Result::Ok(())
                 }
 
-                XvcSubCommand::Aliases(opts) => Ok(aliases::run(output_snd, opts)?),
+                XvcSubCommand::Aliases(opts) => Ok(aliases::run(&output_snd, opts)?),
 
                 // following commands can only be run inside a repository
                 XvcSubCommand::Root(opts) => Ok(root::run(
-                    output_snd,
+                    &output_snd,
                     xvc_root_opt
                         .as_ref()
                         .ok_or_else(|| Error::RequiresXvcRepository)?,
@@ -245,7 +245,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 )?),
 
                 XvcSubCommand::File(opts) => {
-                    Ok(file::run(output_snd, xvc_root_opt.as_ref(), opts)?)
+                    Ok(file::run(&output_snd, xvc_root_opt.as_ref(), opts)?)
                 }
 
                 XvcSubCommand::Pipeline(opts) => {
@@ -253,7 +253,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                     let input = stdin.lock();
                     Ok(pipeline::run(
                         input,
-                        output_snd,
+                        &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
                     )?)
@@ -265,7 +265,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
 
                     Ok(check_ignore::cmd_check_ignore(
                         input,
-                        output_snd,
+                        &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
                     )?)
@@ -276,7 +276,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                     let input = stdin.lock();
                     Ok(storage::cmd_storage(
                         input,
-                        output_snd,
+                        &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
                     )?)

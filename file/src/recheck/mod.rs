@@ -83,14 +83,14 @@ impl UpdateFromXvcConfig for RecheckCLI {
 /// Uses [PathComparisonParams] to get the overview of all elements in the repository.
 /// After getting the list of file targets, runs either [recheck_serial] or [recheck_parallel].
 pub fn cmd_recheck(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cli_opts: RecheckCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, opts.targets)?;
+    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
     let xvc_current_dir = XvcPath::new(xvc_root, current_dir, current_dir)?;
     watch!(xvc_current_dir);
 
@@ -105,13 +105,13 @@ pub fn cmd_recheck(
     let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
-    let cache_type_diff = diff_cache_type(&stored_cache_type_store, &cache_type, &entities);
+    let cache_type_diff = diff_cache_type(&stored_cache_type_store, cache_type, &entities);
     let mut cache_type_targets = cache_type_diff.filter(|_, d| d.changed());
 
     let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
     let text_or_binary_diff = diff_text_or_binary(
         &stored_text_or_binary_store,
-        &text_or_binary.unwrap_or_default(),
+        text_or_binary.unwrap_or_default(),
         &target_files.keys().copied().collect(),
     );
 
@@ -139,14 +139,15 @@ pub fn cmd_recheck(
         &stored_content_digest_store,
         &stored_text_or_binary_store,
         &prerequisite_diffs,
-        &text_or_binary,
-        &Some(algorithm),
+        text_or_binary,
+        Some(algorithm),
         !opts.no_parallel,
     );
 
     cache_type_targets.retain(|xe, d| {
         if content_digest_diff.contains_key(xe) && content_digest_diff[&xe].changed() {
-            let xp = stored_xvc_path_store[&xe];
+            let output_snd = output_snd.clone();
+            let xp = &stored_xvc_path_store[&xe];
             warn!(
                 output_snd,
                 "{} has changed on disk. Either carry in, force, or delete the target to recheck. ",
@@ -157,6 +158,8 @@ pub fn cmd_recheck(
             return true;
         }
     });
+
+    let xvc_metadata_diff = &prerequisite_diffs.1;
 
     let missing_targets = xvc_metadata_diff.filter(|_, d| matches!(d, Diff::ActualMissing { .. }));
 
@@ -194,7 +197,7 @@ pub fn cmd_recheck(
 }
 
 fn recheck(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     files_to_recheck: &HStore<&XvcPath>,
     cache_type_store: &XvcStore<CacheType>,
@@ -216,7 +219,7 @@ fn recheck(
                 fs::remove_file(target_path)?;
             }
             let cache_type = cache_type_store[&xe];
-            recheck_from_cache(output_snd, xvc_root, xvc_path, &cache_path, cache_type)
+            recheck_from_cache(&output_snd, xvc_root, xvc_path, &cache_path, cache_type)
         } else {
             error!(
                 output_snd,

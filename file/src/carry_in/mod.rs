@@ -114,14 +114,14 @@ impl UpdateFromXvcConfig for CarryInCLI {
 ///
 
 pub fn cmd_carry_in(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cli_opts: CarryInCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, opts.targets)?;
+    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
 
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
@@ -141,7 +141,7 @@ pub fn cmd_carry_in(
     let stored_text_or_binary_store: XvcStore<FileTextOrBinary> = xvc_root.load_store()?;
     let text_or_binary_diff = diff_text_or_binary(
         &stored_text_or_binary_store,
-        &opts.text_or_binary.unwrap_or_default(),
+        opts.text_or_binary.unwrap_or_default(),
         &HashSet::from_iter(targets.keys().copied()),
     );
     let stored_content_digest_store: XvcStore<ContentDigest> = xvc_root.load_store()?;
@@ -157,18 +157,19 @@ pub fn cmd_carry_in(
         &stored_content_digest_store,
         &stored_text_or_binary_store,
         &prerequisite_diffs,
-        &opts.text_or_binary,
-        &None,
+        opts.text_or_binary,
+        None,
         !opts.no_parallel,
     );
 
+    let text_or_binary_diff = &prerequisite_diffs.2;
     let xvc_paths_to_carry = if opts.force {
         target_files
     } else {
+        let content_digest_diff = &content_digest_diff;
+
         target_files
-            .filter(|xe, _| {
-                content_digest_diff[&xe].changed() || text_or_binary_diff[&xe].changed()
-            })
+            .filter(|xe, _| content_digest_diff[xe].changed() || text_or_binary_diff[xe].changed())
             .cloned()
     };
 
@@ -216,7 +217,7 @@ pub fn cmd_carry_in(
     )?;
 
     // We only update the records for existing paths.
-    update_store_records(xvc_root, &text_or_binary_diff, false, false)?;
+    update_store_records(xvc_root, text_or_binary_diff, false, false)?;
     update_store_records(xvc_root, &content_digest_diff, false, false)?;
 
     Ok(())
@@ -226,7 +227,7 @@ pub fn cmd_carry_in(
 /// Returns the store of carried in elements. These should be rechecked to the
 /// remote.
 pub fn carry_in(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     xvc_paths_to_carry: &HStore<XvcPath>,
     cache_paths: &HStore<XvcCachePath>,

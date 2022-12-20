@@ -60,17 +60,23 @@ pub struct BringCLI {
 /// - Expands globs in `opts.targets`.
 /// - Gets the corresponding cache path for each file target.
 /// - Calls `storage.receive` for each of these targets.
-pub fn fetch(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: &BringCLI) -> Result<()> {
-    let remote = get_storage_record(output_snd.clone(), xvc_root, &opts.storage)?;
+pub fn fetch(
+    output_snd: &Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    opts: &BringCLI,
+) -> Result<()> {
+    let remote = get_storage_record(output_snd, xvc_root, &opts.storage)?;
 
     let current_dir = xvc_root.config().current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, opts.targets)?;
+    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
-    let target_file_xvc_metadata = xvc_root
+    let target_xvc_metadata = xvc_root
         .load_store::<XvcMetadata>()?
-        .subset(targets.keys().copied())?
-        .filter(|xe, xmd| xmd.file_type == XvcFileType::File);
+        .subset(targets.keys().copied())?;
+
+    let target_file_xvc_metadata =
+        target_xvc_metadata.filter(|xe, xmd| xmd.file_type == XvcFileType::File);
 
     let target_files = targets.subset(target_file_xvc_metadata.keys().copied())?;
 
@@ -103,7 +109,7 @@ pub fn fetch(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: &Bring
 
     remote
         .receive(
-            output_snd.clone(),
+            output_snd,
             xvc_root,
             cache_paths
                 .values()
@@ -122,11 +128,11 @@ pub fn fetch(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: &Bring
 /// - [fetch] targets from the storage
 /// - [checkout][cmd_checkout] them from storage if `opts.no_checkout` is false. (default)
 pub fn cmd_bring(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     opts: BringCLI,
 ) -> Result<()> {
-    fetch(output_snd.clone(), xvc_root, &opts)?;
+    fetch(output_snd, xvc_root, &opts)?;
 
     if !opts.no_checkout {
         let checkout_targets = opts.targets.clone();

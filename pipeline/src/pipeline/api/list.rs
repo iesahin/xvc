@@ -7,7 +7,7 @@ use xvc_logging::XvcOutputLine;
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
-pub fn cmd_list(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot) -> Result<()> {
+pub fn cmd_list(output_snd: &Sender<XvcOutputLine>, xvc_root: &XvcRoot) -> Result<()> {
     Ok(
         xvc_root.with_r11store(|rs: &R11Store<XvcPipeline, XvcPipelineRunDir>| {
             let mut table = Table::new();

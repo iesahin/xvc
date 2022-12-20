@@ -2,9 +2,10 @@ use crate::common::targets_from_store;
 use crate::Result;
 
 use clap::Parser;
+use crossbeam_channel::Sender;
 use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{error, watch};
+use xvc_logging::{error, watch, XvcOutputLine};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 
 /// Send (upload) tracked files to storage
@@ -29,20 +30,21 @@ pub struct SendCLI {
 
 /// Send a targets in `opts.targets` in `xvc_root`  to `opt.remote`
 pub fn cmd_send(
-    output_snd: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     opts: SendCLI,
 ) -> Result<()> {
-    let remote = get_storage_record(output_snd.clone(), xvc_root, &opts.remote)?;
+    let remote = get_storage_record(output_snd, xvc_root, &opts.remote)?;
     watch!(remote);
     let current_dir = xvc_root.config().current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, opts.targets)?;
+    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
     let target_file_xvc_metadata = xvc_root
         .load_store::<XvcMetadata>()?
         .subset(targets.keys().copied())?
-        .filter(|xe, xmd| xmd.file_type == XvcFileType::File);
+        .filter(|xe, xmd| xmd.file_type == XvcFileType::File)
+        .cloned();
 
     let target_files = targets.subset(target_file_xvc_metadata.keys().copied())?;
 
@@ -76,10 +78,14 @@ pub fn cmd_send(
 
     remote
         .send(
-            output_snd.clone(),
+            output_snd,
             xvc_root,
             // TODO: Change interface of XvcStorage to get an HStore instead of Vec
-            cache_paths.values().cloned().collect().as_slice(),
+            cache_paths
+                .values()
+                .cloned()
+                .collect::<Vec<XvcCachePath>>()
+                .as_slice(),
             opts.force,
         )
         .map_err(|e| xvc_core::Error::from(anyhow::anyhow!("Remote error: {}", e)))?;

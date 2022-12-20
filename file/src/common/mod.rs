@@ -96,7 +96,7 @@ pub fn pipe_path_digest(
 }
 
 pub fn pathbuf_to_xvc_target(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     xvc_ignore: &IgnoreRules,
     current_dir: &AbsolutePath,
@@ -147,7 +147,7 @@ pub fn pathbuf_to_xvc_target(
 }
 
 pub fn split_file_directory_targets(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xpmm: &XvcPathMetadataMap,
     xvc_targets: &[XvcPath],
 ) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
@@ -197,7 +197,7 @@ pub fn split_file_directory_targets(
 pub fn targets_from_store(
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
-    targets: Option<Vec<String>>,
+    targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
     // If we are not in the root, we add current dir to all targets and recur.
     if *current_dir != *xvc_root.absolute_path() {
@@ -210,7 +210,7 @@ pub fn targets_from_store(
             None => vec![cwd.to_string()],
         };
 
-        return targets_from_store(xvc_root, xvc_root.absolute_path(), Some(targets));
+        return targets_from_store(xvc_root, xvc_root.absolute_path(), &Some(targets));
     }
 
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
@@ -224,14 +224,15 @@ pub fn targets_from_store(
 
         let mut paths =
             xvc_path_store.filter(|_, p| glob_matcher.is_match(&p.as_relative_path().as_str()));
-        let mut metadata = xvc_metadata_store.subset(paths.keys().copied())?;
+        let metadata = xvc_metadata_store.subset(paths.keys().copied())?;
         // for any directories in the targets, we add all child paths
         let dir_md = metadata.filter(|_, md| md.file_type == XvcFileType::Directory);
         let dir_paths = paths.subset(dir_md.keys().copied())?;
-        for (xe, dir) in dir_paths.iter() {
-            let mut child_paths = xvc_path_store.filter(|_, p| p.starts_with(dir));
-            let mut child_metadata = xvc_metadata_store.subset(child_paths.keys().copied())?;
-            paths.extend(child_paths.into_iter());
+        for (_, dir) in dir_paths.iter() {
+            let child_paths = xvc_path_store.filter(|_, p| p.starts_with(dir));
+            child_paths.into_iter().for_each(|(k, v)| {
+                paths.insert(k, v);
+            });
         }
         Ok(paths)
     } else {
@@ -257,7 +258,7 @@ pub fn targets_from_store(
 pub fn targets_from_disk(
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
-    targets: Option<Vec<String>>,
+    targets: &Option<Vec<String>>,
 ) -> Result<XvcPathMetadataMap> {
     // If we are not in the root, we add current dir to all targets and recur.
     if *current_dir != *xvc_root.absolute_path() {
@@ -270,7 +271,7 @@ pub fn targets_from_disk(
             None => vec![cwd.to_string()],
         };
 
-        return targets_from_disk(xvc_root, xvc_root.absolute_path(), Some(targets));
+        return targets_from_disk(xvc_root, xvc_root.absolute_path(), &Some(targets));
     }
     let (all_paths, _) = all_paths_and_metadata(xvc_root);
 
@@ -330,22 +331,22 @@ pub fn xvc_path_metadata_map_from_disk(
 }
 
 pub fn expand_directory_targets(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xpmm: &XvcPathMetadataMap,
     dir_targets: &XvcPathMetadataMap,
 ) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
-    let mut dir_targets = XvcPathMetadataMap::new();
-    let mut file_targets = XvcPathMetadataMap::new();
+    let mut all_dir_targets = XvcPathMetadataMap::new();
+    let mut all_file_targets = XvcPathMetadataMap::new();
 
-    for (dir_target, dir_md) in &dir_targets {
+    for (dir_target, dir_md) in dir_targets {
         for (xvc_path, xvc_md) in xpmm {
             if xvc_path.starts_with(&dir_target) && *xvc_path != *dir_target {
                 match xvc_md.file_type {
                     XvcFileType::Directory => {
-                        dir_targets.insert(xvc_path.clone(), xvc_md.clone());
+                        all_dir_targets.insert(xvc_path.clone(), xvc_md.clone());
                     }
                     XvcFileType::File => {
-                        file_targets.insert(xvc_path.clone(), xvc_md.clone());
+                        all_file_targets.insert(xvc_path.clone(), xvc_md.clone());
                     }
                     _ => {
                         error!(output_snd, "Unsupported Target: {xvc_path}");
@@ -353,13 +354,13 @@ pub fn expand_directory_targets(
                 }
             }
         }
-        dir_targets.insert(dir_target.clone(), dir_md.clone());
+        all_dir_targets.insert(dir_target.clone(), dir_md.clone());
     }
-    (dir_targets, file_targets)
+    (all_dir_targets, all_file_targets)
 }
 
 pub fn expand_xvc_dir_file_targets(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     targets: Vec<PathBuf>,
@@ -389,7 +390,7 @@ pub fn decide_no_parallel(from_opts: bool, targets: &[PathBuf]) -> bool {
 }
 
 pub fn recheck_from_cache(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,

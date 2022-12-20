@@ -29,7 +29,7 @@ pub struct RootCLI {
 ///   This probably leads to panic! in caller.
 /// - It returns an error when `xvc_root` cannot be converted to absolute path
 ///   This should never happen if `xvc_root` properly constructed.
-pub fn run(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: RootCLI) -> Result<()> {
+pub fn run(output_snd: &Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: RootCLI) -> Result<()> {
     if opts.absolute {
         output_snd.send(XvcOutputLine::Output(format!(
             "{}",

@@ -26,7 +26,7 @@ macro_rules! watch {
 macro_rules! error {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            $channel.send(XvcOutputLine::Error(format!($fmt $(, $x)*))).unwrap();
+            &$channel.send(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -41,7 +41,7 @@ macro_rules! error {
 macro_rules! info {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            $channel.send(XvcOutputLine::Info(format!($fmt $(,$x)*))).unwrap();
+            (&$channel).send(::xvc_logging::XvcOutputLine::Info(format!($fmt $(,$x)*))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -56,7 +56,7 @@ macro_rules! info {
 macro_rules! warn {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            $channel.send(XvcOutputLine::Warn(format!($fmt $(,$x)*))).unwrap();
+            (&$channel).send(::xvc_logging::XvcOutputLine::Warn(format!($fmt $(,$x)*))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -71,7 +71,7 @@ macro_rules! warn {
 macro_rules! debug {
     ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
         {
-            $channel.send(XvcOutputLine::Debug(format!($fmt $(, $x)*))).unwrap();
+                    (&$channel).send(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr ),* ) => {
@@ -86,7 +86,7 @@ macro_rules! debug {
 macro_rules! output {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            $channel.send(XvcOutputLine::Output(format!($fmt $(, $x)*))).unwrap();
+            (&$channel).send(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -101,7 +101,7 @@ macro_rules! output {
 macro_rules! panic {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            $channel.send(XvcOutputLine::Panic(format!($fmt $(, $x)*))).unwrap();
+            (&$channel).send(::xvc_logging::XvcOutputLine::Panic(format!($fmt $(, $x)*))).unwrap();
             ::std::panic!($fmt $(, $x)*);
         }
     };
@@ -116,7 +116,9 @@ macro_rules! panic {
 #[macro_export]
 macro_rules! tick {
     ( $channel:ident, $n:literal) => {{
-        $channel.send(XvcOutputLine::Tick($n)).unwrap();
+        (&$channel)
+            .send(::xvc_logging::XvcOutputLine::Tick($n))
+            .unwrap();
     }};
     ($n:literal) => {{
         for _ in 0..$n {
@@ -134,8 +136,8 @@ macro_rules! uwr {
         match $e {
             Ok(v) => v,
             Err(e) => {
-                $channel
-                    .send(XvcOutputLine::Panic(format!("{:?}", e)))
+                (&$channel)
+                    .send(::xvc_logging::XvcOutputLine::Panic(format!("{:?}", e)))
                     .unwrap();
                 ::std::panic!("{:?}", e);
             }
@@ -153,7 +155,9 @@ macro_rules! uwo {
             Some(v) => v,
             None => {
                 let msg = format!("None from the expression: {}", stringify!($e));
-                $channel.send(XvcOutputLine::Panic(msg)).unwrap();
+                (&$channel)
+                    .send(::xvc_logging::XvcOutputLine::Panic(msg.clone()))
+                    .unwrap();
                 ::std::panic!("{}", msg);
             }
         }

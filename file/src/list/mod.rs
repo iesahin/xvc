@@ -441,7 +441,7 @@ impl UpdateFromXvcConfig for ListCLI {
 /// TODO: - I: File is ignored
 
 pub fn cmd_list(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cli_opts: ListCLI,
 ) -> Result<()> {

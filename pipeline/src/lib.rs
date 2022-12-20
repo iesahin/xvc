@@ -303,7 +303,7 @@ pub fn init(xvc_root: &XvcRoot) -> Result<()> {
 
 pub fn run<R: BufRead>(
     input: R,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     command: PipelineCLI,
 ) -> Result<()> {

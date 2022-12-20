@@ -162,7 +162,7 @@ impl PathComparisonParams {
 ///
 ///
 // pub fn find_dir_changes_serial(
-//     os: Sender<XvcOutputLine>,
+//     os: &Sender<XvcOutputLine>,
 //     xvc_root: &XvcRoot,
 //     updated_path_comparison_params: &PathComparisonParams,
 //     actual_xvc_path_store: &HStore<XvcPath>,
@@ -442,7 +442,7 @@ pub fn diff_cache_type(
     entities: &HashSet<XvcEntity>,
 ) -> DiffStore<CacheType> {
     let requested_cache_type_store: HStore<CacheType> =
-        HStore::from_iter(entities.iter().map(|x| (*x, *requested_cache_type)));
+        HStore::from_iter(entities.iter().map(|x| (*x, requested_cache_type)));
 
     let cache_store_diff = diff_store(
         stored_cache_type_store,
@@ -463,7 +463,7 @@ pub fn diff_text_or_binary(
 ) -> DiffStore<FileTextOrBinary> {
     let requested_text_or_binary_store: HStore<FileTextOrBinary> = entities
         .iter()
-        .map(|x| (*x, *requested_text_or_binary))
+        .map(|x| (*x, requested_text_or_binary))
         .collect();
     let text_or_binary_diff = diff_store(
         &stored_text_or_binary_store,
@@ -478,7 +478,7 @@ pub fn diff_text_or_binary(
 /// This is used to identify the files that requires attention in several
 /// commands, like recheck or carry-in.
 pub fn diff_content_digest(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_content_digest_store: &XvcStore<ContentDigest>,
@@ -488,18 +488,15 @@ pub fn diff_content_digest(
     requested_hash_algorithm: Option<HashAlgorithm>,
     parallel: bool,
 ) -> DiffStore<ContentDigest> {
-    let xvc_path_diff_store = prerequisite_diffs.0;
-    let xvc_metadata_diff_store = prerequisite_diffs.1;
-    let text_or_binary_diff_store = prerequisite_diffs.2;
+    let xvc_path_diff_store = &prerequisite_diffs.0;
+    let xvc_metadata_diff_store = &prerequisite_diffs.1;
+    let text_or_binary_diff_store = &prerequisite_diffs.2;
     let entities: HashSet<XvcEntity> = xvc_path_diff_store.keys().copied().collect();
     let algorithm: HashAlgorithm =
         requested_hash_algorithm.unwrap_or_else(|| HashAlgorithm::from_conf(xvc_root.config()));
 
     let the_closure = |xe| -> Result<(XvcEntity, Diff<ContentDigest>)> {
         let xvc_path_diff = xvc_path_diff_store.get(xe).expect("xvc_path_diff.get(xe)");
-        let xvc_metadata_diff = xvc_metadata_diff_store
-            .get(xe)
-            .expect("xvc_metadata_diff.get(xe)");
 
         if prerequisite_diffs.get_diff3(*xe).changed() {
             let stored_content_digest = stored_content_digest_store.get(xe);
@@ -610,7 +607,6 @@ pub fn diff_content_digest(
 /// When a collection list changes, for example a file added to a directory, we
 /// recalculate the collection digest to see if the collection has changed.
 pub fn diff_dir_collection_digest(
-    xvc_root: &XvcRoot,
     stored_collection_digest: Option<&CollectionDigest>,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     path_diffs: &DiffStore<XvcPath>,
@@ -618,7 +614,7 @@ pub fn diff_dir_collection_digest(
 ) -> Result<Diff<CollectionDigest>> {
     let xvc_path_diff = path_diffs.subset(sorted_entities.iter().copied())?;
     let stored_xvc_paths = stored_xvc_path_store.subset(sorted_entities.iter().copied())?;
-    let collection_strings = Vec::<String>::new();
+    let mut collection_strings = Vec::<String>::new();
 
     for xe in sorted_entities {
         let xvc_path_diff = xvc_path_diff.get(xe).expect("xvc_path_diff.get(xe)");
@@ -670,14 +666,13 @@ pub fn diff_dir_collection_digest(
 /// It can be used to detect changes in directories, globs, or other collections
 /// that use [XvcMetadata] to keep individual items' metadata.
 pub fn diff_dir_metadata_digest(
-    xvc_root: &XvcRoot,
     stored_metadata_digest: Option<&MetadataDigest>,
     stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
     metadata_diffs: &DiffStore<XvcMetadata>,
     sorted_entities: &[XvcEntity],
 ) -> Result<Diff<MetadataDigest>> {
     let xvc_metadata_diff = metadata_diffs.subset(sorted_entities.iter().copied())?;
-    let metadata_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
+    let mut metadata_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
 
     for xe in sorted_entities {
         let xvc_metadata_diff = xvc_metadata_diff
@@ -737,14 +732,13 @@ pub fn diff_dir_metadata_digest(
 /// content digests also change. We collect them together and calculate their
 /// digest to detect changes in the collection.
 pub fn diff_dir_content_digest(
-    xvc_root: &XvcRoot,
     stored_content_digest: Option<&ContentDigest>,
     stored_xvc_content_store: &XvcStore<ContentDigest>,
     content_diffs: &DiffStore<ContentDigest>,
     sorted_entities: &[XvcEntity],
 ) -> Result<Diff<ContentDigest>> {
     let xvc_content_diff = content_diffs.subset(sorted_entities.iter().copied())?;
-    let content_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
+    let mut content_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
 
     for xe in sorted_entities {
         let xvc_content_diff = xvc_content_diff

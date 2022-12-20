@@ -113,14 +113,14 @@ impl UpdateFromXvcConfig for TrackCLI {
 ///     CacheType --> |Reflink| Reflink
 /// ```
 pub fn cmd_track(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     cli_opts: TrackCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = targets_from_disk(xvc_root, current_dir, opts.targets)?;
+    let targets = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
     let requested_cache_type = opts.cache_type.unwrap_or_default();
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
@@ -185,11 +185,14 @@ pub fn cmd_track(
         !no_parallel,
     );
 
-    update_store_records(xvc_root, &xvc_path_diff, true, false);
-    update_store_records(xvc_root, &xvc_metadata_diff, true, false);
-    update_store_records(xvc_root, &cache_type_diff, true, false);
-    update_store_records(xvc_root, &text_or_binary_diff, true, false);
-    update_store_records(xvc_root, &content_digest_diff, true, false);
+    let xvc_path_diff = prerequisite_diffs.0;
+    let xvc_metadata_diff = prerequisite_diffs.1;
+    let text_or_binary_diff = prerequisite_diffs.2;
+    update_store_records(xvc_root, &xvc_path_diff, true, false)?;
+    update_store_records(xvc_root, &xvc_metadata_diff, true, false)?;
+    update_store_records(xvc_root, &cache_type_diff, true, false)?;
+    update_store_records(xvc_root, &text_or_binary_diff, true, false)?;
+    update_store_records(xvc_root, &content_digest_diff, true, false)?;
 
     // We reload to get the latest file types
     let current_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
@@ -282,7 +285,7 @@ pub fn cmd_track(
 }
 
 /* fn commit( */
-/*     output_snd: Sender<XvcOutputLine>, */
+/*     output_snd: &Sender<XvcOutputLine>, */
 /*     xvc_root: &XvcRoot, */
 /*     path_comparison_params: &PathComparisonParams, */
 /*     path_delta_store: &FileDeltaStore, */

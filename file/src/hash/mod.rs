@@ -54,7 +54,7 @@ impl UpdateFromXvcConfig for HashCLI {
 }
 
 pub fn cmd_hash(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: Option<&XvcRoot>,
     opts: HashCLI,
 ) -> Result<()> {

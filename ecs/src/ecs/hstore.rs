@@ -276,3 +276,42 @@ impl<T: Clone> HStore<&T> {
         HStore::from(map)
     }
 }
+
+impl<T> IntoIterator for HStore<T> {
+    type Item = (XvcEntity, T);
+    type IntoIter = std::collections::hash_map::IntoIter<XvcEntity, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.map.into_iter()
+    }
+}
+
+impl<T: PartialEq> HStore<T> {
+    /// Returns the entities for a `value`.
+    ///
+    /// There may be more than one entity for a given value, hence it returns a `Vec`.
+    /// It uses internal reverse index for fast lookup.
+    pub fn entities_for(&self, value: &T) -> Option<Vec<XvcEntity>>
+    where
+        T: PartialEq,
+    {
+        let entity_vec: Vec<XvcEntity> = self
+            .map
+            .iter()
+            .filter_map(|(k, v)| if *v == *value { Some(*k) } else { None })
+            .collect();
+        if entity_vec.is_empty() {
+            None
+        } else {
+            Some(entity_vec)
+        }
+    }
+
+    /// Returns the first entity matched with [Self::entities_for]
+    pub fn entity_by_value(&self, value: &T) -> Option<XvcEntity> {
+        match self.entities_for(value) {
+            Some(vec_e) => vec_e.get(0).copied(),
+            None => None,
+        }
+    }
+}

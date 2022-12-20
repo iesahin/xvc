@@ -19,7 +19,7 @@ use crate::{Result, XvcStorage, XvcStorageEvent};
 
 pub fn cmd_storage_new_local(
     input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     path: PathBuf,
     name: String,
@@ -56,7 +56,7 @@ pub struct XvcLocalStorage {
 impl XvcStorageOperations for XvcLocalStorage {
     fn init(
         self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let guid_filename = self.path.join(XVC_STORAGE_GUID_FILENAME);
@@ -105,7 +105,7 @@ impl XvcStorageOperations for XvcLocalStorage {
 
     fn list(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         todo!()
@@ -113,7 +113,7 @@ impl XvcStorageOperations for XvcLocalStorage {
 
     fn send(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -157,7 +157,7 @@ impl XvcStorageOperations for XvcLocalStorage {
 
     fn receive(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -201,7 +201,7 @@ impl XvcStorageOperations for XvcLocalStorage {
 
     fn delete(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {

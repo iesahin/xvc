@@ -121,7 +121,7 @@ pub struct XvcFileCLI {
 }
 
 pub fn run(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: Option<&XvcRoot>,
     opts: XvcFileCLI,
 ) -> Result<()> {
@@ -221,7 +221,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
             }
         });
 
-        s.spawn(move |_| run(output_snd, xvc_root.as_ref(), cli_opts).map_err(|e| e.error()));
+        s.spawn(move |_| run(&output_snd, xvc_root.as_ref(), cli_opts).map_err(|e| e.error()));
     })
     .map_err(|e| error!("{:?}", e))
     .expect("Crossbeam scope error");
