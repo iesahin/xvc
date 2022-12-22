@@ -46,6 +46,10 @@ pub struct XvcCLI {
     #[arg(long)]
     pub quiet: bool,
 
+    /// Turn on all logging to $TMPDIR/xvc.log
+    #[arg(long)]
+    pub debug: bool,
+
     /// Set working directory for the command.
     /// It doesn't create a new shell, or change the directory.
     #[arg(short = 'C', default_value = ".")]
@@ -187,7 +191,14 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         XvcVerbosity::Trace => LevelFilter::Trace,
     };
 
-    setup_logging(Some(term_log_level), None);
+    setup_logging(
+        Some(term_log_level),
+        if cli_opts.debug {
+            Some(LevelFilter::Trace)
+        } else {
+            None
+        },
+    );
 
     let xvc_config_params = XvcConfigInitParams {
         current_dir: AbsolutePath::from(&cli_opts.workdir),

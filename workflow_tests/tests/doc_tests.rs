@@ -91,7 +91,6 @@ fn link_to_docs() -> Result<()> {
             // Link to the directory TMPDIR we just created above.
             // This is to renew test input for each run.
             let in_dir_symlink = doc_dir.join(dir).join(&in_dir_name);
-            watch!(&in_dir_symlink);
             if in_dir_symlink.is_symlink() {
                 fs::remove_file(&in_dir_symlink)?;
             }

@@ -33,21 +33,29 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
         XvcVerbosity::Trace => ["-vvvv"],
     };
 
+    // watch!(cmd);
+    // watch!(verbosity_opt);
+    // watch!(args);
+
     let output = match cwd {
         Some(cwd) => cmd
+            .arg("--debug")
             .args(verbosity_opt)
             .args(args)
             .current_dir(cwd)
             .output()?,
-        None => cmd.args(verbosity_opt).args(args).output()?,
+        None => cmd.arg("--debug").args(verbosity_opt).args(args).output()?,
     };
 
     // watch!(cmd);
     // watch!(output);
     assert!(output.status.success());
 
-    let output_str = String::from_utf8(output.stdout)?;
-    watch!(output_str);
+    let mut output_str = String::from_utf8(output.stdout)?;
+
+    println!("{}", String::from_utf8(output.stderr)?);
+
+    // watch!(output_str);
 
     Ok(output_str)
 }
