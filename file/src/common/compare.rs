@@ -148,14 +148,12 @@ pub fn diff_content_digest(
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_content_digest_store: &XvcStore<ContentDigest>,
     stored_text_or_binary_store: &XvcStore<FileTextOrBinary>,
-    prerequisite_diffs: &DiffStore3<XvcPath, XvcMetadata, FileTextOrBinary>,
+    xvc_path_diff_store: &DiffStore<XvcPath>,
+    xvc_metadata_diff_store: &DiffStore<XvcMetadata>,
     requested_text_or_binary: Option<FileTextOrBinary>,
     requested_hash_algorithm: Option<HashAlgorithm>,
     parallel: bool,
 ) -> DiffStore<ContentDigest> {
-    let xvc_path_diff_store = &prerequisite_diffs.0;
-    let xvc_metadata_diff_store = &prerequisite_diffs.1;
-    let text_or_binary_diff_store = &prerequisite_diffs.2;
     let entities: HashSet<XvcEntity> = xvc_path_diff_store.keys().copied().collect();
     let algorithm: HashAlgorithm =
         requested_hash_algorithm.unwrap_or_else(|| HashAlgorithm::from_conf(xvc_root.config()));
@@ -164,10 +162,16 @@ pub fn diff_content_digest(
         let xvc_path_diff = xvc_path_diff_store
             .get(xe)
             .ok_or_else(|| EcsError::CannotFindEntityInStore { entity: *xe })?;
+        watch!(xvc_path_diff);
         let xvc_metadata_diff = xvc_metadata_diff_store
             .get(xe)
             .ok_or_else(|| EcsError::CannotFindEntityInStore { entity: *xe })?;
-        if prerequisite_diffs.get_diff3(*xe).changed() {
+        watch!(xvc_metadata_diff);
+        let xvc_path_diff = xvc_path_diff_store.get(&xe).unwrap_or_default();
+        let xvc_metadata_diff = xvc_path_diff_store.get(&xe).unwrap_or_default();
+        let anything_changed = xvc_path_diff.changed() || xvc_metadata_diff.changed();
+
+        if anything_changed {
             let stored_content_digest = stored_content_digest_store.get(xe);
             let text_or_binary = requested_text_or_binary.unwrap_or_else(|| {
                 stored_text_or_binary_store
@@ -201,9 +205,6 @@ pub fn diff_content_digest(
 
             watch!(xvc_path_diff);
             let diff_content_digest = match xvc_path_diff {
-                // We calculate the diff even the path is identical.
-                // This is because the metadata or the `text_or_binary` has
-                // changed.
                 Diff::Identical | Diff::Skipped => {
                     match xvc_metadata_diff {
                         // text_or_binary should have changed.
@@ -256,7 +257,7 @@ pub fn diff_content_digest(
                 // We have a record, but the path on disk is missing.
                 // We can't calculate the digest. We'll use the recorded
                 // one.
-                Diff::ActualMissing { record } => {
+                Diff::ActualMissing { .. } => {
                     match stored_content_digest {
                         Some(record) => Diff::ActualMissing { record: *record },
                         // if the both actual and the record are

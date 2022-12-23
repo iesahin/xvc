@@ -37,24 +37,23 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     // watch!(verbosity_opt);
     // watch!(args);
 
-    let output = match cwd {
+    let prepared = match cwd {
         Some(cwd) => cmd
             .arg("--debug")
             .args(verbosity_opt)
             .args(args)
-            .current_dir(cwd)
-            .output()?,
-        None => cmd.arg("--debug").args(verbosity_opt).args(args).output()?,
+            .current_dir(cwd),
+        None => cmd.arg("--debug").args(verbosity_opt).args(args),
     };
 
-    // watch!(cmd);
-    // watch!(output);
+    watch!(prepared);
+    let output = prepared.output()?;
+
     assert!(output.status.success());
 
-    let mut output_str = String::from_utf8(output.stdout)?;
+    let output_str = String::from_utf8(output.stdout)?;
 
-    println!("{}", String::from_utf8(output.stderr)?);
-
+    // println!("{}", String::from_utf8(output.stderr)?);
     // watch!(output_str);
 
     Ok(output_str)

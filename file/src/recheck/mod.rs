@@ -146,8 +146,15 @@ pub fn cmd_recheck(
         !opts.no_parallel,
     );
 
+    watch!(content_digest_diff);
     cache_type_targets.retain(|xe, d| {
-        if content_digest_diff.contains_key(xe) && content_digest_diff[&xe].changed() {
+        watch!(content_digest_diff.get(xe));
+        if content_digest_diff.contains_key(xe)
+            && matches!(
+                content_digest_diff[&xe],
+                Diff::<ContentDigest>::Different { .. }
+            )
+        {
             let output_snd = output_snd.clone();
             let xp = &stored_xvc_path_store[&xe];
             error!(
@@ -161,27 +168,35 @@ pub fn cmd_recheck(
         }
     });
 
-    let xvc_metadata_diff = &prerequisite_diffs.1;
+    let no_digest_targets =
+        content_digest_diff.filter(|_, d| matches!(d, Diff::ActualMissing { .. }));
 
-    let missing_targets = xvc_metadata_diff.filter(|_, d| matches!(d, Diff::ActualMissing { .. }));
-
+    watch!(no_digest_targets);
     // We recheck files
     // - if they are not in the workspace
     // - if their cache type is different from the current cache type
     // - if they are in the workspace but force is set
 
+    watch!(target_files);
+
     let files_to_recheck = target_files.filter(|xe, _| {
-        opts.force || cache_type_targets.contains_key(xe) || missing_targets.contains_key(xe)
+        opts.force || cache_type_targets.contains_key(xe) || no_digest_targets.contains_key(xe)
     });
+
+    watch!(files_to_recheck);
 
     let updated_cache_type_store =
         apply_diff(&stored_cache_type_store, &cache_type_diff, true, false)?;
+
+    watch!(updated_cache_type_store);
+
     let updated_content_digest_store = apply_diff(
         &stored_content_digest_store,
         &content_digest_diff,
         true,
         false,
     )?;
+    watch!(updated_content_digest_store);
 
     recheck(
         output_snd,
@@ -190,7 +205,7 @@ pub fn cmd_recheck(
         &updated_cache_type_store,
         &updated_content_digest_store,
         opts.no_parallel,
-    );
+    )?;
 
     xvc_root.save_store(&updated_cache_type_store)?;
     xvc_root.save_store(&updated_content_digest_store)?;
