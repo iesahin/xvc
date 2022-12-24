@@ -167,8 +167,13 @@ pub fn diff_content_digest(
             .get(xe)
             .ok_or_else(|| EcsError::CannotFindEntityInStore { entity: *xe })?;
         watch!(xvc_metadata_diff);
-        let xvc_path_diff = xvc_path_diff_store.get(&xe).unwrap_or_default();
-        let xvc_metadata_diff = xvc_path_diff_store.get(&xe).unwrap_or_default();
+        let xvc_path_diff = xvc_path_diff_store
+            .get(&xe)
+            .unwrap_or_else(|| &Diff::<XvcPath>::Skipped);
+        let xvc_metadata_diff = xvc_metadata_diff_store
+            .get(&xe)
+            .unwrap_or_else(|| &Diff::<XvcMetadata>::Skipped);
+
         let anything_changed = xvc_path_diff.changed() || xvc_metadata_diff.changed();
 
         if anything_changed {
@@ -188,6 +193,8 @@ pub fn diff_content_digest(
                 Ok(path)
             };
             let compare_with_stored_digest = |actual| -> Diff<ContentDigest> {
+                watch!(stored_content_digest);
+                watch!(actual);
                 match stored_content_digest {
                     Some(record) => {
                         if actual != *record {
@@ -243,9 +250,15 @@ pub fn diff_content_digest(
                 }
                 // The path is not recorded before.
                 Diff::RecordMissing { actual } => {
+                    watch!(actual);
                     let path = actual.to_absolute_path(xvc_root);
-                    let actual = ContentDigest::from_path(&path, algorithm, text_or_binary.0)?;
-                    compare_with_stored_digest(actual)
+                    watch!(path);
+                    let actual_digest =
+                        ContentDigest::from_path(&path, algorithm, text_or_binary.0)?;
+                    watch!(actual_digest);
+                    let res = compare_with_stored_digest(actual_digest);
+                    watch!(res);
+                    res
                 }
                 // The path is changed. This can happen after a move
                 // operation, for example.

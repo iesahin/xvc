@@ -169,26 +169,22 @@ pub fn cmd_track(
     let hash_algorithm = HashAlgorithm::from_conf(conf);
 
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
-    let prerequisite_diffs = DiffStore3::<XvcPath, XvcMetadata, FileTextOrBinary>(
-        xvc_path_diff,
-        xvc_metadata_diff,
-        text_or_binary_diff,
-    );
+
     let content_digest_diff = diff_content_digest(
         output_snd,
         xvc_root,
         &stored_xvc_path_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
-        &prerequisite_diffs,
+        &xvc_path_diff,
+        &xvc_metadata_diff,
         opts.text_or_binary,
-        None,
+        Some(hash_algorithm),
         !no_parallel,
     );
 
-    let xvc_path_diff = prerequisite_diffs.0;
-    let xvc_metadata_diff = prerequisite_diffs.1;
-    let text_or_binary_diff = prerequisite_diffs.2;
+    watch!(content_digest_diff);
+
     update_store_records(xvc_root, &xvc_path_diff, true, false)?;
     update_store_records(xvc_root, &xvc_metadata_diff, true, false)?;
     update_store_records(xvc_root, &cache_type_diff, true, false)?;
@@ -197,6 +193,7 @@ pub fn cmd_track(
 
     // We reload to get the latest file types
     let current_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    watch!(current_xvc_metadata_store.len());
 
     let file_entities = changed_entities.iter().filter_map(|xe| {
         current_xvc_metadata_store.get(xe).and_then(|md| {

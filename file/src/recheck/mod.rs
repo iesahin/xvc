@@ -26,6 +26,16 @@ use xvc_logging::{error, warn, watch, XvcOutputLine};
 use xvc_walker::Glob;
 
 /// Check out file from cache by a copy or link
+///
+/// There are three conditions to recheck a file:
+///
+/// - If the workspace copy is missing.
+/// - If the workspace copy is not changed but the user wants to change cache type. (e.g. from copy
+/// to symlink.)
+/// - If the `--force` is set.
+///
+/// If the workspace copy of a file is changed, this command doesn't overwrite it by default. Set
+/// `--force` to do so.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
 #[command(rename_all = "kebab-case", author, version)]
 pub struct RecheckCLI {
@@ -39,15 +49,10 @@ pub struct RecheckCLI {
     #[arg(long)]
     pub no_parallel: bool,
 
-    /// Force even if target exists
+    /// Force even if target exists.
     #[arg(long)]
     pub force: bool,
 
-    /// Recheck files as text, binary (Default: auto)
-    ///
-    /// Text files may go OS specific line ending replacements.
-    #[arg(long)]
-    pub text_or_binary: Option<FileTextOrBinary>,
     /// Files/directories to recheck
     #[arg()]
     pub targets: Option<Vec<String>>,
@@ -60,10 +65,6 @@ impl UpdateFromXvcConfig for RecheckCLI {
             .unwrap_or_else(|| CacheType::from_conf(conf));
         let no_parallel = self.no_parallel || conf.get_bool("file.add.no_parallel")?.option;
 
-        let text_or_binary = self.text_or_binary.as_ref().map_or_else(
-            || Some(FileTextOrBinary::from_conf(conf)),
-            |v| Some(v.to_owned()),
-        );
         let force = self.force;
 
         Ok(Box::new(Self {
@@ -71,7 +72,6 @@ impl UpdateFromXvcConfig for RecheckCLI {
             cache_type: Some(cache_type),
             force,
             no_parallel,
-            text_or_binary,
         }))
     }
 }
@@ -97,7 +97,6 @@ pub fn cmd_recheck(
 
     let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
     watch!(cache_type);
-    let text_or_binary = opts.text_or_binary;
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
@@ -110,13 +109,6 @@ pub fn cmd_recheck(
     let cache_type_diff = diff_cache_type(&stored_cache_type_store, cache_type, &entities);
     let mut cache_type_targets = cache_type_diff.filter(|_, d| d.changed());
 
-    let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
-    let text_or_binary_diff = diff_text_or_binary(
-        &stored_text_or_binary_store,
-        text_or_binary.unwrap_or_default(),
-        &target_files.keys().copied().collect(),
-    );
-
     let xvc_path_metadata_diff = diff_xvc_path_metadata(
         xvc_root,
         &stored_xvc_path_store,
@@ -126,13 +118,8 @@ pub fn cmd_recheck(
     let xvc_path_diff: DiffStore<XvcPath> = xvc_path_metadata_diff.0;
     let xvc_metadata_diff: DiffStore<XvcMetadata> = xvc_path_metadata_diff.1;
 
-    let prerequisite_diffs = DiffStore3::<XvcPath, XvcMetadata, FileTextOrBinary>(
-        xvc_path_diff,
-        xvc_metadata_diff,
-        text_or_binary_diff,
-    );
-
     let algorithm = HashAlgorithm::from_conf(conf);
+    let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
 
     let content_digest_diff = diff_content_digest(
         output_snd,
@@ -140,8 +127,9 @@ pub fn cmd_recheck(
         &stored_xvc_path_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
-        &prerequisite_diffs,
-        text_or_binary,
+        &xvc_path_diff,
+        &xvc_metadata_diff,
+        None,
         Some(algorithm),
         !opts.no_parallel,
     );

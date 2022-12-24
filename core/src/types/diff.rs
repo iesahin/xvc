@@ -45,6 +45,15 @@ where
     }
 }
 
+impl<T> std::default::Default for Diff<T>
+where
+    T: Storable,
+{
+    fn default() -> Self {
+        Diff::<T>::Skipped
+    }
+}
+
 /// Keeping track of differences between two stores of the same type.
 pub type DiffStore<T> = HStore<Diff<T>>;
 

@@ -136,6 +136,7 @@ macro_rules! uwr {
         match $e {
             Ok(v) => v,
             Err(e) => {
+                watch!(e);
                 (&$channel)
                     .send(::xvc_logging::XvcOutputLine::Panic(format!("{:?}", e)))
                     .unwrap();
@@ -154,6 +155,7 @@ macro_rules! uwo {
         match $e {
             Some(v) => v,
             None => {
+                watch!($e);
                 let msg = format!("None from the expression: {}", stringify!($e));
                 (&$channel)
                     .send(::xvc_logging::XvcOutputLine::Panic(msg.clone()))

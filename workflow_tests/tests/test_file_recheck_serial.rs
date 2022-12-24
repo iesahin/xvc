@@ -62,12 +62,10 @@ fn test_file_recheck_serial() -> Result<()> {
         file_to_add,
     ])?;
 
-    // No --force, it shouldn't overwrite
-
-    assert!(PathBuf::from(file_to_add).is_symlink());
+    assert!(PathBuf::from(file_to_add).is_file());
 
     let dir_to_add = "dir-0001/";
-    x(&["file", "track", dir_to_add])?;
+    x(&["file", "track", "--no-parallel", dir_to_add])?;
 
     let n_files_before = jwalk::WalkDir::new(dir_to_add).into_iter().count();
 

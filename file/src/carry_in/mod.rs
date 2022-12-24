@@ -109,7 +109,7 @@ impl UpdateFromXvcConfig for CarryInCLI {
 ///     Filter -->|Yes| XvcDigest
 ///     Filter -->|No| Ignore
 ///     XvcDigest --> CacheLocation
-///     
+///
 /// ```
 ///
 
@@ -148,7 +148,6 @@ pub fn cmd_carry_in(
 
     let xvc_path_diff = xvc_path_metadata_diff.0;
     let xvc_metadata_diff = xvc_path_metadata_diff.1;
-    let prerequisite_diffs = DiffStore3(xvc_path_diff, xvc_metadata_diff, text_or_binary_diff);
 
     let content_digest_diff = diff_content_digest(
         output_snd,
@@ -156,13 +155,13 @@ pub fn cmd_carry_in(
         &xvc_path_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
-        &prerequisite_diffs,
+        &xvc_path_diff,
+        &xvc_metadata_diff,
         opts.text_or_binary,
         None,
         !opts.no_parallel,
     );
 
-    let text_or_binary_diff = &prerequisite_diffs.2;
     let xvc_paths_to_carry = if opts.force {
         target_files
     } else {
@@ -217,7 +216,7 @@ pub fn cmd_carry_in(
     )?;
 
     // We only update the records for existing paths.
-    update_store_records(xvc_root, text_or_binary_diff, false, false)?;
+    update_store_records(xvc_root, &text_or_binary_diff, false, false)?;
     update_store_records(xvc_root, &content_digest_diff, false, false)?;
 
     Ok(())

@@ -260,6 +260,8 @@ pub fn targets_from_disk(
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
 ) -> Result<XvcPathMetadataMap> {
+    watch!(current_dir);
+    watch!(xvc_root.absolute_path());
     // If we are not in the root, we add current dir to all targets and recur.
     if *current_dir != *xvc_root.absolute_path() {
         let cwd = current_dir
@@ -275,10 +277,16 @@ pub fn targets_from_disk(
     }
     let (all_paths, _) = all_paths_and_metadata(xvc_root);
 
+    watch!(all_paths);
+
     if let Some(targets) = targets {
         let mut glob_matcher = GlobSetBuilder::new();
         targets.iter().for_each(|t| {
-            glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
+            if t.ends_with('/') {
+                glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
+            } else {
+                glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
+            }
         });
         let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
 
@@ -480,7 +488,9 @@ where
     T: Storable,
 {
     let records = xvc_root.load_store::<T>()?;
+    watch!(records.len());
     let new_store = apply_diff(&records, diffs, add_new, remove_missing)?;
+    watch!(new_store.len());
     xvc_root.save_store(&new_store)?;
     Ok(())
 }

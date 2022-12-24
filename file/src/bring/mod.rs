@@ -142,7 +142,6 @@ pub fn cmd_bring(
             cache_type: opts.checkout_as,
             no_parallel: false,
             force: opts.force,
-            text_or_binary: None,
             targets: checkout_targets,
         };
 
