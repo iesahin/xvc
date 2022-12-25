@@ -64,7 +64,7 @@ fn test_notify() -> Result<()> {
                 if err_counter > 0 {
                     err_counter -= 1;
                     watch!(err_counter);
-                    // sleep(Duration::from_millis(10));
+                    sleep(Duration::from_millis(10));
                 } else {
                     break;
                 }
@@ -88,23 +88,22 @@ fn test_notify() -> Result<()> {
         let size_created = 10;
         files.iter().for_each(|f| {
             watch!(f);
-            generate_random_file(&f, size_created)
+            generate_random_file(&f, size_created);
+            sleep(Duration::from_millis(10));
         });
-
-        sleep(Duration::from_millis(100));
 
         let size_updated = 20;
 
         files.iter().for_each(|f| {
             watch!(f);
             generate_random_file(&f, size_updated);
+            sleep(Duration::from_millis(10));
         });
-
-        sleep(Duration::from_millis(100));
 
         files.iter().for_each(|f| {
             watch!(f);
             std::fs::remove_file(f).unwrap();
+            sleep(Duration::from_millis(10));
         });
 
         sleep(Duration::from_millis(100));
