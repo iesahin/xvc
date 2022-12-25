@@ -67,7 +67,9 @@ fn test_notify() -> Result<()> {
                 if err_counter > 0 {
                     err_counter -= 1;
                     watch!(err_counter);
-                    sleep(Duration::from_millis((MAX_ERROR_COUNT - err_counter) * 10));
+                    sleep(Duration::from_millis(
+                        ((MAX_ERROR_COUNT - err_counter) * 10) as u64,
+                    ));
                 } else {
                     break;
                 }
