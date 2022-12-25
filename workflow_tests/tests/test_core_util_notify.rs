@@ -16,25 +16,29 @@ use xvc_walker::{walk_serial, IgnoreRules, PathMetadata, Result as XvcWalkerResu
 
 #[test]
 fn test_notify() -> Result<()> {
-    let xvc_root = run_in_example_xvc(true)?;
+    let temp_dir = run_in_temp_dir();
     test_logging(log::LevelFilter::Trace);
-    let initial_rules = IgnoreRules::try_from_patterns(&xvc_root, COMMON_IGNORE_PATTERNS)?;
+    let initial_rules = IgnoreRules::try_from_patterns(&temp_dir, COMMON_IGNORE_PATTERNS)?;
     let walk_options = WalkOptions {
         ignore_filename: Some(XVCIGNORE_FILENAME.to_string()),
         include_dirs: true,
     };
-    let res_paths = Arc::new(Mutex::new(Vec::<XvcWalkerResult<PathMetadata>>::new()));
-    let res_paths_copy = res_paths.clone();
+    let created_paths = Arc::new(Mutex::new(Vec::<PathBuf>::new()));
+    let updated_paths = Arc::new(Mutex::new(Vec::<PathBuf>::new()));
+    let deleted_paths = Arc::new(Mutex::new(Vec::<PathBuf>::new()));
+    let created_paths_clone = created_paths.clone();
+    let updated_paths_clone = updated_paths.clone();
+    let deleted_paths_clone = deleted_paths.clone();
     let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
-    let all_rules = walk_serial(initial_rules, &xvc_root, &walk_options, &mut initial_paths)?;
+    let all_rules = walk_serial(initial_rules, &temp_dir, &walk_options, &mut initial_paths)?;
     watch!(all_rules);
     let (_watcher, receiver) = make_watcher(all_rules)?;
+
+    watch!(initial_paths.len());
 
     const MAX_ERROR_COUNT: usize = 100;
 
     let handle = thread::spawn(move || {
-        let mut_res_paths = res_paths.clone();
-        let mut res_paths = mut_res_paths.lock().unwrap();
         let mut err_counter = MAX_ERROR_COUNT;
         loop {
             let r = receiver.try_recv();
@@ -42,21 +46,23 @@ fn test_notify() -> Result<()> {
                 err_counter = MAX_ERROR_COUNT;
                 match pe {
                     PathEvent::Create { path, metadata } => {
-                        res_paths.push(Ok(PathMetadata { path, metadata }))
+                        let mut created_paths = created_paths.lock().unwrap();
+                        created_paths.push(path);
                     }
                     PathEvent::Update { path, metadata } => {
-                        res_paths.retain(|pm| pm.as_ref().unwrap().path.clone() != path.clone());
-                        res_paths.push(Ok(PathMetadata { path, metadata }));
+                        let mut updated_paths = updated_paths.lock().unwrap();
+                        updated_paths.push(path);
                     }
                     PathEvent::Delete { path } => {
-                        res_paths.retain(|pm| pm.as_ref().unwrap().path != path)
+                        let mut deleted_paths = deleted_paths.lock().unwrap();
+                        deleted_paths.push(path);
                     }
                 }
             } else {
                 if err_counter > 0 {
                     err_counter -= 1;
                     watch!(err_counter);
-                    sleep(Duration::from_millis(100));
+                    sleep(Duration::from_millis(10));
                 } else {
                     break;
                 }
@@ -64,42 +70,39 @@ fn test_notify() -> Result<()> {
         }
         drop(receiver);
     });
-    let files: Vec<String> = (1..10).map(|n| format!("file-000{n}.bin")).collect();
+
+    let files: Vec<PathBuf> = (1..10)
+        .map(|n| temp_dir.join(&PathBuf::from(format!("file-000{n}.bin"))))
+        .collect();
     watch!(files.len());
-    let size1 = 10;
+    let size_created = 10;
     files
         .iter()
-        .for_each(|f| generate_random_file(&xvc_root.join(&PathBuf::from(f)), size1));
+        .for_each(|f| generate_random_file(&f, size_created));
 
-    sleep(Duration::from_millis(1000));
+    sleep(Duration::from_millis(100));
 
-    let pmp_names: Vec<String> = res_paths_copy
-        .clone()
-        .lock()
-        .unwrap()
+    let size_updated = 20;
+
+    files
         .iter()
-        .map(|p| {
-            p.as_ref()
-                .unwrap()
-                .path
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .to_string()
-        })
-        .collect();
+        .for_each(|f| generate_random_file(&f, size_updated));
 
-    watch!(pmp_names.len());
+    sleep(Duration::from_millis(100));
 
-    sleep(Duration::from_millis(1000));
+    files.iter().for_each(|f| std::fs::remove_file(f).unwrap());
 
-    assert!(pmp_names
-        .iter()
-        .any(|f| f.to_string() == "file-0001.bin".to_string()));
+    sleep(Duration::from_millis(100));
 
-    watch!(handle);
+    let created_paths = created_paths_clone.lock().unwrap();
+    assert!(created_paths.len() == files.len());
+
+    let updated_paths = updated_paths_clone.lock().unwrap();
+    assert!(updated_paths.len() == files.len());
+
+    let deleted_paths = deleted_paths_clone.lock().unwrap();
+    assert!(deleted_paths.len() == files.len());
 
     handle.join().unwrap();
-
-    clean_up(&xvc_root)
+    clean_up_path_buf(temp_dir)
 }

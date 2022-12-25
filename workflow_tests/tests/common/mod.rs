@@ -172,6 +172,10 @@ pub fn sh(cmd: &str) -> Result<CaptureData> {
         .map_err(|e| anyhow!("{}", e).into())
 }
 
+pub fn clean_up_path_buf(path_buf: PathBuf) -> Result<()> {
+    fs::remove_dir_all(&path_buf).map_err(|e| e.into())
+}
+
 pub fn clean_up(xvc_root: &XvcRoot) -> Result<()> {
     fs::remove_dir_all(&xvc_root.absolute_path()).map_err(|e| e.into())
 }
