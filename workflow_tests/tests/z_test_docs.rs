@@ -114,7 +114,7 @@ fn link_to_docs() -> Result<()> {
 }
 
 #[test]
-fn doc_tests() -> Result<()> {
+fn z_doc_tests() -> Result<()> {
     link_to_docs()?;
 
     trycmd::TestCases::new()
