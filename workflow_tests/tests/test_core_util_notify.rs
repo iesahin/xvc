@@ -40,7 +40,7 @@ fn test_notify() -> Result<()> {
 
     watch!(initial_paths.len());
 
-    const MAX_ERROR_COUNT: usize = 10;
+    const MAX_ERROR_COUNT: usize = 100;
 
     let event_handler = thread::spawn(move || {
         let mut err_counter = MAX_ERROR_COUNT;
