@@ -112,15 +112,15 @@ fn test_notify() -> Result<()> {
     file_modifier.join().unwrap();
     let (created_paths, updated_paths, deleted_paths) = event_handler.join().unwrap();
 
-    let created_paths = created_paths.read().unwrap();
+    let created_paths = created_paths.try_read().unwrap();
     watch!(created_paths);
     assert!(created_paths.len() == files_len);
 
     watch!(created_paths);
-    let updated_paths = updated_paths.read().unwrap();
+    let updated_paths = updated_paths.try_read().unwrap();
     watch!(updated_paths);
     assert!(updated_paths.len() == files_len);
-    let deleted_paths = deleted_paths.read().unwrap();
+    let deleted_paths = deleted_paths.try_read().unwrap();
 
     watch!(deleted_paths);
     assert!(deleted_paths.len() == files_len);
