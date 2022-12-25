@@ -17,6 +17,7 @@ use xvc_walker::{walk_serial, IgnoreRules, PathMetadata, Result as XvcWalkerResu
 #[test]
 fn test_notify() -> Result<()> {
     let temp_dir = run_in_temp_dir();
+    watch!(temp_dir);
     test_logging(log::LevelFilter::Trace);
     let initial_rules = IgnoreRules::try_from_patterns(&temp_dir, COMMON_IGNORE_PATTERNS)?;
     let walk_options = WalkOptions {
@@ -32,18 +33,20 @@ fn test_notify() -> Result<()> {
     let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
     let all_rules = walk_serial(initial_rules, &temp_dir, &walk_options, &mut initial_paths)?;
     watch!(all_rules);
-    let (_watcher, receiver) = make_watcher(all_rules)?;
+    let (watcher, receiver) = make_watcher(all_rules)?;
+    watch!(watcher);
 
     let receiver_clone = receiver.clone();
 
     watch!(initial_paths.len());
 
-    const MAX_ERROR_COUNT: usize = 100;
+    const MAX_ERROR_COUNT: usize = 10;
 
     let event_handler = thread::spawn(move || {
         let mut err_counter = MAX_ERROR_COUNT;
         loop {
             let r = receiver.try_recv();
+            watch!(r);
             if let Ok(pe) = r {
                 err_counter = MAX_ERROR_COUNT;
                 match pe {
@@ -64,7 +67,7 @@ fn test_notify() -> Result<()> {
                 if err_counter > 0 {
                     err_counter -= 1;
                     watch!(err_counter);
-                    sleep(Duration::from_millis(10));
+                    sleep(Duration::from_millis((MAX_ERROR_COUNT - err_counter) * 10));
                 } else {
                     break;
                 }
@@ -72,6 +75,7 @@ fn test_notify() -> Result<()> {
         }
         watch!(err_counter);
         watch!(receiver);
+        (created_paths, updated_paths, deleted_paths)
     });
 
     watch!(receiver_clone);
@@ -85,6 +89,8 @@ fn test_notify() -> Result<()> {
     watch!(files.len());
 
     let file_modifier = thread::spawn(move || {
+        sleep(Duration::from_millis(100));
+
         let size_created = 10;
         files.iter().for_each(|f| {
             watch!(f);
@@ -110,17 +116,18 @@ fn test_notify() -> Result<()> {
     });
 
     file_modifier.join().unwrap();
-    event_handler.join().unwrap();
+    let (created_paths, updated_paths, deleted_paths) = event_handler.join().unwrap();
 
-    let created_paths = created_paths_clone.lock().unwrap();
+    let created_paths = created_paths.lock().unwrap();
     watch!(created_paths);
     assert!(created_paths.len() == files_len);
 
-    let updated_paths = updated_paths_clone.lock().unwrap();
+    watch!(created_paths);
+    let updated_paths = updated_paths.lock().unwrap();
     watch!(updated_paths);
     assert!(updated_paths.len() == files_len);
+    let deleted_paths = deleted_paths.lock().unwrap();
 
-    let deleted_paths = deleted_paths_clone.lock().unwrap();
     watch!(deleted_paths);
     assert!(deleted_paths.len() == files_len);
 
