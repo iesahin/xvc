@@ -68,6 +68,7 @@ fn test_notify() -> Result<()> {
                 }
             }
         }
+        watch!(err_counter);
         drop(receiver);
     });
 
