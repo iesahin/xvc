@@ -34,11 +34,13 @@ fn test_notify() -> Result<()> {
     watch!(all_rules);
     let (_watcher, receiver) = make_watcher(all_rules)?;
 
+    let receiver_clone = receiver.clone();
+
     watch!(initial_paths.len());
 
     const MAX_ERROR_COUNT: usize = 100;
 
-    let handle = thread::spawn(move || {
+    let event_handler = thread::spawn(move || {
         let mut err_counter = MAX_ERROR_COUNT;
         loop {
             let r = receiver.try_recv();
@@ -69,41 +71,59 @@ fn test_notify() -> Result<()> {
             }
         }
         watch!(err_counter);
-        drop(receiver);
+        watch!(receiver);
     });
+
+    watch!(receiver_clone);
 
     let files: Vec<PathBuf> = (1..10)
         .map(|n| temp_dir.join(&PathBuf::from(format!("file-000{n}.bin"))))
         .collect();
+
+    let files_len = files.len();
+
     watch!(files.len());
-    let size_created = 10;
-    files
-        .iter()
-        .for_each(|f| generate_random_file(&f, size_created));
 
-    sleep(Duration::from_millis(100));
+    let file_modifier = thread::spawn(move || {
+        let size_created = 10;
+        files.iter().for_each(|f| {
+            watch!(f);
+            generate_random_file(&f, size_created)
+        });
 
-    let size_updated = 20;
+        sleep(Duration::from_millis(100));
 
-    files
-        .iter()
-        .for_each(|f| generate_random_file(&f, size_updated));
+        let size_updated = 20;
 
-    sleep(Duration::from_millis(100));
+        files.iter().for_each(|f| {
+            watch!(f);
+            generate_random_file(&f, size_updated);
+        });
 
-    files.iter().for_each(|f| std::fs::remove_file(f).unwrap());
+        sleep(Duration::from_millis(100));
 
-    sleep(Duration::from_millis(100));
+        files.iter().for_each(|f| {
+            watch!(f);
+            std::fs::remove_file(f).unwrap();
+        });
+
+        sleep(Duration::from_millis(100));
+    });
 
     let created_paths = created_paths_clone.lock().unwrap();
-    assert!(created_paths.len() == files.len());
+    watch!(created_paths);
+    assert!(created_paths.len() == files_len);
 
     let updated_paths = updated_paths_clone.lock().unwrap();
-    assert!(updated_paths.len() == files.len());
+    watch!(updated_paths);
+    assert!(updated_paths.len() == files_len);
 
     let deleted_paths = deleted_paths_clone.lock().unwrap();
-    assert!(deleted_paths.len() == files.len());
+    watch!(deleted_paths);
+    assert!(deleted_paths.len() == files_len);
 
-    handle.join().unwrap();
+    file_modifier.join().unwrap();
+    event_handler.join().unwrap();
+
     clean_up_path_buf(temp_dir)
 }
