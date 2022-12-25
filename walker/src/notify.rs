@@ -9,9 +9,10 @@ use crate::{
     error::{Error, Result},
     IgnoreRules, MatchResult,
 };
-use notify::{Event, EventHandler, RecommendedWatcher, RecursiveMode, Watcher};
+use notify::{Event, EventHandler, FsEventWatcher, RecommendedWatcher, RecursiveMode, Watcher};
 use std::fs::Metadata;
 use std::path::PathBuf;
+use xvc_logging::watch;
 
 use crossbeam_channel::{bounded, Receiver, Sender};
 use log::{debug, warn};
@@ -49,6 +50,7 @@ struct PathEventHandler {
 
 impl EventHandler for PathEventHandler {
     fn handle_event(&mut self, event: notify::Result<Event>) {
+        watch!(event);
         if let Ok(event) = event {
             match event.kind {
                 notify::EventKind::Create(_) => self.create_event(event.paths[0].clone()),
@@ -150,6 +152,9 @@ pub fn make_watcher(
         ignore_rules,
         sender,
     })?;
+
     watcher.watch(&root, RecursiveMode::Recursive)?;
+    watch!(<FsEventWatcher as Watcher>::kind());
+    watch!(watcher);
     Ok((watcher, receiver))
 }
