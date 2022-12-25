@@ -74,7 +74,7 @@ Note that the size of the file has increased, as we replace each `a` with an `ee
 
 
 ```console
-$ xvc file carry-in data.txt
+$ xvc --debug file carry-in data.txt
 
 $ xvc file list data.txt
 C=	[..] 	                  23	data.txt
