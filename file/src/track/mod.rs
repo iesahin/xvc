@@ -174,6 +174,7 @@ pub fn cmd_track(
         output_snd,
         xvc_root,
         &stored_xvc_path_store,
+        &stored_xvc_metadata_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
         &xvc_path_diff,

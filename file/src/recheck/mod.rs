@@ -99,8 +99,8 @@ pub fn cmd_recheck(
     watch!(cache_type);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
-    let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
-    let target_files = only_file_targets(&stored_xvc_path_store, &xvc_metadata_store, &targets)?;
+    let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    let target_files = only_file_targets(&stored_xvc_path_store, &stored_xvc_metadata_store, &targets)?;
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
 
     let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
@@ -112,7 +112,7 @@ pub fn cmd_recheck(
     let xvc_path_metadata_diff = diff_xvc_path_metadata(
         xvc_root,
         &stored_xvc_path_store,
-        &xvc_metadata_store,
+        &stored_xvc_metadata_store,
         &target_xvc_path_metadata_map,
     );
     let xvc_path_diff: DiffStore<XvcPath> = xvc_path_metadata_diff.0;
@@ -125,6 +125,7 @@ pub fn cmd_recheck(
         output_snd,
         xvc_root,
         &stored_xvc_path_store,
+        &stored_xvc_metadata_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
         &xvc_path_diff,

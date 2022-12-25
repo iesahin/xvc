@@ -126,15 +126,16 @@ pub fn cmd_carry_in(
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
 
-    let xvc_path_store = xvc_root.load_store::<XvcPath>()?;
-    let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
-    let target_files = only_file_targets(&xvc_path_store, &xvc_metadata_store, &targets)?;
+    let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+    let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    let target_files =
+        only_file_targets(&stored_xvc_path_store, &stored_xvc_metadata_store, &targets)?;
 
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
     let xvc_path_metadata_diff = diff_xvc_path_metadata(
         xvc_root,
-        &xvc_path_store,
-        &xvc_metadata_store,
+        &stored_xvc_path_store,
+        &stored_xvc_metadata_store,
         &target_xvc_path_metadata_map,
     );
 
@@ -152,7 +153,8 @@ pub fn cmd_carry_in(
     let content_digest_diff = diff_content_digest(
         output_snd,
         xvc_root,
-        &xvc_path_store,
+        &stored_xvc_path_store,
+        &stored_xvc_metadata_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
         &xvc_path_diff,

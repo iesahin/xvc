@@ -1,6 +1,6 @@
 # xvc file carry-in
 
-Copies the file changes to cache. 
+Copies the file changes to cache.
 
 ## Synopsis
 
@@ -34,10 +34,9 @@ Options:
 
 ```
 
-
 ## Examples
 
-Carry in command works with Xvc repositories. 
+Carry in command works with Xvc repositories.
 
 ```console
 $ git init
