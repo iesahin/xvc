@@ -109,6 +109,9 @@ fn test_notify() -> Result<()> {
         sleep(Duration::from_millis(100));
     });
 
+    file_modifier.join().unwrap();
+    event_handler.join().unwrap();
+
     let created_paths = created_paths_clone.lock().unwrap();
     watch!(created_paths);
     assert!(created_paths.len() == files_len);
@@ -120,9 +123,6 @@ fn test_notify() -> Result<()> {
     let deleted_paths = deleted_paths_clone.lock().unwrap();
     watch!(deleted_paths);
     assert!(deleted_paths.len() == files_len);
-
-    file_modifier.join().unwrap();
-    event_handler.join().unwrap();
 
     clean_up_path_buf(temp_dir)
 }
