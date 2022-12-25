@@ -64,7 +64,7 @@ fn test_notify() -> Result<()> {
                 if err_counter > 0 {
                     err_counter -= 1;
                     watch!(err_counter);
-                    sleep(Duration::from_millis(10));
+                    // sleep(Duration::from_millis(10));
                 } else {
                     break;
                 }
