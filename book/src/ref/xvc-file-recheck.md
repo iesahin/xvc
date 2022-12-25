@@ -37,15 +37,14 @@ Options:
 
 ```
 
-
 This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if you feel more at home with Git terminology.
 
 ## Examples
 
-Rechecking is analogous to [git checkout](https://git-scm.com/docs/git-checkout). 
-It copies or links a cached file to the workspace. 
+Rechecking is analogous to [git checkout](https://git-scm.com/docs/git-checkout).
+It copies or links a cached file to the workspace.
 
-Start by tracking a file. 
+Start by tracking a file.
 
 ```console
 $ git init
@@ -61,7 +60,6 @@ total[..]
 ```
 
 Once you added the file to the cache, you can delete the workspace copy.
-
 
 ```console
 $ rm data.txt
@@ -105,7 +103,7 @@ l[..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
 
 ```
 
-Hardlinks look like the original file. 
+Hardlinks look like the original file.
 
 ```console
 $ xvc -vv file recheck data.txt --as hardlink --force
@@ -122,8 +120,8 @@ total[..]
 
 Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
 
-Reflinks are supported by Xvc, but the underlying file system should also support it. 
-Otherwise it uses `copy`. 
+Reflinks are supported by Xvc, but the underlying file system should also support it.
+Otherwise it uses `copy`.
 
 ```console
 $ rm -f data.txt
@@ -131,4 +129,4 @@ $ xvc file recheck data.txt --as reflink
 
 ```
 
-The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems. 
+The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems.

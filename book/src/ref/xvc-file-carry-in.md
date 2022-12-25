@@ -46,6 +46,7 @@ $ xvc init
 ```
 
 We first track a file.
+
 ```console
 $ xvc file track data.txt
 
@@ -55,7 +56,7 @@ C=	[..] 	                  19	data.txt	c85f3e81
 
 ```
 
-We update the file with a command. 
+We update the file with a command.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
@@ -69,8 +70,7 @@ C<	[..] 	                  23	data.txt	e37c686a
 
 ```
 
-Note that the size of the file has increased, as we replace each `a` with an `ee`. 
-
+Note that the size of the file has increased, as we replace each `a` with an `ee`.
 
 ```console
 $ xvc --debug file carry-in data.txt
