@@ -107,6 +107,7 @@ macro_rules! panic {
     };
     ($fmt:literal $(, $x:expr )* ) => {
         {
+            watch!($fmt $(, $x)*);
             ::std::panic!($fmt $(, $x)*);
         }
     };
