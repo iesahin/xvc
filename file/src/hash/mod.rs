@@ -95,11 +95,11 @@ pub fn cmd_hash(
             for (path, digest) in digest_rec {
                 watch!(path);
                 watch!(digest);
-                output!(output_snd, "{}\t{digest}", path.to_string_lossy());
+                output!(output_snd, "{digest}\t{}", path.to_string_lossy());
             }
         } else if t.is_file() {
             let digest = calc_digest(&t, algorithm, text_or_binary)?;
-            output!(output_snd, "{}\t{digest}", t.to_string_lossy());
+            output!(output_snd, "{digest}\t{}", t.to_string_lossy());
         } else {
             warn!("Unsupported FS Type: {:?}", t);
         }

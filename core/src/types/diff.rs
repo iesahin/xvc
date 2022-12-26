@@ -119,6 +119,12 @@ pub fn diff_store<T: Storable>(
     diff_store
 }
 
+/// Update `records` loaded from store with the changed values in `diffs`.
+/// When the actual values are changed and we want to update the store, we use this function.
+///
+/// If `add_new` is `true`, we add new values to `records`. (See [Diff::RecordMissing])
+/// If `remove_missing` is `true`, we remove missing values from `records`. (See [Diff::ActualMissing])
+/// We always update the values that are different. (See [Diff::Different])
 pub fn update_with_actual<T: Storable>(
     records: &mut XvcStore<T>,
     diffs: DiffStore<T>,
