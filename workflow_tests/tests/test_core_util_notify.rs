@@ -138,6 +138,5 @@ fn test_notify() -> Result<()> {
     assert!(created_len == files_len);
     assert!(updated_len == files_len);
     assert!(deleted_len == files_len);
-    drop(files);
     Ok(())
 }
