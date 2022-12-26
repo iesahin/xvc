@@ -1,5 +1,9 @@
 mod common;
+use assert_fs::fixture::ChildPath;
+use assert_fs::prelude::{FileTouch, FileWriteBin, PathChild};
+use assert_fs::TempDir;
 use common::*;
+use std::env;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, sleep};
@@ -16,7 +20,8 @@ use xvc_walker::{walk_serial, IgnoreRules, PathMetadata, Result as XvcWalkerResu
 
 #[test]
 fn test_notify() -> Result<()> {
-    let temp_dir = run_in_temp_dir();
+    let temp_dir = TempDir::new()?;
+    env::set_current_dir(&temp_dir)?;
     watch!(temp_dir);
     test_logging(log::LevelFilter::Trace);
     let initial_rules = IgnoreRules::try_from_patterns(&temp_dir, COMMON_IGNORE_PATTERNS)?;
@@ -31,8 +36,8 @@ fn test_notify() -> Result<()> {
     let updated_paths_clone = updated_paths.clone();
     let deleted_paths_clone = deleted_paths.clone();
     let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
-    let files: Vec<PathBuf> = (1..5)
-        .map(|n| temp_dir.join(&PathBuf::from(format!("file-000{n}.bin"))))
+    let files: Vec<ChildPath> = (1..5)
+        .map(|n| temp_dir.child(format!("file-000{n}.bin")))
         .collect();
 
     let files_len = files.len();
@@ -86,44 +91,52 @@ fn test_notify() -> Result<()> {
         watch!(err_counter);
         watch!(receiver);
         drop(receiver);
-        (created_paths, updated_paths, deleted_paths)
     });
 
     let file_modifier = thread::spawn(move || {
         sleep(Duration::from_millis(100));
+        files.iter().for_each(|f| {
+            watch!(f.path());
+            f.touch().unwrap();
+        });
 
         let size_updated = 20;
 
         files.iter().for_each(|f| {
-            watch!(f);
-            generate_random_file(&f, size_updated);
-            sleep(Duration::from_millis(100));
+            watch!(f.path());
+            f.write_binary(&vec![0; size_updated]).unwrap();
         });
 
         files.iter().for_each(|f| {
-            watch!(f);
-            std::fs::remove_file(f).unwrap();
-            sleep(Duration::from_millis(100));
+            watch!(f.path());
+            f.remove().unwrap();
         });
 
         sleep(Duration::from_millis(100));
+        watch!(created_paths_clone);
+        let created_paths = created_paths_clone.try_read().unwrap();
+        watch!(created_paths);
+
+        watch!(updated_paths_clone);
+        let updated_paths = updated_paths_clone.try_read().unwrap();
+        watch!(updated_paths);
+
+        watch!(deleted_paths_clone);
+        let deleted_paths = deleted_paths_clone.try_read().unwrap();
+        watch!(deleted_paths);
+
+        (
+            created_paths.len(),
+            updated_paths.len(),
+            deleted_paths.len(),
+        )
     });
 
-    file_modifier.join().unwrap();
-    let (created_paths, updated_paths, deleted_paths) = event_handler.join().unwrap();
-
-    let created_paths = created_paths.try_read().unwrap();
-    watch!(created_paths);
-    assert!(created_paths.len() == files_len);
-
-    watch!(created_paths);
-    let updated_paths = updated_paths.try_read().unwrap();
-    watch!(updated_paths);
-    assert!(updated_paths.len() == files_len);
-    let deleted_paths = deleted_paths.try_read().unwrap();
-
-    watch!(deleted_paths);
-    assert!(deleted_paths.len() == files_len);
-
-    clean_up_path_buf(temp_dir)
+    event_handler.join().unwrap();
+    let (created_len, updated_len, deleted_len) = file_modifier.join().unwrap();
+    assert!(created_len == files_len);
+    assert!(updated_len == files_len);
+    assert!(deleted_len == files_len);
+    drop(files);
+    Ok(())
 }

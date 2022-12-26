@@ -10,6 +10,7 @@ use rand::RngCore;
 use rand::SeedableRng;
 use std::cmp;
 use std::env;
+use std::fs::OpenOptions;
 use std::{
     fs::{self, File},
     process::Command,
@@ -115,7 +116,11 @@ pub fn temp_git_dir() -> PathBuf {
 
 /// Generate a random binary file
 pub fn generate_random_file(filename: &Path, size: usize) {
-    let f = File::create(filename).unwrap();
+    let f = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .open(filename)
+        .unwrap();
     let mut writer = BufWriter::new(f);
 
     let mut rng = rand::thread_rng();
