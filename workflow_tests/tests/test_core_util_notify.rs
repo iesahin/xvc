@@ -52,7 +52,7 @@ fn test_notify() -> Result<()> {
 
     watch!(files.len());
 
-    const MAX_ERROR_COUNT: usize = 100;
+    const MAX_ERROR_COUNT: usize = 1000;
 
     let event_handler = thread::spawn(move || {
         let mut err_counter = MAX_ERROR_COUNT;
