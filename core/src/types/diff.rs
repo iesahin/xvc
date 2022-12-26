@@ -122,9 +122,11 @@ pub fn diff_store<T: Storable>(
 /// Update `records` loaded from store with the changed values in `diffs`.
 /// When the actual values are changed and we want to update the store, we use this function.
 ///
+/// It always updates values that are changed. (See [Diff::Different])
 /// If `add_new` is `true`, we add new values to `records`. (See [Diff::RecordMissing])
 /// If `remove_missing` is `true`, we remove missing values from `records`. (See [Diff::ActualMissing])
-/// We always update the values that are different. (See [Diff::Different])
+///
+/// See [apply_diff] for a version that doesn't modify the original store.
 pub fn update_with_actual<T: Storable>(
     records: &mut XvcStore<T>,
     diffs: DiffStore<T>,
@@ -139,12 +141,12 @@ pub fn update_with_actual<T: Storable>(
                     records.insert(*xe, actual.clone());
                 }
             }
-            Diff::ActualMissing { record } => {
+            Diff::ActualMissing { .. } => {
                 if remove_missing {
                     records.remove(*xe);
                 }
             }
-            Diff::Different { record, actual } => {
+            Diff::Different { actual, .. } => {
                 records.insert(*xe, actual.clone());
             }
             Diff::Skipped => {}
@@ -153,6 +155,15 @@ pub fn update_with_actual<T: Storable>(
     Ok(())
 }
 
+/// Create a new store from `records` and with the changed values in `diffs`.
+/// When the actual values are changed and we want a new store with new values, we use this function.
+///
+/// It always updates values that are changed. (See [Diff::Different])
+/// If `add_new` is `true`, we add new values to `records`. (See [Diff::RecordMissing])
+/// If `remove_missing` is `true`, we remove missing values from `records`. (See [Diff::ActualMissing])
+///
+/// See [update_with_actual] for a version that modifies the original store in
+/// place.
 pub fn apply_diff<T: Storable>(
     records: &XvcStore<T>,
     diffs: &DiffStore<T>,
