@@ -33,10 +33,14 @@ fn test_file_hash() -> Result<()> {
     let dir_hash = x(&["file", "hash", "dir-0001/"])?;
     assert!({ dir_hash.lines().count() == 100 });
     let images_hash = x(&["file", "hash", "file-0000.bin"])?;
-    assert!(re_match(
-        &images_hash,
-        "^a572622134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1\tfile-0000.bin.*",
-    ));
+    assert!(
+        re_match(
+            &images_hash,
+            "^a572622134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1\tfile-0000.bin.*"
+        ),
+        "images_hash = {}",
+        &images_hash
+    );
 
     let text_hash = x(&["file", "hash", "--text-or-binary", "text", "file-0000.bin"])?;
     assert!(re_match(
