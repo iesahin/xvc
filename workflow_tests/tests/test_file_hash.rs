@@ -21,7 +21,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 
 #[test]
 fn test_file_hash() -> Result<()> {
-    // setup::logging(LevelFilter::Trace);
+    setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let x = |cmd: &[&str]| common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace);
 
