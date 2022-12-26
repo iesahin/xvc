@@ -4,6 +4,7 @@ use assert_fs::prelude::{FileTouch, FileWriteBin, PathChild};
 use assert_fs::TempDir;
 use common::*;
 use std::env;
+use std::fs::remove_file;
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, sleep};
@@ -109,7 +110,7 @@ fn test_notify() -> Result<()> {
 
         files.iter().for_each(|f| {
             watch!(f.path());
-            f.remove().unwrap();
+            remove_file(f.path()).unwrap();
         });
 
         sleep(Duration::from_millis(100));
