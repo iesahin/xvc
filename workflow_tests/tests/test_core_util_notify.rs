@@ -25,6 +25,15 @@ fn test_notify() -> Result<()> {
     env::set_current_dir(&temp_dir)?;
     watch!(temp_dir);
     test_logging(log::LevelFilter::Trace);
+    let files: Vec<ChildPath> = (1..5)
+        .map(|n| temp_dir.child(format!("file-000{n}.bin")))
+        .collect();
+
+    let files_len = files.len();
+    files.iter().for_each(|f| {
+        watch!(f.path());
+        f.touch().unwrap();
+    });
     let initial_rules = IgnoreRules::try_from_patterns(&temp_dir, COMMON_IGNORE_PATTERNS)?;
     let walk_options = WalkOptions {
         ignore_filename: Some(XVCIGNORE_FILENAME.to_string()),
@@ -37,11 +46,6 @@ fn test_notify() -> Result<()> {
     let updated_paths_clone = updated_paths.clone();
     let deleted_paths_clone = deleted_paths.clone();
     let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
-    let files: Vec<ChildPath> = (1..5)
-        .map(|n| temp_dir.child(format!("file-000{n}.bin")))
-        .collect();
-
-    let files_len = files.len();
 
     let all_rules = walk_serial(initial_rules, &temp_dir, &walk_options, &mut initial_paths)?;
     watch!(all_rules);
@@ -96,10 +100,6 @@ fn test_notify() -> Result<()> {
 
     let file_modifier = thread::spawn(move || {
         sleep(Duration::from_millis(100));
-        files.iter().for_each(|f| {
-            watch!(f.path());
-            f.touch().unwrap();
-        });
 
         let size_updated = 20;
 
