@@ -677,6 +677,6 @@ pub fn cmd_list(
         .collect();
 
     let list_rows = ListRows::new(opts.format.unwrap(), opts.sort_criteria.unwrap(), rows);
-    output!(output_snd, "{}", list_rows.build_table(!opts.no_total_size));
+    output!(output_snd, "{}", list_rows.build_table(!opts.no_summary));
     Ok(())
 }
