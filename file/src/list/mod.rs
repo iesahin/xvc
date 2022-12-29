@@ -359,7 +359,7 @@ impl ListRows {
         output
     }
 
-    pub fn build_table(&self) -> String {
+    pub fn build_table(&mut self) -> String {
         let mut output = String::new();
         let row_cmp = |a: &ListRow, b: &ListRow| match self.sort_criteria {
             ListSortCriteria::NameAsc => a.name.cmp(&b.name),
