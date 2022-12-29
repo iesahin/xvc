@@ -179,12 +179,12 @@ pub fn apply_diff<T: Storable>(
                     new_records.insert(*xe, actual.clone());
                 }
             }
-            Diff::ActualMissing { record } => {
+            Diff::ActualMissing { .. } => {
                 if remove_missing {
                     new_records.remove(*xe);
                 }
             }
-            Diff::Different { record, actual } => {
+            Diff::Different { actual, .. } => {
                 new_records.insert(*xe, actual.clone());
             }
         }

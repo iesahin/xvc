@@ -52,16 +52,21 @@ pub struct PathMatch {
     From,
     AsRef,
     Deref,
-    Default,
     Copy,
 )]
 pub struct FileTextOrBinary(TextOrBinary);
-conf!(FileTextOrBinary, "file.add.text_or_binary");
+conf!(FileTextOrBinary, "file.track.text_or_binary");
 persist!(FileTextOrBinary, "file-text-or-binary");
 
 impl FileTextOrBinary {
     pub fn as_inner(&self) -> TextOrBinary {
         self.0
+    }
+}
+
+impl Default for FileTextOrBinary {
+    fn default() -> Self {
+        Self(TextOrBinary::default())
     }
 }
 

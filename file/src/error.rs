@@ -4,6 +4,7 @@ use log::{debug, error, info, trace, warn};
 use std::fmt::Debug;
 use std::io;
 use std::path::PathBuf;
+use std::time::SystemTimeError;
 use thiserror::Error as ThisError;
 
 /// Error messages for xvc-file
@@ -74,6 +75,14 @@ pub enum Error {
     StripPrefixError {
         #[from]
         source: std::path::StripPrefixError,
+    },
+    #[error("Relative Path Strip Prefix Error: {:?}", e)]
+    RelativeStripPrefixError { e: relative_path::StripPrefixError },
+
+    #[error("System time error")]
+    SystemTimeError {
+        #[from]
+        source: SystemTimeError,
     },
     #[error("Xvc does not support content digest for symlink: {path}")]
     ContentDigestNotSupported { path: PathBuf },

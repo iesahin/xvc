@@ -63,7 +63,7 @@ impl UpdateFromXvcConfig for RecheckCLI {
         let cache_type = self
             .cache_type
             .unwrap_or_else(|| CacheType::from_conf(conf));
-        let no_parallel = self.no_parallel || conf.get_bool("file.add.no_parallel")?.option;
+        let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
 
         let force = self.force;
 
