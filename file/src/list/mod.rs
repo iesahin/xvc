@@ -381,10 +381,18 @@ impl ListRows {
 
         if print_summary {
             let total_lines = self.rows.borrow().len();
-            let total_actual_size =
-                format_size(self.rows.borrow().iter().fold(0u64, |tot, r| r.actual_size));
-            let total_cached_size =
-                format_size(self.rows.borrow().iter().fold(0u64, |tot, r| r.actual_size));
+            let total_actual_size = format_size(
+                self.rows
+                    .borrow()
+                    .iter()
+                    .fold(0u64, |tot, r| tot + r.actual_size),
+            );
+            let total_cached_size = format_size(
+                self.rows
+                    .borrow()
+                    .iter()
+                    .fold(0u64, |tot, r| tot + r.actual_size),
+            );
             output.push_str(
                 &format!("Total #: {total_lines} Workspace: {total_actual_size} Cached: {total_cached_size}\n"),
             )

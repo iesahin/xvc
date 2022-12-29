@@ -8,6 +8,5 @@ use xvc::error::Result;
 /// It parses the command line arguments [xvc::cli::XvcCLI] and calls [xvc::cli::dispatch]
 fn main() -> Result<()> {
     let cli_opts = xvc::cli::XvcCLI::parse();
-    println!("{:?}", cli_opts);
     xvc::cli::dispatch(cli_opts)
 }
