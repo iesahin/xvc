@@ -181,7 +181,7 @@ no_parallel = false
 # There are no escape sequences in the format string. 
 # If you want to add a tab, type it to the string.
 # If you want to add a literal double curly brace, open an issue. 
-format = "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd}} {{acd}}"
+format = "{{{{aft}}}}{{{{rct}}}} {{{{asz}}}} {{{{ats}}}}   {{{{name}}}}  {{{{rcd}}}} {{{{acd}}}}"
 
 # Default sort order for `xvc file list`.
 # Valid values are

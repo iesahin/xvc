@@ -192,6 +192,7 @@ pub fn apply_diff<T: Storable>(
     Ok(new_records)
 }
 
+
 pub struct Diff2<T, U>
 where
     T: Storable,
