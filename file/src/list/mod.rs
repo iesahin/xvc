@@ -621,6 +621,7 @@ pub fn cmd_list(
     } else {
         matches
     };
+
     let matches = if opts
         .format
         .as_ref()
@@ -633,7 +634,11 @@ pub fn cmd_list(
         matches
             .into_iter()
             .filter_map(|pm| {
-                if let Some(actual_path) = &pm.actual_path {
+                if pm.actual_path.is_some()
+                    && pm.actual_metadata.is_some()
+                    && pm.actual_metadata.unwrap().file_type == XvcFileType::File
+                {
+                    let actual_path = pm.actual_path.as_ref().unwrap();
                     let path = actual_path.to_absolute_path(xvc_root);
                     let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
                         text_or_binary_store
