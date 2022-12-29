@@ -291,7 +291,7 @@ fn format_timestamp(timestamp: SystemTime) -> String {
 ///
 /// MB, GB, TB are used for sizes larger than 1MB, 1GB, 1TB respectively
 /// Calculations for these are done with 1024 as base, not 1000.
-fn format_size(size: u64) -> String {
+pub fn format_size(size: u64) -> String {
     if size < 1024 * 1024 {
         format!("{:11}", size)
     } else if size < 1024 * 1024 * 1024 {
@@ -337,9 +337,7 @@ impl ListRows {
             match column {
                 ListColumn::RecordedCacheType => output.push_str(&row.recorded_cache_type),
                 ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
-                ListColumn::ActualSize => {
-                    output.push_str(&format!("{:>20}", row.actual_size_str))
-                }
+                ListColumn::ActualSize => output.push_str(&format!("{:>20}", row.actual_size_str)),
                 ListColumn::ActualContentDigest => {
                     output.push_str(&format!("{:>8}", row.actual_content_digest_str))
                 }
@@ -363,7 +361,7 @@ impl ListRows {
         output
     }
 
-    pub fn build_table(&self) -> String {
+    pub fn build_table(&self, print_summary: bool) -> String {
         let mut output = String::new();
         let row_cmp = |a: &ListRow, b: &ListRow| match self.sort_criteria {
             ListSortCriteria::NameAsc => a.name.cmp(&b.name),
@@ -383,13 +381,24 @@ impl ListRows {
             output.push_str(&row_str);
             output.push_str("\n");
         }
+
+        if print_summary {
+            let total_lines = self.rows.borrow().len();
+            let total_actual_size =
+                format_size(self.rows.borrow().iter().fold(0u64, |tot, r| r.actual_size));
+            let total_cached_size =
+                format_size(self.rows.borrow().iter().fold(0u64, |tot, r| r.actual_size));
+            output.push_str(
+                "Total #: {total_lines} Workspace: {total_actual_size} Cached: {total_cached_size}\n",
+            )
+        }
         output
     }
 }
 
 impl Display for ListRows {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.build_table())?;
+        write!(f, "{}", self.build_table(true))?;
         Ok(())
     }
 }
@@ -444,10 +453,10 @@ pub struct ListCLI {
     /// The default option can be set with file.list.sort in the config file.
     #[arg(long, short = 's', alias = "sort")]
     sort_criteria: Option<ListSortCriteria>,
-    /// Don't show the total size of the listed files.
-    /// The default option can be set with file.list.no_total_size in the config file.
+    /// Don't show total number and size of the listed files.
+    /// The default option can be set with file.list.no_summary in the config file.
     #[arg(long)]
-    no_total_size: bool,
+    no_summary: bool,
     /// Show directory contents recursively.
     /// The default option can be set with file.list.recursive in the config file.
     #[arg(long, short = 'R')]
@@ -668,7 +677,6 @@ pub fn cmd_list(
         .collect();
 
     let list_rows = ListRows::new(opts.format.unwrap(), opts.sort_criteria.unwrap(), rows);
-
-    output!(output_snd, "{}", list_rows);
+    output!(output_snd, "{}", list_rows.build_table(!opts.no_total_size));
     Ok(())
 }
