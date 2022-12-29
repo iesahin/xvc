@@ -338,23 +338,23 @@ impl ListRows {
                 ListColumn::RecordedCacheType => output.push_str(&row.recorded_cache_type),
                 ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
                 ListColumn::ActualSize => {
-                    output.push_str(&format!("\t{:>20}", row.actual_size_str))
+                    output.push_str(&format!("{:>20}", row.actual_size_str))
                 }
                 ListColumn::ActualContentDigest => {
-                    output.push_str(&format!("\t{:>8}", row.actual_content_digest_str))
+                    output.push_str(&format!("{:>8}", row.actual_content_digest_str))
                 }
                 ListColumn::ActualTimestamp => {
-                    output.push_str(&format!("\t{:>20}", row.actual_timestamp_str))
+                    output.push_str(&format!("{:>20}", row.actual_timestamp_str))
                 }
                 ListColumn::Name => output.push_str(&row.name),
                 ListColumn::RecordedSize => {
-                    output.push_str(&format!("\t{:>20}", row.recorded_size_str))
+                    output.push_str(&format!("{:>20}", row.recorded_size_str))
                 }
                 ListColumn::RecordedContentDigest => {
-                    output.push_str(&format!("\t{:>8}", row.recorded_content_digest_str))
+                    output.push_str(&format!("{:>8}", row.recorded_content_digest_str))
                 }
                 ListColumn::RecordedTimestamp => {
-                    output.push_str(&format!("\t{:>20}", row.recorded_timestamp_str))
+                    output.push_str(&format!("{:>20}", row.recorded_timestamp_str))
                 }
                 ListColumn::CacheStatus => output.push_str(&row.cache_status),
                 ListColumn::Literal(literal) => output.push_str(&literal),
