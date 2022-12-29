@@ -654,9 +654,11 @@ pub fn cmd_list(
         matches
     };
 
+    let path_prefix = current_dir.strip_prefix(&xvc_root.absolute_path())?;
+
     let rows = matches
         .into_iter()
-        .filter_map(|pm| match ListRow::new(xvc_root, current_dir, pm) {
+        .filter_map(|pm| match ListRow::new(xvc_root, path_prefix, pm) {
             Ok(lr) => Some(lr),
             Err(e) => {
                 error!(output_snd, "{}", e);
