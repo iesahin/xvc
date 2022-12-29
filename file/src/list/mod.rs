@@ -454,10 +454,6 @@ pub struct ListCLI {
     /// The default option can be set with file.list.no_summary in the config file.
     #[arg(long)]
     no_summary: bool,
-    /// Show directory contents recursively.
-    /// The default option can be set with file.list.recursive in the config file.
-    #[arg(long, short = 'R')]
-    recursive: bool,
     /// Files/directories to list
     #[arg()]
     targets: Option<Vec<String>>,
