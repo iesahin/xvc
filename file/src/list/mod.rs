@@ -12,6 +12,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use log::warn;
 use serde::__private::de::Content;
+use std::cell::RefCell;
 use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use std::path::{Path, PathBuf};
@@ -315,7 +316,7 @@ struct PathMatch {
 struct ListRows {
     format: ListFormat,
     sort_criteria: ListSortCriteria,
-    rows: Vec<ListRow>,
+    rows: RefCell<Vec<ListRow>>,
 }
 
 impl ListRows {
@@ -323,11 +324,11 @@ impl ListRows {
         Self {
             format,
             sort_criteria,
-            rows,
+            rows: RefCell::new(rows),
         }
     }
 
-    fn build_row(&self, row: ListRow) -> String {
+    fn build_row(&self, row: &ListRow) -> String {
         let mut output = String::new();
         for column in &self.format.columns {
             match column {
@@ -359,7 +360,7 @@ impl ListRows {
         output
     }
 
-    pub fn build_table(&mut self) -> String {
+    pub fn build_table(&self) -> String {
         let mut output = String::new();
         let row_cmp = |a: &ListRow, b: &ListRow| match self.sort_criteria {
             ListSortCriteria::NameAsc => a.name.cmp(&b.name),
@@ -368,13 +369,13 @@ impl ListRows {
             ListSortCriteria::SizeDesc => b.recorded_size.cmp(&a.actual_size),
             ListSortCriteria::TimestampAsc => a.recorded_timestamp.cmp(&b.actual_timestamp),
             ListSortCriteria::TimestampDesc => b.recorded_timestamp.cmp(&a.actual_timestamp),
-            _ => unreachable!(),
+            ListSortCriteria::None => std::cmp::Ordering::Equal,
         };
         if self.sort_criteria != ListSortCriteria::None {
-            self.rows.sort_by(row_cmp);
+            self.rows.borrow_mut().sort_unstable_by(row_cmp)
         }
 
-        for row in self.rows {
+        for row in self.rows.borrow().iter() {
             let row_str = self.build_row(row);
             output.push_str(&row_str);
             output.push_str("\n");
@@ -516,7 +517,7 @@ pub fn cmd_list(
     // 3. Paths that are in the store but not on disk
     // 4. Paths that are on disk but not in the store
 
-    let found_entities = HashSet::<XvcEntity>::new();
+    let mut found_entities = HashSet::<XvcEntity>::new();
 
     for (disk_xvc_path, disk_xvc_md) in from_disk {
         // Group 1 and Group 2
@@ -585,6 +586,7 @@ pub fn cmd_list(
     // unwrap shouldn't panic as we fill the options in from_conf.
     let matches = if opts
         .format
+        .as_ref()
         .unwrap()
         .columns
         .contains(&ListColumn::RecordedContentDigest)
@@ -609,6 +611,7 @@ pub fn cmd_list(
     };
     let matches = if opts
         .format
+        .as_ref()
         .unwrap()
         .columns
         .contains(&ListColumn::ActualContentDigest)
@@ -618,7 +621,7 @@ pub fn cmd_list(
         matches
             .into_iter()
             .filter_map(|pm| {
-                if let Some(actual_path) = pm.actual_path {
+                if let Some(actual_path) = &pm.actual_path {
                     let path = actual_path.to_absolute_path(xvc_root);
                     let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
                         text_or_binary_store
