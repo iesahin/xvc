@@ -216,9 +216,6 @@ impl ListRow {
             }
         };
 
-        let actual_to_recorded = actual_timestamp.duration_since(recorded_timestamp);
-        let recorded_to_actual = recorded_timestamp.duration_since(actual_timestamp);
-
         // We don't consider subsecond differences to be significant.
         let cache_status = if path_match.actual_metadata.is_some() {
             if path_match.recorded_metadata.is_some() {
@@ -379,7 +376,7 @@ impl ListRows {
         for row in self.rows.borrow().iter() {
             let row_str = self.build_row(row);
             output.push_str(&row_str);
-            output.push_str("\n");
+            output.push('\n');
         }
 
         if print_summary {
@@ -389,7 +386,7 @@ impl ListRows {
             let total_cached_size =
                 format_size(self.rows.borrow().iter().fold(0u64, |tot, r| r.actual_size));
             output.push_str(
-                "Total #: {total_lines} Workspace: {total_actual_size} Cached: {total_cached_size}\n",
+                &format!("Total #: {total_lines} Workspace: {total_actual_size} Cached: {total_cached_size}\n"),
             )
         }
         output
