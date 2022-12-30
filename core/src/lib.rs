@@ -161,7 +161,8 @@ no_parallel = false
 
 # Format for `xvc file list` rows. You can reorder or remove columns.
 # The following are the keys for each row: 
-# - {{acd}}:  actual content digest. The hash of the workspace file's content.
+# - {{acd64}}:  actual content digest. All 64 digits from the workspace file's content.
+# - {{acd8}}:  actual content digest. First 8 digits the file content digest. 
 # - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
 #   symlink (S), hardlink (H) or reflink (R). 
 # - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB,
@@ -171,7 +172,8 @@ no_parallel = false
 # - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
 #   whether the file timestamp is the same as the cached timestamp, newer,
 #   older, not cached or not tracked.
-# - {{rcd}}:  recorded content digest. The hash of the cached content.
+# - {{rcd64}}:  recorded content digest. All 64 digits.
+# - {{rcd8}}:  recorded content digest. First 8 digits.
 # - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace
 #   as a copy (C), symlink (S), hardlink (H) or reflink (R).
 # - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
@@ -181,7 +183,7 @@ no_parallel = false
 # There are no escape sequences in the format string. 
 # If you want to add a tab, type it to the string.
 # If you want to add a literal double curly brace, open an issue. 
-format = "{{{{aft}}}}{{{{rct}}}} {{{{asz}}}} {{{{ats}}}}   {{{{name}}}}  {{{{rcd}}}} {{{{acd}}}}"
+format = "{{{{aft}}}}{{{{rct}}}} {{{{asz}}}} {{{{ats}}}}   {{{{name}}}}  {{{{rcd}}}} {{{{acd8}}}}"
 
 # Default sort order for `xvc file list`.
 # Valid values are
