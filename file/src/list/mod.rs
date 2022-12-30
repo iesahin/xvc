@@ -29,8 +29,10 @@ use xvc_logging::{error, output, watch, XvcOutputLine};
 
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
 enum ListColumn {
-    #[strum(serialize = "acd")]
-    ActualContentDigest,
+    #[strum(serialize = "acd64")]
+    ActualContentDigest64,
+    #[strum(serialize = "acd8")]
+    ActualContentDigest8,
     #[strum(serialize = "aft")]
     ActualFileType,
     #[strum(serialize = "asz")]
@@ -43,8 +45,10 @@ enum ListColumn {
     CacheStatus,
     #[strum(serialize = "rct")]
     RecordedCacheType,
-    #[strum(serialize = "rcd")]
-    RecordedContentDigest,
+    #[strum(serialize = "rcd64")]
+    RecordedContentDigest64,
+    #[strum(serialize = "rcd8")]
+    RecordedContentDigest8,
     #[strum(serialize = "rsz")]
     RecordedSize,
     #[strum(serialize = "rts")]
@@ -334,23 +338,23 @@ impl ListRows {
             match column {
                 ListColumn::RecordedCacheType => output.push_str(&row.recorded_cache_type),
                 ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
-                ListColumn::ActualSize => output.push_str(&format!("{:>20}", row.actual_size_str)),
-                ListColumn::ActualContentDigest => {
-                    output.push_str(&format!("{:>8}", row.actual_content_digest_str))
+                ListColumn::ActualSize => output.push_str(&row.actual_size_str),
+                ListColumn::ActualContentDigest64 => {
+                    output.push_str(&row.actual_content_digest_str)
                 }
-                ListColumn::ActualTimestamp => {
-                    output.push_str(&format!("{:>20}", row.actual_timestamp_str))
+                ListColumn::ActualContentDigest8 => {
+                    output.push_str(&row.actual_content_digest_str[..8])
                 }
+                ListColumn::ActualTimestamp => output.push_str(&row.actual_timestamp_str),
                 ListColumn::Name => output.push_str(&row.name),
-                ListColumn::RecordedSize => {
-                    output.push_str(&format!("{:>20}", row.recorded_size_str))
+                ListColumn::RecordedSize => output.push_str(&row.recorded_size_str),
+                ListColumn::RecordedContentDigest64 => {
+                    output.push_str(&row.recorded_content_digest_str)
                 }
-                ListColumn::RecordedContentDigest => {
-                    output.push_str(&format!("{:>8}", row.recorded_content_digest_str))
+                ListColumn::RecordedContentDigest8 => {
+                    output.push_str(&row.recorded_content_digest_str[..8])
                 }
-                ListColumn::RecordedTimestamp => {
-                    output.push_str(&format!("{:>20}", row.recorded_timestamp_str))
-                }
+                ListColumn::RecordedTimestamp => output.push_str(&row.recorded_timestamp_str),
                 ListColumn::CacheStatus => output.push_str(&row.cache_status),
                 ListColumn::Literal(literal) => output.push_str(&literal),
             }
@@ -597,13 +601,9 @@ pub fn cmd_list(
 
     // Now fill in the digests if needed
     // unwrap shouldn't panic as we fill the options in from_conf.
-    let matches = if opts
-        .format
-        .as_ref()
-        .unwrap()
-        .columns
-        .contains(&ListColumn::RecordedContentDigest)
-    {
+    let matches = if opts.format.as_ref().unwrap().columns.iter().any(|c| {
+        *c == ListColumn::RecordedContentDigest64 || *c == ListColumn::RecordedContentDigest8
+    }) {
         let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
         matches
             .into_iter()
@@ -623,51 +623,49 @@ pub fn cmd_list(
         matches
     };
 
-    let matches = if opts
-        .format
-        .as_ref()
-        .unwrap()
-        .columns
-        .contains(&ListColumn::ActualContentDigest)
-    {
-        let algorithm = HashAlgorithm::from_conf(conf);
-        let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
-        matches
-            .into_iter()
-            .filter_map(|pm| {
-                if pm.actual_path.is_some()
-                    && pm.actual_metadata.is_some()
-                    && pm.actual_metadata.unwrap().file_type == XvcFileType::File
-                {
-                    let actual_path = pm.actual_path.as_ref().unwrap();
-                    let path = actual_path.to_absolute_path(xvc_root);
-                    let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
-                        text_or_binary_store
-                            .get(&xvc_entity)
-                            .copied()
-                            .unwrap_or_default()
-                    } else {
-                        FileTextOrBinary::default()
-                    };
+    let matches =
+        if opts.format.as_ref().unwrap().columns.iter().any(|c| {
+            *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
+        }) {
+            let algorithm = HashAlgorithm::from_conf(conf);
+            let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
+            matches
+                .into_iter()
+                .filter_map(|pm| {
+                    if pm.actual_path.is_some()
+                        && pm.actual_metadata.is_some()
+                        && pm.actual_metadata.unwrap().file_type == XvcFileType::File
+                    {
+                        let actual_path = pm.actual_path.as_ref().unwrap();
+                        let path = actual_path.to_absolute_path(xvc_root);
+                        let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
+                            text_or_binary_store
+                                .get(&xvc_entity)
+                                .copied()
+                                .unwrap_or_default()
+                        } else {
+                            FileTextOrBinary::default()
+                        };
 
-                    match ContentDigest::from_path(&path, algorithm, text_or_binary.as_inner()) {
-                        Ok(digest) => Some(PathMatch {
-                            actual_digest: Some(digest),
-                            ..pm
-                        }),
-                        Err(e) => {
-                            error!(output_snd, "{}", e);
-                            None
+                        match ContentDigest::from_path(&path, algorithm, text_or_binary.as_inner())
+                        {
+                            Ok(digest) => Some(PathMatch {
+                                actual_digest: Some(digest),
+                                ..pm
+                            }),
+                            Err(e) => {
+                                error!(output_snd, "{}", e);
+                                None
+                            }
                         }
+                    } else {
+                        Some(pm)
                     }
-                } else {
-                    Some(pm)
-                }
-            })
-            .collect()
-    } else {
-        matches
-    };
+                })
+                .collect()
+        } else {
+            matches
+        };
 
     let path_prefix = current_dir.strip_prefix(&xvc_root.absolute_path())?;
 
