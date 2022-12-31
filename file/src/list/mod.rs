@@ -343,7 +343,11 @@ impl ListRows {
                     output.push_str(&row.actual_content_digest_str)
                 }
                 ListColumn::ActualContentDigest8 => {
-                    output.push_str(&row.actual_content_digest_str[..8])
+                    output.push_str(if row.actual_content_digest_str.len() >= 8 {
+                        &row.actual_content_digest_str[..8]
+                    } else {
+                        &row.actual_content_digest_str
+                    })
                 }
                 ListColumn::ActualTimestamp => output.push_str(&row.actual_timestamp_str),
                 ListColumn::Name => output.push_str(&row.name),
@@ -352,7 +356,11 @@ impl ListRows {
                     output.push_str(&row.recorded_content_digest_str)
                 }
                 ListColumn::RecordedContentDigest8 => {
-                    output.push_str(&row.recorded_content_digest_str[..8])
+                    output.push_str(if row.recorded_content_digest_str.len() >= 8 {
+                        &row.recorded_content_digest_str[..8]
+                    } else {
+                        &row.recorded_content_digest_str
+                    })
                 }
                 ListColumn::RecordedTimestamp => output.push_str(&row.recorded_timestamp_str),
                 ListColumn::CacheStatus => output.push_str(&row.cache_status),
