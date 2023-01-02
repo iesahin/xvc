@@ -20,3 +20,16 @@ Options:
   -h, --help                           Print help information
 
 ```
+
+## Examples
+
+```console
+$ xvc-test-helper create-directory-tree --directories 5 --files 5
+
+$ tree
+
+$ xvc file list 
+
+$ xvc file list --format '{name}'
+
+```

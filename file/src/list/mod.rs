@@ -406,7 +406,7 @@ impl ListRows {
                     .fold(0u64, |tot, r| tot + r.actual_size),
             );
             output.push_str(
-                &format!("Total #: {total_lines} Workspace: {total_actual_size} Cached: {total_cached_size}\n"),
+                &format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n"),
             )
         }
         output
