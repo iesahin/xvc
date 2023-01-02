@@ -91,12 +91,13 @@ lrwxr-xr-x  [..] data.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b7230
 ```
 
 Symlink and hardlinks are read-only. 
-In order to modify a file, you must recheck as `copy`.
+You can delete the symlink, and replace with an updated copy. 
+(As `perl -i` does below.)
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
 
-$ xvc -vvvv file recheck data.txt --as copy
+$ xvc file recheck data.txt --as copy
 [ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
 $ xvc file carry-in data.txt
