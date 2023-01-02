@@ -86,7 +86,7 @@ $ xvc file recheck data.txt --as symlink
 [ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
 $ ls -l data.txt
--rw-rw-rw- [..] data.txt
+-rw-rw-rw- [..] data.txt [..]/0.txt
 
 ```
 
