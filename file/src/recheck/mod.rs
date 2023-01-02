@@ -181,6 +181,9 @@ pub fn cmd_recheck(
     let recordable_content_digest_diff =
         content_digest_diff.subset(files_to_recheck.keys().copied())?;
 
+    watch!(recordable_cache_type_diff);
+    watch!(recordable_content_digest_diff);
+
     let updated_cache_type_store = apply_diff(
         &stored_cache_type_store,
         &recordable_cache_type_diff,
