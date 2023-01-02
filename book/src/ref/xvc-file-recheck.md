@@ -95,8 +95,10 @@ You can force it to do so.
 ```console
 $ xvc -vv file recheck data.txt --as symlink --force
 ...
+
 [INFO] [SYMLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
 ...
+
 
 $ ls -l data.txt
 l[..] data.txt -> [CWD]/.xvc/b3/[..]/0.txt
