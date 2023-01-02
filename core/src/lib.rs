@@ -168,10 +168,10 @@ no_parallel = false
 # - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB,
 #   GB and TB to represent sizes larger than 1MB. 
 # - {{ats}}:  actual timestamp. The timestamp of the workspace file.
-# - {{name}}: The name of the file or directory.
 # - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
 #   whether the file timestamp is the same as the cached timestamp, newer,
 #   older, not cached or not tracked.
+# - {{name}}: The name of the file or directory.
 # - {{rcd64}}:  recorded content digest. All 64 digits.
 # - {{rcd8}}:  recorded content digest. First 8 digits.
 # - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace
