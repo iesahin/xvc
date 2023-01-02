@@ -105,7 +105,7 @@ $ perl -i -pe 's/a/ee/g' data.txt
 You cannot recheck a file as symlink or hardlink if the file is modified.
 
 ```console
-$ xvc file recheck data.txt --as hardlink
+$ xvc -vvvv file recheck data.txt --as hardlink
 ```
 
 Use `--force` if you want to discard the changes. 
