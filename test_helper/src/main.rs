@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use crate::*;
 use clap::Parser;
 use xvc_test_helper::{
     create_directory_tree, create_temp_dir, generate_filled_file, generate_random_file,
@@ -90,11 +89,14 @@ fn main() -> Result<()> {
             directories,
             files,
         } => {
-            let root = root.unwrap_or_else(|| std::env::current_dir()?);
+            let root = root.unwrap_or_else(|| std::env::current_dir().unwrap());
             create_directory_tree(&root, directories, files);
         }
         XvcTestHelperSubcommandCLI::RandomDirName { seed, prefix } => {
-            let name = random_dir_name(&prefix, seed);
+            let name = random_dir_name(
+                &prefix.unwrap_or_else(|| "xvc-test-helper".to_string()),
+                seed,
+            );
             println!("{}", name);
         }
         XvcTestHelperSubcommandCLI::RandomTempDir { prefix } => {
