@@ -96,10 +96,11 @@ In order to modify a file, you must recheck as `copy`.
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
 
-$ xvc file recheck data.txt --as copy
+$ xvc -vvvv file recheck data.txt --as copy
 [ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
-$ perl -i -pe 's/a/ee/g' data.txt
+$ xvc file carry-in data.txt
+
 ```
 
 You cannot recheck a file as symlink or hardlink if the file is modified.
