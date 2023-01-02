@@ -190,6 +190,6 @@ fn test_file_list() -> Result<()> {
 fn count_files_in_dir(dir: &str) -> String {
     r#"
     cd $DIR
-    ls -la | wc -l
+    ls -laR | wc -l
     "#
 }
