@@ -71,7 +71,7 @@ total[..]
 Then, recheck the file. By default, it makes a copy of the file.
 
 ```console
-$ xvc -vvvv file recheck data.txt
+$ xvc file recheck data.txt
 
 $ ls -l
 ...
