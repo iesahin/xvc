@@ -17,6 +17,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
+use xvc_core::util::file;
 use xvc_core::{
     apply_diff, CacheType, ContentDigest, Diff, Diff3, DiffStore, DiffStore3, HashAlgorithm,
     TextOrBinary, XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
@@ -100,7 +101,8 @@ pub fn cmd_recheck(
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
-    let target_files = only_file_targets(&stored_xvc_path_store, &stored_xvc_metadata_store, &targets)?;
+    let target_files =
+        only_file_targets(&stored_xvc_path_store, &stored_xvc_metadata_store, &targets)?;
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
 
     let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
@@ -174,14 +176,23 @@ pub fn cmd_recheck(
 
     watch!(files_to_recheck);
 
-    let updated_cache_type_store =
-        apply_diff(&stored_cache_type_store, &cache_type_diff, true, false)?;
+    // We only record the diffs if they are in files to recheck
+    let recordable_cache_type_diff = cache_type_diff.subset(files_to_recheck.keys().copied())?;
+    let recordable_content_digest_diff =
+        content_digest_diff.subset(files_to_recheck.keys().copied())?;
+
+    let updated_cache_type_store = apply_diff(
+        &stored_cache_type_store,
+        &recordable_cache_type_diff,
+        true,
+        false,
+    )?;
 
     watch!(updated_cache_type_store);
 
     let updated_content_digest_store = apply_diff(
         &stored_content_digest_store,
-        &content_digest_diff,
+        &recordable_content_digest_diff,
         true,
         false,
     )?;
