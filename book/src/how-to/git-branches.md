@@ -38,6 +38,7 @@ $ xvc file list data.txt
 FC          19 [..] data.txt  c85f3e81 c85f3e81
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
+
 ```
 
 If you return to `main` branch, you'll see the file is tracked by neither Git nor Xvc. 
@@ -48,6 +49,7 @@ $ git checkout main
 $ xvc file list data.txt
 FX          19 [..] data.txt   c85f3e81
 Total #: 1 Workspace Size:          19 Cached Size:          19
+
 
 $ git status -s
 ?? data.txt
