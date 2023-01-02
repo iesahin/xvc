@@ -104,16 +104,8 @@ $ xvc file carry-in data.txt
 
 ```
 
-You cannot recheck a file as symlink or hardlink if the file is modified.
-
 ```console
-$ xvc -vvvv file recheck data.txt --as hardlink
-```
-
-Use `--force` if you want to discard the changes. 
-
-```console
-$ xvc -vv file recheck data.txt --as hardlink --force
+$ xvc file recheck data.txt --as hardlink
 ...
 [WARN] data.txt already exists. Removing to recheck.
 [INFO] [HARDLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
