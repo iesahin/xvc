@@ -74,7 +74,8 @@ Then, recheck the file. By default, it makes a copy of the file.
 $ xvc -vvvv file recheck data.txt
 
 $ ls -l
-total
+
+...
 -rw-rw-rw- [..] data.txt
 
 ```
@@ -85,7 +86,7 @@ Xvc updates the cache type if the file is not changed.
 $ xvc file recheck data.txt --as symlink
 
 $ ls -l data.txt
-lrw-rw-rw- [..] data.txt [..]/0.txt
+lrwxr-xr-x  [..] data.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 ```
 
