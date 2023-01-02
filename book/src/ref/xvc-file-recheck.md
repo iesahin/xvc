@@ -74,7 +74,6 @@ Then, recheck the file. By default, it makes a copy of the file.
 $ xvc -vvvv file recheck data.txt
 
 $ ls -l
-
 ...
 -rw-rw-rw- [..] data.txt
 
@@ -100,14 +99,13 @@ $ perl -i -pe 's/a/ee/g' data.txt
 $ xvc file recheck data.txt --as copy
 [ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
-$ xvc file carry-in data.txt
+$ rm data.txt
 
 ```
 
 ```console
 $ xvc file recheck data.txt --as hardlink
 ...
-[WARN] data.txt already exists. Removing to recheck.
 [INFO] [HARDLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
 ...
 
