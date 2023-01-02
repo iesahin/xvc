@@ -96,6 +96,7 @@ In order to modify a file, you must recheck as `copy`.
 $ perl -i -pe 's/a/ee/g' data.txt
 
 $ xvc file recheck data.txt --as copy
+[ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
 $ perl -i -pe 's/a/ee/g' data.txt
 ```

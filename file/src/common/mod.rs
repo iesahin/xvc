@@ -477,6 +477,7 @@ pub fn move_to_cache(
     let mut perm = cache_path.metadata()?.permissions();
     perm.set_readonly(true);
     fs::set_permissions(&cache_path, perm)?;
+    fs::set_permissions(&cache_path, perm)?;
     Ok(())
 }
 
