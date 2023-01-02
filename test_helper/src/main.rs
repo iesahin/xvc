@@ -100,7 +100,7 @@ fn main() -> Result<()> {
             println!("{}", name);
         }
         XvcTestHelperSubcommandCLI::RandomTempDir { prefix } => {
-            let dir = random_temp_dir(prefix);
+            let dir = random_temp_dir(prefix.as_deref());
             println!("{}", dir.to_string_lossy());
         }
         XvcTestHelperSubcommandCLI::GenerateRandomFile { size, filename } => {

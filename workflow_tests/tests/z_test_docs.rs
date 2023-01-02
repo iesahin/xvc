@@ -8,6 +8,7 @@ use std::{
 use anyhow::anyhow;
 use jwalk;
 use trycmd;
+use trycmd::cargo::cargo_bin;
 use which;
 use xvc::error::Result;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
@@ -117,7 +118,10 @@ fn link_to_docs() -> Result<()> {
 fn z_doc_tests() -> Result<()> {
     link_to_docs()?;
 
+    let path_to_xvc_test_helper = cargo_bin!("xvc").parent().unwrap().join("xvc-test-helper");
+
     trycmd::TestCases::new()
+        .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
         .register_bin("git", which::which("git")?)
         .register_bin("echo", which::which("echo"))
         .register_bin("cat", which::which("cat"))
