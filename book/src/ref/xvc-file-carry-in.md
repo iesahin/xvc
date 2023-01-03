@@ -54,6 +54,7 @@ $ xvc file list data.txt
 FC          19 [..]   data.txt  c85f3e81 c85f3e81
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
+
 ```
 
 We update the file with a command.
@@ -68,6 +69,7 @@ $ xvc file list data.txt
 FC          23 [..]   data.txt  c85f3e81 e37c686a
 Total #: 1 Workspace Size:          23 Cached Size:          19
 
+
 ```
 
 Note that the size of the file has increased, as we replace each `a` with an `ee`.
@@ -76,7 +78,8 @@ Note that the size of the file has increased, as we replace each `a` with an `ee
 $ xvc file carry-in data.txt
 
 $ xvc file list data.txt
-FC          [..]   data.txt  c85f3e81 e37c686a
-Total #: 1 Workspace Size:          23 Cached Size:          23
+FC          23 2023-01-03 16:02:13   data.txt  e37c686a e37c686a
+Total #: 1 Workspace Size:          23 Cached Size:          19
+
 
 ```
