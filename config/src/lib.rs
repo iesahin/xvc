@@ -495,11 +495,11 @@ impl XvcConfig {
             Ok(config_file) => match config.update_from_file(&config_file, source) {
                 Ok(new_config) => config = new_config,
                 Err(err) => {
-                    err.info();
+                    err.debug();
                 }
             },
             Err(err) => {
-                err.info();
+                err.debug();
             }
         };
 
@@ -525,7 +525,7 @@ impl XvcConfig {
             match config.update_from_hash_map(env_config, XvcConfigOptionSource::Environment) {
                 Ok(conf) => config = conf,
                 Err(err) => {
-                    err.info();
+                    err.debug();
                 }
             }
         }
@@ -542,7 +542,7 @@ impl XvcConfig {
                     config = conf;
                 }
                 Err(err) => {
-                    err.info();
+                    err.debug();
                 }
             }
         }
