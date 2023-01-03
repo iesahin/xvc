@@ -211,7 +211,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     let xvc_root_opt = match XvcRoot::new(Path::new(&cli_opts.workdir), xvc_config_params) {
         Ok(r) => Some(r),
         Err(e) => {
-            e.info();
+            e.debug();
             None
         }
     };
@@ -302,7 +302,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 }
 
                 None => {
-                    info!("Xvc is outside of a project, no need to handle Git operations.");
+                    warn!("Xvc is outside of a project, no need to handle Git operations.");
                 }
             }
             Ok(())
@@ -425,9 +425,9 @@ fn stash_user_staged_files(git_command: &str, xvc_directory: &str) -> Result<Str
 
     // If so stash them
     if git_diff_staged_out.trim().len() > 0 {
-        info!("Stashing user staged files: {git_diff_staged_out}");
+        debug!("Stashing user staged files: {git_diff_staged_out}");
         let stash_out = exec_git(git_command, xvc_directory, &["stash", "push", "--staged"])?;
-        info!("Stashed user staged files: {stash_out}");
+        debug!("Stashed user staged files: {stash_out}");
     }
 
     Ok(git_diff_staged_out)
@@ -435,7 +435,7 @@ fn stash_user_staged_files(git_command: &str, xvc_directory: &str) -> Result<Str
 
 fn unstash_user_staged_files(git_command: &str, xvc_directory: &str) -> Result<()> {
     let res_git_stash_pop = exec_git(git_command, xvc_directory, &["stash", "pop", "--index"])?;
-    info!("Unstashed user staged files: {res_git_stash_pop}");
+    debug!("Unstashed user staged files: {res_git_stash_pop}");
     Ok(())
 }
 
@@ -448,7 +448,7 @@ fn git_checkout_ref(xvc_root: &XvcRoot, from_ref: String) -> Result<()> {
     exec_git(&git_command, xvc_directory, &["checkout", &from_ref])?;
 
     if git_diff_staged_out.trim().len() > 0 {
-        info!("Unstashing user staged files: {git_diff_staged_out}");
+        debug!("Unstashing user staged files: {git_diff_staged_out}");
         unstash_user_staged_files(&git_command, xvc_directory)?;
     }
     Ok(())
@@ -488,12 +488,12 @@ fn git_auto_commit(
     xvc_cmd: &str,
     to_branch: Option<&str>,
 ) -> Result<()> {
-    info!("Using Git: {git_command}");
+    debug!("Using Git: {git_command}");
 
     let git_diff_staged_out = stash_user_staged_files(&git_command, xvc_root_str)?;
 
     if let Some(branch) = to_branch {
-        info!("Checking out branch {branch}");
+        debug!("Checking out branch {branch}");
         exec_git(&git_command, xvc_root_str, &["checkout", "-b", branch])?;
     }
 
@@ -503,7 +503,7 @@ fn git_auto_commit(
         xvc_root_str,
         &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
     )?;
-    info!("Adding .xvc/ to git: {res_git_add}");
+    debug!("Adding .xvc/ to git: {res_git_add}");
     let res_git_commit = exec_git(
         &git_command,
         xvc_root_str,
@@ -513,12 +513,12 @@ fn git_auto_commit(
             &format!("Xvc auto-commit after '{xvc_cmd}'"),
         ],
     )?;
-    info!("Committing .xvc/ to git: {res_git_commit}");
+    debug!("Committing .xvc/ to git: {res_git_commit}");
 
     // Pop the stash if there were files we stashed
 
     if git_diff_staged_out.trim().len() > 0 {
-        info!("Unstashing user staged files: {git_diff_staged_out}");
+        debug!("Unstashing user staged files: {git_diff_staged_out}");
         unstash_user_staged_files(&git_command, xvc_root_str)?;
     }
     Ok(())
@@ -530,6 +530,6 @@ fn git_auto_stage(git_command: &str, xvc_root_str: &str, xvc_dir_str: &str) -> R
         xvc_root_str,
         &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
     )?;
-    info!("Staging .xvc/ to git: {res_git_add}");
+    debug!("Staging .xvc/ to git: {res_git_add}");
     Ok(())
 }
