@@ -1,51 +1,33 @@
-use chrono::Utc;
-use crossbeam_channel::{bounded, Sender};
-use derive_more::{AsRef, Deref, Display, From, FromStr};
+use crossbeam_channel::Sender;
+
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
-use std::io::Write;
 
-use xvc_config::{conf, FromConfigKey};
+use std::collections::HashSet;
+
+use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
-use xvc_core::util::git::build_gitignore;
-use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
-use xvc_core::{
-    all_paths_and_metadata, Diff, Diff3, DiffStore3, MetadataDigest, XvcCachePath, XvcFileType,
-    XvcPathMetadataMap, CHANNEL_BOUND,
-};
-use xvc_core::{CollectionDigest, ContentDigest, HashAlgorithm};
-use xvc_core::{XvcRoot, XVCIGNORE_FILENAME};
-use xvc_logging::{error, info, output, uwo, uwr, warn, watch, XvcOutputLine};
-use xvc_walker::{
-    check_ignore, walk_parallel, AbsolutePath, Glob, GlobSet, GlobSetBuilder, IgnoreRules,
-    MatchResult, WalkOptions,
-};
 
-use crate::common::compare::{
-    diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata,
-    PathComparisonParams,
-};
+use xvc_core::ContentDigest;
+use xvc_core::XvcRoot;
+use xvc_core::{Diff, XvcCachePath};
+use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputLine};
+
+use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata};
 use crate::common::{
-    decide_no_parallel, expand_xvc_dir_file_targets, move_to_cache, only_file_targets,
-    pathbuf_to_xvc_target, recheck_from_cache, split_file_directory_targets, targets_from_store,
+    move_to_cache, only_file_targets, recheck_from_cache, targets_from_store,
     xvc_path_metadata_map_from_disk,
 };
 use crate::common::{update_store_records, FileTextOrBinary};
-use crate::error::{Error, Result};
-
-use std::fs::{self, OpenOptions};
+use crate::error::Result;
 
 use clap::Parser;
-use std::path::PathBuf;
 
 use xvc_core::CacheType;
-use xvc_core::TextOrBinary;
+
 use xvc_core::XvcMetadata;
 use xvc_core::XvcPath;
-use xvc_ecs::XvcEntity;
-use xvc_ecs::{persist, HStore, XvcStore};
-use xvc_ecs::{R11Store, Storable};
+
+use xvc_ecs::{HStore, XvcStore};
 
 ///
 /// Carry in (commit) changed files/directories to the cache.

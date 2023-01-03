@@ -28,8 +28,8 @@ use xvc_config::XvcVerbosity;
 use xvc_core::default_project_config;
 use xvc_core::XvcRoot;
 use xvc_core::CHANNEL_BOUND;
-use xvc_logging::setup_logging;
 use xvc_logging::XvcOutputLine;
+use xvc_logging::{setup_logging, watch};
 use xvc_walker::AbsolutePath;
 
 use bring::BringCLI;
@@ -127,6 +127,7 @@ pub fn run(
     xvc_root: Option<&XvcRoot>,
     opts: XvcFileCLI,
 ) -> Result<()> {
+    watch!(opts);
     match opts.subcommand {
         XvcFileSubCommand::Track(opts) => track::cmd_track(
             output_snd,
