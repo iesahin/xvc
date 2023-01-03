@@ -66,7 +66,7 @@ Oh, deetee, my, deetee
 
 $ xvc file list data.txt
 FC          23 [..]   data.txt  c85f3e81 e37c686a
-Total #: 1 Workspace Size:          23 Cached Size:          23
+Total #: 1 Workspace Size:          23 Cached Size:          19
 
 ```
 

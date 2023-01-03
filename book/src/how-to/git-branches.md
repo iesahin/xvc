@@ -48,7 +48,7 @@ $ git checkout main
 ...
 $ xvc file list data.txt
 FX          19 [..] data.txt   c85f3e81
-Total #: 1 Workspace Size:          19 Cached Size:          19
+Total #: 1 Workspace Size:          19 Cached Size:          0
 
 
 $ git status -s
