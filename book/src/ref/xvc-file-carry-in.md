@@ -73,7 +73,7 @@ Total #: 1 Workspace Size:          23 Cached Size:          19
 Note that the size of the file has increased, as we replace each `a` with an `ee`.
 
 ```console
-$ xvc file carry-in data.txt
+$ xvc -vvvv file carry-in data.txt
 
 $ xvc file list data.txt
 FC          [..]   data.txt  c85f3e81 e37c686a
