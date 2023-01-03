@@ -1,5 +1,3 @@
-use log::info;
-use log::trace;
 use std::fmt;
 use std::fs;
 use std::fs::OpenOptions;
@@ -8,6 +6,7 @@ use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
+use xvc_logging::{debug, info, trace};
 use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcConfigInitParams};
@@ -208,7 +207,7 @@ impl XvcRoot {
             .expect("Cannot canonicalize the path. Possible symlink loop.");
         loop {
             if pb.join(XVC_DIR).is_dir() {
-                info!("XVC DIR: {:?}", pb);
+                debug!("XVC DIR: {:?}", pb);
                 return Ok(pb.into());
             } else if pb.parent() == None {
                 return Err(Error::CannotFindXvcRoot { path: path.into() });
