@@ -74,7 +74,7 @@ macro_rules! debug {
                     (&$channel).send(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*))).unwrap();
         }
     };
-    ($fmt:literal $(, $x:expr ),* ) => {
+    ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::debug!($fmt $(, $x)*);
         }
