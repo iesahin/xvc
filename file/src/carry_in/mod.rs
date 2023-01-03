@@ -207,7 +207,7 @@ pub fn cmd_carry_in(
         .collect();
 
     let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
-
+    watch!(xvc_paths_to_carry);
     carry_in(
         output_snd,
         xvc_root,
