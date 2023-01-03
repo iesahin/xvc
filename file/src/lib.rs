@@ -214,7 +214,6 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
 
     thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<XvcOutputLine>(CHANNEL_BOUND);
-        // let (input_snd, input_rec) = bounded(CHANNEL_BOUND);
         s.spawn(move |_| {
             let mut output = io::stdout();
             while let Ok(output_line) = output_rec.recv() {
