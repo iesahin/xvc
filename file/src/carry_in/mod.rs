@@ -63,6 +63,8 @@ impl UpdateFromXvcConfig for CarryInCLI {
             |v| Some(v.to_owned()),
         );
 
+        watch!(text_or_binary);
+
         Ok(Box::new(Self {
             targets: self.targets.clone(),
             force,
