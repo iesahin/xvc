@@ -72,6 +72,7 @@ $ ls -l
 ...
 -rw-rw-rw- [..] data.txt
 
+
 ```
 
 Xvc updates the cache type if the file is not changed.
