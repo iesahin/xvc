@@ -204,10 +204,10 @@ fn init_logging(term_level: Option<LevelFilter>, file_level: Option<LevelFilter>
     match dispatch.apply() {
         Ok(_) => {
             if let Some(level) = term_level {
-                info!("Terminal logger enabled with level: {:?}", level);
+                debug!("Terminal logger enabled with level: {:?}", level);
             };
             if let Some(level) = file_level {
-                info!(
+                debug!(
                     "File logger enabled with level: {:?} to {:?}",
                     level, logfile
                 );
