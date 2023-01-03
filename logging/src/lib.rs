@@ -81,6 +81,21 @@ macro_rules! debug {
     };
 }
 
+/// Either send [XvcOutputLine::Trace] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! trace {
+    ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
+        {
+                    (&$channel).send(::xvc_logging::XvcOutputLine::Trace(format!($fmt $(, $x)*))).unwrap();
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::log::trace!($fmt $(, $x)*);
+        }
+    };
+}
+
 /// Either send [XvcOutputLine::Output] to the given channel, or print to stdout
 #[macro_export]
 macro_rules! output {
