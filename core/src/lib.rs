@@ -196,6 +196,13 @@ no_summary = false
 # List files recursively always.
 recursive = false
 
+[file.carry-in]
+# Carry-in the files to cache always, even if they are already present.
+force = false
+
+# Don't use parallel move/copy in carry-in
+no_parallel = false
+
 [pipeline]
 # Name of the current pipeline to run
 current_pipeline = "default"
