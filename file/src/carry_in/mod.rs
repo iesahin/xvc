@@ -164,6 +164,8 @@ pub fn cmd_carry_in(
         !opts.no_parallel,
     );
 
+    watch!(content_digest_diff);
+
     let xvc_paths_to_carry = if opts.force {
         target_files
     } else {
