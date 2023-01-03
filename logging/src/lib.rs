@@ -224,8 +224,10 @@ fn init_logging(term_level: Option<LevelFilter>, file_level: Option<LevelFilter>
 pub enum XvcOutputLine {
     /// The output that we should be reporting to user
     Output(String),
-    /// For informational messages the user doesn't usually follow
+    /// For informational messages
     Info(String),
+    /// For debug output to show the internals of Xvc
+    Debug(String),
     /// Warnings that are against some usual workflows
     Warn(String),
     /// Errors that interrupts a workflow but may be recoverable
@@ -242,6 +244,10 @@ impl XvcOutputLine {
     /// print [INFO] `s`
     pub fn info(s: &str) -> Self {
         Self::Info(s.to_string())
+    }
+    /// print [DEBUG]
+    pub fn debug(s: &str) -> Self {
+        Self::Debug(s.to_string())
     }
     /// print [WARN] `s`
     pub fn warn(s: &str) -> Self {

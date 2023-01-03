@@ -7,10 +7,7 @@ use crate::init;
 use clap::Parser;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
-use log::error;
-use log::info;
-use log::warn;
-use log::LevelFilter;
+use log::{debug, error, info, warn, LevelFilter};
 use std::io;
 use subprocess::Exec;
 use which;
@@ -322,6 +319,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Error(_) => {}
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Error => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
@@ -330,6 +328,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Error(m) => println!("[ERROR] {}", m.to_string()),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Warn => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
@@ -338,6 +337,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Info(_) => {}
                         XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Info => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
@@ -346,6 +346,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Error(m) => println!("[ERROR] {}", m.to_string()),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Debug => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
@@ -354,6 +355,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Error(m) => error!("[ERROR] {}", m.to_string()),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
                         XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Debug(m) => debug!("[DEBUG] {}", m),
                     },
                     LevelFilter::Trace => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
@@ -361,6 +363,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Warn(m) => warn!("[WARN] {}", m.to_string()),
                         XvcOutputLine::Error(m) => error!("[ERROR] {}", m.to_string()),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Debug(m) => debug!("[DEBUG] {}", m),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                 }

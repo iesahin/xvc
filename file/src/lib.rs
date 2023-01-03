@@ -18,9 +18,7 @@ use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
 use list::ListCLI;
-use log::info;
-use log::warn;
-use log::{error, LevelFilter};
+use log::{debug, error, info, warn, LevelFilter};
 use std::io;
 use std::io::Write;
 use std::path::Path;
@@ -225,6 +223,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
                     XvcOutputLine::Warn(m) => warn!("[WARN] {}", m),
                     XvcOutputLine::Error(m) => error!("[ERROR] {}", m),
                     XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
+                    XvcOutputLine::Debug(m) => debug!("[DEBUG] {}", m),
                     XvcOutputLine::Tick(_) => {}
                 }
             }
