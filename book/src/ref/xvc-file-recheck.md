@@ -69,7 +69,6 @@ Then, recheck the file. By default, it makes a copy of the file.
 $ xvc file recheck data.txt
 
 $ ls -l
-
 ...
 -rw-rw-rw- [..] data.txt
 
