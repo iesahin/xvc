@@ -57,7 +57,9 @@ impl UpdateFromXvcConfig for CarryInCLI {
     /// If options are not given, they are supplied from [XvcConfig]
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let force = self.force || conf.get_bool("file.carry-in.force")?.option;
+        watch!(force);
         let no_parallel = self.no_parallel || conf.get_bool("file.carry-in.no_parallel")?.option;
+        watch!(no_parallel);
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(
             || Some(FileTextOrBinary::from_conf(conf)),
             |v| Some(v.to_owned()),
