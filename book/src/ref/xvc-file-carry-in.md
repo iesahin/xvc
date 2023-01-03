@@ -50,9 +50,7 @@ We first track a file.
 ```console
 $ xvc file track data.txt
 
-$ xvc file list -a data.txt
-C=	[..] 	                  19	data.txt	c85f3e81
-
+$ xvc file list data.txt
 
 ```
 
@@ -64,19 +62,17 @@ $ perl -i -pe 's/a/ee/g' data.txt
 $ cat data.txt
 Oh, deetee, my, deetee
 
-$ xvc file list -a data.txt
-C<	[..] 	                  23	data.txt	e37c686a
-
+$ xvc file list data.txt
 
 ```
 
 Note that the size of the file has increased, as we replace each `a` with an `ee`.
 
 ```console
-$ xvc --debug file carry-in data.txt
+$ xvc file carry-in data.txt
 
 $ xvc file list data.txt
-C=	[..] 	                  23	data.txt
-
+FC          [..]   data.txt  c85f3e81 e37c686a
+Total #: 1 Workspace Size:          23 Cached Size:          23
 
 ```
