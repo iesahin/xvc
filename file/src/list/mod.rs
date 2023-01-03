@@ -473,17 +473,20 @@ pub struct ListCLI {
     format: Option<ListFormat>,
     /// Sort column.
     ///
-    /// It can be one of none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
+    /// It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
     ///
-    /// The default is name-desc
     /// The default option can be set with file.list.sort in the config file.
     #[arg(long, short = 's', alias = "sort")]
     sort_criteria: Option<ListSortCriteria>,
+
     /// Don't show total number and size of the listed files.
+    ///
     /// The default option can be set with file.list.no_summary in the config file.
     #[arg(long)]
     no_summary: bool,
-    /// Files/directories to list
+    /// Files/directories to list.
+    ///
+    /// If not supplied, lists all files under the current directory.
     #[arg()]
     targets: Option<Vec<String>>,
 }
@@ -497,7 +500,6 @@ impl UpdateFromXvcConfig for ListCLI {
         let sort_criteria = self
             .sort_criteria
             .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
-        let current_dir = conf.current_dir()?;
         Ok(Box::new(Self {
             format: Some(format),
             sort_criteria: Some(sort_criteria),

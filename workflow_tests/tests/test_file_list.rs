@@ -124,10 +124,6 @@ fn test_file_list() -> Result<()> {
     assert!(recursive_list.lines().count() > 100);
     let captured_1 = line_captures(&recursive_list, &format!("\t{ADDED_FILE_1}"));
 
-    // TODO: The following test fails on Github CI. Probably related to timestamps.
-    // Turned off until investigation.
-    // re_match(&captured_1[0], "^C=.*");
-
     const ADDED_DIR_1: &str = "dir-0001/dir-0003";
 
     x(&["track", ADDED_DIR_1])?;
