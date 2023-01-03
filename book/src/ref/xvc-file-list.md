@@ -11,7 +11,9 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 
 Arguments:
   [TARGETS]...
-          Files/directories to list
+          Files/directories to list.
+          
+          If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
@@ -42,12 +44,14 @@ Options:
   -s, --sort-criteria <SORT_CRITERIA>
           Sort column.
           
-          It can be one of none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
+          It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
           
-          The default is name-desc The default option can be set with file.list.sort in the config file.
+          The default option can be set with file.list.sort in the config file.
 
       --no-summary
-          Don't show total number and size of the listed files. The default option can be set with file.list.no_summary in the config file
+          Don't show total number and size of the listed files.
+          
+          The default option can be set with file.list.no_summary in the config file.
 
   -h, --help
           Print help information (use `-h` for a summary)
@@ -55,6 +59,9 @@ Options:
 ```
 
 ## Examples
+
+For these examples, we'll create a directory tree with five directories, each
+having a file.
 
 ```console
 $ xvc-test-helper create-directory-tree --directories 5 --files 5
@@ -94,8 +101,201 @@ $ tree
 
 6 directories, 25 files
 
-$ xvc file list 
+```
 
-$ xvc file list --format '{name}'
+`xvc file list` command works only in Xvc repositories. As we didn't initialize
+a repository yet, it lists nothing.
+
+```console
+$ xvc file list 
+```
+
+Let's initialize the repository. 
+
+```console
+$ git init
+...
+
+$ xvc init
 
 ```
+
+Now it lists all files and directories.
+
+```console
+$ xvc file list
+FX        1005 2023-01-03 16:59:22   dir-0005/file-0005.bin   08531cac
+FX        1004 2023-01-03 16:59:22   dir-0005/file-0004.bin   5e26dabe
+FX        1003 2023-01-03 16:59:22   dir-0005/file-0003.bin   ead0068e
+FX        1002 2023-01-03 16:59:22   dir-0005/file-0002.bin   4d640733
+FX        1001 2023-01-03 16:59:22   dir-0005/file-0001.bin   bed87b23
+DX         224 2023-01-03 16:59:22   dir-0005   
+FX        1005 2023-01-03 16:59:22   dir-0004/file-0005.bin   b2b2bddb
+FX        1004 2023-01-03 16:59:22   dir-0004/file-0004.bin   8ff2f24a
+FX        1003 2023-01-03 16:59:22   dir-0004/file-0003.bin   e2755ea6
+FX        1002 2023-01-03 16:59:22   dir-0004/file-0002.bin   23545da4
+FX        1001 2023-01-03 16:59:22   dir-0004/file-0001.bin   9c4ab98b
+DX         224 2023-01-03 16:59:22   dir-0004   
+FX        1005 2023-01-03 16:59:22   dir-0003/file-0005.bin   027c0985
+FX        1004 2023-01-03 16:59:22   dir-0003/file-0004.bin   620aeeea
+FX        1003 2023-01-03 16:59:22   dir-0003/file-0003.bin   668debee
+FX        1002 2023-01-03 16:59:22   dir-0003/file-0002.bin   0affaca7
+FX        1001 2023-01-03 16:59:22   dir-0003/file-0001.bin   937e75d7
+DX         224 2023-01-03 16:59:22   dir-0003   
+FX        1005 2023-01-03 16:59:22   dir-0002/file-0005.bin   bf2e80f4
+FX        1004 2023-01-03 16:59:22   dir-0002/file-0004.bin   f5ba6991
+FX        1003 2023-01-03 16:59:22   dir-0002/file-0003.bin   ca4918fb
+FX        1002 2023-01-03 16:59:22   dir-0002/file-0002.bin   aaad9eae
+FX        1001 2023-01-03 16:59:22   dir-0002/file-0001.bin   c7c47a7d
+DX         224 2023-01-03 16:59:22   dir-0002   
+FX        1005 2023-01-03 16:59:22   dir-0001/file-0005.bin   8ee36a5d
+FX        1004 2023-01-03 16:59:22   dir-0001/file-0004.bin   467fbc90
+FX        1003 2023-01-03 16:59:22   dir-0001/file-0003.bin   db15fcea
+FX        1002 2023-01-03 16:59:22   dir-0001/file-0002.bin   f75cb41e
+FX        1001 2023-01-03 16:59:22   dir-0001/file-0001.bin   41c23152
+DX         224 2023-01-03 16:59:22   dir-0001   
+FX         130 2023-01-03 16:59:22   .xvcignore   ac46bf74
+FX         107 2023-01-03 16:59:22   .gitignore   ce9fcf30
+Total #: 32 Workspace Size:       26432 Cached Size:           0
+
+
+```
+
+With the default output format, the first two letters show the path type and
+cache type, respectively. 
+
+For example, if you track `dir-0001` as `copy`, the first letter is `F` for the
+files and `D` for the directories. The second letter is `C` for files, meaning
+the file is a copy of the cached file, and it's `X` for directories that means
+they are not in the cache. Similar to Git, Xvc doesn't track only files and
+directories are considered as collection of files.
+
+```console
+$ xvc file track dir-0001/
+
+$ xvc file list dir-0001/
+FX        1005 2023-01-03 16:59:22   dir-0001/file-0005.bin   8ee36a5d
+FX        1004 2023-01-03 16:59:22   dir-0001/file-0004.bin   467fbc90
+FX        1003 2023-01-03 16:59:22   dir-0001/file-0003.bin   db15fcea
+FX        1002 2023-01-03 16:59:22   dir-0001/file-0002.bin   f75cb41e
+FX        1001 2023-01-03 16:59:22   dir-0001/file-0001.bin   41c23152
+FX         149 2023-01-03 16:59:23   dir-0001/.gitignore   8fdc6aad
+Total #: 6 Workspace Size:        5164 Cached Size:           0
+
+
+```
+
+If you add another set of files as hardlinks to the cached copies, it will
+print the second letter as `H`.
+
+```console
+$ xvc file track dir-0002 --recheck-as hardlink
+error: Found argument '--recheck-as' which wasn't expected, or isn't valid in this context
+
+  If you tried to supply '--recheck-as' as a value rather than a flag, use '-- --recheck-as'
+
+Usage: xvc file track <--cache-type <CACHE_TYPE>|--no-commit|--text-or-binary <TEXT_OR_BINARY>|--force|--no-parallel|TARGETS>
+
+For more information try '--help'
+
+$ xvc file list
+FX        1005 2023-01-03 16:59:22   dir-0005/file-0005.bin   08531cac
+FX        1004 2023-01-03 16:59:22   dir-0005/file-0004.bin   5e26dabe
+FX        1003 2023-01-03 16:59:22   dir-0005/file-0003.bin   ead0068e
+FX        1002 2023-01-03 16:59:22   dir-0005/file-0002.bin   4d640733
+FX        1001 2023-01-03 16:59:22   dir-0005/file-0001.bin   bed87b23
+DX         224 2023-01-03 16:59:22   dir-0005   
+FX        1005 2023-01-03 16:59:22   dir-0004/file-0005.bin   b2b2bddb
+FX        1004 2023-01-03 16:59:22   dir-0004/file-0004.bin   8ff2f24a
+FX        1003 2023-01-03 16:59:22   dir-0004/file-0003.bin   e2755ea6
+FX        1002 2023-01-03 16:59:22   dir-0004/file-0002.bin   23545da4
+FX        1001 2023-01-03 16:59:22   dir-0004/file-0001.bin   9c4ab98b
+DX         224 2023-01-03 16:59:22   dir-0004   
+FX        1005 2023-01-03 16:59:22   dir-0003/file-0005.bin   027c0985
+FX        1004 2023-01-03 16:59:22   dir-0003/file-0004.bin   620aeeea
+FX        1003 2023-01-03 16:59:22   dir-0003/file-0003.bin   668debee
+FX        1002 2023-01-03 16:59:22   dir-0003/file-0002.bin   0affaca7
+FX        1001 2023-01-03 16:59:22   dir-0003/file-0001.bin   937e75d7
+DX         224 2023-01-03 16:59:22   dir-0003   
+FX        1005 2023-01-03 16:59:22   dir-0002/file-0005.bin   bf2e80f4
+FX        1004 2023-01-03 16:59:22   dir-0002/file-0004.bin   f5ba6991
+FX        1003 2023-01-03 16:59:22   dir-0002/file-0003.bin   ca4918fb
+FX        1002 2023-01-03 16:59:22   dir-0002/file-0002.bin   aaad9eae
+FX        1001 2023-01-03 16:59:22   dir-0002/file-0001.bin   c7c47a7d
+DX         224 2023-01-03 16:59:22   dir-0002   
+FC        1005 2023-01-03 16:59:22   dir-0001/file-0005.bin  8ee36a5d 8ee36a5d
+FC        1004 2023-01-03 16:59:22   dir-0001/file-0004.bin  467fbc90 467fbc90
+FC        1003 2023-01-03 16:59:22   dir-0001/file-0003.bin  db15fcea db15fcea
+FC        1002 2023-01-03 16:59:22   dir-0001/file-0002.bin  f75cb41e f75cb41e
+FC        1001 2023-01-03 16:59:22   dir-0001/file-0001.bin  41c23152 41c23152
+FX         149 2023-01-03 16:59:23   dir-0001/.gitignore   8fdc6aad
+DX         256 2023-01-03 16:59:23   dir-0001   
+FX         130 2023-01-03 16:59:22   .xvcignore   ac46bf74
+FX         107 2023-01-03 16:59:22   .gitignore   ce9fcf30
+Total #: 33 Workspace Size:       26613 Cached Size:        5015
+
+
+```
+
+Note, as hardlinks are actually files with the same inode in the file system
+with alternative paths, they are detected as `F`. 
+
+Symbolic links are typically reported as `SS` in the first letters. 
+It means they are symbolic links on the file system and their cache type is also
+symbolic links. 
+
+```console
+$ xvc file track dir-0003 --recheck-as symlink
+error: Found argument '--recheck-as' which wasn't expected, or isn't valid in this context
+
+  If you tried to supply '--recheck-as' as a value rather than a flag, use '-- --recheck-as'
+
+Usage: xvc file track <--cache-type <CACHE_TYPE>|--no-commit|--text-or-binary <TEXT_OR_BINARY>|--force|--no-parallel|TARGETS>
+
+For more information try '--help'
+
+$ xvc file list
+FX        1005 2023-01-03 16:59:22   dir-0005/file-0005.bin   08531cac
+FX        1004 2023-01-03 16:59:22   dir-0005/file-0004.bin   5e26dabe
+FX        1003 2023-01-03 16:59:22   dir-0005/file-0003.bin   ead0068e
+FX        1002 2023-01-03 16:59:22   dir-0005/file-0002.bin   4d640733
+FX        1001 2023-01-03 16:59:22   dir-0005/file-0001.bin   bed87b23
+DX         224 2023-01-03 16:59:22   dir-0005   
+FX        1005 2023-01-03 16:59:22   dir-0004/file-0005.bin   b2b2bddb
+FX        1004 2023-01-03 16:59:22   dir-0004/file-0004.bin   8ff2f24a
+FX        1003 2023-01-03 16:59:22   dir-0004/file-0003.bin   e2755ea6
+FX        1002 2023-01-03 16:59:22   dir-0004/file-0002.bin   23545da4
+FX        1001 2023-01-03 16:59:22   dir-0004/file-0001.bin   9c4ab98b
+DX         224 2023-01-03 16:59:22   dir-0004   
+FX        1005 2023-01-03 16:59:22   dir-0003/file-0005.bin   027c0985
+FX        1004 2023-01-03 16:59:22   dir-0003/file-0004.bin   620aeeea
+FX        1003 2023-01-03 16:59:22   dir-0003/file-0003.bin   668debee
+FX        1002 2023-01-03 16:59:22   dir-0003/file-0002.bin   0affaca7
+FX        1001 2023-01-03 16:59:22   dir-0003/file-0001.bin   937e75d7
+DX         224 2023-01-03 16:59:22   dir-0003   
+FX        1005 2023-01-03 16:59:22   dir-0002/file-0005.bin   bf2e80f4
+FX        1004 2023-01-03 16:59:22   dir-0002/file-0004.bin   f5ba6991
+FX        1003 2023-01-03 16:59:22   dir-0002/file-0003.bin   ca4918fb
+FX        1002 2023-01-03 16:59:22   dir-0002/file-0002.bin   aaad9eae
+FX        1001 2023-01-03 16:59:22   dir-0002/file-0001.bin   c7c47a7d
+DX         224 2023-01-03 16:59:22   dir-0002   
+FC        1005 2023-01-03 16:59:22   dir-0001/file-0005.bin  8ee36a5d 8ee36a5d
+FC        1004 2023-01-03 16:59:22   dir-0001/file-0004.bin  467fbc90 467fbc90
+FC        1003 2023-01-03 16:59:22   dir-0001/file-0003.bin  db15fcea db15fcea
+FC        1002 2023-01-03 16:59:22   dir-0001/file-0002.bin  f75cb41e f75cb41e
+FC        1001 2023-01-03 16:59:22   dir-0001/file-0001.bin  41c23152 41c23152
+FX         149 2023-01-03 16:59:23   dir-0001/.gitignore   8fdc6aad
+DX         256 2023-01-03 16:59:23   dir-0001   
+FX         130 2023-01-03 16:59:22   .xvcignore   ac46bf74
+FX         107 2023-01-03 16:59:22   .gitignore   ce9fcf30
+Total #: 33 Workspace Size:       26613 Cached Size:        5015
+
+
+```
+
+Although not all filesystems support, `R` represents reflinks. 
+
+### Sort options
+
+You may sort `xvc file list` output by name, by modification time and by file
+size. 

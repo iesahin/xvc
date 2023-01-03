@@ -20,6 +20,7 @@ use std::str::FromStr;
 use std::time::SystemTime;
 use strum_macros::{Display as EnumDisplay, EnumString};
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
+use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{
     CacheType, ContentDigest, HashAlgorithm, TextOrBinary, XvcFileType, XvcMetadata, XvcPath,
     XvcRoot,
@@ -151,7 +152,7 @@ impl ListRow {
 
         let actual_content_digest_str = match path_match.actual_digest {
             Some(digest) => format!("{}", digest),
-            None => "".to_string(),
+            None => str::repeat("-", DIGEST_LENGTH * 2),
         };
 
         let (actual_size, actual_size_str) =
@@ -200,7 +201,7 @@ impl ListRow {
 
         let recorded_content_digest_str = match path_match.recorded_digest {
             Some(digest) => format!("{}", digest),
-            None => "".to_string(),
+            None => str::repeat("-", DIGEST_LENGTH * 2),
         };
 
         watch!(&path_prefix);
