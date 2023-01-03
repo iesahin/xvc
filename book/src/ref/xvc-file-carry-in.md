@@ -78,7 +78,7 @@ Note that the size of the file has increased, as we replace each `a` with an `ee
 $ xvc file carry-in data.txt
 
 $ xvc file list data.txt
-FC          23 2023-01-03 16:02:13   data.txt  e37c686a e37c686a
+FC          23 [..]   data.txt  e37c686a e37c686a
 Total #: 1 Workspace Size:          23 Cached Size:          19
 
 
