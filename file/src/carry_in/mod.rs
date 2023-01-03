@@ -100,6 +100,8 @@ pub fn cmd_carry_in(
     xvc_root: &XvcRoot,
     cli_opts: CarryInCLI,
 ) -> Result<()> {
+    watch!(cli_opts);
+    watch!(xvc_root);
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     watch!(opts);
