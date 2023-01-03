@@ -120,11 +120,10 @@ pub fn cmd_carry_in(
 ) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
+    watch!(opts);
     let current_dir = conf.current_dir()?;
     let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
-
-    let text_or_binary = opts.text_or_binary.unwrap_or_default();
-    let no_parallel = opts.no_parallel;
+    watch!(targets);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
