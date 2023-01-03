@@ -403,7 +403,7 @@ impl ListRows {
                 self.rows
                     .borrow()
                     .iter()
-                    .fold(0u64, |tot, r| tot + r.actual_size),
+                    .fold(0u64, |tot, r| tot + r.recorded_size),
             );
             output.push_str(
                 &format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n"),
