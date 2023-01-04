@@ -124,38 +124,38 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list
-FX        1005 2023-01-04 07:59:49   dir-0005/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:59:49   dir-0005/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:59:49   dir-0005/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:59:49   dir-0005/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:59:49   dir-0005/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:59:49   dir-0005                   
-FX        1005 2023-01-04 07:59:49   dir-0004/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:59:49   dir-0004/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:59:49   dir-0004/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:59:49   dir-0004/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:59:49   dir-0004/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:59:49   dir-0004                   
-FX        1005 2023-01-04 07:59:49   dir-0003/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:59:49   dir-0003/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:59:49   dir-0003/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:59:49   dir-0003/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:59:49   dir-0003/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:59:49   dir-0003                   
-FX        1005 2023-01-04 07:59:49   dir-0002/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:59:49   dir-0002/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:59:49   dir-0002/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:59:49   dir-0002/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:59:49   dir-0002/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:59:49   dir-0002                   
-FX        1005 2023-01-04 07:59:49   dir-0001/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:59:49   dir-0001/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:59:49   dir-0001/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:59:49   dir-0001/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:59:49   dir-0001/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:59:49   dir-0001                   
-FX         130 2023-01-04 07:59:49   .xvcignore           ac46bf74
-FX         107 2023-01-04 07:59:49   .gitignore           ce9fcf30
+FX        1005 2023-01-04 08:07:50   dir-0005/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 08:07:50   dir-0005/file-0004.bin           3640687a
+FX        1003 2023-01-04 08:07:50   dir-0005/file-0003.bin           2856fe70
+FX        1002 2023-01-04 08:07:50   dir-0005/file-0002.bin           8c079454
+FX        1001 2023-01-04 08:07:50   dir-0005/file-0001.bin           189fa49f
+DX         224 2023-01-04 08:07:50   dir-0005                   
+FX        1005 2023-01-04 08:07:50   dir-0004/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 08:07:50   dir-0004/file-0004.bin           3640687a
+FX        1003 2023-01-04 08:07:50   dir-0004/file-0003.bin           2856fe70
+FX        1002 2023-01-04 08:07:50   dir-0004/file-0002.bin           8c079454
+FX        1001 2023-01-04 08:07:50   dir-0004/file-0001.bin           189fa49f
+DX         224 2023-01-04 08:07:50   dir-0004                   
+FX        1005 2023-01-04 08:07:50   dir-0003/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 08:07:50   dir-0003/file-0004.bin           3640687a
+FX        1003 2023-01-04 08:07:50   dir-0003/file-0003.bin           2856fe70
+FX        1002 2023-01-04 08:07:50   dir-0003/file-0002.bin           8c079454
+FX        1001 2023-01-04 08:07:50   dir-0003/file-0001.bin           189fa49f
+DX         224 2023-01-04 08:07:50   dir-0003                   
+FX        1005 2023-01-04 08:07:50   dir-0002/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 08:07:50   dir-0002/file-0004.bin           3640687a
+FX        1003 2023-01-04 08:07:50   dir-0002/file-0003.bin           2856fe70
+FX        1002 2023-01-04 08:07:50   dir-0002/file-0002.bin           8c079454
+FX        1001 2023-01-04 08:07:50   dir-0002/file-0001.bin           189fa49f
+DX         224 2023-01-04 08:07:50   dir-0002                   
+FX        1005 2023-01-04 08:07:50   dir-0001/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 08:07:50   dir-0001/file-0004.bin           3640687a
+FX        1003 2023-01-04 08:07:50   dir-0001/file-0003.bin           2856fe70
+FX        1002 2023-01-04 08:07:50   dir-0001/file-0002.bin           8c079454
+FX        1001 2023-01-04 08:07:50   dir-0001/file-0001.bin           189fa49f
+DX         224 2023-01-04 08:07:50   dir-0001                   
+FX         130 2023-01-04 08:07:50   .xvcignore           ac46bf74
+FX         107 2023-01-04 08:07:50   .gitignore           ce9fcf30
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
@@ -174,12 +174,12 @@ directories are considered as collection of files.
 $ xvc file track dir-0001/
 
 $ xvc file list dir-0001/
-FC        1005 2023-01-04 07:59:49   dir-0001/file-0005.bin  e23e79a0 e23e79a0
-FC        1004 2023-01-04 07:59:49   dir-0001/file-0004.bin  3640687a 3640687a
-FC        1003 2023-01-04 07:59:49   dir-0001/file-0003.bin  2856fe70 2856fe70
-FC        1002 2023-01-04 07:59:49   dir-0001/file-0002.bin  8c079454 8c079454
-FC        1001 2023-01-04 07:59:49   dir-0001/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 07:59:50   dir-0001/.gitignore           fae3d317
+FC        1005 2023-01-04 08:07:50   dir-0001/file-0005.bin  e23e79a0 e23e79a0
+FC        1004 2023-01-04 08:07:50   dir-0001/file-0004.bin  3640687a 3640687a
+FC        1003 2023-01-04 08:07:50   dir-0001/file-0003.bin  2856fe70 2856fe70
+FC        1002 2023-01-04 08:07:50   dir-0001/file-0002.bin  8c079454 8c079454
+FC        1001 2023-01-04 08:07:50   dir-0001/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 08:07:51   dir-0001/.gitignore           f8a3e270
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -190,22 +190,14 @@ print the second letter as `H`.
 
 ```console
 $ xvc file track dir-0002 --cache-type hardlink
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
-thread '<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', lib/src/cli/mod.rs:329:52
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:373:10
 
 $ xvc file list dir-0002
-FH        1005 2023-01-04 07:59:49   dir-0002/file-0005.bin  e23e79a0 e23e79a0
-FH        1004 2023-01-04 07:59:49   dir-0002/file-0004.bin  3640687a 3640687a
-FH        1003 2023-01-04 07:59:49   dir-0002/file-0003.bin  2856fe70 2856fe70
-FH        1002 2023-01-04 07:59:49   dir-0002/file-0002.bin  8c079454 8c079454
-FH        1001 2023-01-04 07:59:49   dir-0002/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 07:59:50   dir-0002/.gitignore           e271831b
+FH        1005 2023-01-04 08:07:50   dir-0002/file-0005.bin  e23e79a0 e23e79a0
+FH        1004 2023-01-04 08:07:50   dir-0002/file-0004.bin  3640687a 3640687a
+FH        1003 2023-01-04 08:07:50   dir-0002/file-0003.bin  2856fe70 2856fe70
+FH        1002 2023-01-04 08:07:50   dir-0002/file-0002.bin  8c079454 8c079454
+FH        1001 2023-01-04 08:07:50   dir-0002/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 08:07:52   dir-0002/.gitignore           7a499f10
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -219,7 +211,7 @@ It means they are symbolic links on the file system and their cache type is also
 symbolic links. 
 
 ```console
-$ xvc -vvvv file track dir-0003 --cache-type symlink
+$ xvc file track dir-0003 --cache-type symlink
 [DEBUG][logging/src/lib.rs:222] Terminal logger enabled with level: Trace
 [TRACE][core/src/types/xvcroot.rs:204] "."
 [DEBUG][core/src/types/xvcroot.rs:210] XVC DIR: "[CWD]"
@@ -230,11 +222,11 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
     "core.quiet = false",
 ]
 [TRACE][config/src/lib.rs:538] map: {
-    "core.quiet": Boolean(
-        false,
-    ),
     "core.verbosity": String(
         "debug",
+    ),
+    "core.quiet": Boolean(
+        false,
     ),
 }
 [TRACE][config/src/lib.rs:541] conf: XvcConfig {
@@ -248,115 +240,82 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         XvcConfigMap {
             source: Default,
             map: {
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "file.track.no_parallel": Boolean(
-                    false,
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "file.list.no_summary": Boolean(
-                    false,
-                ),
                 "git.command": String(
                     "git",
+                ),
+                "git.auto_stage": Boolean(
+                    false,
                 ),
                 "file.list.format": String(
                     "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
                 ),
-                "file.carry-in.force": Boolean(
-                    false,
+                "git.use_git": Boolean(
+                    true,
                 ),
                 "cache.type": String(
                     "copy",
                 ),
-                "file.list.recursive": Boolean(
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.list.no_summary": Boolean(
                     false,
                 ),
                 "cache.algorithm": String(
                     "blake3",
                 ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "git.auto_stage": Boolean(
+                "file.list.recursive": Boolean(
                     false,
                 ),
-                "core.guid": String(
-                    "e96ab41932d53e0e",
-                ),
-                "pipeline.default": String(
-                    "default",
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "core.verbosity": String(
-                    "error",
+                "file.carry-in.no_parallel": Boolean(
+                    false,
                 ),
                 "file.track.text_or_binary": String(
                     "auto",
                 ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
+                "core.guid": String(
+                    "fb48413aeb00aae5",
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "core.verbosity": String(
+                    "error",
+                ),
+                "pipeline.default": String(
+                    "default",
+                ),
+                "file.track.no_parallel": Boolean(
+                    false,
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
+                "git.use_git": Boolean(
+                    true,
                 ),
                 "git.command": String(
                     "git",
                 ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "core.guid": String(
-                    "995c281502239359",
-                ),
-                "file.track.no_parallel": Boolean(
-                    false,
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.list.no_summary": Boolean(
-                    false,
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
-                ),
-                "cache.type": String(
-                    "copy",
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "file.track.no_commit": Boolean(
                     false,
@@ -364,20 +323,53 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
                 "file.list.recursive": Boolean(
                     false,
                 ),
-                "git.auto_commit": Boolean(
-                    true,
+                "core.verbosity": String(
+                    "error",
                 ),
                 "file.carry-in.force": Boolean(
                     false,
                 ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "file.list.format": String(
+                    "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
+                ),
                 "git.auto_stage": Boolean(
                     false,
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "pipeline.default": String(
+                    "default",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
                 ),
                 "file.carry-in.no_parallel": Boolean(
                     false,
                 ),
-                "pipeline.default": String(
-                    "default",
+                "core.guid": String(
+                    "bee701fc631b3414",
+                ),
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "cache.type": String(
+                    "copy",
+                ),
+                "cache.algorithm": String(
+                    "blake3",
                 ),
             },
         },
@@ -392,24 +384,120 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         XvcConfigMap {
             source: CommandLine,
             map: {
-                "core.quiet": Boolean(
-                    false,
-                ),
                 "core.verbosity": String(
                     "debug",
+                ),
+                "core.quiet": Boolean(
+                    false,
                 ),
             },
         },
     ],
     the_config: {
+        "core.verbosity": XvcConfigValue {
+            source: CommandLine,
+            value: String(
+                "debug",
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
+            ),
+        },
+        "file.track.text_or_binary": XvcConfigValue {
+            source: Project,
+            value: String(
+                "auto",
+            ),
+        },
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.list.sort": XvcConfigValue {
+            source: Project,
+            value: String(
+                "name-desc",
+            ),
+        },
+        "file.list.format": XvcConfigValue {
+            source: Project,
+            value: String(
+                "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
+            ),
+        },
+        "git.command": XvcConfigValue {
+            source: Project,
+            value: String(
+                "git",
+            ),
+        },
+        "git.auto_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "file.carry-in.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "pipeline.current_pipeline": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.list.recursive": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "bee701fc631b3414",
+            ),
+        },
+        "file.track.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.track.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
         "cache.type": XvcConfigValue {
             source: Project,
             value: String(
                 "copy",
             ),
         },
-        "file.track.no_parallel": XvcConfigValue {
-            source: Project,
+        "core.quiet": XvcConfigValue {
+            source: CommandLine,
             value: Boolean(
                 false,
             ),
@@ -420,31 +508,7 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
                 "blake3",
             ),
         },
-        "git.auto_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
         "git.auto_stage": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "995c281502239359",
-            ),
-        },
-        "file.track.no_commit": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -456,87 +520,15 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
                 false,
             ),
         },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.list.recursive": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "file.track.text_or_binary": XvcConfigValue {
-            source: Project,
-            value: String(
-                "auto",
-            ),
-        },
-        "file.track.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "core.verbosity": XvcConfigValue {
-            source: CommandLine,
-            value: String(
-                "debug",
-            ),
-        },
         "git.use_git": XvcConfigValue {
             source: Project,
             value: Boolean(
                 true,
             ),
         },
-        "pipeline.current_pipeline": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "file.list.format": XvcConfigValue {
-            source: Project,
-            value: String(
-                "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
-            ),
-        },
-        "file.list.sort": XvcConfigValue {
-            source: Project,
-            value: String(
-                "name-desc",
-            ),
-        },
-        "file.carry-in.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
-            ),
-        },
-        "file.carry-in.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
     },
     init_params: XvcConfigInitParams {
-        default_configuration: "/n[core]/n# The repository id. Please do not delete or change it. /n# This is used to identify the repository and generate paths in storages. /n# In the future it may be used to in other ways. /nguid = /"e96ab41932d53e0e/"/n# Default verbosity level. /n# One of /"error/", /"warn/", /"info/"/nverbosity = /"error/"/n/n[git]/n# Automate git operations. /n# Turning this off leads Xvc to behave as if it's not in a Git repository./n# Not recommended unless you're really not using Git/nuse_git = true/n# Command to run Git process./n# You can set this to an absolute path to specify an executable/n# If set to a non-absolute path, the executable will be searched in $PATH./ncommand = /"git/"/n/n# Commit changes in .xvc/ directory after commands./n# You can set this to false if you want to commit manually. /nauto_commit = true/n/n# Stage changes in .xvc/ directory without committing./n# auto_commit implies auto_stage. /n# If you want to commit manually but don't want to stage after individual Xvc commands, you can set this to true. /nauto_stage = false/n/n[cache]/n# The cache type for XVC. It may take copy, hardlink, symlink, reflink as values./n# The default is copy to make sure the options is portable./n# Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file./n# Note that hardlink and symlink are read-only as they link the files in cache. /ntype = /"copy/"/n# The hash algorithm used for the cache. /n# It may take blake3, blake2, sha2 or sha3 as values. /n# All algorithms are selected to produce 256-bit hashes, so sha2 means SHA2-256, blake2 means BLAKE2s, etc./n# The cache path is produced by prepending algorithm name to the cache. /n# Blake3 files are in .xvc/b3/, while sha2 files are in .xvc/s2/ etc. /nalgorithm = /"blake3/"/n/n[file]/n/n[file.track]/n/n# Don't move file content to cache after xvc file track/nno_commit = false/n# Force to track files even if they are already tracked./nforce = false/n/n# Xvc calculates file content digest differently for text and binary files./n# This option controls whether to treat files as text or binary./n# It may take auto, text or binary as values./n# Auto check each file individually and treat it as text if it's text./ntext_or_binary = /"auto/"/n/n# Don't use parallelism in track operations. /n# Note that some of the operations are implemented in parallel by default, and this option affects some heavier operations./nno_parallel = false/n/n[file.list]/n/n# Format for `xvc file list` rows. You can reorder or remove columns./n# The following are the keys for each row: /n# - {acd64}:  actual content digest. All 64 digits from the workspace file's content./n# - {acd8}:  actual content digest. First 8 digits the file content digest. /n# - {aft}:  actual file type. Whether the entry is a file (F), directory (D),/n#   symlink (S), hardlink (H) or reflink (R). /n# - {asz}:  actual size. The size of the workspace file in bytes. It uses MB,/n#   GB and TB to represent sizes larger than 1MB. /n# - {ats}:  actual timestamp. The timestamp of the workspace file./n# - {cst}:  cache status. One of /"=/", /">/", /"</", /"X/", or /"?/" to show/n#   whether the file timestamp is the same as the cached timestamp, newer,/n#   older, not cached or not tracked./n# - {name}: The name of the file or directory./n# - {rcd64}:  recorded content digest. All 64 digits./n# - {rcd8}:  recorded content digest. First 8 digits./n# - {rct}:  recorded cache type. Whether the entry is linked to the workspace/n#   as a copy (C), symlink (S), hardlink (H) or reflink (R)./n# - {rsz}:  recorded size. The size of the cached content in bytes. It uses/n#   MB, GB and TB to represent sizes larged than 1MB./n# - {rts}:  recorded timestamp. The timestamp of the cached content./n# /n# There are no escape sequences in the format string. /n# If you want to add a tab, type it to the string./n# If you want to add a literal double curly brace, open an issue. /nformat = /"{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}/"/n/n# Default sort order for `xvc file list`./n# Valid values are/n# none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc./nsort = /"name-desc/"/n/n# Do not show a summary for as the final row for `xvc file list`./nno_summary = false/n/n# List files recursively always./nrecursive = false/n/n[file.carry-in]/n# Carry-in the files to cache always, even if they are already present./nforce = false/n/n# Don't use parallel move/copy in carry-in/nno_parallel = false/n/n[pipeline]/n# Name of the current pipeline to run/ncurrent_pipeline = /"default/"/n# Name of the default pipeline/ndefault = /"default/"/n# Name of the default params file name/ndefault_params_file = /"params.yaml/"/n/n",
+        default_configuration: "/n[core]/n# The repository id. Please do not delete or change it. /n# This is used to identify the repository and generate paths in storages. /n# In the future it may be used to in other ways. /nguid = /"fb48413aeb00aae5/"/n# Default verbosity level. /n# One of /"error/", /"warn/", /"info/"/nverbosity = /"error/"/n/n[git]/n# Automate git operations. /n# Turning this off leads Xvc to behave as if it's not in a Git repository./n# Not recommended unless you're really not using Git/nuse_git = true/n# Command to run Git process./n# You can set this to an absolute path to specify an executable/n# If set to a non-absolute path, the executable will be searched in $PATH./ncommand = /"git/"/n/n# Commit changes in .xvc/ directory after commands./n# You can set this to false if you want to commit manually. /nauto_commit = true/n/n# Stage changes in .xvc/ directory without committing./n# auto_commit implies auto_stage. /n# If you want to commit manually but don't want to stage after individual Xvc commands, you can set this to true. /nauto_stage = false/n/n[cache]/n# The cache type for XVC. It may take copy, hardlink, symlink, reflink as values./n# The default is copy to make sure the options is portable./n# Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file./n# Note that hardlink and symlink are read-only as they link the files in cache. /ntype = /"copy/"/n# The hash algorithm used for the cache. /n# It may take blake3, blake2, sha2 or sha3 as values. /n# All algorithms are selected to produce 256-bit hashes, so sha2 means SHA2-256, blake2 means BLAKE2s, etc./n# The cache path is produced by prepending algorithm name to the cache. /n# Blake3 files are in .xvc/b3/, while sha2 files are in .xvc/s2/ etc. /nalgorithm = /"blake3/"/n/n[file]/n/n[file.track]/n/n# Don't move file content to cache after xvc file track/nno_commit = false/n# Force to track files even if they are already tracked./nforce = false/n/n# Xvc calculates file content digest differently for text and binary files./n# This option controls whether to treat files as text or binary./n# It may take auto, text or binary as values./n# Auto check each file individually and treat it as text if it's text./ntext_or_binary = /"auto/"/n/n# Don't use parallelism in track operations. /n# Note that some of the operations are implemented in parallel by default, and this option affects some heavier operations./nno_parallel = false/n/n[file.list]/n/n# Format for `xvc file list` rows. You can reorder or remove columns./n# The following are the keys for each row: /n# - {acd64}:  actual content digest. All 64 digits from the workspace file's content./n# - {acd8}:  actual content digest. First 8 digits the file content digest. /n# - {aft}:  actual file type. Whether the entry is a file (F), directory (D),/n#   symlink (S), hardlink (H) or reflink (R). /n# - {asz}:  actual size. The size of the workspace file in bytes. It uses MB,/n#   GB and TB to represent sizes larger than 1MB. /n# - {ats}:  actual timestamp. The timestamp of the workspace file./n# - {cst}:  cache status. One of /"=/", /">/", /"</", /"X/", or /"?/" to show/n#   whether the file timestamp is the same as the cached timestamp, newer,/n#   older, not cached or not tracked./n# - {name}: The name of the file or directory./n# - {rcd64}:  recorded content digest. All 64 digits./n# - {rcd8}:  recorded content digest. First 8 digits./n# - {rct}:  recorded cache type. Whether the entry is linked to the workspace/n#   as a copy (C), symlink (S), hardlink (H) or reflink (R)./n# - {rsz}:  recorded size. The size of the cached content in bytes. It uses/n#   MB, GB and TB to represent sizes larged than 1MB./n# - {rts}:  recorded timestamp. The timestamp of the cached content./n# /n# There are no escape sequences in the format string. /n# If you want to add a tab, type it to the string./n# If you want to add a literal double curly brace, open an issue. /nformat = /"{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}/"/n/n# Default sort order for `xvc file list`./n# Valid values are/n# none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc./nsort = /"name-desc/"/n/n# Do not show a summary for as the final row for `xvc file list`./nno_summary = false/n/n# List files recursively always./nrecursive = false/n/n[file.carry-in]/n# Carry-in the files to cache always, even if they are already present./nforce = false/n/n# Don't use parallel move/copy in carry-in/nno_parallel = false/n/n[pipeline]/n# Name of the current pipeline to run/ncurrent_pipeline = /"default/"/n# Name of the default pipeline/ndefault = /"default/"/n# Name of the default params file name/ndefault_params_file = /"params.yaml/"/n/n",
         current_dir: AbsolutePath(
             "[CWD]",
         ),
@@ -559,13 +551,13 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
 }
 [TRACE][ecs/src/ecs/mod.rs:184] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs:194] files: [
-    "[CWD]/.xvc/ec/1672819189560232",
-    "[CWD]/.xvc/ec/1672819189563121",
-    "[CWD]/.xvc/ec/1672819189849579",
-    "[CWD]/.xvc/ec/1672819190146052",
-    "[CWD]/.xvc/ec/1672819190451434",
-    "[CWD]/.xvc/ec/1672819190749221",
-    "[CWD]/.xvc/ec/1672819191012445",
+    "[CWD]/.xvc/ec/1672819670917611",
+    "[CWD]/.xvc/ec/1672819670920916",
+    "[CWD]/.xvc/ec/1672819671218848",
+    "[CWD]/.xvc/ec/1672819671527057",
+    "[CWD]/.xvc/ec/1672819671822766",
+    "[CWD]/.xvc/ec/1672819672121993",
+    "[CWD]/.xvc/ec/1672819672410806",
 ]
 [TRACE][file/src/lib.rs:130] opts: XvcFileCLI {
     verbosity: 0,
@@ -603,77 +595,7 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:431] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
 [TRACE][file/src/common/mod.rs:305] all_paths: {
     XvcPath(
-        "dir-0005/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 443016953,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 440595725,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            224,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442517707,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            224,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441921338,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 440268436,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0003.bin",
+        "dir-0005/file-0003.bin",
     ): XvcMetadata {
         file_type: File,
         size: Some(
@@ -681,36 +603,8 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442344959,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441861297,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/.gitignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            149,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819190,
-                tv_nsec: 141525086,
+                tv_sec: 1672819670,
+                tv_nsec: 777663436,
             },
         ),
     },
@@ -723,330 +617,8 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819190,
-                tv_nsec: 145846923,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442814330,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441720423,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 440788931,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/.gitignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            149,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819190,
-                tv_nsec: 746616472,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 440493267,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            256,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819190,
-                tv_nsec: 746558014,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 440911638,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442228710,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442720789,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441557508,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441147095,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441448342,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441962546,
-            },
-        ),
-    },
-    XvcPath(
-        ".xvcignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            130,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 560366904,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            224,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 443072661,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 440380268,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 440102729,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 443109577,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441265927,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442909787,
-            },
-        ),
-    },
-    XvcPath(
-        ".gitignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            107,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 560425320,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441033721,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442450625,
+                tv_sec: 1672819671,
+                tv_nsec: 526015916,
             },
         ),
     },
@@ -1059,8 +631,204 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442122961,
+                tv_sec: 1672819670,
+                tv_nsec: 777225565,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776696236,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776759152,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777335105,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/.gitignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            149,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819672,
+                tv_nsec: 119678028,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776965067,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776539529,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776593362,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776814027,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777108607,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777437729,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776265365,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776907817,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/.gitignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            149,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819671,
+                tv_nsec: 524118433,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776449738,
             },
         ),
     },
@@ -1073,8 +841,232 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 442557582,
+                tv_sec: 1672819670,
+                tv_nsec: 777461479,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777761185,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777281147,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776394405,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777547145,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777723435,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777075149,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777139982,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777020691,
+            },
+        ),
+    },
+    XvcPath(
+        ".xvcignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            130,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 917776309,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            256,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819672,
+                tv_nsec: 119622695,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776155741,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777408771,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 776336531,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777608353,
+            },
+        ),
+    },
+    XvcPath(
+        ".gitignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            107,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 917849183,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777784143,
             },
         ),
     },
@@ -1376,16 +1368,16 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
 }
 [TRACE][file/src/track/mod.rs:125] targets: {
     XvcPath(
-        "dir-0003/file-0004.bin",
+        "dir-0003/file-0002.bin",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            1004,
+            1002,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441861297,
+                tv_sec: 1672819670,
+                tv_nsec: 776965067,
             },
         ),
     },
@@ -1398,8 +1390,22 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441448342,
+                tv_sec: 1672819670,
+                tv_nsec: 776907817,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777075149,
             },
         ),
     },
@@ -1412,8 +1418,8 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441720423,
+                tv_sec: 1672819670,
+                tv_nsec: 777020691,
             },
         ),
     },
@@ -1426,38 +1432,24 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441962546,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441557508,
+                tv_sec: 1672819670,
+                tv_nsec: 777139982,
             },
         ),
     },
 }
 [TRACE][file/src/common/compare.rs:77] pmm: {
     XvcPath(
-        "dir-0003/file-0004.bin",
+        "dir-0003/file-0002.bin",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            1004,
+            1002,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441861297,
+                tv_sec: 1672819670,
+                tv_nsec: 776965067,
             },
         ),
     },
@@ -1470,8 +1462,22 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441448342,
+                tv_sec: 1672819670,
+                tv_nsec: 776907817,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672819670,
+                tv_nsec: 777075149,
             },
         ),
     },
@@ -1484,8 +1490,8 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441720423,
+                tv_sec: 1672819670,
+                tv_nsec: 777020691,
             },
         ),
     },
@@ -1498,28 +1504,14 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441962546,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672819189,
-                tv_nsec: 441557508,
+                tv_sec: 1672819670,
+                tv_nsec: 777139982,
             },
         ),
     },
 }
 [TRACE][ecs/src/ecs/hstore.rs:106] value: XvcPath(
-    "dir-0003/file-0004.bin",
+    "dir-0003/file-0002.bin",
 )
 [TRACE][ecs/src/ecs/hstore.rs:111] key: XvcEntity(
     12,
@@ -1531,33 +1523,31 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
     13,
 )
 [TRACE][ecs/src/ecs/hstore.rs:106] value: XvcPath(
-    "dir-0003/file-0003.bin",
+    "dir-0003/file-0004.bin",
 )
 [TRACE][ecs/src/ecs/hstore.rs:111] key: XvcEntity(
     14,
 )
 [TRACE][ecs/src/ecs/hstore.rs:106] value: XvcPath(
-    "dir-0003/file-0005.bin",
+    "dir-0003/file-0003.bin",
 )
 [TRACE][ecs/src/ecs/hstore.rs:111] key: XvcEntity(
     15,
 )
 [TRACE][ecs/src/ecs/hstore.rs:106] value: XvcPath(
-    "dir-0003/file-0002.bin",
+    "dir-0003/file-0005.bin",
 )
 [TRACE][ecs/src/ecs/hstore.rs:111] key: XvcEntity(
     16,
 )
 [TRACE][file/src/common/compare.rs:186] xvc_path_diff: RecordMissing {
     actual: XvcPath(
-        "dir-0003/file-0001.bin",
-    ),
-}
-[TRACE][file/src/common/compare.rs:186] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
         "dir-0003/file-0002.bin",
     ),
 }
+[TRACE][file/src/common/compare.rs:228] actual: XvcPath(
+    "dir-0003/file-0002.bin",
+)
 [TRACE][file/src/common/compare.rs:186] xvc_path_diff: RecordMissing {
     actual: XvcPath(
         "dir-0003/file-0003.bin",
@@ -1566,85 +1556,45 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
 [TRACE][file/src/common/compare.rs:228] actual: XvcPath(
     "dir-0003/file-0003.bin",
 )
+[TRACE][file/src/common/compare.rs:186] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "dir-0003/file-0001.bin",
+    ),
+}
+[TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
+    "[CWD]/dir-0003/file-0002.bin",
+)
 [TRACE][file/src/common/compare.rs:228] actual: XvcPath(
     "dir-0003/file-0001.bin",
+)
+[TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
+    "[CWD]/dir-0003/file-0003.bin",
+)
+[TRACE][file/src/common/compare.rs:186] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "dir-0003/file-0004.bin",
+    ),
+}
+[TRACE][file/src/common/compare.rs:228] actual: XvcPath(
+    "dir-0003/file-0004.bin",
+)
+[TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
+    "[CWD]/dir-0003/file-0001.bin",
 )
 [TRACE][file/src/common/compare.rs:186] xvc_path_diff: RecordMissing {
     actual: XvcPath(
         "dir-0003/file-0005.bin",
     ),
 }
-[TRACE][file/src/common/compare.rs:186] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "dir-0003/file-0004.bin",
-    ),
-}
 [TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0001.bin",
-)
-[TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0003.bin",
-)
-[TRACE][file/src/common/compare.rs:228] actual: XvcPath(
-    "dir-0003/file-0004.bin",
-)
-[TRACE][file/src/common/compare.rs:228] actual: XvcPath(
-    "dir-0003/file-0002.bin",
+    "[CWD]/dir-0003/file-0004.bin",
 )
 [TRACE][file/src/common/compare.rs:228] actual: XvcPath(
     "dir-0003/file-0005.bin",
 )
 [TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0002.bin",
-)
-[TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0004.bin",
-)
-[TRACE][file/src/common/compare.rs:230] path: AbsolutePath(
     "[CWD]/dir-0003/file-0005.bin",
 )
-[TRACE][file/src/common/compare.rs:232] actual_digest: ContentDigest(
-    Some(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                140,
-                7,
-                148,
-                84,
-                126,
-                211,
-                222,
-                142,
-                46,
-                151,
-                25,
-                130,
-                69,
-                35,
-                188,
-                184,
-                180,
-                188,
-                80,
-                6,
-                127,
-                7,
-                219,
-                171,
-                100,
-                139,
-                46,
-                110,
-                110,
-                168,
-                220,
-                175,
-            ],
-        },
-    ),
-)
-[TRACE][file/src/common/compare.rs:169] stored_content_digest: None
 [TRACE][file/src/common/compare.rs:232] actual_digest: ContentDigest(
     Some(
         XvcDigest {
@@ -1686,7 +1636,7 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         },
     ),
 )
-[TRACE][file/src/common/compare.rs:170] actual: ContentDigest(
+[TRACE][file/src/common/compare.rs:232] actual_digest: ContentDigest(
     Some(
         XvcDigest {
             algorithm: Blake3,
@@ -1728,6 +1678,89 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
     ),
 )
 [TRACE][file/src/common/compare.rs:169] stored_content_digest: None
+[TRACE][file/src/common/compare.rs:169] stored_content_digest: None
+[TRACE][file/src/common/compare.rs:232] actual_digest: ContentDigest(
+    Some(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                40,
+                86,
+                254,
+                112,
+                162,
+                183,
+                80,
+                103,
+                80,
+                254,
+                78,
+                197,
+                30,
+                252,
+                188,
+                179,
+                246,
+                198,
+                28,
+                188,
+                213,
+                148,
+                250,
+                186,
+                185,
+                50,
+                48,
+                146,
+                187,
+                110,
+                121,
+                245,
+            ],
+        },
+    ),
+)
+[TRACE][file/src/common/compare.rs:170] actual: ContentDigest(
+    Some(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                24,
+                159,
+                164,
+                159,
+                169,
+                65,
+                161,
+                103,
+                12,
+                135,
+                82,
+                25,
+                244,
+                96,
+                73,
+                116,
+                69,
+                244,
+                178,
+                116,
+                164,
+                55,
+                78,
+                6,
+                65,
+                1,
+                100,
+                252,
+                97,
+                89,
+                172,
+                78,
+            ],
+        },
+    ),
+)
 [TRACE][file/src/common/compare.rs:232] actual_digest: ContentDigest(
     Some(
         XvcDigest {
@@ -1769,89 +1802,7 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         },
     ),
 )
-[TRACE][file/src/common/compare.rs:170] actual: ContentDigest(
-    Some(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                24,
-                159,
-                164,
-                159,
-                169,
-                65,
-                161,
-                103,
-                12,
-                135,
-                82,
-                25,
-                244,
-                96,
-                73,
-                116,
-                69,
-                244,
-                178,
-                116,
-                164,
-                55,
-                78,
-                6,
-                65,
-                1,
-                100,
-                252,
-                97,
-                89,
-                172,
-                78,
-            ],
-        },
-    ),
-)
 [TRACE][file/src/common/compare.rs:169] stored_content_digest: None
-[TRACE][file/src/common/compare.rs:232] actual_digest: ContentDigest(
-    Some(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                226,
-                62,
-                121,
-                160,
-                46,
-                26,
-                251,
-                17,
-                168,
-                143,
-                20,
-                205,
-                47,
-                40,
-                42,
-                111,
-                25,
-                210,
-                127,
-                111,
-                103,
-                105,
-                95,
-                164,
-                142,
-                243,
-                131,
-                76,
-                149,
-                186,
-                61,
-                43,
-            ],
-        },
-    ),
-)
 [TRACE][file/src/common/compare.rs:234] res: RecordMissing {
     actual: ContentDigest(
         Some(
@@ -1895,7 +1846,134 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
     ),
 }
+[TRACE][file/src/common/compare.rs:170] actual: ContentDigest(
+    Some(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                140,
+                7,
+                148,
+                84,
+                126,
+                211,
+                222,
+                142,
+                46,
+                151,
+                25,
+                130,
+                69,
+                35,
+                188,
+                184,
+                180,
+                188,
+                80,
+                6,
+                127,
+                7,
+                219,
+                171,
+                100,
+                139,
+                46,
+                110,
+                110,
+                168,
+                220,
+                175,
+            ],
+        },
+    ),
+)
 [TRACE][file/src/common/compare.rs:232] actual_digest: ContentDigest(
+    Some(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                226,
+                62,
+                121,
+                160,
+                46,
+                26,
+                251,
+                17,
+                168,
+                143,
+                20,
+                205,
+                47,
+                40,
+                42,
+                111,
+                25,
+                210,
+                127,
+                111,
+                103,
+                105,
+                95,
+                164,
+                142,
+                243,
+                131,
+                76,
+                149,
+                186,
+                61,
+                43,
+            ],
+        },
+    ),
+)
+[TRACE][file/src/common/compare.rs:169] stored_content_digest: None
+[TRACE][file/src/common/compare.rs:169] stored_content_digest: None
+[TRACE][file/src/common/compare.rs:234] res: RecordMissing {
+    actual: ContentDigest(
+        Some(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    140,
+                    7,
+                    148,
+                    84,
+                    126,
+                    211,
+                    222,
+                    142,
+                    46,
+                    151,
+                    25,
+                    130,
+                    69,
+                    35,
+                    188,
+                    184,
+                    180,
+                    188,
+                    80,
+                    6,
+                    127,
+                    7,
+                    219,
+                    171,
+                    100,
+                    139,
+                    46,
+                    110,
+                    110,
+                    168,
+                    220,
+                    175,
+                ],
+            },
+        ),
+    ),
+}
+[TRACE][file/src/common/compare.rs:170] actual: ContentDigest(
     Some(
         XvcDigest {
             algorithm: Blake3,
@@ -1936,7 +2014,6 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         },
     ),
 )
-[TRACE][file/src/common/compare.rs:169] stored_content_digest: None
 [TRACE][file/src/common/compare.rs:170] actual: ContentDigest(
     Some(
         XvcDigest {
@@ -1978,45 +2055,44 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         },
     ),
 )
-[TRACE][file/src/common/compare.rs:169] stored_content_digest: None
 [TRACE][file/src/common/compare.rs:234] res: RecordMissing {
     actual: ContentDigest(
         Some(
             XvcDigest {
                 algorithm: Blake3,
                 digest: [
-                    140,
-                    7,
-                    148,
-                    84,
-                    126,
-                    211,
-                    222,
-                    142,
-                    46,
-                    151,
-                    25,
-                    130,
-                    69,
-                    35,
-                    188,
-                    184,
-                    180,
-                    188,
+                    40,
+                    86,
+                    254,
+                    112,
+                    162,
+                    183,
                     80,
-                    6,
-                    127,
-                    7,
-                    219,
-                    171,
-                    100,
-                    139,
-                    46,
+                    103,
+                    80,
+                    254,
+                    78,
+                    197,
+                    30,
+                    252,
+                    188,
+                    179,
+                    246,
+                    198,
+                    28,
+                    188,
+                    213,
+                    148,
+                    250,
+                    186,
+                    185,
+                    50,
+                    48,
+                    146,
+                    187,
                     110,
-                    110,
-                    168,
-                    220,
-                    175,
+                    121,
+                    245,
                 ],
             },
         ),
@@ -2149,92 +2225,188 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
         ),
     ),
 }
-[TRACE][file/src/common/compare.rs:170] actual: ContentDigest(
-    Some(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                40,
-                86,
-                254,
-                112,
-                162,
-                183,
-                80,
-                103,
-                80,
-                254,
-                78,
-                197,
-                30,
-                252,
-                188,
-                179,
-                246,
-                198,
-                28,
-                188,
-                213,
-                148,
-                250,
-                186,
-                185,
-                50,
-                48,
-                146,
-                187,
-                110,
-                121,
-                245,
-            ],
-        },
-    ),
-)
-[TRACE][file/src/common/compare.rs:234] res: RecordMissing {
-    actual: ContentDigest(
-        Some(
-            XvcDigest {
-                algorithm: Blake3,
-                digest: [
-                    40,
-                    86,
-                    254,
-                    112,
-                    162,
-                    183,
-                    80,
-                    103,
-                    80,
-                    254,
-                    78,
-                    197,
-                    30,
-                    252,
-                    188,
-                    179,
-                    246,
-                    198,
-                    28,
-                    188,
-                    213,
-                    148,
-                    250,
-                    186,
-                    185,
-                    50,
-                    48,
-                    146,
-                    187,
-                    110,
-                    121,
-                    245,
-                ],
-            },
-        ),
-    ),
-}
 [TRACE][file/src/track/mod.rs:188] content_digest_diff: HStore {
     map: {
+        XvcEntity(
+            14,
+        ): RecordMissing {
+            actual: ContentDigest(
+                Some(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            54,
+                            64,
+                            104,
+                            122,
+                            43,
+                            46,
+                            180,
+                            76,
+                            201,
+                            168,
+                            30,
+                            71,
+                            108,
+                            65,
+                            212,
+                            169,
+                            9,
+                            191,
+                            72,
+                            100,
+                            91,
+                            56,
+                            43,
+                            153,
+                            138,
+                            112,
+                            199,
+                            136,
+                            152,
+                            115,
+                            196,
+                            136,
+                        ],
+                    },
+                ),
+            ),
+        },
+        XvcEntity(
+            12,
+        ): RecordMissing {
+            actual: ContentDigest(
+                Some(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            140,
+                            7,
+                            148,
+                            84,
+                            126,
+                            211,
+                            222,
+                            142,
+                            46,
+                            151,
+                            25,
+                            130,
+                            69,
+                            35,
+                            188,
+                            184,
+                            180,
+                            188,
+                            80,
+                            6,
+                            127,
+                            7,
+                            219,
+                            171,
+                            100,
+                            139,
+                            46,
+                            110,
+                            110,
+                            168,
+                            220,
+                            175,
+                        ],
+                    },
+                ),
+            ),
+        },
+        XvcEntity(
+            15,
+        ): RecordMissing {
+            actual: ContentDigest(
+                Some(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            40,
+                            86,
+                            254,
+                            112,
+                            162,
+                            183,
+                            80,
+                            103,
+                            80,
+                            254,
+                            78,
+                            197,
+                            30,
+                            252,
+                            188,
+                            179,
+                            246,
+                            198,
+                            28,
+                            188,
+                            213,
+                            148,
+                            250,
+                            186,
+                            185,
+                            50,
+                            48,
+                            146,
+                            187,
+                            110,
+                            121,
+                            245,
+                        ],
+                    },
+                ),
+            ),
+        },
+        XvcEntity(
+            16,
+        ): RecordMissing {
+            actual: ContentDigest(
+                Some(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            226,
+                            62,
+                            121,
+                            160,
+                            46,
+                            26,
+                            251,
+                            17,
+                            168,
+                            143,
+                            20,
+                            205,
+                            47,
+                            40,
+                            42,
+                            111,
+                            25,
+                            210,
+                            127,
+                            111,
+                            103,
+                            105,
+                            95,
+                            164,
+                            142,
+                            243,
+                            131,
+                            76,
+                            149,
+                            186,
+                            61,
+                            43,
+                        ],
+                    },
+                ),
+            ),
+        },
         XvcEntity(
             13,
         ): RecordMissing {
@@ -2280,198 +2452,18 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
                 ),
             ),
         },
-        XvcEntity(
-            14,
-        ): RecordMissing {
-            actual: ContentDigest(
-                Some(
-                    XvcDigest {
-                        algorithm: Blake3,
-                        digest: [
-                            40,
-                            86,
-                            254,
-                            112,
-                            162,
-                            183,
-                            80,
-                            103,
-                            80,
-                            254,
-                            78,
-                            197,
-                            30,
-                            252,
-                            188,
-                            179,
-                            246,
-                            198,
-                            28,
-                            188,
-                            213,
-                            148,
-                            250,
-                            186,
-                            185,
-                            50,
-                            48,
-                            146,
-                            187,
-                            110,
-                            121,
-                            245,
-                        ],
-                    },
-                ),
-            ),
-        },
-        XvcEntity(
-            15,
-        ): RecordMissing {
-            actual: ContentDigest(
-                Some(
-                    XvcDigest {
-                        algorithm: Blake3,
-                        digest: [
-                            226,
-                            62,
-                            121,
-                            160,
-                            46,
-                            26,
-                            251,
-                            17,
-                            168,
-                            143,
-                            20,
-                            205,
-                            47,
-                            40,
-                            42,
-                            111,
-                            25,
-                            210,
-                            127,
-                            111,
-                            103,
-                            105,
-                            95,
-                            164,
-                            142,
-                            243,
-                            131,
-                            76,
-                            149,
-                            186,
-                            61,
-                            43,
-                        ],
-                    },
-                ),
-            ),
-        },
-        XvcEntity(
-            12,
-        ): RecordMissing {
-            actual: ContentDigest(
-                Some(
-                    XvcDigest {
-                        algorithm: Blake3,
-                        digest: [
-                            54,
-                            64,
-                            104,
-                            122,
-                            43,
-                            46,
-                            180,
-                            76,
-                            201,
-                            168,
-                            30,
-                            71,
-                            108,
-                            65,
-                            212,
-                            169,
-                            9,
-                            191,
-                            72,
-                            100,
-                            91,
-                            56,
-                            43,
-                            153,
-                            138,
-                            112,
-                            199,
-                            136,
-                            152,
-                            115,
-                            196,
-                            136,
-                        ],
-                    },
-                ),
-            ),
-        },
-        XvcEntity(
-            16,
-        ): RecordMissing {
-            actual: ContentDigest(
-                Some(
-                    XvcDigest {
-                        algorithm: Blake3,
-                        digest: [
-                            140,
-                            7,
-                            148,
-                            84,
-                            126,
-                            211,
-                            222,
-                            142,
-                            46,
-                            151,
-                            25,
-                            130,
-                            69,
-                            35,
-                            188,
-                            184,
-                            180,
-                            188,
-                            80,
-                            6,
-                            127,
-                            7,
-                            219,
-                            171,
-                            100,
-                            139,
-                            46,
-                            110,
-                            110,
-                            168,
-                            220,
-                            175,
-                        ],
-                    },
-                ),
-            ),
-        },
     },
 }
-[TRACE][file/src/common/mod.rs:529] records.len(): 10
-[TRACE][file/src/common/mod.rs:531] new_store.len(): 15
-[TRACE][file/src/common/mod.rs:529] records.len(): 10
-[TRACE][file/src/common/mod.rs:531] new_store.len(): 15
-[TRACE][file/src/common/mod.rs:529] records.len(): 10
-[TRACE][file/src/common/mod.rs:531] new_store.len(): 15
-[TRACE][file/src/common/mod.rs:529] records.len(): 10
-[TRACE][file/src/common/mod.rs:531] new_store.len(): 15
-[TRACE][file/src/common/mod.rs:529] records.len(): 10
-[TRACE][file/src/common/mod.rs:531] new_store.len(): 15
+[TRACE][file/src/common/mod.rs:540] records.len(): 10
+[TRACE][file/src/common/mod.rs:542] new_store.len(): 15
+[TRACE][file/src/common/mod.rs:540] records.len(): 10
+[TRACE][file/src/common/mod.rs:542] new_store.len(): 15
+[TRACE][file/src/common/mod.rs:540] records.len(): 10
+[TRACE][file/src/common/mod.rs:542] new_store.len(): 15
+[TRACE][file/src/common/mod.rs:540] records.len(): 10
+[TRACE][file/src/common/mod.rs:542] new_store.len(): 15
+[TRACE][file/src/common/mod.rs:540] records.len(): 10
+[TRACE][file/src/common/mod.rs:542] new_store.len(): 15
 [TRACE][file/src/track/mod.rs:198] current_xvc_metadata_store.len(): 15
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 1 regexes
@@ -2484,78 +2476,63 @@ $ xvc -vvvv file track dir-0003 --cache-type symlink
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 1 regexes
 [TRACE][file/src/track/mod.rs:421] dir_map: {}
 [TRACE][file/src/track/mod.rs:456] file_map: {
+    "[CWD]/dir-0003/file-0003.bin": "[CWD]/dir-0003/.gitignore",
+    "[CWD]/dir-0003/file-0004.bin": "[CWD]/dir-0003/.gitignore",
+    "[CWD]/dir-0003/file-0001.bin": "[CWD]/dir-0003/.gitignore",
     "[CWD]/dir-0003/file-0002.bin": "[CWD]/dir-0003/.gitignore",
     "[CWD]/dir-0003/file-0005.bin": "[CWD]/dir-0003/.gitignore",
-    "[CWD]/dir-0003/file-0003.bin": "[CWD]/dir-0003/.gitignore",
-    "[CWD]/dir-0003/file-0001.bin": "[CWD]/dir-0003/.gitignore",
-    "[CWD]/dir-0003/file-0004.bin": "[CWD]/dir-0003/.gitignore",
 }
-[TRACE][file/src/common/mod.rs:450] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0004.bin",
-)
-[TRACE][file/src/common/mod.rs:451] cache_type: Symlink
-[TRACE][file/src/common/mod.rs:450] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0002.bin",
-)
-[TRACE][file/src/common/mod.rs:451] cache_type: Symlink
-[TRACE][file/src/carry_in/mod.rs:254] e: IoError {
-    source: Os {
-        code: 17,
-        kind: AlreadyExists,
-        message: "File exists",
-    },
-}
-[TRACE][file/src/carry_in/mod.rs:254] e: IoError {
-    source: Os {
-        code: 17,
-        kind: AlreadyExists,
-        message: "File exists",
-    },
-}
-[TRACE][file/src/common/mod.rs:450] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0003.bin",
-)
-thread 'thread '<unnamed><unnamed>' panicked at '[TRACE][file/src/common/mod.rs:451] cache_type: Symlink
-' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', [INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/364/068/7a2b2eb44cc9a81e476c41d4a909bf48645b382b998a70c7889873c488/0.bin for dir-0003/file-0004.bin
-file/src/carry_in/mod.rs:file/src/carry_in/mod.rs254:[INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/8c0/794/547ed3de8e2e9719824523bcb8b4bc50067f07dbab648b2e6e6ea8dcaf/0.bin for dir-0003/file-0002.bin
-254:[INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/285/6fe/70a2b7506750fe4ec51efcbcb3f6c61cbcd594fabab9323092bb6e79f5/0.bin for dir-0003/file-0003.bin
-:thread '[TRACE][file/src/common/mod.rs:450] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0001.bin",
-)
-<unnamed>99
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/285/6fe/70a2b7506750fe4ec51efcbcb3f6c61cbcd594fabab9323092bb6e79f5/0.bin for dir-0003/file-0003.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/364/068/7a2b2eb44cc9a81e476c41d4a909bf48645b382b998a70c7889873c488/0.bin for dir-0003/file-0004.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [SKIP] [CWD]/dir-0003/file-0003.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [RECHECK] b3/285/6fe/70a2b7506750fe4ec51efcbcb3f6c61cbcd594fabab9323092bb6e79f5/0.bin -> dir-0003/file-0003.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [SKIP] [CWD]/dir-0003/file-0004.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [RECHECK] b3/364/068/7a2b2eb44cc9a81e476c41d4a909bf48645b382b998a70c7889873c488/0.bin -> dir-0003/file-0004.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/e23/e79/a02e1afb11a88f14cd2f282a6f19d27f6f67695fa48ef3834c95ba3d2b/0.bin for dir-0003/file-0005.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/189/fa4/9fa941a1670c875219f460497445f4b274a4374e06410164fc6159ac4e/0.bin for dir-0003/file-0001.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [SKIP] [CWD]/dir-0003/file-0005.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [RECHECK] b3/e23/e79/a02e1afb11a88f14cd2f282a6f19d27f6f67695fa48ef3834c95ba3d2b/0.bin -> dir-0003/file-0005.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [EXISTS] [CWD]/.xvc/b3/8c0/794/547ed3de8e2e9719824523bcb8b4bc50067f07dbab648b2e6e6ea8dcaf/0.bin for dir-0003/file-0002.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [SKIP] [CWD]/dir-0003/file-0001.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [RECHECK] b3/189/fa4/9fa941a1670c875219f460497445f4b274a4374e06410164fc6159ac4e/0.bin -> dir-0003/file-0001.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [SKIP] [CWD]/dir-0003/file-0002.bin
+[INFO][lib/src/cli/mod.rs:362] [INFO] [RECHECK] b3/8c0/794/547ed3de8e2e9719824523bcb8b4bc50067f07dbab648b2e6e6ea8dcaf/0.bin -> dir-0003/file-0002.bin
+[TRACE][lib/src/cli/mod.rs:294] "Before handle_git_automation": "Before handle_git_automation"
+[DEBUG][lib/src/cli/mod.rs:491] Using Git: /opt/homebrew/bin/git
+[TRACE][lib/src/cli/mod.rs:398] args: [
+    "-C",
+    "[CWD]",
+    "diff",
+    "--name-only",
+    "--cached",
+]
+[TRACE][lib/src/cli/mod.rs:424] git_diff_staged_out: ""
+[TRACE][lib/src/cli/mod.rs:398] args: [
+    "-C",
+    "[CWD]",
+    "add",
+    "[CWD]/.xvc",
+    "*.gitignore",
+    "*.xvcignore",
+]
+[DEBUG][lib/src/cli/mod.rs:506] Adding .xvc/ to git: 
+[TRACE][lib/src/cli/mod.rs:398] args: [
+    "-C",
+    "[CWD]",
+    "commit",
+    "-m",
+    "Xvc auto-commit after /'/'",
+]
+[DEBUG][lib/src/cli/mod.rs:516] Committing .xvc/ to git: [main b6f688f] Xvc auto-commit after ''
+ 7 files changed, 12 insertions(+)
+ create mode 100644 .xvc/ec/1672819672707825
+ create mode 100644 .xvc/store/cache-type-store/1672819672687693.json
+ create mode 100644 .xvc/store/content-digest-store/1672819672688155.json
+ create mode 100644 .xvc/store/file-text-or-binary-store/1672819672687900.json
+ create mode 100644 .xvc/store/xvc-metadata-store/1672819672687412.json
+ create mode 100644 .xvc/store/xvc-path-store/1672819672687023.json
+ create mode 100644 dir-0003/.gitignore
 
-' panicked at '[PANIC] IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', lib/src/cli/mod.rs:365:52
-[TRACE][file/src/common/mod.rs:451] cache_type: Symlink
-[TRACE][file/src/carry_in/mod.rs:254] e: IoError {
-    source: Os {
-        code: 17,
-        kind: AlreadyExists,
-        message: "File exists",
-    },
-}
-[TRACE][file/src/common/mod.rs:450] path: AbsolutePath(
-    "[CWD]/dir-0003/file-0005.bin",
-)
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }[TRACE][file/src/common/mod.rs:451] cache_type: Symlink
-', file/src/carry_in/mod.rs:254:9
-[TRACE][file/src/carry_in/mod.rs:254] e: IoError {
-    source: Os {
-        code: 17,
-        kind: AlreadyExists,
-        message: "File exists",
-    },
-}
-thread '<unnamed>' panicked at 'called `Result::unwrap()` on an `Err` value: "SendError(..)"', file/src/carry_in/mod.rs:254:9
-[TRACE][file/src/carry_in/mod.rs:254] e: IoError {
-    source: Os {
-        code: 17,
-        kind: AlreadyExists,
-        message: "File exists",
-    },
-}
-thread '<unnamed>' panicked at 'called `Result::unwrap()` on an `Err` value: "SendError(..)"', file/src/carry_in/mod.rs:254:9
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:373:10
 
 $ xvc file list dir-0003
 FS        1005 [..]   dir-0003/file-0005.bin  e23e79a0 e23e79a0
