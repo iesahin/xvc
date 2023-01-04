@@ -208,6 +208,7 @@ pub fn cmd_recheck(
         &updated_cache_type_store,
         &updated_content_digest_store,
         opts.no_parallel,
+        opts.force,
     )?;
 
     xvc_root.save_store(&updated_cache_type_store)?;
@@ -223,6 +224,7 @@ fn recheck(
     cache_type_store: &XvcStore<CacheType>,
     content_digest_store: &XvcStore<ContentDigest>,
     parallel: bool,
+    force: bool,
 ) -> Result<()> {
     let checkout = |xe, xvc_path: &XvcPath| -> Result<()> {
         let content_digest = content_digest_store[&xe];
@@ -239,7 +241,14 @@ fn recheck(
                 fs::remove_file(target_path)?;
             }
             let cache_type = cache_type_store[&xe];
-            recheck_from_cache(&output_snd, xvc_root, xvc_path, &cache_path, cache_type)
+            recheck_from_cache(
+                &output_snd,
+                xvc_root,
+                xvc_path,
+                &cache_path,
+                cache_type,
+                force,
+            )
         } else {
             error!(
                 output_snd,

@@ -252,7 +252,7 @@ pub fn carry_in(
         }
         let cache_type = uwo!(cache_types.get(xe).cloned(), output_snd);
         uwr!(
-            recheck_from_cache(output_snd, xvc_root, xp, &cache_path, cache_type),
+            recheck_from_cache(output_snd, xvc_root, xp, &cache_path, cache_type, force),
             output_snd
         );
         info!(output_snd, "[RECHECK] {cache_path} -> {xp}");
