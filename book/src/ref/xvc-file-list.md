@@ -227,7 +227,18 @@ Total #: 6 Workspace Size:        1049 Cached Size:        5015
 
 Although not all filesystems support, `R` represents reflinks. 
 
-### Sort options
+## Globs
+
+You may use globs to list files.
+
+```console
+$ xvc file list 'dir-*/*-0001.bin' 
+
+```
+
+## Sorting
 
 You may sort `xvc file list` output by name, by modification time and by file
 size. 
+
+## Column Format
