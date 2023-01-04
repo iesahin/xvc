@@ -124,35 +124,35 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list
-FX        1005 [..]   dir-0005/file-0005.bin           61d6a953
-FX        1004 [..]   dir-0005/file-0004.bin           53b55a4b
-FX        1003 [..]   dir-0005/file-0003.bin           c21d8350
-FX        1002 [..]   dir-0005/file-0002.bin           dea17607
-FX        1001 [..]   dir-0005/file-0001.bin           19b97fce
+FX        1005 [..]   dir-0005/file-0005.bin           4b426a03
+FX        1004 [..]   dir-0005/file-0004.bin           19690667
+FX        1003 [..]   dir-0005/file-0003.bin           dbd48e89
+FX        1002 [..]   dir-0005/file-0002.bin           91f74c8f
+FX        1001 [..]   dir-0005/file-0001.bin           2bb12322
 DX         224 [..]   dir-0005                   
-FX        1005 [..]   dir-0004/file-0005.bin           3a311f32
-FX        1004 [..]   dir-0004/file-0004.bin           2aa9ad69
-FX        1003 [..]   dir-0004/file-0003.bin           e77b09af
-FX        1002 [..]   dir-0004/file-0002.bin           a4cbf445
-FX        1001 [..]   dir-0004/file-0001.bin           bbd2692b
+FX        1005 [..]   dir-0004/file-0005.bin           53e50e00
+FX        1004 [..]   dir-0004/file-0004.bin           67a79a18
+FX        1003 [..]   dir-0004/file-0003.bin           d30ac481
+FX        1002 [..]   dir-0004/file-0002.bin           4848f582
+FX        1001 [..]   dir-0004/file-0001.bin           c1b8e3a8
 DX         224 [..]   dir-0004                   
-FX        1005 [..]   dir-0003/file-0005.bin           6fd18d90
-FX        1004 [..]   dir-0003/file-0004.bin           63825ae6
-FX        1003 [..]   dir-0003/file-0003.bin           48cdc2a8
-FX        1002 [..]   dir-0003/file-0002.bin           e7a1745d
-FX        1001 [..]   dir-0003/file-0001.bin           29134255
+FX        1005 [..]   dir-0003/file-0005.bin           742b41eb
+FX        1004 [..]   dir-0003/file-0004.bin           0d215e78
+FX        1003 [..]   dir-0003/file-0003.bin           7c4fb508
+FX        1002 [..]   dir-0003/file-0002.bin           6fdbd555
+FX        1001 [..]   dir-0003/file-0001.bin           2350682c
 DX         224 [..]   dir-0003                   
-FX        1005 [..]   dir-0002/file-0005.bin           9bd8e854
-FX        1004 [..]   dir-0002/file-0004.bin           328e7a0b
-FX        1003 [..]   dir-0002/file-0003.bin           6550e3a6
-FX        1002 [..]   dir-0002/file-0002.bin           d1409141
-FX        1001 [..]   dir-0002/file-0001.bin           e6f6ef8c
+FX        1005 [..]   dir-0002/file-0005.bin           6bbfe931
+FX        1004 [..]   dir-0002/file-0004.bin           ac2f2b1d
+FX        1003 [..]   dir-0002/file-0003.bin           39faaf51
+FX        1002 [..]   dir-0002/file-0002.bin           3fce39f8
+FX        1001 [..]   dir-0002/file-0001.bin           ad9341fd
 DX         224 [..]   dir-0002                   
-FX        1005 [..]   dir-0001/file-0005.bin           31c682ad
-FX        1004 [..]   dir-0001/file-0004.bin           99c085dc
-FX        1003 [..]   dir-0001/file-0003.bin           fe0a0511
-FX        1002 [..]   dir-0001/file-0002.bin           c86d75b5
-FX        1001 [..]   dir-0001/file-0001.bin           6e2cfbe7
+FX        1005 [..]   dir-0001/file-0005.bin           0ee026ba
+FX        1004 [..]   dir-0001/file-0004.bin           bd0ca8de
+FX        1003 [..]   dir-0001/file-0003.bin           8b6207f6
+FX        1002 [..]   dir-0001/file-0002.bin           6108f2a6
+FX        1001 [..]   dir-0001/file-0001.bin           305bfa2b
 DX         224 [..]   dir-0001                   
 FX         130 [..]   .xvcignore           ac46bf74
 FX         107 [..]   .gitignore           ce9fcf30
@@ -174,11 +174,11 @@ directories are considered as collection of files.
 $ xvc file track dir-0001/
 
 $ xvc file list dir-0001/
-FC        1005 [..]   dir-0001/file-0005.bin  31c682ad 31c682ad
-FC        1004 [..]   dir-0001/file-0004.bin  99c085dc 99c085dc
-FC        1003 [..]   dir-0001/file-0003.bin  fe0a0511 fe0a0511
-FC        1002 [..]   dir-0001/file-0002.bin  c86d75b5 c86d75b5
-FC        1001 [..]   dir-0001/file-0001.bin  6e2cfbe7 6e2cfbe7
+FC        1005 [..]   dir-0001/file-0005.bin  0ee026ba 0ee026ba
+FC        1004 [..]   dir-0001/file-0004.bin  bd0ca8de bd0ca8de
+FC        1003 [..]   dir-0001/file-0003.bin  8b6207f6 8b6207f6
+FC        1002 [..]   dir-0001/file-0002.bin  6108f2a6 6108f2a6
+FC        1001 [..]   dir-0001/file-0001.bin  305bfa2b 305bfa2b
 FX         149 [..]   dir-0001/.gitignore           [..]
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
@@ -192,11 +192,11 @@ print the second letter as `H`.
 $ xvc file track dir-0002 --cache-type hardlink
 
 $ xvc file list dir-0002
-FH        1005 [..]   dir-0002/file-0005.bin  9bd8e854 9bd8e854
-FH        1004 [..]   dir-0002/file-0004.bin  328e7a0b 328e7a0b
-FH        1003 [..]   dir-0002/file-0003.bin  6550e3a6 6550e3a6
-FH        1002 [..]   dir-0002/file-0002.bin  d1409141 d1409141
-FH        1001 [..]   dir-0002/file-0001.bin  e6f6ef8c e6f6ef8c
+FH        1005 [..]   dir-0002/file-0005.bin  6bbfe931 6bbfe931
+FH        1004 [..]   dir-0002/file-0004.bin  ac2f2b1d ac2f2b1d
+FH        1003 [..]   dir-0002/file-0003.bin  39faaf51 39faaf51
+FH        1002 [..]   dir-0002/file-0002.bin  3fce39f8 3fce39f8
+FH        1001 [..]   dir-0002/file-0001.bin  ad9341fd ad9341fd
 FX         149 [..]   dir-0002/.gitignore           [..]
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
@@ -214,11 +214,11 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-SS         180 [..]   dir-0003/file-0005.bin  6fd18d90         
-SS         180 [..]   dir-0003/file-0004.bin  63825ae6         
-SS         180 [..]   dir-0003/file-0003.bin  48cdc2a8         
-SS         180 [..]   dir-0003/file-0002.bin  e7a1745d         
-SS         180 [..]   dir-0003/file-0001.bin  29134255         
+SS         180 [..]   dir-0003/file-0005.bin  742b41eb         
+SS         180 [..]   dir-0003/file-0004.bin  0d215e78         
+SS         180 [..]   dir-0003/file-0003.bin  7c4fb508         
+SS         180 [..]   dir-0003/file-0002.bin  6fdbd555         
+SS         180 [..]   dir-0003/file-0001.bin  2350682c         
 FX         149 [..]   dir-0003/.gitignore           [..]
 Total #: 6 Workspace Size:        1049 Cached Size:        5015
 
