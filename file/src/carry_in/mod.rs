@@ -233,6 +233,12 @@ pub fn carry_in(
         let abs_cache_path = cache_path.to_absolute_path(xvc_root);
         if abs_cache_path.exists() {
             if force {
+                let mut file_perm =
+                    uwr!(abs_cache_path.as_path().metadata(), output_snd).permissions();
+                file_perm.set_readonly(false);
+                uwr!(fs::set_permissions(&abs_cache_path, file_perm), output_snd);
+                /* let mut dir_perm = cache_dir.metadata()?.permissions(); */
+                /* dir_perm.set_readonly(true); */
                 uwr!(fs::remove_file(&abs_cache_path), output_snd);
                 info!(output_snd, "[REMOVE] {abs_cache_path}");
                 uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
