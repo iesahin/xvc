@@ -122,6 +122,7 @@ pub fn cmd_track(
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
     let targets = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
+    watch!(targets);
     let requested_cache_type = opts.cache_type.unwrap_or_default();
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
