@@ -230,8 +230,15 @@ pub fn targets_from_store(
         });
         let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
 
-        let mut paths =
-            xvc_path_store.filter(|_, p| glob_matcher.is_match(&p.as_relative_path().as_str()));
+        let mut paths = xvc_path_store.filter(|_, p| {
+            watch!(p);
+            let str_path = &p.as_relative_path().as_str();
+            watch!(str_path);
+            let is_match = glob_matcher.is_match(str_path);
+            watch!(is_match);
+            is_match
+        });
+
         watch!(paths);
         let metadata = xvc_metadata_store.subset(paths.keys().copied())?;
         watch!(metadata);
