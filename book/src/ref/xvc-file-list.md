@@ -124,38 +124,38 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list
-FX        1005 2023-01-04 04:31:35   dir-0005/file-0005.bin           65986ac4
-FX        1004 2023-01-04 04:31:35   dir-0005/file-0004.bin           763a0cd3
-FX        1003 2023-01-04 04:31:35   dir-0005/file-0003.bin           198be997
-FX        1002 2023-01-04 04:31:35   dir-0005/file-0002.bin           830e220a
-FX        1001 2023-01-04 04:31:35   dir-0005/file-0001.bin           048cb5fe
-DX         224 2023-01-04 04:31:35   dir-0005                   
-FX        1005 2023-01-04 04:31:35   dir-0004/file-0005.bin           bc5cf9d0
-FX        1004 2023-01-04 04:31:35   dir-0004/file-0004.bin           1c5fa2cf
-FX        1003 2023-01-04 04:31:35   dir-0004/file-0003.bin           16a4d080
-FX        1002 2023-01-04 04:31:35   dir-0004/file-0002.bin           bcaa8ee6
-FX        1001 2023-01-04 04:31:35   dir-0004/file-0001.bin           5a9fe513
-DX         224 2023-01-04 04:31:35   dir-0004                   
-FX        1005 2023-01-04 04:31:35   dir-0003/file-0005.bin           002dfb5e
-FX        1004 2023-01-04 04:31:35   dir-0003/file-0004.bin           885cbba7
-FX        1003 2023-01-04 04:31:35   dir-0003/file-0003.bin           f735de35
-FX        1002 2023-01-04 04:31:35   dir-0003/file-0002.bin           266a6a5c
-FX        1001 2023-01-04 04:31:35   dir-0003/file-0001.bin           a6f6fa18
-DX         224 2023-01-04 04:31:35   dir-0003                   
-FX        1005 2023-01-04 04:31:35   dir-0002/file-0005.bin           a12815a6
-FX        1004 2023-01-04 04:31:35   dir-0002/file-0004.bin           22bebca5
-FX        1003 2023-01-04 04:31:35   dir-0002/file-0003.bin           b0627ad5
-FX        1002 2023-01-04 04:31:35   dir-0002/file-0002.bin           98a6e815
-FX        1001 2023-01-04 04:31:35   dir-0002/file-0001.bin           1c16c734
-DX         224 2023-01-04 04:31:35   dir-0002                   
-FX        1005 2023-01-04 04:31:35   dir-0001/file-0005.bin           e25c0c55
-FX        1004 2023-01-04 04:31:35   dir-0001/file-0004.bin           12d9adcb
-FX        1003 2023-01-04 04:31:35   dir-0001/file-0003.bin           e00adae4
-FX        1002 2023-01-04 04:31:35   dir-0001/file-0002.bin           e26b15ad
-FX        1001 2023-01-04 04:31:35   dir-0001/file-0001.bin           9dbca3b1
-DX         224 2023-01-04 04:31:35   dir-0001                   
-FX         130 2023-01-04 04:31:35   .xvcignore           ac46bf74
-FX         107 2023-01-04 04:31:35   .gitignore           ce9fcf30
+FX        1005 2023-01-04 04:38:25   dir-0005/file-0005.bin           3eea348f
+FX        1004 2023-01-04 04:38:25   dir-0005/file-0004.bin           df0b2139
+FX        1003 2023-01-04 04:38:25   dir-0005/file-0003.bin           1cf6fbb5
+FX        1002 2023-01-04 04:38:25   dir-0005/file-0002.bin           45573365
+FX        1001 2023-01-04 04:38:25   dir-0005/file-0001.bin           f6226fda
+DX         224 2023-01-04 04:38:25   dir-0005                   
+FX        1005 2023-01-04 04:38:25   dir-0004/file-0005.bin           c2bb2f9a
+FX        1004 2023-01-04 04:38:25   dir-0004/file-0004.bin           7a13ea4a
+FX        1003 2023-01-04 04:38:25   dir-0004/file-0003.bin           c30aaa5d
+FX        1002 2023-01-04 04:38:25   dir-0004/file-0002.bin           86af00e1
+FX        1001 2023-01-04 04:38:25   dir-0004/file-0001.bin           f910f741
+DX         224 2023-01-04 04:38:25   dir-0004                   
+FX        1005 2023-01-04 04:38:25   dir-0003/file-0005.bin           5651bfac
+FX        1004 2023-01-04 04:38:25   dir-0003/file-0004.bin           22a4cf8f
+FX        1003 2023-01-04 04:38:25   dir-0003/file-0003.bin           64fef92e
+FX        1002 2023-01-04 04:38:25   dir-0003/file-0002.bin           5f9859dd
+FX        1001 2023-01-04 04:38:25   dir-0003/file-0001.bin           aebe77c5
+DX         224 2023-01-04 04:38:25   dir-0003                   
+FX        1005 2023-01-04 04:38:25   dir-0002/file-0005.bin           60266f81
+FX        1004 2023-01-04 04:38:25   dir-0002/file-0004.bin           68e22b88
+FX        1003 2023-01-04 04:38:25   dir-0002/file-0003.bin           a0ed5aee
+FX        1002 2023-01-04 04:38:25   dir-0002/file-0002.bin           4c08d083
+FX        1001 2023-01-04 04:38:25   dir-0002/file-0001.bin           7ff4b3e6
+DX         224 2023-01-04 04:38:25   dir-0002                   
+FX        1005 2023-01-04 04:38:25   dir-0001/file-0005.bin           ca78aa3d
+FX        1004 2023-01-04 04:38:25   dir-0001/file-0004.bin           5d0cd4f5
+FX        1003 2023-01-04 04:38:25   dir-0001/file-0003.bin           a330650c
+FX        1002 2023-01-04 04:38:25   dir-0001/file-0002.bin           ae182d14
+FX        1001 2023-01-04 04:38:25   dir-0001/file-0001.bin           3245a378
+DX         224 2023-01-04 04:38:25   dir-0001                   
+FX         130 2023-01-04 04:38:25   .xvcignore           ac46bf74
+FX         107 2023-01-04 04:38:25   .gitignore           ce9fcf30
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
@@ -173,7 +173,7 @@ directories are considered as collection of files.
 ```console
 $ xvc file track dir-0001/
 
-$ xvc -vvvv file list dir-0001/
+$ xvc file list dir-0001/
 [DEBUG][logging/src/lib.rs:222] Terminal logger enabled with level: Trace
 [TRACE][core/src/types/xvcroot.rs:204] "."
 [DEBUG][core/src/types/xvcroot.rs:210] XVC DIR: "[CWD]"
@@ -184,11 +184,11 @@ $ xvc -vvvv file list dir-0001/
     "core.quiet = false",
 ]
 [TRACE][config/src/lib.rs:538] map: {
-    "core.quiet": Boolean(
-        false,
-    ),
     "core.verbosity": String(
         "debug",
+    ),
+    "core.quiet": Boolean(
+        false,
     ),
 }
 [TRACE][config/src/lib.rs:541] conf: XvcConfig {
@@ -202,29 +202,11 @@ $ xvc -vvvv file list dir-0001/
         XvcConfigMap {
             source: Default,
             map: {
-                "pipeline.default": String(
-                    "default",
-                ),
                 "file.list.no_summary": Boolean(
                     false,
                 ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "git.auto_stage": Boolean(
-                    false,
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
-                ),
-                "core.guid": String(
-                    "381c459fa428c03f",
+                "pipeline.default": String(
+                    "default",
                 ),
                 "file.carry-in.force": Boolean(
                     false,
@@ -232,91 +214,85 @@ $ xvc -vvvv file list dir-0001/
                 "pipeline.default_params_file": String(
                     "params.yaml",
                 ),
-                "file.carry-in.no_parallel": Boolean(
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "file.track.no_parallel": Boolean(
                     false,
                 ),
+                "file.list.format": String(
+                    "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "core.guid": String(
+                    "2f66d68feb083a6c",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
                 "file.list.recursive": Boolean(
+                    false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
                     false,
                 ),
                 "cache.algorithm": String(
                     "blake3",
                 ),
-                "file.track.no_parallel": Boolean(
-                    false,
-                ),
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "file.track.force": Boolean(
-                    false,
-                ),
                 "pipeline.current_pipeline": String(
                     "default",
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
-                "git.command": String(
-                    "git",
-                ),
                 "cache.type": String(
                     "copy",
                 ),
-                "file.list.sort": String(
-                    "name-desc",
+                "git.auto_stage": Boolean(
+                    false,
+                ),
+                "file.track.force": Boolean(
+                    false,
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "cache.type": String(
-                    "copy",
-                ),
-                "git.command": String(
-                    "git",
-                ),
-                "pipeline.default": String(
-                    "default",
-                ),
-                "file.list.no_summary": Boolean(
-                    false,
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "git.auto_stage": Boolean(
-                    false,
-                ),
                 "file.track.force": Boolean(
+                    false,
+                ),
+                "file.list.recursive": Boolean(
                     false,
                 ),
                 "file.list.sort": String(
                     "name-desc",
                 ),
-                "file.list.recursive": Boolean(
-                    false,
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
                 ),
                 "file.track.no_commit": Boolean(
                     false,
                 ),
-                "file.track.text_or_binary": String(
-                    "auto",
+                "cache.type": String(
+                    "copy",
                 ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "core.guid": String(
-                    "5a0b8e1e415e2116",
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
-                ),
-                "git.use_git": Boolean(
-                    true,
+                "core.verbosity": String(
+                    "error",
                 ),
                 "file.track.no_parallel": Boolean(
                     false,
@@ -324,14 +300,38 @@ $ xvc -vvvv file list dir-0001/
                 "pipeline.current_pipeline": String(
                     "default",
                 ),
-                "core.verbosity": String(
-                    "error",
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
                 ),
                 "cache.algorithm": String(
                     "blake3",
                 ),
-                "file.carry-in.force": Boolean(
+                "file.list.format": String(
+                    "{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}",
+                ),
+                "pipeline.default": String(
+                    "default",
+                ),
+                "git.auto_stage": Boolean(
                     false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "core.guid": String(
+                    "aae7c63586bc81bd",
                 ),
             },
         },
@@ -346,44 +346,20 @@ $ xvc -vvvv file list dir-0001/
         XvcConfigMap {
             source: CommandLine,
             map: {
-                "core.quiet": Boolean(
-                    false,
-                ),
                 "core.verbosity": String(
                     "debug",
+                ),
+                "core.quiet": Boolean(
+                    false,
                 ),
             },
         },
     ],
     the_config: {
-        "file.track.text_or_binary": XvcConfigValue {
-            source: Project,
-            value: String(
-                "auto",
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "cache.type": XvcConfigValue {
-            source: Project,
-            value: String(
-                "copy",
-            ),
-        },
         "git.auto_commit": XvcConfigValue {
             source: Project,
             value: Boolean(
                 true,
-            ),
-        },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "5a0b8e1e415e2116",
             ),
         },
         "pipeline.current_pipeline": XvcConfigValue {
@@ -392,49 +368,55 @@ $ xvc -vvvv file list dir-0001/
                 "default",
             ),
         },
-        "file.list.no_summary": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
-            ),
-        },
-        "file.carry-in.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
         "file.list.recursive": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "file.track.force": XvcConfigValue {
+        "cache.type": XvcConfigValue {
+            source: Project,
+            value: String(
+                "copy",
+            ),
+        },
+        "core.verbosity": XvcConfigValue {
+            source: CommandLine,
+            value: String(
+                "debug",
+            ),
+        },
+        "file.list.no_summary": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "aae7c63586bc81bd",
+            ),
+        },
+        "file.track.text_or_binary": XvcConfigValue {
+            source: Project,
+            value: String(
+                "auto",
+            ),
+        },
+        "file.track.no_parallel": XvcConfigValue {
+            source: Project,
             value: Boolean(
                 false,
             ),
         },
         "git.auto_stage": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -446,10 +428,34 @@ $ xvc -vvvv file list dir-0001/
                 false,
             ),
         },
-        "git.use_git": XvcConfigValue {
+        "git.command": XvcConfigValue {
             source: Project,
+            value: String(
+                "git",
+            ),
+        },
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.list.sort": XvcConfigValue {
+            source: Project,
+            value: String(
+                "name-desc",
+            ),
+        },
+        "core.quiet": XvcConfigValue {
+            source: CommandLine,
             value: Boolean(
-                true,
+                false,
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
             ),
         },
         "file.list.format": XvcConfigValue {
@@ -464,25 +470,19 @@ $ xvc -vvvv file list dir-0001/
                 "blake3",
             ),
         },
-        "file.track.no_commit": XvcConfigValue {
+        "file.carry-in.no_parallel": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "core.verbosity": XvcConfigValue {
-            source: CommandLine,
-            value: String(
-                "debug",
-            ),
-        },
-        "file.list.sort": XvcConfigValue {
+        "git.use_git": XvcConfigValue {
             source: Project,
-            value: String(
-                "name-desc",
+            value: Boolean(
+                true,
             ),
         },
-        "file.track.no_parallel": XvcConfigValue {
+        "file.track.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -490,7 +490,7 @@ $ xvc -vvvv file list dir-0001/
         },
     },
     init_params: XvcConfigInitParams {
-        default_configuration: "/n[core]/n# The repository id. Please do not delete or change it. /n# This is used to identify the repository and generate paths in storages. /n# In the future it may be used to in other ways. /nguid = /"381c459fa428c03f/"/n# Default verbosity level. /n# One of /"error/", /"warn/", /"info/"/nverbosity = /"error/"/n/n[git]/n# Automate git operations. /n# Turning this off leads Xvc to behave as if it's not in a Git repository./n# Not recommended unless you're really not using Git/nuse_git = true/n# Command to run Git process./n# You can set this to an absolute path to specify an executable/n# If set to a non-absolute path, the executable will be searched in $PATH./ncommand = /"git/"/n/n# Commit changes in .xvc/ directory after commands./n# You can set this to false if you want to commit manually. /nauto_commit = true/n/n# Stage changes in .xvc/ directory without committing./n# auto_commit implies auto_stage. /n# If you want to commit manually but don't want to stage after individual Xvc commands, you can set this to true. /nauto_stage = false/n/n[cache]/n# The cache type for XVC. It may take copy, hardlink, symlink, reflink as values./n# The default is copy to make sure the options is portable./n# Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file./n# Note that hardlink and symlink are read-only as they link the files in cache. /ntype = /"copy/"/n# The hash algorithm used for the cache. /n# It may take blake3, blake2, sha2 or sha3 as values. /n# All algorithms are selected to produce 256-bit hashes, so sha2 means SHA2-256, blake2 means BLAKE2s, etc./n# The cache path is produced by prepending algorithm name to the cache. /n# Blake3 files are in .xvc/b3/, while sha2 files are in .xvc/s2/ etc. /nalgorithm = /"blake3/"/n/n[file]/n/n[file.track]/n/n# Don't move file content to cache after xvc file track/nno_commit = false/n# Force to track files even if they are already tracked./nforce = false/n/n# Xvc calculates file content digest differently for text and binary files./n# This option controls whether to treat files as text or binary./n# It may take auto, text or binary as values./n# Auto check each file individually and treat it as text if it's text./ntext_or_binary = /"auto/"/n/n# Don't use parallelism in track operations. /n# Note that some of the operations are implemented in parallel by default, and this option affects some heavier operations./nno_parallel = false/n/n[file.list]/n/n# Format for `xvc file list` rows. You can reorder or remove columns./n# The following are the keys for each row: /n# - {acd64}:  actual content digest. All 64 digits from the workspace file's content./n# - {acd8}:  actual content digest. First 8 digits the file content digest. /n# - {aft}:  actual file type. Whether the entry is a file (F), directory (D),/n#   symlink (S), hardlink (H) or reflink (R). /n# - {asz}:  actual size. The size of the workspace file in bytes. It uses MB,/n#   GB and TB to represent sizes larger than 1MB. /n# - {ats}:  actual timestamp. The timestamp of the workspace file./n# - {cst}:  cache status. One of /"=/", /">/", /"</", /"X/", or /"?/" to show/n#   whether the file timestamp is the same as the cached timestamp, newer,/n#   older, not cached or not tracked./n# - {name}: The name of the file or directory./n# - {rcd64}:  recorded content digest. All 64 digits./n# - {rcd8}:  recorded content digest. First 8 digits./n# - {rct}:  recorded cache type. Whether the entry is linked to the workspace/n#   as a copy (C), symlink (S), hardlink (H) or reflink (R)./n# - {rsz}:  recorded size. The size of the cached content in bytes. It uses/n#   MB, GB and TB to represent sizes larged than 1MB./n# - {rts}:  recorded timestamp. The timestamp of the cached content./n# /n# There are no escape sequences in the format string. /n# If you want to add a tab, type it to the string./n# If you want to add a literal double curly brace, open an issue. /nformat = /"{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}/"/n/n# Default sort order for `xvc file list`./n# Valid values are/n# none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc./nsort = /"name-desc/"/n/n# Do not show a summary for as the final row for `xvc file list`./nno_summary = false/n/n# List files recursively always./nrecursive = false/n/n[file.carry-in]/n# Carry-in the files to cache always, even if they are already present./nforce = false/n/n# Don't use parallel move/copy in carry-in/nno_parallel = false/n/n[pipeline]/n# Name of the current pipeline to run/ncurrent_pipeline = /"default/"/n# Name of the default pipeline/ndefault = /"default/"/n# Name of the default params file name/ndefault_params_file = /"params.yaml/"/n/n",
+        default_configuration: "/n[core]/n# The repository id. Please do not delete or change it. /n# This is used to identify the repository and generate paths in storages. /n# In the future it may be used to in other ways. /nguid = /"2f66d68feb083a6c/"/n# Default verbosity level. /n# One of /"error/", /"warn/", /"info/"/nverbosity = /"error/"/n/n[git]/n# Automate git operations. /n# Turning this off leads Xvc to behave as if it's not in a Git repository./n# Not recommended unless you're really not using Git/nuse_git = true/n# Command to run Git process./n# You can set this to an absolute path to specify an executable/n# If set to a non-absolute path, the executable will be searched in $PATH./ncommand = /"git/"/n/n# Commit changes in .xvc/ directory after commands./n# You can set this to false if you want to commit manually. /nauto_commit = true/n/n# Stage changes in .xvc/ directory without committing./n# auto_commit implies auto_stage. /n# If you want to commit manually but don't want to stage after individual Xvc commands, you can set this to true. /nauto_stage = false/n/n[cache]/n# The cache type for XVC. It may take copy, hardlink, symlink, reflink as values./n# The default is copy to make sure the options is portable./n# Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file./n# Note that hardlink and symlink are read-only as they link the files in cache. /ntype = /"copy/"/n# The hash algorithm used for the cache. /n# It may take blake3, blake2, sha2 or sha3 as values. /n# All algorithms are selected to produce 256-bit hashes, so sha2 means SHA2-256, blake2 means BLAKE2s, etc./n# The cache path is produced by prepending algorithm name to the cache. /n# Blake3 files are in .xvc/b3/, while sha2 files are in .xvc/s2/ etc. /nalgorithm = /"blake3/"/n/n[file]/n/n[file.track]/n/n# Don't move file content to cache after xvc file track/nno_commit = false/n# Force to track files even if they are already tracked./nforce = false/n/n# Xvc calculates file content digest differently for text and binary files./n# This option controls whether to treat files as text or binary./n# It may take auto, text or binary as values./n# Auto check each file individually and treat it as text if it's text./ntext_or_binary = /"auto/"/n/n# Don't use parallelism in track operations. /n# Note that some of the operations are implemented in parallel by default, and this option affects some heavier operations./nno_parallel = false/n/n[file.list]/n/n# Format for `xvc file list` rows. You can reorder or remove columns./n# The following are the keys for each row: /n# - {acd64}:  actual content digest. All 64 digits from the workspace file's content./n# - {acd8}:  actual content digest. First 8 digits the file content digest. /n# - {aft}:  actual file type. Whether the entry is a file (F), directory (D),/n#   symlink (S), hardlink (H) or reflink (R). /n# - {asz}:  actual size. The size of the workspace file in bytes. It uses MB,/n#   GB and TB to represent sizes larger than 1MB. /n# - {ats}:  actual timestamp. The timestamp of the workspace file./n# - {cst}:  cache status. One of /"=/", /">/", /"</", /"X/", or /"?/" to show/n#   whether the file timestamp is the same as the cached timestamp, newer,/n#   older, not cached or not tracked./n# - {name}: The name of the file or directory./n# - {rcd64}:  recorded content digest. All 64 digits./n# - {rcd8}:  recorded content digest. First 8 digits./n# - {rct}:  recorded cache type. Whether the entry is linked to the workspace/n#   as a copy (C), symlink (S), hardlink (H) or reflink (R)./n# - {rsz}:  recorded size. The size of the cached content in bytes. It uses/n#   MB, GB and TB to represent sizes larged than 1MB./n# - {rts}:  recorded timestamp. The timestamp of the cached content./n# /n# There are no escape sequences in the format string. /n# If you want to add a tab, type it to the string./n# If you want to add a literal double curly brace, open an issue. /nformat = /"{{aft}}{{rct}} {{asz}} {{ats}}   {{name}}  {{rcd8}} {{acd8}}/"/n/n# Default sort order for `xvc file list`./n# Valid values are/n# none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc./nsort = /"name-desc/"/n/n# Do not show a summary for as the final row for `xvc file list`./nno_summary = false/n/n# List files recursively always./nrecursive = false/n/n[file.carry-in]/n# Carry-in the files to cache always, even if they are already present./nforce = false/n/n# Don't use parallel move/copy in carry-in/nno_parallel = false/n/n[pipeline]/n# Name of the current pipeline to run/ncurrent_pipeline = /"default/"/n# Name of the default pipeline/ndefault = /"default/"/n# Name of the default params file name/ndefault_params_file = /"params.yaml/"/n/n",
         current_dir: AbsolutePath(
             "[CWD]",
         ),
@@ -513,10 +513,10 @@ $ xvc -vvvv file list dir-0001/
 }
 [TRACE][ecs/src/ecs/mod.rs:184] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs:194] files: [
-    "[CWD]/.xvc/ec/1672806695756709",
-    "[CWD]/.xvc/ec/1672806695759667",
-    "[CWD]/.xvc/ec/1672806696045826",
-    "[CWD]/.xvc/ec/1672806696345708",
+    "[CWD]/.xvc/ec/1672807105979933",
+    "[CWD]/.xvc/ec/1672807105982844",
+    "[CWD]/.xvc/ec/1672807106290808",
+    "[CWD]/.xvc/ec/1672807106586582",
 ]
 [TRACE][file/src/lib.rs:130] opts: XvcFileCLI {
     verbosity: 0,
@@ -541,58 +541,16 @@ $ xvc -vvvv file list dir-0001/
         },
     ),
 }
-[TRACE][file/src/common/mod.rs:283] current_dir: AbsolutePath(
+[TRACE][file/src/common/mod.rs:288] current_dir: AbsolutePath(
     "[CWD]",
 )
-[TRACE][file/src/common/mod.rs:284] xvc_root.absolute_path(): AbsolutePath(
+[TRACE][file/src/common/mod.rs:289] xvc_root.absolute_path(): AbsolutePath(
     "[CWD]",
 )
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:431] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
-[TRACE][file/src/common/mod.rs:300] all_paths: {
+[TRACE][file/src/common/mod.rs:305] all_paths: {
     XvcPath(
-        "dir-0005/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 637063221,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 635333410,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 632181875,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0003.bin",
+        "dir-0005/file-0003.bin",
     ): XvcMetadata {
         file_type: File,
         size: Some(
@@ -600,190 +558,8 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 628531877,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 634816154,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 636186628,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 635046157,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            224,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 636506964,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 638289692,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 635924458,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 631344449,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 635660413,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 634256440,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 637346849,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 636448214,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 632720798,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 633896019,
+                tv_sec: 1672807105,
+                tv_nsec: 849310488,
             },
         ),
     },
@@ -796,36 +572,22 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 636722175,
+                tv_sec: 1672807105,
+                tv_nsec: 848690648,
             },
         ),
     },
     XvcPath(
-        "dir-0001/.gitignore",
+        "dir-0003/file-0005.bin",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            149,
+            1005,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806696,
-                tv_nsec: 344338998,
-            },
-        ),
-    },
-    XvcPath(
-        ".gitignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            107,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 756939872,
+                tv_sec: 1672807105,
+                tv_nsec: 847673720,
             },
         ),
     },
@@ -838,50 +600,22 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 637988356,
+                tv_sec: 1672807105,
+                tv_nsec: 849554241,
             },
         ),
     },
     XvcPath(
-        "dir-0001/file-0002.bin",
+        "dir-0004/file-0001.bin",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            1002,
+            1001,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 628150997,
-            },
-        ),
-    },
-    XvcPath(
-        ".xvcignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            130,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 756871955,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 637917897,
+                tv_sec: 1672807105,
+                tv_nsec: 847927723,
             },
         ),
     },
@@ -894,8 +628,22 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 633330346,
+                tv_sec: 1672807105,
+                tv_nsec: 846229996,
+            },
+        ),
+    },
+    XvcPath(
+        ".xvcignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            130,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 980083343,
             },
         ),
     },
@@ -908,92 +656,8 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 633681475,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0002.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 633026801,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            256,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806696,
-                tv_nsec: 345388510,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0002/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 633615641,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 627871494,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0005/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 637631727,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0003",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            224,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 635108782,
+                tv_sec: 1672807105,
+                tv_nsec: 846501749,
             },
         ),
     },
@@ -1006,14 +670,350 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 634534026,
+                tv_sec: 1672807105,
+                tv_nsec: 847099339,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            256,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807106,
+                tv_nsec: 578895345,
+            },
+        ),
+    },
+    XvcPath(
+        ".gitignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            107,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 980144177,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 846901837,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 845530697,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 846011285,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 849700909,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 846432373,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 845104526,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 847302466,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 847475593,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 848119809,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 844569561,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 849124028,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 845798950,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 849497115,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0003",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 847523760,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 848308186,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 848499146,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0005/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 848932318,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0002.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 844892231,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/.gitignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            149,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807106,
+                tv_nsec: 577855500,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 845317611,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0002/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 846647959,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 848545272,
             },
         ),
     },
 }
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:431] built glob set; 0 literals, 0 basenames, 0 extensions, 1 prefixes, 0 suffixes, 0 required extensions, 0 regexes
-[TRACE][file/src/common/mod.rs:322] glob_matcher: GlobSet {
+[TRACE][file/src/common/mod.rs:327] glob_matcher: GlobSet {
     len: 1,
     strats: [
         Extension(
@@ -1305,64 +1305,8 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 627871494,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0004.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1004,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 631344449,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0003.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 628531877,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/.gitignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            149,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806696,
-                tv_nsec: 344338998,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0001/file-0005.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            1005,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 632181875,
+                tv_sec: 1672807105,
+                tv_nsec: 844569561,
             },
         ),
     },
@@ -1375,8 +1319,64 @@ $ xvc -vvvv file list dir-0001/
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1672806695,
-                tv_nsec: 628150997,
+                tv_sec: 1672807105,
+                tv_nsec: 844892231,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0004.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1004,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 845317611,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/.gitignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            149,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807106,
+                tv_nsec: 577855500,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0003.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 845104526,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0001/file-0005.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            1005,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1672807105,
+                tv_nsec: 845530697,
             },
         ),
     },
@@ -1386,54 +1386,98 @@ $ xvc -vvvv file list dir-0001/
         "dir-0001/",
     ],
 )
-[TRACE][file/src/common/mod.rs:228] t: "dir-0001/"
-[DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:431] built glob set; 1 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
-[TRACE][file/src/common/mod.rs:234] p: XvcPath(
-    "dir-0001/file-0002.bin",
-)
-[TRACE][file/src/common/mod.rs:236] str_path: "dir-0001/file-0002.bin"
-[TRACE][file/src/common/mod.rs:238] is_match: false
-[TRACE][file/src/common/mod.rs:234] p: XvcPath(
+[TRACE][file/src/common/mod.rs:227] t: "dir-0001/"
+[DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs:431] built glob set; 1 literals, 0 basenames, 0 extensions, 1 prefixes, 0 suffixes, 0 required extensions, 0 regexes
+[TRACE][file/src/common/mod.rs:238] p: XvcPath(
     "dir-0001/file-0001.bin",
 )
-[TRACE][file/src/common/mod.rs:236] str_path: "dir-0001/file-0001.bin"
-[TRACE][file/src/common/mod.rs:238] is_match: false
-[TRACE][file/src/common/mod.rs:234] p: XvcPath(
+[TRACE][file/src/common/mod.rs:240] str_path: "dir-0001/file-0001.bin"
+[TRACE][file/src/common/mod.rs:242] is_match: true
+[TRACE][file/src/common/mod.rs:238] p: XvcPath(
+    "dir-0001/file-0002.bin",
+)
+[TRACE][file/src/common/mod.rs:240] str_path: "dir-0001/file-0002.bin"
+[TRACE][file/src/common/mod.rs:242] is_match: true
+[TRACE][file/src/common/mod.rs:238] p: XvcPath(
     "dir-0001/file-0005.bin",
 )
-[TRACE][file/src/common/mod.rs:236] str_path: "dir-0001/file-0005.bin"
-[TRACE][file/src/common/mod.rs:238] is_match: false
-[TRACE][file/src/common/mod.rs:234] p: XvcPath(
-    "dir-0001/file-0003.bin",
-)
-[TRACE][file/src/common/mod.rs:236] str_path: "dir-0001/file-0003.bin"
-[TRACE][file/src/common/mod.rs:238] is_match: false
-[TRACE][file/src/common/mod.rs:234] p: XvcPath(
+[TRACE][file/src/common/mod.rs:240] str_path: "dir-0001/file-0005.bin"
+[TRACE][file/src/common/mod.rs:242] is_match: true
+[TRACE][file/src/common/mod.rs:238] p: XvcPath(
     "dir-0001/file-0004.bin",
 )
-[TRACE][file/src/common/mod.rs:236] str_path: "dir-0001/file-0004.bin"
-[TRACE][file/src/common/mod.rs:238] is_match: false
-[TRACE][file/src/common/mod.rs:242] paths: HStore {
-    map: {},
-}
-[TRACE][file/src/common/mod.rs:244] metadata: HStore {
-    map: {},
-}
-[TRACE][file/src/common/mod.rs:247] dir_md: HStore {
-    map: {},
-}
-[TRACE][file/src/common/mod.rs:249] dir_paths: HStore {
-    map: {},
-}
-[TRACE][file/src/common/mod.rs:256] paths: HStore {
-    map: {},
+[TRACE][file/src/common/mod.rs:240] str_path: "dir-0001/file-0004.bin"
+[TRACE][file/src/common/mod.rs:242] is_match: true
+[TRACE][file/src/common/mod.rs:238] p: XvcPath(
+    "dir-0001/file-0003.bin",
+)
+[TRACE][file/src/common/mod.rs:240] str_path: "dir-0001/file-0003.bin"
+[TRACE][file/src/common/mod.rs:242] is_match: true
+[TRACE][file/src/common/mod.rs:246] paths: HStore {
+    map: {
+        XvcEntity(
+            2,
+        ): XvcPath(
+            "dir-0001/file-0001.bin",
+        ),
+        XvcEntity(
+            5,
+        ): XvcPath(
+            "dir-0001/file-0004.bin",
+        ),
+        XvcEntity(
+            6,
+        ): XvcPath(
+            "dir-0001/file-0003.bin",
+        ),
+        XvcEntity(
+            3,
+        ): XvcPath(
+            "dir-0001/file-0002.bin",
+        ),
+        XvcEntity(
+            4,
+        ): XvcPath(
+            "dir-0001/file-0005.bin",
+        ),
+    },
 }
 [TRACE][file/src/list/mod.rs:545] from_store: HStore {
-    map: {},
+    map: {
+        XvcEntity(
+            2,
+        ): XvcPath(
+            "dir-0001/file-0001.bin",
+        ),
+        XvcEntity(
+            5,
+        ): XvcPath(
+            "dir-0001/file-0004.bin",
+        ),
+        XvcEntity(
+            6,
+        ): XvcPath(
+            "dir-0001/file-0003.bin",
+        ),
+        XvcEntity(
+            3,
+        ): XvcPath(
+            "dir-0001/file-0002.bin",
+        ),
+        XvcEntity(
+            4,
+        ): XvcPath(
+            "dir-0001/file-0005.bin",
+        ),
+    },
 }
 [TRACE][file/src/list/mod.rs:624] matches: [
     PathMatch {
-        xvc_entity: None,
+        xvc_entity: Some(
+            XvcEntity(
+                2,
+            ),
+        ),
         actual_path: Some(
             XvcPath(
                 "dir-0001/file-0001.bin",
@@ -1447,20 +1491,93 @@ $ xvc -vvvv file list dir-0001/
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1672806695,
-                        tv_nsec: 627871494,
+                        tv_sec: 1672807105,
+                        tv_nsec: 844569561,
                     },
                 ),
             },
         ),
         actual_digest: None,
-        recorded_path: None,
-        recorded_metadata: None,
+        recorded_path: Some(
+            XvcPath(
+                "dir-0001/file-0001.bin",
+            ),
+        ),
+        recorded_metadata: Some(
+            XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1001,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1672807105,
+                        tv_nsec: 844569561,
+                    },
+                ),
+            },
+        ),
         recorded_digest: None,
-        recorded_cache_type: None,
+        recorded_cache_type: Some(
+            Copy,
+        ),
     },
     PathMatch {
-        xvc_entity: None,
+        xvc_entity: Some(
+            XvcEntity(
+                3,
+            ),
+        ),
+        actual_path: Some(
+            XvcPath(
+                "dir-0001/file-0002.bin",
+            ),
+        ),
+        actual_metadata: Some(
+            XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1002,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1672807105,
+                        tv_nsec: 844892231,
+                    },
+                ),
+            },
+        ),
+        actual_digest: None,
+        recorded_path: Some(
+            XvcPath(
+                "dir-0001/file-0002.bin",
+            ),
+        ),
+        recorded_metadata: Some(
+            XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1002,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1672807105,
+                        tv_nsec: 844892231,
+                    },
+                ),
+            },
+        ),
+        recorded_digest: None,
+        recorded_cache_type: Some(
+            Copy,
+        ),
+    },
+    PathMatch {
+        xvc_entity: Some(
+            XvcEntity(
+                5,
+            ),
+        ),
         actual_path: Some(
             XvcPath(
                 "dir-0001/file-0004.bin",
@@ -1474,44 +1591,36 @@ $ xvc -vvvv file list dir-0001/
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1672806695,
-                        tv_nsec: 631344449,
+                        tv_sec: 1672807105,
+                        tv_nsec: 845317611,
                     },
                 ),
             },
         ),
         actual_digest: None,
-        recorded_path: None,
-        recorded_metadata: None,
-        recorded_digest: None,
-        recorded_cache_type: None,
-    },
-    PathMatch {
-        xvc_entity: None,
-        actual_path: Some(
+        recorded_path: Some(
             XvcPath(
-                "dir-0001/file-0003.bin",
+                "dir-0001/file-0004.bin",
             ),
         ),
-        actual_metadata: Some(
+        recorded_metadata: Some(
             XvcMetadata {
                 file_type: File,
                 size: Some(
-                    1003,
+                    1004,
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1672806695,
-                        tv_nsec: 628531877,
+                        tv_sec: 1672807105,
+                        tv_nsec: 845317611,
                     },
                 ),
             },
         ),
-        actual_digest: None,
-        recorded_path: None,
-        recorded_metadata: None,
         recorded_digest: None,
-        recorded_cache_type: None,
+        recorded_cache_type: Some(
+            Copy,
+        ),
     },
     PathMatch {
         xvc_entity: None,
@@ -1528,8 +1637,8 @@ $ xvc -vvvv file list dir-0001/
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1672806696,
-                        tv_nsec: 344338998,
+                        tv_sec: 1672807106,
+                        tv_nsec: 577855500,
                     },
                 ),
             },
@@ -1541,7 +1650,61 @@ $ xvc -vvvv file list dir-0001/
         recorded_cache_type: None,
     },
     PathMatch {
-        xvc_entity: None,
+        xvc_entity: Some(
+            XvcEntity(
+                6,
+            ),
+        ),
+        actual_path: Some(
+            XvcPath(
+                "dir-0001/file-0003.bin",
+            ),
+        ),
+        actual_metadata: Some(
+            XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1003,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1672807105,
+                        tv_nsec: 845104526,
+                    },
+                ),
+            },
+        ),
+        actual_digest: None,
+        recorded_path: Some(
+            XvcPath(
+                "dir-0001/file-0003.bin",
+            ),
+        ),
+        recorded_metadata: Some(
+            XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1003,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1672807105,
+                        tv_nsec: 845104526,
+                    },
+                ),
+            },
+        ),
+        recorded_digest: None,
+        recorded_cache_type: Some(
+            Copy,
+        ),
+    },
+    PathMatch {
+        xvc_entity: Some(
+            XvcEntity(
+                4,
+            ),
+        ),
         actual_path: Some(
             XvcPath(
                 "dir-0001/file-0005.bin",
@@ -1555,44 +1718,36 @@ $ xvc -vvvv file list dir-0001/
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1672806695,
-                        tv_nsec: 632181875,
+                        tv_sec: 1672807105,
+                        tv_nsec: 845530697,
                     },
                 ),
             },
         ),
         actual_digest: None,
-        recorded_path: None,
-        recorded_metadata: None,
-        recorded_digest: None,
-        recorded_cache_type: None,
-    },
-    PathMatch {
-        xvc_entity: None,
-        actual_path: Some(
+        recorded_path: Some(
             XvcPath(
-                "dir-0001/file-0002.bin",
+                "dir-0001/file-0005.bin",
             ),
         ),
-        actual_metadata: Some(
+        recorded_metadata: Some(
             XvcMetadata {
                 file_type: File,
                 size: Some(
-                    1002,
+                    1005,
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1672806695,
-                        tv_nsec: 628150997,
+                        tv_sec: 1672807105,
+                        tv_nsec: 845530697,
                     },
                 ),
             },
         ),
-        actual_digest: None,
-        recorded_path: None,
-        recorded_metadata: None,
         recorded_digest: None,
-        recorded_cache_type: None,
+        recorded_cache_type: Some(
+            Copy,
+        ),
     },
 ]
 [TRACE][file/src/list/mod.rs:207] &path_prefix: ""
@@ -1601,11 +1756,11 @@ $ xvc -vvvv file list dir-0001/
 )
 [TRACE][file/src/list/mod.rs:207] &path_prefix: ""
 [TRACE][file/src/list/mod.rs:209] ap: XvcPath(
-    "dir-0001/file-0004.bin",
+    "dir-0001/file-0002.bin",
 )
 [TRACE][file/src/list/mod.rs:207] &path_prefix: ""
 [TRACE][file/src/list/mod.rs:209] ap: XvcPath(
-    "dir-0001/file-0003.bin",
+    "dir-0001/file-0004.bin",
 )
 [TRACE][file/src/list/mod.rs:207] &path_prefix: ""
 [TRACE][file/src/list/mod.rs:209] ap: XvcPath(
@@ -1613,19 +1768,19 @@ $ xvc -vvvv file list dir-0001/
 )
 [TRACE][file/src/list/mod.rs:207] &path_prefix: ""
 [TRACE][file/src/list/mod.rs:209] ap: XvcPath(
-    "dir-0001/file-0005.bin",
+    "dir-0001/file-0003.bin",
 )
 [TRACE][file/src/list/mod.rs:207] &path_prefix: ""
 [TRACE][file/src/list/mod.rs:209] ap: XvcPath(
-    "dir-0001/file-0002.bin",
+    "dir-0001/file-0005.bin",
 )
-FX        1005 2023-01-04 04:31:35   dir-0001/file-0005.bin           e25c0c55
-FX        1004 2023-01-04 04:31:35   dir-0001/file-0004.bin           12d9adcb
-FX        1003 2023-01-04 04:31:35   dir-0001/file-0003.bin           e00adae4
-FX        1002 2023-01-04 04:31:35   dir-0001/file-0002.bin           e26b15ad
-FX        1001 2023-01-04 04:31:35   dir-0001/file-0001.bin           9dbca3b1
-FX         149 2023-01-04 04:31:36   dir-0001/.gitignore           2828ab04
-Total #: 6 Workspace Size:        5164 Cached Size:           0
+FC        1005 2023-01-04 04:38:25   dir-0001/file-0005.bin  ca78aa3d ca78aa3d
+FC        1004 2023-01-04 04:38:25   dir-0001/file-0004.bin  5d0cd4f5 5d0cd4f5
+FC        1003 2023-01-04 04:38:25   dir-0001/file-0003.bin  a330650c a330650c
+FC        1002 2023-01-04 04:38:25   dir-0001/file-0002.bin  ae182d14 ae182d14
+FC        1001 2023-01-04 04:38:25   dir-0001/file-0001.bin  3245a378 3245a378
+FX         149 2023-01-04 04:38:26   dir-0001/.gitignore           e0f7edd0
+Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 [TRACE][lib/src/cli/mod.rs:294] "Before handle_git_automation": "Before handle_git_automation"
 [DEBUG][lib/src/cli/mod.rs:491] Using Git: /opt/homebrew/bin/git
@@ -1653,9 +1808,9 @@ Total #: 6 Workspace Size:        5164 Cached Size:           0
     "-m",
     "Xvc auto-commit after /'/'",
 ]
-[DEBUG][lib/src/cli/mod.rs:516] Committing .xvc/ to git: [main 342a48e] Xvc auto-commit after ''
+[DEBUG][lib/src/cli/mod.rs:516] Committing .xvc/ to git: [main 836bfbf] Xvc auto-commit after ''
  1 file changed, 1 insertion(+)
- create mode 100644 .xvc/ec/1672806696649125
+ create mode 100644 .xvc/ec/1672807106884206
 
 
 ```
@@ -1667,13 +1822,13 @@ print the second letter as `H`.
 $ xvc file track dir-0002 --cache-type hardlink
 
 $ xvc file list dir-0002
-FX        1005 2023-01-04 04:31:35   dir-0002/file-0005.bin           a12815a6
-FX        1004 2023-01-04 04:31:35   dir-0002/file-0004.bin           22bebca5
-FX        1003 2023-01-04 04:31:35   dir-0002/file-0003.bin           b0627ad5
-FX        1002 2023-01-04 04:31:35   dir-0002/file-0002.bin           98a6e815
-FX        1001 2023-01-04 04:31:35   dir-0002/file-0001.bin           1c16c734
-FX         149 2023-01-04 04:31:36   dir-0002/.gitignore           14831303
-Total #: 6 Workspace Size:        5164 Cached Size:           0
+FH        1005 2023-01-04 04:38:25   dir-0002/file-0005.bin  60266f81 60266f81
+FH        1004 2023-01-04 04:38:25   dir-0002/file-0004.bin  68e22b88 68e22b88
+FH        1003 2023-01-04 04:38:25   dir-0002/file-0003.bin  a0ed5aee a0ed5aee
+FH        1002 2023-01-04 04:38:25   dir-0002/file-0002.bin  4c08d083 4c08d083
+FH        1001 2023-01-04 04:38:25   dir-0002/file-0001.bin  7ff4b3e6 7ff4b3e6
+FX         149 2023-01-04 04:38:27   dir-0002/.gitignore           2e097544
+Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
 ```
@@ -1689,13 +1844,13 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-SX         180 [..]   dir-0003/file-0005.bin                   
-SX         180 [..]   dir-0003/file-0004.bin                   
-SX         180 [..]   dir-0003/file-0003.bin                   
-SX         180 [..]   dir-0003/file-0002.bin                   
-SX         180 [..]   dir-0003/file-0001.bin                   
-FX         149 2023-01-04 04:31:37   dir-0003/.gitignore           60dd97de
-Total #: 6 Workspace Size:        1049 Cached Size:           0
+SS         180 2023-01-04 04:38:27   dir-0003/file-0005.bin  5651bfac         
+SS         180 2023-01-04 04:38:27   dir-0003/file-0004.bin  22a4cf8f         
+SS         180 2023-01-04 04:38:27   dir-0003/file-0003.bin  64fef92e         
+SS         180 2023-01-04 04:38:27   dir-0003/file-0002.bin  5f9859dd         
+SS         180 2023-01-04 04:38:27   dir-0003/file-0001.bin  aebe77c5         
+FX         149 2023-01-04 04:38:27   dir-0003/.gitignore           b9a37d2c
+Total #: 6 Workspace Size:        1049 Cached Size:        5015
 
 
 ```
