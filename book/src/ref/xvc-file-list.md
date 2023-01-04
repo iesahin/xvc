@@ -220,7 +220,7 @@ SS         [..]   dir-0003/file-0003.bin  2856fe70
 SS         [..]   dir-0003/file-0002.bin  8c079454         
 SS         [..]   dir-0003/file-0001.bin  189fa49f         
 FX         [..]   dir-0003/.gitignore           [..]
-Total #: 6 Workspace Size:        1049 Cached Size:        5015
+Total #: 6 Workspace Size:        1044 Cached Size:        5015
 
 
 ```
@@ -233,12 +233,12 @@ You may use globs to list files.
 
 ```console
 $ xvc file list 'dir-*/*-0001.bin' 
-FX        1001 2023-01-04 12:46:31   dir-0005/file-0001.bin           189fa49f
-FX        1001 2023-01-04 12:46:31   dir-0004/file-0001.bin           189fa49f
-SS         180 2023-01-04 12:46:33   dir-0003/file-0001.bin  189fa49f         
-FH        1001 2023-01-04 12:46:31   dir-0002/file-0001.bin  189fa49f 189fa49f
-FC        1001 2023-01-04 12:46:31   dir-0001/file-0001.bin  189fa49f 189fa49f
-Total #: 5 Workspace Size:        4184 Cached Size:        1001
+FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
+FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
+SS         [..]   dir-0003/file-0001.bin  189fa49f         
+FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
+FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
+Total #: 5 Workspace Size:        4183 Cached Size:        1001
 
 
 ```
@@ -250,6 +250,19 @@ You can also use multiple targets as globs.
 
 ```console
 $ xvc file list '*/*-0001.bin' '*/*-0002.bin' 
+FX        1002 [..]   dir-0005/file-0002.bin           8c079454
+FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
+FX        1002 [..]   dir-0004/file-0002.bin           8c079454
+FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
+SS         179 [..]   dir-0003/file-0002.bin  8c079454         
+SS         179 [..]   dir-0003/file-0001.bin  189fa49f         
+FH        1002 [..]   dir-0002/file-0002.bin  8c079454 8c079454
+FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
+FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
+FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
+Total #: 10 Workspace Size:        8370 Cached Size:        2003
+
+
 ```
 
 ## Sorting
