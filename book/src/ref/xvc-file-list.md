@@ -41,8 +41,8 @@ Options:
           
           The default format can be set with file.list.format in the config file.
 
-  -s, --sort-criteria <SORT_CRITERIA>
-          Sort column.
+  -s, --sort <SORT>
+          Sort criteria.
           
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
           
