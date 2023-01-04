@@ -179,7 +179,7 @@ FC        1004 [..]   dir-0001/file-0004.bin  3640687a 3640687a
 FC        1003 [..]   dir-0001/file-0003.bin  2856fe70 2856fe70
 FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-FX         149 [..]   dir-0001/.gitignore           d525eb64
+FX         149 2023-01-04 12:25:28   dir-0001/.gitignore           [..]
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
