@@ -218,6 +218,8 @@ pub fn targets_from_store(
         return targets_from_store(xvc_root, xvc_root.absolute_path(), &Some(targets));
     }
 
+    watch!(targets);
+
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
     if let Some(targets) = targets {
         let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
@@ -229,16 +231,21 @@ pub fn targets_from_store(
 
         let mut paths =
             xvc_path_store.filter(|_, p| glob_matcher.is_match(&p.as_relative_path().as_str()));
+        watch!(paths);
         let metadata = xvc_metadata_store.subset(paths.keys().copied())?;
+        watch!(metadata);
         // for any directories in the targets, we add all child paths
         let dir_md = metadata.filter(|_, md| md.file_type == XvcFileType::Directory);
+        watch!(dir_md);
         let dir_paths = paths.subset(dir_md.keys().copied())?;
+        watch!(dir_paths);
         for (_, dir) in dir_paths.iter() {
             let child_paths = xvc_path_store.filter(|_, p| p.starts_with(dir));
             child_paths.into_iter().for_each(|(k, v)| {
                 paths.insert(k, v);
             });
         }
+        watch!(paths);
         Ok(paths)
     } else {
         Ok(xvc_path_store.into())
