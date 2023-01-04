@@ -208,7 +208,6 @@ pub fn cmd_recheck(
         &updated_cache_type_store,
         &updated_content_digest_store,
         opts.no_parallel,
-        opts.force,
     )?;
 
     xvc_root.save_store(&updated_cache_type_store)?;
