@@ -268,6 +268,6 @@ Total #: 10 Workspace Size:        [..] Cached Size:        2003
 ## Sorting
 
 You may sort `xvc file list` output by name, by modification time and by file
-size. 
+size.
 
 ## Column Format

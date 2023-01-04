@@ -2,28 +2,25 @@
 //!
 //! - [ListCLI] defines the command line options
 //! - [cmd_list]  is the entry point to run the command
-use crate::common::compare::{diff_cache_type, PathComparisonParams};
-use crate::common::{calc_digest, targets_from_disk, targets_from_store, FileTextOrBinary};
+
+use crate::common::{targets_from_disk, targets_from_store, FileTextOrBinary};
 use crate::error::Error;
-use crate::{Result, XvcFileCLI};
+use crate::Result;
 use anyhow::anyhow;
 use chrono;
 use clap::Parser;
 use crossbeam_channel::Sender;
-use log::warn;
-use serde::__private::de::Content;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::str::FromStr;
 use std::time::SystemTime;
 use strum_macros::{Display as EnumDisplay, EnumString};
-use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
+use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig};
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{
-    CacheType, ContentDigest, HashAlgorithm, TextOrBinary, XvcFileType, XvcMetadata, XvcPath,
-    XvcRoot,
+    CacheType, ContentDigest, HashAlgorithm, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::XvcEntity;
 use xvc_logging::{error, output, watch, XvcOutputLine};
@@ -474,13 +471,13 @@ pub struct ListCLI {
     /// The default format can be set with file.list.format in the config file.
     #[arg(long, short = 'f')]
     format: Option<ListFormat>,
-    /// Sort column.
+    /// Sort criteria.
     ///
     /// It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
     ///
     /// The default option can be set with file.list.sort in the config file.
-    #[arg(long, short = 's', alias = "sort")]
-    sort_criteria: Option<ListSortCriteria>,
+    #[arg(long, short = 's')]
+    sort: Option<ListSortCriteria>,
 
     /// Don't show total number and size of the listed files.
     ///
@@ -501,11 +498,11 @@ impl UpdateFromXvcConfig for ListCLI {
     ) -> xvc_config::error::Result<Box<Self>> {
         let format = self.format.unwrap_or_else(|| ListFormat::from_conf(conf));
         let sort_criteria = self
-            .sort_criteria
+            .sort
             .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
         Ok(Box::new(Self {
             format: Some(format),
-            sort_criteria: Some(sort_criteria),
+            sort: Some(sort_criteria),
             ..self
         }))
     }
@@ -706,7 +703,7 @@ pub fn cmd_list(
         })
         .collect();
 
-    let list_rows = ListRows::new(opts.format.unwrap(), opts.sort_criteria.unwrap(), rows);
+    let list_rows = ListRows::new(opts.format.unwrap(), opts.sort.unwrap(), rows);
     output!(output_snd, "{}", list_rows.build_table(!opts.no_summary));
     Ok(())
 }
