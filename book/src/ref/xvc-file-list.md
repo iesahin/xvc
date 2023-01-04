@@ -233,7 +233,23 @@ You may use globs to list files.
 
 ```console
 $ xvc file list 'dir-*/*-0001.bin' 
+FX        1001 2023-01-04 12:46:31   dir-0005/file-0001.bin           189fa49f
+FX        1001 2023-01-04 12:46:31   dir-0004/file-0001.bin           189fa49f
+SS         180 2023-01-04 12:46:33   dir-0003/file-0001.bin  189fa49f         
+FH        1001 2023-01-04 12:46:31   dir-0002/file-0001.bin  189fa49f 189fa49f
+FC        1001 2023-01-04 12:46:31   dir-0001/file-0001.bin  189fa49f 189fa49f
+Total #: 5 Workspace Size:        4184 Cached Size:        1001
 
+
+```
+
+Note that all these files are identical. They are cached once, and only one of
+them takes space in the cache. 
+
+You can also use multiple targets as globs.
+
+```console
+$ xvc file list '*/*-0001.bin' '*/*-0002.bin' 
 ```
 
 ## Sorting
