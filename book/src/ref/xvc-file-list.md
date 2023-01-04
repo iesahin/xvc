@@ -287,7 +287,7 @@ Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 ```console
 $ xvc file list --sort name-asc dir-0001/
-FX         149 [..]   dir-0001/.gitignore           299ac998
+FX         149 [..]   dir-0001/.gitignore           [..]
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
 FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
 FC        1003 [..]   dir-0001/file-0003.bin  2856fe70 2856fe70
