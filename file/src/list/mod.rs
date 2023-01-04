@@ -619,6 +619,8 @@ pub fn cmd_list(
         matches.push(pm);
     }
 
+    watch!(matches);
+
     // Now fill in the digests if needed
     // unwrap shouldn't panic as we fill the options in from_conf.
     let matches = if opts.format.as_ref().unwrap().columns.iter().any(|c| {

@@ -291,7 +291,7 @@ pub fn targets_from_disk(
                 glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
             } else {
                 if !t.contains('*') {
-                    let abs_target = xvc_root.absolute_path().join(Path::new(t));
+                    let abs_target = current_dir.join(Path::new(t));
                     if abs_target.is_dir() {
                         glob_matcher
                             .add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
@@ -304,6 +304,7 @@ pub fn targets_from_disk(
             }
         });
         let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
+        watch!(glob_matcher);
         Ok(all_paths
             .into_iter()
             .filter(|(p, _)| glob_matcher.is_match(p.as_str()))
