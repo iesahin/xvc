@@ -299,3 +299,12 @@ Total #: 6 Workspace Size:        5164 Cached Size:        5015
 ```
 
 ## Column Format
+
+You can specify the columns that the command prints. 
+
+If you only want to see the file names, use `{{name}}` as the format string. 
+The following command sorts all files with their sizes in the workspace.
+
+```console
+$ xvc file list --format '{{name}}' --sort size-asc
+```
