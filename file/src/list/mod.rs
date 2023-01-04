@@ -13,7 +13,7 @@ use crossbeam_channel::Sender;
 use log::warn;
 use serde::__private::de::Content;
 use std::cell::RefCell;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
@@ -400,12 +400,14 @@ impl ListRows {
                     .iter()
                     .fold(0u64, |tot, r| tot + r.actual_size),
             );
-            let total_cached_size = format_size(
-                self.rows
-                    .borrow()
-                    .iter()
-                    .fold(0u64, |tot, r| tot + r.recorded_size),
-            );
+            let mut cached_sizes = HashMap::<String, u64>::new();
+            self.rows.borrow().iter().for_each(|r| {
+                if !r.recorded_content_digest_str.trim().is_empty() {
+                    cached_sizes.insert(r.recorded_content_digest_str.to_string(), r.recorded_size);
+                }
+            });
+
+            let total_cached_size = format_size(cached_sizes.values().sum());
             output.push_str(
                 &format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n"),
             )
