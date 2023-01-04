@@ -152,7 +152,7 @@ impl ListRow {
 
         let actual_content_digest_str = match path_match.actual_digest {
             Some(digest) => format!("{}", digest),
-            None => str::repeat("-", DIGEST_LENGTH * 2),
+            None => str::repeat(" ", DIGEST_LENGTH * 2),
         };
 
         let (actual_size, actual_size_str) =
@@ -201,7 +201,7 @@ impl ListRow {
 
         let recorded_content_digest_str = match path_match.recorded_digest {
             Some(digest) => format!("{}", digest),
-            None => str::repeat("-", DIGEST_LENGTH * 2),
+            None => str::repeat(" ", DIGEST_LENGTH * 2),
         };
 
         watch!(&path_prefix);
