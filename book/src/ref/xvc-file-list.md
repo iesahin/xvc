@@ -124,38 +124,38 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list
-FX        1005 2023-01-04 07:50:43   dir-0005/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:50:43   dir-0005/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:50:43   dir-0005/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:50:43   dir-0005/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:50:43   dir-0005/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:50:43   dir-0005                   
-FX        1005 2023-01-04 07:50:43   dir-0004/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:50:43   dir-0004/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:50:43   dir-0004/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:50:43   dir-0004/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:50:43   dir-0004/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:50:43   dir-0004                   
-FX        1005 2023-01-04 07:50:43   dir-0003/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:50:43   dir-0003/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:50:43   dir-0003/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:50:43   dir-0003/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:50:43   dir-0003/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:50:43   dir-0003                   
-FX        1005 2023-01-04 07:50:43   dir-0002/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:50:43   dir-0002/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:50:43   dir-0002/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:50:43   dir-0002/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:50:43   dir-0002/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:50:43   dir-0002                   
-FX        1005 2023-01-04 07:50:43   dir-0001/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:50:43   dir-0001/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:50:43   dir-0001/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:50:43   dir-0001/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:50:43   dir-0001/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:50:43   dir-0001                   
-FX         130 2023-01-04 07:50:44   .xvcignore           ac46bf74
-FX         107 2023-01-04 07:50:44   .gitignore           ce9fcf30
+FX        1005 2023-01-04 07:56:14   dir-0005/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:56:14   dir-0005/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:56:14   dir-0005/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:56:14   dir-0005/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:56:14   dir-0005/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:56:14   dir-0005                   
+FX        1005 2023-01-04 07:56:14   dir-0004/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:56:14   dir-0004/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:56:14   dir-0004/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:56:14   dir-0004/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:56:14   dir-0004/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:56:14   dir-0004                   
+FX        1005 2023-01-04 07:56:14   dir-0003/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:56:14   dir-0003/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:56:14   dir-0003/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:56:14   dir-0003/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:56:14   dir-0003/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:56:14   dir-0003                   
+FX        1005 2023-01-04 07:56:14   dir-0002/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:56:14   dir-0002/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:56:14   dir-0002/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:56:14   dir-0002/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:56:14   dir-0002/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:56:14   dir-0002                   
+FX        1005 2023-01-04 07:56:14   dir-0001/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:56:14   dir-0001/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:56:14   dir-0001/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:56:14   dir-0001/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:56:14   dir-0001/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:56:14   dir-0001                   
+FX         130 2023-01-04 07:56:14   .xvcignore           ac46bf74
+FX         107 2023-01-04 07:56:14   .gitignore           ce9fcf30
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
@@ -174,12 +174,12 @@ directories are considered as collection of files.
 $ xvc file track dir-0001/
 
 $ xvc file list dir-0001/
-FC        1005 2023-01-04 07:50:43   dir-0001/file-0005.bin  e23e79a0 e23e79a0
-FC        1004 2023-01-04 07:50:43   dir-0001/file-0004.bin  3640687a 3640687a
-FC        1003 2023-01-04 07:50:43   dir-0001/file-0003.bin  2856fe70 2856fe70
-FC        1002 2023-01-04 07:50:43   dir-0001/file-0002.bin  8c079454 8c079454
-FC        1001 2023-01-04 07:50:43   dir-0001/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 07:50:44   dir-0001/.gitignore           42c1a81b
+FC        1005 2023-01-04 07:56:14   dir-0001/file-0005.bin  e23e79a0 e23e79a0
+FC        1004 2023-01-04 07:56:14   dir-0001/file-0004.bin  3640687a 3640687a
+FC        1003 2023-01-04 07:56:14   dir-0001/file-0003.bin  2856fe70 2856fe70
+FC        1002 2023-01-04 07:56:14   dir-0001/file-0002.bin  8c079454 8c079454
+FC        1001 2023-01-04 07:56:14   dir-0001/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 07:56:15   dir-0001/.gitignore           6b8428cb
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -190,22 +190,22 @@ print the second letter as `H`.
 
 ```console
 $ xvc file track dir-0002 --cache-type hardlink
-thread '<unnamed>' panicked at 'thread 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }<unnamed>thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:248:9
-thread 'note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:248:9
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:248:9
-', file/src/carry_in/mod.rs:248:9
-' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:248:9
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 thread '<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', lib/src/cli/mod.rs:329:52
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:thread '254<unnamed>thread '' panicked at '<unnamed>thread ':<unnamed>IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:9
+', ' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }file/src/carry_in/mod.rs', :254254:9
+:9file/src/carry_in/mod.rs
+:254:9
 thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:373:10
 
 $ xvc file list dir-0002
-FH        1005 2023-01-04 07:50:43   dir-0002/file-0005.bin  e23e79a0 e23e79a0
-FH        1004 2023-01-04 07:50:43   dir-0002/file-0004.bin  3640687a 3640687a
-FH        1003 2023-01-04 07:50:43   dir-0002/file-0003.bin  2856fe70 2856fe70
-FH        1002 2023-01-04 07:50:43   dir-0002/file-0002.bin  8c079454 8c079454
-FH        1001 2023-01-04 07:50:43   dir-0002/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 07:50:45   dir-0002/.gitignore           5590a4e4
+FH        1005 2023-01-04 07:56:14   dir-0002/file-0005.bin  e23e79a0 e23e79a0
+FH        1004 2023-01-04 07:56:14   dir-0002/file-0004.bin  3640687a 3640687a
+FH        1003 2023-01-04 07:56:14   dir-0002/file-0003.bin  2856fe70 2856fe70
+FH        1002 2023-01-04 07:56:14   dir-0002/file-0002.bin  8c079454 8c079454
+FH        1001 2023-01-04 07:56:14   dir-0002/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 07:56:16   dir-0002/.gitignore           732a8947
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -219,14 +219,14 @@ It means they are symbolic links on the file system and their cache type is also
 symbolic links. 
 
 ```console
-$ xvc file track dir-0003 --cache-type symlink
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }thread '', file/src/carry_in/mod.rs:248:9
+$ xvc -vvvv file track dir-0003 --cache-type symlink
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:248:9
-IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:248:9
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rsthread ':<unnamed>248' panicked at ':[PANIC] IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }file/src/carry_in/mod.rs', lib/src/cli/mod.rs:329:52
-9
-:248:9
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', file/src/carry_in/mod.rs:254:9
+thread '<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 17, kind: AlreadyExists, message: "File exists" } }', lib/src/cli/mod.rs:329:52
 thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:373:10
 
 $ xvc file list dir-0003
