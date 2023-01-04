@@ -270,4 +270,10 @@ Total #: 10 Workspace Size:        [..] Cached Size:        2003
 You may sort `xvc file list` output by name, by modification time and by file
 size.
 
+Use `--sort` option to specify the sort criteria. 
+
+```console
+$ xvc file list --sort name-desc dir-0001/
+```
+
 ## Column Format
