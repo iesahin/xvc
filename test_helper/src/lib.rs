@@ -167,8 +167,6 @@ pub fn generate_random_text_file(filename: &Path, num_lines: usize) {
     }
 }
 
-// TODO: Write some tests for complex test helpers
-
 /// Build a directory tree containing `n_dirs` under `root`.
 /// Each of these directories contain `n_files_per_dir` random binary files.
 pub fn create_directory_tree(
@@ -185,7 +183,7 @@ pub fn create_directory_tree(
         std::fs::create_dir_all(root.join(Path::new(&dir)))?;
         for (name, size) in &files {
             let filename = PathBuf::from(&format!("{}/{}/{}", root.to_string_lossy(), dir, name));
-            generate_random_file(&filename, *size);
+            generate_filled_file(&filename, *size, 23);
             paths.push(filename);
         }
     }
