@@ -302,9 +302,50 @@ Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 You can specify the columns that the command prints. 
 
-If you only want to see the file names, use `{{name}}` as the format string. 
-The following command sorts all files with their sizes in the workspace.
+For example, if you only want to see the file names, use `{{name}}` as the
+format string. 
+
+The following command sorts all files with their sizes in the workspace, and
+prints their size and name.
 
 ```console
-$ xvc file list --format '{{name}}' --sort size-asc
+$ xvc file list --format '{{asize}} {{name}}' --sort size-asc
+dir-0003
+dir-0004
+.xvcignore
+dir-0005
+dir-0002/.gitignore
+dir-0005/file-0005.bin
+.gitignore
+dir-0005/file-0004.bin
+dir-0004/file-0004.bin
+dir-0004/file-0002.bin
+dir-0005/file-0001.bin
+dir-0004/file-0001.bin
+dir-0001/.gitignore
+dir-0005/file-0002.bin
+dir-0004/file-0003.bin
+dir-0001
+dir-0002
+dir-0003/.gitignore
+dir-0002/file-0001.bin
+dir-0001/file-0001.bin
+dir-0003/file-0001.bin
+dir-0004/file-0005.bin
+dir-0005/file-0003.bin
+dir-0002/file-0002.bin
+dir-0003/file-0002.bin
+dir-0002/file-0004.bin
+dir-0001/file-0005.bin
+dir-0002/file-0005.bin
+dir-0003/file-0005.bin
+dir-0003/file-0003.bin
+dir-0001/file-0002.bin
+dir-0001/file-0003.bin
+dir-0002/file-0003.bin
+dir-0001/file-0004.bin
+dir-0003/file-0004.bin
+Total #: 35 Workspace Size:       22860 Cached Size:           0
+
+
 ```
