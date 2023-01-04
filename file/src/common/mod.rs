@@ -225,6 +225,7 @@ pub fn targets_from_store(
         let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
         let mut glob_matcher = GlobSetBuilder::new();
         targets.iter().for_each(|t| {
+            watch!(t);
             glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
         });
         let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
