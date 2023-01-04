@@ -279,6 +279,7 @@ pub fn cmd_track(
             &cache_paths,
             &cache_type_store,
             !no_parallel,
+            opts.force,
         )?;
     }
     Ok(())

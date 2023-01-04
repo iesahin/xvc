@@ -201,6 +201,7 @@ pub fn cmd_carry_in(
         &cache_paths_to_carry,
         &stored_cache_type_store,
         !opts.no_parallel,
+        opts.force,
     )?;
 
     // We only update the records for existing paths.
