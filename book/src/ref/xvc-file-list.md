@@ -309,43 +309,43 @@ The following command sorts all files with their sizes in the workspace, and
 prints their size and name.
 
 ```console
-$ xvc file list --format '{{asz}} {{name}}' --sort size-asc
-asize dir-0004/file-0005.bin
-asize dir-0005/file-0004.bin
-asize dir-0005/file-0003.bin
-asize .xvcignore
-asize dir-0005/file-0005.bin
-asize dir-0003
-asize dir-0001
-asize dir-0004/file-0001.bin
-asize dir-0002/.gitignore
-asize dir-0004/file-0004.bin
-asize dir-0005
-asize .gitignore
-asize dir-0001/.gitignore
-asize dir-0003/.gitignore
-asize dir-0002
-asize dir-0004/file-0003.bin
-asize dir-0005/file-0001.bin
-asize dir-0005/file-0002.bin
-asize dir-0004
-asize dir-0003/file-0001.bin
-asize dir-0001/file-0001.bin
-asize dir-0002/file-0001.bin
-asize dir-0004/file-0002.bin
-asize dir-0001/file-0002.bin
-asize dir-0003/file-0002.bin
-asize dir-0003/file-0004.bin
-asize dir-0003/file-0003.bin
-asize dir-0002/file-0002.bin
-asize dir-0001/file-0003.bin
-asize dir-0002/file-0005.bin
-asize dir-0001/file-0005.bin
-asize dir-0003/file-0005.bin
-asize dir-0002/file-0003.bin
-asize dir-0002/file-0004.bin
-asize dir-0001/file-0004.bin
-Total #: 35 Workspace Size:       22855 Cached Size:           0
+$ xvc file list --format '{{rsz}} {{name}}' --sort size-desc
+       1005 dir-0005/file-0005.bin
+       1001 dir-0005/file-0001.bin
+        149 dir-0002/.gitignore
+       1003 dir-0005/file-0003.bin
+        130 .xvcignore
+       1001 dir-0004/file-0001.bin
+        149 dir-0003/.gitignore
+        149 dir-0001/.gitignore
+        224 dir-0005
+        256 dir-0001
+       1003 dir-0004/file-0003.bin
+        256 dir-0003
+       1002 dir-0005/file-0002.bin
+        256 dir-0002
+       1004 dir-0005/file-0004.bin
+       1004 dir-0004/file-0004.bin
+       1002 dir-0004/file-0002.bin
+       1005 dir-0004/file-0005.bin
+        107 .gitignore
+        224 dir-0004
+       1001 dir-0002/file-0001.bin
+        180 dir-0003/file-0001.bin
+       1001 dir-0001/file-0001.bin
+        180 dir-0003/file-0002.bin
+       1002 dir-0001/file-0002.bin
+       1002 dir-0002/file-0002.bin
+       1003 dir-0002/file-0003.bin
+        180 dir-0003/file-0003.bin
+       1003 dir-0001/file-0003.bin
+       1004 dir-0002/file-0004.bin
+       1005 dir-0002/file-0005.bin
+       1005 dir-0001/file-0005.bin
+        180 dir-0003/file-0005.bin
+        180 dir-0003/file-0004.bin
+       1004 dir-0001/file-0004.bin
+Total #: 35 Workspace Size:       22860 Cached Size:           0
 
 
 ```
