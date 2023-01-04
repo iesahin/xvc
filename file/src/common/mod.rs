@@ -438,7 +438,6 @@ pub fn recheck_from_cache(
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,
     cache_type: CacheType,
-    force: bool,
 ) -> Result<()> {
     if let Some(parent) = xvc_path.parents().get(0) {
         let parent_dir = parent.to_absolute_path(xvc_root);
@@ -448,16 +447,6 @@ pub fn recheck_from_cache(
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
     let path = xvc_path.to_absolute_path(xvc_root);
-    if path.exists() {
-        if force {
-            fs::remove_file(&path);
-            info!(output_snd, "[REMOVE] {path}");
-        } else {
-            info!(output_snd, "[SKIP] {path}");
-            return Ok(());
-        }
-    }
-
     watch!(path);
     watch!(cache_type);
     match cache_type {

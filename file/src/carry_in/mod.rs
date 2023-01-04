@@ -250,9 +250,15 @@ pub fn carry_in(
             uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
             info!(output_snd, "[CARRY] {xp} -> {cache_path}");
         }
+        let target_path = xp.to_absolute_path(xvc_root);
+        watch!(target_path);
+        if target_path.exists() {
+            uwr!(fs::remove_file(&target_path), output_snd);
+            info!(output_snd, "[REMOVE] {target_path}");
+        }
         let cache_type = uwo!(cache_types.get(xe).cloned(), output_snd);
         uwr!(
-            recheck_from_cache(output_snd, xvc_root, xp, &cache_path, cache_type, force),
+            recheck_from_cache(output_snd, xvc_root, xp, &cache_path, cache_type),
             output_snd
         );
         info!(output_snd, "[RECHECK] {cache_path} -> {xp}");

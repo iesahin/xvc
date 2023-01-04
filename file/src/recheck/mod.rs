@@ -23,7 +23,7 @@ use xvc_core::{
     TextOrBinary, XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, warn, watch, XvcOutputLine};
+use xvc_logging::{error, info, warn, watch, XvcOutputLine};
 use xvc_walker::Glob;
 
 /// Check out file from cache by a copy or link
@@ -226,7 +226,7 @@ fn recheck(
     parallel: bool,
     force: bool,
 ) -> Result<()> {
-    let checkout = |xe, xvc_path: &XvcPath| -> Result<()> {
+    let inner = |xe, xvc_path: &XvcPath| -> Result<()> {
         let content_digest = content_digest_store[&xe];
         let cache_path = XvcCachePath::new(&xvc_path, &content_digest)?;
         watch!(cache_path);
@@ -234,21 +234,17 @@ fn recheck(
             let target_path = xvc_path.to_absolute_path(xvc_root);
             watch!(target_path);
             if target_path.exists() {
-                warn!(
-                    output_snd,
-                    "{} already exists. Removing to recheck.", xvc_path
-                );
-                fs::remove_file(target_path)?;
+                info!(output_snd, "[EXISTS] {target_path}");
+                if force {
+                    fs::remove_file(&target_path)?;
+                    info!(output_snd, "[REMOVE] {target_path}");
+                } else {
+                    info!(output_snd, "[SKIP] {target_path}");
+                    return Ok(());
+                }
             }
             let cache_type = cache_type_store[&xe];
-            recheck_from_cache(
-                &output_snd,
-                xvc_root,
-                xvc_path,
-                &cache_path,
-                cache_type,
-                force,
-            )
+            recheck_from_cache(&output_snd, xvc_root, xvc_path, &cache_path, cache_type)
         } else {
             error!(
                 output_snd,
@@ -260,11 +256,11 @@ fn recheck(
 
     if parallel {
         files_to_recheck.par_iter().for_each(|(xe, xp)| {
-            checkout(*xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
+            inner(*xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
         });
     } else {
         files_to_recheck.iter().for_each(|(xe, xp)| {
-            checkout(*xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
+            inner(*xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
         });
     }
 
