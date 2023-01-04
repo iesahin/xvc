@@ -214,12 +214,12 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-SS         180 [..]   dir-0003/file-0005.bin  e23e79a0         
-SS         180 [..]   dir-0003/file-0004.bin  3640687a         
-SS         180 [..]   dir-0003/file-0003.bin  2856fe70         
-SS         180 [..]   dir-0003/file-0002.bin  8c079454         
-SS         180 [..]   dir-0003/file-0001.bin  189fa49f         
-FX         149 [..]   dir-0003/.gitignore           [..]
+SS         [..]   dir-0003/file-0005.bin  e23e79a0         
+SS         [..]   dir-0003/file-0004.bin  3640687a         
+SS         [..]   dir-0003/file-0003.bin  2856fe70         
+SS         [..]   dir-0003/file-0002.bin  8c079454         
+SS         [..]   dir-0003/file-0001.bin  189fa49f         
+FX         [..]   dir-0003/.gitignore           [..]
 Total #: 6 Workspace Size:        1049 Cached Size:        5015
 
 
