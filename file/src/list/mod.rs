@@ -540,7 +540,9 @@ pub fn cmd_list(
     let current_dir = conf.current_dir()?;
 
     let from_disk = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
+    watch!(from_disk);
     let from_store = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    watch!(from_store);
     let stored_xvc_metadata = xvc_root.load_store::<XvcMetadata>()?;
     let stored_cache_type = xvc_root.load_store::<CacheType>()?;
 
