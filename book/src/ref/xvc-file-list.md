@@ -124,38 +124,38 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list
-FX        1005 2023-01-04 08:11:17   dir-0005/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 08:11:17   dir-0005/file-0004.bin           3640687a
-FX        1003 2023-01-04 08:11:17   dir-0005/file-0003.bin           2856fe70
-FX        1002 2023-01-04 08:11:17   dir-0005/file-0002.bin           8c079454
-FX        1001 2023-01-04 08:11:17   dir-0005/file-0001.bin           189fa49f
-DX         224 2023-01-04 08:11:17   dir-0005                   
-FX        1005 2023-01-04 08:11:17   dir-0004/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 08:11:17   dir-0004/file-0004.bin           3640687a
-FX        1003 2023-01-04 08:11:17   dir-0004/file-0003.bin           2856fe70
-FX        1002 2023-01-04 08:11:17   dir-0004/file-0002.bin           8c079454
-FX        1001 2023-01-04 08:11:17   dir-0004/file-0001.bin           189fa49f
-DX         224 2023-01-04 08:11:17   dir-0004                   
-FX        1005 2023-01-04 08:11:17   dir-0003/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 08:11:17   dir-0003/file-0004.bin           3640687a
-FX        1003 2023-01-04 08:11:17   dir-0003/file-0003.bin           2856fe70
-FX        1002 2023-01-04 08:11:17   dir-0003/file-0002.bin           8c079454
-FX        1001 2023-01-04 08:11:17   dir-0003/file-0001.bin           189fa49f
-DX         224 2023-01-04 08:11:17   dir-0003                   
-FX        1005 2023-01-04 08:11:17   dir-0002/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 08:11:17   dir-0002/file-0004.bin           3640687a
-FX        1003 2023-01-04 08:11:17   dir-0002/file-0003.bin           2856fe70
-FX        1002 2023-01-04 08:11:17   dir-0002/file-0002.bin           8c079454
-FX        1001 2023-01-04 08:11:17   dir-0002/file-0001.bin           189fa49f
-DX         224 2023-01-04 08:11:17   dir-0002                   
-FX        1005 2023-01-04 08:11:17   dir-0001/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 08:11:17   dir-0001/file-0004.bin           3640687a
-FX        1003 2023-01-04 08:11:17   dir-0001/file-0003.bin           2856fe70
-FX        1002 2023-01-04 08:11:17   dir-0001/file-0002.bin           8c079454
-FX        1001 2023-01-04 08:11:17   dir-0001/file-0001.bin           189fa49f
-DX         224 2023-01-04 08:11:17   dir-0001                   
-FX         130 2023-01-04 08:11:17   .xvcignore           ac46bf74
-FX         107 2023-01-04 08:11:17   .gitignore           ce9fcf30
+FX        1005 2023-01-04 12:07:03   dir-0005/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 12:07:03   dir-0005/file-0004.bin           3640687a
+FX        1003 2023-01-04 12:07:03   dir-0005/file-0003.bin           2856fe70
+FX        1002 2023-01-04 12:07:03   dir-0005/file-0002.bin           8c079454
+FX        1001 2023-01-04 12:07:03   dir-0005/file-0001.bin           189fa49f
+DX         224 2023-01-04 12:07:03   dir-0005                   
+FX        1005 2023-01-04 12:07:03   dir-0004/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 12:07:03   dir-0004/file-0004.bin           3640687a
+FX        1003 2023-01-04 12:07:03   dir-0004/file-0003.bin           2856fe70
+FX        1002 2023-01-04 12:07:03   dir-0004/file-0002.bin           8c079454
+FX        1001 2023-01-04 12:07:03   dir-0004/file-0001.bin           189fa49f
+DX         224 2023-01-04 12:07:03   dir-0004                   
+FX        1005 2023-01-04 12:07:03   dir-0003/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 12:07:03   dir-0003/file-0004.bin           3640687a
+FX        1003 2023-01-04 12:07:03   dir-0003/file-0003.bin           2856fe70
+FX        1002 2023-01-04 12:07:03   dir-0003/file-0002.bin           8c079454
+FX        1001 2023-01-04 12:07:03   dir-0003/file-0001.bin           189fa49f
+DX         224 2023-01-04 12:07:03   dir-0003                   
+FX        1005 2023-01-04 12:07:03   dir-0002/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 12:07:03   dir-0002/file-0004.bin           3640687a
+FX        1003 2023-01-04 12:07:03   dir-0002/file-0003.bin           2856fe70
+FX        1002 2023-01-04 12:07:03   dir-0002/file-0002.bin           8c079454
+FX        1001 2023-01-04 12:07:03   dir-0002/file-0001.bin           189fa49f
+DX         224 2023-01-04 12:07:03   dir-0002                   
+FX        1005 2023-01-04 12:07:03   dir-0001/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 12:07:03   dir-0001/file-0004.bin           3640687a
+FX        1003 2023-01-04 12:07:03   dir-0001/file-0003.bin           2856fe70
+FX        1002 2023-01-04 12:07:03   dir-0001/file-0002.bin           8c079454
+FX        1001 2023-01-04 12:07:03   dir-0001/file-0001.bin           189fa49f
+DX         224 2023-01-04 12:07:03   dir-0001                   
+FX         130 2023-01-04 12:07:03   .xvcignore           ac46bf74
+FX         107 2023-01-04 12:07:03   .gitignore           ce9fcf30
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
@@ -174,12 +174,12 @@ directories are considered as collection of files.
 $ xvc file track dir-0001/
 
 $ xvc file list dir-0001/
-FC        1005 2023-01-04 08:11:17   dir-0001/file-0005.bin  e23e79a0 e23e79a0
-FC        1004 2023-01-04 08:11:17   dir-0001/file-0004.bin  3640687a 3640687a
-FC        1003 2023-01-04 08:11:17   dir-0001/file-0003.bin  2856fe70 2856fe70
-FC        1002 2023-01-04 08:11:17   dir-0001/file-0002.bin  8c079454 8c079454
-FC        1001 2023-01-04 08:11:17   dir-0001/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 08:11:18   dir-0001/.gitignore           003344ca
+FC        1005 2023-01-04 12:07:03   dir-0001/file-0005.bin  e23e79a0 e23e79a0
+FC        1004 2023-01-04 12:07:03   dir-0001/file-0004.bin  3640687a 3640687a
+FC        1003 2023-01-04 12:07:03   dir-0001/file-0003.bin  2856fe70 2856fe70
+FC        1002 2023-01-04 12:07:03   dir-0001/file-0002.bin  8c079454 8c079454
+FC        1001 2023-01-04 12:07:03   dir-0001/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 12:07:04   dir-0001/.gitignore           79e70faa
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -192,12 +192,12 @@ print the second letter as `H`.
 $ xvc file track dir-0002 --cache-type hardlink
 
 $ xvc file list dir-0002
-FH        1005 2023-01-04 08:11:17   dir-0002/file-0005.bin  e23e79a0 e23e79a0
-FH        1004 2023-01-04 08:11:17   dir-0002/file-0004.bin  3640687a 3640687a
-FH        1003 2023-01-04 08:11:17   dir-0002/file-0003.bin  2856fe70 2856fe70
-FH        1002 2023-01-04 08:11:17   dir-0002/file-0002.bin  8c079454 8c079454
-FH        1001 2023-01-04 08:11:17   dir-0002/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 08:11:18   dir-0002/.gitignore           19ccc889
+FH        1005 2023-01-04 12:07:03   dir-0002/file-0005.bin  e23e79a0 e23e79a0
+FH        1004 2023-01-04 12:07:03   dir-0002/file-0004.bin  3640687a 3640687a
+FH        1003 2023-01-04 12:07:03   dir-0002/file-0003.bin  2856fe70 2856fe70
+FH        1002 2023-01-04 12:07:03   dir-0002/file-0002.bin  8c079454 8c079454
+FH        1001 2023-01-04 12:07:03   dir-0002/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 12:07:04   dir-0002/.gitignore           f2e54933
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -214,13 +214,13 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-FS        1005 [..]   dir-0003/file-0005.bin  e23e79a0 e23e79a0
-FS        1004 [..]   dir-0003/file-0004.bin  3640687a 3640687a
-FS        1003 [..]   dir-0003/file-0003.bin  2856fe70 2856fe70
-FS        1002 [..]   dir-0003/file-0002.bin  8c079454 8c079454
-FS        1001 [..]   dir-0003/file-0001.bin  189fa49f 189fa49f
-FX         149 [..]   dir-0003/.gitignore           [..]
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+SS         178 2023-01-04 12:07:05   dir-0003/file-0005.bin  e23e79a0         
+SS         178 2023-01-04 12:07:05   dir-0003/file-0004.bin  3640687a         
+SS         178 2023-01-04 12:07:05   dir-0003/file-0003.bin  2856fe70         
+SS         178 2023-01-04 12:07:05   dir-0003/file-0002.bin  8c079454         
+SS         178 2023-01-04 12:07:05   dir-0003/file-0001.bin  189fa49f         
+FX         149 2023-01-04 12:07:05   dir-0003/.gitignore           7426faf8
+Total #: 6 Workspace Size:        1039 Cached Size:        5015
 
 
 ```

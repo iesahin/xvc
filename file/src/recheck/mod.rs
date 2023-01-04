@@ -224,7 +224,6 @@ fn recheck(
     cache_type_store: &XvcStore<CacheType>,
     content_digest_store: &XvcStore<ContentDigest>,
     parallel: bool,
-    force: bool,
 ) -> Result<()> {
     let inner = |xe, xvc_path: &XvcPath| -> Result<()> {
         let content_digest = content_digest_store[&xe];
@@ -235,13 +234,8 @@ fn recheck(
             watch!(target_path);
             if target_path.exists() {
                 info!(output_snd, "[EXISTS] {target_path}");
-                if force {
-                    fs::remove_file(&target_path)?;
-                    info!(output_snd, "[REMOVE] {target_path}");
-                } else {
-                    info!(output_snd, "[SKIP] {target_path}");
-                    return Ok(());
-                }
+                fs::remove_file(&target_path)?;
+                info!(output_snd, "[REMOVE] {target_path}");
             }
             let cache_type = cache_type_store[&xe];
             recheck_from_cache(&output_snd, xvc_root, xvc_path, &cache_path, cache_type)
