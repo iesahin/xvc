@@ -124,38 +124,38 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list
-FX        1005 2023-01-04 07:28:23   dir-0005/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:28:23   dir-0005/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:28:23   dir-0005/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:28:23   dir-0005/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:28:23   dir-0005/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:28:23   dir-0005                   
-FX        1005 2023-01-04 07:28:23   dir-0004/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:28:23   dir-0004/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:28:23   dir-0004/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:28:23   dir-0004/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:28:23   dir-0004/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:28:23   dir-0004                   
-FX        1005 2023-01-04 07:28:23   dir-0003/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:28:23   dir-0003/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:28:23   dir-0003/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:28:23   dir-0003/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:28:23   dir-0003/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:28:23   dir-0003                   
-FX        1005 2023-01-04 07:28:23   dir-0002/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:28:23   dir-0002/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:28:23   dir-0002/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:28:23   dir-0002/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:28:23   dir-0002/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:28:23   dir-0002                   
-FX        1005 2023-01-04 07:28:23   dir-0001/file-0005.bin           e23e79a0
-FX        1004 2023-01-04 07:28:23   dir-0001/file-0004.bin           3640687a
-FX        1003 2023-01-04 07:28:23   dir-0001/file-0003.bin           2856fe70
-FX        1002 2023-01-04 07:28:23   dir-0001/file-0002.bin           8c079454
-FX        1001 2023-01-04 07:28:23   dir-0001/file-0001.bin           189fa49f
-DX         224 2023-01-04 07:28:23   dir-0001                   
-FX         130 2023-01-04 07:28:23   .xvcignore           ac46bf74
-FX         107 2023-01-04 07:28:23   .gitignore           ce9fcf30
+FX        1005 2023-01-04 07:29:37   dir-0005/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:29:37   dir-0005/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:29:37   dir-0005/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:29:37   dir-0005/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:29:37   dir-0005/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:29:37   dir-0005                   
+FX        1005 2023-01-04 07:29:37   dir-0004/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:29:37   dir-0004/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:29:37   dir-0004/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:29:37   dir-0004/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:29:37   dir-0004/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:29:37   dir-0004                   
+FX        1005 2023-01-04 07:29:37   dir-0003/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:29:37   dir-0003/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:29:37   dir-0003/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:29:37   dir-0003/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:29:37   dir-0003/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:29:37   dir-0003                   
+FX        1005 2023-01-04 07:29:37   dir-0002/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:29:37   dir-0002/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:29:37   dir-0002/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:29:37   dir-0002/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:29:37   dir-0002/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:29:37   dir-0002                   
+FX        1005 2023-01-04 07:29:36   dir-0001/file-0005.bin           e23e79a0
+FX        1004 2023-01-04 07:29:36   dir-0001/file-0004.bin           3640687a
+FX        1003 2023-01-04 07:29:36   dir-0001/file-0003.bin           2856fe70
+FX        1002 2023-01-04 07:29:36   dir-0001/file-0002.bin           8c079454
+FX        1001 2023-01-04 07:29:36   dir-0001/file-0001.bin           189fa49f
+DX         224 2023-01-04 07:29:36   dir-0001                   
+FX         130 2023-01-04 07:29:37   .xvcignore           ac46bf74
+FX         107 2023-01-04 07:29:37   .gitignore           ce9fcf30
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
@@ -174,12 +174,12 @@ directories are considered as collection of files.
 $ xvc file track dir-0001/
 
 $ xvc file list dir-0001/
-FC        1005 2023-01-04 07:28:23   dir-0001/file-0005.bin  e23e79a0 e23e79a0
-FC        1004 2023-01-04 07:28:23   dir-0001/file-0004.bin  3640687a 3640687a
-FC        1003 2023-01-04 07:28:23   dir-0001/file-0003.bin  2856fe70 2856fe70
-FC        1002 2023-01-04 07:28:23   dir-0001/file-0002.bin  8c079454 8c079454
-FC        1001 2023-01-04 07:28:23   dir-0001/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 07:28:24   dir-0001/.gitignore           6a9ff43f
+FC        1005 2023-01-04 07:29:36   dir-0001/file-0005.bin  e23e79a0 e23e79a0
+FC        1004 2023-01-04 07:29:36   dir-0001/file-0004.bin  3640687a 3640687a
+FC        1003 2023-01-04 07:29:36   dir-0001/file-0003.bin  2856fe70 2856fe70
+FC        1002 2023-01-04 07:29:36   dir-0001/file-0002.bin  8c079454 8c079454
+FC        1001 2023-01-04 07:29:36   dir-0001/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 07:29:37   dir-0001/.gitignore           01f47796
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -192,20 +192,20 @@ print the second letter as `H`.
 $ xvc file track dir-0002 --cache-type hardlink
 thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', file/src/carry_in/mod.rs:230:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', thread 'file/src/carry_in/mod.rs:230:9
-<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', lib/src/cli/mod.rs:329:52
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', file/src/carry_in/mod.rs:230:9
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', file/src/carry_in/mod.rs:230:9
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', file/src/carry_in/mod.rs:230:9
+thread '<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', lib/src/cli/mod.rs:329:52
+thread 'thread '<unnamed>' panicked at 'thread 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }<unnamed>', ' panicked at 'file/src/carry_in/mod.rs<unnamed>:' panicked at '230IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }:', IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }thread '', file/src/carry_in/mod.rsfile/src/carry_in/mod.rs<unnamed>:' panicked at '230IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }:', 9
+:230file/src/carry_in/mod.rs:230:9
+:9
+9
 thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:373:10
 
 $ xvc file list dir-0002
-FH        1005 2023-01-04 07:28:23   dir-0002/file-0005.bin  e23e79a0 e23e79a0
-FH        1004 2023-01-04 07:28:23   dir-0002/file-0004.bin  3640687a 3640687a
-FH        1003 2023-01-04 07:28:23   dir-0002/file-0003.bin  2856fe70 2856fe70
-FH        1002 2023-01-04 07:28:23   dir-0002/file-0002.bin  8c079454 8c079454
-FH        1001 2023-01-04 07:28:23   dir-0002/file-0001.bin  189fa49f 189fa49f
-FX         149 2023-01-04 07:28:25   dir-0002/.gitignore           3cb89136
+FH        1005 2023-01-04 07:29:37   dir-0002/file-0005.bin  e23e79a0 e23e79a0
+FH        1004 2023-01-04 07:29:37   dir-0002/file-0004.bin  3640687a 3640687a
+FH        1003 2023-01-04 07:29:37   dir-0002/file-0003.bin  2856fe70 2856fe70
+FH        1002 2023-01-04 07:29:37   dir-0002/file-0002.bin  8c079454 8c079454
+FH        1001 2023-01-04 07:29:37   dir-0002/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 07:29:38   dir-0002/.gitignore           630a3a63
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -220,14 +220,14 @@ symbolic links.
 
 ```console
 $ xvc file track dir-0003 --cache-type symlink
-thread 'thread '<unnamed><unnamed>' panicked at '' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', ', file/src/carry_in/mod.rs:230:9
+thread 'thread '<unnamed><unnamed>' panicked at '' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', ', file/src/carry_in/mod.rsfile/src/carry_in/mod.rs::230230::99thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', file/src/carry_in/mod.rs:230:9
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', file/src/carry_in/mod.rs:230:9
-file/src/carry_in/mod.rs:230:9
+
+
 thread '<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', lib/src/cli/mod.rs:329:52
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }', file/src/carry_in/mod.rs:230:9
-thread '<unnamed>thread '' panicked at 'maincalled `Result::unwrap()` on an `Err` value: "SendError(..)"' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:373:10
-', file/src/carry_in/mod.rs:230:9
+thread 'thread '<unnamed><unnamed>' panicked at '' panicked at 'called `Result::unwrap()` on an `Err` value: "SendError(..)"called `Result::unwrap()` on an `Err` value: "SendError(..)"', ', file/src/carry_in/mod.rsfile/src/carry_in/mod.rs::230230::99
+
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:373:10
 
 $ xvc file list dir-0003
 FS        1005 [..]   dir-0003/file-0005.bin  e23e79a0 e23e79a0

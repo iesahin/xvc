@@ -3,6 +3,7 @@ use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use std::collections::HashSet;
+use std::fs;
 
 use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
@@ -219,6 +220,7 @@ pub fn carry_in(
     cache_paths: &HStore<XvcCachePath>,
     cache_types: &XvcStore<CacheType>,
     parallel: bool,
+    force: bool,
 ) -> Result<()> {
     assert! {
         xvc_paths_to_carry.len() == cache_paths.len(),
@@ -227,9 +229,21 @@ pub fn carry_in(
 
     let copy_path_to_cache_and_recheck = |xe, xp| {
         let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
-        uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
+        let abs_cache_path = cache_path.to_absolute_path(xvc_root);
+        if abs_cache_path.exists() {
+            if force {
+                uwr!(fs::remove_file(&abs_cache_path), output_snd);
+                info!(output_snd, "[REMOVE] {abs_cache_path}");
+                uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
+                info!(output_snd, "[CARRY] {xp} -> {cache_path}");
+            } else {
+                info!(output_snd, "[EXISTS] {abs_cache_path} for {xp}");
+            }
+        } else {
+            uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
+            info!(output_snd, "[CARRY] {xp} -> {cache_path}");
+        }
         let cache_type = uwo!(cache_types.get(xe).cloned(), output_snd);
-        info!(output_snd, "[CARRY] {xp} -> {cache_path}");
         uwr!(
             recheck_from_cache(output_snd, xvc_root, xp, &cache_path, cache_type),
             output_snd
