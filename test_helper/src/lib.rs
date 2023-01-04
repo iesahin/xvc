@@ -183,7 +183,7 @@ pub fn create_directory_tree(
         std::fs::create_dir_all(root.join(Path::new(&dir)))?;
         for (name, size) in &files {
             let filename = PathBuf::from(&format!("{}/{}/{}", root.to_string_lossy(), dir, name));
-            generate_filled_file(&filename, *size, 0);
+            generate_filled_file(&filename, *size, 23);
             paths.push(filename);
         }
     }
