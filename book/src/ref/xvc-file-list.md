@@ -274,6 +274,19 @@ Use `--sort` option to specify the sort criteria.
 
 ```console
 $ xvc file list --sort name-desc dir-0001/
+FC        1005 2023-01-04 14:48:05   dir-0001/file-0005.bin  e23e79a0 e23e79a0
+FC        1004 2023-01-04 14:48:05   dir-0001/file-0004.bin  3640687a 3640687a
+FC        1003 2023-01-04 14:48:05   dir-0001/file-0003.bin  2856fe70 2856fe70
+FC        1002 2023-01-04 14:48:05   dir-0001/file-0002.bin  8c079454 8c079454
+FC        1001 2023-01-04 14:48:05   dir-0001/file-0001.bin  189fa49f 189fa49f
+FX         149 2023-01-04 14:48:05   dir-0001/.gitignore           d69dbaff
+Total #: 6 Workspace Size:        5164 Cached Size:        5015
+
+
+```
+
+```console
+$ xvc file list --sort name-asc dir-0001/
 ```
 
 ## Column Format
