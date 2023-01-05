@@ -336,7 +336,7 @@ $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
 2856fe70 2856fe70 dir-0001/file-0003.bin
 3640687a 3640687a dir-0001/file-0004.bin
 e23e79a0 e23e79a0 dir-0001/file-0005.bin
-e8d5fa9d          dir-0001/.gitignore
+[..][..]          dir-0001/.gitignore
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -351,11 +351,6 @@ you can use cache status `{{cst}}` column.
 
 ```console
 $ xvc-test-helper generate-random-file --size 100 --filename dir-0001/a-new-file.bin
-error: Found argument 'dir-0001/a-new-file.bin' which wasn't expected, or isn't valid in this context
-
-Usage: xvc-test-helper generate-random-file [OPTIONS] --filename <FILENAME>
-
-For more information try '--help'
 
 $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0005.bin
@@ -363,8 +358,15 @@ $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0003.bin
 = dir-0001/file-0002.bin
 = dir-0001/file-0001.bin
+X dir-0001/a-new-file.bin
 X dir-0001/.gitignore
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+Total #: 7 Workspace Size:        5264 Cached Size:        5015
 
 
 ```
+
+The cache status column shows `=` for unchanged files in the cache, `X` for
+untracked files, `>` for files that there is newer version in the cache, and `<`
+for files that there is a newer version in the workspace. The comparison is done
+between recorded timestamp and actual timestamp with an accuracy of 1 second.
+
