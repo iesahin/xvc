@@ -298,7 +298,7 @@ pub fn format_size(size: Option<u64>) -> String {
                 format!("{:>4}TB.{}", size / 1024 / 1024 / 1024 / 1024, size % 1000)
             }
         }
-        None => "          ".to_owned(),
+        None => "           ".to_owned(),
     }
 }
 
