@@ -309,39 +309,39 @@ The following command sorts all files with their sizes in the workspace, and
 prints their size and name.
 
 ```console
-$ xvc file list --format '{{rsz}} {{name}}' --sort size-desc
-            dir-0005/file-0005.bin
-            dir-0004/file-0005.bin
+$ xvc file list --format '{{asz}} {{name}}' --sort size-desc
        1005 dir-0002/file-0005.bin
+            dir-0004/file-0005.bin
        1005 dir-0001/file-0005.bin
-       1004 dir-0001/file-0004.bin
-       1004 dir-0002/file-0004.bin
+            dir-0005/file-0005.bin
             dir-0004/file-0004.bin
+       1004 dir-0002/file-0004.bin
+       1004 dir-0001/file-0004.bin
             dir-0005/file-0004.bin
-            dir-0004/file-0003.bin
        1003 dir-0001/file-0003.bin
-       1003 dir-0002/file-0003.bin
+            dir-0004/file-0003.bin
             dir-0005/file-0003.bin
+       1003 dir-0002/file-0003.bin
        1002 dir-0002/file-0002.bin
             dir-0005/file-0002.bin
             dir-0004/file-0002.bin
        1002 dir-0001/file-0002.bin
-            dir-0004/file-0001.bin
        1001 dir-0002/file-0001.bin
-       1001 dir-0001/file-0001.bin
+            dir-0004/file-0001.bin
             dir-0005/file-0001.bin
-            dir-0002
+       1001 dir-0001/file-0001.bin
             dir-0003
             dir-0001
+            dir-0002
             dir-0005
             dir-0004
-       1003 dir-0003/file-0003.bin
-       1005 dir-0003/file-0005.bin
        1001 dir-0003/file-0001.bin
+       1005 dir-0003/file-0005.bin
        1002 dir-0003/file-0002.bin
+       1003 dir-0003/file-0003.bin
        1004 dir-0003/file-0004.bin
-            dir-0001/.gitignore
             dir-0003/.gitignore
+            dir-0001/.gitignore
             dir-0002/.gitignore
             .xvcignore
             .gitignore
