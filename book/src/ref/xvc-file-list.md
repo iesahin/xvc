@@ -336,7 +336,7 @@ $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
 2856fe70 2856fe70 dir-0001/file-0003.bin
 3640687a 3640687a dir-0001/file-0004.bin
 e23e79a0 e23e79a0 dir-0001/file-0005.bin
-650b6c16          dir-0001/.gitignore
+535b5643          dir-0001/.gitignore
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
@@ -350,6 +350,25 @@ If you want to get a quick glimpse of what needs to carried in, or rechecked,
 you can use cache status `{{cst}}` column. 
 
 ```console
-$ xvc-test-helper create-random-file dir-0001/a-new-file.bin
+$ xvc-test-helper generate-random-file dir-0001/a-new-file.bin
+error: The subcommand 'create-random-file' wasn't recognized
+
+  Did you mean 'generate-random-file', 'create-temp-git-dir', 'create-directory-tree', 'create-temp-dir'?
+
+  If you believe you received this message in error, try re-running with 'xvc-test-helper -- create-random-file'
+
+Usage: xvc-test-helper <COMMAND>
+
+For more information try '--help'
+
 $ xvc file list --format '{{cst}} {{name}}' dir-0001/
+= dir-0001/file-0005.bin
+= dir-0001/file-0004.bin
+= dir-0001/file-0003.bin
+= dir-0001/file-0002.bin
+= dir-0001/file-0001.bin
+X dir-0001/.gitignore
+Total #: 6 Workspace Size:        5164 Cached Size:        5015
+
+
 ```
