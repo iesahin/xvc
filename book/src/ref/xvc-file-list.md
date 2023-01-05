@@ -336,7 +336,7 @@ $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
 2856fe70 2856fe70 dir-0001/file-0003.bin
 3640687a 3640687a dir-0001/file-0004.bin
 e23e79a0 e23e79a0 dir-0001/file-0005.bin
-[..][..]          dir-0001/.gitignore
+[..]          dir-0001/.gitignore
 Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
