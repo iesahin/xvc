@@ -373,10 +373,10 @@ impl ListRows {
         let row_cmp = |a: &ListRow, b: &ListRow| match self.sort_criteria {
             ListSortCriteria::NameAsc => a.name.cmp(&b.name),
             ListSortCriteria::NameDesc => b.name.cmp(&a.name),
-            ListSortCriteria::SizeAsc => a.recorded_size.cmp(&b.actual_size),
-            ListSortCriteria::SizeDesc => b.recorded_size.cmp(&a.actual_size),
-            ListSortCriteria::TimestampAsc => a.recorded_timestamp.cmp(&b.actual_timestamp),
-            ListSortCriteria::TimestampDesc => b.recorded_timestamp.cmp(&a.actual_timestamp),
+            ListSortCriteria::SizeAsc => a.actual_size.cmp(&b.actual_size),
+            ListSortCriteria::SizeDesc => b.actual_size.cmp(&a.actual_size),
+            ListSortCriteria::TimestampAsc => a.actual_timestamp.cmp(&b.actual_timestamp),
+            ListSortCriteria::TimestampDesc => b.actual_timestamp.cmp(&a.actual_timestamp),
             ListSortCriteria::None => std::cmp::Ordering::Equal,
         };
         if self.sort_criteria != ListSortCriteria::None {
