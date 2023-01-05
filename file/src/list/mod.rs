@@ -622,30 +622,27 @@ pub fn cmd_list(
 
     watch!(matches);
 
-    // Now fill in the digests if needed
-    // unwrap shouldn't panic as we fill the options in from_conf.
-    let matches = if opts.format.as_ref().unwrap().columns.iter().any(|c| {
-        *c == ListColumn::RecordedContentDigest64 || *c == ListColumn::RecordedContentDigest8
-    }) {
-        let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
-        matches
-            .into_iter()
-            .map(|pm| {
-                if let Some(xvc_entity) = pm.xvc_entity {
-                    let digest = content_digest_store.get(&xvc_entity).cloned();
-                    PathMatch {
-                        recorded_digest: digest,
-                        ..pm
-                    }
-                } else {
-                    pm
+    // Now fill in the digests if needed.
+    // We use rec content digest to identify cache paths and calculate cache
+    // size. So we always load and fill these values.
+    let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
+    let matches: Vec<PathMatch> = matches
+        .into_iter()
+        .map(|pm| {
+            if let Some(xvc_entity) = pm.xvc_entity {
+                let digest = content_digest_store.get(&xvc_entity).cloned();
+                PathMatch {
+                    recorded_digest: digest,
+                    ..pm
                 }
-            })
-            .collect()
-    } else {
-        matches
-    };
+            } else {
+                pm
+            }
+        })
+        .collect();
 
+    // Do not calculate actual content hashes if it's not requested in the
+    // format string.
     let matches =
         if opts.format.as_ref().unwrap().columns.iter().any(|c| {
             *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
