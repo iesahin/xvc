@@ -332,41 +332,24 @@ If you want to compare the recorded (cached) hashes and actual hashes in the wor
 ```console
 $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
 189fa49f 189fa49f dir-0001/file-0001.bin
-189fa49f 189fa49f dir-0002/file-0001.bin
-8c079454 8c079454 dir-0002/file-0002.bin
 8c079454 8c079454 dir-0001/file-0002.bin
 2856fe70 2856fe70 dir-0001/file-0003.bin
-2856fe70 2856fe70 dir-0002/file-0003.bin
-3640687a 3640687a dir-0002/file-0004.bin
 3640687a 3640687a dir-0001/file-0004.bin
 e23e79a0 e23e79a0 dir-0001/file-0005.bin
-e23e79a0 e23e79a0 dir-0002/file-0005.bin
-189fa49f          dir-0004/file-0001.bin
-8c079454          dir-0004/file-0002.bin
-2856fe70          dir-0004/file-0003.bin
-3640687a          dir-0004/file-0004.bin
-                  dir-0004
-e23e79a0          dir-0004/file-0005.bin
-189fa49f          dir-0005/file-0001.bin
-8c079454          dir-0005/file-0002.bin
-2856fe70          dir-0005/file-0003.bin
-3640687a          dir-0005/file-0004.bin
-                  dir-0005
-e23e79a0          dir-0005/file-0005.bin
-ac46bf74          .xvcignore
-ce9fcf30          .gitignore
-436a0807          dir-0001/.gitignore
-                  dir-0001
-2dfc7b99          dir-0002/.gitignore
-                  dir-0002
-8a84015a          dir-0003/.gitignore
-         e23e79a0 dir-0003/file-0005.bin
-         189fa49f dir-0003/file-0001.bin
-         3640687a dir-0003/file-0004.bin
-         2856fe70 dir-0003/file-0003.bin
-         8c079454 dir-0003/file-0002.bin
-                  dir-0003
-Total #: 35 Workspace Size:       22850 Cached Size:        5015
+650b6c16          dir-0001/.gitignore
+Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
+```
+
+```admonish info
+If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't calculate these hashes. If you have large number of files where the default format (that includes actual content hashes) runs slowly, you may customize it to not to include these columns.
+```
+
+If you want to get a quick glimpse of what needs to carried in, or rechecked,
+you can use cache status `{{cst}}` column. 
+
+```console
+$ xvc-test-helper create-random-file dir-0001/a-new-file.bin
+$ xvc file list --format '{{cst}} {{name}}' dir-0001/
 ```
