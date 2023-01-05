@@ -19,7 +19,11 @@ Options:
   -f, --format <FORMAT>
           A string for each row of the output table
           
-          The following are the keys for each row: - {{acd}}:  actual content digest. The hash of the workspace file's content.
+          The following are the keys for each row:
+          
+          - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
+          
+          - {{acd64}}:  actual content digest. All 64 digits.
           
           - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D), symlink (S), hardlink (H) or reflink (R).
           
@@ -31,7 +35,9 @@ Options:
           
           - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show whether the file timestamp is the same as the cached timestamp, newer, older, not cached or not tracked.
           
-          - {{rcd}}:  recorded content digest. The hash of the cached content.
+          - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
+          
+          - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
           
           - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
           
@@ -310,13 +316,13 @@ prints their size and name.
 
 ```console
 $ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0001/
-        180 dir-0003/file-0001.bin
-        180 dir-0003/file-0004.bin
-        180 dir-0003/file-0005.bin
-        180 dir-0003/file-0003.bin
-        180 dir-0003/file-0002.bin
-        149 dir-0003/.gitignore
-Total #: 6 Workspace Size:        1049 Cached Size:        5015
+       1005 dir-0001/file-0005.bin
+       1004 dir-0001/file-0004.bin
+       1003 dir-0001/file-0003.bin
+       1002 dir-0001/file-0002.bin
+       1001 dir-0001/file-0001.bin
+        149 dir-0001/.gitignore
+Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 
 ```
@@ -324,43 +330,43 @@ Total #: 6 Workspace Size:        1049 Cached Size:        5015
 If you want to compare the recorded (cached) hashes and actual hashes in the workspace, you can use `{{acd}} {{rcd}} {{name}}` format string. 
 
 ```console
-$ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc
-acd rcd dir-0001/file-0001.bin
-acd rcd dir-0002/file-0001.bin
-acd rcd dir-0001/file-0002.bin
-acd rcd dir-0002/file-0002.bin
-acd rcd dir-0001/file-0003.bin
-acd rcd dir-0002/file-0003.bin
-acd rcd dir-0002/file-0004.bin
-acd rcd dir-0001/file-0004.bin
-acd rcd dir-0001/file-0005.bin
-acd rcd dir-0002/file-0005.bin
-acd rcd dir-0004/file-0001.bin
-acd rcd dir-0004/file-0002.bin
-acd rcd dir-0004/file-0003.bin
-acd rcd dir-0004/file-0004.bin
-acd rcd dir-0004
-acd rcd dir-0004/file-0005.bin
-acd rcd dir-0005/file-0001.bin
-acd rcd dir-0005/file-0002.bin
-acd rcd dir-0005/file-0003.bin
-acd rcd dir-0005/file-0004.bin
-acd rcd dir-0005
-acd rcd dir-0005/file-0005.bin
-acd rcd .xvcignore
-acd rcd .gitignore
-acd rcd dir-0001/.gitignore
-acd rcd dir-0001
-acd rcd dir-0002/.gitignore
-acd rcd dir-0002
-acd rcd dir-0003/.gitignore
-acd rcd dir-0003/file-0001.bin
-acd rcd dir-0003/file-0003.bin
-acd rcd dir-0003/file-0004.bin
-acd rcd dir-0003/file-0005.bin
-acd rcd dir-0003/file-0002.bin
-acd rcd dir-0003
-Total #: 35 Workspace Size:       22860 Cached Size:        5015
+$ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
+189fa49f 189fa49f dir-0001/file-0001.bin
+189fa49f 189fa49f dir-0002/file-0001.bin
+8c079454 8c079454 dir-0002/file-0002.bin
+8c079454 8c079454 dir-0001/file-0002.bin
+2856fe70 2856fe70 dir-0001/file-0003.bin
+2856fe70 2856fe70 dir-0002/file-0003.bin
+3640687a 3640687a dir-0002/file-0004.bin
+3640687a 3640687a dir-0001/file-0004.bin
+e23e79a0 e23e79a0 dir-0001/file-0005.bin
+e23e79a0 e23e79a0 dir-0002/file-0005.bin
+189fa49f          dir-0004/file-0001.bin
+8c079454          dir-0004/file-0002.bin
+2856fe70          dir-0004/file-0003.bin
+3640687a          dir-0004/file-0004.bin
+                  dir-0004
+e23e79a0          dir-0004/file-0005.bin
+189fa49f          dir-0005/file-0001.bin
+8c079454          dir-0005/file-0002.bin
+2856fe70          dir-0005/file-0003.bin
+3640687a          dir-0005/file-0004.bin
+                  dir-0005
+e23e79a0          dir-0005/file-0005.bin
+ac46bf74          .xvcignore
+ce9fcf30          .gitignore
+436a0807          dir-0001/.gitignore
+                  dir-0001
+2dfc7b99          dir-0002/.gitignore
+                  dir-0002
+8a84015a          dir-0003/.gitignore
+         e23e79a0 dir-0003/file-0005.bin
+         189fa49f dir-0003/file-0001.bin
+         3640687a dir-0003/file-0004.bin
+         2856fe70 dir-0003/file-0003.bin
+         8c079454 dir-0003/file-0002.bin
+                  dir-0003
+Total #: 35 Workspace Size:       22850 Cached Size:        5015
 
 
 ```
