@@ -309,43 +309,14 @@ The following command sorts all files with their sizes in the workspace, and
 prints their size and name.
 
 ```console
-$ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0003/
-       1005 dir-0004/file-0005.bin
-       1005 dir-0002/file-0005.bin
-       1005 dir-0005/file-0005.bin
-       1005 dir-0001/file-0005.bin
-       1004 dir-0001/file-0004.bin
-       1004 dir-0005/file-0004.bin
-       1004 dir-0004/file-0004.bin
-       1004 dir-0002/file-0004.bin
-       1003 dir-0005/file-0003.bin
-       1003 dir-0001/file-0003.bin
-       1003 dir-0002/file-0003.bin
-       1003 dir-0004/file-0003.bin
-       1002 dir-0005/file-0002.bin
-       1002 dir-0004/file-0002.bin
-       1002 dir-0001/file-0002.bin
-       1002 dir-0002/file-0002.bin
-       1001 dir-0001/file-0001.bin
-       1001 dir-0002/file-0001.bin
-       1001 dir-0004/file-0001.bin
-       1001 dir-0005/file-0001.bin
-        256 dir-0001
-        256 dir-0002
-        256 dir-0003
-        224 dir-0004
-        224 dir-0005
-        179 dir-0003/file-0004.bin
-        179 dir-0003/file-0002.bin
-        179 dir-0003/file-0005.bin
-        179 dir-0003/file-0003.bin
-        179 dir-0003/file-0001.bin
+$ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0001/
+        180 dir-0003/file-0001.bin
+        180 dir-0003/file-0004.bin
+        180 dir-0003/file-0005.bin
+        180 dir-0003/file-0003.bin
+        180 dir-0003/file-0002.bin
         149 dir-0003/.gitignore
-        149 dir-0001/.gitignore
-        149 dir-0002/.gitignore
-        130 .xvcignore
-        107 .gitignore
-Total #: 35 Workspace Size:       22855 Cached Size:        5015
+Total #: 6 Workspace Size:        1049 Cached Size:        5015
 
 
 ```
@@ -353,43 +324,43 @@ Total #: 35 Workspace Size:       22855 Cached Size:        5015
 If you want to compare the recorded (cached) hashes and actual hashes in the workspace, you can use `{{acd}} {{rcd}} {{name}}` format string. 
 
 ```console
-$ xvc file list --format '{{acd}} {{rcd}} {{name}}' --sort ts-asc
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0001/file-0001.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0002/file-0001.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0001/file-0002.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0002/file-0002.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0001/file-0003.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0002/file-0003.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0002/file-0004.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0001/file-0004.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0001/file-0005.bin
-2023-01-05 09:28:50 2023-01-05 09:28:50 dir-0002/file-0005.bin
-                    2023-01-05 09:28:50 dir-0004/file-0001.bin
-                    2023-01-05 09:28:50 dir-0004/file-0002.bin
-                    2023-01-05 09:28:50 dir-0004/file-0003.bin
-                    2023-01-05 09:28:50 dir-0004/file-0004.bin
-                    2023-01-05 09:28:50 dir-0004
-                    2023-01-05 09:28:50 dir-0004/file-0005.bin
-                    2023-01-05 09:28:50 dir-0005/file-0001.bin
-                    2023-01-05 09:28:50 dir-0005/file-0002.bin
-                    2023-01-05 09:28:50 dir-0005/file-0003.bin
-                    2023-01-05 09:28:50 dir-0005/file-0004.bin
-                    2023-01-05 09:28:50 dir-0005
-                    2023-01-05 09:28:50 dir-0005/file-0005.bin
-                    2023-01-05 09:28:50 .xvcignore
-                    2023-01-05 09:28:50 .gitignore
-                    2023-01-05 09:28:51 dir-0001/.gitignore
-                    2023-01-05 09:28:51 dir-0001
-                    2023-01-05 09:28:52 dir-0002/.gitignore
-                    2023-01-05 09:28:52 dir-0002
-                    2023-01-05 09:28:52 dir-0003/.gitignore
-2023-01-05 09:28:50 2023-01-05 09:28:52 dir-0003/file-0005.bin
-2023-01-05 09:28:50 2023-01-05 09:28:52 dir-0003/file-0003.bin
-2023-01-05 09:28:50 2023-01-05 09:28:52 dir-0003/file-0001.bin
-2023-01-05 09:28:50 2023-01-05 09:28:52 dir-0003/file-0004.bin
-2023-01-05 09:28:50 2023-01-05 09:28:52 dir-0003/file-0002.bin
-                    2023-01-05 09:28:52 dir-0003
-Total #: 35 Workspace Size:       22855 Cached Size:        5015
+$ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc
+acd rcd dir-0001/file-0001.bin
+acd rcd dir-0002/file-0001.bin
+acd rcd dir-0001/file-0002.bin
+acd rcd dir-0002/file-0002.bin
+acd rcd dir-0001/file-0003.bin
+acd rcd dir-0002/file-0003.bin
+acd rcd dir-0002/file-0004.bin
+acd rcd dir-0001/file-0004.bin
+acd rcd dir-0001/file-0005.bin
+acd rcd dir-0002/file-0005.bin
+acd rcd dir-0004/file-0001.bin
+acd rcd dir-0004/file-0002.bin
+acd rcd dir-0004/file-0003.bin
+acd rcd dir-0004/file-0004.bin
+acd rcd dir-0004
+acd rcd dir-0004/file-0005.bin
+acd rcd dir-0005/file-0001.bin
+acd rcd dir-0005/file-0002.bin
+acd rcd dir-0005/file-0003.bin
+acd rcd dir-0005/file-0004.bin
+acd rcd dir-0005
+acd rcd dir-0005/file-0005.bin
+acd rcd .xvcignore
+acd rcd .gitignore
+acd rcd dir-0001/.gitignore
+acd rcd dir-0001
+acd rcd dir-0002/.gitignore
+acd rcd dir-0002
+acd rcd dir-0003/.gitignore
+acd rcd dir-0003/file-0001.bin
+acd rcd dir-0003/file-0003.bin
+acd rcd dir-0003/file-0004.bin
+acd rcd dir-0003/file-0005.bin
+acd rcd dir-0003/file-0002.bin
+acd rcd dir-0003
+Total #: 35 Workspace Size:       22860 Cached Size:        5015
 
 
 ```

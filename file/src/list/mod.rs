@@ -442,7 +442,10 @@ pub struct ListCLI {
     /// A string for each row of the output table
     ///
     /// The following are the keys for each row:
-    /// - {{acd}}:  actual content digest. The hash of the workspace file's content.
+    ///
+    /// - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
+    ///
+    /// - {{acd64}}:  actual content digest. All 64 digits.
     ///
     /// - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
     ///   symlink (S), hardlink (H) or reflink (R).
@@ -458,7 +461,9 @@ pub struct ListCLI {
     ///   whether the file timestamp is the same as the cached timestamp, newer,
     ///   older, not cached or not tracked.
     ///
-    /// - {{rcd}}:  recorded content digest. The hash of the cached content.
+    /// - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
+    ///
+    /// - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
     ///
     /// - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace
     ///   as a copy (C), symlink (S), hardlink (H) or reflink (R).
