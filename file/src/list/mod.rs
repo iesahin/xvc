@@ -152,49 +152,35 @@ impl ListRow {
             None => str::repeat(" ", DIGEST_LENGTH * 2),
         };
 
-        let (actual_size, actual_size_str) =
-            if let Some(actual_metadata) = path_match.actual_metadata {
-                if let Some(size) = actual_metadata.size {
-                    (size, format_size(size))
-                } else {
-                    (0, "".to_string())
-                }
-            } else {
-                (0, "".to_string())
-            };
+        let actual_size = path_match
+            .actual_metadata
+            .and_then(|md| md.size)
+            .unwrap_or(0);
 
-        let (actual_timestamp, actual_timestamp_str) = if let Some(xmd) = path_match.actual_metadata
-        {
-            if let Some(timestamp) = xmd.modified {
-                (timestamp, format_timestamp(timestamp))
-            } else {
-                (SystemTime::UNIX_EPOCH, "".to_string())
-            }
-        } else {
-            (SystemTime::UNIX_EPOCH, "".to_string())
-        };
+        let actual_size_str = format_size(path_match.actual_metadata.and_then(|md| md.size));
 
-        let (recorded_size, recorded_size_str) =
-            if let Some(recorded_metadata) = path_match.recorded_metadata {
-                if let Some(size) = recorded_metadata.size {
-                    (size, format_size(size))
-                } else {
-                    (0, "".to_string())
-                }
-            } else {
-                (0, "".to_string())
-            };
+        let actual_timestamp = path_match
+            .actual_metadata
+            .and_then(|md| md.modified)
+            .unwrap_or_else(|| SystemTime::UNIX_EPOCH);
 
-        let (recorded_timestamp, recorded_timestamp_str) =
-            if let Some(xmd) = path_match.recorded_metadata {
-                if let Some(timestamp) = xmd.modified {
-                    (timestamp, format_timestamp(timestamp))
-                } else {
-                    (SystemTime::UNIX_EPOCH, "".to_string())
-                }
-            } else {
-                (SystemTime::UNIX_EPOCH, "".to_string())
-            };
+        let actual_timestamp_str =
+            format_timestamp(path_match.actual_metadata.and_then(|md| md.modified));
+
+        let recorded_size = path_match
+            .recorded_metadata
+            .and_then(|md| md.size)
+            .unwrap_or(0);
+
+        let recorded_size_str = format_size(path_match.recorded_metadata.and_then(|md| md.size));
+
+        let recorded_timestamp = path_match
+            .recorded_metadata
+            .and_then(|md| md.modified)
+            .unwrap_or_else(|| SystemTime::UNIX_EPOCH);
+
+        let recorded_timestamp_str =
+            format_timestamp(path_match.recorded_metadata.and_then(|md| md.modified));
 
         let recorded_content_digest_str = match path_match.recorded_digest {
             Some(digest) => format!("{}", digest),
@@ -279,9 +265,16 @@ fn format_cache_type(cache_type: CacheType) -> String {
     }
 }
 
-fn format_timestamp(timestamp: SystemTime) -> String {
-    let timestamp = chrono::DateTime::<chrono::Utc>::from(timestamp);
-    format!("{}", timestamp.format("%Y-%m-%d %H:%M:%S"))
+/// Formats the timestamp with "%Y-%m-%d %H:%M:%S" if there is Some,
+/// or returns a corresponding string of spaces.
+pub fn format_timestamp(timestamp: Option<SystemTime>) -> String {
+    match timestamp {
+        Some(timestamp) => {
+            let timestamp = chrono::DateTime::<chrono::Utc>::from(timestamp);
+            format!("{}", timestamp.format("%Y-%m-%d %H:%M:%S"))
+        }
+        None => "                   ".to_string(),
+    }
 }
 
 /// Format size in human readable form, and shows the small changes.
@@ -290,15 +283,22 @@ fn format_timestamp(timestamp: SystemTime) -> String {
 ///
 /// MB, GB, TB are used for sizes larger than 1MB, 1GB, 1TB respectively
 /// Calculations for these are done with 1024 as base, not 1000.
-pub fn format_size(size: u64) -> String {
-    if size < 1024 * 1024 {
-        format!("{:11}", size)
-    } else if size < 1024 * 1024 * 1024 {
-        format!("{:>4}MB.{}", size / 1024 / 1024, size % 1000)
-    } else if size < 1024 * 1024 * 1024 * 1024 {
-        format!("{:>4}GB.{}", size / 1024 / 1024 / 1024, size % 1000)
-    } else {
-        format!("{:>4}TB.{}", size / 1024 / 1024 / 1024 / 1024, size % 1000)
+///
+/// Returns a string of spaces with the same size of column if size is None.
+pub fn format_size(size: Option<u64>) -> String {
+    match size {
+        Some(size) => {
+            if size < 1024 * 1024 {
+                format!("{:11}", size)
+            } else if size < 1024 * 1024 * 1024 {
+                format!("{:>4}MB.{}", size / 1024 / 1024, size % 1000)
+            } else if size < 1024 * 1024 * 1024 * 1024 {
+                format!("{:>4}GB.{}", size / 1024 / 1024 / 1024, size % 1000)
+            } else {
+                format!("{:>4}TB.{}", size / 1024 / 1024 / 1024 / 1024, size % 1000)
+            }
+        }
+        None => "          ".to_owned(),
     }
 }
 
@@ -391,12 +391,12 @@ impl ListRows {
 
         if print_summary {
             let total_lines = self.rows.borrow().len();
-            let total_actual_size = format_size(
+            let total_actual_size = format_size(Some(
                 self.rows
                     .borrow()
                     .iter()
                     .fold(0u64, |tot, r| tot + r.actual_size),
-            );
+            ));
             let mut cached_sizes = HashMap::<String, u64>::new();
             self.rows.borrow().iter().for_each(|r| {
                 if !r.recorded_content_digest_str.trim().is_empty() {
@@ -404,7 +404,7 @@ impl ListRows {
                 }
             });
 
-            let total_cached_size = format_size(cached_sizes.values().sum());
+            let total_cached_size = format_size(Some(cached_sizes.values().sum()));
             output.push_str(
                 &format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n"),
             )
