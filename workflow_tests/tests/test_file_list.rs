@@ -108,7 +108,14 @@ fn test_file_list() -> Result<()> {
         ("ts-asc", "file-0001.bin"),
         ("ts-desc", "file-0005.bin"),
     ] {
-        let cmd_res = x(&["list", "--format", "{{name}}", "--sort", sort_option])?;
+        let cmd_res = x(&[
+            "list",
+            "--format",
+            "{{name}}",
+            "--sort",
+            sort_option,
+            "dir-0001",
+        ])?;
         let top_line = cmd_res.lines().next().unwrap();
         assert!(
             top_line.ends_with(top_element),
