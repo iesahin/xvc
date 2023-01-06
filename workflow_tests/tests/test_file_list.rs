@@ -110,7 +110,11 @@ fn test_file_list() -> Result<()> {
     ] {
         let cmd_res = x(&["list", "--format", "{{name}}", "--sort", sort_option])?;
         let top_line = cmd_res.lines().next().unwrap();
-        assert!(top_line.ends_with(top_element), "cmd_res: {}", cmd_res);
+        assert!(
+            top_line.ends_with(top_element),
+            "sort: {sort_option}\ncmd_res: {}",
+            cmd_res
+        );
     }
 
     // TODO: Test for other formatting options, cache types, cache status.
