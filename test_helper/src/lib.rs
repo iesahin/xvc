@@ -173,6 +173,7 @@ pub fn create_directory_tree(
     root: &Path,
     n_dirs: usize,
     n_files_per_dir: usize,
+    fill_value: Option<u8>,
 ) -> Result<Vec<PathBuf>> {
     let mut paths = Vec::<PathBuf>::with_capacity(n_dirs * n_files_per_dir);
     let dirs: Vec<String> = (1..=n_dirs).map(|i| format!("dir-{:04}", i)).collect();
@@ -181,11 +182,14 @@ pub fn create_directory_tree(
         .collect();
     for dir in dirs {
         std::fs::create_dir_all(root.join(Path::new(&dir)))?;
-        for (name, size) in &files {
+        paths.extend(files.iter().map(|(name, size)| {
             let filename = PathBuf::from(&format!("{}/{}/{}", root.to_string_lossy(), dir, name));
-            generate_filled_file(&filename, *size, 23);
-            paths.push(filename);
-        }
+            match fill_value {
+                Some(byte) => generate_filled_file(&filename, *size, byte),
+                None => generate_random_file(&filename, *size),
+            }
+            filename
+        }));
     }
     Ok(paths)
 }

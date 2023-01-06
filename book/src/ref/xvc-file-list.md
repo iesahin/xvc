@@ -70,7 +70,7 @@ For these examples, we'll create a directory tree with five directories, each
 having a file.
 
 ```console
-$ xvc-test-helper create-directory-tree --directories 5 --files 5
+$ xvc-test-helper create-directory-tree --directories 5 --files 5 --fill 23
 
 $ tree
 .

@@ -18,9 +18,9 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let child_path = temp_dir.join(&PathBuf::from("file-0000.bin"));
     generate_filled_file(&child_path, 10000, 100);
     assert!(child_path.exists());
-    create_directory_tree(&temp_dir, 10, 10)?;
+    create_directory_tree(&temp_dir, 10, 10, Some(23))?;
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10)?;
+    create_directory_tree(&level_1, 10, 10, Some(23))?;
 
     Ok(temp_dir)
 }
