@@ -1,5 +1,6 @@
 mod common;
 use common::*;
+use log::LevelFilter;
 use std::{fs, path::PathBuf};
 
 use jwalk;
@@ -23,6 +24,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 
 #[test]
 fn test_file_recheck_parallel() -> Result<()> {
+    test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     watch!(xvc_root);
     let x = |cmd: &[&str]| common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace);
