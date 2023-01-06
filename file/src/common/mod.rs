@@ -443,8 +443,8 @@ pub fn recheck_from_cache(
         let parent_dir = parent.to_absolute_path(xvc_root);
         watch!(parent_dir);
         if !parent_dir.exists() {
+            watch!(&parent_dir);
             fs::create_dir_all(parent_dir)?;
-            watch!(parent_dir);
         }
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
@@ -461,7 +461,6 @@ pub fn recheck_from_cache(
             perm.set_readonly(false);
             watch!(&perm);
             fs::set_permissions(&path, perm)?;
-            watch!(&perm);
         }
         CacheType::Hardlink => {
             fs::hard_link(&cache_path, &path)?;
