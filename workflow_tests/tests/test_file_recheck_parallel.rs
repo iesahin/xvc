@@ -45,7 +45,11 @@ fn test_file_recheck_parallel() -> Result<()> {
         file_to_add,
     ])?;
 
-    assert!(PathBuf::from(file_to_add).is_symlink());
+    assert!(
+        PathBuf::from(file_to_add).is_symlink(),
+        "{:?}",
+        PathBuf::from(file_to_add).metadata()
+    );
 
     x(&["file", "recheck", "--cache-type", "hardlink", file_to_add])?;
 
