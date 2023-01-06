@@ -92,11 +92,11 @@ fn test_file_list() -> Result<()> {
 
     watch!(list_all);
 
-    let count_all = list_all.lines().count();
+    let count_all = list_all.trim().lines().count();
     watch!(count_all);
-    // There must be 32 elements in total. 6 x 5: directories, 1 for .gitignore,
-    // 1 for .xvcignore
-    assert!(count_all == 32);
+    // There must be 33 elements in total. 6 x 5: directories, 1 for .gitignore,
+    // 1 for .xvcignore, another line for the summary.
+    assert!(count_all == 33);
 
     // test all sort options
 
