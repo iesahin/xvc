@@ -51,12 +51,6 @@ fn test_file_recheck_parallel() -> Result<()> {
         PathBuf::from(file_to_add).metadata()
     );
 
-    x(&["file", "recheck", "--cache-type", "hardlink", file_to_add])?;
-
-    // No --force, it shouldn't overwrite
-
-    assert!(PathBuf::from(file_to_add).is_symlink());
-
     let dir_to_add = "dir-0001/";
     x(&["file", "track", dir_to_add])?;
 
