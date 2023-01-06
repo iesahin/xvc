@@ -441,8 +441,10 @@ pub fn recheck_from_cache(
 ) -> Result<()> {
     if let Some(parent) = xvc_path.parents().get(0) {
         let parent_dir = parent.to_absolute_path(xvc_root);
+        watch!(parent_dir);
         if !parent_dir.exists() {
             fs::create_dir_all(parent_dir)?;
+            watch!(parent_dir);
         }
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
@@ -451,11 +453,15 @@ pub fn recheck_from_cache(
     watch!(cache_type);
     match cache_type {
         CacheType::Copy => {
+            watch!("Before copy");
             fs::copy(&cache_path, &path)?;
             info!(output_snd, "[COPY] {} -> {}", cache_path, path);
             let mut perm = path.metadata()?.permissions();
+            watch!(&perm);
             perm.set_readonly(false);
+            watch!(&perm);
             fs::set_permissions(&path, perm)?;
+            watch!(&perm);
         }
         CacheType::Hardlink => {
             fs::hard_link(&cache_path, &path)?;
