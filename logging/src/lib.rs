@@ -86,7 +86,7 @@ macro_rules! debug {
 macro_rules! trace {
     ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
         {
-                    (&$channel).send(::xvc_logging::XvcOutputLine::Trace(format!($fmt $(, $x)*))).unwrap();
+                    (&$channel).send(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!()))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -116,7 +116,7 @@ macro_rules! output {
 macro_rules! panic {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(::xvc_logging::XvcOutputLine::Panic(format!($fmt $(, $x)*))).unwrap();
+            (&$channel).send(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!()))).unwrap();
             ::std::panic!($fmt $(, $x)*);
         }
     };
