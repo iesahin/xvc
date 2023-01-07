@@ -54,6 +54,7 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     assert!(output.status.success(), "Command failed: {:?}", prepared);
 
     let output_str = format!("{:#?}", String::from_utf8(output.stdout)?);
+    watch!(output_str);
     Ok(output_str)
 }
 
