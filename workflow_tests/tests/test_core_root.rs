@@ -20,7 +20,7 @@ fn test_root() -> Result<()> {
     let abs = run_xvc(
         Some(&xvc_root),
         &["root", "--absolute"],
-        XvcVerbosity::Trace,
+        XvcVerbosity::Default,
     )?;
 
     watch!(abs);
