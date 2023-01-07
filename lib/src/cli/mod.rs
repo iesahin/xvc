@@ -107,8 +107,8 @@ impl XvcCLI {
     /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
     /// [XvcCLI::command_string].
     pub fn from_str_slice(args: &[&str]) -> Result<XvcCLI> {
-        let parsed = Self::parse_from(args);
         let command_string = args.join(" ");
+        let parsed = Self::parse_from(args);
         Ok(Self {
             command_string,
             ..parsed
