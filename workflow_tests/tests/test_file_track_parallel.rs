@@ -27,7 +27,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 #[test]
 fn test_file_track_parallel() -> Result<()> {
-    // setup::logging(LevelFilter::Trace);
+    test_logging(log::LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["file"];
@@ -93,7 +93,6 @@ fn test_file_track_parallel() -> Result<()> {
     let n_files_after = jwalk::WalkDir::new(".xvc/b3")
         .into_iter()
         .filter(|f| {
-            watch!(f);
             f.as_ref()
                 .map(|f| f.file_type().is_file())
                 .unwrap_or_else(|_| false)
@@ -104,7 +103,6 @@ fn test_file_track_parallel() -> Result<()> {
         n_files_after - n_files_before == 10,
         "n_files_before: {n_files_before}\nn_files_after: {n_files_after}"
     );
-
     let gitignore_file_2 = PathBuf::from(&dir_to_add)
         .parent()
         .ok_or(Error::PathHasNoParent {

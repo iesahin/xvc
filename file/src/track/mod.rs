@@ -217,6 +217,9 @@ pub fn cmd_track(
 
     let current_gitignore = build_gitignore(xvc_root)?;
 
+    watch!(file_targets);
+    watch!(dir_targets);
+
     update_gitignores(
         xvc_root,
         current_dir,
@@ -267,97 +270,6 @@ pub fn cmd_track(
     Ok(())
 }
 
-/* fn commit( */
-/*     output_snd: &Sender<XvcOutputLine>, */
-/*     xvc_root: &XvcRoot, */
-/*     path_comparison_params: &PathComparisonParams, */
-/*     path_delta_store: &FileDeltaStore, */
-/*     force: bool, */
-/*     parallel: bool, */
-/*     algorithm: HashAlgorithm, */
-/*     text_or_binary: &DataTextOrBinary, */
-/*     cache_type: CacheType, */
-/* ) -> Result<()> { */
-/*     let checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> { */
-/*         let cache_path = cache_path(xp, &digest); */
-/*         if !cache_path.to_absolute_path(xvc_root).exists() { */
-/*             move_to_cache(xvc_root, xp, &cache_path)?; */
-/*             recheck_from_cache(xvc_root, xp, &cache_path, cache_type)?; */
-/*             let _ = &output_snd.send(XvcOutputLine::Info(format!( */
-/*                 "[COMMIT] {xp} -> {}", */
-/*                 cache_path */
-/*             )))?; */
-/*         } */
-/*         Ok(()) */
-/*     }; */
-/*  */
-/*     let force_checkout = |xp: &XvcPath, digest: &ContentDigest| -> Result<()> { */
-/*         let cache_path = cache_path(&xp, &digest); */
-/*         if !cache_path.to_absolute_path(xvc_root).exists() { */
-/*             let abs_path = xp.to_absolute_path(xvc_root); */
-/*             fs::remove_file(&abs_path)?; */
-/*             let _ = &output_snd.send(XvcOutputLine::Info(format!("[DELETE] {xp}")))?; */
-/*             move_to_cache(xvc_root, &xp, &cache_path)?; */
-/*             recheck_from_cache(xvc_root, &xp, &cache_path, cache_type)?; */
-/*             let _ = &output_snd.send(XvcOutputLine::Info(format!( */
-/*                 "[CHECKOUT] {xp} -> {abs_path}" */
-/*             )))?; */
-/*         } */
-/*         Ok(()) */
-/*     }; */
-/*  */
-/*     let inner = |(xe, pd): (&XvcEntity, &FileDelta)| -> Result<()> { */
-/*         let xp = path_comparison_params.xvc_path_store[xe].clone(); */
-/*         match pd.delta_content_digest { */
-/*             DeltaField::Identical | DeltaField::Skipped => { */
-/*                 let record_digest = path_comparison_params.content_digest_store[xe]; */
-/*  */
-/*                 match pd.delta_cache_type { */
-/*                     DeltaField::Identical | DeltaField::Skipped => { */
-/*                         debug!("No change to checkout: {}", xp); */
-/*                         Ok(()) */
-/*                     } */
-/*                     // We assume the record is created before, in update records. */
-/*                     // So this is actually no "RecordMissing" */
-/*                     DeltaField::RecordMissing { .. } => force_checkout(&xp, &record_digest), */
-/*                     DeltaField::ActualMissing { .. } => force_checkout(&xp, &record_digest), */
-/*                     DeltaField::Different { .. } => force_checkout(&xp, &record_digest), */
-/*                 } */
-/*             } */
-/*             // We assume the record is created before, in update records. */
-/*             // So this is actually no "RecordMissing" */
-/*             DeltaField::RecordMissing { actual } => checkout(&xp, &actual), */
-/*             DeltaField::ActualMissing { record } => checkout(&xp, &record), */
-/*             DeltaField::Different { record, .. } => { */
-/*                 if force { */
-/*                     force_checkout(&xp, &record) */
-/*                 } else { */
-/*                     output_snd.send(XvcOutputLine::Error(format!( */
-/*                         "Changes in {xp} are not cached. Use --force to overwrite" */
-/*                     )))?; */
-/*                     Ok(()) */
-/*                 } */
-/*             } */
-/*         } */
-/*     }; */
-/*  */
-/*     if parallel { */
-/*         path_delta_store.par_iter().for_each(|p| { */
-/*             inner(p) */
-/*                 .map_err(|e| Error::from(e).error()) */
-/*                 .unwrap_or_else(|_| ()); */
-/*         }); */
-/*     } else { */
-/*         path_delta_store.iter().for_each(|p| { */
-/*             inner(p) */
-/*                 .map_err(|e| Error::from(e).error()) */
-/*                 .unwrap_or_else(|_| ()); */
-/*         }); */
-/*     } */
-/*  */
-/*     Ok(()) */
-/* } */
-/*  */
 /// Write file and directory names to .gitignore found in the same dir
 ///
 /// If `current_ignore` already ignores a file, it's not added separately.
