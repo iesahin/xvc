@@ -27,10 +27,10 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     let verbosity_opt = match verbosity {
         XvcVerbosity::Quiet => ["--quiet"],
         XvcVerbosity::Default => [""],
-        XvcVerbosity::Warn => ["-v"],
-        XvcVerbosity::Info => ["-vv"],
-        XvcVerbosity::Debug => ["-vvv"],
-        XvcVerbosity::Trace => ["-vvvv"],
+        XvcVerbosity::Warn => ["-vv"],
+        XvcVerbosity::Info => ["-vvv"],
+        XvcVerbosity::Debug => ["-vvvv"],
+        XvcVerbosity::Trace => ["-vvvvv"],
     };
 
     // watch!(cmd);

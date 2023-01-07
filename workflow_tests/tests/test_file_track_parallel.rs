@@ -87,7 +87,7 @@ fn test_file_track_parallel() -> Result<()> {
         })
         .count();
 
-    let track_dir_to_add = x(&["-vvvv", "track", dir_to_add])?;
+    let track_dir_to_add = x(&["track", dir_to_add])?;
     watch!(track_dir_to_add);
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3")
