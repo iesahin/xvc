@@ -5,7 +5,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use path_absolutize::Absolutize;
 use relative_path::RelativePath;
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{watch, XvcOutputLine};
 
 #[derive(Debug, Parser)]
 #[command(name = "root")]
@@ -47,6 +47,7 @@ pub fn run(output_snd: &Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: RootCLI
         let rel_dir = RelativePath::new(&current_dir.to_string_lossy()).relative(
             RelativePath::new(&xvc_root.absolute_path().to_string_lossy()),
         );
+        watch!(rel_dir);
         if rel_dir == "" {
             output_snd.send(XvcOutputLine::Output(".".into()))?;
         } else {
