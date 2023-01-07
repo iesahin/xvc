@@ -1,4 +1,5 @@
 //! Main CLI interface for XVC
+use std::env::ArgsOs;
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -107,6 +108,20 @@ impl XvcCLI {
     /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
     /// [XvcCLI::command_string].
     pub fn from_str_slice(args: &[&str]) -> Result<XvcCLI> {
+        let command_string = args.join(" ");
+        let parsed = Self::parse_from(args);
+        Ok(Self {
+            command_string,
+            ..parsed
+        })
+    }
+
+    pub fn from_args_os(args_os: ArgsOs) -> Result<XvcCLI> {
+        let args: Vec<OsString> = args_os.collect();
+        let args: Vec<String> = args
+            .iter()
+            .map(|s| s.to_string_lossy().to_string())
+            .collect();
         let command_string = args.join(" ");
         let parsed = Self::parse_from(args);
         Ok(Self {
