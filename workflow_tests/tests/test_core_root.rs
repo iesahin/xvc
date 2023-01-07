@@ -26,5 +26,6 @@ fn test_root() -> Result<()> {
     watch!(abs);
     assert!(AbsolutePath::from(abs.trim().to_string()) == xvc_root.absolute_path().clone());
     clean_up(&xvc_root).map_err(|e| anyhow::anyhow!("Cleanup error: {e:?}"))?;
+    watch!("cleaned up");
     Ok(())
 }
