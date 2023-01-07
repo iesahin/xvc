@@ -152,6 +152,5 @@ fn test_file_track_parallel() -> Result<()> {
 
     assert!(data_line[0].len() > 0, "{}", data_line[0]);
 
-    // clean_up(&xvc_root)
-    Ok(())
+    clean_up(&xvc_root)
 }

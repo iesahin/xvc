@@ -176,9 +176,11 @@ pub fn sh(cmd: &str) -> Result<CaptureData> {
 }
 
 pub fn clean_up_path_buf(path_buf: PathBuf) -> Result<()> {
-    fs::remove_dir_all(&path_buf).map_err(|e| e.into())
+    sh(format!("rm -rf {}", path_buf.to_string_lossy()).as_str())?;
+    Ok(())
 }
 
 pub fn clean_up(xvc_root: &XvcRoot) -> Result<()> {
-    fs::remove_dir_all(&xvc_root.absolute_path()).map_err(|e| e.into())
+    sh(format!("rm -rf {}", xvc_root.absolute_path().to_string_lossy()).as_str())?;
+    Ok(())
 }
