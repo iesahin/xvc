@@ -815,6 +815,7 @@ fn build_pattern(source: Source, original: &str) -> Pattern<String> {
 }
 
 /// Check whether `path` is whitelisted or ignored with `ignore_rules`
+/// TODO: Change `path` to `AbsolutePath`
 pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     let is_abs = path.is_absolute();
     // strip_prefix eats the final slash, and ends_with behave differently than str, so we work

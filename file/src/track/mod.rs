@@ -205,11 +205,15 @@ pub fn cmd_track(
         })
         .collect();
 
-    let dir_targets: Vec<PathBuf> = targets
+    // Warning: This one uses `opts.targets` instead of `targets` because
+    // `targets` has been filtered to only include files.
+    let dir_targets: Vec<PathBuf> = opts
+        .targets.unwrap_or_else(|| vec![current_dir.to_string()])
         .iter()
-        .filter_map(|(xp, xmd)| {
-            if xmd.file_type == XvcFileType::Directory {
-                Some(xp.to_absolute_path(xvc_root).to_path_buf())
+        .filter_map(|t|)| {
+            let p = PathBuf::from(t);
+            if p.is_dir() {
+                Some(p)
             } else {
                 None
             }
