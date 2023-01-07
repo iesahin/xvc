@@ -226,6 +226,8 @@ pub fn cmd_track(
     )?;
 
     if !opts.no_commit {
+        let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+
         let updated_content_digest_store: HStore<ContentDigest> = content_digest_diff
             .into_iter()
             .filter_map(|(xe, cdd)| match cdd {
