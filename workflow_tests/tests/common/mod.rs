@@ -25,12 +25,12 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     let mut cmd = Command::cargo_bin("xvc").unwrap();
 
     let verbosity_opt = match verbosity {
-        XvcVerbosity::Quiet => ["--quiet"],
-        XvcVerbosity::Default => [""],
-        XvcVerbosity::Warn => ["-vv"],
-        XvcVerbosity::Info => ["-vvv"],
-        XvcVerbosity::Debug => ["-vvvv"],
-        XvcVerbosity::Trace => ["-vvvvv"],
+        XvcVerbosity::Quiet => vec!["--quiet"],
+        XvcVerbosity::Default => vec![],
+        XvcVerbosity::Warn => vec!["-v"],
+        XvcVerbosity::Info => vec!["-vv"],
+        XvcVerbosity::Debug => vec!["-vvv"],
+        XvcVerbosity::Trace => vec!["-vvvvv"],
     };
 
     // watch!(cmd);
