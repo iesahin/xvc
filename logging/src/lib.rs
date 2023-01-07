@@ -15,7 +15,7 @@ macro_rules! watch {
     ( $( $x:expr ),* ) => {
         {
             $(
-               ::log::trace!("{}: {:#?}", stringify!($x), $x);
+               ::log::trace!("{}: {}", stringify!($x), format!("{:#?}", $x).replace("\\n", "\n"));
             )*
         }
     };
@@ -116,7 +116,7 @@ macro_rules! output {
 macro_rules! panic {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]", 
+            (&$channel).send(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]",
                                                                  format!($fmt $(, $x)*), file!(), line!()))).unwrap();
             ::std::panic!($fmt $(, $x)*);
         }
