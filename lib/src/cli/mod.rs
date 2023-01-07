@@ -294,6 +294,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             watch!("Before handle_git_automation");
             match xvc_root_opt {
                 Some(xvc_root) => {
+                    watch!(&cli_opts.command_string);
                     handle_git_automation(
                         xvc_root,
                         cli_opts.to_branch.as_deref(),
