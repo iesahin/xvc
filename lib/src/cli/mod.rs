@@ -359,11 +359,11 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                     },
                     LevelFilter::Trace => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
-                        XvcOutputLine::Info(m) => info!("[INFO] {}", m.to_string()),
-                        XvcOutputLine::Warn(m) => warn!("[WARN] {}", m.to_string()),
-                        XvcOutputLine::Error(m) => error!("[ERROR] {}", m.to_string()),
+                        XvcOutputLine::Info(m) => println!("[INFO] {}", m.to_string()),
+                        XvcOutputLine::Warn(m) => println!("[WARN] {}", m.to_string()),
+                        XvcOutputLine::Error(m) => println!("[ERROR] {}", m.to_string()),
+                        XvcOutputLine::Debug(m) => println!("[DEBUG] {}", m),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
-                        XvcOutputLine::Debug(m) => debug!("[DEBUG] {}", m),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                 }
