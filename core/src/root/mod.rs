@@ -37,12 +37,7 @@ pub fn run(output_snd: &Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: RootCLI
             xvc_root.absolute_path().to_string_lossy()
         )))?;
     } else {
-        let current_dir = xvc_root
-            .config()
-            .current_dir
-            .option
-            .absolutize()?
-            .to_path_buf();
+        let current_dir = xvc_root.config().current_dir.option.to_path_buf();
 
         let rel_dir = RelativePath::new(&current_dir.to_string_lossy()).relative(
             RelativePath::new(&xvc_root.absolute_path().to_string_lossy()),
