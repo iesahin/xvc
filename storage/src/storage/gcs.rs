@@ -1,6 +1,7 @@
 use std::str::FromStr;
 use std::{env, fs};
 
+use crossbeam_channel::Sender;
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
@@ -30,7 +31,7 @@ use super::{
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_gcs(
     input: std::io::StdinLock,
-    output_snd: crossbeam_channel::Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &xvc_core::XvcRoot,
     name: String,
     bucket_name: String,
@@ -47,7 +48,7 @@ pub fn cmd_new_gcs(
 
     watch!(remote);
 
-    let (init_event, remote) = remote.init(output_snd.clone(), xvc_root)?;
+    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -128,7 +129,7 @@ impl XvcGcsStorage {
 
     async fn a_init(
         self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
@@ -158,7 +159,7 @@ impl XvcGcsStorage {
 
     async fn a_list(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let credentials = self.credentials()?;
@@ -223,7 +224,7 @@ impl XvcGcsStorage {
 
     async fn a_send(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -275,7 +276,7 @@ impl XvcGcsStorage {
 
     async fn a_receive(
         &self,
-        output: crossbeam_channel::Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -327,7 +328,7 @@ impl XvcGcsStorage {
 
     async fn a_delete(
         &self,
-        output: crossbeam_channel::Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -338,7 +339,7 @@ impl XvcGcsStorage {
 impl XvcStorageOperations for XvcGcsStorage {
     fn init(
         self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -351,7 +352,7 @@ impl XvcStorageOperations for XvcGcsStorage {
     /// List the bucket contents that start with `self.remote_prefix`
     fn list(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> crate::Result<super::XvcStorageListEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -363,7 +364,7 @@ impl XvcStorageOperations for XvcGcsStorage {
 
     fn send(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -377,7 +378,7 @@ impl XvcStorageOperations for XvcGcsStorage {
 
     fn receive(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -391,7 +392,7 @@ impl XvcStorageOperations for XvcGcsStorage {
 
     fn delete(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {

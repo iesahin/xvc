@@ -3,6 +3,7 @@
 mod common;
 
 pub mod bring;
+pub mod carry_in;
 pub mod error;
 pub mod hash;
 pub mod list;
@@ -11,14 +12,13 @@ pub mod send;
 pub mod track;
 
 use crate::error::{Error, Result};
+use carry_in::CarryInCLI;
 use clap::Subcommand;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
 use list::ListCLI;
-use log::info;
-use log::warn;
-use log::{error, LevelFilter};
+use log::{debug, error, info, warn, LevelFilter};
 use std::io;
 use std::io::Write;
 use std::path::Path;
@@ -28,8 +28,8 @@ use xvc_config::XvcVerbosity;
 use xvc_core::default_project_config;
 use xvc_core::XvcRoot;
 use xvc_core::CHANNEL_BOUND;
-use xvc_logging::setup_logging;
 use xvc_logging::XvcOutputLine;
+use xvc_logging::{setup_logging, watch};
 use xvc_walker::AbsolutePath;
 
 use bring::BringCLI;
@@ -51,6 +51,9 @@ pub enum XvcFileSubCommand {
     /// Get files from cache by copy or *link
     #[command(alias = "checkout")]
     Recheck(RecheckCLI),
+    /// Carry (commit) changed files to cache
+    #[command(alias = "commit")]
+    CarryIn(CarryInCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
     /// Send (push, upload) files to external storages
@@ -120,10 +123,11 @@ pub struct XvcFileCLI {
 }
 
 pub fn run(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: Option<&XvcRoot>,
     opts: XvcFileCLI,
 ) -> Result<()> {
+    watch!(opts);
     match opts.subcommand {
         XvcFileSubCommand::Track(opts) => track::cmd_track(
             output_snd,
@@ -131,6 +135,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Hash(opts) => hash::cmd_hash(output_snd, xvc_root, opts),
+        XvcFileSubCommand::CarryIn(opts) => carry_in::cmd_carry_in(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
         XvcFileSubCommand::Recheck(opts) => recheck::cmd_recheck(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
@@ -205,7 +214,6 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
 
     thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<XvcOutputLine>(CHANNEL_BOUND);
-        // let (input_snd, input_rec) = bounded(CHANNEL_BOUND);
         s.spawn(move |_| {
             let mut output = io::stdout();
             while let Ok(output_line) = output_rec.recv() {
@@ -215,12 +223,13 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
                     XvcOutputLine::Warn(m) => warn!("[WARN] {}", m),
                     XvcOutputLine::Error(m) => error!("[ERROR] {}", m),
                     XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
+                    XvcOutputLine::Debug(m) => debug!("[DEBUG] {}", m),
                     XvcOutputLine::Tick(_) => {}
                 }
             }
         });
 
-        s.spawn(move |_| run(output_snd, xvc_root.as_ref(), cli_opts).map_err(|e| e.error()));
+        s.spawn(move |_| run(&output_snd, xvc_root.as_ref(), cli_opts).map_err(|e| e.error()));
     })
     .map_err(|e| error!("{:?}", e))
     .expect("Crossbeam scope error");

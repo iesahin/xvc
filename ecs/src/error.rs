@@ -9,6 +9,8 @@ use std::io;
 use std::num::ParseIntError;
 use thiserror::Error as ThisError;
 
+use crate::XvcEntity;
+
 #[allow(missing_docs)]
 #[derive(ThisError, Debug)]
 /// Error type for ECS.
@@ -67,6 +69,8 @@ pub enum Error {
     StoreConversionError,
     #[error("Can initialize {object} only once")]
     CanInitializeOnlyOnce { object: String },
+    #[error("Cannot find entity: {entity}")]
+    CannotFindEntityInStore { entity: XvcEntity },
 }
 
 impl Error {

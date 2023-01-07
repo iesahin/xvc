@@ -16,7 +16,7 @@ use crate::{
 };
 
 pub fn cmd_export(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: Option<String>,
     file: Option<PathBuf>,
@@ -50,22 +50,22 @@ pub fn cmd_export(
         Ok(())
     })?;
 
-    let mut steps: XvcStore<XvcStep> = XvcStore::new();
+    let mut steps: HStore<XvcStep> = HStore::new();
 
     xvc_root.with_r1nstore(|rs: &R1NStore<XvcPipeline, XvcStep>| {
         steps = rs.children_of(&pipeline_e)?;
         Ok(())
     })?;
 
-    let commands: XvcStore<XvcStepCommand> = xvc_root
+    let commands: HStore<XvcStepCommand> = xvc_root
         .load_store::<XvcStepCommand>()?
         .subset(steps.keys().cloned())?;
 
-    let step_invalidate: XvcStore<XvcStepInvalidate> = xvc_root
+    let step_invalidate: HStore<XvcStepInvalidate> = xvc_root
         .load_store::<XvcStepInvalidate>()?
         .subset(steps.keys().cloned())?;
 
-    let mut deps: HStore<XvcStore<XvcDependency>> = HStore::new();
+    let mut deps: HStore<HStore<XvcDependency>> = HStore::new();
 
     xvc_root.with_r1nstore(|rs: &R1NStore<XvcStep, XvcDependency>| {
         for step_e in steps.keys() {
@@ -74,7 +74,7 @@ pub fn cmd_export(
         Ok(())
     })?;
 
-    let mut outs: HStore<XvcStore<XvcOutput>> = HStore::new();
+    let mut outs: HStore<HStore<XvcOutput>> = HStore::new();
 
     xvc_root.with_r1nstore(|rs: &R1NStore<XvcStep, XvcOutput>| {
         for step_e in steps.keys() {

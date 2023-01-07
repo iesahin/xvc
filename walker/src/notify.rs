@@ -9,9 +9,14 @@ use crate::{
     error::{Error, Result},
     IgnoreRules, MatchResult,
 };
-use notify::{Event, EventHandler, RecommendedWatcher, RecursiveMode, Watcher};
+use notify::{
+    Config, Event, EventHandler, FsEventWatcher, PollWatcher, RecommendedWatcher, RecursiveMode,
+    Watcher,
+};
 use std::fs::Metadata;
 use std::path::PathBuf;
+use std::time::Duration;
+use xvc_logging::watch;
 
 use crossbeam_channel::{bounded, Receiver, Sender};
 use log::{debug, warn};
@@ -49,6 +54,7 @@ struct PathEventHandler {
 
 impl EventHandler for PathEventHandler {
     fn handle_event(&mut self, event: notify::Result<Event>) {
+        watch!(event);
         if let Ok(event) = event {
             match event.kind {
                 notify::EventKind::Create(_) => self.create_event(event.paths[0].clone()),
@@ -150,6 +156,27 @@ pub fn make_watcher(
         ignore_rules,
         sender,
     })?;
+
     watcher.watch(&root, RecursiveMode::Recursive)?;
+    watch!(<FsEventWatcher as Watcher>::kind());
+    watch!(watcher);
+    Ok((watcher, receiver))
+}
+
+pub fn make_polling_watcher(
+    ignore_rules: IgnoreRules,
+) -> Result<(PollWatcher, Receiver<PathEvent>)> {
+    let (sender, receiver) = bounded(10000);
+    let root = ignore_rules.root.clone();
+    let mut watcher = notify::poll::PollWatcher::new(
+        PathEventHandler {
+            ignore_rules,
+            sender,
+        },
+        Config::default().with_poll_interval(Duration::from_secs(2)),
+    )?;
+
+    watcher.watch(&root, RecursiveMode::Recursive)?;
+    watch!(watcher);
     Ok((watcher, receiver))
 }

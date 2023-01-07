@@ -5,8 +5,8 @@ use super::event::Event;
 use super::event::EventLog;
 use super::*;
 use crate::error::{Error, Result};
-use crate::Storable;
-use std::collections::BTreeMap;
+use crate::{HStore, Storable};
+use std::collections::{BTreeMap, HashMap};
 use std::fmt::Debug;
 use std::path::Path;
 use std::path::PathBuf;
@@ -205,14 +205,14 @@ where
     /// A subset of this maps identified by `XvcEntity` elements of the iterator.
     ///
     /// This can be used to split the map arbitrarily.
-    pub fn subset<I>(&self, keys: I) -> Result<Self>
+    pub fn subset<I>(&self, keys: I) -> Result<HStore<T>>
     where
         I: Iterator<Item = XvcEntity>,
     {
-        let mut store = XvcStore::<T>::new();
+        let mut store = HStore::<T>::new();
         for e in keys {
             if let Some(v) = self.map.get(&e) {
-                store.insert(e, v.clone());
+                store.map.insert(e, v.clone());
             } else {
                 Error::CannotFindKeyInStore { key: e.0 }.warn();
             }
@@ -223,18 +223,20 @@ where
     /// Creates a new map by calling the `predicate` with each value.
     ///
     /// `predicate` must be a function or closure that returns `bool`.
-    pub fn filter<F>(&self, predicate: F) -> Self
+    ///
+    /// This returns [HStore] not to create a new event log.
+    pub fn filter<F>(&self, predicate: F) -> HStore<T>
     where
         F: Fn(&XvcEntity, &T) -> bool,
     {
-        let mut s = Self::new();
+        let mut s = HashMap::new();
         for (e, v) in self.map.iter() {
             if predicate(e, v) {
                 s.insert(*e, v.clone());
             }
         }
 
-        s
+        HStore::from(s)
     }
 
     /// Returns the first element of the map

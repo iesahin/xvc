@@ -6,17 +6,19 @@
 //! Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
 //! workspace.
 
+use crate::common::targets_from_store;
 use crate::{
-    common::cache_path,
     recheck::{cmd_recheck, RecheckCLI},
     Result,
 };
 
 use clap::Parser;
 use crossbeam_channel::Sender;
-use xvc_core::{CacheType, ContentDigest, XvcCachePath, XvcPath, XvcRoot};
-use xvc_ecs::XvcStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_core::{
+    CacheType, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
+};
+use xvc_ecs::{HStore, XvcStore};
+use xvc_logging::{uwo, uwr, warn, watch, XvcOutputLine};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 use xvc_walker::Glob;
 
@@ -49,7 +51,7 @@ pub struct BringCLI {
 
     /// Targets to bring from the storage
     #[arg()]
-    targets: Vec<String>,
+    targets: Option<Vec<String>>,
 }
 
 /// Download files in `opts.targets` from `opts.storage` to cache.
@@ -58,45 +60,64 @@ pub struct BringCLI {
 /// - Expands globs in `opts.targets`.
 /// - Gets the corresponding cache path for each file target.
 /// - Calls `storage.receive` for each of these targets.
-pub fn fetch(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: &BringCLI) -> Result<()> {
-    let remote = get_storage_record(output_snd.clone(), xvc_root, &opts.storage)?;
+pub fn fetch(
+    output_snd: &Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    opts: &BringCLI,
+) -> Result<()> {
+    let remote = get_storage_record(output_snd, xvc_root, &opts.storage)?;
 
-    let path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
+    let current_dir = xvc_root.config().current_dir()?;
+    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    watch!(targets);
 
-    // If the targets are empty, all paths are retrieved
-    let target_store = if opts.targets.is_empty() {
-        path_store
-    } else {
-        let mut globsetb = xvc_walker::GlobSetBuilder::new();
-        for t in opts.targets.clone() {
-            match Glob::new(&t) {
-                Ok(g) => {
-                    globsetb.add(g);
-                }
-                Err(e) => {
-                    output_snd
-                        .send(XvcOutputLine::Warn(format!("Error in glob: {} {}", t, e)))
-                        .unwrap();
-                }
-            }
-        }
-        let globset = globsetb.build().map_err(|e| xvc_walker::Error::from(e))?;
+    let target_xvc_metadata = xvc_root
+        .load_store::<XvcMetadata>()?
+        .subset(targets.keys().copied())?;
 
-        path_store.filter(|_, p| globset.is_match(p.to_string()))
-    };
+    let target_file_xvc_metadata =
+        target_xvc_metadata.filter(|xe, xmd| xmd.file_type == XvcFileType::File);
+
+    let target_files = targets.subset(target_file_xvc_metadata.keys().copied())?;
+
     // Get all cache paths for these paths
     let content_digest_store: XvcStore<ContentDigest> = xvc_root.load_store()?;
 
-    let cache_paths: Vec<XvcCachePath> = target_store
+    let target_content_digests = content_digest_store.subset(target_files.keys().copied())?;
+    watch!(target_content_digests);
+
+    assert! {
+        target_content_digests.len() == target_files.len(),
+        "All files should have a content digest"
+    }
+
+    let cache_paths: HStore<XvcCachePath> = target_content_digests
         .iter()
-        .map(|(e, xvc_path)| {
-            let content_digest = content_digest_store.get(e).unwrap();
-            cache_path(xvc_path, &content_digest)
+        .filter_map(|(xe, cd)| {
+            let xvc_path = target_files.get(xe).unwrap();
+            match XvcCachePath::new(xvc_path, cd) {
+                Ok(cp) => Some((*xe, cp)),
+                Err(e) => {
+                    warn!(output_snd, "Error: {}", e);
+                    None
+                }
+            }
         })
         .collect();
 
+    watch!(cache_paths);
+
     remote
-        .receive(output_snd.clone(), xvc_root, &cache_paths, opts.force)
+        .receive(
+            output_snd,
+            xvc_root,
+            cache_paths
+                .values()
+                .cloned()
+                .collect::<Vec<XvcCachePath>>()
+                .as_slice(),
+            opts.force,
+        )
         .map_err(|e| xvc_core::Error::from(anyhow::anyhow!("Remote error: {}", e)))?;
 
     Ok(())
@@ -107,11 +128,11 @@ pub fn fetch(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: &Bring
 /// - [fetch] targets from the storage
 /// - [checkout][cmd_checkout] them from storage if `opts.no_checkout` is false. (default)
 pub fn cmd_bring(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     opts: BringCLI,
 ) -> Result<()> {
-    fetch(output_snd.clone(), xvc_root, &opts)?;
+    fetch(output_snd, xvc_root, &opts)?;
 
     if !opts.no_checkout {
         let checkout_targets = opts.targets.clone();
@@ -121,7 +142,6 @@ pub fn cmd_bring(
             cache_type: opts.checkout_as,
             no_parallel: false,
             force: opts.force,
-            text_or_binary: None,
             targets: checkout_targets,
         };
 

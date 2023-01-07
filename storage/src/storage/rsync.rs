@@ -26,7 +26,7 @@ use super::{
 
 pub fn cmd_new_rsync(
     input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: String,
     host: String,
@@ -45,7 +45,7 @@ pub fn cmd_new_rsync(
 
     watch!(storage);
 
-    let (init_event, storage) = storage.init(output_snd.clone(), xvc_root)?;
+    let (init_event, storage) = storage.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -246,7 +246,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     /// Initialize the repository by copying guid file to remote storage directory.
     fn init(
         self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<(super::XvcStorageInitEvent, Self)> {
         // "--init",
@@ -294,7 +294,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     /// {XVC_GUID}/[a-zA-Z][0-9]/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{58}/0
     fn list(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         // "--list",
@@ -327,7 +327,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn send(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         _force: bool,
@@ -376,7 +376,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn receive(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -429,7 +429,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn delete(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {

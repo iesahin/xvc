@@ -68,7 +68,7 @@ impl UpdateFromXvcConfig for CheckIgnoreCLI {
 /// ## Errors
 pub fn cmd_check_ignore<R: BufRead>(
     input: R,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     opts: CheckIgnoreCLI,
 ) -> Result<()> {
@@ -101,7 +101,7 @@ pub fn cmd_check_ignore<R: BufRead>(
 
 fn check_ignore_stdin<R: BufRead>(
     input: R,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     opts: &CheckIgnoreCLI,
     ignore_rules: &IgnoreRules,

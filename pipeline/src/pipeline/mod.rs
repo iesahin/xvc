@@ -68,7 +68,7 @@ impl Default for XvcStepInvalidate {
 /// Adds dependencies to `graph` in the form of `XvcDependency::Step`. These are called explicit
 /// dependencies, as steps are defined explicitly to be depending to each other.
 pub fn add_explicit_dependencies(
-    pipeline_steps: &XvcStore<XvcStep>,
+    pipeline_steps: &HStore<XvcStep>,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
     graph: &mut DiGraphMap<XvcEntity, XvcDependency>,
 ) -> Result<()> {
@@ -109,7 +109,7 @@ pub fn add_implicit_dependencies(
     pipeline_rundir: &XvcPath,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
     all_outs: &R1NStore<XvcStep, XvcOutput>,
-    pipeline_steps: &XvcStore<XvcStep>,
+    pipeline_steps: &HStore<XvcStep>,
     graph: &mut DiGraphMap<XvcEntity, XvcDependency>,
 ) -> Result<()> {
     for (to_step_e, to_step) in pipeline_steps.iter() {
@@ -467,7 +467,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                 PathEvent::Delete { path } => {
                     let xvc_path = XvcPath::new(xvc_root, xvc_root, &path)?;
                     let xvc_md = XvcMetadata {
-                        file_type: XvcFileType::RecordOnly,
+                        file_type: XvcFileType::Missing,
                         size: None,
                         modified: None,
                     };
@@ -672,7 +672,7 @@ fn s_checking_missing_dependencies(
             match pmm.get(&xvc_path) {
                 None => return Ok(s.has_missing_dependencies()),
                 Some(xvc_md) => {
-                    if xvc_md.file_type == XvcFileType::RecordOnly {
+                    if xvc_md.file_type == XvcFileType::Missing {
                         return Ok(s.has_missing_dependencies());
                     }
                 }

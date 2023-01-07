@@ -2,7 +2,7 @@
 //! See [CacheType] for different types
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
-use xvc_config::{conf, FromConfigKey, XvcConfig};
+use xvc_config::{conf, FromConfigKey};
 
 use xvc_ecs::persist;
 

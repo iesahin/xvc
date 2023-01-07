@@ -1,13 +1,14 @@
 use std::str::FromStr;
 use std::{env, fs};
 
+use crossbeam_channel::Sender;
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::XvcCachePath;
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{output, watch, XvcOutputLine};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -30,7 +31,7 @@ use super::{
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub(crate) fn cmd_new_wasabi(
     input: std::io::StdinLock,
-    output_snd: crossbeam_channel::Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &xvc_core::XvcRoot,
     name: String,
     bucket_name: String,
@@ -47,7 +48,7 @@ pub(crate) fn cmd_new_wasabi(
 
     watch!(remote);
 
-    let (init_event, remote) = remote.init(output_snd.clone(), xvc_root)?;
+    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -151,7 +152,7 @@ impl XvcWasabiStorage {
 
     async fn a_init(
         self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
@@ -181,7 +182,7 @@ impl XvcWasabiStorage {
 
     async fn a_list(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let bucket = self.get_bucket()?;
@@ -241,7 +242,7 @@ impl XvcWasabiStorage {
 
     async fn a_send(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -293,7 +294,7 @@ impl XvcWasabiStorage {
 
     async fn a_receive(
         &self,
-        output: crossbeam_channel::Sender<XvcOutputLine>,
+        output_snd: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -321,18 +322,14 @@ impl XvcWasabiStorage {
 
             match response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            remote_path.as_str(),
-                            abs_cache_path,
-                        )))
-                        .unwrap();
+                    output!(output_snd, "{} -> {}", remote_path.as_str(), abs_cache_path);
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    output_snd
+                        .send(XvcOutputLine::Error(err.to_string()))
+                        .unwrap();
                 }
             }
         }
@@ -345,7 +342,7 @@ impl XvcWasabiStorage {
 
     async fn a_delete(
         &self,
-        output: crossbeam_channel::Sender<XvcOutputLine>,
+        output_snd: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -356,7 +353,7 @@ impl XvcWasabiStorage {
 impl XvcStorageOperations for XvcWasabiStorage {
     fn init(
         self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -369,7 +366,7 @@ impl XvcStorageOperations for XvcWasabiStorage {
     /// List the bucket contents that start with `self.storage_prefix`
     fn list(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> crate::Result<super::XvcStorageListEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -381,7 +378,7 @@ impl XvcStorageOperations for XvcWasabiStorage {
 
     fn send(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -395,7 +392,7 @@ impl XvcStorageOperations for XvcWasabiStorage {
 
     fn receive(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -409,7 +406,7 @@ impl XvcStorageOperations for XvcWasabiStorage {
 
     fn delete(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {

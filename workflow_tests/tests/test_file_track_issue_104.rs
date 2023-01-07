@@ -12,7 +12,7 @@ use xvc_test_helper::create_directory_tree;
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
-    create_directory_tree(&temp_dir, 2, 10)?;
+    create_directory_tree(&temp_dir, 2, 10, Some(23))?;
     Ok(temp_dir)
 }
 

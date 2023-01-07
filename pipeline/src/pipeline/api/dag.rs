@@ -35,7 +35,7 @@ pub fn dot_from_graph(graph: Graph<&str, &str>) -> Result<String> {
 }
 
 pub fn cmd_dag(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: Option<String>,
     file: Option<PathBuf>,

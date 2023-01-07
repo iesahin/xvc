@@ -815,6 +815,7 @@ fn build_pattern(source: Source, original: &str) -> Pattern<String> {
 }
 
 /// Check whether `path` is whitelisted or ignored with `ignore_rules`
+/// TODO: Change `path` to `AbsolutePath`
 pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     let is_abs = path.is_absolute();
     // strip_prefix eats the final slash, and ends_with behave differently than str, so we work
@@ -1100,13 +1101,13 @@ mod tests {
                 Ok(_) => {}
                 Err(_) => {}
             }
-            create_directory_tree(&temp_dir, 10, 10)?;
+            create_directory_tree(&temp_dir, 10, 10, None)?;
             // root/dir1 may have another tree
             let level_1 = &temp_dir.join("dir-0001");
-            create_directory_tree(&level_1, 10, 10)?;
+            create_directory_tree(&level_1, 10, 10, None)?;
             // and another level
             let level_2 = &level_1.join("dir-0001");
-            create_directory_tree(&level_2, 10, 10)?;
+            create_directory_tree(&level_2, 10, 10, None)?;
         }
 
         Ok(AbsolutePath::from(temp_dir))

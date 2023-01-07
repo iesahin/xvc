@@ -25,30 +25,39 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     let mut cmd = Command::cargo_bin("xvc").unwrap();
 
     let verbosity_opt = match verbosity {
-        XvcVerbosity::Quiet => ["--quiet"],
-        XvcVerbosity::Default => [""],
-        XvcVerbosity::Warn => ["-v"],
-        XvcVerbosity::Info => ["-vv"],
-        XvcVerbosity::Debug => ["-vvv"],
-        XvcVerbosity::Trace => ["-vvvv"],
+        XvcVerbosity::Quiet => vec!["--quiet"],
+        XvcVerbosity::Default => vec![],
+        XvcVerbosity::Warn => vec!["-v"],
+        XvcVerbosity::Info => vec!["-vv"],
+        XvcVerbosity::Debug => vec!["-vvv"],
+        XvcVerbosity::Trace => vec!["-vvvvv"],
     };
 
-    let output = match cwd {
+    // watch!(cmd);
+    // watch!(verbosity_opt);
+    // watch!(args);
+
+    let prepared = match cwd {
         Some(cwd) => cmd
+            .arg("--debug")
             .args(verbosity_opt)
             .args(args)
-            .current_dir(cwd)
-            .output()?,
-        None => cmd.args(verbosity_opt).args(args).output()?,
+            .current_dir(cwd),
+        None => cmd.arg("--debug").args(verbosity_opt).args(args),
     };
 
-    watch!(cmd);
+    watch!(prepared);
+    let output = prepared.output()?;
+
     watch!(output);
 
-    assert!(output.status.success());
+    assert!(output.status.success(), "Command failed: {:?}", prepared);
 
-    let output_str = String::from_utf8(output.stdout)?;
-
+    let output_str = format!(
+        "Command: {prepared:#?}\nStdout: {}\nStderr: {}",
+        String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n"),
+        String::from_utf8_lossy(&output.stderr).replace("\\\n", "\n"),
+    );
     Ok(output_str)
 }
 
@@ -156,7 +165,7 @@ pub fn run_in_temp_xvc_dir() -> Result<XvcRoot> {
             force: false,
         },
     )?;
-    watch!(xvc_root);
+    // watch!(xvc_root);
     Ok(xvc_root)
 }
 
@@ -166,6 +175,18 @@ pub fn sh(cmd: &str) -> Result<CaptureData> {
         .map_err(|e| anyhow!("{}", e).into())
 }
 
+pub fn clean_up_path_buf(path_buf: PathBuf) -> Result<()> {
+    sh(format!("chmod -R 777 {}", path_buf.to_string_lossy()).as_str())?;
+    sh(format!("rm -rf {}", path_buf.to_string_lossy()).as_str())?;
+    Ok(())
+}
+
 pub fn clean_up(xvc_root: &XvcRoot) -> Result<()> {
-    fs::remove_dir_all(&xvc_root.absolute_path()).map_err(|e| e.into())
+    sh(format!(
+        "chmod -R 777 {}",
+        xvc_root.absolute_path().to_string_lossy()
+    )
+    .as_str())?;
+    sh(format!("rm -rf {}", xvc_root.absolute_path().to_string_lossy()).as_str())?;
+    Ok(())
 }

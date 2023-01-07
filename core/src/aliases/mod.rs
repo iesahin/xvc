@@ -56,7 +56,7 @@ alias xvcsr='xvc storage remove'"#;
 
 /// Print out aliases for long commands.
 /// These can be sourced in `~/.zsh_aliases`, `~/.bash_aliases` etc. like `$(xvc aliases)`.
-pub fn run(output_snd: Sender<XvcOutputLine>, _opts: AliasesCLI) -> Result<()> {
+pub fn run(output_snd: &Sender<XvcOutputLine>, _opts: AliasesCLI) -> Result<()> {
     output_snd
         .send(XvcOutputLine::Output(XVC_ALIASES.to_string()))
         .unwrap();

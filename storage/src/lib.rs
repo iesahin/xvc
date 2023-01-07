@@ -310,7 +310,7 @@ impl FromStr for StorageIdentifier {
 /// Other arguments are passed to subcommands.
 pub fn cmd_storage(
     input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     opts: StorageCLI,
 ) -> Result<()> {
@@ -332,7 +332,7 @@ pub fn cmd_storage(
 /// feature flags, that also guard the modules.
 fn cmd_storage_new(
     input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     sc: StorageNewSubCommand,
 ) -> Result<()> {
@@ -480,7 +480,7 @@ fn cmd_storage_new(
 /// This doesn't remove the history associated with them.
 fn cmd_storage_remove(
     input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: String,
 ) -> Result<()> {
@@ -493,7 +493,7 @@ fn cmd_storage_remove(
 /// `output_snd`.
 fn cmd_storage_list(
     _input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
 ) -> Result<()> {
     let store: XvcStore<XvcStorage> = xvc_root.load_store()?;

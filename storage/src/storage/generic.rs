@@ -19,7 +19,7 @@ use super::{
 
 pub fn cmd_storage_new_generic(
     input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: String,
     url: Option<String>,
@@ -46,7 +46,7 @@ pub fn cmd_storage_new_generic(
 
     watch!(storage);
 
-    let (init_event, storage) = storage.init(output_snd.clone(), xvc_root)?;
+    let (init_event, storage) = storage.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -147,7 +147,7 @@ impl XvcGenericStorage {
 
     fn run_for_paths(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         prepared_cmd: &str,
         paths: &[XvcCachePath],
@@ -196,7 +196,7 @@ impl XvcStorageOperations for XvcGenericStorage {
     /// upload the guid file.
     fn init(
         self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<(super::XvcStorageInitEvent, Self)> {
         let mut address_map = self.address_map();
@@ -250,7 +250,7 @@ impl XvcStorageOperations for XvcGenericStorage {
     ///
     fn list(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let address_map = self.address_map();
@@ -279,7 +279,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
     fn send(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         _force: bool,
@@ -299,7 +299,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
     fn receive(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -319,7 +319,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
     fn delete(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {

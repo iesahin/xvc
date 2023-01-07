@@ -205,7 +205,7 @@ fn compare_path(
             let md = match current_md {
                 // There is no current path either, we create something that exists in records only
                 None => XvcMetadata {
-                    file_type: xvc_core::XvcFileType::RecordOnly,
+                    file_type: xvc_core::XvcFileType::Missing,
                     size: None,
                     modified: None,
                 },
@@ -223,7 +223,7 @@ fn compare_path(
                 let md = match current_md {
                     // There is no current path either, we create something that exists in records only
                     None => XvcMetadata {
-                        file_type: xvc_core::XvcFileType::RecordOnly,
+                        file_type: xvc_core::XvcFileType::Missing,
                         size: None,
                         modified: None,
                     },
@@ -235,13 +235,13 @@ fn compare_path(
                 // We found stored metadata, let's check if it's changed
                 let o_md = match current_md {
                     None => Some(XvcMetadata {
-                        file_type: xvc_core::XvcFileType::RecordOnly,
+                        file_type: xvc_core::XvcFileType::Missing,
                         size: None,
                         modified: None,
                     }),
                     Some(md) => {
                         // We always invalidate RecordOnly files
-                        if stored_metadata.file_type == XvcFileType::RecordOnly {
+                        if stored_metadata.file_type == XvcFileType::Missing {
                             Some(*md)
                         } else if md.file_type == stored_metadata.file_type
                             && md.size == stored_metadata.size
