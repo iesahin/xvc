@@ -146,7 +146,7 @@ fn test_file_track_parallel() -> Result<()> {
 
     fs::remove_file(file_0)?;
 
-    let list_after_delete = x(&["list", "--recursive"])?;
+    let list_after_delete = x(&["list"])?;
 
     let data_line = line_captures(&list_after_delete, file_0);
 
