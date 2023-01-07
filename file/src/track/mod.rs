@@ -193,6 +193,7 @@ pub fn cmd_track(
     update_store_records(xvc_root, &text_or_binary_diff, true, false)?;
     update_store_records(xvc_root, &content_digest_diff, true, false)?;
 
+    watch!(targets);
     let file_targets: Vec<PathBuf> = targets
         .iter()
         .filter_map(|(xp, xmd)| {
