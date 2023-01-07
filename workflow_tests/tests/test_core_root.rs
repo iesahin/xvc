@@ -15,7 +15,7 @@ fn test_root() -> Result<()> {
     watch!(xvc_root);
 
     let rel = run_xvc(Some(&xvc_root), &["root"], XvcVerbosity::Trace)?;
-    assert!(rel.trim().to_string() == ".".to_string());
+    assert!(rel.trim().to_string() == ".".to_string(), "{}", rel.trim());
     let abs = run_xvc(
         Some(&xvc_root),
         &["root", "--absolute"],
