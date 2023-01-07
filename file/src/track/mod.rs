@@ -208,9 +208,10 @@ pub fn cmd_track(
     // Warning: This one uses `opts.targets` instead of `targets` because
     // `targets` has been filtered to only include files.
     let dir_targets: Vec<PathBuf> = opts
-        .targets.unwrap_or_else(|| vec![current_dir.to_string()])
+        .targets
+        .unwrap_or_else(|| vec![current_dir.to_string()])
         .iter()
-        .filter_map(|t|)| {
+        .filter_map(|t| {
             let p = PathBuf::from(t);
             if p.is_dir() {
                 Some(p)
