@@ -176,11 +176,17 @@ pub fn sh(cmd: &str) -> Result<CaptureData> {
 }
 
 pub fn clean_up_path_buf(path_buf: PathBuf) -> Result<()> {
+    sh(format!("chmod -R 777 {}", path_buf.to_string_lossy()).as_str())?;
     sh(format!("rm -rf {}", path_buf.to_string_lossy()).as_str())?;
     Ok(())
 }
 
 pub fn clean_up(xvc_root: &XvcRoot) -> Result<()> {
+    sh(format!(
+        "chmod -R 777 {}",
+        xvc_root.absolute_path().to_string_lossy()
+    )
+    .as_str())?;
     sh(format!("rm -rf {}", xvc_root.absolute_path().to_string_lossy()).as_str())?;
     Ok(())
 }
