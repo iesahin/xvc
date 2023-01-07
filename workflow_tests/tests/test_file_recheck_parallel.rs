@@ -34,9 +34,13 @@ fn test_file_recheck_parallel() -> Result<()> {
     assert!(path_to_add.exists());
     fs::remove_file(file_to_add)?;
     assert!(!path_to_add.exists());
-    watch!(x(&["file", "recheck", "--no-parallel", file_to_add])?);
+    watch!(x(&["file", "recheck", file_to_add])?);
 
-    assert!(PathBuf::from(file_to_add).exists());
+    assert!(
+        PathBuf::from(file_to_add).exists(),
+        "{:?} does not exist",
+        file_to_add
+    );
 
     x(&[
         "file",

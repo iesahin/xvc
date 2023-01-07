@@ -193,45 +193,25 @@ pub fn cmd_track(
     update_store_records(xvc_root, &text_or_binary_diff, true, false)?;
     update_store_records(xvc_root, &content_digest_diff, true, false)?;
 
-    // We reload to get the latest file types
-    let current_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
-    watch!(current_xvc_metadata_store.len());
-
-    let file_entities = changed_entities.iter().filter_map(|xe| {
-        current_xvc_metadata_store.get(xe).and_then(|md| {
-            if md.file_type == XvcFileType::File {
-                Some(*xe)
+    let file_targets: Vec<PathBuf> = targets
+        .iter()
+        .filter_map(|(xp, xmd)| {
+            if xmd.file_type == XvcFileType::File {
+                Some(xp.to_absolute_path(xvc_root).to_path_buf())
             } else {
                 None
             }
-        })
-    });
-
-    let directory_entities = changed_entities.iter().filter_map(|xe| {
-        current_xvc_metadata_store.get(xe).and_then(|md| {
-            if md.file_type == XvcFileType::Directory {
-                Some(*xe)
-            } else {
-                None
-            }
-        })
-    });
-
-    let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
-
-    let file_targets: Vec<PathBuf> = file_entities
-        .filter_map(|xe| {
-            current_xvc_path_store
-                .get(&xe)
-                .and_then(|xp| Some(xp.to_absolute_path(xvc_root).to_path_buf()))
         })
         .collect();
 
-    let dir_targets: Vec<PathBuf> = directory_entities
-        .filter_map(|xe| {
-            current_xvc_path_store
-                .get(&xe)
-                .and_then(|xp| Some(xp.to_absolute_path(xvc_root).to_path_buf()))
+    let dir_targets: Vec<PathBuf> = targets
+        .iter()
+        .filter_map(|(xp, xmd)| {
+            if xmd.file_type == XvcFileType::Directory {
+                Some(xp.to_absolute_path(xvc_root).to_path_buf())
+            } else {
+                None
+            }
         })
         .collect();
 
@@ -384,7 +364,7 @@ pub fn cmd_track(
 fn update_gitignores(
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
-    current_ignore: &IgnoreRules,
+    current_gitignore: &IgnoreRules,
     files: &[PathBuf],
     dirs: &[PathBuf],
 ) -> Result<()> {
@@ -398,7 +378,7 @@ fn update_gitignores(
                 current_dir.join(format!("{}/", f.to_string_lossy()))
             };
 
-            let ignore_res = check_ignore(current_ignore, &abs_path);
+            let ignore_res = check_ignore(current_gitignore, &abs_path);
 
             match ignore_res {
                 MatchResult::Ignore => {
@@ -434,7 +414,7 @@ fn update_gitignores(
         .filter_map(|f| {
                     let abs_path = current_dir.join(f);
 
-            match check_ignore(current_ignore, &abs_path) {
+            match check_ignore(current_gitignore, &abs_path) {
                 MatchResult::NoMatch => {
 
                     Some((f.clone(),

@@ -491,6 +491,7 @@ pub fn recheck_from_cache(
             };
         }
     }
+    watch!("Before return");
     Ok(())
 }
 
