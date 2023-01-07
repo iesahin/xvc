@@ -16,6 +16,7 @@ fn test_root() -> Result<()> {
 
     let rel = run_xvc(Some(&xvc_root), &["root"], XvcVerbosity::Default)?;
     watch!(rel);
+    watch!("After root");
     assert!(rel.trim().to_string() == ".".to_string(), "{}", rel.trim());
     let abs = run_xvc(
         Some(&xvc_root),
