@@ -53,11 +53,13 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
 
     assert!(output.status.success(), "Command failed: {:?}", prepared);
 
-    let output_str = format!(
+    let output_str = String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n");
+    let debug_output_str = format!(
         "Command: {prepared:#?}\nStdout: {}\nStderr: {}",
-        String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n"),
+        output_str,
         String::from_utf8_lossy(&output.stderr).replace("\\\n", "\n"),
     );
+    println!("{}", debug_output_str);
     Ok(output_str)
 }
 

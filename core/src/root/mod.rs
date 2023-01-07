@@ -3,7 +3,6 @@ use crate::error::Result;
 use crate::types::xvcroot::XvcRoot;
 use clap::Parser;
 use crossbeam_channel::Sender;
-use path_absolutize::Absolutize;
 use relative_path::RelativePath;
 use xvc_logging::{watch, XvcOutputLine};
 
