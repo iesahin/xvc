@@ -254,6 +254,11 @@ where
         )
     }
 }
+
+/// Keep four diffs for the same set of entities
+///
+/// This is used, for example, to keep path, metadata, digest and collection
+/// diffs for certain entities
 pub struct DiffStore4<T: Storable, U: Storable, V: Storable, W: Storable>(
     DiffStore<T>,
     DiffStore<U>,
@@ -262,6 +267,7 @@ pub struct DiffStore4<T: Storable, U: Storable, V: Storable, W: Storable>(
 );
 
 impl<T: Storable, U: Storable, V: Storable, W: Storable> DiffStore4<T, U, V, W> {
+    /// Return a tuple of diffs for the same entity
     pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>, Diff<V>, Diff<W>) {
         (
             self.0.get(&xe).cloned().expect("Missing diff1"),
