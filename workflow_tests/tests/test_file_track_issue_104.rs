@@ -29,7 +29,7 @@ fn test_file_track_issue_104() -> Result<()> {
         run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
-    let dir_1 = "dir-0001";
+    let dir_1 = "dir-0001/";
     let track_dir_1 = x(&["track", dir_1, "--no-parallel"])?;
     watch!(track_dir_1);
     // Create dir-0001 and dir-0002 with files file-0001..0010.bin inside them.
