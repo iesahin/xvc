@@ -226,13 +226,10 @@ pub fn cmd_track(
     watch!(file_targets);
     watch!(dir_targets);
 
-    update_gitignores(
-        xvc_root,
-        current_dir,
-        &current_gitignore,
-        &file_targets,
-        &dir_targets,
-    )?;
+    update_dir_gitignores(xvc_root, current_dir, &current_gitignore, &dir_targets)?;
+    // We reload gitignores here to make sure we ignore the given dirs
+    let current_gitignore = build_gitignore(xvc_root)?;
+    update_file_gitignores(xvc_root, current_dir, &current_gitignore, &file_targets)?;
 
     if !opts.no_commit {
         let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -281,11 +278,10 @@ pub fn cmd_track(
 /// If `current_ignore` already ignores a file, it's not added separately.
 /// If the user chooses to ignore a files manually by general rules, files are not added here.
 ///
-fn update_gitignores(
+fn update_dir_gitignores(
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     current_gitignore: &IgnoreRules,
-    files: &[PathBuf],
     dirs: &[PathBuf],
 ) -> Result<()> {
     // Check if dirs are already ignored
@@ -321,16 +317,50 @@ fn update_gitignores(
     watch!(dir_map);
 
     // Check if files are already ignored
+    let mut changes = HashMap::<PathBuf, Vec<String>>::new();
+
+    for (d, gi) in dir_map {
+        if !changes.contains_key(&gi) {
+            changes.insert(gi.clone(), Vec::<String>::new());
+        }
+
+        let path_v = changes.get_mut(&gi).unwrap();
+        path_v.push(
+            d.file_name()
+                .map(|d| format!("/{}/", d.to_string_lossy()))
+                .unwrap_or_else(|| "## Path Contains final ..".to_string()),
+        );
+    }
+
+    for (gitignore_file, values) in changes {
+        let append_str = format!(
+            "### Following {} lines are added by xvc on {}\n{}",
+            values.len(),
+            Utc::now().to_rfc2822(),
+            values.join("\n")
+        );
+        let gitignore_path = xvc_root.absolute_path().join(gitignore_file);
+
+        let mut file_o = OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(gitignore_path)?;
+
+        writeln!(file_o, "{}", append_str)?;
+    }
+
+    Ok(())
+}
+
+fn update_file_gitignores(
+    xvc_root: &XvcRoot,
+    current_dir: &AbsolutePath,
+    current_gitignore: &IgnoreRules,
+    files: &[PathBuf],
+) -> Result<()> {
+    // Check if files are already ignored
     let file_map: HashMap<PathBuf, PathBuf> = files
         .iter()
-        // filter if the directories we'll add already contains these files
-        .filter(|f| {
-            for (dir, _) in &dir_map {
-                if f.starts_with(dir) {
-                    return false }
-            }
-            true
-        })
         .filter_map(|f| {
                     let abs_path = current_dir.join(f);
 
@@ -366,18 +396,6 @@ fn update_gitignores(
         path_v.push(
             f.file_name()
                 .map(|f| format!("/{}", f.to_string_lossy()))
-                .unwrap_or_else(|| "## Path Contains final ..".to_string()),
-        );
-    }
-    for (d, gi) in dir_map {
-        if !changes.contains_key(&gi) {
-            changes.insert(gi.clone(), Vec::<String>::new());
-        }
-
-        let path_v = changes.get_mut(&gi).unwrap();
-        path_v.push(
-            d.file_name()
-                .map(|d| format!("/{}/", d.to_string_lossy()))
                 .unwrap_or_else(|| "## Path Contains final ..".to_string()),
         );
     }
