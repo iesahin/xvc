@@ -9,9 +9,11 @@ use xvc_core::XvcPath;
 use xvc_pipeline::{XvcDependency, XvcMetricsFormat, XvcOutput, XvcParamFormat, XvcPipelineSchema};
 
 use xvc::error::Result;
+use xvc_tests::watch;
 
 #[test]
 fn test_pipeline_export() -> Result<()> {
+    test_logging(log::LevelFilter::Trace);
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
@@ -96,6 +98,8 @@ fn test_pipeline_export() -> Result<()> {
 
     let json_export = x(&["export", "--format", "json"])?;
     let ps_json: XvcPipelineSchema = serde_json::from_str(&json_export)?;
+
+    watch!(ps_json);
 
     assert!(ps_json.name == "default");
     assert!(ps_json.version == 1);

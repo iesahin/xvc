@@ -1,3 +1,11 @@
+//! Compare two stores and find out which values are different.
+//!
+//! [Diff] keeps possible differences between two stores of the same type.
+//! [DiffStore] keeps the diffs for all entities in a stores.
+//!
+//! Two [Storable] types are compared and the result is a [Diff] of the same
+//! type.
+//! These diffs make up a store, which is a [DiffStore].
 use std::collections::HashSet;
 
 use crate::Result;
@@ -278,6 +286,10 @@ impl<T: Storable, U: Storable, V: Storable, W: Storable> DiffStore4<T, U, V, W> 
     }
 }
 
+/// Keep five diffs for the same set of entities
+///
+/// This is used, for example, to keep path, metadata, digest, text-or-binary,
+/// cache-type diffs for the same files.
 pub struct DiffStore5<T, U, V, W, X>(
     DiffStore<T>,
     DiffStore<U>,
@@ -300,6 +312,7 @@ where
     W: Storable,
     X: Storable,
 {
+    /// Return a tuple of diffs for the same entity
     pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>, Diff<V>, Diff<W>, Diff<X>) {
         (
             self.0.get(&xe).cloned().expect("Missing diff1"),
