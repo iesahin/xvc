@@ -20,7 +20,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 ///
 #[test]
 fn test_file_track_issue_104() -> Result<()> {
-    setup::logging(LevelFilter::Trace);
+    test_logging(log::LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
 
     let x = |cmd: &[&str]| -> Result<String> {
