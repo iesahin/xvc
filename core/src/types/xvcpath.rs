@@ -1,3 +1,8 @@
+//! Home of the [XvcPath] struct, [TextOrBinary] enum and [XvcCachePath] struct.
+//!
+//! [XvcPath] is the basic path type to represent repository paths in Xvc. It
+//! corresponds to a path relative to the [XvcRoot]. It can be converted from a
+//! [fs::path::Path] and actually is a wrapper around [RelativePathBuf].
 use std::{fmt::Display, path::Path};
 
 use crate::{error::Result, ContentDigest};

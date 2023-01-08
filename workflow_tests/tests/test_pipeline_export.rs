@@ -109,6 +109,7 @@ fn test_pipeline_export() -> Result<()> {
     assert!(ps_json.steps[1].name == "step2");
     assert!(ps_json.steps[1].command == "touch def.txt");
     let deps_json = &ps_json.steps[1].dependencies;
+    watch!(deps_json);
     assert!(deps_json.len() == 6);
     assert!(
         deps_json[0]
@@ -121,7 +122,8 @@ fn test_pipeline_export() -> Result<()> {
         deps_json[1]
             == XvcDependency::Glob {
                 glob: "*.txt".to_string()
-            }
+            },
+            "{:?}", deps_json[1]
     );
 
     assert!(
