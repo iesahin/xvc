@@ -192,55 +192,6 @@ pub fn apply_diff<T: Storable>(
     Ok(new_records)
 }
 
-
-pub struct Diff2<T, U>
-where
-    T: Storable,
-    U: Storable,
-{
-    diff1: Diff<T>,
-    diff2: Diff<U>,
-}
-
-pub struct Diff3<T, U, V>
-where
-    T: Storable,
-    U: Storable,
-    V: Storable,
-{
-    diff1: Diff<T>,
-    diff2: Diff<U>,
-    diff3: Diff<V>,
-}
-
-pub struct Diff4<T, U, V, W>
-where
-    T: Storable,
-    U: Storable,
-    V: Storable,
-    W: Storable,
-{
-    pub diff1: Diff<T>,
-    pub diff2: Diff<U>,
-    pub diff3: Diff<V>,
-    pub diff4: Diff<W>,
-}
-
-pub struct Diff5<T, U, V, W, X>
-where
-    T: Storable,
-    U: Storable,
-    V: Storable,
-    W: Storable,
-    X: Storable,
-{
-    diff1: Diff<T>,
-    diff2: Diff<U>,
-    diff3: Diff<V>,
-    diff4: Diff<W>,
-    diff5: Diff<X>,
-}
-
 impl<T: Storable> Diff<T> {
     pub fn changed(&self) -> bool {
         match self {
@@ -250,34 +201,6 @@ impl<T: Storable> Diff<T> {
             Diff::Different { .. } => true,
             Diff::Skipped => false,
         }
-    }
-}
-
-impl<T: Storable, U: Storable> Diff2<T, U> {
-    pub fn changed(&self) -> bool {
-        self.diff1.changed() || self.diff2.changed()
-    }
-}
-
-impl<T: Storable, U: Storable, V: Storable> Diff3<T, U, V> {
-    pub fn changed(&self) -> bool {
-        self.diff1.changed() || self.diff2.changed() || self.diff3.changed()
-    }
-}
-
-impl<T: Storable, U: Storable, V: Storable, W: Storable> Diff4<T, U, V, W> {
-    pub fn changed(&self) -> bool {
-        self.diff1.changed() || self.diff2.changed() || self.diff3.changed() || self.diff4.changed()
-    }
-}
-
-impl<T: Storable, U: Storable, V: Storable, W: Storable, X: Storable> Diff5<T, U, V, W, X> {
-    pub fn changed(&self) -> bool {
-        self.diff1.changed()
-            || self.diff2.changed()
-            || self.diff3.changed()
-            || self.diff4.changed()
-            || self.diff5.changed()
     }
 }
 
@@ -291,11 +214,11 @@ where
     T: Storable,
     U: Storable,
 {
-    pub fn get_diff2(&self, xe: XvcEntity) -> Diff2<T, U> {
-        Diff2 {
-            diff1: self.0.get(&xe).cloned().expect("Missing diff1"),
-            diff2: self.1.get(&xe).cloned().expect("Missing diff2"),
-        }
+    pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>) {
+        (
+            self.0.get(&xe).cloned().expect("Missing diff1"),
+            self.1.get(&xe).cloned().expect("Missing diff2"),
+        )
     }
 }
 
@@ -311,12 +234,12 @@ where
     U: Storable,
     V: Storable,
 {
-    pub fn get_diff3(&self, xe: XvcEntity) -> Diff3<T, U, V> {
-        Diff3 {
-            diff1: self.0.get(&xe).cloned().expect("Missing diff1"),
-            diff2: self.1.get(&xe).cloned().expect("Missing diff2"),
-            diff3: self.2.get(&xe).cloned().expect("Missing diff3"),
-        }
+    pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>, Diff<V>) {
+        (
+            self.0.get(&xe).cloned().expect("Missing diff1"),
+            self.1.get(&xe).cloned().expect("Missing diff2"),
+            self.2.get(&xe).cloned().expect("Missing diff3"),
+        )
     }
 }
 pub struct DiffStore4<T: Storable, U: Storable, V: Storable, W: Storable>(
@@ -327,13 +250,13 @@ pub struct DiffStore4<T: Storable, U: Storable, V: Storable, W: Storable>(
 );
 
 impl<T: Storable, U: Storable, V: Storable, W: Storable> DiffStore4<T, U, V, W> {
-    pub fn get_diff4(&self, xe: XvcEntity) -> Diff4<T, U, V, W> {
-        Diff4 {
-            diff1: self.0.get(&xe).cloned().expect("Missing diff1"),
-            diff2: self.1.get(&xe).cloned().expect("Missing diff2"),
-            diff3: self.2.get(&xe).cloned().expect("Missing diff3"),
-            diff4: self.3.get(&xe).cloned().expect("Missing diff4"),
-        }
+    pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>, Diff<V>, Diff<W>) {
+        (
+            self.0.get(&xe).cloned().expect("Missing diff1"),
+            self.1.get(&xe).cloned().expect("Missing diff2"),
+            self.2.get(&xe).cloned().expect("Missing diff3"),
+            self.3.get(&xe).cloned().expect("Missing diff4"),
+        )
     }
 }
 
@@ -359,13 +282,13 @@ where
     W: Storable,
     X: Storable,
 {
-    pub fn get_diff5(&self, xe: XvcEntity) -> Diff5<T, U, V, W, X> {
-        Diff5 {
-            diff1: self.0.get(&xe).cloned().expect("Missing diff1"),
-            diff2: self.1.get(&xe).cloned().expect("Missing diff2"),
-            diff3: self.2.get(&xe).cloned().expect("Missing diff3"),
-            diff4: self.3.get(&xe).cloned().expect("Missing diff4"),
-            diff5: self.4.get(&xe).cloned().expect("Missing diff5"),
-        }
+    pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>, Diff<V>, Diff<W>, Diff<X>) {
+        (
+            self.0.get(&xe).cloned().expect("Missing diff1"),
+            self.1.get(&xe).cloned().expect("Missing diff2"),
+            self.2.get(&xe).cloned().expect("Missing diff3"),
+            self.3.get(&xe).cloned().expect("Missing diff4"),
+            self.4.get(&xe).cloned().expect("Missing diff5"),
+        )
     }
 }

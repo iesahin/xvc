@@ -5,27 +5,23 @@
 use std::collections::HashSet;
 use std::fs;
 
-use crate::common::compare::{
-    diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata,
-};
+use crate::common::compare::{diff_cache_type, diff_content_digest, diff_xvc_path_metadata};
 use crate::common::{
-    only_file_targets, targets_from_store, update_store_records, xvc_path_metadata_map_from_disk,
-    FileTextOrBinary,
+    only_file_targets, targets_from_store, xvc_path_metadata_map_from_disk, FileTextOrBinary,
 };
 use crate::{common::recheck_from_cache, Result};
 use clap::Parser;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
-use xvc_core::util::file;
+
 use xvc_core::{
-    apply_diff, CacheType, ContentDigest, Diff, Diff3, DiffStore, DiffStore3, HashAlgorithm,
-    TextOrBinary, XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    apply_diff, CacheType, ContentDigest, Diff, DiffStore, HashAlgorithm, XvcCachePath,
+    XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::{error, info, warn, watch, XvcOutputLine};
-use xvc_walker::Glob;
-
+                
 /// Check out file from cache by a copy or link
 ///
 /// There are three conditions to recheck a file:

@@ -16,10 +16,6 @@ pub use types::xvcdigest::MetadataDigest;
 pub use types::xvcdigest::XvcDigest;
 
 pub use types::diff::Diff;
-pub use types::diff::Diff2;
-pub use types::diff::Diff3;
-pub use types::diff::Diff4;
-pub use types::diff::Diff5;
 pub use types::diff::DiffStore;
 pub use types::diff::DiffStore2;
 pub use types::diff::DiffStore3;
