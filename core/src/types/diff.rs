@@ -193,6 +193,8 @@ pub fn apply_diff<T: Storable>(
 }
 
 impl<T: Storable> Diff<T> {
+    /// Return true if the diff is not [Diff::Identical] or [Diff::Skipped].
+    /// This is used to find out if <T> has changed.
     pub fn changed(&self) -> bool {
         match self {
             Diff::Identical => false,
@@ -204,6 +206,10 @@ impl<T: Storable> Diff<T> {
     }
 }
 
+/// Keep two diffs for the same set of entities
+///
+/// This is used, for example, to keep path and metadata diffs for the same
+/// entities.
 pub struct DiffStore2<T, U>(pub DiffStore<T>, pub DiffStore<U>)
 where
     T: Storable,
@@ -214,6 +220,7 @@ where
     T: Storable,
     U: Storable,
 {
+    /// Return a tuple of diffs for the same entity
     pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>) {
         (
             self.0.get(&xe).cloned().expect("Missing diff1"),

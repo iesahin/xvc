@@ -36,7 +36,10 @@ fn test_file_track_issue_104() -> Result<()> {
 
     let root_gitignore = fs::read_to_string(xvc_root.join(Path::new(".gitignore")))?;
     watch!(root_gitignore);
-    assert!(!xvc_root.join(Path::new("dir-0001/.gitignore")).exists());
+    let dir_ignore = xvc_root.join(Path::new("dir-0001/.gitignore"));
+    let dir_ignore_content = fs::read_to_string(&dir_ignore)?;
+    watch!(dir_ignore_content);
+    assert!(!dir_ignore.exists());
 
     assert!(
         root_gitignore
