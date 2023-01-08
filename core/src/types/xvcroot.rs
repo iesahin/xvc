@@ -1,3 +1,6 @@
+//! The home of [XvcRoot], the primary data structure for Xvc repository.
+//!
+//! It's used to pass around the repository information and configuration.
 use std::fmt;
 use std::fs;
 use std::fs::OpenOptions;
