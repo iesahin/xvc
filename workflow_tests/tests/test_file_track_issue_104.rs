@@ -20,7 +20,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 ///
 #[test]
 fn test_file_track_issue_104() -> Result<()> {
-    // setup::logging(LevelFilter::Trace);
+    setup::logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
 
     let x = |cmd: &[&str]| -> Result<String> {
@@ -35,7 +35,7 @@ fn test_file_track_issue_104() -> Result<()> {
     // Create dir-0001 and dir-0002 with files file-0001..0010.bin inside them.
 
     let root_gitignore = fs::read_to_string(xvc_root.join(Path::new(".gitignore")))?;
-
+    watch!(root_gitignore);
     assert!(!xvc_root.join(Path::new("dir-0001/.gitignore")).exists());
 
     assert!(
