@@ -18,7 +18,7 @@ fn test_pipeline_export() -> Result<()> {
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
         c.extend(cmd);
-        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     x(&[

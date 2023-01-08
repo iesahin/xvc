@@ -1,3 +1,4 @@
+//! Home of the [XvcFileType] enum.
 use std::{
     fs::{self},
     io,

@@ -1,3 +1,6 @@
+//! Home of the [XvcMetadata] struct.
+//!
+//! Also contains various From implementations to convert [fs::Metadata] to [XvcMetadata].
 use crate::error::{Error, Result};
 use std::time::SystemTime;
 use std::{fs, io};
