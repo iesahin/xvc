@@ -92,8 +92,8 @@ pub fn cmd_export(
             name: s.name.clone(),
             command: commands[e].command.clone(),
             invalidate: step_invalidate.get(e).cloned().unwrap_or_default(),
-            dependencies: deps[e].values().sorted().cloned().collect(),
-            outputs: outs[e].values().sorted().cloned().collect(),
+            dependencies: deps[e].values().cloned().sorted().collect(),
+            outputs: outs[e].values().cloned().sorted().collect(),
         };
         step_schemas.push(ss);
     }
