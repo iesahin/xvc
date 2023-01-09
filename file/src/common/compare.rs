@@ -208,7 +208,7 @@ pub fn diff_file_content_digest(
             }
             // The path is changed. This can happen after a move
             // operation, for example.
-            Diff::Different { record, actual } => {
+            Diff::Different { actual, .. } => {
                 let path = actual.to_absolute_path(xvc_root);
                 let actual = ContentDigest::from_path(&path, algorithm, text_or_binary.0)?;
                 compare_with_stored_digest(actual)
@@ -289,7 +289,7 @@ pub fn diff_content_digest(
             None | Some(Diff::Identical) | Some(Diff::Skipped) => from_store(xe),
             Some(Diff::RecordMissing { actual }) => actual,
             Some(Diff::ActualMissing { record }) => record,
-            Some(Diff::Different { record, actual }) => actual,
+            Some(Diff::Different { actual, .. }) => actual,
         };
 
         let child_path_entities = entities
@@ -299,7 +299,7 @@ pub fn diff_content_digest(
                     None | Some(Diff::Identical) | Some(Diff::Skipped) => from_store(xe),
                     Some(Diff::RecordMissing { actual }) => actual,
                     Some(Diff::ActualMissing { record }) => record,
-                    Some(Diff::Different { record, actual }) => actual,
+                    Some(Diff::Different { actual, .. }) => actual,
                 };
 
                 if xvc_path.starts_with(the_dir) {
@@ -466,7 +466,7 @@ pub fn diff_path_collection_digest(
             Diff::RecordMissing { actual } => {
                 collection_strings.push(actual.to_string());
             }
-            Diff::Different { record, actual } => {
+            Diff::Different { actual, .. } => {
                 collection_strings.push(actual.to_string());
             }
             Diff::ActualMissing { record } => {

@@ -239,6 +239,13 @@ fn test_pipeline_import() -> Result<()> {
         watch!(outs2[0]);
         assert!(
             *outs2[0]
+                == XvcOutput::File {
+                    path: XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new("def.txt"))?,
+                }
+        );
+        watch!(outs2[1]);
+        assert!(
+            *outs2[1]
                 == XvcOutput::Metric {
                     path: XvcPath::new(
                         &xvc_root,
@@ -246,13 +253,6 @@ fn test_pipeline_import() -> Result<()> {
                         Path::new("metrics.json")
                     )?,
                     format: XvcMetricsFormat::JSON,
-                }
-        );
-        watch!(outs2[1]);
-        assert!(
-            *outs2[1]
-                == XvcOutput::File {
-                    path: XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new("def.txt"))?,
                 }
         );
         watch!(outs2[2]);

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use clap::Parser;
 use xvc_test_helper::{
     create_directory_tree, create_temp_dir, generate_filled_file, generate_random_file,
-    generate_random_text_file, random_dir_name, random_temp_dir, seeded_temp_dir, temp_git_dir,
+    generate_random_text_file, random_dir_name, random_temp_dir, temp_git_dir,
 };
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
