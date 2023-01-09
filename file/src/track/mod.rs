@@ -11,9 +11,7 @@ use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
-use xvc_core::{
-    ContentDigest, DiffStore3, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot,
-};
+use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_logging::{error, info, watch, XvcOutputLine};
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
@@ -21,13 +19,10 @@ use crate::carry_in::carry_in;
 use crate::common::compare::{
     diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata,
 };
-use crate::common::{
-    decide_no_parallel, expand_xvc_dir_file_targets, targets_from_disk, update_store_records,
-    FileTextOrBinary,
-};
-use crate::error::{Error, Result};
+use crate::common::{targets_from_disk, update_store_records, FileTextOrBinary};
+use crate::error::Result;
 
-use std::fs::{self, OpenOptions};
+use std::fs::OpenOptions;
 
 use clap::Parser;
 use std::path::PathBuf;

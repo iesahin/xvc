@@ -94,6 +94,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
+    watch!(n_storage_files_after);
 
     assert!(
         n_storage_files_before + 1 == n_storage_files_after,

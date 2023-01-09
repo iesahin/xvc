@@ -14,27 +14,19 @@ use serde::{Deserialize, Serialize};
 use xvc_config::{conf, FromConfigKey};
 use xvc_core::types::xvcpath::XvcCachePath;
 use xvc_core::util::file::make_symlink;
+use xvc_core::HashAlgorithm;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, CacheType, CollectionDigest, ContentDigest, DiffStore,
-    MetadataDigest, TextOrBinary, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, apply_diff, CacheType, ContentDigest, DiffStore, TextOrBinary,
+    XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_core::{util::file::is_text_file, HashAlgorithm, XvcDigest};
 use xvc_logging::{error, info, warn, watch};
 
-use xvc_ecs::{persist, HStore, Storable, XvcEntity, XvcStore};
+use xvc_ecs::{persist, HStore, Storable, XvcStore};
 use xvc_logging::XvcOutputLine;
 use xvc_walker::{
     check_ignore, AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder, IgnoreRules,
-    MatchResult, PathMetadata,
+    MatchResult,
 };
-
-#[derive(Debug, Clone)]
-pub struct PathMatch {
-    xvc_path: Option<XvcPath>,
-    actual_path: Option<PathMetadata>,
-    xvc_entity: Option<XvcEntity>,
-    actual_digest: Option<XvcDigest>,
-}
 
 /// Represents whether a file is a text file or not
 #[derive(
@@ -422,14 +414,6 @@ pub fn expand_xvc_dir_file_targets(
     file_targets.extend(implicit_file_targets.into_iter());
 
     (dir_targets, file_targets)
-}
-
-pub const PARALLEL_THRESHOLD: usize = 47;
-
-/// Use parallel processing if the number of targets is greater than the threshold
-/// or directories are included in the targets.
-pub fn decide_no_parallel(from_opts: bool, targets: &[PathBuf]) -> bool {
-    from_opts || (targets.iter().all(|t| t.is_file()) && targets.len() < PARALLEL_THRESHOLD)
 }
 
 pub fn recheck_from_cache(

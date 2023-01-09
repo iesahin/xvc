@@ -446,128 +446,128 @@ pub fn diff_content_digest(
 /// When a collection list changes, for example a file added to a directory, we
 /// recalculate the collection digest to see if the collection has changed.
 /// TODO: Remove this if not unused in pipelines
-pub fn diff_path_collection_digest(
-    stored_collection_digest: Option<&CollectionDigest>,
-    stored_xvc_path_store: &XvcStore<XvcPath>,
-    path_diffs: &DiffStore<XvcPath>,
-    sorted_entities: &[XvcEntity],
-) -> Result<Diff<CollectionDigest>> {
-    let xvc_path_diff = path_diffs.subset(sorted_entities.iter().copied())?;
-    let stored_xvc_paths = stored_xvc_path_store.subset(sorted_entities.iter().copied())?;
-    let mut collection_strings = Vec::<String>::new();
-
-    for xe in sorted_entities {
-        let xvc_path_diff = xvc_path_diff.get(xe).expect("xvc_path_diff.get(xe)");
-        match xvc_path_diff {
-            Diff::Identical | Diff::Skipped => {
-                let path = stored_xvc_paths.get(xe).expect("stored_xvc_paths.get(xe)");
-                collection_strings.push(path.to_string());
-            }
-            Diff::RecordMissing { actual } => {
-                collection_strings.push(actual.to_string());
-            }
-            Diff::Different { actual, .. } => {
-                collection_strings.push(actual.to_string());
-            }
-            Diff::ActualMissing { .. } => {
-                // We can do some weird things here, like adding a prefix or
-                // reversing the string to change the collection result. I think it's better to use an empty
-                // entity string to describe the situation.
-
-                // This is to make sure the collection digest is different when
-                // all records are missing.
-                collection_strings.push(xe.to_string());
-            }
-        }
-    }
-
-    let joined = collection_strings.join("\n");
-    let actual: CollectionDigest = XvcDigest::from_content(&joined, HashAlgorithm::Blake3).into();
-
-    let dg = match stored_collection_digest {
-        Some(record) => {
-            if actual != *record {
-                Diff::Different {
-                    record: *record,
-                    actual,
-                }
-            } else {
-                Diff::Identical
-            }
-        }
-        None => Diff::RecordMissing { actual },
-    };
-
-    Ok(dg)
-}
-
+// pub fn diff_path_collection_digest(
+//     stored_collection_digest: Option<&CollectionDigest>,
+//     stored_xvc_path_store: &XvcStore<XvcPath>,
+//     path_diffs: &DiffStore<XvcPath>,
+//     sorted_entities: &[XvcEntity],
+// ) -> Result<Diff<CollectionDigest>> {
+//     let xvc_path_diff = path_diffs.subset(sorted_entities.iter().copied())?;
+//     let stored_xvc_paths = stored_xvc_path_store.subset(sorted_entities.iter().copied())?;
+//     let mut collection_strings = Vec::<String>::new();
+//
+//     for xe in sorted_entities {
+//         let xvc_path_diff = xvc_path_diff.get(xe).expect("xvc_path_diff.get(xe)");
+//         match xvc_path_diff {
+//             Diff::Identical | Diff::Skipped => {
+//                 let path = stored_xvc_paths.get(xe).expect("stored_xvc_paths.get(xe)");
+//                 collection_strings.push(path.to_string());
+//             }
+//             Diff::RecordMissing { actual } => {
+//                 collection_strings.push(actual.to_string());
+//             }
+//             Diff::Different { actual, .. } => {
+//                 collection_strings.push(actual.to_string());
+//             }
+//             Diff::ActualMissing { .. } => {
+//                 // We can do some weird things here, like adding a prefix or
+//                 // reversing the string to change the collection result. I think it's better to use an empty
+//                 // entity string to describe the situation.
+//
+//                 // This is to make sure the collection digest is different when
+//                 // all records are missing.
+//                 collection_strings.push(xe.to_string());
+//             }
+//         }
+//     }
+//
+//     let joined = collection_strings.join("\n");
+//     let actual: CollectionDigest = XvcDigest::from_content(&joined, HashAlgorithm::Blake3).into();
+//
+//     let dg = match stored_collection_digest {
+//         Some(record) => {
+//             if actual != *record {
+//                 Diff::Different {
+//                     record: *record,
+//                     actual,
+//                 }
+//             } else {
+//                 Diff::Identical
+//             }
+//         }
+//         None => Diff::RecordMissing { actual },
+//     };
+//
+//     Ok(dg)
+// }
+//
 /// This is to detect metadata changes in collections, e.g., directories or
 /// globs. When timestamp, size or similar metadata changes, the result changes.
 /// It can be used to detect changes in directories, globs, or other collections
 /// that use [XvcMetadata] to keep individual items' metadata.
 /// TODO: Remove this if not unused in pipelines
-pub fn diff_dir_metadata_digest(
-    stored_metadata_digest: Option<&MetadataDigest>,
-    stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
-    metadata_diffs: &DiffStore<XvcMetadata>,
-    sorted_entities: &[XvcEntity],
-) -> Result<Diff<MetadataDigest>> {
-    let xvc_metadata_diff = metadata_diffs.subset(sorted_entities.iter().copied())?;
-    let mut metadata_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
-
-    for xe in sorted_entities {
-        let xvc_metadata_diff = xvc_metadata_diff
-            .get(xe)
-            .ok_or(EcsError::CannotFindEntityInStore { entity: *xe })?;
-        match xvc_metadata_diff {
-            Diff::Identical | Diff::Skipped => {
-                let metadata = stored_xvc_metadata_store
-                    .get(xe)
-                    .ok_or(xvc_ecs::error::Error::CannotFindKeyInStore { key: (*xe).into() })?;
-                metadata_digest_bytes.extend(metadata.digest()?.0.unwrap().as_bytes());
-            }
-            Diff::RecordMissing { actual } => {
-                metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
-            }
-            Diff::Different { actual, .. } => {
-                metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
-            }
-            Diff::ActualMissing { .. } => {
-                // This is to make sure the metadata digest is different when
-                // all records are missing or their order has changed.
-                let entity_bytes: usize = (*xe).into();
-                let mut entity_bytes_as_digest = Vec::from([0u8; DIGEST_LENGTH]);
-                entity_bytes_as_digest.copy_from_slice(&entity_bytes.to_le_bytes());
-                metadata_digest_bytes.extend(
-                    XvcDigest::from_bytes(&entity_bytes_as_digest, HashAlgorithm::AsIs).digest,
-                );
-            }
-        }
-    }
-
-    // We always use Blake3 to keep the metadata digest consistent.
-    let actual = MetadataDigest::from(XvcDigest::from_bytes(
-        &metadata_digest_bytes,
-        HashAlgorithm::Blake3,
-    ));
-
-    let digest = match stored_metadata_digest {
-        Some(record) => {
-            if actual != *record {
-                Diff::Different {
-                    record: *record,
-                    actual,
-                }
-            } else {
-                Diff::Identical
-            }
-        }
-        None => Diff::RecordMissing { actual },
-    };
-
-    Ok(digest)
-}
-
+// pub fn diff_dir_metadata_digest(
+//     stored_metadata_digest: Option<&MetadataDigest>,
+//     stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
+//     metadata_diffs: &DiffStore<XvcMetadata>,
+//     sorted_entities: &[XvcEntity],
+// ) -> Result<Diff<MetadataDigest>> {
+//     let xvc_metadata_diff = metadata_diffs.subset(sorted_entities.iter().copied())?;
+//     let mut metadata_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
+//
+//     for xe in sorted_entities {
+//         let xvc_metadata_diff = xvc_metadata_diff
+//             .get(xe)
+//             .ok_or(EcsError::CannotFindEntityInStore { entity: *xe })?;
+//         match xvc_metadata_diff {
+//             Diff::Identical | Diff::Skipped => {
+//                 let metadata = stored_xvc_metadata_store
+//                     .get(xe)
+//                     .ok_or(xvc_ecs::error::Error::CannotFindKeyInStore { key: (*xe).into() })?;
+//                 metadata_digest_bytes.extend(metadata.digest()?.0.unwrap().as_bytes());
+//             }
+//             Diff::RecordMissing { actual } => {
+//                 metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
+//             }
+//             Diff::Different { actual, .. } => {
+//                 metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
+//             }
+//             Diff::ActualMissing { .. } => {
+//                 // This is to make sure the metadata digest is different when
+//                 // all records are missing or their order has changed.
+//                 let entity_bytes: usize = (*xe).into();
+//                 let mut entity_bytes_as_digest = Vec::from([0u8; DIGEST_LENGTH]);
+//                 entity_bytes_as_digest.copy_from_slice(&entity_bytes.to_le_bytes());
+//                 metadata_digest_bytes.extend(
+//                     XvcDigest::from_bytes(&entity_bytes_as_digest, HashAlgorithm::AsIs).digest,
+//                 );
+//             }
+//         }
+//     }
+//
+//     // We always use Blake3 to keep the metadata digest consistent.
+//     let actual = MetadataDigest::from(XvcDigest::from_bytes(
+//         &metadata_digest_bytes,
+//         HashAlgorithm::Blake3,
+//     ));
+//
+//     let digest = match stored_metadata_digest {
+//         Some(record) => {
+//             if actual != *record {
+//                 Diff::Different {
+//                     record: *record,
+//                     actual,
+//                 }
+//             } else {
+//                 Diff::Identical
+//             }
+//         }
+//         None => Diff::RecordMissing { actual },
+//     };
+//
+//     Ok(digest)
+// }
+//
 /// This is used to detect content changes in elements of path collections,
 /// e.g., directories or globs. When the content of these elements change, their
 /// content digests also change. We collect them together and calculate their
