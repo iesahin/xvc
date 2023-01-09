@@ -9,7 +9,7 @@ use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
-use xvc_logging::{debug, info, trace};
+use xvc_logging::{debug, trace};
 use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcConfigInitParams};
@@ -61,6 +61,11 @@ impl Deref for XvcRoot {
 }
 
 impl XvcRoot {
+    /// Create a new XvcRoot object from the `path`.
+    /// Configuration is loaded according to [`config_opts`][XvcConfigInitParams].
+    /// The path is not required to be the root of the repository.
+    /// This function searches for the root of the repository using
+    /// [XvcRoot::find_root] and uses it as the root.
     pub fn new(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
         match XvcRoot::find_root(path) {
             Ok(absolute_path) => {
@@ -203,7 +208,9 @@ impl XvcRoot {
     const STORE_PATH: &'static str = "store";
     const ENTITY_GENERATOR_PATH: &'static str = "ec";
 
-    fn find_root(path: &Path) -> Result<AbsolutePath> {
+    /// Finds the root of the xvc repository by looking for the .xvc directory
+    /// in parents of a given path.
+    pub fn find_root(path: &Path) -> Result<AbsolutePath> {
         trace!("{:?}", path);
         let mut pb = PathBuf::from(path)
             .canonicalize()

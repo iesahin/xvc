@@ -59,7 +59,7 @@ impl XvcMetadata {
 impl From<io::Result<fs::Metadata>> for XvcMetadata {
     fn from(r_md: io::Result<fs::Metadata>) -> Self {
         match r_md {
-            Err(e) => Self {
+            Err(_) => Self {
                 file_type: XvcFileType::Missing,
                 size: None,
                 modified: None,
@@ -84,7 +84,7 @@ impl From<io::Result<fs::Metadata>> for XvcMetadata {
 impl From<std::result::Result<fs::Metadata, jwalk::Error>> for XvcMetadata {
     fn from(r_md: std::result::Result<fs::Metadata, jwalk::Error>) -> Self {
         match r_md {
-            Err(e) => Self {
+            Err(_) => Self {
                 file_type: XvcFileType::Missing,
                 size: None,
                 modified: None,

@@ -185,7 +185,9 @@ fn test_pipeline_export() -> Result<()> {
                     Path::new("metrics.json")
                 )?,
                 format: XvcMetricsFormat::JSON,
-            }
+            },
+        "{:?}",
+        outs_json[0]
     );
 
     assert!(
