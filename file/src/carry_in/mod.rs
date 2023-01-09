@@ -113,7 +113,7 @@ pub fn cmd_carry_in(
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
     let target_files =
-        only_file_targets(&stored_xvc_path_store, &stored_xvc_metadata_store, &targets)?;
+        only_file_targets(&stored_xvc_metadata_store, &targets)?;
 
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
     let xvc_path_metadata_diff = diff_xvc_path_metadata(

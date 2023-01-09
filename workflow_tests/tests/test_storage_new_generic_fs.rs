@@ -80,6 +80,8 @@ fn test_storage_new_generic_fs() -> Result<()> {
         })
         .count();
 
+    watch!(n_storage_files_before);
+
     let push_result = x(&["file", "send", "--to", "generic-storage", the_file])?;
     watch!(push_result);
 

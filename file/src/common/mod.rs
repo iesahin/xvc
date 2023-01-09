@@ -1,6 +1,6 @@
 pub mod compare;
 
-use std::fs::{self, Permissions};
+use std::fs::{self};
 use std::{
     fs::Metadata,
     path::{Path, PathBuf},
@@ -19,14 +19,11 @@ use xvc_core::{
     all_paths_and_metadata, apply_diff, CacheType, ContentDigest, DiffStore, TextOrBinary,
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_logging::{error, info, warn, watch};
+use xvc_logging::{info, warn, watch};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 use xvc_logging::XvcOutputLine;
-use xvc_walker::{
-    check_ignore, AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder, IgnoreRules,
-    MatchResult,
-};
+use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder};
 
 /// Represents whether a file is a text file or not
 #[derive(
@@ -92,95 +89,95 @@ pub fn pipe_path_digest(
     Ok(())
 }
 
-pub fn pathbuf_to_xvc_target(
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    xvc_ignore: &IgnoreRules,
-    current_dir: &AbsolutePath,
-    targets: &Vec<PathBuf>,
-) -> Vec<XvcPath> {
-    targets
-        .into_iter()
-        .filter_map(|t| {
-            watch!(t);
-            watch!(t.is_file());
-            watch!(t.is_dir());
-            watch!(t.metadata());
-            if t.is_file() || t.is_dir() {
-                Some(t)
-            } else {
-                warn!(
-                    output_snd,
-                    "Unsupported Target Type: {}",
-                    t.to_string_lossy()
-                );
-                None
-            }
-        })
-        .filter(|t| {
-            let ignore_result = check_ignore(&xvc_ignore, t);
-
-            match ignore_result {
-                MatchResult::Ignore => {
-                    warn!(output_snd, "Ignored: {}", t.to_string_lossy());
-                    false
-                }
-                MatchResult::Whitelist => {
-                    info!(output_snd, "Whitelisted: {}", t.to_string_lossy());
-                    true
-                }
-                MatchResult::NoMatch => true,
-            }
-        })
-        .map(|t| XvcPath::new(xvc_root, current_dir, &t))
-        .filter_map(|res_xp| match res_xp {
-            Ok(xp) => Some(xp),
-            Err(e) => {
-                error!("{}", e);
-                None
-            }
-        })
-        .collect()
-}
-
-pub fn split_file_directory_targets(
-    output_snd: &Sender<XvcOutputLine>,
-    xpmm: &XvcPathMetadataMap,
-    xvc_targets: &[XvcPath],
-) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
-    let mut dir_targets = XvcPathMetadataMap::new();
-    let mut file_targets = XvcPathMetadataMap::new();
-
-    for xvc_target in xvc_targets {
-        if let Some(xmd) = xpmm.get(&xvc_target) {
-            match xmd.file_type {
-                XvcFileType::Missing => {
-                    error!(output_snd, "Target not found: {}", xvc_target);
-                }
-                XvcFileType::File => {
-                    file_targets.insert(xvc_target.clone(), xmd.clone());
-                }
-                XvcFileType::Directory => {
-                    dir_targets.insert(xvc_target.clone(), xmd.clone());
-                }
-                XvcFileType::Symlink => {
-                    error!(output_snd, "Symlinks are not supported: {}", xvc_target)
-                }
-                XvcFileType::Hardlink => {
-                    error!(output_snd, "Hardlinks are not supported: {xvc_target}");
-                }
-                XvcFileType::Reflink => {
-                    error!(output_snd, "Reflinks are not supported: {xvc_target}")
-                }
-            }
-        } else {
-            warn!(output_snd, "Ignored or not found: {xvc_target}");
-        }
-    }
-
-    (file_targets, dir_targets)
-}
-
+// pub fn pathbuf_to_xvc_target(
+//     output_snd: &Sender<XvcOutputLine>,
+//     xvc_root: &XvcRoot,
+//     xvc_ignore: &IgnoreRules,
+//     current_dir: &AbsolutePath,
+//     targets: &Vec<PathBuf>,
+// ) -> Vec<XvcPath> {
+//     targets
+//         .into_iter()
+//         .filter_map(|t| {
+//             watch!(t);
+//             watch!(t.is_file());
+//             watch!(t.is_dir());
+//             watch!(t.metadata());
+//             if t.is_file() || t.is_dir() {
+//                 Some(t)
+//             } else {
+//                 warn!(
+//                     output_snd,
+//                     "Unsupported Target Type: {}",
+//                     t.to_string_lossy()
+//                 );
+//                 None
+//             }
+//         })
+//         .filter(|t| {
+//             let ignore_result = check_ignore(&xvc_ignore, t);
+//
+//             match ignore_result {
+//                 MatchResult::Ignore => {
+//                     warn!(output_snd, "Ignored: {}", t.to_string_lossy());
+//                     false
+//                 }
+//                 MatchResult::Whitelist => {
+//                     info!(output_snd, "Whitelisted: {}", t.to_string_lossy());
+//                     true
+//                 }
+//                 MatchResult::NoMatch => true,
+//             }
+//         })
+//         .map(|t| XvcPath::new(xvc_root, current_dir, &t))
+//         .filter_map(|res_xp| match res_xp {
+//             Ok(xp) => Some(xp),
+//             Err(e) => {
+//                 error!("{}", e);
+//                 None
+//             }
+//         })
+//         .collect()
+// }
+//
+// pub fn split_file_directory_targets(
+//     output_snd: &Sender<XvcOutputLine>,
+//     xpmm: &XvcPathMetadataMap,
+//     xvc_targets: &[XvcPath],
+// ) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
+//     let mut dir_targets = XvcPathMetadataMap::new();
+//     let mut file_targets = XvcPathMetadataMap::new();
+//
+//     for xvc_target in xvc_targets {
+//         if let Some(xmd) = xpmm.get(&xvc_target) {
+//             match xmd.file_type {
+//                 XvcFileType::Missing => {
+//                     error!(output_snd, "Target not found: {}", xvc_target);
+//                 }
+//                 XvcFileType::File => {
+//                     file_targets.insert(xvc_target.clone(), xmd.clone());
+//                 }
+//                 XvcFileType::Directory => {
+//                     dir_targets.insert(xvc_target.clone(), xmd.clone());
+//                 }
+//                 XvcFileType::Symlink => {
+//                     error!(output_snd, "Symlinks are not supported: {}", xvc_target)
+//                 }
+//                 XvcFileType::Hardlink => {
+//                     error!(output_snd, "Hardlinks are not supported: {xvc_target}");
+//                 }
+//                 XvcFileType::Reflink => {
+//                     error!(output_snd, "Reflinks are not supported: {xvc_target}")
+//                 }
+//             }
+//         } else {
+//             warn!(output_snd, "Ignored or not found: {xvc_target}");
+//         }
+//     }
+//
+//     (file_targets, dir_targets)
+// }
+//
 /// This is to convert targets given in the CLI to XvcPaths. It doesn't walk the
 /// file system. It's to be used in `xvc file carry-in` or `xvc file recheck`,
 /// where we already track the files in the store.
@@ -226,7 +223,7 @@ pub fn targets_from_store(
         });
         let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
 
-        let mut paths = xvc_path_store.filter(|_, p| {
+        let paths = xvc_path_store.filter(|_, p| {
             watch!(p);
             let str_path = &p.as_relative_path().as_str();
             watch!(str_path);
@@ -327,7 +324,6 @@ pub fn targets_from_disk(
 }
 
 pub fn only_file_targets(
-    xvc_path_store: &XvcStore<XvcPath>,
     xvc_metadata_store: &XvcStore<XvcMetadata>,
     targets: &HStore<XvcPath>,
 ) -> Result<HStore<XvcPath>> {
@@ -357,7 +353,7 @@ pub fn xvc_path_metadata_map_from_disk(
 ) -> XvcPathMetadataMap {
     targets
         .par_iter()
-        .map(|(xe, xp)| {
+        .map(|(_, xp)| {
             let p = xp.to_absolute_path(xvc_root);
             let xmd = XvcMetadata::from(p.metadata());
             (xp.clone(), xmd)
@@ -365,56 +361,56 @@ pub fn xvc_path_metadata_map_from_disk(
         .collect()
 }
 
-pub fn expand_directory_targets(
-    output_snd: &Sender<XvcOutputLine>,
-    xpmm: &XvcPathMetadataMap,
-    dir_targets: &XvcPathMetadataMap,
-) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
-    let mut all_dir_targets = XvcPathMetadataMap::new();
-    let mut all_file_targets = XvcPathMetadataMap::new();
-
-    for (dir_target, dir_md) in dir_targets {
-        for (xvc_path, xvc_md) in xpmm {
-            if xvc_path.starts_with(&dir_target) && *xvc_path != *dir_target {
-                match xvc_md.file_type {
-                    XvcFileType::Directory => {
-                        all_dir_targets.insert(xvc_path.clone(), xvc_md.clone());
-                    }
-                    XvcFileType::File => {
-                        all_file_targets.insert(xvc_path.clone(), xvc_md.clone());
-                    }
-                    _ => {
-                        error!(output_snd, "Unsupported Target: {xvc_path}");
-                    }
-                }
-            }
-        }
-        all_dir_targets.insert(dir_target.clone(), dir_md.clone());
-    }
-    (all_dir_targets, all_file_targets)
-}
-
-pub fn expand_xvc_dir_file_targets(
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    current_dir: &AbsolutePath,
-    targets: Vec<PathBuf>,
-) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
-    let (xpmm, xvc_ignore) = all_paths_and_metadata(xvc_root);
-    let xvc_targets =
-        pathbuf_to_xvc_target(output_snd, xvc_root, &xvc_ignore, current_dir, &targets);
-
-    let (mut file_targets, given_dir_targets) =
-        split_file_directory_targets(output_snd, &xpmm, &xvc_targets);
-    // Add all paths under directory targets
-    let (mut dir_targets, implicit_file_targets) =
-        expand_directory_targets(output_snd, &xpmm, &given_dir_targets);
-
-    dir_targets.extend(given_dir_targets.into_iter());
-    file_targets.extend(implicit_file_targets.into_iter());
-
-    (dir_targets, file_targets)
-}
+// pub fn expand_directory_targets(
+//     output_snd: &Sender<XvcOutputLine>,
+//     xpmm: &XvcPathMetadataMap,
+//     dir_targets: &XvcPathMetadataMap,
+// ) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
+//     let mut all_dir_targets = XvcPathMetadataMap::new();
+//     let mut all_file_targets = XvcPathMetadataMap::new();
+//
+//     for (dir_target, dir_md) in dir_targets {
+//         for (xvc_path, xvc_md) in xpmm {
+//             if xvc_path.starts_with(&dir_target) && *xvc_path != *dir_target {
+//                 match xvc_md.file_type {
+//                     XvcFileType::Directory => {
+//                         all_dir_targets.insert(xvc_path.clone(), xvc_md.clone());
+//                     }
+//                     XvcFileType::File => {
+//                         all_file_targets.insert(xvc_path.clone(), xvc_md.clone());
+//                     }
+//                     _ => {
+//                         error!(output_snd, "Unsupported Target: {xvc_path}");
+//                     }
+//                 }
+//             }
+//         }
+//         all_dir_targets.insert(dir_target.clone(), dir_md.clone());
+//     }
+//     (all_dir_targets, all_file_targets)
+// }
+//
+// pub fn expand_xvc_dir_file_targets(
+//     output_snd: &Sender<XvcOutputLine>,
+//     xvc_root: &XvcRoot,
+//     current_dir: &AbsolutePath,
+//     targets: Vec<PathBuf>,
+// ) -> (XvcPathMetadataMap, XvcPathMetadataMap) {
+//     let (xpmm, xvc_ignore) = all_paths_and_metadata(xvc_root);
+//     let xvc_targets =
+//         pathbuf_to_xvc_target(output_snd, xvc_root, &xvc_ignore, current_dir, &targets);
+//
+//     let (mut file_targets, given_dir_targets) =
+//         split_file_directory_targets(output_snd, &xpmm, &xvc_targets);
+//     // Add all paths under directory targets
+//     let (mut dir_targets, implicit_file_targets) =
+//         expand_directory_targets(output_snd, &xpmm, &given_dir_targets);
+//
+//     dir_targets.extend(given_dir_targets.into_iter());
+//     file_targets.extend(implicit_file_targets.into_iter());
+//
+//     (dir_targets, file_targets)
+// }
 
 pub fn recheck_from_cache(
     output_snd: &Sender<XvcOutputLine>,
