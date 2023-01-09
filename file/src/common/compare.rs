@@ -469,7 +469,7 @@ pub fn diff_path_collection_digest(
             Diff::Different { actual, .. } => {
                 collection_strings.push(actual.to_string());
             }
-            Diff::ActualMissing { record } => {
+            Diff::ActualMissing { .. } => {
                 // We can do some weird things here, like adding a prefix or
                 // reversing the string to change the collection result. I think it's better to use an empty
                 // entity string to describe the situation.
@@ -529,10 +529,10 @@ pub fn diff_dir_metadata_digest(
             Diff::RecordMissing { actual } => {
                 metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
             }
-            Diff::Different { record, actual } => {
+            Diff::Different { actual, .. } => {
                 metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
             }
-            Diff::ActualMissing { record } => {
+            Diff::ActualMissing { .. } => {
                 // This is to make sure the metadata digest is different when
                 // all records are missing or their order has changed.
                 let entity_bytes: usize = (*xe).into();
@@ -595,10 +595,10 @@ pub fn diff_dir_content_digest(
             Diff::RecordMissing { actual } => {
                 content_digest_bytes.extend(actual.0.expect("digest").digest);
             }
-            Diff::Different { record, actual } => {
+            Diff::Different { actual, .. } => {
                 content_digest_bytes.extend(actual.0.expect("digest").digest);
             }
-            Diff::ActualMissing { record } => {
+            Diff::ActualMissing { .. } => {
                 // This is to make sure the content digest is different when
                 // all records are missing or their order has changed.
                 let entity_bytes: usize = (*xe).into();
