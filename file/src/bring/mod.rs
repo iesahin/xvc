@@ -14,13 +14,10 @@ use crate::{
 
 use clap::Parser;
 use crossbeam_channel::Sender;
-use xvc_core::{
-    CacheType, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
-};
+use xvc_core::{CacheType, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{uwo, uwr, warn, watch, XvcOutputLine};
+use xvc_logging::{warn, watch, XvcOutputLine};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
-use xvc_walker::Glob;
 
 /// Bring (download, pull, fetch) files from storage.
 ///
@@ -76,7 +73,7 @@ pub fn fetch(
         .subset(targets.keys().copied())?;
 
     let target_file_xvc_metadata =
-        target_xvc_metadata.filter(|xe, xmd| xmd.file_type == XvcFileType::File);
+        target_xvc_metadata.filter(|_, xmd| xmd.file_type == XvcFileType::File);
 
     let target_files = targets.subset(target_file_xvc_metadata.keys().copied())?;
 

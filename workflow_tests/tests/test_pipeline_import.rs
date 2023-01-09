@@ -3,6 +3,7 @@ mod common;
 use std::{iter::zip, path::Path};
 
 use common::*;
+use itertools::Itertools;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcPath;
@@ -121,7 +122,7 @@ fn test_pipeline_import() -> Result<()> {
         let steps = all_steps.children_of(pipeline_e)?;
         watch!(steps);
         assert_eq!(steps.len(), 2);
-        for (step, step_name) in zip(steps.values(), ["step1", "step2"]) {
+        for (step, step_name) in zip(steps.values().sorted(), ["step1", "step2"]) {
             assert_eq!(
                 *step,
                 XvcStep {
@@ -130,7 +131,8 @@ fn test_pipeline_import() -> Result<()> {
             );
         }
 
-        for (step_e, step_command) in zip(steps.keys(), ["touch abc.txt", "touch def.txt"]) {
+        for (step_e, step_command) in zip(steps.keys().sorted(), ["touch abc.txt", "touch def.txt"])
+        {
             watch!(step_e);
             let command = all_commands
                 .left_to_right(step_e)
@@ -146,7 +148,7 @@ fn test_pipeline_import() -> Result<()> {
                 }
             );
         }
-        let step_v: Vec<(&XvcEntity, &XvcStep)> = steps.iter().collect();
+        let step_v: Vec<(&XvcEntity, &XvcStep)> = steps.iter().sorted().collect();
 
         assert_eq!(
             *step_v[0].1,
@@ -168,7 +170,7 @@ fn test_pipeline_import() -> Result<()> {
         assert_eq!(all_deps.children_of(&step_v[1].0)?.len(), 6);
         let deps2_s = all_deps.children_of(&step_v[1].0)?;
         watch!(deps2_s.len());
-        let deps2: Vec<&XvcDependency> = deps2_s.values().collect();
+        let deps2: Vec<&XvcDependency> = deps2_s.values().sorted().collect();
         watch!(deps2);
         watch!(deps2[0]);
         assert!(

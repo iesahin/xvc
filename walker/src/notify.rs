@@ -163,6 +163,13 @@ pub fn make_watcher(
     Ok((watcher, receiver))
 }
 
+/// Create a [notify::PollWatcher] and a [crossbeam_channel::Receiver] to receive
+/// [PathEvent]s. It creates the channel and [PathEventHandler] with its [Sender], then returns the
+/// [Receiver] for consumption.
+///
+/// Note that this is used when [`make_watcher`] doesn't work as expected. It uses
+/// a polling watcher with 2 second polls to the filesystem. It has lower
+/// performance than [`make_watcher`], but it works in all platforms.
 pub fn make_polling_watcher(
     ignore_rules: IgnoreRules,
 ) -> Result<(PollWatcher, Receiver<PathEvent>)> {

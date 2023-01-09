@@ -169,14 +169,14 @@ pub fn cmd_carry_in(
                 let digest = stored_content_digest_store.get(xe).unwrap();
                 Some((*xe, uwr!(XvcCachePath::new(xp, digest), output_snd)))
             }
-            Diff::ActualMissing { record } => {
+            Diff::ActualMissing { .. } => {
                 // carry-in shouldn't be used to delete files from cache
                 warn!(
                     output_snd,
                     "{xp} is deleted from workspace. Not deleting cached copy. Use `xvc file delete` if you want to delete {xp}.");
                 None
             }
-            Diff::RecordMissing { actual } => {
+            Diff::RecordMissing { .. } => {
                 // carry-in shouldn't be used to track new files.
                 // This is a bug in the code.
                 warn!(output_snd, "Record missing for {:?}. This is a bug. Please report.", xp);
