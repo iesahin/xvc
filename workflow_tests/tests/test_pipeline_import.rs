@@ -233,7 +233,7 @@ fn test_pipeline_import() -> Result<()> {
         );
         let outs2_v = all_outs.children_of(&step_v[1].0)?;
         watch!(outs2_v);
-        let outs2: Vec<&XvcOutput> = outs2_v.values().collect();
+        let outs2: Vec<&XvcOutput> = outs2_v.values().sorted().collect();
         watch!(outs2);
         assert!(outs2.len() == 3);
         watch!(outs2[0]);

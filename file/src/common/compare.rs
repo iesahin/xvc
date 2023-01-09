@@ -5,22 +5,21 @@ use crossbeam_channel::Sender;
 
 use itertools::Itertools;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use serde::__private::de::Content;
+
 use std::collections::{BTreeMap, HashSet};
 use std::path::PathBuf;
-use xvc_core::util::file;
 
 use xvc_config::FromConfigKey;
 use xvc_core::types::xvcdigest::{CollectionDigest, ContentDigest, MetadataDigest, DIGEST_LENGTH};
 use xvc_ecs::Error as EcsError;
 
 use xvc_core::{
-    diff_store, CacheType, Diff, DiffStore, DiffStore2, DiffStore3, HashAlgorithm, XvcDigest,
-    XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    diff_store, CacheType, Diff, DiffStore, DiffStore2, HashAlgorithm, XvcDigest, XvcFileType,
+    XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, panic, uwr, watch, XvcOutputLine};
+use xvc_logging::{error, panic, watch, XvcOutputLine};
 
 use super::FileTextOrBinary;
 
@@ -35,33 +34,6 @@ pub struct PathComparisonParams {
     pub cache_type_store: XvcStore<CacheType>,
     pub text_or_binary_store: XvcStore<FileTextOrBinary>,
     pub algorithm: HashAlgorithm,
-}
-
-impl PathComparisonParams {
-    pub fn init(xvc_root: &XvcRoot) -> Result<Self> {
-        let conf = xvc_root.config();
-        let algorithm = HashAlgorithm::from_conf(conf);
-        let xvc_path_store = xvc_root.load_store::<XvcPath>()?;
-        let xvc_path_imap = xvc_path_store.index_map()?;
-        let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
-        let metadata_digest_store = xvc_root.load_store::<MetadataDigest>()?;
-        let collection_digest_store = xvc_root.load_store::<CollectionDigest>()?;
-        let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
-        let cache_type_store = xvc_root.load_store::<CacheType>()?;
-        let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
-
-        Ok(Self {
-            algorithm,
-            xvc_path_store,
-            xvc_path_imap,
-            xvc_metadata_store,
-            cache_type_store,
-            collection_digest_store,
-            content_digest_store,
-            metadata_digest_store,
-            text_or_binary_store,
-        })
-    }
 }
 
 /// Compare the records and the actual info from `pmm` to find the differences
