@@ -10,7 +10,7 @@ use std::{env, path::PathBuf};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigInitParams};
 use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
-    HashAlgorithm, TextOrBinary, XvcDigest, XvcRoot,
+    HashAlgorithm, TextOrBinary, XvcRoot,
 };
 use xvc_logging::{output, watch, XvcOutputLine};
 use xvc_walker::AbsolutePath;
@@ -52,7 +52,9 @@ impl UpdateFromXvcConfig for HashCLI {
         }))
     }
 }
-
+/// Entry point for `xvc file hash`.
+///
+/// Calculate hash of given files in `opts.targets` and send to `output_snd`.
 pub fn cmd_hash(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: Option<&XvcRoot>,
