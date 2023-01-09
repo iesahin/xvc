@@ -39,7 +39,6 @@ use crate::XVC_DIR;
 pub struct XvcRoot {
     absolute_path: AbsolutePath,
     xvc_dir: PathBuf,
-    store_dir: PathBuf,
     config: XvcConfig,
     local_config_path: PathBuf,
     project_config_path: PathBuf,
@@ -86,10 +85,8 @@ impl XvcRoot {
                 let entity_generator =
                     xvc_ecs::load_generator(&xvc_dir.join(Self::ENTITY_GENERATOR_PATH))?;
 
-                let store_dir = xvc_dir.join(Self::STORE_PATH);
                 let xvc_root = XvcRoot {
                     xvc_dir,
-                    store_dir,
                     local_config_path,
                     project_config_path,
                     absolute_path,
@@ -142,8 +139,6 @@ impl XvcRoot {
                     fs::create_dir_all(entity_generator_dir)?;
                     let entity_generator_path = entity_generator_dir.join(timestamp());
                     fs::write(&entity_generator_path, "1")?;
-                    let store_dir = xvc_dir.join(Self::STORE_PATH);
-                    fs::create_dir(&store_dir)?;
                     // TODO: Add crate specific initializations
 
                     let xvcignore_path = path.join(XVCIGNORE_FILENAME);

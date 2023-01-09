@@ -87,7 +87,7 @@ impl XvcRoot {
         T: Storable,
         U: Storable,
     {
-        Ok(R11Store::<T, U>::load_r11store(self.store_dir())?)
+        Ok(R11Store::<T, U>::load_r11store(self.xvc_dir())?)
     }
 
     /// Utility function to load a [xvc_ecs::R1NStore] in a repository.
@@ -96,7 +96,7 @@ impl XvcRoot {
         T: Storable,
         U: Storable,
     {
-        Ok(R1NStore::<T, U>::load_r1nstore(self.store_dir())?)
+        Ok(R1NStore::<T, U>::load_r1nstore(self.xvc_dir())?)
     }
 
     /// Utility function to load a [xvc_ecs::RMNStore] in a repository.
@@ -105,7 +105,7 @@ impl XvcRoot {
         T: Storable,
         U: Storable,
     {
-        Ok(RMNStore::<T, U>::load_rmnstore(self.store_dir())?)
+        Ok(RMNStore::<T, U>::load_rmnstore(self.xvc_dir())?)
     }
 
     /// Utility function to save a [xvc_ecs::R11Store] in a repository.
@@ -114,7 +114,7 @@ impl XvcRoot {
         T: Storable,
         U: Storable,
     {
-        Ok(R11Store::<T, U>::save_r11store(store, self.store_dir())?)
+        Ok(R11Store::<T, U>::save_r11store(store, self.xvc_dir())?)
     }
 
     /// Utility function to save a [xvc_ecs::R1NStore] in a repository.
@@ -123,7 +123,7 @@ impl XvcRoot {
         T: Storable,
         U: Storable,
     {
-        Ok(R1NStore::<T, U>::save_r1nstore(store, self.store_dir())?)
+        Ok(R1NStore::<T, U>::save_r1nstore(store, self.xvc_dir())?)
     }
 
     /// Utility function to save a [xvc_ecs::RMNStore] in a repository.
@@ -132,7 +132,7 @@ impl XvcRoot {
         T: Storable,
         U: Storable,
     {
-        Ok(RMNStore::<T, U>::save_rmnstore(store, self.store_dir())?)
+        Ok(RMNStore::<T, U>::save_rmnstore(store, self.xvc_dir())?)
     }
 
     /// Loads a [xvc_ecs::BStore] and runs the given closure with it.
