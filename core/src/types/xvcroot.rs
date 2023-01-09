@@ -166,46 +166,67 @@ impl XvcRoot {
         }
     }
 
+    /// Join `path` to the repository root and return the absolute path of the
+    /// given path.
+    ///
+    /// Uses [AbsolutePath::join] internally.
     pub fn join(&self, path: &Path) -> PathBuf {
         self.absolute_path.join(path)
     }
 
+    /// Get the [XvcEntityGenerator] for this repository.
+    /// This is used to generate new entity IDs.
+    /// There can only be one entity generator per process.
     pub fn entity_generator(&self) -> &XvcEntityGenerator {
         &self.entity_generator
     }
 
+    /// Get the next entity ID from the entity generator.
     pub fn new_entity(&self) -> XvcEntity {
         self.entity_generator.next_element()
     }
 
+    /// Get the absolute path of the repository root.
     pub fn absolute_path(&self) -> &AbsolutePath {
         &self.absolute_path
     }
 
+    /// Get the absolute path to the .xvc directory.
     pub fn xvc_dir(&self) -> &PathBuf {
         &self.xvc_dir
     }
-    pub fn store_dir(&self) -> &PathBuf {
-        &self.store_dir
-    }
+
+    /// Get the configuration for this repository.
+    /// The configuration is initialized using [XvcConfigInitParams] in [Self::new].
     pub fn config(&self) -> &XvcConfig {
         &self.config
     }
+
+    /// Get the absolute path to the local config file.
+    /// This is the file that is used to store (gitignored) project configuration.
     pub fn local_config_path(&self) -> &PathBuf {
         &self.local_config_path
     }
+
+    /// Get the absolute path to the project config file.
+    /// This is the file used to store (git tracked) project configuration.
     pub fn project_config_path(&self) -> &PathBuf {
         &self.project_config_path
     }
 
+    /// The path of the entity generator directory.
+    /// Normally it's in `.xvc/ec/` and can be configured using [Self::ENTITY_GENERATOR_PATH].
     fn entity_generator_path(&self) -> PathBuf {
         self.xvc_dir().join(Self::ENTITY_GENERATOR_PATH)
     }
 
+    /// The name for the repository metadata directory.
     const XVC_DIR: &'static str = ".xvc";
+    /// The file name for the git-ignored configuration.
     const LOCAL_CONFIG_PATH: &'static str = "config.local.toml";
+    /// The file name for the git-tracked configuration.
     const PROJECT_CONFIG_PATH: &'static str = "config.toml";
-    const STORE_PATH: &'static str = "store";
+    /// The directory name for the entity generator.
     const ENTITY_GENERATOR_PATH: &'static str = "ec";
 
     /// Finds the root of the xvc repository by looking for the .xvc directory

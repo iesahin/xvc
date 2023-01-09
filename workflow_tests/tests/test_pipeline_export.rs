@@ -176,8 +176,15 @@ fn test_pipeline_export() -> Result<()> {
     let outs_json = &ps_json.steps[1].outputs;
 
     assert!(outs_json.len() == 3);
+
     assert!(
         outs_json[0]
+            == XvcOutput::File {
+                path: XvcPath::new(&xvc_root, &xvc_root.absolute_path(), Path::new("def.txt"))?,
+            }
+    );
+    assert!(
+        outs_json[1]
             == XvcOutput::Metric {
                 path: XvcPath::new(
                     &xvc_root,
@@ -187,14 +194,7 @@ fn test_pipeline_export() -> Result<()> {
                 format: XvcMetricsFormat::JSON,
             },
         "{:?}",
-        outs_json[0]
-    );
-
-    assert!(
         outs_json[1]
-            == XvcOutput::File {
-                path: XvcPath::new(&xvc_root, &xvc_root.absolute_path(), Path::new("def.txt"))?,
-            }
     );
 
     assert!(
