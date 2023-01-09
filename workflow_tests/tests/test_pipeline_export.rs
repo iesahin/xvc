@@ -104,6 +104,7 @@ fn test_pipeline_export() -> Result<()> {
     assert!(ps_json.name == "default");
     assert!(ps_json.version == 1);
     assert!(ps_json.steps.len() == 2);
+    // TODO: We may want to sort the steps by name
     assert!(ps_json.steps[0].name == "step1", "{:?}", ps_json.steps);
     assert!(ps_json.steps[0].command == "touch abc.txt");
     assert!(ps_json.steps[1].name == "step2");

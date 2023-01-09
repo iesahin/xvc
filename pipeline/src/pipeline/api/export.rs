@@ -1,5 +1,6 @@
 use crate::error::{Error, Result};
 use crossbeam_channel::Sender;
+use itertools::Itertools;
 use std::{fs, path::PathBuf};
 use xvc_config::FromConfigKey;
 use xvc_core::{
@@ -84,15 +85,15 @@ pub fn cmd_export(
     })?;
 
     // Generate the output
-
+    // We sort the output here to keep the results consistent
     let mut step_schemas = Vec::<XvcStepSchema>::with_capacity(steps.len());
-    for (e, s) in steps.iter() {
+    for (e, s) in steps.iter().sorted() {
         let ss = XvcStepSchema {
             name: s.name.clone(),
             command: commands[e].command.clone(),
             invalidate: step_invalidate.get(e).cloned().unwrap_or_default(),
-            dependencies: deps[e].values().cloned().collect(),
-            outputs: outs[e].values().cloned().collect(),
+            dependencies: deps[e].values().sorted().cloned().collect(),
+            outputs: outs[e].values().sorted().cloned().collect(),
         };
         step_schemas.push(ss);
     }

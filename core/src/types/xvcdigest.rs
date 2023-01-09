@@ -165,6 +165,12 @@ impl From<XvcDigest> for ContentDigest {
 }
 
 impl ContentDigest {
+    /// Returns the content hash of the file in `path` calculated by `algorithm`.
+    ///
+    /// If `text_or_binary` is `TextOrBinary::Auto`, the file is checked for
+    /// text-ness by [`is_text_file`] and the appropriate digest is returned.
+    /// Otherwise the digest is calculated as text or binary, via
+    /// [`XvcDigest::from_text_file`] or [`XvcDigest::from_binary_file`].
     pub fn from_path(
         path: &Path,
         algorithm: HashAlgorithm,
