@@ -96,6 +96,8 @@ where
     /// [crate::HStore]). This function adds events to `current` set, and these are serialized.
     /// See https://github.com/iesahin/xvc/issues/45
     pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
+        watch!(entity);
+        watch!(value);
         self.current.add(entity, value.clone());
 
         match self.entity_index.get_mut(&value) {
