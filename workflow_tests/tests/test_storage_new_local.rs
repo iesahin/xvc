@@ -30,7 +30,7 @@ fn test_storage_new_local() -> Result<()> {
     let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
     let x = |cmd: &[&str]| -> Result<String> {
-        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
     let out = x(&[
@@ -113,8 +113,8 @@ fn test_storage_new_local() -> Result<()> {
     ))?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "local-storage"])?;
-    watch!(pull_result);
+    let bring_result = x(&["file", "bring", "--from", "local-storage"])?;
+    watch!(bring_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
