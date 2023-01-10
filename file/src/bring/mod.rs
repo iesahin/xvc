@@ -148,6 +148,7 @@ pub fn fetch(
     watch!("Move completed");
 
     xvc_root.with_store_mut(|store: &mut XvcStore<XvcStorageEvent>| {
+        watch!(&store);
         store
             .insert(
                 xvc_root.new_entity(),
@@ -156,7 +157,9 @@ pub fn fetch(
             .ok_or_else(|| -> anyhow::Error {
                 anyhow::anyhow!("Error recording event {:#?}", event)
             })?;
+        watch!("Recorded event");
         Ok(())
+
     })?;
 
     Ok(())
