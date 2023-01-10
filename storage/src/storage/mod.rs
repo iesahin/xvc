@@ -15,14 +15,9 @@ pub mod s3;
 #[cfg(feature = "wasabi")]
 pub mod wasabi;
 
-use std::{
-    fmt::Display,
-    fs::{self, create_dir_all, read_dir, write},
-    path::{Path, PathBuf},
-    str::FromStr,
-};
+use std::{fmt::Display, str::FromStr};
 
-use derive_more::{Display, FromStr};
+use derive_more::Display;
 pub use event::{
     XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageInitEvent, XvcStorageListEvent,
     XvcStorageReceiveEvent, XvcStorageSendEvent,
@@ -30,18 +25,19 @@ pub use event::{
 
 pub use local::XvcLocalStorage;
 
-use anyhow::anyhow;
 use crossbeam_channel::Sender;
 use serde::{Deserialize, Serialize};
+use tempfile::TempDir;
 use uuid::Uuid;
 use xvc_logging::XvcOutputLine;
+use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
-use log::{debug, trace};
+
 use relative_path::{RelativePath, RelativePathBuf};
-use subprocess::Exec;
-use xvc_core::{XvcCachePath, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
-use xvc_ecs::{persist, Storable, XvcEntity, XvcStore};
+
+use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_ecs::{persist, XvcStore};
 
 use self::generic::XvcGenericStorage;
 
@@ -164,7 +160,7 @@ pub trait XvcStorageOperations {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcStorageReceiveEvent>;
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)>;
     fn delete(
         &self,
         output: &Sender<XvcOutputLine>,
@@ -281,7 +277,7 @@ impl XvcStorageOperations for XvcStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcStorageReceiveEvent> {
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         match self {
             XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
@@ -324,6 +320,28 @@ impl XvcStorageOperations for XvcStorage {
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(r) => r.delete(output, xvc_root, paths),
         }
+    }
+}
+
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq)]
+pub struct XvcStorageTempDir(AbsolutePath);
+impl XvcStorageTempDir {
+    pub fn new() -> Result<Self> {
+        let temp_dir = AbsolutePath::from(TempDir::new()?.into_path());
+        Ok(Self(temp_dir))
+    }
+
+    pub fn path(&self) -> &AbsolutePath {
+        &self.0
+    }
+
+    pub fn temp_cache_dir(&self, cache_path: &XvcCachePath) -> Result<AbsolutePath> {
+        let temp_cache_dir = self.0.join(&cache_path.directory().as_str());
+        Ok(AbsolutePath::from(temp_cache_dir))
+    }
+    pub fn temp_cache_path(&self, cache_path: &XvcCachePath) -> Result<AbsolutePath> {
+        let temp_cache_path = self.0.join(&cache_path.inner().as_str());
+        Ok(AbsolutePath::from(temp_cache_path))
     }
 }
 

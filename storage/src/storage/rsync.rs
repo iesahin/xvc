@@ -21,7 +21,7 @@ use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStora
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XVC_STORAGE_GUID_FILENAME,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
 };
 
 pub fn cmd_new_rsync(
@@ -380,18 +380,19 @@ impl XvcStorageOperations for XvcRsyncStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcStorageReceiveEvent> {
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         // "--download",
         // "mkdir -p {ABSOLUTE_CACHE_DIR} ; rsync -av {URL}:{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH} {ABSOLUTE_CACHE_PATH}",
         //
         let rsync_executable = Self::rsync_executable()?;
+        let temp_dir = XvcStorageTempDir::new()?;
 
         let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
-            let local_path = cache_path.to_absolute_path(xvc_root);
+            let local_path = temp_dir.temp_cache_path(cache_path).unwrap();
             let remote_url = self.rsync_cache_url(&xvc_guid, cache_path);
-            let cache_dir = local_path.as_ref().parent().unwrap();
+            let cache_dir = temp_dir.temp_cache_dir(cache_path).unwrap();
             watch!(cache_dir);
             if !cache_dir.exists() {
                 watch!(cache_dir);
@@ -421,10 +422,13 @@ impl XvcStorageOperations for XvcRsyncStorage {
             }
         });
 
-        Ok(XvcStorageReceiveEvent {
-            guid: self.guid.clone(),
-            paths: storage_paths,
-        })
+        Ok((
+            temp_dir,
+            XvcStorageReceiveEvent {
+                guid: self.guid.clone(),
+                paths: storage_paths,
+            },
+        ))
     }
 
     fn delete(

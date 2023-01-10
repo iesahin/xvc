@@ -200,6 +200,12 @@ impl XvcCachePath {
     pub fn custom(relative_path: &str) -> Self {
         Self(RelativePathBuf::from(relative_path))
     }
+
+    /// Returns the clone of inner relativepathbuf for processing.
+    /// e.g. in [xvc_storage::XvcStorageTempDir] to create temporary cache files.
+    pub fn inner(&self) -> RelativePathBuf {
+        self.0.clone()
+    }
 }
 
 impl AsRef<RelativePath> for XvcCachePath {

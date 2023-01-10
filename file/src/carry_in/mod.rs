@@ -20,7 +20,7 @@ use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputLine};
 
 use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata};
 use crate::common::{
-    move_to_cache, only_file_targets, recheck_from_cache, targets_from_store,
+    move_xvc_path_to_cache, only_file_targets, recheck_from_cache, targets_from_store,
     xvc_path_metadata_map_from_disk,
 };
 use crate::common::{update_store_records, FileTextOrBinary};
@@ -245,13 +245,19 @@ pub fn carry_in(
                 /* dir_perm.set_readonly(true); */
                 uwr!(fs::remove_file(&abs_cache_path), output_snd);
                 info!(output_snd, "[REMOVE] {abs_cache_path}");
-                uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
+                uwr!(
+                    move_xvc_path_to_cache(xvc_root, xp, &cache_path),
+                    output_snd
+                );
                 info!(output_snd, "[CARRY] {xp} -> {cache_path}");
             } else {
                 info!(output_snd, "[EXISTS] {abs_cache_path} for {xp}");
             }
         } else {
-            uwr!(move_to_cache(xvc_root, xp, &cache_path), output_snd);
+            uwr!(
+                move_xvc_path_to_cache(xvc_root, xp, &cache_path),
+                output_snd
+            );
             info!(output_snd, "[CARRY] {xp} -> {cache_path}");
         }
         let target_path = xp.to_absolute_path(xvc_root);

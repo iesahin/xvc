@@ -18,7 +18,7 @@ use anyhow::anyhow;
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
 };
 
 /// Configure a new Wasabi storage remote.
@@ -298,7 +298,7 @@ impl XvcWasabiStorage {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> Result<XvcStorageReceiveEvent> {
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let repo_guid = xvc_root
             .config()
             .guid()
@@ -306,14 +306,16 @@ impl XvcWasabiStorage {
         let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         let bucket = self.get_bucket()?;
+        let temp_dir = XvcStorageTempDir::new()?;
 
         for cache_path in paths {
             watch!(cache_path);
             let remote_path = self.build_remote_path(&repo_guid, cache_path);
-            let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-            watch!(abs_cache_path);
-            let abs_cache_dir = abs_cache_path.parent().unwrap();
+            let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             fs::create_dir_all(&abs_cache_dir)?;
+            let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
+            watch!(abs_cache_path);
+
             let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
 
             let response = bucket
@@ -334,10 +336,13 @@ impl XvcWasabiStorage {
             }
         }
 
-        Ok(XvcStorageReceiveEvent {
-            guid: self.guid.clone(),
-            paths: copied_paths,
-        })
+        Ok((
+            temp_dir,
+            XvcStorageReceiveEvent {
+                guid: self.guid.clone(),
+                paths: copied_paths,
+            },
+        ))
     }
 
     async fn a_delete(
@@ -396,7 +401,7 @@ impl XvcStorageOperations for XvcWasabiStorage {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> crate::Result<super::XvcStorageReceiveEvent> {
+    ) -> crate::Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()

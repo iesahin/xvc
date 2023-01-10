@@ -6,6 +6,7 @@ use std::{
 
 use crossbeam_channel::Sender;
 use serde::{Deserialize, Serialize};
+use tempfile::TempDir;
 use xvc_core::XvcRoot;
 use xvc_ecs::R1NStore;
 use xvc_logging::{watch, XvcOutputLine};
@@ -13,7 +14,7 @@ use xvc_logging::{watch, XvcOutputLine};
 use super::{
     XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent, XvcStorageListEvent,
     XvcStorageOperations, XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent,
-    XVC_STORAGE_GUID_FILENAME,
+    XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
 };
 use crate::{Result, XvcStorage, XvcStorageEvent};
 
@@ -161,12 +162,13 @@ impl XvcStorageOperations for XvcLocalStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcStorageReceiveEvent> {
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let repo_guid = xvc_root
             .config()
             .guid()
             .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
         let mut copied_paths = Vec::<XvcStoragePath>::new();
+        let temp_dir = XvcStorageTempDir::new()?;
 
         for cache_path in paths {
             watch!(cache_path);
@@ -174,16 +176,11 @@ impl XvcStorageOperations for XvcLocalStorage {
             watch!(remote_path);
             let abs_remote_path = remote_path.as_ref().to_logical_path(&self.path);
             watch!(abs_remote_path);
-            let abs_cache_path = cache_path.to_absolute_path(xvc_root);
+            let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
             watch!(abs_cache_path);
-            if force && abs_cache_path.exists() {
-                fs::remove_file(abs_cache_path.clone())?;
-            }
-            let abs_cache_dir = abs_cache_path.parent().unwrap();
+            let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             watch!(abs_cache_dir);
-            if !abs_cache_dir.exists() {
-                fs::create_dir_all(&abs_cache_dir)?;
-            }
+            fs::create_dir_all(&abs_cache_dir)?;
             fs::copy(&abs_remote_path, &abs_cache_path)?;
             watch!(abs_cache_path.exists());
             copied_paths.push(remote_path);
@@ -197,10 +194,13 @@ impl XvcStorageOperations for XvcLocalStorage {
                 .unwrap();
         }
 
-        Ok(XvcStorageReceiveEvent {
-            guid: self.guid.clone(),
-            paths: copied_paths,
-        })
+        Ok((
+            temp_dir,
+            XvcStorageReceiveEvent {
+                guid: self.guid.clone(),
+                paths: copied_paths,
+            },
+        ))
     }
 
     fn delete(

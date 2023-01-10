@@ -475,28 +475,32 @@ pub fn recheck_from_cache(
     Ok(())
 }
 
-pub fn move_to_cache(
+pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<()> {
+    let cache_dir = cache_path.parent().ok_or(Error::InternalError {
+        message: "Cache path has no parent.".to_string(),
+    })?;
+    watch!(cache_dir);
+    if !cache_dir.exists() {
+        fs::create_dir_all(cache_dir)?;
+        let mut dir_perm = cache_dir.metadata()?.permissions();
+        dir_perm.set_readonly(true);
+        fs::set_permissions(&cache_dir, dir_perm)?;
+    }
+    fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
+    let mut file_perm = cache_path.metadata()?.permissions();
+    file_perm.set_readonly(true);
+    fs::set_permissions(&cache_path, file_perm)?;
+    Ok(())
+}
+
+pub fn move_xvc_path_to_cache(
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,
 ) -> Result<()> {
     let path = xvc_path.to_absolute_path(xvc_root);
     let cache_path = cache_path.to_absolute_path(xvc_root);
-    let cache_dir = cache_path.parent().ok_or(Error::InternalError {
-        message: "Cache path has no parent.".to_string(),
-    })?;
-    watch!(cache_dir);
-    fs::create_dir_all(cache_dir)?;
-    watch!(path);
-    watch!(cache_path);
-    fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
-    let mut file_perm = cache_path.metadata()?.permissions();
-    file_perm.set_readonly(true);
-    fs::set_permissions(&cache_path, file_perm)?;
-    let mut dir_perm = cache_dir.metadata()?.permissions();
-    dir_perm.set_readonly(true);
-    fs::set_permissions(&cache_dir, dir_perm)?;
-    Ok(())
+    move_to_cache(&path, &cache_path)
 }
 
 /// Record store records checking their Diff.
