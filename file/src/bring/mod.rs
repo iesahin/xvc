@@ -157,7 +157,7 @@ pub fn fetch(
             .ok_or_else(|| -> anyhow::Error {
                 anyhow::anyhow!("Error recording event {:#?}", event)
             })?;
-        watch!("Recorded event");
+        watch!(&store);
         Ok(())
 
     })?;
