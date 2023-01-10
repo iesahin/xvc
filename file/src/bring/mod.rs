@@ -7,7 +7,7 @@
 //! workspace.
 
 use crate::common::{move_to_cache, targets_from_store};
-use crate::error::Error;
+
 use crate::{
     recheck::{cmd_recheck, RecheckCLI},
     Result,
@@ -18,7 +18,7 @@ use crossbeam_channel::Sender;
 use xvc_core::{CacheType, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{debug, uwr, warn, watch, XvcOutputLine};
-use xvc_storage::storage::XvcStorageReceiveEvent;
+
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 

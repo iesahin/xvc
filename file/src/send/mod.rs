@@ -1,3 +1,7 @@
+//! Home of the `xvc file send` command
+//!
+//! - [`cmd_send`] implements the command
+//! - [`SendCLI`] is the command line interface
 use crate::common::targets_from_store;
 use crate::Result;
 

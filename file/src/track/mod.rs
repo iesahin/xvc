@@ -1,11 +1,16 @@
+//! Home of the `xvc file track` command and related functionality.
+//!
+//! - [`cmd_track`] is the entry point for the `xvc file track` command.
+//! - [`TrackCLI`] is the command line interface
+//! - [`update_file_gitignores`] and [`update_dir_gitignores`] are functions to
+//!   update `.gitignore` files with the tracked paths.
+//! - [`carry_in`] is a specialized carry in function for `xvc file track`.
 use chrono::Utc;
-use crossbeam_channel::{bounded, Sender};
-use derive_more::{AsRef, Deref, Display, From};
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use serde::{Deserialize, Serialize};
+use crossbeam_channel::Sender;
+use derive_more::From;
+
 use std::collections::{HashMap, HashSet};
 use std::io::Write;
-use std::str::FromStr;
 
 use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
@@ -29,7 +34,7 @@ use std::path::PathBuf;
 
 use xvc_core::CacheType;
 use xvc_core::XvcPath;
-use xvc_ecs::{HStore, XvcEntity, XvcStore};
+use xvc_ecs::{HStore, XvcEntity};
 
 /// Add files for tracking with Xvc
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
