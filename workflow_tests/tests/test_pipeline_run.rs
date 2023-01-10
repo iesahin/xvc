@@ -185,6 +185,7 @@ fn test_pipeline_run() -> Result<()> {
     };
 
     create_pipeline()?;
+    watch!("Before first");
     let _run_res = x(&["run"])?;
 
     assert!(Path::new("abc.txt").exists());
@@ -193,6 +194,7 @@ fn test_pipeline_run() -> Result<()> {
     assert!(Path::new("num-training-files.txt").exists());
 
     Exec::shell("rm -f training-files.txt").join()?;
+    watch!("Before second");
     x(&["run"])?;
     assert!(Path::new("training-files.txt").exists());
 
@@ -201,6 +203,7 @@ fn test_pipeline_run() -> Result<()> {
     let training_files_before = fs::read_to_string("training-files.txt")?;
     assert!(training_files_before.contains(file_to_remove));
     Exec::shell(format!("rm -f {file_to_remove}")).join()?;
+    watch!("Before third");
     x(&["run"])?;
     let training_files_after = fs::read_to_string("training-files.txt")?;
     assert!(!training_files_after.contains(file_to_remove));
