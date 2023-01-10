@@ -124,7 +124,7 @@ fn test_storage_new_local() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-
+    watch!(n_local_files_after_pull);
     assert!(n_storage_files_after == n_local_files_after_pull);
     watch!(the_file);
     assert!(PathBuf::from(the_file).exists());
