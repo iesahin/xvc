@@ -5,6 +5,10 @@ use xvc_core::XvcRoot;
 use crate::pipeline::the_grand_pipeline_loop;
 use crate::XvcPipeline;
 
+/// Entry point for `xvc pipeline run` command.
+///
+/// It loads an [`XvcPipeline`] with the name and runs [`the_grand_pipeline_loop`]
+/// with it.
 pub fn cmd_run(xvc_root: &XvcRoot, name: Option<String>) -> Result<()> {
     let conf = xvc_root.config();
     let pipeline_name = match name {
