@@ -482,14 +482,19 @@ pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<(
     watch!(cache_dir);
     if !cache_dir.exists() {
         fs::create_dir_all(cache_dir)?;
+    } else {
+        // Set to writable
         let mut dir_perm = cache_dir.metadata()?.permissions();
-        dir_perm.set_readonly(true);
+        dir_perm.set_readonly(false);
         fs::set_permissions(&cache_dir, dir_perm)?;
     }
     fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
     let mut file_perm = cache_path.metadata()?.permissions();
     file_perm.set_readonly(true);
     fs::set_permissions(&cache_path, file_perm)?;
+    let mut dir_perm = cache_dir.metadata()?.permissions();
+    dir_perm.set_readonly(true);
+    fs::set_permissions(&cache_dir, dir_perm)?;
     Ok(())
 }
 
@@ -500,6 +505,8 @@ pub fn move_xvc_path_to_cache(
 ) -> Result<()> {
     let path = xvc_path.to_absolute_path(xvc_root);
     let cache_path = cache_path.to_absolute_path(xvc_root);
+    watch!(path);
+    watch!(cache_path);
     move_to_cache(&path, &cache_path)
 }
 
