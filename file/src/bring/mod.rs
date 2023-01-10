@@ -169,17 +169,17 @@ pub fn cmd_bring(
     fetch(output_snd, xvc_root, &opts)?;
 
     if !opts.no_checkout {
-        let checkout_targets = opts.targets.clone();
+        let recheck_targets = opts.targets.clone();
+        watch!(recheck_targets);
 
-        watch!(checkout_targets);
-        let checkout_opts = RecheckCLI {
+        let recheck_opts = RecheckCLI {
             cache_type: opts.checkout_as,
             no_parallel: false,
             force: opts.force,
-            targets: checkout_targets,
+            targets: recheck_targets,
         };
 
-        cmd_recheck(output_snd, xvc_root, checkout_opts)?;
+        cmd_recheck(output_snd, xvc_root, recheck_opts)?;
     }
 
     Ok(())
