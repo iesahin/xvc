@@ -145,6 +145,8 @@ pub fn fetch(
         uwr!(move_to_cache(&temp_path, &cache_path), output_snd);
     }
 
+    watch!("Move completed");
+
     xvc_root.with_store_mut(|store: &mut XvcStore<XvcStorageEvent>| {
         store
             .insert(
