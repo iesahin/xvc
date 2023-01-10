@@ -6,7 +6,8 @@
 //! Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
 //! workspace.
 
-use crate::common::targets_from_store;
+use crate::common::{move_to_cache, targets_from_store};
+use crate::error::Error;
 use crate::{
     recheck::{cmd_recheck, RecheckCLI},
     Result,
@@ -16,7 +17,9 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use xvc_core::{CacheType, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{warn, watch, XvcOutputLine};
+use xvc_logging::{debug, uwr, warn, watch, XvcOutputLine};
+use xvc_storage::storage::XvcStorageReceiveEvent;
+use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 
 /// Bring (download, pull, fetch) files from storage.
@@ -66,6 +69,7 @@ pub fn fetch(
 
     let current_dir = xvc_root.config().current_dir()?;
     let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let force = opts.force;
     watch!(targets);
 
     let target_xvc_metadata = xvc_root
@@ -100,11 +104,23 @@ pub fn fetch(
                 }
             }
         })
+        .filter(|(_, cp)| {
+            if force {
+                return true;
+            }
+            let cache_path = cp.to_absolute_path(xvc_root);
+            if cache_path.exists() {
+                debug!(output_snd, "Cache path already exists: {}", cache_path);
+                false
+            } else {
+                true
+            }
+        })
         .collect();
 
     watch!(cache_paths);
 
-    remote
+    let (temp_dir, event) = remote
         .receive(
             output_snd,
             xvc_root,
@@ -116,6 +132,25 @@ pub fn fetch(
             opts.force,
         )
         .map_err(|e| xvc_core::Error::from(anyhow::anyhow!("Remote error: {}", e)))?;
+
+    // Move the files from temp dir to cache
+    for (_, cp) in cache_paths {
+        let cache_path = cp.to_absolute_path(xvc_root);
+        let temp_path = temp_dir.temp_cache_path(&cp)?;
+        uwr!(move_to_cache(&temp_path, &cache_path), output_snd);
+    }
+
+    xvc_root.with_store_mut(|store: &mut XvcStore<XvcStorageEvent>| {
+        store
+            .insert(
+                xvc_root.new_entity(),
+                XvcStorageEvent::Receive(event.clone()),
+            )
+            .ok_or_else(|| -> anyhow::Error {
+                anyhow::anyhow!("Error recording event {:#?}", event)
+            })?;
+        Ok(())
+    })?;
 
     Ok(())
 }
