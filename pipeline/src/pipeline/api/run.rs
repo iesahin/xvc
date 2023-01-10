@@ -1,6 +1,7 @@
 use crate::error::Result;
 use xvc_config::FromConfigKey;
 use xvc_core::XvcRoot;
+use xvc_logging::watch;
 
 use crate::pipeline::the_grand_pipeline_loop;
 use crate::XvcPipeline;
@@ -15,5 +16,6 @@ pub fn cmd_run(xvc_root: &XvcRoot, name: Option<String>) -> Result<()> {
         Some(name) => name,
         None => XvcPipeline::from_conf(conf).name,
     };
+    watch!(pipeline_name);
     the_grand_pipeline_loop(xvc_root, pipeline_name)
 }
