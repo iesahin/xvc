@@ -180,7 +180,10 @@ impl XvcStorageOperations for XvcLocalStorage {
                 fs::remove_file(abs_cache_path.clone())?;
             }
             let abs_cache_dir = abs_cache_path.parent().unwrap();
-            fs::create_dir_all(&abs_cache_dir)?;
+            watch!(abs_cache_dir);
+            if !abs_cache_dir.exists() {
+                fs::create_dir_all(&abs_cache_dir)?;
+            }
             fs::copy(&abs_remote_path, &abs_cache_path)?;
             watch!(abs_cache_path.exists());
             copied_paths.push(remote_path);
