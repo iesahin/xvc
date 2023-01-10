@@ -109,8 +109,10 @@ where
             }
         }
         watch!(self.entity_index);
-
-        self.map.insert(entity, value)
+        watch!(self.map);
+        let ret = self.map.insert(entity, value);
+        watch!(ret);
+        ret
     }
 
     /// Updates the data associated with an entity.
