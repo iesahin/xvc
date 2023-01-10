@@ -489,6 +489,8 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
             }
         });
 
+        watch!(broken_steps);
+
         for step_e in broken_steps {
             warn!(
                 "Broken Step: {:?} ({}) with Command {:?}",
@@ -504,6 +506,8 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         {
             continue_running = false;
         }
+
+        watch!(step_states);
     }
 
     // TODO: Check if there are running processes in the process pool and terminate them (per option)

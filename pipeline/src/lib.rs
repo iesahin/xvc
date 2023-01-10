@@ -1,3 +1,8 @@
+//! Pipeline management commands and data structures
+//!
+//! This contains CLI structs for `xvc pipeline` subcommands, [`init`] function to
+//! run during `xvc init` for pipeline related initialization, [`run`] function
+//! to dispatch the options to subcommands.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod error;
@@ -40,36 +45,54 @@ pub use crate::pipeline::schema::XvcStepSchema;
 pub use crate::pipeline::step::XvcStep;
 use crate::pipeline::XvcStepInvalidate;
 
+/// Pipeline management commands
 #[derive(Debug, Parser)]
-#[command(name = "pipeline", about = "Pipeline management commands")]
+#[command(name = "pipeline")]
 pub struct PipelineCLI {
-    #[arg(long, short, help = "Name of the pipeline this command applies to")]
+    /// Name of the pipeline this command applies
+    #[arg(long, short)]
     pub name: Option<String>,
+    /// Subcommand to run
     #[command(subcommand)]
     pub subcommand: PipelineSubCommand,
 }
 
+/// Pipeline management subcommands
 #[derive(Debug, Clone, Parser)]
-#[command(about = "Pipeline management commands")]
+#[command()]
 pub enum PipelineSubCommand {
-    #[command(about = "Add a new pipeline")]
+    /// Create a new pipeline
+    #[command()]
     New {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline this command applies to
+        #[arg(long, short)]
         name: String,
-        #[arg(short, long, help = "default working directory")]
+
+        /// Default working directory
+        #[arg(short, long)]
         workdir: Option<PathBuf>,
-        #[arg(long, help = "set this to default")]
+
+        /// Set this pipeline as default
+        #[arg(long)]
         set_default: bool,
     },
 
-    #[command(about = "Rename, change dir or set a pipeline default")]
+    /// Rename, change dir or set a pipeline as default
+    #[command()]
     Update {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline this command applies to
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(long, help = "rename this pipeline to")]
+
+        /// Rename the pipeline to
+        #[arg(long)]
         rename: Option<String>,
-        #[arg(long, help = "set the working directory to")]
+
+        /// Set the working directory
+        #[arg(long)]
         workdir: Option<PathBuf>,
+
+        /// Set this pipeline as default
         #[arg(long, help = "set this pipeline default")]
         set_default: bool,
     },
