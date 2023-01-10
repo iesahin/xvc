@@ -37,17 +37,17 @@ pub struct BringCLI {
     #[arg(long)]
     force: bool,
 
-    /// Don't checkout after bringing the file to cache.
+    /// Don't recheck (checkout) after bringing the file to cache.
     ///
-    /// This is similar to `fetch` command in Git.
-    /// It just updates the cache, and doesn't bring the file to workspace.
+    /// This makes the command similar to `git fetch` in Git.
+    /// It just updates the cache, and doesn't copy/link the file to workspace.
     #[arg(long)]
-    no_checkout: bool,
+    no_recheck: bool,
 
-    /// Checkout the file in one of the four alternative ways.
-    /// (See `xvc file checkout`) and [CacheType][CacheType].
+    /// Recheck (checkout) the file in one of the four alternative ways.
+    /// (See `xvc file recheck`) and [CacheType]
     #[arg(long)]
-    checkout_as: Option<CacheType>,
+    recheck_as: Option<CacheType>,
 
     /// Targets to bring from the storage
     #[arg()]
@@ -133,6 +133,9 @@ pub fn fetch(
         )
         .map_err(|e| xvc_core::Error::from(anyhow::anyhow!("Remote error: {}", e)))?;
 
+    watch!(temp_dir);
+    watch!(event);
+
     // Move the files from temp dir to cache
     for (_, cp) in cache_paths {
         let cache_path = cp.to_absolute_path(xvc_root);
@@ -168,7 +171,7 @@ pub fn cmd_bring(
 ) -> Result<()> {
     fetch(output_snd, xvc_root, &opts)?;
 
-    if !opts.no_checkout {
+    if !opts.no_recheck {
         let recheck_targets = opts.targets.clone();
         watch!(recheck_targets);
 

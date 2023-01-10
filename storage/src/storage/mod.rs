@@ -29,7 +29,7 @@ use crossbeam_channel::Sender;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{watch, XvcOutputLine};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
@@ -278,6 +278,7 @@ impl XvcStorageOperations for XvcStorage {
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
+        watch!(paths);
         match self {
             XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
