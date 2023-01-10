@@ -170,7 +170,7 @@ pub fn cmd_bring(
     opts: BringCLI,
 ) -> Result<()> {
     fetch(output_snd, xvc_root, &opts)?;
-
+    watch!("Fetch completed");
     if !opts.no_recheck {
         let recheck_targets = opts.targets.clone();
         watch!(recheck_targets);
