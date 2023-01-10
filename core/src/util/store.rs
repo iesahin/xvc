@@ -14,7 +14,7 @@ impl XvcRoot {
     where
         T: Storable,
     {
-        Ok(XvcStore::<T>::load_store(self.xvc_dir())?)
+        Ok(XvcStore::<T>::load_store(self.store_dir())?)
     }
 
     /// Utility function to save a [xvc_ecs::XvcStore] in a repository.
@@ -22,7 +22,7 @@ impl XvcRoot {
     where
         T: Storable,
     {
-        Ok(XvcStore::<T>::save_store(store, self.xvc_dir())?)
+        Ok(XvcStore::<T>::save_store(store, self.store_dir())?)
     }
 
     /// Loads a [xvc_ecs::XvcStore] and runs the given closure with it.
