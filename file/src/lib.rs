@@ -128,6 +128,9 @@ pub struct XvcFileCLI {
     subcommand: XvcFileSubCommand,
 }
 
+/// Entry point for the `xvc file` command.
+///
+/// It runs the subcommand specified in the command line arguments.
 pub fn run(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: Option<&XvcRoot>,
@@ -169,6 +172,9 @@ pub fn run(
     }
 }
 
+/// Dispatch function for the `xvc-file` binary.
+///
+/// This works almost identically with the [xvc::dispatch] function.
 pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
     let verbosity = if cli_opts.quiet {
         XvcVerbosity::Quiet
@@ -243,7 +249,9 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
     Ok(())
 }
 
-// this is run during repository initialization
+/// This is run during `xvc init` for `xvc file` related initialization.
+///
+/// It's a NOOP currently.
 pub fn init(_xvc_root: &XvcRoot) -> Result<()> {
     Ok(())
 }

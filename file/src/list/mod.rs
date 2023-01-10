@@ -66,7 +66,7 @@ impl FromStr for ListFormat {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         let mut columns = Vec::new();
         for begin_marker in s.split("{{") {
-            let mut items = begin_marker.split("}}");
+            let items = begin_marker.split("}}");
             for item in items {
                 if let Ok(col) = item.parse::<ListColumn>() {
                     columns.push(col);
@@ -120,13 +120,15 @@ struct ListRow {
     recorded_content_digest_str: String,
     recorded_size: u64,
     recorded_size_str: String,
+    // This can be used as a separate field to sort in the future
+    #[allow(dead_code)]
     recorded_timestamp: SystemTime,
     recorded_timestamp_str: String,
 }
 
 impl ListRow {
     ///
-    fn new(xvc_root: &XvcRoot, path_prefix: &Path, path_match: PathMatch) -> Result<Self> {
+    fn new(path_prefix: &Path, path_match: PathMatch) -> Result<Self> {
         let actual_file_type =
             String::from(if let Some(actual_metadata) = path_match.actual_metadata {
                 match actual_metadata.file_type {
@@ -696,7 +698,7 @@ pub fn cmd_list(
 
     let rows = matches
         .into_iter()
-        .filter_map(|pm| match ListRow::new(xvc_root, path_prefix, pm) {
+        .filter_map(|pm| match ListRow::new(path_prefix, pm) {
             Ok(lr) => Some(lr),
             Err(e) => {
                 error!(output_snd, "{}", e);

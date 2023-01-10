@@ -151,7 +151,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         sh(sh_cmd)
     };
 
-    let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn) };
+    let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace) };
 
     let out = x(&[
         "storage",
@@ -244,6 +244,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         .count();
 
     assert!(n_storage_files_after == n_local_files_after_pull);
+    watch!(the_file);
     assert!(PathBuf::from(the_file).exists());
 
     // Set remote specific passwords and remove DO ones
