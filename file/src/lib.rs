@@ -1,3 +1,9 @@
+//! Xvc operations on files
+//!
+//! Most of these commands require an Xvc repository [XvcRoot] to be present.
+//!
+//! Modules correspond to subcommands, and are documented separately.
+//!  
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 mod common;

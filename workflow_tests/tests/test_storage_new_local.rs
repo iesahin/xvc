@@ -75,6 +75,7 @@ fn test_storage_new_local() -> Result<()> {
         })
         .count();
 
+    watch!(n_storage_files_after);
     assert!(
         n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",

@@ -155,7 +155,12 @@ macro_rules! uwr {
             Err(e) => {
                 watch!(e);
                 (&$channel)
-                    .send(::xvc_logging::XvcOutputLine::Panic(format!("{:?}", e)))
+                    .send(::xvc_logging::XvcOutputLine::Panic(format!(
+                        "{:?}, [{}::{}]",
+                        e,
+                        file!(),
+                        line!()
+                    )))
                     .unwrap();
                 ::std::panic!("{:?}", e);
             }
@@ -173,7 +178,12 @@ macro_rules! uwo {
             Some(v) => v,
             None => {
                 watch!($e);
-                let msg = format!("None from the expression: {}", stringify!($e));
+                let msg = format!(
+                    "None from the expression: {} [{}::{}]",
+                    stringify!($e),
+                    file!(),
+                    line!()
+                );
                 (&$channel)
                     .send(::xvc_logging::XvcOutputLine::Panic(msg.clone()))
                     .unwrap();
