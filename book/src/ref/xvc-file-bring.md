@@ -19,7 +19,7 @@ Options:
       --force
           Force even if the files are already present in the workspace
 
-      --no-checkout
+      --no-recheck
           Don't checkout after bringing the file to cache.
           
           This is similar to `fetch` command in Git. It just updates the cache, and doesn't bring the file to workspace.

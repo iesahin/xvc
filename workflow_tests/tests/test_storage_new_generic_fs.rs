@@ -110,13 +110,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     sh(&format!("rm -rf {}", cache_dir.to_string_lossy()))?;
 
-    let fetch_result = x(&[
-        "file",
-        "bring",
-        "--no-checkout",
-        "--from",
-        "generic-storage",
-    ])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "generic-storage"])?;
 
     watch!(fetch_result);
 

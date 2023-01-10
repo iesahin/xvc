@@ -7,6 +7,8 @@ use std::path::PathBuf;
 use thiserror::Error as ThisError;
 
 #[derive(ThisError, Debug)]
+/// Error messages for pipelines crate
+#[allow(missing_docs)]
 pub enum Error {
     #[error("Sorry. {0} is not implemented yet")]
     Todo(&'static str),

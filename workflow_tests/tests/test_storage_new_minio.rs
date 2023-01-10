@@ -219,7 +219,7 @@ fn test_storage_new_minio() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "minio-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "minio-storage"])?;
 
     watch!(fetch_result);
 

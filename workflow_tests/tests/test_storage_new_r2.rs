@@ -215,7 +215,7 @@ fn test_storage_new_r2() -> Result<()> {
     // remove all cache
     fs::remove_dir_all(&cache_dir)?;
 
-    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "r2-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "r2-storage"])?;
 
     watch!(fetch_result);
 

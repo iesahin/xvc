@@ -151,111 +151,111 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         sh(sh_cmd)
     };
 
-let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace) };
+    let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace) };
 
-let out = x(&[
-    "storage",
-    "new",
-    "digital-ocean",
-    "--name",
-    "do-storage",
-    "--bucket-name",
-    bucket_name,
-    "--storage-prefix",
-    &storage_prefix,
-    "--region",
-    &region,
-])?;
+    let out = x(&[
+        "storage",
+        "new",
+        "digital-ocean",
+        "--name",
+        "do-storage",
+        "--bucket-name",
+        bucket_name,
+        "--storage-prefix",
+        &storage_prefix,
+        "--region",
+        &region,
+    ])?;
 
-watch!(out);
-let s3_bucket_list = s3cmd(
-    &format!("ls --recursive 's3://{bucket_name}/'"),
-    &format!("| rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
-);
-watch!(s3_bucket_list);
-assert!(s3_bucket_list.len() > 0);
+    watch!(out);
+    let s3_bucket_list = s3cmd(
+        &format!("ls --recursive 's3://{bucket_name}/'"),
+        &format!("| rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
+    );
+    watch!(s3_bucket_list);
+    assert!(s3_bucket_list.len() > 0);
 
-let the_file = "file-0000.bin";
+    let the_file = "file-0000.bin";
 
-let file_track_result = x(&["file", "track", the_file])?;
-watch!(file_track_result);
+    let file_track_result = x(&["file", "track", the_file])?;
+    watch!(file_track_result);
 
-let cache_dir = xvc_root.xvc_dir().join("b3");
+    let cache_dir = xvc_root.xvc_dir().join("b3");
 
-let file_list_before = s3cmd(
-    &format!("ls --recursive s3://{bucket_name}"),
-    &format!("| rg {storage_prefix} | rg 0.bin"),
-);
-watch!(file_list_before);
-let n_storage_files_before = file_list_before.lines().count();
-let push_result = x(&["file", "send", "--to", "do-storage", the_file])?;
-watch!(push_result);
+    let file_list_before = s3cmd(
+        &format!("ls --recursive s3://{bucket_name}"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
+    );
+    watch!(file_list_before);
+    let n_storage_files_before = file_list_before.lines().count();
+    let push_result = x(&["file", "send", "--to", "do-storage", the_file])?;
+    watch!(push_result);
 
-let file_list_after = s3cmd(
-    &format!("ls --recursive s3://{bucket_name}"),
-    &format!("| rg {storage_prefix} | rg 0.bin"),
-);
-watch!(file_list_after);
+    let file_list_after = s3cmd(
+        &format!("ls --recursive s3://{bucket_name}"),
+        &format!("| rg {storage_prefix} | rg 0.bin"),
+    );
+    watch!(file_list_after);
 
-// The file should be in:
-// - storage_dir/REPO_ID/b3/ABCD...123/0.bin
+    // The file should be in:
+    // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
 
-let n_storage_files_after = file_list_after.lines().count();
+    let n_storage_files_after = file_list_after.lines().count();
 
-assert!(
-    n_storage_files_before + 1 == n_storage_files_after,
-    "{} - {}",
-    n_storage_files_before,
-    n_storage_files_after
-);
+    assert!(
+        n_storage_files_before + 1 == n_storage_files_after,
+        "{} - {}",
+        n_storage_files_before,
+        n_storage_files_after
+    );
 
-// remove all cache
-sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
+    // remove all cache
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "do-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "do-storage"])?;
 
-watch!(fetch_result);
+    watch!(fetch_result);
 
-let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
-    .into_iter()
-    .filter(|f| {
-        f.as_ref()
-            .map(|f| f.file_type().is_file())
-            .unwrap_or_else(|_| false)
-    })
-    .count();
+    let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
+        .into_iter()
+        .filter(|f| {
+            f.as_ref()
+                .map(|f| f.file_type().is_file())
+                .unwrap_or_else(|_| false)
+        })
+        .count();
 
-assert!(n_storage_files_after == n_local_files_after_fetch);
+    assert!(n_storage_files_after == n_local_files_after_fetch);
 
-let cache_dir = xvc_root.xvc_dir().join("b3");
-sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
-fs::remove_file(the_file)?;
+    let cache_dir = xvc_root.xvc_dir().join("b3");
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
+    fs::remove_file(the_file)?;
 
-let pull_result = x(&["file", "bring", "--from", "do-storage"])?;
-watch!(pull_result);
+    let pull_result = x(&["file", "bring", "--from", "do-storage"])?;
+    watch!(pull_result);
 
-let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
-    .into_iter()
-    .filter(|f| {
-        f.as_ref()
-            .map(|f| f.file_type().is_file())
-            .unwrap_or_else(|_| false)
-    })
-    .count();
+    let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
+        .into_iter()
+        .filter(|f| {
+            f.as_ref()
+                .map(|f| f.file_type().is_file())
+                .unwrap_or_else(|_| false)
+        })
+        .count();
 
-assert!(n_storage_files_after == n_local_files_after_pull);
-watch!(the_file);
-assert!(PathBuf::from(the_file).exists());
+    assert!(n_storage_files_after == n_local_files_after_pull);
+    watch!(the_file);
+    assert!(PathBuf::from(the_file).exists());
 
-// Set remote specific passwords and remove DO ones
-env::set_var("XVC_STORAGE_ACCESS_KEY_ID_do-storage", access_key);
-env::set_var("XVC_STORAGE_SECRET_KEY_do-storage", secret_key);
+    // Set remote specific passwords and remove DO ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_do-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_do-storage", secret_key);
 
-env::remove_var("DIGITAL_OCEAN_ACCESS_KEY_ID");
-env::remove_var("DIGITAL_OCEAN_SECRET_ACCESS_KEY");
+    env::remove_var("DIGITAL_OCEAN_ACCESS_KEY_ID");
+    env::remove_var("DIGITAL_OCEAN_SECRET_ACCESS_KEY");
 
-let pull_result_2 = x(&["file", "bring", "--from", "do-storage"])?;
-watch!(pull_result_2);
+    let pull_result_2 = x(&["file", "bring", "--from", "do-storage"])?;
+    watch!(pull_result_2);
 
-clean_up(&xvc_root)
+    clean_up(&xvc_root)
 }

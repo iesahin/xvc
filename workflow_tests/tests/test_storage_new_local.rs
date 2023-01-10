@@ -91,7 +91,7 @@ fn test_storage_new_local() -> Result<()> {
         &cache_dir.to_string_lossy().to_string()
     ))?;
 
-    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "local-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "local-storage"])?;
 
     watch!(fetch_result);
 
