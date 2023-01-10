@@ -86,7 +86,7 @@ impl XvcRoot {
                 let entity_generator =
                     xvc_ecs::load_generator(&xvc_dir.join(Self::ENTITY_GENERATOR_PATH))?;
 
-                let store_dir = xvc_dir.join(Self::STORE_PATH);
+                let store_dir = xvc_dir.join(Self::STORE_DIR);
                 let xvc_root = XvcRoot {
                     xvc_dir,
                     store_dir,
@@ -142,7 +142,7 @@ impl XvcRoot {
                     fs::create_dir_all(entity_generator_dir)?;
                     let entity_generator_path = entity_generator_dir.join(timestamp());
                     fs::write(&entity_generator_path, "1")?;
-                    let store_dir = xvc_dir.join(Self::STORE_PATH);
+                    let store_dir = xvc_dir.join(Self::STORE_DIR);
                     fs::create_dir(&store_dir)?;
                     // TODO: Add crate specific initializations
 
@@ -214,6 +214,11 @@ impl XvcRoot {
         &self.project_config_path
     }
 
+    /// Get the absolute path to the store directory.
+    pub fn store_dir(&self) -> &PathBuf {
+        &self.store_dir
+    }
+
     /// The path of the entity generator directory.
     /// Normally it's in `.xvc/ec/` and can be configured using [Self::ENTITY_GENERATOR_PATH].
     fn entity_generator_path(&self) -> PathBuf {
@@ -228,6 +233,9 @@ impl XvcRoot {
     const PROJECT_CONFIG_PATH: &'static str = "config.toml";
     /// The directory name for the entity generator.
     const ENTITY_GENERATOR_PATH: &'static str = "ec";
+
+    /// The directory name for the store.
+    const STORE_DIR: &'static str = "store";
 
     /// Finds the root of the xvc repository by looking for the .xvc directory
     /// in parents of a given path.
