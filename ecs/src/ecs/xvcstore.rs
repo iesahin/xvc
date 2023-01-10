@@ -99,7 +99,7 @@ where
         watch!(entity);
         watch!(value);
         self.current.add(entity, value.clone());
-
+        watch!(self.current);
         match self.entity_index.get_mut(&value) {
             Some(v) => {
                 v.push(entity);
@@ -108,6 +108,7 @@ where
                 self.entity_index.insert(value.clone(), vec![entity]);
             }
         }
+        watch!(self.entity_index);
 
         self.map.insert(entity, value)
     }
