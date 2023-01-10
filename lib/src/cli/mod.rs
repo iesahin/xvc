@@ -8,7 +8,7 @@ use crate::init;
 use clap::Parser;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
-use log::{debug, error, info, warn, LevelFilter};
+use log::{debug, warn, LevelFilter};
 use std::io;
 use subprocess::Exec;
 use which;
@@ -116,6 +116,8 @@ impl XvcCLI {
         })
     }
 
+    /// Parse the command line from the result of [`std::env::args_os`].
+    /// This updates [XvcCLI::command_string] with the command line.
     pub fn from_args_os(args_os: ArgsOs) -> Result<XvcCLI> {
         let args: Vec<OsString> = args_os.collect();
         let args: Vec<String> = args

@@ -239,8 +239,8 @@ pub fn cmd_track(
             .filter_map(|(xe, cdd)| match cdd {
                 xvc_core::Diff::Identical => None,
                 xvc_core::Diff::RecordMissing { actual } => Some((xe, actual)),
-                xvc_core::Diff::ActualMissing { record } => None,
-                xvc_core::Diff::Different { record, actual } => Some((xe, actual)),
+                xvc_core::Diff::ActualMissing { .. } => None,
+                xvc_core::Diff::Different { actual, .. } => Some((xe, actual)),
                 xvc_core::Diff::Skipped => None,
             })
             .collect();

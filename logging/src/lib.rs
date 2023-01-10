@@ -26,7 +26,7 @@ macro_rules! watch {
 macro_rules! error {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            &$channel.send(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*))).unwrap();
+            (&$channel).send(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {

@@ -366,13 +366,13 @@ pub fn diff_content_digest(
         .collect::<HashSet<_>>()
         .difference(&dir_entities)
         .for_each(|xe| {
+            let ep = stored_xvc_path_store
+                .get(xe)
+                .map(|xp| xp.to_string())
+                .unwrap_or_else(|| format!("{:?}", xvc_path_diff_store.get(xe).unwrap()));
             error!(
                 output_snd,
-                "Skipping {} because it is neither a file nor a directory",
-                stored_xvc_path_store
-                    .get(xe)
-                    .map(|xp| xp.to_string())
-                    .unwrap_or_else(|| format!("{:?}", xvc_path_diff_store.get(xe).unwrap()))
+                "Skipping {} because it is neither a file nor a directory", ep
             );
         });
 

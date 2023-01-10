@@ -47,7 +47,7 @@ pub fn cmd_send(
     let target_file_xvc_metadata = xvc_root
         .load_store::<XvcMetadata>()?
         .subset(targets.keys().copied())?
-        .filter(|xe, xmd| xmd.file_type == XvcFileType::File)
+        .filter(|_, xmd| xmd.file_type == XvcFileType::File)
         .cloned();
 
     let target_files = targets.subset(target_file_xvc_metadata.keys().copied())?;
