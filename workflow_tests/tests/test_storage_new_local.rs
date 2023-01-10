@@ -126,6 +126,7 @@ fn test_storage_new_local() -> Result<()> {
         .count();
 
     assert!(n_storage_files_after == n_local_files_after_pull);
+    watch!(the_file);
     assert!(PathBuf::from(the_file).exists());
 
     // When we reinit with the same storage path, it shouldn't update the GUID.
