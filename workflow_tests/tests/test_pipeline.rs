@@ -45,7 +45,7 @@ fn test_pipeline() -> Result<()> {
         "step2",
         "--command",
         "echo hi xvc",
-        "--changed",
+        "--when",
         "always",
     ])?;
     x(&[

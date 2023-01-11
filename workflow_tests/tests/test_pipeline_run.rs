@@ -28,7 +28,7 @@ fn test_pipeline_run() -> Result<()> {
             "hello",
             "--command",
             "echo 'hello xvc!'",
-            "--changed",
+            "--when",
             "always",
         ])?;
 

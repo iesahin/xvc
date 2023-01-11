@@ -16,6 +16,12 @@ use crate::{
     XvcStepCommand, XvcStepSchema,
 };
 
+/// Entry point for `xvc pipeline export` command.
+/// Export the pipeline and all its steps to a file.
+/// The file format is determined by the `format` parameter.
+/// If `file` is None, prints to stdout.
+/// If `name` is None, uses the default pipeline name from the config.
+/// If `format` is None, uses the default format from [XvcSchemaSerializationFormat::default()]
 pub fn cmd_export(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
