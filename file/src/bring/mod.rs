@@ -149,17 +149,12 @@ pub fn fetch(
 
     xvc_root.with_store_mut(|store: &mut XvcStore<XvcStorageEvent>| {
         watch!(&store);
-        store
-            .insert(
-                xvc_root.new_entity(),
-                XvcStorageEvent::Receive(event.clone()),
-            )
-            .ok_or_else(|| -> anyhow::Error {
-                anyhow::anyhow!("Error recording event {:#?}", event)
-            })?;
+        store.insert(
+            xvc_root.new_entity(),
+            XvcStorageEvent::Receive(event.clone()),
+        );
         watch!(&store);
         Ok(())
-
     })?;
 
     Ok(())
