@@ -111,6 +111,7 @@ where
         watch!(self.entity_index);
         watch!(self.map);
         let ret = self.map.insert(entity, value);
+        watch!(self.map);
         watch!(ret);
         ret
     }
