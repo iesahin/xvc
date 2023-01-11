@@ -3,6 +3,7 @@ mod common;
 use common::*;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
+use xvc_tests::watch;
 
 #[test]
 fn test_pipeline() -> Result<()> {
@@ -22,7 +23,7 @@ fn test_pipeline() -> Result<()> {
     let pipelines_2 = x(&["list"])?;
     assert!(matches!(pipelines_2.find("pipeline-old"), None));
 
-    x(&[
+    let res = x(&[
         "-n",
         "pipeline-2",
         "step",
@@ -32,6 +33,8 @@ fn test_pipeline() -> Result<()> {
         "--command",
         "touch abc.txt",
     ])?;
+
+    watch!(res);
 
     x(&[
         "-n",

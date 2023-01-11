@@ -246,59 +246,59 @@ pub enum StepSubCommand {
         /// Pipelines are referred with their names.
         #[arg(long = "pipeline")]
         pipelines: Option<Vec<String>>,
-        #[arg(
-            long = "directory",
-            help = "Add a directory dependency to the step. Can be used multiple times."
-        )]
+
+        /// Add a directory dependency to the step. Can be used multiple times.
+        #[arg(long = "directory")]
         directories: Option<Vec<String>>,
-        #[arg(
-            long = "glob",
-            help = "Add a glob dependency to the step. Can be used multiple times."
-        )]
+
+        /// Add a glob dependency to the step. Can be used multiple times.
+        #[arg(long = "glob")]
         globs: Option<Vec<String>>,
-        #[arg(
-            long = "param",
-            help = "Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times."
-        )]
+
+        /// Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times.
+        #[arg(long = "param")]
         params: Option<Vec<String>>,
+
+        /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
         #[arg(
             long = "regex",
             aliases = &["regexp"],
-            help = "Add a regex dependency in the form filename.txt:/^regex/"
         )]
         regexps: Option<Vec<String>>,
+
+        /// Add a line dependency in the form filename.txt::123-234
         #[arg(
             long = "line",
             aliases = &["lines"],
-            help = "Add a line dependency in the form filename.txt::123-234"
         )]
         lines: Option<Vec<String>>,
     },
 
-    #[command(about = "Add an output to a step in the pipeline")]
+    /// Add an output to a step
+    #[command()]
     Output {
-        #[arg(long, short, help = "Name of the step")]
+        /// Name of the step to add the output to
+        #[arg(long, short)]
         step_name: String,
-        #[arg(
-            long = "output-file",
-            help = "Add a file output to the step. Can be used multiple times."
-        )]
+
+        /// Add a file output to the step. Can be used multiple times.
+        #[arg(long = "output-file")]
         files: Option<Vec<String>>,
-        #[arg(
-            long = "output-metric",
-            help = "Add a metrics output to the step. Can be used multiple times."
-        )]
+
+        /// Add a metric output to the step. Can be used multiple times.
+        #[arg(long = "output-metric")]
         metrics: Option<Vec<String>>,
-        #[arg(
-            long = "output-image",
-            help = "Add an image output to the step. Can be used multiple times."
-        )]
+
+        /// Add an image output to the step. Can be used multiple times.
+        #[arg(long = "output-image")]
         images: Option<Vec<String>>,
     },
 
-    #[command(about = "Print step configuration")]
+    /// Print step configuration
+    #[command()]
     Show {
-        #[arg(long, short, help = "Name of the step")]
+        /// Name of the step to show
+        #[arg(long, short)]
         step_name: String,
     },
 }
@@ -314,6 +314,8 @@ impl UpdateFromXvcConfig for PipelineCLI {
     }
 }
 
+/// A pipeline is a collection of steps that are run in a specific order.
+/// This struct defines the name of it.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, PartialOrd, Ord)]
 pub struct XvcPipeline {
     /// The name of the pipeline, that's also the unique ID
@@ -332,6 +334,8 @@ impl FromStr for XvcPipeline {
 persist!(XvcPipeline, "xvc-pipeline");
 conf!(XvcPipeline, "pipeline.default");
 
+/// A pipeline run directory where the pipeline is run.
+/// It should be within the workspace to be portable across systems.
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct XvcPipelineRunDir {
     /// The directory to run the command relative to xvc_root
@@ -341,6 +345,9 @@ pub struct XvcPipelineRunDir {
 persist!(XvcPipelineRunDir, "xvc-pipeline-run-dir");
 
 impl XvcPipeline {
+    /// Load a pipeline by name.
+    ///
+    /// Returns the entity and the pipeline if found. Otherwise returns [Error::NoPipelinesFound].
     pub fn from_name(xvc_root: &XvcRoot, name: &str) -> Result<(XvcEntity, Self)> {
         let all = xvc_root.load_store::<XvcPipeline>()?;
         match all.iter().find(|(_, p)| p.name == name) {
@@ -379,7 +386,10 @@ pub fn init(xvc_root: &XvcRoot) -> Result<()> {
     Ok(())
 }
 
-pub fn run<R: BufRead>(
+/// Run `xvc pipeline` command.
+/// This is the entry point for the pipeline subcommand.
+/// It dispatches to the subcommands using [PipelineCLI] argument.
+pub fn cmd_pipeline<R: BufRead>(
     input: R,
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
@@ -427,6 +437,7 @@ pub fn run<R: BufRead>(
     }
 }
 
+/// Dispatch `xvc pipeline step` subcommands.
 pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI) -> Result<()> {
     match command.subcommand {
         StepSubCommand::New {

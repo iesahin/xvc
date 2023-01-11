@@ -276,7 +276,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 XvcSubCommand::Pipeline(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
-                    Ok(pipeline::run(
+                    Ok(pipeline::cmd_pipeline(
                         input,
                         &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
