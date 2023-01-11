@@ -132,7 +132,7 @@ fn test_storage_new_generic_rsync() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    sh(format!("rm -rf {}", cache_dir.to_string_lossy());
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "generic-storage"])?;
