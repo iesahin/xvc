@@ -216,7 +216,7 @@ fn test_storage_new_s3() -> Result<()> {
     );
 
     // remove all cache
-    fs::remove_dir_all(&cache_dir)?;
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "s3-storage"])?;
 
@@ -234,7 +234,7 @@ fn test_storage_new_s3() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "s3-storage"])?;

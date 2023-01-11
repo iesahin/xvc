@@ -179,34 +179,51 @@ pub enum PipelineSubCommand {
     Step(StepCLI),
 }
 
+/// Step creation, dependency, output commands
 #[derive(Debug, Clone, Parser)]
-#[command(name = "step", about = "Step management commands")]
+#[command(name = "step")]
 pub struct StepCLI {
+    /// Step subcommand
     #[command(subcommand)]
     pub subcommand: StepSubCommand,
 }
 
+/// Step management subcommands
 #[derive(Debug, Clone, Parser)]
-#[command(about = "Step management commands")]
+#[command()]
 pub enum StepSubCommand {
-    #[command(about = "Add a new step")]
+    /// Add a new step
+    #[command()]
     New {
+        /// Name of the new step
         #[arg(long, short, help = "Name of the step")]
-        step_name: String,
-        #[arg(long, short, help = "Command to run the step")]
+        name: String,
+
+        /// Step command to run
+        #[arg(long, short)]
         command: Option<String>,
-        #[arg(long, help = "When to run the command")]
-        changed: Option<XvcStepInvalidate>,
+
+        /// When to run the command. One of always, never, by_dependencies (default).
+        /// This is used to freeze or invalidate a step manually.
+        #[arg(long)]
+        when: Option<XvcStepInvalidate>,
     },
 
+    /// Update a step's command or when options.
     #[command(about = "Update step options")]
     Update {
-        #[arg(long, short, help = "Name of the step (that must already be added)")]
-        step_name: String,
-        #[arg(long, short, help = "Command to run the step")]
+        /// Name of the step to update. The step should already be defined.
+        #[arg(long, short)]
+        step: String,
+
+        /// Step command to run
+        #[arg(long, short)]
         command: Option<String>,
-        #[arg(long, help = "When to run the command")]
-        changed: Option<XvcStepInvalidate>,
+
+        /// When to run the command. One of always, never, by_dependencies (default).
+        /// This is used to freeze or invalidate a step manually.
+        #[arg(long)]
+        when: Option<XvcStepInvalidate>,
     },
 
     #[command(about = "Add a dependency to a step in the pipeline")]
@@ -406,14 +423,14 @@ pub fn run<R: BufRead>(
 pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI) -> Result<()> {
     match command.subcommand {
         StepSubCommand::New {
-            step_name,
+            name: step_name,
             command,
-            changed,
+            when: changed,
         } => cmd_step_new(xvc_root, pipeline_name, step_name, command, changed),
         StepSubCommand::Update {
-            step_name,
+            step: step_name,
             command,
-            changed,
+            when: changed,
         } => cmd_step_update(xvc_root, pipeline_name, step_name, command, changed),
 
         StepSubCommand::Dependency {

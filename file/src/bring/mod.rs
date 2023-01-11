@@ -140,20 +140,14 @@ pub fn fetch(
     for (_, cp) in cache_paths {
         let cache_path = cp.to_absolute_path(xvc_root);
         let temp_path = temp_dir.temp_cache_path(&cp)?;
-        watch!(&cache_path);
-        watch!(&temp_path);
         uwr!(move_to_cache(&temp_path, &cache_path), output_snd);
     }
 
-    watch!("Move completed");
-
     xvc_root.with_store_mut(|store: &mut XvcStore<XvcStorageEvent>| {
-        watch!(&store);
         store.insert(
             xvc_root.new_entity(),
             XvcStorageEvent::Receive(event.clone()),
         );
-        watch!(&store);
         Ok(())
     })?;
 

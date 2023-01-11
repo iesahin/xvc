@@ -107,7 +107,7 @@ fn test_storage_new_rsync() -> Result<()> {
     // remove all cache
     //
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "rsync-storage"])?;
 
@@ -128,7 +128,7 @@ fn test_storage_new_rsync() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy());
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "rsync-storage"])?;
