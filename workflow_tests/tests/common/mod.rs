@@ -30,7 +30,7 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
         XvcVerbosity::Warn => vec!["-v"],
         XvcVerbosity::Info => vec!["-vv"],
         XvcVerbosity::Debug => vec!["-vvv"],
-        XvcVerbosity::Trace => vec!["-vvvvv"],
+        XvcVerbosity::Trace => vec!["--debug", "-vvvvv"],
     };
 
     // watch!(cmd);
@@ -38,12 +38,8 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     // watch!(args);
 
     let prepared = match cwd {
-        Some(cwd) => cmd
-            .arg("--debug")
-            .args(verbosity_opt)
-            .args(args)
-            .current_dir(cwd),
-        None => cmd.arg("--debug").args(verbosity_opt).args(args),
+        Some(cwd) => cmd.args(verbosity_opt).args(args).current_dir(cwd),
+        None => cmd.args(verbosity_opt).args(args),
     };
 
     watch!(prepared);
