@@ -97,55 +97,85 @@ pub enum PipelineSubCommand {
         set_default: bool,
     },
 
+    /// Delete a pipeline
     #[command(about = "Delete a pipeline")]
     Delete {
-        #[arg(long, short, help = "Name of the pipeline to be deleted")]
+        /// Name or GUID of the pipeline to be deleted
+        #[arg(long, short)]
         name: String,
     },
 
+    /// Run a pipeline
     #[command(about = "Run a pipeline")]
     Run {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to run
+        #[arg(long, short)]
         name: Option<String>,
     },
-    #[command(about = "List all pipelines")]
+
+    /// List all pipelines
+    #[command()]
     List,
-    #[command(about = "Generate mermaid diagram for the pipeline")]
+
+    /// Generate a dot or mermaid diagram for the pipeline
+    #[command()]
     Dag {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to generate the diagram
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(long, help = "File to write the pipeline. Writes to stdin if not set.")]
+
+        /// Output file. Writes to stdout if not set.
+        #[arg(long)]
         file: Option<PathBuf>,
-        #[arg(long, help = "Format for graph")]
-        format: Option<XvcPipelineDagFormat>,
+
+        /// Format for graph. Either dot or mermaid.
+        #[arg(long, default_value = "dot")]
+        format: XvcPipelineDagFormat,
     },
-    #[command(about = "Export the pipeline to a YAML, TOML or JSON file")]
+
+    /// Export the pipeline to a YAML or JSON file to edit
+    #[command()]
     Export {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to export
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(long, help = "File to write the pipeline. Writes to stdin if not set.")]
+
+        /// File to write the pipeline. Writes to stdout if not set.
+        #[arg(long)]
         file: Option<PathBuf>,
-        #[arg(long, help = "Format for output to stdout.")]
+
+        /// Output format. One of json or yaml. If not set, the format is
+        /// guessed from the file extension. If the file extension is not set,
+        /// json is used as default.
+        #[arg(long)]
         format: Option<XvcSchemaSerializationFormat>,
     },
-    #[command(about = "Import the pipeline from a file")]
+
+    /// Import the pipeline from a file
+    #[command()]
     Import {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to import.
+        /// If not set, the name from the file is used.
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(
-            long,
-            help = "File to read the pipeline. Reads from stdin if not specified."
-        )]
+
+        /// File to read the pipeline. Use stdin if not specified.
+        #[arg(long)]
         file: Option<PathBuf>,
-        #[arg(long, help = "Format for input from stdin.")]
+
+        /// Input format. One of json or yaml. If not set, the format is
+        /// guessed from the file extension. If the file extension is not set,
+        /// json is used as default.        
+        #[arg(long)]
         format: Option<XvcSchemaSerializationFormat>,
-        #[arg(
-            long,
-            help = "Whether to overwrite the current pipeline if one found with an identical name"
-        )]
+
+        /// Overwrite the pipeline even if the name already exists
+        #[arg(long)]
         overwrite: bool,
     },
-    #[command(about = "Step management commands")]
+
+    /// Step creation, dependency, output commands
+    #[command()]
     Step(StepCLI),
 }
 

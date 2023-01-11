@@ -39,13 +39,9 @@ pub fn cmd_dag(
     xvc_root: &XvcRoot,
     name: Option<String>,
     file: Option<PathBuf>,
-    format: Option<XvcPipelineDagFormat>,
+    format: XvcPipelineDagFormat,
 ) -> Result<()> {
     let conf = xvc_root.config();
-    let format = match format {
-        Some(f) => f,
-        None => XvcPipelineDagFormat::default(),
-    };
     let pipeline_name = name.unwrap_or_else(|| XvcPipeline::from_conf(conf).name);
 
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
