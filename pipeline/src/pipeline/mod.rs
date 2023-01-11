@@ -426,16 +426,12 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                 XvcStepState::Running(s) => s_running(s, params, &mut process_pool),
             };
 
-            watch!(r_next_state);
-
             match r_next_state {
                 Ok(state) => {
                     next_states.map.insert(*step_e, state.clone());
                 }
                 Err(e) => {
                     warn!("{}", e);
-                    watch!(params_debug.step_command);
-                    watch!(step_s);
                     continue_running = false;
                     break;
                 }
@@ -452,7 +448,6 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         // update pmp with fs events
         //
         while let Ok(fs_event) = fs_receiver.try_recv() {
-            watch!(fs_event);
             match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(xvc_root, xvc_root, &path)?;
@@ -489,8 +484,6 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
             }
         });
 
-        watch!(broken_steps);
-
         for step_e in broken_steps {
             warn!(
                 "Broken Step: {:?} ({}) with Command {:?}",
@@ -506,8 +499,6 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         {
             continue_running = false;
         }
-
-        watch!(step_states);
     }
 
     // TODO: Check if there are running processes in the process pool and terminate them (per option)
@@ -520,7 +511,6 @@ fn s_checking_dependency_content_digest(
     dependency_comparison_params: &DependencyComparisonParams,
     dependency_changes: &mut HStore<XvcDependencyChange>,
 ) -> Result<XvcStepState> {
-    watch!(s);
     if params.run_conditions.ignore_content_digest_comparison {
         return Ok(s.content_digest_ignored());
     }
@@ -554,7 +544,6 @@ fn s_checking_dependency_content_digest(
 }
 
 fn s_checking_timestamps(s: &CheckingTimestampsState, params: StateParams) -> Result<XvcStepState> {
-    watch!(s);
     if params.run_conditions.ignore_timestamp_comparison {
         return Ok(s.timestamps_ignored());
     }
@@ -662,7 +651,6 @@ fn s_checking_missing_dependencies(
     s: &CheckingMissingDependenciesState,
     params: StateParams,
 ) -> Result<XvcStepState> {
-    watch!(s);
     if params.run_conditions.ignore_missing_dependencies {
         return Ok(s.missing_dependencies_ignored());
     }
@@ -672,7 +660,6 @@ fn s_checking_missing_dependencies(
     let deps = params.all_dependencies.children_of(step_e)?;
     for (_, dep) in deps.iter() {
         if let Some(xvc_path) = dep.xvc_path() {
-            watch!(xvc_path);
             match pmm.get(&xvc_path) {
                 None => return Ok(s.has_missing_dependencies()),
                 Some(xvc_md) => {
@@ -690,7 +677,6 @@ fn s_waiting_dependency_steps(
     s: &WaitingDependencyStepsState,
     params: StateParams,
 ) -> Result<XvcStepState> {
-    watch!(s);
     if !params.run_conditions.wait_running_dep_steps {
         return Ok(s.dependency_steps_running_ignored());
     }
@@ -698,7 +684,6 @@ fn s_waiting_dependency_steps(
     let dep_neighbors = dependency_graph.neighbors(*params.step_e);
     let dep_states = params.current_states.subset(dep_neighbors)?;
     // if there are no dependencies, we can claim successfully finished
-    watch!(dep_states);
     if dep_states.len() == 0 {
         return Ok(s.dependency_steps_finished_successfully());
     }
@@ -723,13 +708,11 @@ fn s_waiting_dependency_steps(
 }
 
 fn s_no_need_to_run(s: &NoNeedToRunState, _params: StateParams) -> Result<XvcStepState> {
-    watch!(s);
     Ok(s.completed_without_running_step())
 }
 
 /// Broken stays always Broken
 fn s_broken(s: &BrokenState, _params: StateParams) -> Result<XvcStepState> {
-    watch!(s);
     Ok(s.has_broken())
 }
 
@@ -739,7 +722,6 @@ fn s_running(
     process_pool: &mut HStore<CommandProcess>,
 ) -> Result<XvcStepState> {
     // Check whether the process is still running
-    watch!(s);
     let step_e = params.step_e;
     let command_process = &mut process_pool.get(step_e).unwrap();
     let process_rc = command_process.process.clone();
@@ -761,9 +743,6 @@ fn s_running(
             format!("Process communication error: {:?}", err),
         ),
     };
-
-    watch!(&process_stdout);
-    watch!(&process_stderr);
 
     if !process_stdout.is_empty() {
         stdout_sender.send(process_stdout)?;
@@ -818,7 +797,6 @@ fn s_waiting_to_run(
     params: StateParams,
     process_pool: &mut HStore<CommandProcess>,
 ) -> Result<XvcStepState> {
-    watch!(s);
     let all_states = params.current_states;
     let step_e = params.step_e;
     let n_running = all_states
@@ -871,7 +849,6 @@ fn s_waiting_to_run(
 
 /// Terminal state: Waits till the end of times
 fn s_done(s: &DoneState, _params: StateParams) -> Result<XvcStepState> {
-    watch!(s);
     Ok(s.has_done())
 }
 
@@ -879,7 +856,6 @@ fn s_checking_missing_outputs(
     s: &CheckingMissingOutputsState,
     params: StateParams,
 ) -> Result<XvcStepState> {
-    watch!(s);
     let step_e = params.step_e;
     let run_conditions = params.run_conditions;
     let step_outs = params.all_outputs.children_of(step_e)?;
@@ -901,7 +877,6 @@ fn s_checking_missing_outputs(
 
 fn s_begin(s: &BeginState, params: StateParams) -> Result<XvcStepState> {
     // checking whether we run this step or not
-    watch!(s);
     if params.run_conditions.never {
         Ok(s.run_never())
     } else {
