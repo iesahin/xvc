@@ -196,7 +196,7 @@ pub enum StepSubCommand {
     #[command()]
     New {
         /// Name of the new step
-        #[arg(long, short, help = "Name of the step")]
+        #[arg(long, short)]
         name: String,
 
         /// Step command to run
@@ -214,7 +214,7 @@ pub enum StepSubCommand {
     Update {
         /// Name of the step to update. The step should already be defined.
         #[arg(long, short)]
-        step: String,
+        step_name: String,
 
         /// Step command to run
         #[arg(long, short)]
@@ -226,23 +226,32 @@ pub enum StepSubCommand {
         when: Option<XvcStepInvalidate>,
     },
 
-    #[command(about = "Add a dependency to a step in the pipeline")]
+    /// Add a dependency to a step
+    #[command()]
     Dependency {
-        #[arg(long, short, help = "Name of the step")]
+        /// Name of the step to add the dependency to
+        #[arg(long, short)]
         step_name: String,
-        #[arg(
-            long = "file",
-            help = "Add a file dependency to the step. Can be used multiple times."
-        )]
+
+        /// Add a file dependency to the step. Can be used multiple times.
+        #[arg(long = "file")]
         files: Option<Vec<String>>,
-        #[arg(long = "step", help = "Add explicit step dependencies to run")]
+
+        /// Add a step dependency to a step. Can be used multiple times.
+        /// Steps are referred with their names.
+        #[arg(long = "step")]
         steps: Option<Vec<String>>,
-        #[arg(long = "pipeline", help = "Add explicit pipeline dependencies to run")]
+
+        /// Add a pipeline dependency to a step. Can be used multiple times.
+        /// Pipelines are referred with their names.
+        #[arg(long = "pipeline")]
         pipelines: Option<Vec<String>>,
         #[arg(
             long = "directory",
             help = "Add a directory dependency to the step. Can be used multiple times."
         )]
+
+
         directories: Option<Vec<String>>,
         #[arg(
             long = "glob",
@@ -434,7 +443,7 @@ pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI
         } => cmd_step_update(xvc_root, pipeline_name, step_name, command, changed),
 
         StepSubCommand::Dependency {
-            step_name,
+            step: step_name,
             files,
             directories,
             globs,
