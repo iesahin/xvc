@@ -243,7 +243,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
     let (mut pmm, ignore_rules) = all_paths_and_metadata(xvc_root);
-    let (_fs_watcher, fs_receiver) = make_polling_watcher(ignore_rules)?;
+    let (_fs_watcher, fs_receiver) = make_watcher(ignore_rules)?;
 
     let pipeline_len = pipeline_steps.len();
 
