@@ -21,7 +21,7 @@ fn test_pipeline_run() -> Result<()> {
     };
 
     let create_pipeline = || -> Result<()> {
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
@@ -30,156 +30,148 @@ fn test_pipeline_run() -> Result<()> {
             "echo 'hello xvc!'",
             "--changed",
             "always",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "step1",
             "--command",
             "touch abc.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "step1",
             "--output-file",
             "abc.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "step_dep",
             "--command",
             "touch step_dep.txt",
-        ])?);
-        watch!(x(&[
+        ])?;
+
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "step_dep",
             "--step",
             "step1",
-        ])?);
-        watch!(x(&[
+        ])?;
+        x(&[
             "step",
             "output",
             "--step-name",
             "step_dep",
             "--output-file",
             "step_dep.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "txt_files",
             "--command",
             "find . -name '*.py' > src-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "txt_files",
             "--glob",
             "*/*.py",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "txt_files",
             "--output-file",
             "src-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "training_files",
             "--command",
             "find data/images/train -name '*.png' > training-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "training_files",
             "--directory",
             "data/images/train",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "training_files",
             "--output-file",
             "training-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "glob_dep",
             "--command",
             "touch glob_dep.json",
-        ])?);
+        ])?;
 
-        watch!(x(&[
-            "step",
-            "dependency",
-            "--step-name",
-            "glob_dep",
-            "--glob",
-            "*.txt",
-        ])?);
-
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "glob_dep",
             "--output-metric",
             "glob_dep.json",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "count_training_files",
             "--command",
             "wc -l training-files.txt > num-training-files.txt",
-        ])?);
-        watch!(x(&[
+        ])?;
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "count_training_files",
             "--lines",
             "training-files.txt::-1000000",
-        ])?);
-        watch!(x(&[
+        ])?;
+        x(&[
             "step",
             "output",
             "--step-name",
             "count_training_files",
             "--output-file",
             "num-training-files.txt",
-        ])?);
+        ])?;
 
         Ok(())
     };
