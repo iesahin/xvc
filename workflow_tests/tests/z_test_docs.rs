@@ -12,7 +12,6 @@ use trycmd::cargo::cargo_bin;
 use which;
 use xvc::error::Result;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
-use xvc_tests::watch;
 
 use fs_extra::{self, dir::CopyOptions};
 

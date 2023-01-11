@@ -43,7 +43,7 @@ fn test_storage_new_generic_rsync() -> Result<()> {
 
     let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn) };
 
-    let delete_dir = sh(format!(
+    sh(format!(
         "ssh {url} 'test -e {storage_dir_name} && rm -rf {storage_dir_name}'"
     ));
 

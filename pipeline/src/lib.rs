@@ -197,7 +197,7 @@ pub enum StepSubCommand {
     New {
         /// Name of the new step
         #[arg(long, short)]
-        name: String,
+        step_name: String,
 
         /// Step command to run
         #[arg(long, short)]
@@ -441,7 +441,7 @@ pub fn cmd_pipeline<R: BufRead>(
 pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI) -> Result<()> {
     match command.subcommand {
         StepSubCommand::New {
-            name: step_name,
+            step_name,
             command,
             when: changed,
         } => cmd_step_new(xvc_root, pipeline_name, step_name, command, changed),

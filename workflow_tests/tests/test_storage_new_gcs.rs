@@ -146,8 +146,6 @@ fn test_storage_new_gcs() -> Result<()> {
     watch!(config_file_name);
 
     let s3cmd = |cmd: &str, append: &str| -> String {
-        let acc = access_key.clone();
-        let sec = secret_key.clone();
         let sh_cmd = format!("s3cmd --config {config_file_name} {cmd} {append}");
         sh(sh_cmd)
     };
