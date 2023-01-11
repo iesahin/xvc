@@ -250,8 +250,6 @@ pub enum StepSubCommand {
             long = "directory",
             help = "Add a directory dependency to the step. Can be used multiple times."
         )]
-
-
         directories: Option<Vec<String>>,
         #[arg(
             long = "glob",
@@ -437,13 +435,13 @@ pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI
             when: changed,
         } => cmd_step_new(xvc_root, pipeline_name, step_name, command, changed),
         StepSubCommand::Update {
-            step: step_name,
+            step_name,
             command,
             when: changed,
         } => cmd_step_update(xvc_root, pipeline_name, step_name, command, changed),
 
         StepSubCommand::Dependency {
-            step: step_name,
+            step_name,
             files,
             directories,
             globs,
