@@ -17,7 +17,7 @@ fn test_pipeline_run() -> Result<()> {
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
         c.extend(cmd);
-        run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
+        run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
     };
 
     let create_pipeline = || -> Result<()> {
