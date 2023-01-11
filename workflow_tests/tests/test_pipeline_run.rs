@@ -12,7 +12,7 @@ use xvc_tests::watch;
 
 #[test]
 fn test_pipeline_run() -> Result<()> {
-    test_logging(log::LevelFilter::Trace);
+    test_logging(log::LevelFilter::Warn);
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
