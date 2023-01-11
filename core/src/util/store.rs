@@ -5,6 +5,7 @@ use xvc_ecs::R1NStore;
 use xvc_ecs::RMNStore;
 use xvc_ecs::Storable;
 use xvc_ecs::XvcStore;
+use xvc_logging::watch;
 
 use crate::XvcRoot;
 
@@ -41,8 +42,12 @@ impl XvcRoot {
         T: Storable,
     {
         let mut store = self.load_store::<T>()?;
+        watch!("Loaded");
         f(&mut store)?;
-        self.save_store(&store)
+        watch!("Before save");
+        self.save_store(&store)?;
+        watch!("Saved");
+        Ok(())
     }
 
     // /// Utility function to load a [xvc_ecs::BStore] in a repository.
