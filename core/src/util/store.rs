@@ -44,6 +44,7 @@ impl XvcRoot {
         let mut store = self.load_store::<T>()?;
         watch!("Loaded");
         f(&mut store)?;
+        watch!(store);
         watch!("Before save");
         self.save_store(&store)?;
         watch!("Saved");
