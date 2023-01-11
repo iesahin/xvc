@@ -209,7 +209,7 @@ fn init_logging(term_level: Option<LevelFilter>, file_level: Option<LevelFilter>
 
     let mut dispatch = fern::Dispatch::new().format(|out, message, record| {
         out.finish(format_args!(
-            "[{}][{}:{}] {}",
+            "[{}][{}::{}] {}",
             record.level(),
             record.file().get_or_insert("None"),
             record.line().get_or_insert(0),

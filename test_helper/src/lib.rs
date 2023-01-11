@@ -32,7 +32,7 @@ use std::os::windows::fs as windows_fs;
 /// Testing always send traces to `$TMPDIR/xvc.log`.
 /// The `level` here determines whether these are sent to `stdout`.
 pub fn test_logging(level: LevelFilter) {
-    setup_logging(Some(level), Some(LevelFilter::Trace));
+    setup_logging(Some(level), Some(level));
 }
 
 /// Generates a random name with `prefix` and a random number generated from `seed`.
