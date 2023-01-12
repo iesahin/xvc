@@ -58,35 +58,6 @@ fn test_file_list() -> Result<()> {
         common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
-    let re_match = |output, regex| {
-        let regex = Regex::new(regex).unwrap();
-        assert!(
-            regex.is_match(output),
-            "regex: {}, output: {}",
-            regex,
-            output
-        );
-    };
-
-    let line_filter = |regex, line| {
-        let regex = Regex::new(regex).unwrap();
-        regex.is_match(line)
-    };
-
-    let line_captures = |output: &str, pattern: &str| -> Vec<String> {
-        let regex = Regex::new(&format!("^.*{pattern}.*$")).unwrap();
-        output
-            .lines()
-            .filter_map(|s| {
-                if regex.is_match(s) {
-                    Some(s.to_owned())
-                } else {
-                    None
-                }
-            })
-            .collect()
-    };
-
     watch!("begin");
     let list_all = x(&["list", "--format", "{{name}}"])?;
 

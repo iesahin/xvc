@@ -1,7 +1,6 @@
 # xvc pipeline dag
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline dag --help

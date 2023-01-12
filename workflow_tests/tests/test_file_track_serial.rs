@@ -41,11 +41,6 @@ fn test_file_track_serial() -> Result<()> {
         common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
-    let re_match = |output, regex| {
-        let regex = Regex::new(regex).unwrap();
-        assert!(regex.is_match(output), "output: {}", output);
-    };
-
     let line_captures = |output: &str, pattern: &str| -> Vec<String> {
         let regex = Regex::new(&format!("^.*{pattern}.*$")).unwrap();
         output

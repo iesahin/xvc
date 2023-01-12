@@ -64,7 +64,8 @@ enum XvcTestHelperSubcommandCLI {
         size: usize,
         /// The byte to fill the file with
         #[clap(short, long, default_value = "0")]
-        byte: u8,
+        fill: u8,
+        /// The filename to write to
         #[clap(short, long)]
         filename: String,
     },
@@ -113,11 +114,11 @@ fn main() -> Result<()> {
         }
         XvcTestHelperSubcommandCLI::GenerateFilledFile {
             size,
-            byte,
+            fill,
             filename,
         } => {
             let path = PathBuf::from(filename);
-            generate_filled_file(&path, size, byte);
+            generate_filled_file(&path, size, fill);
         }
         XvcTestHelperSubcommandCLI::GenerateRandomTextFile { lines, filename } => {
             let path = PathBuf::from(filename);

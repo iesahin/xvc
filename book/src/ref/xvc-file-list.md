@@ -1,7 +1,6 @@
 # xvc file list
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc file list --help
@@ -116,7 +115,7 @@ a repository yet, it lists nothing.
 $ xvc file list 
 ```
 
-Let's initialize the repository. 
+Let's initialize the repository.
 
 ```console
 $ git init
@@ -168,7 +167,7 @@ Total #: 32 Workspace Size:       26432 Cached Size:           0
 ```
 
 With the default output format, the first two letters show the path type and
-cache type, respectively. 
+cache type, respectively.
 
 For example, if you track `dir-0001` as `copy`, the first letter is `F` for the
 files and `D` for the directories. The second letter is `C` for files, meaning
@@ -210,11 +209,11 @@ Total #: 6 Workspace Size:        5164 Cached Size:        5015
 ```
 
 Note, as hardlinks are actually files with the same inode in the file system
-with alternative paths, they are detected as `F`. 
+with alternative paths, they are detected as `F`.
 
-Symbolic links are typically reported as `SS` in the first letters. 
+Symbolic links are typically reported as `SS` in the first letters.
 It means they are symbolic links on the file system and their cache type is also
-symbolic links. 
+symbolic links.
 
 ```console
 $ xvc file track dir-0003 --cache-type symlink
@@ -231,7 +230,7 @@ Total #: 6 Workspace Size:        [..] Cached Size:        5015
 
 ```
 
-Although not all filesystems support, `R` represents reflinks. 
+Although not all filesystems support, `R` represents reflinks.
 
 ## Globs
 
@@ -250,7 +249,7 @@ Total #: 5 Workspace Size:        [..] Cached Size:        1001
 ```
 
 Note that all these files are identical. They are cached once, and only one of
-them takes space in the cache. 
+them takes space in the cache.
 
 You can also use multiple targets as globs.
 
@@ -276,7 +275,7 @@ Total #: 10 Workspace Size:        [..] Cached Size:        2003
 You may sort `xvc file list` output by name, by modification time and by file
 size.
 
-Use `--sort` option to specify the sort criteria. 
+Use `--sort` option to specify the sort criteria.
 
 ```console
 $ xvc file list --sort name-desc dir-0001/
@@ -306,10 +305,10 @@ Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 ## Column Format
 
-You can specify the columns that the command prints. 
+You can specify the columns that the command prints.
 
 For example, if you only want to see the file names, use `{{name}}` as the
-format string. 
+format string.
 
 The following command sorts all files with their sizes in the workspace, and
 prints their size and name.
@@ -327,7 +326,7 @@ Total #: 6 Workspace Size:        5164 Cached Size:        5015
 
 ```
 
-If you want to compare the recorded (cached) hashes and actual hashes in the workspace, you can use `{{acd}} {{rcd}} {{name}}` format string. 
+If you want to compare the recorded (cached) hashes and actual hashes in the workspace, you can use `{{acd}} {{rcd}} {{name}}` format string.
 
 ```console
 $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
@@ -347,7 +346,7 @@ If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't ca
 ```
 
 If you want to get a quick glimpse of what needs to carried in, or rechecked,
-you can use cache status `{{cst}}` column. 
+you can use cache status `{{cst}}` column.
 
 ```console
 $ xvc-test-helper generate-random-file --size 100 --filename dir-0001/a-new-file.bin
@@ -369,4 +368,3 @@ The cache status column shows `=` for unchanged files in the cache, `X` for
 untracked files, `>` for files that there is newer version in the cache, and `<`
 for files that there is a newer version in the workspace. The comparison is done
 between recorded timestamp and actual timestamp with an accuracy of 1 second.
-
