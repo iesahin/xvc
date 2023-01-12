@@ -6,19 +6,16 @@ use common::*;
 use std::env;
 use std::fs::remove_file;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, sleep};
 use std::time::Duration;
-use xvc_ecs::ecs::event;
 
-use common::*;
 use xvc::error::Result;
 
 use xvc::watch;
 use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::XVCIGNORE_FILENAME;
-use xvc_logging::panic;
-use xvc_walker::notify::{make_polling_watcher, make_watcher, PathEvent};
+
+use xvc_walker::notify::{make_polling_watcher, PathEvent};
 use xvc_walker::{walk_serial, IgnoreRules, PathMetadata, Result as XvcWalkerResult, WalkOptions};
 
 #[test]
@@ -33,7 +30,7 @@ fn test_notify() -> Result<()> {
         include_dirs: true,
     };
     let (created_paths_snd, created_paths_rec) = crossbeam_channel::unbounded();
-    let (updated_paths_snd, updated_paths_rec) = crossbeam_channel::unbounded();
+    let (updated_paths_snd, _) = crossbeam_channel::unbounded();
     let (deleted_paths_snd, deleted_paths_rec) = crossbeam_channel::unbounded();
 
     let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
@@ -67,10 +64,10 @@ fn test_notify() -> Result<()> {
             if let Ok(pe) = r {
                 err_counter = MAX_ERROR_COUNT;
                 match pe {
-                    PathEvent::Create { path, metadata } => {
+                    PathEvent::Create { path, .. } => {
                         created_paths_snd.send(path).unwrap();
                     }
-                    PathEvent::Update { path, metadata } => {
+                    PathEvent::Update { path, .. } => {
                         updated_paths_snd.send(path).unwrap();
                     }
                     PathEvent::Delete { path } => {

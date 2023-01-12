@@ -1,7 +1,6 @@
 # xvc pipeline export
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline export --help

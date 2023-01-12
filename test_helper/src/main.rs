@@ -33,7 +33,7 @@ enum XvcTestHelperSubcommandCLI {
         #[clap(short, long, default_value = "1")]
         files: usize,
         /// Fill value
-        #[clap(short, long)]
+        #[clap(long)]
         fill: Option<u8>,
     },
 

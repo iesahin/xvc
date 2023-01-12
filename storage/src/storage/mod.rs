@@ -97,7 +97,7 @@ impl Display for XvcStorage {
             XvcStorage::S3(s3r) => write!(
                 f,
                 "S3:      {}\t{}\t{}.{}/{}",
-                s3r.name, s3r.guid, s3r.region, s3r.bucket_name, s3r.remote_prefix
+                s3r.name, s3r.guid, s3r.region, s3r.bucket_name, s3r.storage_prefix
             ),
             #[cfg(feature = "minio")]
             XvcStorage::Minio(mr) => write!(

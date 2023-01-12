@@ -2,7 +2,7 @@
 
 use anyhow::anyhow;
 use assert_cmd::Command;
-use std::fs;
+
 use std::path::PathBuf;
 use std::{env, path::Path};
 use subprocess::{CaptureData, Exec};

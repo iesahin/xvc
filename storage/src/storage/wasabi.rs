@@ -30,7 +30,6 @@ use super::{
 /// [init][XvcWasabiStorage::init] function to create/update guid, and
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub(crate) fn cmd_new_wasabi(
-    input: std::io::StdinLock,
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &xvc_core::XvcRoot,
     name: String,
@@ -351,6 +350,7 @@ impl XvcWasabiStorage {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
+        // TODO: Implement a_delete for wasabi
         todo!();
     }
 }

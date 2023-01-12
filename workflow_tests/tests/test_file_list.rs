@@ -2,12 +2,9 @@ mod common;
 use common::*;
 
 use std::path::Path;
-use std::thread::sleep;
-use std::time::Duration;
 
 use log::LevelFilter;
-use regex::Regex;
-use shellfn::shell;
+
 use xvc::error::Result;
 use xvc::watch;
 use xvc_config::XvcVerbosity;

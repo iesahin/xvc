@@ -1,6 +1,6 @@
 #![warn(missing_docs)]
 //! The entry point for xvc cli
-use clap::Parser;
+
 use xvc::error::Result;
 
 /// The entry point of the `xvc` cli.

@@ -1,7 +1,6 @@
 # xvc pipeline import
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline import --help

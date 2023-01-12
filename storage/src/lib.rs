@@ -371,7 +371,6 @@ fn cmd_storage_new(
             bucket_name,
             region,
         } => storage::s3::cmd_new_s3(
-            input,
             output_snd,
             xvc_root,
             name,
@@ -448,7 +447,6 @@ fn cmd_storage_new(
             endpoint,
             storage_prefix,
         } => storage::wasabi::cmd_new_wasabi(
-            input,
             output_snd,
             xvc_root,
             name,

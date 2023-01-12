@@ -5,16 +5,13 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use anyhow::anyhow;
 use crossbeam_channel::Sender;
 use regex::Regex;
-use relative_path::RelativePath;
 use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
-use which::which;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{info, warn, watch, XvcOutputLine};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -445,7 +442,6 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
-            let local_path = cache_path.to_absolute_path(xvc_root);
             let remote_path = self.ssh_cache_path(xvc_guid.as_str(), cache_path);
             let delete_cmd = format!("rm -f '{}'", remote_path);
             let cmd_output = self.ssh_cmd(&ssh_executable, &delete_cmd);
@@ -454,10 +450,9 @@ impl XvcStorageOperations for XvcRsyncStorage {
                 Ok(cmd_output) => {
                     let stdout_str = cmd_output.stdout_str();
                     let stderr_str = cmd_output.stderr_str();
-                    watch!(stdout_str);
-                    watch!(stderr_str);
-                    output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                    output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                    info!(output, "[REMOTE DELETE] {}", remote_path);
+                    info!(output, "{}", stdout_str);
+                    warn!(output, "{}", stderr_str);
                     let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                     storage_paths.push(storage_path);
                 }

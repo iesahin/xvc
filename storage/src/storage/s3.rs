@@ -29,20 +29,19 @@ use super::{
 /// [init][XvcS3Storage::init] function to create/update guid, and
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_s3(
-    input: std::io::StdinLock,
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: String,
     region: String,
     bucket_name: String,
-    remote_prefix: String,
+    storage_prefix: String,
 ) -> Result<()> {
     let remote = XvcS3Storage {
         guid: XvcStorageGuid::new(),
         name,
         region,
         bucket_name,
-        remote_prefix,
+        storage_prefix,
     };
 
     watch!(remote);
@@ -89,7 +88,7 @@ pub struct XvcS3Storage {
     /// The "directory" in the bucket that Xvc will use.
     ///
     /// Xvc checks the presence of Guid file before creating this folder.
-    pub remote_prefix: String,
+    pub storage_prefix: String,
 }
 
 impl XvcS3Storage {
@@ -159,7 +158,7 @@ impl XvcS3Storage {
             .put_object(
                 format!(
                     "{}/{}/{}",
-                    self.bucket_name, self.remote_prefix, XVC_STORAGE_GUID_FILENAME
+                    self.bucket_name, self.storage_prefix, XVC_STORAGE_GUID_FILENAME
                 ),
                 guid_bytes,
             )
@@ -181,11 +180,11 @@ impl XvcS3Storage {
     ) -> Result<XvcStorageListEvent> {
         let bucket = self.get_bucket()?;
         let xvc_guid = xvc_root.config().guid().unwrap();
-        let prefix = self.remote_prefix.clone();
+        let prefix = self.storage_prefix.clone();
 
         let res_list = bucket
             .list(
-                format!("{}/{}", self.remote_prefix, xvc_guid),
+                format!("{}/{}", self.storage_prefix, xvc_guid),
                 Some("/".to_string()),
             )
             .await;
@@ -228,7 +227,7 @@ impl XvcS3Storage {
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
         let remote_path = XvcStoragePath::from(format!(
             "{}/{}/{}/{}",
-            self.bucket_name, self.remote_prefix, repo_guid, cache_path
+            self.bucket_name, self.storage_prefix, repo_guid, cache_path
         ));
 
         remote_path
@@ -349,6 +348,7 @@ impl XvcS3Storage {
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
+        // TODO: Implement delete for S3
         todo!();
     }
 }

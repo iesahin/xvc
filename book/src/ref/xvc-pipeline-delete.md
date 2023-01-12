@@ -1,7 +1,6 @@
 # xvc pipeline delete
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline delete --help
