@@ -461,7 +461,6 @@ fn cmd_storage_new(
             user,
             storage_dir,
         } => storage::rsync::cmd_new_rsync(
-            input,
             output_snd,
             xvc_root,
             name,

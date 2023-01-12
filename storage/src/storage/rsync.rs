@@ -1,9 +1,4 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::HashMap,
-    env, fs,
-    path::{Path, PathBuf},
-};
+use std::{env, fs};
 
 use crossbeam_channel::Sender;
 use regex::Regex;
@@ -21,8 +16,14 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
 };
 
+/// Entry point for `xvc storage new rsync` command.
+/// Creates a new Rsync storage with the given options.
+/// It creates a new [`XvcRsyncStorage`], uploads the `.xvc-guid` file and
+/// records the storage.
+///
+/// If the connection options are not valid, [XvcRsyncStorage::init] will fail,
+/// and this function will return an error before recording the storage.
 pub fn cmd_new_rsync(
-    input: std::io::StdinLock,
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: String,

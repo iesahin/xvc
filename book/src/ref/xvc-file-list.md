@@ -184,8 +184,7 @@ FC        1004 [..]   dir-0001/file-0004.bin  3640687a 3640687a
 FC        1003 [..]   dir-0001/file-0003.bin  2856fe70 2856fe70
 FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-FX         149 [..]   dir-0001/.gitignore           [..]
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
 ```
@@ -202,8 +201,7 @@ FH        1004 [..]   dir-0002/file-0004.bin  3640687a 3640687a
 FH        1003 [..]   dir-0002/file-0003.bin  2856fe70 2856fe70
 FH        1002 [..]   dir-0002/file-0002.bin  8c079454 8c079454
 FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
-FX         149 [..]   dir-0002/.gitignore           [..]
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
 ```
@@ -224,8 +222,7 @@ SS         [..]   dir-0003/file-0004.bin  3640687a
 SS         [..]   dir-0003/file-0003.bin  2856fe70         
 SS         [..]   dir-0003/file-0002.bin  8c079454         
 SS         [..]   dir-0003/file-0001.bin  189fa49f         
-FX         [..]   dir-0003/.gitignore           [..]
-Total #: 6 Workspace Size:        [..] Cached Size:        5015
+Total #: 5 Workspace Size:         895 Cached Size:        5015
 
 
 ```
@@ -284,21 +281,19 @@ FC        1004 [..]   dir-0001/file-0004.bin  3640687a 3640687a
 FC        1003 [..]   dir-0001/file-0003.bin  2856fe70 2856fe70
 FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-FX         149 [..]   dir-0001/.gitignore           [..]
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
 ```
 
 ```console
 $ xvc file list --sort name-asc dir-0001/
-FX         149 [..]   dir-0001/.gitignore           [..]
-FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
-FC        1003 [..]   dir-0001/file-0003.bin  2856fe70 2856fe70
-FC        1004 [..]   dir-0001/file-0004.bin  3640687a 3640687a
-FC        1005 [..]   dir-0001/file-0005.bin  e23e79a0 e23e79a0
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+FC        1001 2023-01-12 09:57:35   dir-0001/file-0001.bin  189fa49f 189fa49f
+FC        1002 2023-01-12 09:57:35   dir-0001/file-0002.bin  8c079454 8c079454
+FC        1003 2023-01-12 09:57:35   dir-0001/file-0003.bin  2856fe70 2856fe70
+FC        1004 2023-01-12 09:57:35   dir-0001/file-0004.bin  3640687a 3640687a
+FC        1005 2023-01-12 09:57:35   dir-0001/file-0005.bin  e23e79a0 e23e79a0
+Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
 ```
@@ -320,8 +315,7 @@ $ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0001/
        1003 dir-0001/file-0003.bin
        1002 dir-0001/file-0002.bin
        1001 dir-0001/file-0001.bin
-        149 dir-0001/.gitignore
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
 ```
@@ -335,8 +329,7 @@ $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
 2856fe70 2856fe70 dir-0001/file-0003.bin
 3640687a 3640687a dir-0001/file-0004.bin
 e23e79a0 e23e79a0 dir-0001/file-0005.bin
-[..]          dir-0001/.gitignore
-Total #: 6 Workspace Size:        5164 Cached Size:        5015
+Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
 ```
@@ -358,8 +351,7 @@ $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0002.bin
 = dir-0001/file-0001.bin
 X dir-0001/a-new-file.bin
-X dir-0001/.gitignore
-Total #: 7 Workspace Size:        5264 Cached Size:        5015
+Total #: 6 Workspace Size:        5115 Cached Size:        5015
 
 
 ```
