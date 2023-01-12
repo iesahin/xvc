@@ -70,6 +70,8 @@ pub enum XvcDependency {
     // TODO: Bitcoin { wallet } to check Bitcoin wallets
     // TODO: JupyterNotebook { file, cell }
     // TODO: EnvironmentVariable { name }
+    // TODO: PythonFunc {file, name}
+    // TODO: PythonClass {file, name}
 }
 
 persist!(XvcDependency, "xvc-dependency");

@@ -16,7 +16,7 @@ use crate::error::{Error, Result};
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use crossbeam_channel::{Receiver, Sender};
-use xvc_walker::notify::{make_polling_watcher, make_watcher, PathEvent};
+use xvc_walker::notify::{make_watcher, PathEvent};
 
 use log::{info, warn};
 use petgraph::algo::toposort;

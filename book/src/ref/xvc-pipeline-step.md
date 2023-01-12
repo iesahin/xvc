@@ -5,15 +5,15 @@
 
 ```console
 $ xvc pipeline step --help
-Step management commands
+Step creation, dependency, output commands
 
 Usage: xvc pipeline step <COMMAND>
 
 Commands:
   new         Add a new step
   update      Update step options
-  dependency  Add a dependency to a step in the pipeline
-  output      Add an output to a step in the pipeline
+  dependency  Add a dependency to a step
+  output      Add an output to a step
   show        Print step configuration
   help        Print this message or the help of the given subcommand(s)
 

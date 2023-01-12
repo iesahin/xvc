@@ -7,6 +7,9 @@ use crate::{
     XvcStepSchema,
 };
 
+/// Entry point for `xvc pipeline step show` command.
+///
+/// Prints the step information for the given step in JSON format.
 pub fn cmd_step_show(
     xvc_root: &XvcRoot,
     pipeline_name: &str,
