@@ -10,8 +10,7 @@ use crate::{
     IgnoreRules, MatchResult,
 };
 use notify::{
-    Config, Event, EventHandler, FsEventWatcher, PollWatcher, RecommendedWatcher, RecursiveMode,
-    Watcher,
+    Config, Event, EventHandler, PollWatcher, RecommendedWatcher, RecursiveMode, Watcher,
 };
 use std::fs::Metadata;
 use std::path::PathBuf;
@@ -158,7 +157,6 @@ pub fn make_watcher(
     })?;
 
     watcher.watch(&root, RecursiveMode::Recursive)?;
-    watch!(<FsEventWatcher as Watcher>::kind());
     watch!(watcher);
     Ok((watcher, receiver))
 }
