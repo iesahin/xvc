@@ -20,40 +20,39 @@ pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
     Ok(conf.get_str("pipeline.default_params_file")?.option)
 }
 
+/// Represents variety of dependencies Xvc supports.
+/// This is to unify all dependencies without dynamic dispatch and having
+/// compile time errors when we miss something about dependencies.
 #[derive(Debug, Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum XvcDependency {
-    Pipeline {
-        name: String,
-    },
-    Step {
-        name: String,
-    },
-    File {
-        path: XvcPath,
-    },
-    Glob {
-        glob: String,
-    },
-    Directory {
-        path: XvcPath,
-    },
-    Url {
-        url: Url,
-    },
-    Import {
-        url: Url,
-        path: XvcPath,
-    },
+    /// A pipeline dependency when a step depends on another pipeline
+    Pipeline { name: String },
+    /// A step dependency when a step depends on another step
+    Step { name: String },
+    /// A file dependency within the workspace
+    File { path: XvcPath },
+    /// A glob dependency to describe a set of files
+    Glob { glob: String },
+    /// When a step depends all files in a dependency
+    Directory { path: XvcPath },
+    /// When a step depends to a URL
+    Url { url: Url },
+    /// When a step depends to a URL that corresponds to a path in the workspace
+    Import { url: Url, path: XvcPath },
+    /// When a step depends to a (hyper)parameter in a JSON, YAML or similar
+    /// file.
     Param {
         format: XvcParamFormat,
         path: XvcPath,
         key: String,
     },
+    /// When a step depends to a regex result run on a text file
     Regex {
         path: XvcPath,
         // We use this because Regex is not Serializable
         regex: String,
     },
+    /// When a step depends to a set of lines in a text file
     Lines {
         path: XvcPath,
         begin: usize,
