@@ -1,13 +1,13 @@
-use std::cell::{Cell, RefCell};
+use std::cell::RefCell;
 use std::path::PathBuf;
 
 use crate::error::{Error, Result};
 use crossbeam_channel::Sender;
-use log::info;
 use regex::Regex;
 use xvc_core::{XvcPath, XvcRoot};
 use xvc_ecs::{R1NStore, XvcEntity};
 use xvc_logging::{debug, XvcOutputLine};
+use xvc_walker::AbsolutePath;
 
 use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
 
@@ -18,6 +18,7 @@ use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep}
 pub struct XvcDependencyList<'a> {
     output_snd: &'a Sender<XvcOutputLine>,
     xvc_root: &'a XvcRoot,
+    current_dir: &'a AbsolutePath,
     pipeline_e: XvcEntity,
     step_e: XvcEntity,
     step: XvcStep,
@@ -44,12 +45,13 @@ impl<'a> XvcDependencyList<'a> {
             step,
             deps: RefCell::new(Vec::new()),
             output_snd,
+            current_dir,
         })
     }
 
     /// Add file dependencies
     pub fn files(&mut self, files: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = self.xvc_root.config().current_dir()?;
+        let current_dir = self.current_dir;
         if let Some(files) = files {
             let mut deps = self.deps.borrow_mut();
             for file in files {
@@ -62,7 +64,7 @@ impl<'a> XvcDependencyList<'a> {
 
     /// Add directory dependencies
     pub fn directories(&mut self, directories: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = self.xvc_root.config().current_dir()?;
+        let current_dir = self.current_dir;
         if let Some(directories) = directories {
             let mut deps = self.deps.borrow_mut();
             for directory in directories {
@@ -75,7 +77,6 @@ impl<'a> XvcDependencyList<'a> {
 
     /// Add glob dependencies.
     pub fn globs(&mut self, globs: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = self.xvc_root.config().current_dir()?;
         if let Some(globs) = globs {
             let mut deps = self.deps.borrow_mut();
             for glob in globs {
@@ -91,7 +92,7 @@ impl<'a> XvcDependencyList<'a> {
     /// `param_file::param_name`. In the first form, `param_file` is retrieved
     /// from [`deps::conf_params_file`].
     pub fn params(&mut self, params: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = self.xvc_root.config().current_dir()?;
+        let current_dir = self.current_dir;
         if let Some(params) = params {
             let param_splitter = Regex::new(r"((?P<param_file>.*)::)?(?P<param_name>.*)").unwrap();
             let default_param_file_name = deps::conf_params_file(self.xvc_root.config())?;
@@ -127,7 +128,6 @@ impl<'a> XvcDependencyList<'a> {
     ///
     /// Note that, these are not implemented yet in the `run` command.
     pub fn pipelines(&mut self, pipelines: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = self.xvc_root.config().current_dir()?;
         if let Some(pipelines) = pipelines {
             let mut deps = self.deps.borrow_mut();
             for pipeline_name in pipelines {
@@ -146,7 +146,6 @@ impl<'a> XvcDependencyList<'a> {
 
     /// Add step dependencies via their names.
     pub fn steps(&mut self, steps: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = self.xvc_root.config().current_dir()?;
         if let Some(steps) = steps {
             let mut deps = self.deps.borrow_mut();
             for step_name in steps {
@@ -215,7 +214,7 @@ impl<'a> XvcDependencyList<'a> {
     /// and end are digit strings. If begin is omitted, it defaults to 0. If end
     /// is omitted, it defaults to [usize::MAX]
     pub fn lines(&mut self, lines: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = &self.xvc_root.config().current_dir()?;
+        let current_dir = self.current_dir;
         if let Some(lines) = lines {
             let mut deps = self.deps.borrow_mut();
             let lines_splitter =

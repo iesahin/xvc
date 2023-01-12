@@ -10,9 +10,8 @@ mod pipeline;
 
 pub use crate::pipeline::api::{
     dag::cmd_dag, delete::cmd_delete, export::cmd_export, import::cmd_import, list::cmd_list,
-    new::cmd_new, run::cmd_run, step_dependency::cmd_step_dependency, step_new::cmd_step_new,
-    step_output::cmd_step_output, step_show::cmd_step_show, step_update::cmd_step_update,
-    update::cmd_update,
+    new::cmd_new, run::cmd_run, step_new::cmd_step_new, step_output::cmd_step_output,
+    step_show::cmd_step_show, step_update::cmd_step_update, update::cmd_update,
 };
 
 use clap::Parser;
