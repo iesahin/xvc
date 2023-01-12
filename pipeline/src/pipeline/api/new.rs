@@ -8,6 +8,10 @@ use xvc_ecs::R11Store;
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
+/// Entry point for `xvc pipeline new` command.
+/// It creates a new pipeline with the given name.
+/// If `workdir` is None, uses the default workdir.
+/// If `default` is true, sets the new pipeline as the default one.
 pub fn cmd_new(
     xvc_root: &XvcRoot,
     name: &str,

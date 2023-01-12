@@ -18,6 +18,7 @@ pub use crate::pipeline::api::{
 use clap::Parser;
 
 use crossbeam_channel::Sender;
+use pipeline::api::step_dependency::XvcDependencyList;
 use pipeline::deps;
 use pipeline::schema::XvcSchemaSerializationFormat;
 
@@ -433,12 +434,19 @@ pub fn cmd_pipeline<R: BufRead>(
             format,
             overwrite,
         } => cmd_import(input, xvc_root, name, file, format, overwrite),
-        PipelineSubCommand::Step(step_cli) => handle_step_cli(xvc_root, &pipeline_name, step_cli),
+        PipelineSubCommand::Step(step_cli) => {
+            handle_step_cli(output_snd, xvc_root, &pipeline_name, step_cli)
+        }
     }
 }
 
 /// Dispatch `xvc pipeline step` subcommands.
-pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI) -> Result<()> {
+pub fn handle_step_cli(
+    output_snd: &Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    pipeline_name: &str,
+    command: StepCLI,
+) -> Result<()> {
     match command.subcommand {
         StepSubCommand::New {
             step_name,
@@ -461,19 +469,16 @@ pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI
             pipelines,
             regexps,
             lines,
-        } => cmd_step_dependency(
-            xvc_root,
-            pipeline_name,
-            step_name,
-            files,
-            directories,
-            globs,
-            params,
-            steps,
-            pipelines,
-            regexps,
-            lines,
-        ),
+        } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
+            .files(files)?
+            .directories(directories)?
+            .globs(globs)?
+            .params(params)?
+            .steps(steps)?
+            .pipelines(pipelines)?
+            .regexes(regexps)?
+            .lines(lines)?
+            .record(),
         StepSubCommand::Output {
             step_name,
             files,
