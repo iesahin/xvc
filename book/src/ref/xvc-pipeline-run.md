@@ -1,6 +1,6 @@
 # xvc pipeline run
 
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline run --help

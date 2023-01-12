@@ -1,7 +1,6 @@
 # xvc pipeline new
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline new --help

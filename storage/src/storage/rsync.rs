@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{info, warn, watch, XvcOutputLine};
+use xvc_logging::{info, uwr, warn, watch, XvcOutputLine};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -393,7 +393,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
             watch!(cache_dir);
             if !cache_dir.exists() {
                 watch!(cache_dir);
-                fs::create_dir_all(&cache_dir);
+                uwr!(fs::create_dir_all(&cache_dir), output);
             }
 
             watch!(remote_url);
