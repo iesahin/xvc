@@ -1,7 +1,6 @@
 # Data-Model Pipelines
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline --help

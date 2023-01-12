@@ -1,7 +1,6 @@
 # xvc pipeline step
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline step --help

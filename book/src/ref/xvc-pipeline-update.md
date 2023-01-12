@@ -1,7 +1,6 @@
 # xvc pipeline update
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline update --help
