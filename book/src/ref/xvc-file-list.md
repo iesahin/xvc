@@ -72,6 +72,39 @@ having a file.
 $ xvc-test-helper create-directory-tree --directories 5 --files 5 --fill 23
 
 $ tree
+.
+├── dir-0001
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   ├── file-0003.bin
+│   ├── file-0004.bin
+│   └── file-0005.bin
+├── dir-0002
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   ├── file-0003.bin
+│   ├── file-0004.bin
+│   └── file-0005.bin
+├── dir-0003
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   ├── file-0003.bin
+│   ├── file-0004.bin
+│   └── file-0005.bin
+├── dir-0004
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   ├── file-0003.bin
+│   ├── file-0004.bin
+│   └── file-0005.bin
+└── dir-0005
+    ├── file-0001.bin
+    ├── file-0002.bin
+    ├── file-0003.bin
+    ├── file-0004.bin
+    └── file-0005.bin
+
+[..] directories, 25 files
 
 ```
 
