@@ -24,57 +24,57 @@ enum XvcTestHelperSubcommandCLI {
     /// Create a directory tree
     CreateDirectoryTree {
         /// The root directory to create the tree in
-        #[clap(short, long)]
+        #[arg(short, long)]
         root: Option<PathBuf>,
         /// The number of directories to create
-        #[clap(short, long, default_value = "1")]
+        #[arg(short, long, default_value = "1")]
         directories: usize,
         /// The number of files to create
-        #[clap(short, long, default_value = "1")]
+        #[arg(short, long, default_value = "1")]
         files: usize,
         /// Fill value
-        #[clap(long)]
+        #[arg(long)]
         fill: Option<u8>,
     },
 
     RandomDirName {
         /// The seed to supply to the random number generator
-        #[clap(short, long)]
+        #[arg(short, long)]
         seed: Option<u64>,
-        #[clap(short, long)]
+        #[arg(short, long)]
         prefix: Option<String>,
     },
 
     RandomTempDir {
-        #[clap(short, long)]
+        #[arg(short, long)]
         prefix: Option<String>,
     },
 
     GenerateRandomFile {
         /// The size of the file to generate
-        #[clap(short, long, default_value = "1024")]
+        #[arg(short, long, default_value = "1024")]
         size: usize,
-        #[clap(short, long)]
+        #[arg(short, long)]
         filename: String,
     },
 
     GenerateFilledFile {
         /// The size of the file to generate
-        #[clap(short, long, default_value = "1024")]
+        #[arg(short, long, default_value = "1024")]
         size: usize,
         /// The byte to fill the file with
-        #[clap(short, long, default_value = "0")]
+        #[arg(short, long, default_value = "0")]
         fill: u8,
         /// The filename to write to
-        #[clap(short, long)]
+        #[arg(short, long)]
         filename: String,
     },
 
     GenerateRandomTextFile {
         /// The number of lines to generate
-        #[clap(short, long, default_value = "1")]
+        #[arg(short, long, default_value = "1")]
         lines: usize,
-        #[clap(short, long)]
+        #[arg(short, long)]
         filename: String,
     },
 }

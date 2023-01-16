@@ -13,9 +13,9 @@ use xvc_logging::watch;
 use xvc_pipeline;
 use xvc_walker::AbsolutePath;
 
-#[derive(Debug, Clone, Parser)]
-#[command(about = "Initialize an XVC repository")]
 /// Initialize an XVC repository
+#[derive(Debug, Clone, Parser)]
+#[command(author, version)]
 pub struct InitCLI {
     #[arg(long)]
     /// Path to the directory to be intialized. (default: current directory)
