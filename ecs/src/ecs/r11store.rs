@@ -181,7 +181,7 @@ mod test {
     #[test]
     fn test_insert() -> Result<()> {
         let mut rs = R11Store::<String, String>::new();
-        let entity: XvcEntity = 100.into();
+        let entity: XvcEntity = (100, 12830912380).into();
         rs.insert(&entity, "left component".into(), "right component".into());
         assert!(rs.left[&entity] == "left component");
         assert!(rs.right[&entity] == "right component");
@@ -191,30 +191,30 @@ mod test {
     #[test]
     fn test_left_to_right() -> Result<()> {
         let mut rs = R11Store::<String, String>::new();
-        let entity: XvcEntity = 100usize.into();
+        let entity: XvcEntity = (100, 218021380921).into();
         rs.insert(
             &entity,
             "left component".into(),
             "right component".to_string(),
         );
         assert!(rs.left_to_right(&entity) == Some((&entity, &"right component".to_string())));
-        assert!(rs.left_to_right(&(101usize.into())) == None);
+        assert!(rs.left_to_right(&(101, 921309218309).into()) == None);
         Ok(())
     }
     #[test]
     fn test_right_to_left() -> Result<()> {
         let mut rs = R11Store::<String, String>::new();
-        let entity: XvcEntity = 100usize.into();
+        let entity: XvcEntity = (100, 128012389012).into();
         rs.insert(&entity, "left component".into(), "right component".into());
         assert!(rs.right_to_left(&entity) == Some((&entity, &"left component".to_string())));
-        assert!(rs.right_to_left(&101usize.into()) == None);
+        assert!(rs.right_to_left(&(101, 8120938120931).into()) == None);
         Ok(())
     }
 
     #[test]
     fn test_tuple() -> Result<()> {
         let mut rs = R11Store::<String, String>::new();
-        let entity: XvcEntity = 100usize.into();
+        let entity: XvcEntity = (100, 123980123819203).into();
         rs.insert(&entity, "left component".into(), "right component".into());
         let t = rs.tuple(&entity);
         assert!(t.0.as_deref() == Some(&"left component".to_string()));
