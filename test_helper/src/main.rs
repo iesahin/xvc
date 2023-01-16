@@ -11,7 +11,7 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 #[derive(Parser)]
 #[command(version, author)]
 struct XvcTestHelperCLI {
-    #[clap(subcommand)]
+    #[command(subcommand)]
     subcommand: XvcTestHelperSubcommandCLI,
 }
 

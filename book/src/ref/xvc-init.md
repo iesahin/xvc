@@ -14,6 +14,7 @@ Options:
       --no-git       Don't require Git
       --force        Create the repository even if already initialized. Overwrites the current .xvc directory Resets all data and guid, etc
   -h, --help         Print help information
+  -V, --version      Print version information
 
 ```
 
