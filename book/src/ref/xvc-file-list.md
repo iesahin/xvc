@@ -131,31 +131,31 @@ Now it lists all files and directories.
 $ xvc file list --sort name-asc
 FX         107 [..]   .gitignore           ce9fcf30
 FX         130 [..]   .xvcignore           ac46bf74
-DX         224 [..]   dir-0001                   
+DX        [..] [..]   dir-0001                   
 FX        1001 [..]   dir-0001/file-0001.bin           189fa49f
 FX        1002 [..]   dir-0001/file-0002.bin           8c079454
 FX        1003 [..]   dir-0001/file-0003.bin           2856fe70
 FX        1004 [..]   dir-0001/file-0004.bin           3640687a
 FX        1005 [..]   dir-0001/file-0005.bin           e23e79a0
-DX         224 [..]   dir-0002                   
+DX        [..] [..]   dir-0002                   
 FX        1001 [..]   dir-0002/file-0001.bin           189fa49f
 FX        1002 [..]   dir-0002/file-0002.bin           8c079454
 FX        1003 [..]   dir-0002/file-0003.bin           2856fe70
 FX        1004 [..]   dir-0002/file-0004.bin           3640687a
 FX        1005 [..]   dir-0002/file-0005.bin           e23e79a0
-DX         224 [..]   dir-0003                   
+DX        [..] [..]   dir-0003                   
 FX        1001 [..]   dir-0003/file-0001.bin           189fa49f
 FX        1002 [..]   dir-0003/file-0002.bin           8c079454
 FX        1003 [..]   dir-0003/file-0003.bin           2856fe70
 FX        1004 [..]   dir-0003/file-0004.bin           3640687a
 FX        1005 [..]   dir-0003/file-0005.bin           e23e79a0
-DX         224 [..]   dir-0004                   
+DX        [..] [..]   dir-0004                   
 FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
 FX        1002 [..]   dir-0004/file-0002.bin           8c079454
 FX        1003 [..]   dir-0004/file-0003.bin           2856fe70
 FX        1004 [..]   dir-0004/file-0004.bin           3640687a
 FX        1005 [..]   dir-0004/file-0005.bin           e23e79a0
-DX         224 [..]   dir-0005                   
+DX        [..] [..]   dir-0005                   
 FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
 FX        1002 [..]   dir-0005/file-0002.bin           8c079454
 FX        1003 [..]   dir-0005/file-0003.bin           2856fe70
@@ -217,11 +217,11 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-SS         180 [..]   dir-0003/file-0005.bin  e23e79a0         
-SS         180 [..]   dir-0003/file-0004.bin  3640687a         
-SS         180 [..]   dir-0003/file-0003.bin  2856fe70         
-SS         180 [..]   dir-0003/file-0002.bin  8c079454         
-SS         180 [..]   dir-0003/file-0001.bin  189fa49f         
+SS        [..]   dir-0003/file-0005.bin  e23e79a0         
+SS        [..]   dir-0003/file-0004.bin  3640687a         
+SS        [..]   dir-0003/file-0003.bin  2856fe70         
+SS        [..]   dir-0003/file-0002.bin  8c079454         
+SS        [..]   dir-0003/file-0001.bin  189fa49f         
 Total #: 5 Workspace Size:         900 Cached Size:        5015
 
 
@@ -237,7 +237,7 @@ You may use globs to list files.
 $ xvc file list 'dir-*/*-0001.bin' 
 FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
 FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
-SS         180 [..]   dir-0003/file-0001.bin  189fa49f         
+SS        [..] [..]   dir-0003/file-0001.bin  189fa49f         
 FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
 Total #: 5 Workspace Size:        4184 Cached Size:        1001
@@ -256,8 +256,8 @@ FX        1002 [..]   dir-0005/file-0002.bin           8c079454
 FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
 FX        1002 [..]   dir-0004/file-0002.bin           8c079454
 FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
-SS         180 [..]   dir-0003/file-0002.bin  8c079454         
-SS         180 [..]   dir-0003/file-0001.bin  189fa49f         
+SS        [..] [..]   dir-0003/file-0002.bin  8c079454         
+SS        [..] [..]   dir-0003/file-0001.bin  189fa49f         
 FH        1002 [..]   dir-0002/file-0002.bin  8c079454 8c079454
 FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
 FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
