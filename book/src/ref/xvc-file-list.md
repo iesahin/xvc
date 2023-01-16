@@ -104,7 +104,7 @@ $ tree
     ├── file-0004.bin
     └── file-0005.bin
 
-6 directories, 25 files
+...
 
 ```
 
