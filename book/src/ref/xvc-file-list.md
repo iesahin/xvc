@@ -223,7 +223,7 @@ SS        [..]   dir-0003/file-0004.bin  3640687a
 SS        [..]   dir-0003/file-0003.bin  2856fe70         
 SS        [..]   dir-0003/file-0002.bin  8c079454         
 SS        [..]   dir-0003/file-0001.bin  189fa49f         
-Total #: 5 Workspace Size:         900 Cached Size:        5015
+Total #: 5 Workspace Size:        [..] Cached Size:        5015
 
 
 ```
@@ -241,7 +241,7 @@ FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
 SS        [..] [..]   dir-0003/file-0001.bin  189fa49f         
 FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-Total #: 5 Workspace Size:        4184 Cached Size:        1001
+Total #: 5 Workspace Size:        [..] Cached Size:        1001
 
 
 ```
@@ -263,7 +263,7 @@ FH        1002 [..]   dir-0002/file-0002.bin  8c079454 8c079454
 FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
 FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-Total #: 10 Workspace Size:        8372 Cached Size:        2003
+Total #: 10 Workspace Size:        [..] Cached Size:        2003
 
 
 ```
