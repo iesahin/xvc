@@ -72,39 +72,6 @@ having a file.
 $ xvc-test-helper create-directory-tree --directories 5 --files 5 --fill 23
 
 $ tree
-.
-├── dir-0001
-│   ├── file-0001.bin
-│   ├── file-0002.bin
-│   ├── file-0003.bin
-│   ├── file-0004.bin
-│   └── file-0005.bin
-├── dir-0002
-│   ├── file-0001.bin
-│   ├── file-0002.bin
-│   ├── file-0003.bin
-│   ├── file-0004.bin
-│   └── file-0005.bin
-├── dir-0003
-│   ├── file-0001.bin
-│   ├── file-0002.bin
-│   ├── file-0003.bin
-│   ├── file-0004.bin
-│   └── file-0005.bin
-├── dir-0004
-│   ├── file-0001.bin
-│   ├── file-0002.bin
-│   ├── file-0003.bin
-│   ├── file-0004.bin
-│   └── file-0005.bin
-└── dir-0005
-    ├── file-0001.bin
-    ├── file-0002.bin
-    ├── file-0003.bin
-    ├── file-0004.bin
-    └── file-0005.bin
-
-...
 
 ```
 
@@ -217,12 +184,12 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-SS         [..]   dir-0003/file-0005.bin  e23e79a0         
-SS         [..]   dir-0003/file-0004.bin  3640687a         
-SS         [..]   dir-0003/file-0003.bin  2856fe70         
-SS         [..]   dir-0003/file-0002.bin  8c079454         
-SS         [..]   dir-0003/file-0001.bin  189fa49f         
-Total #: 5 Workspace Size:         [..] Cached Size:        5015
+SS         180 [..]   dir-0003/file-0005.bin  e23e79a0         
+SS         180 [..]   dir-0003/file-0004.bin  3640687a         
+SS         180 [..]   dir-0003/file-0003.bin  2856fe70         
+SS         180 [..]   dir-0003/file-0002.bin  8c079454         
+SS         180 [..]   dir-0003/file-0001.bin  189fa49f         
+Total #: 5 Workspace Size:         900 Cached Size:        5015
 
 
 ```
@@ -237,10 +204,10 @@ You may use globs to list files.
 $ xvc file list 'dir-*/*-0001.bin' 
 FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
 FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
-SS         [..]   dir-0003/file-0001.bin  189fa49f         
+SS         180 [..]   dir-0003/file-0001.bin  189fa49f         
 FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-Total #: 5 Workspace Size:        [..] Cached Size:        1001
+Total #: 5 Workspace Size:        4184 Cached Size:        1001
 
 
 ```
@@ -256,13 +223,13 @@ FX        1002 [..]   dir-0005/file-0002.bin           8c079454
 FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
 FX        1002 [..]   dir-0004/file-0002.bin           8c079454
 FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
-SS         [..]   dir-0003/file-0002.bin  8c079454         
-SS         [..]   dir-0003/file-0001.bin  189fa49f         
+SS         180 [..]   dir-0003/file-0002.bin  8c079454         
+SS         180 [..]   dir-0003/file-0001.bin  189fa49f         
 FH        1002 [..]   dir-0002/file-0002.bin  8c079454 8c079454
 FH        1001 [..]   dir-0002/file-0001.bin  189fa49f 189fa49f
 FC        1002 [..]   dir-0001/file-0002.bin  8c079454 8c079454
 FC        1001 [..]   dir-0001/file-0001.bin  189fa49f 189fa49f
-Total #: 10 Workspace Size:        [..] Cached Size:        2003
+Total #: 10 Workspace Size:        8372 Cached Size:        2003
 
 
 ```
