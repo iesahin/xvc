@@ -22,6 +22,6 @@ Commands:
 
 Options:
   -n, --name <NAME>  Name of the pipeline this command applies
-  -h, --help         Print help information
+  -h, --help         Print help
 
 ```

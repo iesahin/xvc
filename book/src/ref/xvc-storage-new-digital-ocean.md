@@ -30,7 +30,7 @@ Options:
           [default: ]
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
 ```
 

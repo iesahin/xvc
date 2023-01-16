@@ -10,6 +10,6 @@ Usage: xvc pipeline delete --name <NAME>
 
 Options:
   -n, --name <NAME>  Name or GUID of the pipeline to be deleted
-  -h, --help         Print help information
+  -h, --help         Print help
 
 ```

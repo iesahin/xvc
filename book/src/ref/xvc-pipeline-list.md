@@ -10,6 +10,6 @@ List all pipelines
 Usage: xvc pipeline list
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 ```

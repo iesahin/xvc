@@ -14,7 +14,7 @@ Usage: xvc root [OPTIONS]
 
 Options:
       --absolute  Show absolute path instead of relative
-  -h, --help      Print help information
+  -h, --help      Print help
 
 ```
 

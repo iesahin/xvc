@@ -28,6 +28,6 @@ Options:
           Recheck (checkout) the file in one of the four alternative ways. (See `xvc file recheck`) and [CacheType]
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
 ```

@@ -31,7 +31,7 @@ Options:
           Include the target paths which don’t match any pattern in the --details list. All fields in each line, except for <target_path>, will be empty. Has no effect without --details
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
 ```
 

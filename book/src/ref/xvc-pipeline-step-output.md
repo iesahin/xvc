@@ -17,7 +17,7 @@ Options:
       --output-file <FILES>      Add a file output to the step. Can be used multiple times
       --output-metric <METRICS>  Add a metric output to the step. Can be used multiple times
       --output-image <IMAGES>    Add an image output to the step. Can be used multiple times
-  -h, --help                     Print help information
+  -h, --help                     Print help
 
 ```
 

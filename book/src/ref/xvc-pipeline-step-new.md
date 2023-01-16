@@ -16,7 +16,7 @@ Options:
   -s, --step-name <STEP_NAME>  Name of the new step
   -c, --command <COMMAND>      Step command to run
       --when <WHEN>            When to run the command. One of always, never, by_dependencies (default). This is used to freeze or invalidate a step manually
-  -h, --help                   Print help information
+  -h, --help                   Print help
 
 ```
 

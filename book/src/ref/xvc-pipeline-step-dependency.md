@@ -22,7 +22,7 @@ Options:
       --param <PARAMS>           Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times
       --regex <REGEXPS>          Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times
       --line <LINES>             Add a line dependency in the form filename.txt::123-234
-  -h, --help                     Print help information
+  -h, --help                     Print help
 
 ```
 

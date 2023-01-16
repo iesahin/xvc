@@ -29,8 +29,8 @@ Options:
       --no-project-config  Ignore project config (.xvc/config)
       --no-local-config    Ignore local config (.xvc/config.local)
       --no-env-config      Ignore configuration options from the environment
-  -h, --help               Print help information
-  -V, --version            Print version information
+  -h, --help               Print help
+  -V, --version            Print version
 
 ```
 

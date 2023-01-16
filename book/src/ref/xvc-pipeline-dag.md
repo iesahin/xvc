@@ -12,6 +12,6 @@ Options:
   -n, --name <NAME>      Name of the pipeline to generate the diagram
       --file <FILE>      Output file. Writes to stdout if not set
       --format <FORMAT>  Format for graph. Either dot or mermaid [default: dot]
-  -h, --help             Print help information
+  -h, --help             Print help
 
 ```

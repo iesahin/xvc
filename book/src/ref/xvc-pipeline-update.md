@@ -13,6 +13,6 @@ Options:
       --rename <RENAME>    Rename the pipeline to
       --workdir <WORKDIR>  Set the working directory
       --set-default        set this pipeline default
-  -h, --help               Print help information
+  -h, --help               Print help
 
 ```

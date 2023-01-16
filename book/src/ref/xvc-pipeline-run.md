@@ -10,6 +10,6 @@ Usage: xvc pipeline run [OPTIONS]
 
 Options:
   -n, --name <NAME>  Name of the pipeline to run
-  -h, --help         Print help information
+  -h, --help         Print help
 
 ```
