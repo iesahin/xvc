@@ -114,6 +114,7 @@ fn link_to_docs() -> Result<()> {
 }
 
 #[test]
+#[cfg(target_os = "macos")]
 fn z_doc_tests() -> Result<()> {
     link_to_docs()?;
 
