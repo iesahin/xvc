@@ -125,42 +125,42 @@ $ xvc init
 
 ```
 
-Now it lists all files and directories.
+Now it lists all files and directories. 
 
 ```console
-$ xvc file list
-FX        1005 [..]   dir-0005/file-0005.bin           e23e79a0
-FX        1004 [..]   dir-0005/file-0004.bin           3640687a
-FX        1003 [..]   dir-0005/file-0003.bin           2856fe70
-FX        1002 [..]   dir-0005/file-0002.bin           8c079454
-FX        1001 [..]   dir-0005/file-0001.bin           189fa49f
-DX         224 [..]   dir-0005                   
-FX        1005 [..]   dir-0004/file-0005.bin           e23e79a0
-FX        1004 [..]   dir-0004/file-0004.bin           3640687a
-FX        1003 [..]   dir-0004/file-0003.bin           2856fe70
-FX        1002 [..]   dir-0004/file-0002.bin           8c079454
-FX        1001 [..]   dir-0004/file-0001.bin           189fa49f
-DX         224 [..]   dir-0004                   
-FX        1005 [..]   dir-0003/file-0005.bin           e23e79a0
-FX        1004 [..]   dir-0003/file-0004.bin           3640687a
-FX        1003 [..]   dir-0003/file-0003.bin           2856fe70
-FX        1002 [..]   dir-0003/file-0002.bin           8c079454
-FX        1001 [..]   dir-0003/file-0001.bin           189fa49f
-DX         224 [..]   dir-0003                   
-FX        1005 [..]   dir-0002/file-0005.bin           e23e79a0
-FX        1004 [..]   dir-0002/file-0004.bin           3640687a
-FX        1003 [..]   dir-0002/file-0003.bin           2856fe70
-FX        1002 [..]   dir-0002/file-0002.bin           8c079454
-FX        1001 [..]   dir-0002/file-0001.bin           189fa49f
-DX         224 [..]   dir-0002                   
-FX        1005 [..]   dir-0001/file-0005.bin           e23e79a0
-FX        1004 [..]   dir-0001/file-0004.bin           3640687a
-FX        1003 [..]   dir-0001/file-0003.bin           2856fe70
-FX        1002 [..]   dir-0001/file-0002.bin           8c079454
-FX        1001 [..]   dir-0001/file-0001.bin           189fa49f
-DX         224 [..]   dir-0001                   
-FX         130 [..]   .xvcignore           ac46bf74
-FX         107 [..]   .gitignore           [..]
+$ xvc file list --sort name-asc
+FX         107 2023-01-16 10:59:30   .gitignore           ce9fcf30
+FX         130 2023-01-16 10:59:30   .xvcignore           ac46bf74
+DX         224 2023-01-16 10:59:30   dir-0001                   
+FX        1001 2023-01-16 10:59:30   dir-0001/file-0001.bin           189fa49f
+FX        1002 2023-01-16 10:59:30   dir-0001/file-0002.bin           8c079454
+FX        1003 2023-01-16 10:59:30   dir-0001/file-0003.bin           2856fe70
+FX        1004 2023-01-16 10:59:30   dir-0001/file-0004.bin           3640687a
+FX        1005 2023-01-16 10:59:30   dir-0001/file-0005.bin           e23e79a0
+DX         224 2023-01-16 10:59:30   dir-0002                   
+FX        1001 2023-01-16 10:59:30   dir-0002/file-0001.bin           189fa49f
+FX        1002 2023-01-16 10:59:30   dir-0002/file-0002.bin           8c079454
+FX        1003 2023-01-16 10:59:30   dir-0002/file-0003.bin           2856fe70
+FX        1004 2023-01-16 10:59:30   dir-0002/file-0004.bin           3640687a
+FX        1005 2023-01-16 10:59:30   dir-0002/file-0005.bin           e23e79a0
+DX         224 2023-01-16 10:59:30   dir-0003                   
+FX        1001 2023-01-16 10:59:30   dir-0003/file-0001.bin           189fa49f
+FX        1002 2023-01-16 10:59:30   dir-0003/file-0002.bin           8c079454
+FX        1003 2023-01-16 10:59:30   dir-0003/file-0003.bin           2856fe70
+FX        1004 2023-01-16 10:59:30   dir-0003/file-0004.bin           3640687a
+FX        1005 2023-01-16 10:59:30   dir-0003/file-0005.bin           e23e79a0
+DX         224 2023-01-16 10:59:30   dir-0004                   
+FX        1001 2023-01-16 10:59:30   dir-0004/file-0001.bin           189fa49f
+FX        1002 2023-01-16 10:59:30   dir-0004/file-0002.bin           8c079454
+FX        1003 2023-01-16 10:59:30   dir-0004/file-0003.bin           2856fe70
+FX        1004 2023-01-16 10:59:30   dir-0004/file-0004.bin           3640687a
+FX        1005 2023-01-16 10:59:30   dir-0004/file-0005.bin           e23e79a0
+DX         224 2023-01-16 10:59:30   dir-0005                   
+FX        1001 2023-01-16 10:59:30   dir-0005/file-0001.bin           189fa49f
+FX        1002 2023-01-16 10:59:30   dir-0005/file-0002.bin           8c079454
+FX        1003 2023-01-16 10:59:30   dir-0005/file-0003.bin           2856fe70
+FX        1004 2023-01-16 10:59:30   dir-0005/file-0004.bin           3640687a
+FX        1005 2023-01-16 10:59:30   dir-0005/file-0005.bin           e23e79a0
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
