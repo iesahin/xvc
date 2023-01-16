@@ -127,6 +127,7 @@ $ xvc init
 
 Now it lists all files and directories. 
 
+
 ```console
 $ xvc file list --sort name-asc
 FX         107 [..]   .gitignore           ce9fcf30
