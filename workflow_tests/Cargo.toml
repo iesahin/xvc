@@ -66,7 +66,7 @@ test-generic-rsync = []
 proptest = "^1.0"
 test-case = "^2.2"
 globset = "^0.4"
-
+escargot = "^0.5"
 xvc-test-helper = { version = "0.4.2-alpha.8", path = "../test_helper" }
 shellfn = "^0.1"
 jwalk = "^0.6"

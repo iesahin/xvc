@@ -37,8 +37,7 @@ use xvc_core::{
     TextOrBinary, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
-use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
-use xvc_logging::watch;
+use xvc_ecs::{persist, HStore, R1NStore, XvcEntity};
 
 use sp::ExitStatus;
 use subprocess as sp;
