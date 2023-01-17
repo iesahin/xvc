@@ -56,6 +56,18 @@ impl From<(u64, u64)> for XvcEntity {
     }
 }
 
+impl From<u128> for XvcEntity {
+    fn from(e: u128) -> Self {
+        Self((e >> 64) as u64, e as u64)
+    }
+}
+
+impl From<XvcEntity> for u128 {
+    fn from(e: XvcEntity) -> u128 {
+        ((e.0 as u128) << 64) | (e.1 as u128)
+    }
+}
+
 impl From<XvcEntity> for (u64, u64) {
     fn from(e: XvcEntity) -> (u64, u64) {
         (e.0, e.1)
