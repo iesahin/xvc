@@ -124,7 +124,7 @@ fn z_doc_tests() -> Result<()> {
         .bin("xvc-test-helper")
         .current_release()
         .current_target()
-        .manifest_path("test_helper/Cargo.toml")
+        .manifest_path("../test_helper/Cargo.toml")
         .run()
         .map_err(|e| anyhow!("Failed to build xvc-test-helper: {e:?}"))?;
 
