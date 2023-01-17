@@ -28,6 +28,7 @@ xvc-file = { version = "0.4.2-alpha.0", path = "../file" }
 xvc-pipeline = { version = "0.4.2-alpha.0", path = "../pipeline" }
 xvc-walker = { version = "0.4.2-alpha.0", path = "../walker" }
 xvc-storage = { version = "0.4.2-alpha.0", path = "../storage" }
+xvc-test-helper = { version = "0.4.2.-alpha.8", path = "../test_helper" }
 
 ## packages for testing
 clap = {version = "^4.1", features=["derive"]}
@@ -65,7 +66,6 @@ test-generic-rsync = []
 [dev-dependencies]
 proptest = "^1.0"
 test-case = "^2.2"
-xvc-test-helper = {path = "../test_helper/"}
 globset = "^0.4"
 
 shellfn = "^0.1"

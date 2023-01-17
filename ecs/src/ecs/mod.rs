@@ -29,7 +29,7 @@ use std::time::UNIX_EPOCH;
 use serde::{Deserialize, Serialize};
 use xvc_logging::watch;
 
-use crate::error::{Error as XvcError, Result as XvcResult};
+use crate::error::{Error as XvcError, Result};
 
 /// Describes an entity in Entity Component System-sense.
 ///
@@ -95,8 +95,8 @@ static INIT: Once = Once::new();
 /// This function can only be used once in a process.
 /// You cannot load a second instance of the entity generator, as it will defeat its thread-safe
 /// uniqueness purpose.
-pub fn load_generator(dir: &Path) -> XvcResult<XvcEntityGenerator> {
-    let mut gen: XvcResult<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+pub fn load_generator(dir: &Path) -> Result<XvcEntityGenerator> {
+    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
     INIT.call_once(|| gen = XvcEntityGenerator::load(dir));
@@ -107,8 +107,8 @@ pub fn load_generator(dir: &Path) -> XvcResult<XvcEntityGenerator> {
 ///
 /// Normally this only be used once an Xvc repository initializes.
 /// The starting value for entities is 1.
-pub fn init_generator() -> XvcResult<XvcEntityGenerator> {
-    let mut gen: XvcResult<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+pub fn init_generator() -> Result<XvcEntityGenerator> {
+    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
 
@@ -144,7 +144,7 @@ impl XvcEntityGenerator {
         )
     }
 
-    fn load(dir: &Path) -> XvcResult<XvcEntityGenerator> {
+    fn load(dir: &Path) -> Result<XvcEntityGenerator> {
         let path = most_recent_file(dir)?;
         match path {
             Some(path) => {
@@ -158,7 +158,7 @@ impl XvcEntityGenerator {
     }
 
     /// Saves the current XvcEntity value to path.
-    pub fn save(&self, dir: &Path) -> XvcResult<()> {
+    pub fn save(&self, dir: &Path) -> Result<()> {
         let (counter, init_random) = self.next_element().into();
         if !dir.exists() {
             fs::create_dir_all(dir)?;
@@ -183,7 +183,7 @@ pub fn timestamp() -> String {
 /// This is used to sort timestamp named files. (See [timestamp]).
 /// Store files are loaded in this order to replay the changes across branches.
 /// TODO: Add link to book chapter.
-pub fn sorted_files(dir: &Path) -> XvcResult<Vec<PathBuf>> {
+pub fn sorted_files(dir: &Path) -> Result<Vec<PathBuf>> {
     if dir.exists() {
         let mut files: Vec<PathBuf> = fs::read_dir(dir)?
             .filter_map(|e| match e {
@@ -203,7 +203,7 @@ pub fn sorted_files(dir: &Path) -> XvcResult<Vec<PathBuf>> {
 /// This one returns the most recent timestamp named file.
 /// It gets files with [sorted_files] and returns the last one if there is one.
 /// If there are no files in a directory, this returns `Ok(None)`.
-pub fn most_recent_file(dir: &Path) -> XvcResult<Option<PathBuf>> {
+pub fn most_recent_file(dir: &Path) -> Result<Option<PathBuf>> {
     watch!(dir);
     if !dir.exists() {
         return Ok(None);
@@ -256,7 +256,7 @@ mod tests {
     use xvc_logging::setup_logging;
 
     #[test]
-    fn test_init() -> XvcResult<()> {
+    fn test_init() -> Result<()> {
         let gen = init_generator()?;
         assert_eq!(gen.counter.load(Ordering::SeqCst), 1);
         assert_eq!(gen.next_element().0, 1);
@@ -267,7 +267,7 @@ mod tests {
     }
 
     #[test]
-    fn test_load() -> XvcResult<()> {
+    fn test_load() -> Result<()> {
         setup_logging(Some(LevelFilter::Trace), None);
         let tempdir = TempDir::new("test-xvc-ecs")?;
         let gen_dir = tempdir.path().join("entity-gen");
@@ -289,6 +289,15 @@ mod tests {
         gen.save(&gen_dir)?;
         let new_val = fs::read_to_string(most_recent_file(&gen_dir)?.unwrap())?.parse::<u64>()?;
         assert_eq!(new_val, r + 2003);
+        Ok(())
+    }
+
+    #[test]
+    fn test_from_to() -> Result<()> {
+        let e1 = XvcEntity(1, 2);
+        let u1: u128 = e1.into();
+        let e2 = XvcEntity::from(u1);
+        assert_eq!(e1, e2);
         Ok(())
     }
 }
