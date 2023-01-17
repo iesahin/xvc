@@ -118,17 +118,15 @@ fn link_to_docs() -> Result<()> {
 fn z_doc_tests() -> Result<()> {
     link_to_docs()?;
 
-    let path_to_xvc_test_helper = cargo_bin!("xvc").parent().unwrap().join("xvc-test-helper");
-
-    escargot::CargoBuild::new()
+    let xvc_th = escargot::CargoBuild::new()
         .bin("xvc-test-helper")
-        // .current_release()
-        // .current_target()
+        .current_release()
+        .current_target()
         .manifest_path("../test_helper/Cargo.toml")
-        .target_dir(path_to_xvc_test_helper.parent().unwrap())
         .run()
         .map_err(|e| anyhow!("Failed to build xvc-test-helper: {e:?}"))?;
 
+    let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
     assert!(path_to_xvc_test_helper.exists());
 
     trycmd::TestCases::new()
