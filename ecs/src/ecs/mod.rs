@@ -157,9 +157,11 @@ impl XvcEntityGenerator {
         }
     }
 
-    /// Saves the current XvcEntity value to path.
+    /// Saves the current XvcEntity counter to path.
+    /// It saves only the first (e.0) part of the entity. The second part is
+    /// generated per invocation to randomize entities in parallel use.
     pub fn save(&self, dir: &Path) -> Result<()> {
-        let (counter, init_random) = self.next_element().into();
+        let (counter, _) = self.next_element().into();
         if !dir.exists() {
             fs::create_dir_all(dir)?;
         }

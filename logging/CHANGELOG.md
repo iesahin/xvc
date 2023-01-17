@@ -1,11 +1,19 @@
 # v0.5.0
+
 - Refactor XvcEntity to `(u64, u64)`
   - Issue: <https://github.com/iesahin/xvc/issues/198>
-  - [x] From<u128> and Into<u128>  
-  - [x] From<(u64, u64)> and Into<(u64, u64)>
+  - [x] `From<u128>` and `Into<u128>`
+  - [x] `From<(u64, u64)>` and `Into<(u64, u64)>`
   - [ ] Tests
     - [x] Add tests for `From<u128>` and `Into<u128>` ecs/src/ecs/mod.rs
-- [ ] 
+- [x] `xvc-test-helper` binary is not produced at builds
+  - [x] Moved it from dev-dependencies to dependencies in workflow_tests/Cargo.toml
+    - [x] Still doesn't work 🛑
+    - [x] We need binary dependencies in cargo: <https://rust-lang.github.io/rfcs/3028-cargo-binary-dependencies.html>,
+    - [x] It's available in nightly: <https://github.com/rust-lang/cargo/issues/9096>
+    - [x] Revert to dev-dependencies
+  - [x] `z_test_docs` fails immediately if no `xvc-test-helper` binary is found.
+  - [ ] Run the tests not with `-p workflow_tests`
 
 # v0.4.2
 

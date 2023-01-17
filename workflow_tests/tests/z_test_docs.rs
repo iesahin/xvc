@@ -119,6 +119,7 @@ fn z_doc_tests() -> Result<()> {
     link_to_docs()?;
 
     let path_to_xvc_test_helper = cargo_bin!("xvc").parent().unwrap().join("xvc-test-helper");
+    assert!(path_to_xvc_test_helper.exists());
 
     trycmd::TestCases::new()
         .register_bin("xvc-test-helper", &path_to_xvc_test_helper)

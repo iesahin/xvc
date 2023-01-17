@@ -28,7 +28,6 @@ xvc-file = { version = "0.4.2-alpha.0", path = "../file" }
 xvc-pipeline = { version = "0.4.2-alpha.0", path = "../pipeline" }
 xvc-walker = { version = "0.4.2-alpha.0", path = "../walker" }
 xvc-storage = { version = "0.4.2-alpha.0", path = "../storage" }
-xvc-test-helper = { version = "0.4.2-alpha.8", path = "../test_helper" }
 
 ## packages for testing
 clap = {version = "^4.1", features=["derive"]}
@@ -68,6 +67,7 @@ proptest = "^1.0"
 test-case = "^2.2"
 globset = "^0.4"
 
+xvc-test-helper = { version = "0.4.2-alpha.8", path = "../test_helper" }
 shellfn = "^0.1"
 jwalk = "^0.6"
 anyhow =  "^1.0"
