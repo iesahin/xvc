@@ -125,8 +125,11 @@ fn z_doc_tests() -> Result<()> {
         .current_release()
         .current_target()
         .manifest_path("../test_helper/Cargo.toml")
+        .target_dir(path_to_xvc_test_helper.parent().unwrap())
         .run()
         .map_err(|e| anyhow!("Failed to build xvc-test-helper: {e:?}"))?;
+
+    assert!(path_to_xvc_test_helper.exists());
 
     trycmd::TestCases::new()
         .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
