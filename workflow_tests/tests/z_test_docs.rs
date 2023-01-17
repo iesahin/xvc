@@ -122,8 +122,8 @@ fn z_doc_tests() -> Result<()> {
 
     escargot::CargoBuild::new()
         .bin("xvc-test-helper")
-        .current_release()
-        .current_target()
+        // .current_release()
+        // .current_target()
         .manifest_path("../test_helper/Cargo.toml")
         .target_dir(path_to_xvc_test_helper.parent().unwrap())
         .run()
