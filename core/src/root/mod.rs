@@ -1,10 +1,10 @@
+//! Get the Xvc root directory for the current project
 use crate::error::Result;
 use crate::types::xvcroot::XvcRoot;
 use clap::Parser;
 use crossbeam_channel::Sender;
-use path_absolutize::Absolutize;
 use relative_path::RelativePath;
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{watch, XvcOutputLine};
 
 #[derive(Debug, Parser)]
 #[command(name = "root")]
@@ -29,23 +29,19 @@ pub struct RootCLI {
 ///   This probably leads to panic! in caller.
 /// - It returns an error when `xvc_root` cannot be converted to absolute path
 ///   This should never happen if `xvc_root` properly constructed.
-pub fn run(output_snd: Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: RootCLI) -> Result<()> {
+pub fn run(output_snd: &Sender<XvcOutputLine>, xvc_root: &XvcRoot, opts: RootCLI) -> Result<()> {
     if opts.absolute {
         output_snd.send(XvcOutputLine::Output(format!(
             "{}",
             xvc_root.absolute_path().to_string_lossy()
         )))?;
     } else {
-        let current_dir = xvc_root
-            .config()
-            .current_dir
-            .option
-            .absolutize()?
-            .to_path_buf();
+        let current_dir = xvc_root.config().current_dir.option.to_path_buf();
 
         let rel_dir = RelativePath::new(&current_dir.to_string_lossy()).relative(
             RelativePath::new(&xvc_root.absolute_path().to_string_lossy()),
         );
+        watch!(rel_dir);
         if rel_dir == "" {
             output_snd.send(XvcOutputLine::Output(".".into()))?;
         } else {

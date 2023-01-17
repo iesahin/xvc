@@ -5,7 +5,7 @@ on:
   # schedule:
   #   - cron: "17 17 * * *"
   pull_request:
-    types: [labeled, review_requested]
+  #  types: [labeled, review_requested]
   push:
     tags:
       - "v*.*.*"
@@ -14,7 +14,7 @@ jobs:
   coverage:
     name: Test and Coverage
     if: github.actor == 'iesahin'
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 50
 
     strategy:
@@ -53,11 +53,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Git config for automated Git tests
-        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev'
+      # - name: Install required packages
+      #
+      #   run: sudo apt install -y inotify-tools ripgrep s3cmd
 
       - name: Install required packages
-        run: sudo apt install -y inotify-tools ripgrep s3cmd
+        run: |
+          brew install s3cmd
+          brew install ripgrep
+          brew install tree
+
+      - name: Git config for automated Git tests
+        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev'
 
       - name: Write the private key file for one.emresult.com connection
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa

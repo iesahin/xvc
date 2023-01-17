@@ -17,7 +17,7 @@ use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
 };
 
 /// Configure a new Amazon Web Services S3 remote storage.
@@ -29,25 +29,24 @@ use super::{
 /// [init][XvcS3Storage::init] function to create/update guid, and
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_s3(
-    input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: String,
     region: String,
     bucket_name: String,
-    remote_prefix: String,
+    storage_prefix: String,
 ) -> Result<()> {
     let remote = XvcS3Storage {
         guid: XvcStorageGuid::new(),
         name,
         region,
         bucket_name,
-        remote_prefix,
+        storage_prefix,
     };
 
     watch!(remote);
 
-    let (init_event, remote) = remote.init(output_snd.clone(), xvc_root)?;
+    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -89,7 +88,7 @@ pub struct XvcS3Storage {
     /// The "directory" in the bucket that Xvc will use.
     ///
     /// Xvc checks the presence of Guid file before creating this folder.
-    pub remote_prefix: String,
+    pub storage_prefix: String,
 }
 
 impl XvcS3Storage {
@@ -143,7 +142,7 @@ impl XvcS3Storage {
 
     async fn a_init(
         self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         _xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
@@ -159,7 +158,7 @@ impl XvcS3Storage {
             .put_object(
                 format!(
                     "{}/{}/{}",
-                    self.bucket_name, self.remote_prefix, XVC_STORAGE_GUID_FILENAME
+                    self.bucket_name, self.storage_prefix, XVC_STORAGE_GUID_FILENAME
                 ),
                 guid_bytes,
             )
@@ -176,16 +175,16 @@ impl XvcS3Storage {
 
     async fn a_list(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let bucket = self.get_bucket()?;
         let xvc_guid = xvc_root.config().guid().unwrap();
-        let prefix = self.remote_prefix.clone();
+        let prefix = self.storage_prefix.clone();
 
         let res_list = bucket
             .list(
-                format!("{}/{}", self.remote_prefix, xvc_guid),
+                format!("{}/{}", self.storage_prefix, xvc_guid),
                 Some("/".to_string()),
             )
             .await;
@@ -228,7 +227,7 @@ impl XvcS3Storage {
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
         let remote_path = XvcStoragePath::from(format!(
             "{}/{}/{}/{}",
-            self.bucket_name, self.remote_prefix, repo_guid, cache_path
+            self.bucket_name, self.storage_prefix, repo_guid, cache_path
         ));
 
         remote_path
@@ -236,7 +235,7 @@ impl XvcS3Storage {
 
     async fn a_send(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         _force: bool,
@@ -288,11 +287,11 @@ impl XvcS3Storage {
 
     async fn a_receive(
         &self,
-        output: crossbeam_channel::Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         _force: bool,
-    ) -> Result<XvcStorageReceiveEvent> {
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let repo_guid = xvc_root
             .config()
             .guid()
@@ -300,14 +299,16 @@ impl XvcS3Storage {
         let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         let bucket = self.get_bucket()?;
+        let temp_dir = XvcStorageTempDir::new()?;
 
         for cache_path in paths {
             watch!(cache_path);
             let remote_path = self.build_remote_path(&repo_guid, cache_path);
-            let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-            watch!(abs_cache_path);
-            let abs_cache_dir = abs_cache_path.parent().unwrap();
+            let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             fs::create_dir_all(&abs_cache_dir)?;
+            let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
+            watch!(abs_cache_path);
+
             let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
 
             let response = bucket
@@ -332,18 +333,22 @@ impl XvcS3Storage {
             }
         }
 
-        Ok(XvcStorageReceiveEvent {
-            guid: self.guid.clone(),
-            paths: copied_paths,
-        })
+        Ok((
+            temp_dir,
+            XvcStorageReceiveEvent {
+                guid: self.guid.clone(),
+                paths: copied_paths,
+            },
+        ))
     }
 
     async fn a_delete(
         &self,
-        output: crossbeam_channel::Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
+        // TODO: Implement delete for S3
         todo!();
     }
 }
@@ -351,7 +356,7 @@ impl XvcS3Storage {
 impl XvcStorageOperations for XvcS3Storage {
     fn init(
         self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -364,7 +369,7 @@ impl XvcStorageOperations for XvcS3Storage {
     /// List the bucket contents that start with `self.remote_prefix`
     fn list(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
     ) -> crate::Result<super::XvcStorageListEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -376,7 +381,7 @@ impl XvcStorageOperations for XvcS3Storage {
 
     fn send(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -390,11 +395,11 @@ impl XvcStorageOperations for XvcS3Storage {
 
     fn receive(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> crate::Result<super::XvcStorageReceiveEvent> {
+    ) -> crate::Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()
@@ -404,7 +409,7 @@ impl XvcStorageOperations for XvcS3Storage {
 
     fn delete(
         &self,
-        output: crossbeam_channel::Sender<xvc_logging::XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {

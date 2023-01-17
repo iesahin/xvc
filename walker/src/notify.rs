@@ -9,9 +9,13 @@ use crate::{
     error::{Error, Result},
     IgnoreRules, MatchResult,
 };
-use notify::{Event, EventHandler, RecommendedWatcher, RecursiveMode, Watcher};
+use notify::{
+    Config, Event, EventHandler, PollWatcher, RecommendedWatcher, RecursiveMode, Watcher,
+};
 use std::fs::Metadata;
 use std::path::PathBuf;
+use std::time::Duration;
+use xvc_logging::watch;
 
 use crossbeam_channel::{bounded, Receiver, Sender};
 use log::{debug, warn};
@@ -49,6 +53,7 @@ struct PathEventHandler {
 
 impl EventHandler for PathEventHandler {
     fn handle_event(&mut self, event: notify::Result<Event>) {
+        watch!(event);
         if let Ok(event) = event {
             match event.kind {
                 notify::EventKind::Create(_) => self.create_event(event.paths[0].clone()),
@@ -150,6 +155,33 @@ pub fn make_watcher(
         ignore_rules,
         sender,
     })?;
+
     watcher.watch(&root, RecursiveMode::Recursive)?;
+    watch!(watcher);
+    Ok((watcher, receiver))
+}
+
+/// Create a [notify::PollWatcher] and a [crossbeam_channel::Receiver] to receive
+/// [PathEvent]s. It creates the channel and [PathEventHandler] with its [Sender], then returns the
+/// [Receiver] for consumption.
+///
+/// Note that this is used when [`make_watcher`] doesn't work as expected. It uses
+/// a polling watcher with 2 second polls to the filesystem. It has lower
+/// performance than [`make_watcher`], but it works in all platforms.
+pub fn make_polling_watcher(
+    ignore_rules: IgnoreRules,
+) -> Result<(PollWatcher, Receiver<PathEvent>)> {
+    let (sender, receiver) = bounded(10000);
+    let root = ignore_rules.root.clone();
+    let mut watcher = notify::poll::PollWatcher::new(
+        PathEventHandler {
+            ignore_rules,
+            sender,
+        },
+        Config::default().with_poll_interval(Duration::from_secs(2)),
+    )?;
+
+    watcher.watch(&root, RecursiveMode::Recursive)?;
+    watch!(watcher);
     Ok((watcher, receiver))
 }

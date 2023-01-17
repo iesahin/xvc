@@ -10,13 +10,14 @@ File and directory management commands
 Usage: xvc file [OPTIONS] <COMMAND>
 
 Commands:
-  track    Add file and directories to Xvc
-  hash     Get digest hash of files with the supported algorithms
-  recheck  Get files from cache by copy or *link
-  list     List tracked and untracked elements in the workspace
-  send     Send (push, upload) files to external storages
-  bring    Bring (download, pull, fetch) files from external storages
-  help     Print this message or the help of the given subcommand(s)
+  track     Add file and directories to Xvc
+  hash      Get digest hash of files with the supported algorithms
+  recheck   Get files from cache by copy or *link
+  carry-in  Carry (commit) changed files to cache
+  list      List tracked and untracked elements in the workspace
+  send      Send (push, upload) files to external storages
+  bring     Bring (download, pull, fetch) files from external storages
+  help      Print this message or the help of the given subcommand(s)
 
 Options:
   -v, --verbose...         Verbosity level. Use multiple times to increase command output detail
@@ -28,8 +29,8 @@ Options:
       --no-project-config  Ignore project config (.xvc/config)
       --no-local-config    Ignore local config (.xvc/config.local)
       --no-env-config      Ignore configuration options from the environment
-  -h, --help               Print help information
-  -V, --version            Print version information
+  -h, --help               Print help
+  -V, --version            Print version
 
 ```
 

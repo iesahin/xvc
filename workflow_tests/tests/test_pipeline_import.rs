@@ -3,6 +3,7 @@ mod common;
 use std::{iter::zip, path::Path};
 
 use common::*;
+use itertools::Itertools;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcPath;
@@ -121,7 +122,7 @@ fn test_pipeline_import() -> Result<()> {
         let steps = all_steps.children_of(pipeline_e)?;
         watch!(steps);
         assert_eq!(steps.len(), 2);
-        for (step, step_name) in zip(steps.values(), ["step1", "step2"]) {
+        for (step, step_name) in zip(steps.values().sorted(), ["step1", "step2"]) {
             assert_eq!(
                 *step,
                 XvcStep {
@@ -130,7 +131,8 @@ fn test_pipeline_import() -> Result<()> {
             );
         }
 
-        for (step_e, step_command) in zip(steps.keys(), ["touch abc.txt", "touch def.txt"]) {
+        for (step_e, step_command) in zip(steps.keys().sorted(), ["touch abc.txt", "touch def.txt"])
+        {
             watch!(step_e);
             let command = all_commands
                 .left_to_right(step_e)
@@ -146,7 +148,7 @@ fn test_pipeline_import() -> Result<()> {
                 }
             );
         }
-        let step_v: Vec<(&XvcEntity, &XvcStep)> = steps.iter().collect();
+        let step_v: Vec<(&XvcEntity, &XvcStep)> = steps.iter().sorted().collect();
 
         assert_eq!(
             *step_v[0].1,
@@ -168,7 +170,7 @@ fn test_pipeline_import() -> Result<()> {
         assert_eq!(all_deps.children_of(&step_v[1].0)?.len(), 6);
         let deps2_s = all_deps.children_of(&step_v[1].0)?;
         watch!(deps2_s.len());
-        let deps2: Vec<&XvcDependency> = deps2_s.values().collect();
+        let deps2: Vec<&XvcDependency> = deps2_s.values().sorted().collect();
         watch!(deps2);
         watch!(deps2[0]);
         assert!(
@@ -231,12 +233,19 @@ fn test_pipeline_import() -> Result<()> {
         );
         let outs2_v = all_outs.children_of(&step_v[1].0)?;
         watch!(outs2_v);
-        let outs2: Vec<&XvcOutput> = outs2_v.values().collect();
+        let outs2: Vec<&XvcOutput> = outs2_v.values().sorted().collect();
         watch!(outs2);
         assert!(outs2.len() == 3);
         watch!(outs2[0]);
         assert!(
             *outs2[0]
+                == XvcOutput::File {
+                    path: XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new("def.txt"))?,
+                }
+        );
+        watch!(outs2[1]);
+        assert!(
+            *outs2[1]
                 == XvcOutput::Metric {
                     path: XvcPath::new(
                         &xvc_root,
@@ -244,13 +253,6 @@ fn test_pipeline_import() -> Result<()> {
                         Path::new("metrics.json")
                     )?,
                     format: XvcMetricsFormat::JSON,
-                }
-        );
-        watch!(outs2[1]);
-        assert!(
-            *outs2[1]
-                == XvcOutput::File {
-                    path: XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new("def.txt"))?,
                 }
         );
         watch!(outs2[2]);

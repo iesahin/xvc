@@ -13,8 +13,8 @@ Print step configuration
 Usage: xvc pipeline step show --step-name <STEP_NAME>
 
 Options:
-  -s, --step-name <STEP_NAME>  Name of the step
-  -h, --help                   Print help information
+  -s, --step-name <STEP_NAME>  Name of the step to show
+  -h, --help                   Print help
 
 ```
 

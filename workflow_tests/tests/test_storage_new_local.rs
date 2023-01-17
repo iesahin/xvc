@@ -30,7 +30,7 @@ fn test_storage_new_local() -> Result<()> {
     let storage_dir = common::random_temp_dir(Some("xvc-storage"));
 
     let x = |cmd: &[&str]| -> Result<String> {
-        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
     let out = x(&[
@@ -75,6 +75,7 @@ fn test_storage_new_local() -> Result<()> {
         })
         .count();
 
+    watch!(n_storage_files_after);
     assert!(
         n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
@@ -85,9 +86,12 @@ fn test_storage_new_local() -> Result<()> {
     // remove all cache
     //
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(&format!(
+        "rm -rf '{}'",
+        &cache_dir.to_string_lossy().to_string()
+    ))?;
 
-    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "local-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "local-storage"])?;
 
     watch!(fetch_result);
 
@@ -103,11 +107,14 @@ fn test_storage_new_local() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(&format!(
+        "rm -rf '{}'",
+        &cache_dir.to_string_lossy().to_string()
+    ))?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "local-storage"])?;
-    watch!(pull_result);
+    let bring_result = x(&["file", "bring", "--from", "local-storage"])?;
+    watch!(bring_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -117,8 +124,11 @@ fn test_storage_new_local() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-
+    watch!(n_local_files_after_pull);
     assert!(n_storage_files_after == n_local_files_after_pull);
+    watch!(the_file);
+    let tree_result = sh("tree")?;
+    watch!(String::from_utf8(tree_result.stdout));
     assert!(PathBuf::from(the_file).exists());
 
     // When we reinit with the same storage path, it shouldn't update the GUID.

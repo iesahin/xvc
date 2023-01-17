@@ -4,6 +4,9 @@ use xvc_ecs::{R11Store, XvcStore};
 
 use crate::{pipeline::XvcStepInvalidate, XvcPipeline, XvcStep, XvcStepCommand};
 
+/// Entry point for `xvc pipeline step update` command.
+/// Updates the command and invalidation strategy (`when` to run) of the
+/// given step.
 pub fn cmd_step_update(
     xvc_root: &XvcRoot,
     pipeline_name: &str,

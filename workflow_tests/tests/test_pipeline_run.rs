@@ -12,187 +12,181 @@ use xvc_tests::watch;
 
 #[test]
 fn test_pipeline_run() -> Result<()> {
-    test_logging(log::LevelFilter::Trace);
+    test_logging(log::LevelFilter::Warn);
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
         c.extend(cmd);
-        run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
+        run_xvc(Some(&xvc_root), &c, XvcVerbosity::Debug)
     };
 
     let create_pipeline = || -> Result<()> {
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "hello",
             "--command",
             "echo 'hello xvc!'",
-            "--changed",
+            "--when",
             "always",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "step1",
             "--command",
             "touch abc.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "step1",
             "--output-file",
             "abc.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "step_dep",
             "--command",
             "touch step_dep.txt",
-        ])?);
-        watch!(x(&[
+        ])?;
+
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "step_dep",
             "--step",
             "step1",
-        ])?);
-        watch!(x(&[
+        ])?;
+        x(&[
             "step",
             "output",
             "--step-name",
             "step_dep",
             "--output-file",
             "step_dep.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "txt_files",
             "--command",
             "find . -name '*.py' > src-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "txt_files",
             "--glob",
             "*/*.py",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "txt_files",
             "--output-file",
             "src-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "training_files",
             "--command",
             "find data/images/train -name '*.png' > training-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "training_files",
             "--directory",
             "data/images/train",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "training_files",
             "--output-file",
             "training-files.txt",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "glob_dep",
             "--command",
             "touch glob_dep.json",
-        ])?);
+        ])?;
 
-        watch!(x(&[
-            "step",
-            "dependency",
-            "--step-name",
-            "glob_dep",
-            "--glob",
-            "*.txt",
-        ])?);
-
-        watch!(x(&[
+        x(&[
             "step",
             "output",
             "--step-name",
             "glob_dep",
             "--output-metric",
             "glob_dep.json",
-        ])?);
+        ])?;
 
-        watch!(x(&[
+        x(&[
             "step",
             "new",
             "--step-name",
             "count_training_files",
             "--command",
             "wc -l training-files.txt > num-training-files.txt",
-        ])?);
-        watch!(x(&[
+        ])?;
+        x(&[
             "step",
             "dependency",
             "--step-name",
             "count_training_files",
             "--lines",
             "training-files.txt::-1000000",
-        ])?);
-        watch!(x(&[
+        ])?;
+        x(&[
             "step",
             "output",
             "--step-name",
             "count_training_files",
             "--output-file",
             "num-training-files.txt",
-        ])?);
+        ])?;
 
         Ok(())
     };
 
     create_pipeline()?;
+    watch!("Before first");
     let _run_res = x(&["run"])?;
-
+    println!("run_res: {}", _run_res);
     assert!(Path::new("abc.txt").exists());
     assert!(Path::new("src-files.txt").exists());
     assert!(Path::new("training-files.txt").exists());
     assert!(Path::new("num-training-files.txt").exists());
 
     Exec::shell("rm -f training-files.txt").join()?;
+    watch!("Before second");
     x(&["run"])?;
     assert!(Path::new("training-files.txt").exists());
 
@@ -201,6 +195,7 @@ fn test_pipeline_run() -> Result<()> {
     let training_files_before = fs::read_to_string("training-files.txt")?;
     assert!(training_files_before.contains(file_to_remove));
     Exec::shell(format!("rm -f {file_to_remove}")).join()?;
+    watch!("Before third");
     x(&["run"])?;
     let training_files_after = fs::read_to_string("training-files.txt")?;
     assert!(!training_files_after.contains(file_to_remove));

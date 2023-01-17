@@ -5,7 +5,6 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 use log::LevelFilter;
-use log::{error, info};
 use std::env;
 use std::path::Path;
 use std::sync::Once;
@@ -16,10 +15,182 @@ macro_rules! watch {
     ( $( $x:expr ),* ) => {
         {
             $(
-               ::log::trace!("{}: {:#?}", stringify!($x), $x);
+               ::log::trace!("{}: {}", stringify!($x), format!("{:#?}", $x).replace("\\n", "\n"));
             )*
         }
     };
+}
+
+/// Either send a [XvcOutputLine::Error] value to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! error {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*))).unwrap();
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::log::error!($fmt $(,$x)*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Info] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! info {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(::xvc_logging::XvcOutputLine::Info(format!($fmt $(,$x)*))).unwrap();
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::log::info!($fmt $(, $x)*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Warn] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! warn {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(::xvc_logging::XvcOutputLine::Warn(format!($fmt $(,$x)*))).unwrap();
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::log::warn!($fmt $(, $x)*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Debug] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! debug {
+    ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
+        {
+                    (&$channel).send(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*))).unwrap();
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::log::debug!($fmt $(, $x)*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Trace] to the given channel, or log via `log` crate
+#[macro_export]
+macro_rules! trace {
+    ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
+        {
+                    (&$channel).send(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!()))).unwrap();
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::log::trace!($fmt $(, $x)*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Output] to the given channel, or print to stdout
+#[macro_export]
+macro_rules! output {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*))).unwrap();
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::std::println!($fmt $(, $x)*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Panic] to the given channel, or print to stdout
+#[macro_export]
+macro_rules! panic {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]",
+                                                                 format!($fmt $(, $x)*), file!(), line!()))).unwrap();
+            ::std::panic!($fmt $(, $x)*);
+        }
+    };
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            watch!($fmt $(, $x)*);
+            ::std::panic!($fmt $(, $x)*);
+        }
+    };
+}
+
+/// Either send [XvcOutputLine::Tick] to the given channel, or print dots to stdout
+#[macro_export]
+macro_rules! tick {
+    ( $channel:ident, $n:literal) => {{
+        (&$channel)
+            .send(::xvc_logging::XvcOutputLine::Tick($n))
+            .unwrap();
+    }};
+    ($n:literal) => {{
+        for _ in 0..$n {
+            ::std::print!(".");
+        }
+    }};
+}
+
+/// Unwrap the result of an expression, and if it is an error, send it to the given channel
+/// and panic.
+/// This is mostly to be used in `for_each` blocks, where the error is not propagated.
+#[macro_export]
+macro_rules! uwr {
+    ( $e:expr, $channel:ident ) => {{
+        match $e {
+            Ok(v) => v,
+            Err(e) => {
+                watch!(e);
+                (&$channel)
+                    .send(::xvc_logging::XvcOutputLine::Panic(format!(
+                        "{:?}, [{}::{}]",
+                        e,
+                        file!(),
+                        line!()
+                    )))
+                    .unwrap();
+                ::std::panic!("{:?}", e);
+            }
+        }
+    }};
+}
+
+/// Unwrap an option, and if it is an error, send it to the given channel
+/// and panic.
+/// This is mostly to be used in `for_each` blocks, where the error is not propagated.
+#[macro_export]
+macro_rules! uwo {
+    ( $e:expr, $channel:ident ) => {{
+        match $e {
+            Some(v) => v,
+            None => {
+                watch!($e);
+                let msg = format!(
+                    "None from the expression: {} [{}::{}]",
+                    stringify!($e),
+                    file!(),
+                    line!()
+                );
+                (&$channel)
+                    .send(::xvc_logging::XvcOutputLine::Panic(msg.clone()))
+                    .unwrap();
+                ::std::panic!("{}", msg);
+            }
+        }
+    }};
 }
 
 /// Logging Initializer
@@ -38,7 +209,7 @@ fn init_logging(term_level: Option<LevelFilter>, file_level: Option<LevelFilter>
 
     let mut dispatch = fern::Dispatch::new().format(|out, message, record| {
         out.finish(format_args!(
-            "[{}][{}:{}] {}",
+            "[{}][{}::{}] {}",
             record.level(),
             record.file().get_or_insert("None"),
             record.line().get_or_insert(0),
@@ -59,10 +230,10 @@ fn init_logging(term_level: Option<LevelFilter>, file_level: Option<LevelFilter>
     match dispatch.apply() {
         Ok(_) => {
             if let Some(level) = term_level {
-                info!("Terminal logger enabled with level: {:?}", level);
+                debug!("Terminal logger enabled with level: {:?}", level);
             };
             if let Some(level) = file_level {
-                info!(
+                debug!(
                     "File logger enabled with level: {:?} to {:?}",
                     level, logfile
                 );
@@ -79,8 +250,10 @@ fn init_logging(term_level: Option<LevelFilter>, file_level: Option<LevelFilter>
 pub enum XvcOutputLine {
     /// The output that we should be reporting to user
     Output(String),
-    /// For informational messages the user doesn't usually follow
+    /// For informational messages
     Info(String),
+    /// For debug output to show the internals of Xvc
+    Debug(String),
     /// Warnings that are against some usual workflows
     Warn(String),
     /// Errors that interrupts a workflow but may be recoverable
@@ -97,6 +270,10 @@ impl XvcOutputLine {
     /// print [INFO] `s`
     pub fn info(s: &str) -> Self {
         Self::Info(s.to_string())
+    }
+    /// print [DEBUG]
+    pub fn debug(s: &str) -> Self {
+        Self::Debug(s.to_string())
     }
     /// print [WARN] `s`
     pub fn warn(s: &str) -> Self {

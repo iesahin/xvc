@@ -7,11 +7,16 @@ use toml::Value as TomlValue;
 use log::{error, warn};
 use serde::{Deserialize, Serialize};
 
+/// Parsable formats of a parameter file
 #[derive(Debug, Clone, Copy, Eq, PartialOrd, Ord, PartialEq, Serialize, Deserialize)]
 pub enum XvcParamFormat {
+    /// The default value if we cannot infer the format somehow
     Unknown,
+    /// Yaml files are parsed with [serde_yaml]
     YAML,
+    /// Json files are parsed with [serde_json]
     JSON,
+    /// Toml files are parsed with [toml]
     TOML,
 }
 
@@ -28,6 +33,8 @@ impl XvcParamFormat {
         }
     }
 
+    /// Infer the (hyper)parameter file format from the file path, by checking
+    /// its extension.
     pub fn from_path(path: &Path) -> Self {
         match path.extension() {
             None => {

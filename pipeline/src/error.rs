@@ -1,3 +1,4 @@
+//! Error and Result types for the pipelines crate
 use log::{debug, error, info, trace, warn};
 
 use std::ffi::OsString;
@@ -7,6 +8,8 @@ use std::path::PathBuf;
 use thiserror::Error as ThisError;
 
 #[derive(ThisError, Debug)]
+/// Error messages for pipelines crate
+#[allow(missing_docs)]
 pub enum Error {
     #[error("Sorry. {0} is not implemented yet")]
     Todo(&'static str),
@@ -367,29 +370,36 @@ where
 }
 //
 impl Error {
+    /// Log the error and return it
     pub fn debug(self) -> Self {
         debug!("{}", self);
         self
     }
+    /// Log the error and return it
     pub fn trace(self) -> Self {
         trace!("{}", self);
         self
     }
+    /// Log the error and return it
     pub fn warn(self) -> Self {
         warn!("{}", self);
         self
     }
+    /// Log the error and return it
     pub fn error(self) -> Self {
         error!("{}", self);
         self
     }
+    /// Log the error and return it
     pub fn info(self) -> Self {
         info!("{}", self);
         self
     }
+    /// Panic with the error
     pub fn panic(self) -> Self {
         panic!("{}", self);
     }
 }
 
+/// The result type for xvc pipeline crate
 pub type Result<T> = std::result::Result<T, Error>;

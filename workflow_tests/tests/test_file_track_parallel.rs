@@ -18,16 +18,16 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 10, 10)?;
+    create_directory_tree(&temp_dir, 10, 10, Some(23))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10)?;
+    create_directory_tree(&level_1, 10, 10, Some(23))?;
 
     Ok(temp_dir)
 }
 #[test]
 fn test_file_track_parallel() -> Result<()> {
-    // setup::logging(LevelFilter::Trace);
+    test_logging(log::LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["file"];
@@ -93,7 +93,6 @@ fn test_file_track_parallel() -> Result<()> {
     let n_files_after = jwalk::WalkDir::new(".xvc/b3")
         .into_iter()
         .filter(|f| {
-            watch!(f);
             f.as_ref()
                 .map(|f| f.file_type().is_file())
                 .unwrap_or_else(|_| false)
@@ -104,7 +103,6 @@ fn test_file_track_parallel() -> Result<()> {
         n_files_after - n_files_before == 10,
         "n_files_before: {n_files_before}\nn_files_after: {n_files_after}"
     );
-
     let gitignore_file_2 = PathBuf::from(&dir_to_add)
         .parent()
         .ok_or(Error::PathHasNoParent {
@@ -148,7 +146,7 @@ fn test_file_track_parallel() -> Result<()> {
 
     fs::remove_file(file_0)?;
 
-    let list_after_delete = x(&["list", "--recursive"])?;
+    let list_after_delete = x(&["list"])?;
 
     let data_line = line_captures(&list_after_delete, file_0);
 

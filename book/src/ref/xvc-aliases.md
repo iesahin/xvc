@@ -9,7 +9,7 @@ Print command aliases to be sourced in shell files
 Usage: xvc aliases
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 ```
 

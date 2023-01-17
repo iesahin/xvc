@@ -13,7 +13,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 1, 100)?;
+    create_directory_tree(&temp_dir, 1, 100, None)?;
     // root/dir1 may have another tree
 
     Ok(temp_dir)
@@ -21,7 +21,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 
 #[test]
 fn test_file_hash() -> Result<()> {
-    // setup::logging(LevelFilter::Trace);
+    test_logging(log::LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let x = |cmd: &[&str]| common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace);
 
@@ -33,10 +33,14 @@ fn test_file_hash() -> Result<()> {
     let dir_hash = x(&["file", "hash", "dir-0001/"])?;
     assert!({ dir_hash.lines().count() == 100 });
     let images_hash = x(&["file", "hash", "file-0000.bin"])?;
-    assert!(re_match(
-        &images_hash,
-        "^a572622134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1\tfile-0000.bin.*",
-    ));
+    assert!(
+        re_match(
+            &images_hash,
+            "^a572622134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1\tfile-0000.bin.*"
+        ),
+        "images_hash = {}",
+        &images_hash
+    );
 
     let text_hash = x(&["file", "hash", "--text-or-binary", "text", "file-0000.bin"])?;
     assert!(re_match(

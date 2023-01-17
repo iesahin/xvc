@@ -58,7 +58,7 @@ Options:
           You can set a string to replace {STORAGE_DIR} placeholder in commands
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
 ```
 

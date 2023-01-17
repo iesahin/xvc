@@ -20,43 +20,73 @@ pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
     Ok(conf.get_str("pipeline.default_params_file")?.option)
 }
 
+/// Represents variety of dependencies Xvc supports.
+/// This is to unify all dependencies without dynamic dispatch and having
+/// compile time errors when we miss something about dependencies.
 #[derive(Debug, Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum XvcDependency {
+    /// A pipeline dependency when a step depends on another pipeline
     Pipeline {
+        /// The name of the pipeline
         name: String,
     },
+    /// A step dependency when a step depends on another step
     Step {
+        /// The name of the step
         name: String,
     },
+    /// A file dependency within the workspace
     File {
+        /// The path in the workspace
         path: XvcPath,
     },
+    /// A glob dependency to describe a set of files
     Glob {
+        /// The glob pattern that will be converted to a [Glob]
         glob: String,
     },
+    /// When a step depends all files in a dependency
     Directory {
+        /// The path in the workspace
         path: XvcPath,
     },
+    /// When a step depends to a URL
     Url {
+        /// URL like https://example.com/my-file.html
         url: Url,
     },
+    /// When a step depends to a URL that corresponds to a path in the workspace
     Import {
+        /// URL like https://example.com/my-file.html
         url: Url,
+        /// A workspace file that is downloaded from the URL
         path: XvcPath,
     },
+    /// When a step depends to a (hyper)parameter in a JSON, YAML or similar
+    /// file.
     Param {
+        /// Format of the params file
         format: XvcParamFormat,
+        /// Path of the file in the workspace
         path: XvcPath,
+        /// Key like `mydict.mykey` to access the value
         key: String,
     },
+    /// When a step depends to a regex searched in a text file
     Regex {
+        /// Path of the file in the workspace
         path: XvcPath,
+        /// The regex to search in the file
         // We use this because Regex is not Serializable
         regex: String,
     },
+    /// When a step depends to a set of lines in a text file
     Lines {
+        /// Path of the file in the workspace
         path: XvcPath,
+        /// The beginning of range
         begin: usize,
+        /// The end of range
         end: usize,
     },
     // TODO: Generic { generic-command } to denote a command where we check its output and decide
@@ -70,11 +100,14 @@ pub enum XvcDependency {
     // TODO: Bitcoin { wallet } to check Bitcoin wallets
     // TODO: JupyterNotebook { file, cell }
     // TODO: EnvironmentVariable { name }
+    // TODO: PythonFunc {file, name}
+    // TODO: PythonClass {file, name}
 }
 
 persist!(XvcDependency, "xvc-dependency");
 
 impl XvcDependency {
+    /// Returns the path of the dependency if it has a single path.
     pub fn xvc_path(&self) -> Option<XvcPath> {
         match self {
             XvcDependency::File { path } => Some(path.clone()),

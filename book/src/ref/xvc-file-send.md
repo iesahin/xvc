@@ -14,6 +14,6 @@ Arguments:
 Options:
   -r, --remote <REMOTE>  Storage name or guid to send the files
       --force            Force even if the files are already present in the storage
-  -h, --help             Print help information
+  -h, --help             Print help
 
 ```

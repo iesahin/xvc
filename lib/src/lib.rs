@@ -4,9 +4,6 @@
 pub mod cli;
 pub mod error;
 pub mod init;
-use std::path::Path;
-
-use config::XvcVerbosity;
 
 pub use xvc_config as config;
 pub use xvc_core as core;

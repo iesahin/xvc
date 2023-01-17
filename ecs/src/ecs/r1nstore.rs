@@ -2,7 +2,7 @@
 //! Each child has a one parent but each parent can have multiple children.
 use super::XvcEntity;
 use crate::error::{Error, Result};
-use crate::{Storable, XvcStore};
+use crate::{HStore, Storable, XvcStore};
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::marker::PhantomData;
@@ -94,7 +94,7 @@ where
     }
 
     /// get the store of related entities.
-    pub fn children_of(&self, parent_entity: &XvcEntity) -> Result<XvcStore<U>> {
+    pub fn children_of(&self, parent_entity: &XvcEntity) -> Result<HStore<U>> {
         let related_entities = self.child_parents.iter().filter_map(|(child, parent)| {
             if *parent == (*parent_entity).into() {
                 Some(*child)

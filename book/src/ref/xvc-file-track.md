@@ -14,7 +14,7 @@ Usage: xvc file track [OPTIONS] [TARGETS]...
 
 Arguments:
   [TARGETS]...
-          Files/directories to add
+          Files/directories to track
 
 Options:
       --cache-type <CACHE_TYPE>
@@ -35,7 +35,7 @@ Options:
           Don't use parallelism
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
 ```
 

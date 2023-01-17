@@ -25,9 +25,6 @@ use crate::CHANNEL_BOUND;
 ///     This function doesn't consider any ignore rules in traversal.
 ///     It may be better to use `xvc_walker::walk_parallel` first and
 ///     [crate::util::file::glob_paths] to filter the paths.
-#[deprecated(
-    note = "Use xvc_walker::walk_parallel and filter the paths by xvc_core::util::file::glob_paths"
-)]
 pub fn expand_globs_to_paths<T>(current_dir: &Path, targets: &[T]) -> Result<Vec<PathBuf>>
 where
     T: AsRef<str> + Display,

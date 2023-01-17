@@ -13,7 +13,7 @@ List all configured storages
 Usage: xvc storage list
 
 Options:
-  -h, --help  Print help information
+  -h, --help  Print help
 
 ```
 

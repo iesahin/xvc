@@ -1,3 +1,8 @@
+//! Home of the [XvcPath] struct, [TextOrBinary] enum and [XvcCachePath] struct.
+//!
+//! [XvcPath] is the basic path type to represent repository paths in Xvc. It
+//! corresponds to a path relative to the [XvcRoot]. It can be converted from a
+//! [fs::path::Path] and actually is a wrapper around [RelativePathBuf].
 use std::{fmt::Display, path::Path};
 
 use crate::{error::Result, ContentDigest};
@@ -86,20 +91,20 @@ impl XvcPath {
         &self,
         xvc_root: &XvcRoot,
         algorithm: HashAlgorithm,
-        text_or_binary: &TextOrBinary,
+        text_or_binary: TextOrBinary,
     ) -> Result<ContentDigest> {
         let abs_path = self.to_absolute_path(xvc_root);
 
         let xvc_digest = match text_or_binary {
             TextOrBinary::Auto => {
                 if is_text_file(&abs_path)? {
-                    XvcDigest::from_text_file(&abs_path, &algorithm)
+                    XvcDigest::from_text_file(&abs_path, algorithm)
                 } else {
-                    XvcDigest::from_binary_file(&abs_path, &algorithm)
+                    XvcDigest::from_binary_file(&abs_path, algorithm)
                 }
             }
-            TextOrBinary::Text => XvcDigest::from_text_file(&abs_path, &algorithm),
-            TextOrBinary::Binary => XvcDigest::from_binary_file(&abs_path, &algorithm),
+            TextOrBinary::Text => XvcDigest::from_text_file(&abs_path, algorithm),
+            TextOrBinary::Binary => XvcDigest::from_binary_file(&abs_path, algorithm),
         }?;
 
         Ok(ContentDigest(Some(xvc_digest)))
@@ -137,8 +142,11 @@ impl XvcPath {
 )]
 #[strum(serialize_all = "lowercase")]
 pub enum TextOrBinary {
+    /// Detect whether the file is text or binary with [is_text_file] function
     Auto,
+    /// Remove all line endings before calculating the digest
     Text,
+    /// Do not remove line endings before calculating the digest
     Binary,
 }
 
@@ -191,6 +199,12 @@ impl XvcCachePath {
     ///  Create a custom relative path used for cache global files (like temporary guid files.)
     pub fn custom(relative_path: &str) -> Self {
         Self(RelativePathBuf::from(relative_path))
+    }
+
+    /// Returns the clone of inner relativepathbuf for processing.
+    /// e.g. in [xvc_storage::XvcStorageTempDir] to create temporary cache files.
+    pub fn inner(&self) -> RelativePathBuf {
+        self.0.clone()
     }
 }
 

@@ -40,4 +40,4 @@ pub enum XvcStorageEvent {
     Receive(XvcStorageReceiveEvent),
     Delete(XvcStorageDeleteEvent),
 }
-persist!(XvcStorageEvent, "remote-event");
+persist!(XvcStorageEvent, "storage-event");

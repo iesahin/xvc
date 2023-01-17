@@ -1,32 +1,30 @@
-use std::{
-    cell::{Cell, RefCell},
-    collections::HashMap,
-    env, fs,
-    path::{Path, PathBuf},
-};
+use std::{env, fs};
 
-use anyhow::anyhow;
 use crossbeam_channel::Sender;
 use regex::Regex;
-use relative_path::RelativePath;
 use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
-use which::which;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{info, uwr, warn, watch, XvcOutputLine};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XVC_STORAGE_GUID_FILENAME,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
 };
 
+/// Entry point for `xvc storage new rsync` command.
+/// Creates a new Rsync storage with the given options.
+/// It creates a new [`XvcRsyncStorage`], uploads the `.xvc-guid` file and
+/// records the storage.
+///
+/// If the connection options are not valid, [XvcRsyncStorage::init] will fail,
+/// and this function will return an error before recording the storage.
 pub fn cmd_new_rsync(
-    input: std::io::StdinLock,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     name: String,
     host: String,
@@ -45,7 +43,7 @@ pub fn cmd_new_rsync(
 
     watch!(storage);
 
-    let (init_event, storage) = storage.init(output_snd.clone(), xvc_root)?;
+    let (init_event, storage) = storage.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -246,7 +244,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     /// Initialize the repository by copying guid file to remote storage directory.
     fn init(
         self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<(super::XvcStorageInitEvent, Self)> {
         // "--init",
@@ -294,7 +292,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     /// {XVC_GUID}/[a-zA-Z][0-9]/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{58}/0
     fn list(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         // "--list",
@@ -327,7 +325,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn send(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         _force: bool,
@@ -376,26 +374,27 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn receive(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
-    ) -> Result<XvcStorageReceiveEvent> {
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         // "--download",
         // "mkdir -p {ABSOLUTE_CACHE_DIR} ; rsync -av {URL}:{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH} {ABSOLUTE_CACHE_PATH}",
         //
         let rsync_executable = Self::rsync_executable()?;
+        let temp_dir = XvcStorageTempDir::new()?;
 
         let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
-            let local_path = cache_path.to_absolute_path(xvc_root);
+            let local_path = temp_dir.temp_cache_path(cache_path).unwrap();
             let remote_url = self.rsync_cache_url(&xvc_guid, cache_path);
-            let cache_dir = local_path.as_ref().parent().unwrap();
+            let cache_dir = temp_dir.temp_cache_dir(cache_path).unwrap();
             watch!(cache_dir);
             if !cache_dir.exists() {
                 watch!(cache_dir);
-                fs::create_dir_all(&cache_dir);
+                uwr!(fs::create_dir_all(&cache_dir), output);
             }
 
             watch!(remote_url);
@@ -421,15 +420,18 @@ impl XvcStorageOperations for XvcRsyncStorage {
             }
         });
 
-        Ok(XvcStorageReceiveEvent {
-            guid: self.guid.clone(),
-            paths: storage_paths,
-        })
+        Ok((
+            temp_dir,
+            XvcStorageReceiveEvent {
+                guid: self.guid.clone(),
+                paths: storage_paths,
+            },
+        ))
     }
 
     fn delete(
         &self,
-        output: Sender<XvcOutputLine>,
+        output: &Sender<XvcOutputLine>,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -441,7 +443,6 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
-            let local_path = cache_path.to_absolute_path(xvc_root);
             let remote_path = self.ssh_cache_path(xvc_guid.as_str(), cache_path);
             let delete_cmd = format!("rm -f '{}'", remote_path);
             let cmd_output = self.ssh_cmd(&ssh_executable, &delete_cmd);
@@ -450,10 +451,9 @@ impl XvcStorageOperations for XvcRsyncStorage {
                 Ok(cmd_output) => {
                     let stdout_str = cmd_output.stdout_str();
                     let stderr_str = cmd_output.stderr_str();
-                    watch!(stdout_str);
-                    watch!(stderr_str);
-                    output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                    output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                    info!(output, "[REMOTE DELETE] {}", remote_path);
+                    info!(output, "{}", stdout_str);
+                    warn!(output, "{}", stderr_str);
                     let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                     storage_paths.push(storage_path);
                 }

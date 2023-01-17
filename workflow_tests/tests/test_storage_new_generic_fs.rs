@@ -14,10 +14,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 10, 10)?;
+    create_directory_tree(&temp_dir, 10, 10, Some(47))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10)?;
+    create_directory_tree(&level_1, 10, 10, Some(47))?;
 
     Ok(temp_dir)
 }
@@ -30,7 +30,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
     let temp_directory = format!("{}/", env::temp_dir().to_string_lossy());
 
     let x = |cmd: &[&str]| -> Result<String> {
-        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
     let out = x(&[
@@ -80,6 +80,8 @@ fn test_storage_new_generic_fs() -> Result<()> {
         })
         .count();
 
+    watch!(n_storage_files_before);
+
     let push_result = x(&["file", "send", "--to", "generic-storage", the_file])?;
     watch!(push_result);
 
@@ -94,6 +96,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
+    watch!(n_storage_files_after);
 
     assert!(
         n_storage_files_before + 1 == n_storage_files_after,
@@ -105,15 +108,9 @@ fn test_storage_new_generic_fs() -> Result<()> {
     // remove all cache
     //
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(&format!("rm -rf {}", cache_dir.to_string_lossy()))?;
 
-    let fetch_result = x(&[
-        "file",
-        "bring",
-        "--no-checkout",
-        "--from",
-        "generic-storage",
-    ])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "generic-storage"])?;
 
     watch!(fetch_result);
 
@@ -129,7 +126,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(&format!("rm -rf {}", cache_dir.to_string_lossy()))?;
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "generic-storage"])?;

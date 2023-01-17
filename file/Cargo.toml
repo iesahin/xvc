@@ -31,7 +31,7 @@ xvc-storage = {version = "0.4.2-alpha.0",  path = "../storage" }
 
 
 ## Cli and config
-clap = {version = "^4.0", features=["derive"]}
+clap = {version = "^4.1", features=["derive"]}
 directories-next = "2.0"
 
 ## Hashing

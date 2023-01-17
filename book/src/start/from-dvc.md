@@ -45,7 +45,7 @@ Both of these use DAGs to represent pipelines.
 * There is no command similar to `dvc diff` in Xvc. 
 * There is no command similar to `dvc doctor` or `dvc version`. Version information should be visible in the help text. 
 * Currently, there are no commands corresponding to `dvc exp` set of commands. This is on the roadmap for Xvc. Scope, implementation, and actual commands may differ.
-* `dvc fetch` is replaced by [`xvc file bring --no-checkout`](/ref/xvc-file-bring.md). 
+* `dvc fetch` is replaced by [`xvc file bring --no-recheck`](/ref/xvc-file-bring.md). 
 * Instead of freezing "pipeline stages" as in `dvc freeze`, and unfreezing with `dvc unfreeze`, `xvc pipeline step update --changed [never|always|by_dependencies]` can be used to specify if/when to run a pipeline step. 
 * Instead of `dvc gc` to "garbage-collect" files, you can use [`xvc file delete`](/ref/xvc-file-delete.md)  with various options. 
 * There is no corresponding command for `dvc get-url` in Xvc. You can use `wget` or `curl` instead. 

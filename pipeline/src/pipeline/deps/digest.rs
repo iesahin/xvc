@@ -161,7 +161,7 @@ pub fn paths_collection_digest(
     params: &DependencyDigestParams,
     paths: &XvcPathMetadataMap,
 ) -> Result<CollectionDigest> {
-    collection_digest(paths, params.algorithm).map_err(|e| e.into())
+    collection_digest(paths, *params.algorithm).map_err(|e| e.into())
 }
 
 /// Returns a stable digest of the list of paths.
@@ -176,7 +176,7 @@ pub fn paths_metadata_digest(
         s
     });
 
-    Ok(XvcDigest::from_content(&md_str, algorithm).into())
+    Ok(XvcDigest::from_content(&md_str, *algorithm).into())
 }
 
 ///
@@ -202,7 +202,7 @@ fn paths_content_digest(
         whole_content[i * 32..(i + 1) * 32].copy_from_slice(&digest.0.unwrap().digest);
     }
 
-    Ok(XvcDigest::from_bytes(&whole_content, params.algorithm).into())
+    Ok(XvcDigest::from_bytes(&whole_content, *params.algorithm).into())
 }
 
 /// Returns content digest for `xvc_path`
@@ -213,7 +213,7 @@ pub fn xvc_path_content_digest(
 ) -> Result<ContentDigest> {
     Ok(XvcDigest::from_binary_file(
         &xvc_path.to_absolute_path(params.xvc_root),
-        params.algorithm,
+        *params.algorithm,
     )?
     .into())
 }
@@ -227,7 +227,8 @@ fn params_content_digest(
 ) -> Result<ContentDigest> {
     let path = param_file.to_absolute_path(digest_params.xvc_root);
     let param_pair = XvcParamPair::new_with_format(&path, param_format, key)?;
-    let digest = XvcDigest::from_content(&format!("{}", param_pair.value), digest_params.algorithm);
+    let digest =
+        XvcDigest::from_content(&format!("{}", param_pair.value), *digest_params.algorithm);
     Ok(digest.into())
 }
 
@@ -245,7 +246,7 @@ fn regex_content_digest(
     let all_capture = re
         .find_iter(&content)
         .fold("".to_string(), |p, c| format!("{}{}", p, c.as_str()));
-    Ok(XvcDigest::from_content(&all_capture, algorithm).into())
+    Ok(XvcDigest::from_content(&all_capture, *algorithm).into())
 }
 
 /// Generates a digest from specified lines of a text file.
@@ -275,5 +276,5 @@ fn lines_content_digest(
         }
     }
 
-    Ok(XvcDigest::from_content(&content, algorithm).into())
+    Ok(XvcDigest::from_content(&content, *algorithm).into())
 }

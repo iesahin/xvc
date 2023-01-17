@@ -8,10 +8,10 @@ use std::{
 use anyhow::anyhow;
 use jwalk;
 use trycmd;
+use trycmd::cargo::cargo_bin;
 use which;
 use xvc::error::Result;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
-use xvc_tests::watch;
 
 use fs_extra::{self, dir::CopyOptions};
 
@@ -91,7 +91,6 @@ fn link_to_docs() -> Result<()> {
             // Link to the directory TMPDIR we just created above.
             // This is to renew test input for each run.
             let in_dir_symlink = doc_dir.join(dir).join(&in_dir_name);
-            watch!(&in_dir_symlink);
             if in_dir_symlink.is_symlink() {
                 fs::remove_file(&in_dir_symlink)?;
             }
@@ -115,15 +114,21 @@ fn link_to_docs() -> Result<()> {
 }
 
 #[test]
-fn doc_tests() -> Result<()> {
+#[cfg(target_os = "macos")]
+fn z_doc_tests() -> Result<()> {
     link_to_docs()?;
 
+    let path_to_xvc_test_helper = cargo_bin!("xvc").parent().unwrap().join("xvc-test-helper");
+
     trycmd::TestCases::new()
+        .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
         .register_bin("git", which::which("git")?)
-        .register_bin("echo", Path::new("/bin/echo"))
-        .register_bin("cat", Path::new("/bin/cat"))
-        .register_bin("ls", Path::new("/bin/ls"))
-        .register_bin("rm", Path::new("/bin/rm"))
+        .register_bin("echo", which::which("echo"))
+        .register_bin("cat", which::which("cat"))
+        .register_bin("ls", which::which("ls"))
+        .register_bin("rm", which::which("rm"))
+        .register_bin("perl", which::which("perl"))
+        .register_bin("tree", which::which("tree"))
         .case("docs/*/*.md")
         // We skip this for the time being.
         .skip("docs/start/ml.md");

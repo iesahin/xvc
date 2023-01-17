@@ -8,6 +8,9 @@ use xvc_ecs::R11Store;
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
+/// Entry point for `xvc pipeline update` command.
+/// Can rename the pipeline, change the working directory or set the pipeline as
+/// default.
 pub fn cmd_update(
     xvc_root: &XvcRoot,
     name: String,
@@ -27,6 +30,7 @@ pub fn cmd_update(
                 if let Some((pipeline_e, pipeline)) = pipeline_subset_store.first() {
                     let mut pipeline = pipeline.clone();
                     if default {
+                        // TODO: Implement setting the default pipeline
                         return Err(CoreError::Todo("Setting default pipeline").error());
                     }
                     if let Some(wd) = &workdir {

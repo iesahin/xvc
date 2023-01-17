@@ -27,15 +27,10 @@ Options:
       --force
           Force even if target exists
 
-      --text-or-binary <TEXT_OR_BINARY>
-          Recheck files as text, binary (Default: auto)
-          
-          Text files may go OS specific line ending replacements.
-
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
   -V, --version
-          Print version information
+          Print version
 
 ```

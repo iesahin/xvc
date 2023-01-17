@@ -21,6 +21,7 @@ Commands:
 Options:
   -v, --verbose...             Output verbosity. Use multiple times to increase the output detail
       --quiet                  Suppress all output
+      --debug                  Turn on all logging to $TMPDIR/xvc.log
   -C <WORKDIR>                 Set working directory for the command. It doesn't create a new shell, or change the directory [default: .]
   -c, --config <CONFIG>        Configuration options set from the command line in the form section.key=value You can use multiple times
       --no-system-config       Ignore system configuration file
@@ -31,8 +32,8 @@ Options:
       --skip-git               Don't run automated Git operations for this command. If you want to run git commands yourself all the time, you can set `git.auto_commit` and `git.auto_stage` options in the configuration to False
       --from-ref <FROM_REF>    Checkout the given Git reference (branch, tag, commit etc.) before performing the Xvc operation. This runs `git checkout <given-value>` before running the command
       --to-branch <TO_BRANCH>  If given, create (or checkout) the given branch before committing results of the operation. This runs `git checkout --branch <given-value>` before committing the changes
-  -h, --help                   Print help information
-  -V, --version                Print version information
+  -h, --help                   Print help
+  -V, --version                Print version
 
 ```
 

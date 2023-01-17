@@ -25,7 +25,7 @@ Options:
           Recommended to keep this name unique to refer easily.
 
   -h, --help
-          Print help information (use `-h` for a summary)
+          Print help (see a summary with '-h')
 
 ```
 

@@ -13,7 +13,8 @@ Options:
       --path <PATH>  Path to the directory to be intialized. (default: current directory)
       --no-git       Don't require Git
       --force        Create the repository even if already initialized. Overwrites the current .xvc directory Resets all data and guid, etc
-  -h, --help         Print help information
+  -h, --help         Print help
+  -V, --version      Print version
 
 ```
 

@@ -2,7 +2,7 @@ use crate::error::{Error, Result};
 use log::warn;
 use std::{fs, io::BufRead, path::PathBuf};
 use xvc_core::XvcRoot;
-use xvc_ecs::{R11Store, R1NStore, XvcStore};
+use xvc_ecs::{R11Store, R1NStore};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},
@@ -10,6 +10,12 @@ use crate::{
     XvcStepCommand,
 };
 
+/// Entry point for `xvc pipeline import` command.
+/// Reads a pipeline definition in JSON or YAML formats and creates/updates it.
+/// If `name` is None, uses the pipeline name from the file.
+/// If `file` is None, reads from stdin.
+/// If `format` is None, uses the file extension to determine the format.
+/// If `overwrite` is true, overwrites the pipeline if it already exists.
 pub fn cmd_import<R: BufRead>(
     input: R,
     xvc_root: &XvcRoot,

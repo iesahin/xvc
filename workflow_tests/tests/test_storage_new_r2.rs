@@ -117,10 +117,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 10, 10)?;
+    create_directory_tree(&temp_dir, 10, 10, Some(47))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10)?;
+    create_directory_tree(&level_1, 10, 10, Some(47))?;
 
     Ok(temp_dir)
 }
@@ -213,9 +213,9 @@ fn test_storage_new_r2() -> Result<()> {
     );
 
     // remove all cache
-    fs::remove_dir_all(&cache_dir)?;
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-checkout", "--from", "r2-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "r2-storage"])?;
 
     watch!(fetch_result);
 
@@ -231,7 +231,7 @@ fn test_storage_new_r2() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_fetch);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
-    fs::remove_dir_all(&cache_dir)?;
+    sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "r2-storage"])?;

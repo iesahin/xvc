@@ -10,6 +10,7 @@ use rand::RngCore;
 use rand::SeedableRng;
 use std::cmp;
 use std::env;
+use std::fs::OpenOptions;
 use std::{
     fs::{self, File},
     process::Command,
@@ -31,7 +32,7 @@ use std::os::windows::fs as windows_fs;
 /// Testing always send traces to `$TMPDIR/xvc.log`.
 /// The `level` here determines whether these are sent to `stdout`.
 pub fn test_logging(level: LevelFilter) {
-    setup_logging(Some(level), Some(LevelFilter::Trace));
+    setup_logging(Some(level), Some(level));
 }
 
 /// Generates a random name with `prefix` and a random number generated from `seed`.
@@ -66,7 +67,7 @@ pub fn random_temp_dir(prefix: Option<&str>) -> PathBuf {
 }
 
 /// Return a temp directory created with a seed.
-/// If the `seed` is `None`, it creates a random directory name.
+/// If `seed` is `None`, it creates a random directory name.
 /// This function doesn't create the directory.
 pub fn seeded_temp_dir(prefix: &str, seed: Option<u64>) -> PathBuf {
     let temp_dir = env::temp_dir();
@@ -115,7 +116,11 @@ pub fn temp_git_dir() -> PathBuf {
 
 /// Generate a random binary file
 pub fn generate_random_file(filename: &Path, size: usize) {
-    let f = File::create(filename).unwrap();
+    let f = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .open(filename)
+        .unwrap();
     let mut writer = BufWriter::new(f);
 
     let mut rng = rand::thread_rng();
@@ -162,14 +167,13 @@ pub fn generate_random_text_file(filename: &Path, num_lines: usize) {
     }
 }
 
-// TODO: Write some tests for complex test helpers
-
 /// Build a directory tree containing `n_dirs` under `root`.
 /// Each of these directories contain `n_files_per_dir` random binary files.
 pub fn create_directory_tree(
     root: &Path,
     n_dirs: usize,
     n_files_per_dir: usize,
+    fill_value: Option<u8>,
 ) -> Result<Vec<PathBuf>> {
     let mut paths = Vec::<PathBuf>::with_capacity(n_dirs * n_files_per_dir);
     let dirs: Vec<String> = (1..=n_dirs).map(|i| format!("dir-{:04}", i)).collect();
@@ -178,11 +182,14 @@ pub fn create_directory_tree(
         .collect();
     for dir in dirs {
         std::fs::create_dir_all(root.join(Path::new(&dir)))?;
-        for (name, size) in &files {
+        paths.extend(files.iter().map(|(name, size)| {
             let filename = PathBuf::from(&format!("{}/{}/{}", root.to_string_lossy(), dir, name));
-            generate_random_file(&filename, *size);
-            paths.push(filename);
-        }
+            match fill_value {
+                Some(byte) => generate_filled_file(&filename, *size, byte),
+                None => generate_random_file(&filename, *size),
+            }
+            filename
+        }));
     }
     Ok(paths)
 }

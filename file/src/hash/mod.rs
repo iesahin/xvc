@@ -10,9 +10,9 @@ use std::{env, path::PathBuf};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigInitParams};
 use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
-    HashAlgorithm, TextOrBinary, XvcDigest, XvcRoot,
+    HashAlgorithm, TextOrBinary, XvcRoot,
 };
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{output, watch, XvcOutputLine};
 use xvc_walker::AbsolutePath;
 
 use crate::common::{calc_digest, pipe_path_digest};
@@ -52,9 +52,11 @@ impl UpdateFromXvcConfig for HashCLI {
         }))
     }
 }
-
+/// Entry point for `xvc file hash`.
+///
+/// Calculate hash of given files in `opts.targets` and send to `output_snd`.
 pub fn cmd_hash(
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: Option<&XvcRoot>,
     opts: HashCLI,
 ) -> Result<()> {
@@ -77,15 +79,6 @@ pub fn cmd_hash(
 
     let text_or_binary = opts.text_or_binary;
     let targets = opts.targets;
-    let send_output = |path: PathBuf, digest: XvcDigest| {
-        output_snd
-            .send(XvcOutputLine::Output(format!(
-                "{}\t{}",
-                digest,
-                path.to_string_lossy()
-            )))
-            .unwrap();
-    };
 
     for t in targets {
         watch!(t);
@@ -99,16 +92,16 @@ pub fn cmd_hash(
             let (filtered_path_snd, filtered_path_rec) = unbounded();
             pipe_filter_path_errors(path_rec, filtered_path_snd)?;
             let (digest_snd, digest_rec) = unbounded();
-            pipe_path_digest(filtered_path_rec, digest_snd, &algorithm, text_or_binary)?;
+            pipe_path_digest(filtered_path_rec, digest_snd, algorithm, text_or_binary)?;
 
             for (path, digest) in digest_rec {
                 watch!(path);
                 watch!(digest);
-                send_output(path, digest);
+                output!(output_snd, "{digest}\t{}", path.to_string_lossy());
             }
         } else if t.is_file() {
-            let digest = calc_digest(&t, &algorithm, text_or_binary)?;
-            send_output(t, digest);
+            let digest = calc_digest(&t, algorithm, text_or_binary)?;
+            output!(output_snd, "{digest}\t{}", t.to_string_lossy());
         } else {
             warn!("Unsupported FS Type: {:?}", t);
         }

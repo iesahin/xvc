@@ -4,6 +4,9 @@ use xvc_core::XvcRoot;
 
 use crate::XvcPipeline;
 
+/// Entry point for `xvc pipeline delete` command.
+/// It deletes the pipeline with the given name.
+/// It is not possible to delete the default pipeline.
 pub fn cmd_delete(xvc_root: &XvcRoot, name: String) -> Result<()> {
     let conf = xvc_root.config();
     let default_pipeline = XvcPipeline::from_conf(conf);

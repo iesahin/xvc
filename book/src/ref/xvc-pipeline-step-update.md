@@ -13,10 +13,10 @@ Update step options
 Usage: xvc pipeline step update [OPTIONS] --step-name <STEP_NAME>
 
 Options:
-  -s, --step-name <STEP_NAME>  Name of the step (that must already be added)
-  -c, --command <COMMAND>      Command to run the step
-      --changed <CHANGED>      When to run the command
-  -h, --help                   Print help information
+  -s, --step-name <STEP_NAME>  Name of the step to update. The step should already be defined
+  -c, --command <COMMAND>      Step command to run
+      --when <WHEN>            When to run the command. One of always, never, by_dependencies (default). This is used to freeze or invalidate a step manually
+  -h, --help                   Print help
 
 ```
 

@@ -1,3 +1,8 @@
+//! Pipeline management commands and data structures
+//!
+//! This contains CLI structs for `xvc pipeline` subcommands, [`init`] function to
+//! run during `xvc init` for pipeline related initialization, [`run`] function
+//! to dispatch the options to subcommands.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod error;
@@ -5,14 +10,14 @@ mod pipeline;
 
 pub use crate::pipeline::api::{
     dag::cmd_dag, delete::cmd_delete, export::cmd_export, import::cmd_import, list::cmd_list,
-    new::cmd_new, run::cmd_run, step_dependency::cmd_step_dependency, step_new::cmd_step_new,
-    step_output::cmd_step_output, step_show::cmd_step_show, step_update::cmd_step_update,
-    update::cmd_update,
+    new::cmd_new, run::cmd_run, step_new::cmd_step_new, step_output::cmd_step_output,
+    step_show::cmd_step_show, step_update::cmd_step_update, update::cmd_update,
 };
 
 use clap::Parser;
 
 use crossbeam_channel::Sender;
+use pipeline::api::step_dependency::XvcDependencyList;
 use pipeline::deps;
 use pipeline::schema::XvcSchemaSerializationFormat;
 
@@ -40,188 +45,260 @@ pub use crate::pipeline::schema::XvcStepSchema;
 pub use crate::pipeline::step::XvcStep;
 use crate::pipeline::XvcStepInvalidate;
 
+/// Pipeline management commands
 #[derive(Debug, Parser)]
-#[command(name = "pipeline", about = "Pipeline management commands")]
+#[command(name = "pipeline")]
 pub struct PipelineCLI {
-    #[arg(long, short, help = "Name of the pipeline this command applies to")]
+    /// Name of the pipeline this command applies
+    #[arg(long, short)]
     pub name: Option<String>,
+    /// Subcommand to run
     #[command(subcommand)]
     pub subcommand: PipelineSubCommand,
 }
 
+/// Pipeline management subcommands
 #[derive(Debug, Clone, Parser)]
-#[command(about = "Pipeline management commands")]
+#[command()]
 pub enum PipelineSubCommand {
-    #[command(about = "Add a new pipeline")]
+    /// Create a new pipeline
+    #[command()]
     New {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline this command applies to
+        #[arg(long, short)]
         name: String,
-        #[arg(short, long, help = "default working directory")]
+
+        /// Default working directory
+        #[arg(short, long)]
         workdir: Option<PathBuf>,
-        #[arg(long, help = "set this to default")]
+
+        /// Set this pipeline as default
+        #[arg(long)]
         set_default: bool,
     },
 
-    #[command(about = "Rename, change dir or set a pipeline default")]
+    /// Rename, change dir or set a pipeline as default
+    #[command()]
     Update {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline this command applies to
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(long, help = "rename this pipeline to")]
+
+        /// Rename the pipeline to
+        #[arg(long)]
         rename: Option<String>,
-        #[arg(long, help = "set the working directory to")]
+
+        /// Set the working directory
+        #[arg(long)]
         workdir: Option<PathBuf>,
+
+        /// Set this pipeline as default
         #[arg(long, help = "set this pipeline default")]
         set_default: bool,
     },
 
+    /// Delete a pipeline
     #[command(about = "Delete a pipeline")]
     Delete {
-        #[arg(long, short, help = "Name of the pipeline to be deleted")]
+        /// Name or GUID of the pipeline to be deleted
+        #[arg(long, short)]
         name: String,
     },
 
+    /// Run a pipeline
     #[command(about = "Run a pipeline")]
     Run {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to run
+        #[arg(long, short)]
         name: Option<String>,
     },
-    #[command(about = "List all pipelines")]
+
+    /// List all pipelines
+    #[command()]
     List,
-    #[command(about = "Generate mermaid diagram for the pipeline")]
+
+    /// Generate a dot or mermaid diagram for the pipeline
+    #[command()]
     Dag {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to generate the diagram
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(long, help = "File to write the pipeline. Writes to stdin if not set.")]
+
+        /// Output file. Writes to stdout if not set.
+        #[arg(long)]
         file: Option<PathBuf>,
-        #[arg(long, help = "Format for graph")]
-        format: Option<XvcPipelineDagFormat>,
+
+        /// Format for graph. Either dot or mermaid.
+        #[arg(long, default_value = "dot")]
+        format: XvcPipelineDagFormat,
     },
-    #[command(about = "Export the pipeline to a YAML, TOML or JSON file")]
+
+    /// Export the pipeline to a YAML or JSON file to edit
+    #[command()]
     Export {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to export
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(long, help = "File to write the pipeline. Writes to stdin if not set.")]
+
+        /// File to write the pipeline. Writes to stdout if not set.
+        #[arg(long)]
         file: Option<PathBuf>,
-        #[arg(long, help = "Format for output to stdout.")]
+
+        /// Output format. One of json or yaml. If not set, the format is
+        /// guessed from the file extension. If the file extension is not set,
+        /// json is used as default.
+        #[arg(long)]
         format: Option<XvcSchemaSerializationFormat>,
     },
-    #[command(about = "Import the pipeline from a file")]
+
+    /// Import the pipeline from a file
+    #[command()]
     Import {
-        #[arg(long, short, help = "Name of the pipeline this command applies to")]
+        /// Name of the pipeline to import.
+        /// If not set, the name from the file is used.
+        #[arg(long, short)]
         name: Option<String>,
-        #[arg(
-            long,
-            help = "File to read the pipeline. Reads from stdin if not specified."
-        )]
+
+        /// File to read the pipeline. Use stdin if not specified.
+        #[arg(long)]
         file: Option<PathBuf>,
-        #[arg(long, help = "Format for input from stdin.")]
+
+        /// Input format. One of json or yaml. If not set, the format is
+        /// guessed from the file extension. If the file extension is not set,
+        /// json is used as default.        
+        #[arg(long)]
         format: Option<XvcSchemaSerializationFormat>,
-        #[arg(
-            long,
-            help = "Whether to overwrite the current pipeline if one found with an identical name"
-        )]
+
+        /// Overwrite the pipeline even if the name already exists
+        #[arg(long)]
         overwrite: bool,
     },
-    #[command(about = "Step management commands")]
+
+    /// Step creation, dependency, output commands
+    #[command()]
     Step(StepCLI),
 }
 
+/// Step creation, dependency, output commands
 #[derive(Debug, Clone, Parser)]
-#[command(name = "step", about = "Step management commands")]
+#[command(name = "step")]
 pub struct StepCLI {
+    /// Step subcommand
     #[command(subcommand)]
     pub subcommand: StepSubCommand,
 }
 
+/// Step management subcommands
 #[derive(Debug, Clone, Parser)]
-#[command(about = "Step management commands")]
+#[command()]
 pub enum StepSubCommand {
-    #[command(about = "Add a new step")]
+    /// Add a new step
+    #[command()]
     New {
-        #[arg(long, short, help = "Name of the step")]
+        /// Name of the new step
+        #[arg(long, short)]
         step_name: String,
-        #[arg(long, short, help = "Command to run the step")]
+
+        /// Step command to run
+        #[arg(long, short)]
         command: Option<String>,
-        #[arg(long, help = "When to run the command")]
-        changed: Option<XvcStepInvalidate>,
+
+        /// When to run the command. One of always, never, by_dependencies (default).
+        /// This is used to freeze or invalidate a step manually.
+        #[arg(long)]
+        when: Option<XvcStepInvalidate>,
     },
 
+    /// Update a step's command or when options.
     #[command(about = "Update step options")]
     Update {
-        #[arg(long, short, help = "Name of the step (that must already be added)")]
+        /// Name of the step to update. The step should already be defined.
+        #[arg(long, short)]
         step_name: String,
-        #[arg(long, short, help = "Command to run the step")]
+
+        /// Step command to run
+        #[arg(long, short)]
         command: Option<String>,
-        #[arg(long, help = "When to run the command")]
-        changed: Option<XvcStepInvalidate>,
+
+        /// When to run the command. One of always, never, by_dependencies (default).
+        /// This is used to freeze or invalidate a step manually.
+        #[arg(long)]
+        when: Option<XvcStepInvalidate>,
     },
 
-    #[command(about = "Add a dependency to a step in the pipeline")]
+    /// Add a dependency to a step
+    #[command()]
     Dependency {
-        #[arg(long, short, help = "Name of the step")]
+        /// Name of the step to add the dependency to
+        #[arg(long, short)]
         step_name: String,
-        #[arg(
-            long = "file",
-            help = "Add a file dependency to the step. Can be used multiple times."
-        )]
+
+        /// Add a file dependency to the step. Can be used multiple times.
+        #[arg(long = "file")]
         files: Option<Vec<String>>,
-        #[arg(long = "step", help = "Add explicit step dependencies to run")]
+
+        /// Add a step dependency to a step. Can be used multiple times.
+        /// Steps are referred with their names.
+        #[arg(long = "step")]
         steps: Option<Vec<String>>,
-        #[arg(long = "pipeline", help = "Add explicit pipeline dependencies to run")]
+
+        /// Add a pipeline dependency to a step. Can be used multiple times.
+        /// Pipelines are referred with their names.
+        #[arg(long = "pipeline")]
         pipelines: Option<Vec<String>>,
-        #[arg(
-            long = "directory",
-            help = "Add a directory dependency to the step. Can be used multiple times."
-        )]
+
+        /// Add a directory dependency to the step. Can be used multiple times.
+        #[arg(long = "directory")]
         directories: Option<Vec<String>>,
-        #[arg(
-            long = "glob",
-            help = "Add a glob dependency to the step. Can be used multiple times."
-        )]
+
+        /// Add a glob dependency to the step. Can be used multiple times.
+        #[arg(long = "glob")]
         globs: Option<Vec<String>>,
-        #[arg(
-            long = "param",
-            help = "Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times."
-        )]
+
+        /// Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times.
+        #[arg(long = "param")]
         params: Option<Vec<String>>,
+
+        /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
         #[arg(
             long = "regex",
             aliases = &["regexp"],
-            help = "Add a regex dependency in the form filename.txt:/^regex/"
         )]
         regexps: Option<Vec<String>>,
+
+        /// Add a line dependency in the form filename.txt::123-234
         #[arg(
             long = "line",
             aliases = &["lines"],
-            help = "Add a line dependency in the form filename.txt::123-234"
         )]
         lines: Option<Vec<String>>,
     },
 
-    #[command(about = "Add an output to a step in the pipeline")]
+    /// Add an output to a step
+    #[command()]
     Output {
-        #[arg(long, short, help = "Name of the step")]
+        /// Name of the step to add the output to
+        #[arg(long, short)]
         step_name: String,
-        #[arg(
-            long = "output-file",
-            help = "Add a file output to the step. Can be used multiple times."
-        )]
+
+        /// Add a file output to the step. Can be used multiple times.
+        #[arg(long = "output-file")]
         files: Option<Vec<String>>,
-        #[arg(
-            long = "output-metric",
-            help = "Add a metrics output to the step. Can be used multiple times."
-        )]
+
+        /// Add a metric output to the step. Can be used multiple times.
+        #[arg(long = "output-metric")]
         metrics: Option<Vec<String>>,
-        #[arg(
-            long = "output-image",
-            help = "Add an image output to the step. Can be used multiple times."
-        )]
+
+        /// Add an image output to the step. Can be used multiple times.
+        #[arg(long = "output-image")]
         images: Option<Vec<String>>,
     },
 
-    #[command(about = "Print step configuration")]
+    /// Print step configuration
+    #[command()]
     Show {
-        #[arg(long, short, help = "Name of the step")]
+        /// Name of the step to show
+        #[arg(long, short)]
         step_name: String,
     },
 }
@@ -237,6 +314,8 @@ impl UpdateFromXvcConfig for PipelineCLI {
     }
 }
 
+/// A pipeline is a collection of steps that are run in a specific order.
+/// This struct defines the name of it.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, PartialOrd, Ord)]
 pub struct XvcPipeline {
     /// The name of the pipeline, that's also the unique ID
@@ -255,6 +334,8 @@ impl FromStr for XvcPipeline {
 persist!(XvcPipeline, "xvc-pipeline");
 conf!(XvcPipeline, "pipeline.default");
 
+/// A pipeline run directory where the pipeline is run.
+/// It should be within the workspace to be portable across systems.
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct XvcPipelineRunDir {
     /// The directory to run the command relative to xvc_root
@@ -264,6 +345,9 @@ pub struct XvcPipelineRunDir {
 persist!(XvcPipelineRunDir, "xvc-pipeline-run-dir");
 
 impl XvcPipeline {
+    /// Load a pipeline by name.
+    ///
+    /// Returns the entity and the pipeline if found. Otherwise returns [Error::NoPipelinesFound].
     pub fn from_name(xvc_root: &XvcRoot, name: &str) -> Result<(XvcEntity, Self)> {
         let all = xvc_root.load_store::<XvcPipeline>()?;
         match all.iter().find(|(_, p)| p.name == name) {
@@ -275,20 +359,21 @@ impl XvcPipeline {
     }
 }
 
-// this is run during repository initialization
+/// Initialize pipeline stores and save them.
+///
+/// This is to run during `xvc init`.
 pub fn init(xvc_root: &XvcRoot) -> Result<()> {
     let conf = xvc_root.config();
     let mut pipeline_store = XvcStore::<XvcPipeline>::new();
     // If there is a system config for default pipeline name, adhere to it
-    let first_name = if let Ok(config_opt) = conf.get_str("pipeline.default") {
+    let initial_name = if let Ok(config_opt) = conf.get_str("pipeline.default") {
         config_opt.option
     } else {
         "default".to_string()
     };
 
-    pipeline_store.insert(xvc_root.new_entity(), XvcPipeline { name: first_name });
+    pipeline_store.insert(xvc_root.new_entity(), XvcPipeline { name: initial_name });
 
-    // We don't add anything to rundir_store, it's run in xvc_root
     xvc_root.save_store(&pipeline_store)?;
     xvc_root.save_store(&XvcStore::<XvcPipelineRunDir>::new())?;
 
@@ -301,9 +386,12 @@ pub fn init(xvc_root: &XvcRoot) -> Result<()> {
     Ok(())
 }
 
-pub fn run<R: BufRead>(
+/// Run `xvc pipeline` command.
+/// This is the entry point for the pipeline subcommand.
+/// It dispatches to the subcommands using [PipelineCLI] argument.
+pub fn cmd_pipeline<R: BufRead>(
     input: R,
-    output_snd: Sender<XvcOutputLine>,
+    output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     command: PipelineCLI,
 ) -> Result<()> {
@@ -345,21 +433,29 @@ pub fn run<R: BufRead>(
             format,
             overwrite,
         } => cmd_import(input, xvc_root, name, file, format, overwrite),
-        PipelineSubCommand::Step(step_cli) => handle_step_cli(xvc_root, &pipeline_name, step_cli),
+        PipelineSubCommand::Step(step_cli) => {
+            handle_step_cli(output_snd, xvc_root, &pipeline_name, step_cli)
+        }
     }
 }
 
-pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI) -> Result<()> {
+/// Dispatch `xvc pipeline step` subcommands.
+pub fn handle_step_cli(
+    output_snd: &Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    pipeline_name: &str,
+    command: StepCLI,
+) -> Result<()> {
     match command.subcommand {
         StepSubCommand::New {
             step_name,
             command,
-            changed,
+            when: changed,
         } => cmd_step_new(xvc_root, pipeline_name, step_name, command, changed),
         StepSubCommand::Update {
             step_name,
             command,
-            changed,
+            when: changed,
         } => cmd_step_update(xvc_root, pipeline_name, step_name, command, changed),
 
         StepSubCommand::Dependency {
@@ -372,19 +468,16 @@ pub fn handle_step_cli(xvc_root: &XvcRoot, pipeline_name: &str, command: StepCLI
             pipelines,
             regexps,
             lines,
-        } => cmd_step_dependency(
-            xvc_root,
-            pipeline_name,
-            step_name,
-            files,
-            directories,
-            globs,
-            params,
-            steps,
-            pipelines,
-            regexps,
-            lines,
-        ),
+        } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
+            .files(files)?
+            .directories(directories)?
+            .globs(globs)?
+            .params(params)?
+            .steps(steps)?
+            .pipelines(pipelines)?
+            .regexes(regexps)?
+            .lines(lines)?
+            .record(),
         StepSubCommand::Output {
             step_name,
             files,

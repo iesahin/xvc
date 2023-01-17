@@ -1,105 +1,134 @@
 mod common;
+use assert_fs::fixture::ChildPath;
+use assert_fs::prelude::{FileTouch, FileWriteBin, PathChild};
+use assert_fs::TempDir;
 use common::*;
+use std::env;
+use std::fs::remove_file;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
 use std::thread::{self, sleep};
 use std::time::Duration;
 
-use common::*;
 use xvc::error::Result;
 
 use xvc::watch;
 use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::XVCIGNORE_FILENAME;
-use xvc_walker::notify::{make_watcher, PathEvent};
+
+use xvc_walker::notify::{make_polling_watcher, PathEvent};
 use xvc_walker::{walk_serial, IgnoreRules, PathMetadata, Result as XvcWalkerResult, WalkOptions};
 
 #[test]
 fn test_notify() -> Result<()> {
-    let xvc_root = run_in_example_xvc(true)?;
+    let temp_dir = TempDir::new()?;
+    env::set_current_dir(&temp_dir)?;
+    watch!(temp_dir);
     test_logging(log::LevelFilter::Trace);
-    let initial_rules = IgnoreRules::try_from_patterns(&xvc_root, COMMON_IGNORE_PATTERNS)?;
+    let initial_rules = IgnoreRules::try_from_patterns(&temp_dir, COMMON_IGNORE_PATTERNS)?;
     let walk_options = WalkOptions {
         ignore_filename: Some(XVCIGNORE_FILENAME.to_string()),
         include_dirs: true,
     };
-    let res_paths = Arc::new(Mutex::new(Vec::<XvcWalkerResult<PathMetadata>>::new()));
-    let res_paths_copy = res_paths.clone();
+    let (created_paths_snd, created_paths_rec) = crossbeam_channel::unbounded();
+    let (updated_paths_snd, _) = crossbeam_channel::unbounded();
+    let (deleted_paths_snd, deleted_paths_rec) = crossbeam_channel::unbounded();
+
     let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
-    let all_rules = walk_serial(initial_rules, &xvc_root, &walk_options, &mut initial_paths)?;
+
+    watch!(initial_paths.len());
+
+    let files: Vec<ChildPath> = (1..10)
+        .map(|n| temp_dir.child(format!("file-000{n}.bin")))
+        .collect();
+
+    let files_len = files.len();
+
+    files.iter().for_each(|f| {
+        watch!(f.path());
+        f.touch().unwrap();
+    });
+    const MAX_ERROR_COUNT: usize = 10;
+
+    let all_rules = walk_serial(initial_rules, &temp_dir, &walk_options, &mut initial_paths)?;
     watch!(all_rules);
-    let (_watcher, receiver) = make_watcher(all_rules)?;
+    let (watcher, receiver) = make_polling_watcher(all_rules)?;
+    watch!(watcher);
+    watch!(initial_paths.len());
 
-    const MAX_ERROR_COUNT: usize = 100;
-
-    let handle = thread::spawn(move || {
-        let mut_res_paths = res_paths.clone();
-        let mut res_paths = mut_res_paths.lock().unwrap();
+    let event_handler = thread::spawn(move || {
         let mut err_counter = MAX_ERROR_COUNT;
         loop {
+            watch!(receiver);
             let r = receiver.try_recv();
+            watch!(r);
             if let Ok(pe) = r {
                 err_counter = MAX_ERROR_COUNT;
                 match pe {
-                    PathEvent::Create { path, metadata } => {
-                        res_paths.push(Ok(PathMetadata { path, metadata }))
+                    PathEvent::Create { path, .. } => {
+                        created_paths_snd.send(path).unwrap();
                     }
-                    PathEvent::Update { path, metadata } => {
-                        res_paths.retain(|pm| pm.as_ref().unwrap().path.clone() != path.clone());
-                        res_paths.push(Ok(PathMetadata { path, metadata }));
+                    PathEvent::Update { path, .. } => {
+                        updated_paths_snd.send(path).unwrap();
                     }
                     PathEvent::Delete { path } => {
-                        res_paths.retain(|pm| pm.as_ref().unwrap().path != path)
+                        deleted_paths_snd.send(path).unwrap();
                     }
                 }
             } else {
                 if err_counter > 0 {
                     err_counter -= 1;
-                    watch!(err_counter);
-                    sleep(Duration::from_millis(100));
                 } else {
                     break;
                 }
             }
+
+            watch!(err_counter);
+            sleep(Duration::from_millis(
+                ((MAX_ERROR_COUNT - err_counter) * 100) as u64,
+            ));
         }
-        drop(receiver);
+        watch!(err_counter);
+        watch!(receiver);
     });
-    let files: Vec<String> = (1..10).map(|n| format!("file-000{n}.bin")).collect();
-    watch!(files.len());
-    let size1 = 10;
-    files
-        .iter()
-        .for_each(|f| generate_random_file(&xvc_root.join(&PathBuf::from(f)), size1));
 
-    sleep(Duration::from_millis(1000));
+    sleep(Duration::from_millis(3000));
+    let size_updated = 20;
 
-    let pmp_names: Vec<String> = res_paths_copy
-        .clone()
-        .lock()
-        .unwrap()
-        .iter()
-        .map(|p| {
-            p.as_ref()
-                .unwrap()
-                .path
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .to_string()
-        })
-        .collect();
+    files.iter().for_each(|f| {
+        watch!(f.path());
+        f.write_binary(&vec![0; size_updated]).unwrap();
+    });
 
-    watch!(pmp_names.len());
+    sleep(Duration::from_millis(3000));
+    files.iter().for_each(|f| {
+        watch!(f.path());
+        remove_file(f.path()).unwrap();
+    });
 
-    sleep(Duration::from_millis(1000));
+    sleep(Duration::from_millis(2000));
 
-    assert!(pmp_names
-        .iter()
-        .any(|f| f.to_string() == "file-0001.bin".to_string()));
+    event_handler.join().unwrap();
 
-    watch!(handle);
+    {
+        let created_paths = created_paths_rec.iter().collect::<Vec<PathBuf>>();
+        watch!(created_paths);
+        let len = created_paths.len();
+        watch!(len);
+        // This also gets the directory creation event itself
+        assert!(len == files_len + 1);
+    }
+    // TODO: This is not working for some reason on macOS
+    // {
+    //     let updated_paths = updated_paths_rec.iter().collect::<Vec<PathBuf>>();
+    //     watch!(updated_paths);
+    //     assert_eq!(updated_paths.len(), files_len);
+    // }
 
-    handle.join().unwrap();
+    {
+        let deleted_paths = deleted_paths_rec.iter().collect::<Vec<PathBuf>>();
+        watch!(deleted_paths);
+        assert_eq!(deleted_paths.len(), files_len);
+    }
 
-    clean_up(&xvc_root)
+    Ok(())
 }

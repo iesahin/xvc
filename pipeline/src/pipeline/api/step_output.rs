@@ -6,6 +6,12 @@ use xvc_ecs::R1NStore;
 
 use crate::{XvcMetricsFormat, XvcOutput, XvcPipeline, XvcStep};
 
+/// Entry point for `xvc pipeline step output` command.
+///
+/// It loads the pipeline and the step with the given names. Then records
+/// `files`, `metrics` and `images` as [XvcOutput]s of the step.
+///
+/// TODO: This can be split like [crate::pipeline::api::step_dependency::XvcDependencyList].
 pub fn cmd_step_output(
     xvc_root: &XvcRoot,
     pipeline_name: &str,

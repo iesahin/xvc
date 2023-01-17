@@ -1,18 +1,17 @@
 # xvc pipeline new
 
-
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline new --help
-Add a new pipeline
+Create a new pipeline
 
 Usage: xvc pipeline new [OPTIONS] --name <NAME>
 
 Options:
   -n, --name <NAME>        Name of the pipeline this command applies to
-  -w, --workdir <WORKDIR>  default working directory
-      --set-default        set this to default
-  -h, --help               Print help information
+  -w, --workdir <WORKDIR>  Default working directory
+      --set-default        Set this pipeline as default
+  -h, --help               Print help
 
 ```

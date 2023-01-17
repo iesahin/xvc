@@ -9,14 +9,16 @@ use xvc_core::XvcPath;
 use xvc_pipeline::{XvcDependency, XvcMetricsFormat, XvcOutput, XvcParamFormat, XvcPipelineSchema};
 
 use xvc::error::Result;
+use xvc_tests::watch;
 
 #[test]
 fn test_pipeline_export() -> Result<()> {
+    test_logging(log::LevelFilter::Trace);
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
         c.extend(cmd);
-        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
     x(&[
@@ -97,14 +99,18 @@ fn test_pipeline_export() -> Result<()> {
     let json_export = x(&["export", "--format", "json"])?;
     let ps_json: XvcPipelineSchema = serde_json::from_str(&json_export)?;
 
+    watch!(ps_json);
+
     assert!(ps_json.name == "default");
     assert!(ps_json.version == 1);
     assert!(ps_json.steps.len() == 2);
-    assert!(ps_json.steps[0].name == "step1");
+    // TODO: We may want to sort the steps by name
+    assert!(ps_json.steps[0].name == "step1", "{:?}", ps_json.steps);
     assert!(ps_json.steps[0].command == "touch abc.txt");
     assert!(ps_json.steps[1].name == "step2");
     assert!(ps_json.steps[1].command == "touch def.txt");
     let deps_json = &ps_json.steps[1].dependencies;
+    watch!(deps_json);
     assert!(deps_json.len() == 6);
     assert!(
         deps_json[0]
@@ -117,7 +123,9 @@ fn test_pipeline_export() -> Result<()> {
         deps_json[1]
             == XvcDependency::Glob {
                 glob: "*.txt".to_string()
-            }
+            },
+        "{:?}",
+        deps_json[1]
     );
 
     assert!(
@@ -168,8 +176,15 @@ fn test_pipeline_export() -> Result<()> {
     let outs_json = &ps_json.steps[1].outputs;
 
     assert!(outs_json.len() == 3);
+
     assert!(
         outs_json[0]
+            == XvcOutput::File {
+                path: XvcPath::new(&xvc_root, &xvc_root.absolute_path(), Path::new("def.txt"))?,
+            }
+    );
+    assert!(
+        outs_json[1]
             == XvcOutput::Metric {
                 path: XvcPath::new(
                     &xvc_root,
@@ -177,14 +192,9 @@ fn test_pipeline_export() -> Result<()> {
                     Path::new("metrics.json")
                 )?,
                 format: XvcMetricsFormat::JSON,
-            }
-    );
-
-    assert!(
+            },
+        "{:?}",
         outs_json[1]
-            == XvcOutput::File {
-                path: XvcPath::new(&xvc_root, &xvc_root.absolute_path(), Path::new("def.txt"))?,
-            }
     );
 
     assert!(

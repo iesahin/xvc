@@ -4,6 +4,7 @@ use log::{debug, error, info, trace, warn};
 use std::fmt::Debug;
 use std::io;
 use std::path::PathBuf;
+use std::time::SystemTimeError;
 use thiserror::Error as ThisError;
 
 /// Error messages for xvc-file
@@ -29,7 +30,7 @@ pub enum Error {
     #[error("Walker Error: {source}")]
     WalkerError {
         #[from]
-        source: xvc_walker::error::Error,
+        source: xvc_walker::Error,
     },
     #[error("Ecs Error: {source}")]
     EcsError {
@@ -69,6 +70,22 @@ pub enum Error {
     },
     #[error("Crossbeam Send Error for Type: {t:?} {cause:?}")]
     CrossbeamSendError { t: String, cause: String },
+
+    #[error("Strip Prefix Error")]
+    StripPrefixError {
+        #[from]
+        source: std::path::StripPrefixError,
+    },
+    #[error("Relative Path Strip Prefix Error: {:?}", e)]
+    RelativeStripPrefixError { e: relative_path::StripPrefixError },
+
+    #[error("System time error")]
+    SystemTimeError {
+        #[from]
+        source: SystemTimeError,
+    },
+    #[error("Xvc does not support content digest for symlink: {path}")]
+    ContentDigestNotSupported { path: PathBuf },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
@@ -84,29 +101,37 @@ where
 }
 
 impl Error {
+    /// Write error message to stderr using [log::debug] and return the error
     pub fn debug(self) -> Self {
         debug!("{}", self);
         self
     }
+    /// Write error message to stderr using [log::trace] and return the error
     pub fn trace(self) -> Self {
         trace!("{}", self);
         self
     }
+
+    /// Write error message to stderr using [log::warn] and return the error
     pub fn warn(self) -> Self {
         warn!("{}", self);
         self
     }
+    /// Write error message to stderr using [log::error] and return the error
     pub fn error(self) -> Self {
         error!("{}", self);
         self
     }
+    /// Write error message to stderr using [log::info] and return the error
     pub fn info(self) -> Self {
         info!("{}", self);
         self
     }
+    /// Write error message to stderr using [panic!] and quit.
     pub fn panic(self) -> Self {
         panic!("{}", self);
     }
 }
 
+/// Result type for xvc-file crate
 pub type Result<T> = std::result::Result<T, Error>;

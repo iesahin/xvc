@@ -18,8 +18,8 @@ Options:
       --text-or-binary <TEXT_OR_BINARY>
           For "text" remove line endings before calculating the digest. Keep line endings if "binary". "auto" (default) detects the type by checking 0s in the first 8Kbytes, similar to Git [default: auto]
   -h, --help
-          Print help information
+          Print help
   -V, --version
-          Print version information
+          Print version
 
 ```
