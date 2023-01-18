@@ -7,14 +7,17 @@ use serde::{Deserialize, Serialize};
 use xvc_core::XvcRoot;
 use xvc_ecs::{persist, XvcEntity};
 
+/// A step (stage) in a pipeline.
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
 pub struct XvcStep {
+    /// Name of the step
     pub name: String,
 }
 
 persist!(XvcStep, "xvc-step");
 
 impl XvcStep {
+    /// Search for a step with the given name in the given pipeline.
     pub fn from_name(
         xvc_root: &XvcRoot,
         pipeline_e: &XvcEntity,
@@ -33,7 +36,8 @@ impl XvcStep {
             }),
         }
     }
-    #[allow(dead_code)]
+
+    /// Search for a step with the given entity in the given pipeline.
     pub fn from_entity(
         xvc_root: &XvcRoot,
         pipeline_e: &XvcEntity,
@@ -50,6 +54,7 @@ impl XvcStep {
     }
 }
 
+// TODO: Link to the Documentation after it's written: https://github.com/iesahin/xvc/issues/202
 state_machine! {
     XvcStepState {
         InitialStates { Begin }

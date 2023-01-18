@@ -30,6 +30,7 @@ tree and subtasks are marked with indentation.
   - [x] Update the ECS documentation
     - [x] Update arch/ecs.md
     - [x] Search for any `XvcEntity` references that may be changed
+  - [x] Write pipelines code documentation
 
 ## v0.4.2
 
