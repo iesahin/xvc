@@ -64,7 +64,7 @@ where
     /// ```
     /// # use xvc_ecs::{R11Store, XvcEntity};
     /// # let mut rs = R11Store::<String, String>::new();
-    /// let entity: XvcEntity = 100usize.into();
+    /// let entity: XvcEntity = (100u64, 200u64).into();
     /// rs.insert(&entity, "left component".into(), "right component".to_string());
     /// ```
 
@@ -77,7 +77,7 @@ where
     /// ```
     /// # use xvc_ecs::{R11Store, XvcEntity};
     /// # let mut rs = R11Store::<String, String>::new();
-    /// let entity: XvcEntity = 100.into();
+    /// let entity: XvcEntity = (100, 200).into();
     /// rs.insert(&entity, "left component".into(), "right component".into());
     /// ```
     pub fn right_to_left(&self, entity: &XvcEntity) -> Option<(&XvcEntity, &T)> {
@@ -88,7 +88,7 @@ where
     /// ```
     /// # use xvc_ecs::{R11Store, XvcEntity};
     /// # let mut rs = R11Store::<String, String>::new();
-    /// let entity: XvcEntity = 100.into();
+    /// let entity: XvcEntity = (100, 200).into();
     /// rs.insert(&entity, "left component".into(), "right component".into());
     /// let t = rs.tuple(&entity);
     /// ```

@@ -11,6 +11,7 @@ tree and subtasks are marked with indentation.
   - [x] `From<(u64, u64)>` and `Into<(u64, u64)>`
   - [x] Tests
     - [x] Add tests for `From<u128>` and `Into<u128>` ecs/src/ecs/mod.rs
+    - [x] Fix doc tests that use `100usize` to create `XvcEntity`
 - [x] `xvc-test-helper` binary is not produced at builds
   - [x] Moved it from dev-dependencies to dependencies in workflow_tests/Cargo.toml
     - [x] Still doesn't work 🛑
