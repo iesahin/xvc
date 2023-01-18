@@ -10,6 +10,7 @@ mod common;
 
 pub mod bring;
 pub mod carry_in;
+pub mod copy;
 pub mod error;
 pub mod hash;
 pub mod list;
@@ -20,6 +21,7 @@ pub mod track;
 use crate::error::{Error, Result};
 use carry_in::CarryInCLI;
 use clap::Subcommand;
+use copy::CopyCLI;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
@@ -60,6 +62,8 @@ pub enum XvcFileSubCommand {
     /// Carry (commit) changed files to cache
     #[command(alias = "commit")]
     CarryIn(CarryInCLI),
+    /// Copy from source to another location in the workspace
+    Copy(CopyCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
     /// Send (push, upload) files to external storages
@@ -165,6 +169,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Bring(opts) => bring::cmd_bring(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Copy(opts) => copy::cmd_copy(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

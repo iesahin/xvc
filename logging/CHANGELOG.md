@@ -34,6 +34,8 @@ tree and subtasks are marked with indentation.
 - [ ] Implement `xvc file copy` command
   - [ ] Issue: https://github.com/iesahin/xvc/issues/179
   - [ ] Create the user interface
+    - [x] Add `copy` to `XvcFileCLI`
+    - [x] Created CopyCLI
   - [ ] Write the documentation and doc tests: 
     - [x] Write initial examples: book/src/ref/xvc-file-copy.md
   - [ ] Implement the command
