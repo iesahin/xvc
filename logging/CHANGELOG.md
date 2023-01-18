@@ -4,12 +4,12 @@ This document is a change log that I write for the project, as I develop. It's a
 tree and subtasks are marked with indentation. 
 
 ## v0.5.0
-
 - Refactor XvcEntity to `(u64, u64)`
   - Issue: <https://github.com/iesahin/xvc/issues/198>
+  - PR: <https://github.com/iesahin/xvc/pulls/201>
   - [x] `From<u128>` and `Into<u128>`
   - [x] `From<(u64, u64)>` and `Into<(u64, u64)>`
-  - [ ] Tests
+  - [x] Tests
     - [x] Add tests for `From<u128>` and `Into<u128>` ecs/src/ecs/mod.rs
 - [x] `xvc-test-helper` binary is not produced at builds
   - [x] Moved it from dev-dependencies to dependencies in workflow_tests/Cargo.toml
@@ -18,12 +18,14 @@ tree and subtasks are marked with indentation.
     - [x] It's available in nightly: <https://github.com/rust-lang/cargo/issues/9096>
     - [x] Revert to dev-dependencies
   - [x] `z_test_docs` fails immediately if no `xvc-test-helper` binary is found.
-  - [ ] Run the tests without `-p workflow_tests`
-    - [ ] Hypothesis: The reason the test helper binary is not produced is that we run only `workflow_tests` crate.
-    - [ ] Looks this hypothesis is not correct. 
-  - [ ] The best way seems to be adding
+  - [x] Run the tests without `-p workflow_tests`
+    - [x] Hypothesis: The reason the test helper binary is not produced is that we run only `workflow_tests` crate.
+    - [x] Looks this hypothesis is not correct. 
+  - [x] The best way seems to be adding
     <https://docs.rs/escargot/latest/escargot/> and building the binary before
     the doc tests.
+    - Now builds the binary before running the doc tests. ✅
+  - Update the ECS documentation
 
 ## v0.4.2
 

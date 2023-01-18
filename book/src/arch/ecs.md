@@ -11,7 +11,7 @@ Although it may differ in other frameworks, Xvc assumes the following:
 
 - An entity is a neutral way of tracking components and their relationships. 
 It doesn't contain any semantics other than _being an entity._
-An _entity_ in Xvc is an atomic usize integer. (`XvcEntity`)
+An _entity_ in Xvc is an atomic integer tuple. (`XvcEntity`)
 
 - A component is a bundle of associated data about these entities.
 All semantics of entities are described through components.
@@ -20,7 +20,7 @@ Xvc uses components to keep track of different aspects of file system objects, d
 - A system is where the components are created and modified.
 Xvc considers all modules that interact with components as separate systems.
 
-For example, suppose you're want to track a new file in Xvc.
+Suppose you're want to track a new file in Xvc.
 Xvc creates a new entity for this file. 
 Associates the path (`XvcPath`) with this entity. 
 Checks the file metadata, creates an instance of `XvcMetadata`, and associates it with this entity. 
@@ -38,26 +38,26 @@ It doesn't have different functionality for files that are models or data.
 In the future, however, when this will be added, an `XvcModel` component will be created and associated with the same entity of an `XvcPath`. 
 It will allow to work with some paths as model files but it doesn't require _paths_ to be known beforehand.
 There may be other metadata, like _features_ or _version_ associated with models that are more important. 
-There may be some models without a file system path, maybe living only in memory or on the cloud.
+There may be some models without a file system path, maybe living only in memory or in the cloud.
 Those kind of models might be checked by verifying whether the model has a corresponding `XvcPath` component or not.
 
 In contrast, OOP would define this either by _inheritance_ (a model is a path) or _containment_ (a model has a path). 
 When you select any of these, it becomes a _relationship_ that must be maintained indefinitely.
-When you only have an integer that identifies these components, it's much easier to describe _models without a path_ later. 
-There is no predefined relationship between paths and models. 
+When you only have an integer that identifies these components, it's much easier to describe _models without a path_ later.
+There is no predefined relationship between paths and models.
 
 The architecture is approximately similar to database modeling. 
 Components are in-memory tables, albeit they are small and mostly contain a few fields.
 Entities are sequential primary keys.
 Systems are _insert_, _query_ and _update_ mechanisms. 
 
-# Stores
+## Stores
 
 An `XvcStore` in its basic definition is a map structure between `XvcEntity` and a component type `T` 
 It has facilities for persistence, iteration, search and filtering. 
 It can be considered a _system_ in the usual ECS sense.
 
-## Loading and Saving Stores
+### Loading and Saving Stores
 
 As our goal is to track data files with Git, stores save and load binary files' metadata to text files.
 Instead of storing the binary data itself in Git, Xvc stores information about these files to track whether they are changed.  
@@ -70,10 +70,13 @@ The JSON files are then commit to Git.
 Note that, there are usually multiple branches in Git repositories.
 Also multiple users may work on the same branch.
 
-When these text files are reused by the stores, they are modified and this may lead to merge conflicts. 
-We don't want our users to deal with merge conflicts with entities and components residing in text files. 
+When these text files are reused by the stores, they are modified and this may lead to merge conflicts.
+We don't want our users to deal with merge conflicts with entities and
+components in text files. 
+This also makes it possible to use binary formats like MessagePack in the
+future.
 
-Suppose user A made a change in `XvcStore<XvcPath>` by adding a few files. 
+Suppose user A made a change in `XvcStore<XvcPath>` by adding a few files.
 Another user B made another change to the project, by adding another set of files in another copy of the project.
 This will lead to merge conflicts: 
 - `XvcEntity` counter will have different values in A and B's repositories. 
@@ -93,9 +96,24 @@ A `BTreeMap` is also created by this vector.
 
 When an item is deleted, a `Remove` event is added to the event vector.
 While loading, stores removes the elements with `Remove` events from the `BTreeMap`.
-So the final set of elements doesn't contain the removed item. 
+So the final set of elements doesn't contain the removed item.
 
-Stores also have a inverse index for quick lookup.
+The second problem with multiple branches is duplicate entities in separate
+branches. Xvc uses a _counter_ to generate unique entity ids. 
+When a store is loaded, it checks the last entity id in the event log and uses
+it as the starting point for the counter. But using this counter as is causes
+duplicate values in different branches. Xvc solves this by adding a random value
+to these counter values. 
+
+Since v0.5, `XvcEntity` is a tuple of 64-bit integers. The first is loaded from
+the disk and is an atomic counter. The second is a random value that is renewed
+at every command invocation. Therefore we have a unique entity id for every run,
+that's also sortable by the first value. Easy sorting with integers is sometimes
+required for stable lists.
+
+### Inverted Index
+
+Stores also have a inverted index for quick lookup.
 They store value of `T` as key and a list of entities that correspond to this key. 
 For example, when we have a path that we stored, it's a single operation to get the corresponding `XvcEntity` and after this, all recorded metadata about this path is available. 
 
@@ -108,6 +126,12 @@ In summary, a store has four components.
 - A mutable map of the current data: `BTreeMap<XvcEntity, T>`
 - A mutable map of the entities from values: `BTreeMap<T, Vec<XvcEntity>>`
 
+Note that, when two branches perform the same operation, the event logs will be
+different, as the random part of `XvcEntity` is different. When two parties
+branches merge, the inverted index may contain conflicting values. In this case,
+a `fsck` command is used to merge the store files and merge conflicting entity
+ids.
+
 Insert, update and delete operations affect mutable log and maps. 
 Queries, iteration and such non-destructive operations are done with the maps.
 When loading, all log files are merged in immutable log. 
@@ -117,14 +141,13 @@ When saving, only the mutable log is saved.
 Note that only can only be added to the log, they are not removed. 
 (See `xvc fsck --merge-stores` for merging store files.) 
 
-In the future, if the performance for loading/saving becomes a bottleneck, the map can also be serialized and only the events after its record can be replayed. 
-For the time being additional complexity from saving multiple files is avoided.
+### Relationship Stores
 
-## Relationship Stores
+`XvcStore` keeps component-per-entity.
+Each component is a flat structure that doesn't refer to other components.
 
-The store keeps data-per-entity.
 Xvc also has _relation_ stores that represent relationships between entities, and components.
-As in the database Entity-Relationship Theory, there are three kinds of the relationship store:
+Similar to the database Entity-Relationship model, there are three kinds of the relationship store:
 
 `R11Store<T, U>` keeps two sets of components associated with the same entity. 
 It represents a 1-1 relationship between `T` and `U`.
@@ -144,18 +167,3 @@ The third type is `RMNStore<T, U>`.
 This one keeps arbitrary number of relationships between `T` and `U`. 
 Any number of `T`s may correspond to any number of `U`s. 
 This type of store keeps the relationships in two `XvcStore<XvcEntity>`'s.
-As of this writing, this one isn't used yet in Xvc. 
-The above two is enough as of today, and this one is not developed more than basic functionality.
-When we'll have some cross-cutting structure, e.g., steps that can be used in multiple pipelines, we can improve and use this.
-
-# Loading and Saving XvcEntity
-
-`XvcEntity` should be unique for each non-1-1-related element. 
-It's actually a singleton, thread-safe incrementing counter. 
-It should save the last value it was used. 
-
-In multiple-user or multiple-branch scenarios, if the counter is incremented differently, it may cause havoc in the system.
-Therefore the state is saved to timestamped files similar to `XvcStore`. 
-They are loaded and the maximum value is selected as the last value.
-
-
