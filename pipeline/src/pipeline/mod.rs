@@ -15,6 +15,7 @@ use crate::deps::{dependencies_to_path, dependency_paths};
 use crate::error::{Error, Result};
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
+use chrono::Utc;
 use crossbeam_channel::{Receiver, Sender};
 use xvc_walker::notify::{make_watcher, PathEvent};
 
@@ -37,8 +38,7 @@ use xvc_core::{
     TextOrBinary, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
-use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
-use xvc_logging::watch;
+use xvc_ecs::{persist, HStore, R1NStore, XvcEntity};
 
 use sp::ExitStatus;
 use subprocess as sp;
@@ -386,7 +386,6 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                 step_timeout: &step_timeouts[step_e],
                 pipeline_rundir: &pipeline_rundir,
             };
-            let params_debug = params.clone();
             let r_next_state = match step_s {
                 XvcStepState::Begin(s) => s_begin(s, params),
                 XvcStepState::NoNeedToRun(s) => s_no_need_to_run(s, params),
@@ -600,7 +599,7 @@ fn s_checking_timestamps(s: &CheckingTimestampsState, params: StateParams) -> Re
         });
 
         let min_out_ts = out_paths.fold(
-            Some(SystemTime::from(chrono::MAX_DATETIME)),
+            Some((chrono::DateTime::<Utc>::MAX_UTC).into()),
             |opt_st, (path, md)| match md {
                 None => {
                     Error::PathNotFoundInPathMetadataMap {

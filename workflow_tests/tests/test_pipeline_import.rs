@@ -137,7 +137,7 @@ fn test_pipeline_import() -> Result<()> {
             let command = all_commands
                 .left_to_right(step_e)
                 .ok_or(xvc_ecs::error::Error::CannotFindKeyInStore {
-                    key: (*step_e).into(),
+                    key: step_e.to_string(),
                 })?
                 .1;
             watch!(command);

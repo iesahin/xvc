@@ -190,8 +190,8 @@ mod test {
     #[test]
     fn new() -> Result<()> {
         let mut store = VStore::<String>::new();
-        store.insert(0.into(), "0".into());
-        store.insert(1.into(), "1".into());
+        store.insert((0, 12398012938).into(), "0".into());
+        store.insert((1, 12398012938).into(), "1".into());
         assert_eq!(store.len(), 2);
 
         assert_eq!(store.vec.pop().unwrap().1, "1".to_string());

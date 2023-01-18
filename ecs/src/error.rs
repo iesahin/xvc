@@ -60,11 +60,11 @@ pub enum Error {
     #[error("Multiple keys for value found: {value}")]
     MultipleCorrespondingKeysFound { value: String },
     #[error("Cannot find a related entity: {entity}")]
-    NoParentEntityFound { entity: usize },
+    NoParentEntityFound { entity: XvcEntity },
     #[error("More than one root entity found in an 1-N relation")]
     MoreThanOneParentFound { entity: usize },
     #[error("Cannot find key in store: {key}")]
-    CannotFindKeyInStore { key: usize },
+    CannotFindKeyInStore { key: String },
     #[error("Internal Store Conversion Error")]
     StoreConversionError,
     #[error("Can initialize {object} only once")]

@@ -213,7 +213,7 @@ where
             if let Some(v) = self.map.get(&e) {
                 store.map.insert(e, v.clone());
             } else {
-                Error::CannotFindKeyInStore { key: e.0 }.warn();
+                Error::CannotFindKeyInStore { key: e.to_string() }.warn();
             }
         }
         Ok(store)
@@ -365,12 +365,12 @@ mod test {
     #[test]
     fn new() -> Result<()> {
         let mut store = XvcStore::<String>::new();
-        store.insert(0.into(), "0".into());
-        store.insert(1.into(), "1".into());
+        store.insert((0, 123).into(), "0".into());
+        store.insert((1, 123).into(), "1".into());
         assert_eq!(store.len(), 2);
 
-        assert_eq!(*store.get(&XvcEntity(0)).unwrap(), String::from("0"));
-        assert_eq!(*store.get(&XvcEntity(1)).unwrap(), String::from("1"));
+        assert_eq!(*store.get(&XvcEntity(0, 123)).unwrap(), String::from("0"));
+        assert_eq!(*store.get(&XvcEntity(1, 123)).unwrap(), String::from("1"));
         Ok(())
     }
 
@@ -381,9 +381,9 @@ mod test {
 
         let mut store = XvcStore::<String>::new();
 
-        store.insert(0.into(), "0".into());
-        store.insert(1.into(), "1".into());
-        store.insert(2.into(), "2".into());
+        store.insert((0, 123).into(), "0".into());
+        store.insert((1, 123).into(), "1".into());
+        store.insert((2, 123).into(), "2".into());
 
         store.to_dir(&dir)?;
 

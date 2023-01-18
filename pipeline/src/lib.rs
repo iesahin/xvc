@@ -1,8 +1,8 @@
 //! Pipeline management commands and data structures
 //!
 //! This contains CLI structs for `xvc pipeline` subcommands, [`init`] function to
-//! run during `xvc init` for pipeline related initialization, [`run`] function
-//! to dispatch the options to subcommands.
+//! run during `xvc init` for pipeline related initialization, [`cmd_pipeline`]
+//! and [`handle_step_cli`] functions to dispatch the options to subcommands.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod error;

@@ -238,7 +238,7 @@ impl<T> HStore<T> {
             if let Some(v) = self.get(&e) {
                 map.insert(e, v.clone());
             } else {
-                Error::CannotFindKeyInStore { key: e.0 }.warn();
+                Error::CannotFindKeyInStore { key: e.to_string() }.warn();
             }
         }
         Ok(Self { map })

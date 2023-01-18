@@ -109,7 +109,7 @@ where
     pub fn parent_of(&self, child_entity: &XvcEntity) -> Result<(&ChildEntity<U, T>, &T)> {
         match self.child_parents.get(child_entity) {
             None => Err(Error::NoParentEntityFound {
-                entity: (*child_entity).into(),
+                entity: (*child_entity),
             }),
             Some(p_e) => {
                 let (_, v) =

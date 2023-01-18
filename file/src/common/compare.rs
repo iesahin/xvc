@@ -584,12 +584,16 @@ pub fn diff_dir_content_digest(
     for xe in sorted_entities {
         let xvc_content_diff = xvc_content_diff
             .get(xe)
-            .ok_or(EcsError::CannotFindEntityInStore { entity: *xe })?;
+            .ok_or(EcsError::CannotFindKeyInStore {
+                key: xe.to_string(),
+            })?;
         match xvc_content_diff {
             Diff::Identical | Diff::Skipped => {
-                let content = stored_xvc_content_store
-                    .get(xe)
-                    .ok_or(xvc_ecs::error::Error::CannotFindEntityInStore { entity: *xe })?;
+                let content = stored_xvc_content_store.get(xe).ok_or(
+                    xvc_ecs::error::Error::CannotFindKeyInStore {
+                        key: xe.to_string(),
+                    },
+                )?;
                 content_digest_bytes.extend(content.0.expect("digest").digest);
             }
             Diff::RecordMissing { actual } => {
@@ -601,7 +605,7 @@ pub fn diff_dir_content_digest(
             Diff::ActualMissing { .. } => {
                 // This is to make sure the content digest is different when
                 // all records are missing or their order has changed.
-                let entity_bytes: usize = (*xe).into();
+                let entity_bytes: u128 = (*xe).into();
                 let mut entity_bytes_as_digest = Vec::from([0u8; DIGEST_LENGTH]);
                 entity_bytes_as_digest.copy_from_slice(&entity_bytes.to_le_bytes());
                 content_digest_bytes.extend(

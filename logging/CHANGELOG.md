@@ -1,0 +1,138 @@
+# Introduction
+
+This document is a change log that I write for the project, as I develop. It's a
+tree and subtasks are marked with indentation.
+
+## v0.5.0
+
+- Refactor XvcEntity to `(u64, u64)`
+  - Issue: <https://github.com/iesahin/xvc/issues/198>
+  - PR: <https://github.com/iesahin/xvc/pulls/201>
+  - [x] `From<u128>` and `Into<u128>`
+  - [x] `From<(u64, u64)>` and `Into<(u64, u64)>`
+  - [x] Tests
+    - [x] Add tests for `From<u128>` and `Into<u128>` ecs/src/ecs/mod.rs
+    - [x] Fix doc tests that use `100usize` to create `XvcEntity`
+  - [x] Update the ECS documentation
+    - [x] Update arch/ecs.md
+    - [x] Search for any `XvcEntity` references that may be changed
+- [x] `xvc-test-helper` binary is not produced at builds
+  - [x] Moved it from dev-dependencies to dependencies in workflow_tests/Cargo.toml
+    - [x] Still doesn't work 🛑
+    - [x] We need binary dependencies in cargo: <https://rust-lang.github.io/rfcs/3028-cargo-binary-dependencies.html>,
+    - [x] It's available in nightly: <https://github.com/rust-lang/cargo/issues/9096>
+    - [x] Revert to dev-dependencies
+  - [x] `z_test_docs` fails immediately if no `xvc-test-helper` binary is found.
+  - [x] Run the tests without `-p workflow_tests`
+    - [x] Hypothesis: The reason the test helper binary is not produced is that we run only `workflow_tests` crate.
+    - [x] Looks this hypothesis is not correct.
+  - [x] The best way seems to be adding
+    <https://docs.rs/escargot/latest/escargot/> and building the binary before
+    the doc tests.
+    - Now builds the binary before running the doc tests. ✅
+- [x] Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
+  - [ ] 
+
+## v0.4.2
+
+- `xvc file carry-in` <https://github.com/iesahin/xvc/issues/174>
+  - PR <https://github.com/iesahin/xvc/pull/194>
+    - `xvc file list` debugging <https://github.com/iesahin/xvc/issues/197>
+      - Fixed slicing bug ✅
+      - Recursive option
+        - If not given all files including the ignored files will be reported.
+          - Ignored files will be reported with file type `I`
+      - Add `G` for as a file type for git-tracked files.
+      - `DX         224 2022-12-31 08:21:11   dir-0001/dir-0001  rcd \n`
+        - Fix `rcd` ✅
+      - Count lines in the result
+        - I think it's better to write all of this as a doc test
+- create a `xvc-test-helper create-directory-hierarchy` command.
+  - Add a main.rs to xvc-test-helper ✅
+  - Add clap to parse CLI
+    - Add subcommands ✅
+      - create directory tree
+      - random dir name --prefix str --seed u64
+      - random temp dir --prefix str
+      - seeded temp dir --seed u64
+      - create temp dir
+      - run in temp dir
+      - run in temp git dir
+      - create temp git dir
+      - generate random file filename size
+      - generate filled file filename size byte
+      - generate random text file filename num_lines
+    - Add to doc-tests
+      - added with `cargo_bin!` ✅
+      - began to add `xvc-file-list.md`
+        - Open doc test results in a directory
+          - Use neovim for this
+      - It looks we need to update directory permissions in the cache too
+        - updated move_to_cache function
+      - fix recheck errors
+        - it looks recheck doesn't check whether the file is changed before trying to checkout
+        - do we use `--text-or-binary` option to update the file?
+          - removed the option from help text ✅
+        - I think we need a `DEBUG` level in XvcOutput for otherwise irrelevant information
+          - Added debug option to XvcOutputLine
+          - Changed all noisy output to debug! ✅
+      - fix `carry-in` errors
+        - updated outputs
+        - there seems to be a bug to update the stores
+        - add watches for several places.
+        - the bug was about missing configuration keys.
+          - it must warn/panic when the keys are not there.
+            - all machinery is there, it must report error, but doesn't.
+      - there seems to be a bug in xvc list output about cached/workspace sizes
+        - yes, there was. fixed the summary. ✅
+    - started moving `test_file_list.rs` to document test.
+      - `--recheck-as` option must be introduced instead of `--cache-type`.
+      - there is a bug in `track` when `--cache-type` is given. 🐛
+        - pmm doesn't contain directory contents
+          - fixed ✅
+      - the sorting for timestamp and size are not working
+        - fixed ✅
+      - if a field is blank or None, it should print spaces.
+        - Done for size and timestamp ✅
+    - Why the cache size is empty when they are not reported
+      - Fixed. Loads the rec content digests always now. ✅
+    - We need more tests for other sorting options to increase coverage perhaps.
+      - removed older tests and added only the sorting test to xvc file list wf tests
+      - tests in ref md is larger than this file anyway.
+    - Listing only the changed.
+      - As a status command.
+  - Fix `xvc file hash` tests
+    - create directory tree needs an option to create random files or filled files
+      - update all uses ✅
+      - modify test helper to have this option ✅
+  - Fix `xvc file list` tests
+    - Fix counting and sorting tests ✅
+  - Could we have file, line, function etc in panic! / error! macros?
+    - Modified and did this ✅
+  - Fix `xvc file recheck parallel` tests
+    - There is a failing command, which one?
+      - It looks like a plain recheck after hardlink
+      - The target permissions should be removed
+    - The bug seems to be in `xvc file track`
+      - There is a gitignore bug
+        - Fixed it by using the targets directly
+    - The failure is in cleanup, about permissions.
+      - Delete files and directories one by one
+        - Deleted by shell ✅
+  - Fix `xvc root`
+    - `--debug` should only determine the xvc.log output
+      - changed output in `run_xvc` fn ✅
+  - Fix `xvc pipeline export` tests
+    - There must be sorting in the output, as we changed the stores to HStore ✅
+  - Fix `xvc pipeline import` tests
+    - The same changes, ordering of elements changed ✅
+  - Fix `xvc pipeline run` tests
+    - The example repository again and again ✅
+  - Fix `xvc storage generic fs` tests
+    - Where is the actual error?
+      - It was about removing the repos
+  - Fix `xvc storage local` tests ✅
+    - Cache operations from storages should be done on temp dir and _move to cache_ must be used for all
+      - This is to keep permission operations correct
+      - I did this in the trait  ✅
+      - Modified all receive functions to return a temp dir ✅

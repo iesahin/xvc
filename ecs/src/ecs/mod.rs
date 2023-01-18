@@ -16,11 +16,12 @@ pub mod storable;
 pub mod vstore;
 pub mod xvcstore;
 
+use rand::{rngs, RngCore, SeedableRng};
 use std::fmt;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Once;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -28,35 +29,48 @@ use std::time::UNIX_EPOCH;
 use serde::{Deserialize, Serialize};
 use xvc_logging::watch;
 
-use crate::error::{Error as XvcError, Result as XvcResult};
+use crate::error::{Error as XvcError, Result};
 
 /// Describes an entity in Entity Component System-sense.
 ///
-/// It doesn't have any semantics except being a unique number for a given entity.
+/// It doesn't have any semantics except being unique for a given entity.
 /// Various types of information (components) can be attached to this entity.
 /// XvcStore uses the entity as a key for the components.
 ///
-/// It's possible to convert to `usize` back and forth.
+/// It's possible to convert to `(u64, u64)` or `u128` back and forth.
 /// Normally, you should use [XvcEntityGenerator] to create entities.
-/// It ensures that the numbers are unique and saves the last number across sessions.
+/// It randomizes the first value to be unique and saves the last number across sessions.
+/// This changed in 0.5. See https://github.com/iesahin/xvc/issues/198
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Hash)]
-pub struct XvcEntity(usize);
+pub struct XvcEntity(u64, u64);
 
 impl fmt::Display for XvcEntity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
+        write!(f, "({}, {})", self.0, self.1)
     }
 }
 
-impl From<usize> for XvcEntity {
-    fn from(e: usize) -> Self {
-        Self(e)
+impl From<(u64, u64)> for XvcEntity {
+    fn from(e: (u64, u64)) -> Self {
+        Self(e.0, e.1)
     }
 }
 
-impl From<XvcEntity> for usize {
-    fn from(e: XvcEntity) -> usize {
-        e.0
+impl From<u128> for XvcEntity {
+    fn from(e: u128) -> Self {
+        Self((e >> 64) as u64, e as u64)
+    }
+}
+
+impl From<XvcEntity> for u128 {
+    fn from(e: XvcEntity) -> u128 {
+        ((e.0 as u128) << 64) | (e.1 as u128)
+    }
+}
+
+impl From<XvcEntity> for (u64, u64) {
+    fn from(e: XvcEntity) -> (u64, u64) {
+        (e.0, e.1)
     }
 }
 
@@ -69,7 +83,8 @@ impl From<XvcEntity> for usize {
 
 #[derive(Debug)]
 pub struct XvcEntityGenerator {
-    current: AtomicUsize,
+    counter: AtomicU64,
+    random: u64,
 }
 
 static INIT: Once = Once::new();
@@ -80,8 +95,8 @@ static INIT: Once = Once::new();
 /// This function can only be used once in a process.
 /// You cannot load a second instance of the entity generator, as it will defeat its thread-safe
 /// uniqueness purpose.
-pub fn load_generator(dir: &Path) -> XvcResult<XvcEntityGenerator> {
-    let mut gen: XvcResult<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+pub fn load_generator(dir: &Path) -> Result<XvcEntityGenerator> {
+    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
     INIT.call_once(|| gen = XvcEntityGenerator::load(dir));
@@ -92,8 +107,8 @@ pub fn load_generator(dir: &Path) -> XvcResult<XvcEntityGenerator> {
 ///
 /// Normally this only be used once an Xvc repository initializes.
 /// The starting value for entities is 1.
-pub fn init_generator() -> XvcResult<XvcEntityGenerator> {
-    let mut gen: XvcResult<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+pub fn init_generator() -> Result<XvcEntityGenerator> {
+    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
 
@@ -110,22 +125,27 @@ impl Iterator for XvcEntityGenerator {
 }
 
 impl XvcEntityGenerator {
-    fn new(start: usize) -> XvcEntityGenerator {
-        let current = AtomicUsize::new(0);
-        current.fetch_add(start, Ordering::SeqCst);
-        Self { current }
+    fn new(start: u64) -> XvcEntityGenerator {
+        let counter = AtomicU64::new(0);
+        counter.fetch_add(start, Ordering::SeqCst);
+        let mut rng = rngs::StdRng::from_entropy();
+        let init_random = rng.next_u64();
+        Self {
+            counter,
+            random: init_random,
+        }
     }
 
     /// Returns the next element by atomically incresing the current value.
     pub fn next_element(&self) -> XvcEntity {
-        XvcEntity(self.current.fetch_add(1, Ordering::SeqCst))
+        XvcEntity(self.counter.fetch_add(1, Ordering::SeqCst), self.random)
     }
 
-    fn load(dir: &Path) -> XvcResult<XvcEntityGenerator> {
+    fn load(dir: &Path) -> Result<XvcEntityGenerator> {
         let path = most_recent_file(dir)?;
         match path {
             Some(path) => {
-                let current_val = fs::read_to_string(path)?.parse::<usize>()?;
+                let current_val = fs::read_to_string(path)?.parse::<u64>()?;
                 Ok(Self::new(current_val))
             }
             None => Err(XvcError::CannotRestoreEntityCounter {
@@ -134,14 +154,16 @@ impl XvcEntityGenerator {
         }
     }
 
-    /// Saves the current XvcEntity value to path.
-    pub fn save(&self, dir: &Path) -> XvcResult<()> {
-        let u: usize = self.next_element().into();
+    /// Saves the current XvcEntity counter to path.
+    /// It saves only the first (e.0) part of the entity. The second part is
+    /// generated per creation to randomize entities in parallel branches.
+    pub fn save(&self, dir: &Path) -> Result<()> {
+        let (counter, _) = self.next_element().into();
         if !dir.exists() {
             fs::create_dir_all(dir)?;
         }
         let path = dir.join(timestamp());
-        fs::write(path, format!("{}", u))?;
+        fs::write(path, format!("{}", counter))?;
         Ok(())
     }
 }
@@ -160,7 +182,7 @@ pub fn timestamp() -> String {
 /// This is used to sort timestamp named files. (See [timestamp]).
 /// Store files are loaded in this order to replay the changes across branches.
 /// TODO: Add link to book chapter.
-pub fn sorted_files(dir: &Path) -> XvcResult<Vec<PathBuf>> {
+pub fn sorted_files(dir: &Path) -> Result<Vec<PathBuf>> {
     if dir.exists() {
         let mut files: Vec<PathBuf> = fs::read_dir(dir)?
             .filter_map(|e| match e {
@@ -180,7 +202,7 @@ pub fn sorted_files(dir: &Path) -> XvcResult<Vec<PathBuf>> {
 /// This one returns the most recent timestamp named file.
 /// It gets files with [sorted_files] and returns the last one if there is one.
 /// If there are no files in a directory, this returns `Ok(None)`.
-pub fn most_recent_file(dir: &Path) -> XvcResult<Option<PathBuf>> {
+pub fn most_recent_file(dir: &Path) -> Result<Option<PathBuf>> {
     watch!(dir);
     if !dir.exists() {
         return Ok(None);
@@ -233,23 +255,23 @@ mod tests {
     use xvc_logging::setup_logging;
 
     #[test]
-    fn test_init() -> XvcResult<()> {
+    fn test_init() -> Result<()> {
         let gen = init_generator()?;
-        assert_eq!(gen.current.load(Ordering::SeqCst), 1);
-        assert_eq!(gen.next_element(), XvcEntity(1));
-        assert_eq!(gen.next_element(), XvcEntity(2));
+        assert_eq!(gen.counter.load(Ordering::SeqCst), 1);
+        assert_eq!(gen.next_element().0, 1);
+        assert_eq!(gen.next_element().0, 2);
         let gen2 = init_generator();
         assert!(matches!(gen2, Err(XvcError::CanInitializeOnlyOnce { .. })));
         Ok(())
     }
 
     #[test]
-    fn test_load() -> XvcResult<()> {
+    fn test_load() -> Result<()> {
         setup_logging(Some(LevelFilter::Trace), None);
         let tempdir = TempDir::new("test-xvc-ecs")?;
         let gen_dir = tempdir.path().join("entity-gen");
         fs::create_dir_all(&gen_dir)?;
-        let r: usize = rand::random();
+        let r: u64 = rand::random();
         let gen_file_1 = gen_dir.join(timestamp());
         fs::write(&gen_file_1, format!("{}", r))?;
         sleep(Duration::from_millis(1));
@@ -259,13 +281,22 @@ mod tests {
         let gen_file_3 = gen_dir.join(timestamp());
         fs::write(&gen_file_3, format!("{}", r + 2000))?;
         let gen = XvcEntityGenerator::load(&gen_dir)?;
-        assert_eq!(gen.current.load(Ordering::SeqCst), r + 2000);
-        assert_eq!(gen.next_element(), XvcEntity(r + 2000));
-        assert_eq!(gen.next_element(), XvcEntity(r + 2001));
-        assert_eq!(gen.next_element(), XvcEntity(r + 2002));
+        assert_eq!(gen.counter.load(Ordering::SeqCst), r + 2000);
+        assert_eq!(gen.next_element().0, (r + 2000));
+        assert_eq!(gen.next_element().0, (r + 2001));
+        assert_eq!(gen.next_element().0, (r + 2002));
         gen.save(&gen_dir)?;
-        let new_val = fs::read_to_string(most_recent_file(&gen_dir)?.unwrap())?.parse::<usize>()?;
+        let new_val = fs::read_to_string(most_recent_file(&gen_dir)?.unwrap())?.parse::<u64>()?;
         assert_eq!(new_val, r + 2003);
+        Ok(())
+    }
+
+    #[test]
+    fn test_from_to() -> Result<()> {
+        let e1 = XvcEntity(1, 2);
+        let u1: u128 = e1.into();
+        let e2 = XvcEntity::from(u1);
+        assert_eq!(e1, e2);
         Ok(())
     }
 }

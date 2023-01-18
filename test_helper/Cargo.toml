@@ -12,7 +12,6 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 
 [lib]
 name = "xvc_test_helper"
-type = ["rlib"]
 
 [[bin]]
 name = "xvc-test-helper"
