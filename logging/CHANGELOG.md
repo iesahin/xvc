@@ -13,6 +13,9 @@ tree and subtasks are marked with indentation.
   - [x] Tests
     - [x] Add tests for `From<u128>` and `Into<u128>` ecs/src/ecs/mod.rs
     - [x] Fix doc tests that use `100usize` to create `XvcEntity`
+  - [x] Update the ECS documentation
+    - [x] Update arch/ecs.md
+    - [x] Search for any `XvcEntity` references that may be changed
 - [x] `xvc-test-helper` binary is not produced at builds
   - [x] Moved it from dev-dependencies to dependencies in workflow_tests/Cargo.toml
     - [x] Still doesn't work 🛑
@@ -27,10 +30,8 @@ tree and subtasks are marked with indentation.
     <https://docs.rs/escargot/latest/escargot/> and building the binary before
     the doc tests.
     - Now builds the binary before running the doc tests. ✅
-  - [x] Update the ECS documentation
-    - [x] Update arch/ecs.md
-    - [x] Search for any `XvcEntity` references that may be changed
-  - [x] Write pipelines code documentation
+- [x] Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
+  - [ ] 
 
 ## v0.4.2
 
