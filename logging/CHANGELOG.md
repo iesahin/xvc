@@ -31,7 +31,12 @@ tree and subtasks are marked with indentation.
     the doc tests.
     - Now builds the binary before running the doc tests. ✅
 - [x] Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
-  - [ ] 
+- [ ] Implement `xvc file copy` command
+  - [ ] Issue: https://github.com/iesahin/xvc/issues/179
+  - [ ] Create the user interface
+  - [ ] Write the documentation and doc tests: 
+    - [x] Write initial examples: book/src/ref/xvc-file-copy.md
+  - [ ] Implement the command
 
 ## v0.4.2
 
