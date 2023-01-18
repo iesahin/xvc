@@ -1,9 +1,10 @@
 # Introduction
 
 This document is a change log that I write for the project, as I develop. It's a
-tree and subtasks are marked with indentation. 
+tree and subtasks are marked with indentation.
 
 ## v0.5.0
+
 - Refactor XvcEntity to `(u64, u64)`
   - Issue: <https://github.com/iesahin/xvc/issues/198>
   - PR: <https://github.com/iesahin/xvc/pulls/201>
@@ -21,7 +22,7 @@ tree and subtasks are marked with indentation.
   - [x] `z_test_docs` fails immediately if no `xvc-test-helper` binary is found.
   - [x] Run the tests without `-p workflow_tests`
     - [x] Hypothesis: The reason the test helper binary is not produced is that we run only `workflow_tests` crate.
-    - [x] Looks this hypothesis is not correct. 
+    - [x] Looks this hypothesis is not correct.
   - [x] The best way seems to be adding
     <https://docs.rs/escargot/latest/escargot/> and building the binary before
     the doc tests.
