@@ -25,7 +25,9 @@ tree and subtasks are marked with indentation.
     <https://docs.rs/escargot/latest/escargot/> and building the binary before
     the doc tests.
     - Now builds the binary before running the doc tests. ✅
-  - Update the ECS documentation
+  - [x] Update the ECS documentation
+    - [x] Update arch/ecs.md
+    - [x] Search for any `XvcEntity` references that may be changed
 
 ## v0.4.2
 

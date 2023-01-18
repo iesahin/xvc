@@ -37,7 +37,7 @@ use crate::error::{Error as XvcError, Result};
 /// Various types of information (components) can be attached to this entity.
 /// XvcStore uses the entity as a key for the components.
 ///
-/// It's possible to convert to `(u64, u64)` back and forth.
+/// It's possible to convert to `(u64, u64)` or `u128` back and forth.
 /// Normally, you should use [XvcEntityGenerator] to create entities.
 /// It randomizes the first value to be unique and saves the last number across sessions.
 /// This changed in 0.5. See https://github.com/iesahin/xvc/issues/198
@@ -84,7 +84,7 @@ impl From<XvcEntity> for (u64, u64) {
 #[derive(Debug)]
 pub struct XvcEntityGenerator {
     counter: AtomicU64,
-    init_random: u64,
+    random: u64,
 }
 
 static INIT: Once = Once::new();
@@ -132,16 +132,13 @@ impl XvcEntityGenerator {
         let init_random = rng.next_u64();
         Self {
             counter,
-            init_random,
+            random: init_random,
         }
     }
 
     /// Returns the next element by atomically incresing the current value.
     pub fn next_element(&self) -> XvcEntity {
-        XvcEntity(
-            self.counter.fetch_add(1, Ordering::SeqCst),
-            self.init_random,
-        )
+        XvcEntity(self.counter.fetch_add(1, Ordering::SeqCst), self.random)
     }
 
     fn load(dir: &Path) -> Result<XvcEntityGenerator> {
@@ -159,7 +156,7 @@ impl XvcEntityGenerator {
 
     /// Saves the current XvcEntity counter to path.
     /// It saves only the first (e.0) part of the entity. The second part is
-    /// generated per invocation to randomize entities in parallel use.
+    /// generated per creation to randomize entities in parallel branches.
     pub fn save(&self, dir: &Path) -> Result<()> {
         let (counter, _) = self.next_element().into();
         if !dir.exists() {
