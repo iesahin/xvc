@@ -54,6 +54,11 @@ impl XvcMetadata {
         }
         .into())
     }
+
+    /// Returns true if the file type is a XvcFileType::File
+    pub fn is_file(&self) -> bool {
+        self.file_type == XvcFileType::File
+    }
 }
 
 impl From<io::Result<fs::Metadata>> for XvcMetadata {

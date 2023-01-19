@@ -1,5 +1,6 @@
 pub mod compare;
 
+use core::slice::SlicePattern;
 use std::fs::{self};
 use std::{
     fs::Metadata,
@@ -211,47 +212,39 @@ pub fn targets_from_store(
 
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
     if let Some(targets) = targets {
-        let mut glob_matcher = GlobSetBuilder::new();
-        targets.iter().for_each(|t| {
-            watch!(t);
-            if t.ends_with('/') {
-                glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
-            } else {
-                glob_matcher.add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
-            }
-            glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
-        });
-        let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
-
-        let paths = xvc_path_store.filter(|_, p| {
-            watch!(p);
-            let str_path = &p.as_relative_path().as_str();
-            watch!(str_path);
-            let is_match = glob_matcher.is_match(str_path);
-            watch!(is_match);
-            is_match
-        });
-
+        let paths = filter_paths_by_globs(&xvc_path_store.into(), targets.as_slice())?;
         watch!(paths);
-        /* let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?; */
-        /* let metadata = xvc_metadata_store.subset(paths.keys().copied())?; */
-        /* watch!(metadata); */
-        /* // for any directories in the targets, we add all child paths */
-        /* let dir_md = metadata.filter(|_, md| md.file_type == XvcFileType::Directory); */
-        /* watch!(dir_md); */
-        /* let dir_paths = paths.subset(dir_md.keys().copied())?; */
-        /* watch!(dir_paths); */
-        /* for (_, dir) in dir_paths.iter() { */
-        /*     let child_paths = xvc_path_store.filter(|_, p| p.starts_with(dir)); */
-        /*     child_paths.into_iter().for_each(|(k, v)| { */
-        /*         paths.insert(k, v); */
-        /*     }); */
-        /* } */
-        /* watch!(paths); */
         Ok(paths)
     } else {
         Ok(xvc_path_store.into())
     }
+}
+
+/// Filter a set of paths by a set of globs. The globs are compiled into a
+/// GlobSet and paths are checked against the set.
+pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Result<HStore<XvcPath>> {
+    let mut glob_matcher = GlobSetBuilder::new();
+    globs.iter().for_each(|t| {
+        watch!(t);
+        if t.ends_with('/') {
+            glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
+        } else {
+            glob_matcher.add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
+        }
+        glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
+    });
+    let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
+
+    let paths = paths
+        .filter(|_, p| {
+            let str_path = &p.as_relative_path().as_str();
+            let is_match = glob_matcher.is_match(str_path);
+            is_match
+        })
+        .cloned();
+
+    watch!(paths);
+    Ok(paths)
 }
 
 /// Converts targets to a map of XvcPaths and their metadata. It walks the file

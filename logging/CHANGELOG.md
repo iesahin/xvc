@@ -3,7 +3,7 @@
 This document is a change log that I write for the project, as I develop. It's a
 tree and subtasks are marked with indentation.
 
-## v0.5.0
+## Unreleased
 
 - Refactor XvcEntity to `(u64, u64)`
   - Issue: <https://github.com/iesahin/xvc/issues/198>
@@ -38,9 +38,10 @@ tree and subtasks are marked with indentation.
     - [x] Created CopyCLI
   - [ ] Write the documentation and doc tests: 
     - [x] Write initial examples: book/src/ref/xvc-file-copy.md
+    - [ ] Create a fixture directory
   - [ ] Implement the command
 
-## v0.4.2
+## v0.4.2 (2023-01-17)
 
 - `xvc file carry-in` <https://github.com/iesahin/xvc/issues/174>
   - PR <https://github.com/iesahin/xvc/pull/194>
