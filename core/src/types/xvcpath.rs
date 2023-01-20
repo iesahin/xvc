@@ -60,8 +60,27 @@ impl AsRef<RelativePath> for XvcPath {
 
 impl XvcPath {
     /// Given the current_dir and path, create an XvcPath relative to `xvc_root`
+    /// and return it.
+    ///
+    /// ## Panics
+    ///
+    /// - path shouldn't be empty
+    /// - if path is absolute, it must have current_dir as prefix.
     pub fn new(xvc_root: &XvcRoot, current_dir: &AbsolutePath, path: &Path) -> Result<XvcPath> {
+        let path = if path.is_absolute() {
+            path.strip_prefix(current_dir.as_path())?
+        } else {
+            path
+        };
+
+        if path.as_os_str().is_empty() {
+            panic!("Path shouldn't be empty");
+        }
+
         let abs_path = path.absolutize_from(current_dir)?;
+        xvc_logging::watch!(abs_path);
+        xvc_logging::watch!(current_dir);
+        xvc_logging::watch!(xvc_root.absolute_path());
         let rel_path = abs_path.strip_prefix(xvc_root.absolute_path())?;
         Ok(XvcPath(RelativePathBuf::from_path(rel_path)?))
     }
@@ -122,6 +141,22 @@ impl XvcPath {
         }
 
         parents
+    }
+
+    /// Joins two paths
+    ///
+    /// ```
+    /// use xvc_core::XvcPath;
+    /// use relative_path::RelativePathBuf;
+    ///
+    /// let path = XvcPath::from(RelativePathBuf::from("a/b/c"));
+    /// let other = XvcPath::from(RelativePathBuf::from("d/e/f"));
+    /// let joined = path.join(&other).unwrap();
+    /// assert_eq!(joined, XvcPath::from(RelativePathBuf::from("a/b/c/d/e/f")));
+    /// ```
+    ///
+    pub fn join(&self, other: &XvcPath) -> Result<XvcPath> {
+        Ok(XvcPath(self.0.join(&other.0)))
     }
 }
 
