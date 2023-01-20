@@ -59,6 +59,11 @@ impl XvcMetadata {
     pub fn is_file(&self) -> bool {
         self.file_type == XvcFileType::File
     }
+
+    /// Returns true if the file type is a XvcFileType::Directory
+    pub fn is_dir(&self) -> bool {
+        self.file_type == XvcFileType::Directory
+    }
 }
 
 impl From<io::Result<fs::Metadata>> for XvcMetadata {
