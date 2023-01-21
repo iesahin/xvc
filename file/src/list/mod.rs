@@ -612,7 +612,10 @@ pub fn cmd_list(
     for xvc_entity in &not_found_entities {
         let recorded_md = stored_xvc_metadata.get(&xvc_entity).unwrap();
         let recorded_path = from_store.get(&xvc_entity).unwrap();
-        let recorded_cache_type = stored_cache_type.get(&xvc_entity).unwrap();
+        let recorded_cache_type = stored_cache_type
+            .get(&xvc_entity)
+            .cloned()
+            .unwrap_or_else(|| CacheType::from_conf(conf));
         let pm = PathMatch {
             xvc_entity: Some(xvc_entity.clone()),
             actual_path: None,
