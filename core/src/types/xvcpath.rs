@@ -86,8 +86,8 @@ impl XvcPath {
     }
 
     /// Converts to an absolute path in the file system
-    pub fn to_absolute_path(&self, xvc_root: &XvcRoot) -> AbsolutePath {
-        AbsolutePath::from(self.0.to_path(xvc_root.absolute_path()))
+    pub fn to_absolute_path(&self, root: &AbsolutePath) -> AbsolutePath {
+        AbsolutePath::from(self.0.to_path(root))
     }
 
     /// Returns the root "."

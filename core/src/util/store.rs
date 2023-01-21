@@ -1,14 +1,13 @@
 //! ECS utilities for easy load and save in a repository.
 use crate::error::Result;
+use crate::types::xvcroot::XvcRootInner;
 use xvc_ecs::R11Store;
 use xvc_ecs::R1NStore;
 use xvc_ecs::RMNStore;
 use xvc_ecs::Storable;
 use xvc_ecs::XvcStore;
 
-use crate::XvcRoot;
-
-impl XvcRoot {
+impl XvcRootInner {
     /// Load XvcStore from the repository stores
     pub fn load_store<T>(&self) -> Result<XvcStore<T>>
     where
@@ -44,42 +43,6 @@ impl XvcRoot {
         f(&mut store)?;
         self.save_store(&store)
     }
-
-    // /// Utility function to load a [xvc_ecs::BStore] in a repository.
-    // #[deprecated]
-    // pub fn load_bstore<T>(&self) -> Result<BStore<T>>
-    // where
-    //     T: Storable,
-    // {
-    //     Ok(BStore::<T>::load_bstore(self.store_dir())?)
-    // }
-    //
-    /// Utility function to save a [xvc_ecs::BStore] in a repository.
-    // #[deprecated]
-    // pub fn save_bstore<T>(&self, store: &BStore<T>) -> Result<()>
-    // where
-    //     T: Storable,
-    // {
-    //     Ok(BStore::<T>::save_bstore(store, self.store_dir())?)
-    // }
-    //
-    /// Utility function to save a [xvc_ecs::VStore] in a repository.
-    // #[deprecated]
-    // pub fn save_vstore<T>(&self, store: &VStore<T>) -> Result<()>
-    // where
-    //     T: Storable,
-    // {
-    //     Ok(VStore::<T>::save_vstore(store, self.store_dir())?)
-    // }
-
-    /// Utility function to load a [xvc_ecs::VStore] in a repository.
-    // #[deprecated]
-    // pub fn load_vstore<T>(&self) -> Result<VStore<T>>
-    // where
-    //     T: Storable,
-    // {
-    //     Ok(VStore::<T>::load_vstore(self.store_dir())?)
-    // }
 
     /// Utility function to load a [xvc_ecs::R11Store] in a repository.
     pub fn load_r11store<T, U>(&self) -> Result<R11Store<T, U>>
@@ -135,26 +98,6 @@ impl XvcRoot {
         Ok(RMNStore::<T, U>::save_rmnstore(store, self.store_dir())?)
     }
 
-    /// Loads a [xvc_ecs::BStore] and runs the given closure with it.
-    // #[deprecated]
-    // pub fn with_bstore<T>(&self, mut f: impl FnMut(&BStore<T>) -> Result<()>) -> Result<()>
-    // where
-    //     T: Storable,
-    // {
-    //     let store = self.load_bstore::<T>()?;
-    //     f(&store)
-    // }
-    //
-    /// Loads a [xvc_ecs::VStore] and runs the given closure with it.
-    // #[deprecated]
-    // pub fn with_vstore<T>(&self, mut f: impl FnMut(&VStore<T>) -> Result<()>) -> Result<()>
-    // where
-    //     T: Storable,
-    // {
-    //     let store = self.load_vstore::<T>()?;
-    //     f(&store)
-    // }
-    //
     /// Loads a [xvc_ecs::R11Store] and runs the given closure with it.
     pub fn with_r11store<T, U>(
         &self,
@@ -194,30 +137,6 @@ impl XvcRoot {
         f(&store)
     }
 
-    /// Loads a [xvc_ecs::BStore], runs the given closure with it and saves the store.
-    /// Closure is used to modify the store elements.
-    // #[deprecated]
-    // pub fn with_bstore_mut<T>(&self, mut f: impl FnMut(&mut BStore<T>) -> Result<()>) -> Result<()>
-    // where
-    //     T: Storable,
-    // {
-    //     let mut store = self.load_bstore::<T>()?;
-    //     f(&mut store)?;
-    //     self.save_bstore(&store)
-    // added}
-    //
-    /// Loads a [xvc_ecs::VStore], runs the given closure with it and saves the store.
-    /// Closure is used to modify the store elements.
-    // #[deprecated]
-    // pub fn with_vstore_mut<T>(&self, mut f: impl FnMut(&mut VStore<T>) -> Result<()>) -> Result<()>
-    // where
-    //     T: Storable,
-    // {
-    //     let mut store = self.load_vstore::<T>()?;
-    //     f(&mut store)?;
-    //     self.save_vstore(&store)
-    // }
-    //
     /// Loads a [xvc_ecs::R11Store], runs the given closure with it and saves the store.
     /// Closure is used to modify the store elements.
     pub fn with_r11store_mut<T, U>(

@@ -12,6 +12,7 @@ use log::{debug, warn, LevelFilter};
 use std::io;
 use subprocess::Exec;
 use which;
+use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_logging::XvcOutputLine;
 
 use std::path::Path;
@@ -225,7 +226,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         default_configuration: default_project_config(true),
     };
 
-    let xvc_root_opt = match XvcRoot::new(Path::new(&cli_opts.workdir), xvc_config_params) {
+    let xvc_root_opt = match load_xvc_root(Path::new(&cli_opts.workdir), xvc_config_params) {
         Ok(r) => Some(r),
         Err(e) => {
             e.debug();

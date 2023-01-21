@@ -3,11 +3,13 @@
 //! - [RecheckCLI] describes the command line options.
 //! - [cmd_recheck] is the entry point for the command line.
 use std::collections::HashSet;
-use std::fs;
+use std::thread::JoinHandle;
+use std::{fs, thread};
 
 use crate::common::compare::{diff_cache_type, diff_content_digest, diff_xvc_path_metadata};
+use crate::common::gitignore::{make_ignore_handler, IgnoreOp};
 use crate::common::{
-    only_file_targets, targets_from_store, xvc_path_metadata_map_from_disk, FileTextOrBinary,
+    load_targets_from_store, only_file_targets, xvc_path_metadata_map_from_disk, FileTextOrBinary,
 };
 use crate::{common::recheck_from_cache, Result};
 use clap::Parser;
@@ -20,7 +22,7 @@ use xvc_core::{
     XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, info, warn, watch, XvcOutputLine};
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine};
 
 /// Check out file from cache by a copy or link
 ///
@@ -87,7 +89,7 @@ pub fn cmd_recheck(
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
     let xvc_current_dir = XvcPath::new(xvc_root, current_dir, current_dir)?;
     watch!(xvc_current_dir);
@@ -211,6 +213,55 @@ pub fn cmd_recheck(
     Ok(())
 }
 
+pub enum RecheckOperation {
+    Recheck {
+        xvc_path: XvcPath,
+        content_digest: ContentDigest,
+        cache_type: CacheType,
+    },
+}
+
+type RecheckOp = Option<RecheckOperation>;
+
+pub fn make_recheck_handler(
+    output_snd: &Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    ignore_handler: &Sender<IgnoreOp>,
+    files_to_recheck: &HStore<&XvcPath>,
+) -> Result<(Sender<RecheckOp>, JoinHandle<()>)> {
+    let (recheck_op_snd, recheck_op_rvc) = crossbeam_channel::bounded(crate::CHANNEL_CAPACITY);
+    let output_snd = output_snd.clone();
+    let xvc_root = xvc_root.clone();
+    let ignore_handler = ignore_handler.clone();
+
+    let handle = thread::spawn(move || {
+        while let Ok(Some(op)) = recheck_op_rvc.recv() {
+            match op {
+                RecheckOperation::Recheck {
+                    xvc_path,
+                    content_digest,
+                    cache_type,
+                } => {
+                    let cache_path = XvcCachePath::new(&xvc_path, &content_digest).unwrap();
+                    uwr!(
+                        recheck_from_cache(
+                            &output_snd,
+                            &xvc_root,
+                            &xvc_path,
+                            &cache_path,
+                            cache_type,
+                            &ignore_handler,
+                        ),
+                        output_snd
+                    );
+                }
+            }
+        }
+    });
+
+    Ok((recheck_op_snd, handle))
+}
+
 fn recheck(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
@@ -219,6 +270,8 @@ fn recheck(
     content_digest_store: &XvcStore<ContentDigest>,
     parallel: bool,
 ) -> Result<()> {
+    let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
+
     let inner = |xe, xvc_path: &XvcPath| -> Result<()> {
         let content_digest = content_digest_store[&xe];
         let cache_path = XvcCachePath::new(&xvc_path, &content_digest)?;
@@ -232,7 +285,14 @@ fn recheck(
                 info!(output_snd, "[REMOVE] {target_path}");
             }
             let cache_type = cache_type_store[&xe];
-            recheck_from_cache(&output_snd, xvc_root, xvc_path, &cache_path, cache_type)
+            recheck_from_cache(
+                &output_snd,
+                xvc_root,
+                xvc_path,
+                &cache_path,
+                cache_type,
+                &ignore_writer,
+            )
         } else {
             error!(
                 output_snd,
@@ -251,6 +311,9 @@ fn recheck(
             inner(*xe, xp).unwrap_or_else(|e| warn!(output_snd, "{}", e));
         });
     }
+
+    ignore_writer.send(None);
+    ignore_thread.join().unwrap();
 
     Ok(())
 }

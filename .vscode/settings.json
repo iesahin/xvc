@@ -4,5 +4,14 @@
             "language": "markdown",
             "scheme": "file"
         }
+    ],
+    "grammarly.files.exclude": [
+        "CHANGELOG.md"
+    ],
+    "grammarly.files.include": [
+        "**/readme.md",
+        "**/README.md",
+        "**/*.txt",
+        "book/**/*.md"
     ]
 }

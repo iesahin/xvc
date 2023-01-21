@@ -3,7 +3,7 @@
 //! Most of these commands require an Xvc repository [XvcRoot] to be present.
 //!
 //! Modules correspond to subcommands, and are documented separately.
-//!  
+//!
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 mod common;
@@ -34,6 +34,7 @@ use std::path::PathBuf;
 use xvc_config::XvcConfigInitParams;
 use xvc_config::XvcVerbosity;
 use xvc_core::default_project_config;
+use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::XvcRoot;
 use xvc_core::CHANNEL_BOUND;
 use xvc_logging::XvcOutputLine;
@@ -225,7 +226,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
         default_configuration: default_project_config(true),
     };
 
-    let xvc_root = match XvcRoot::new(Path::new(&cli_opts.workdir), xvc_config_params) {
+    let xvc_root = match load_xvc_root(Path::new(&cli_opts.workdir), xvc_config_params) {
         Ok(r) => Some(r),
         Err(e) => {
             e.info();
@@ -264,3 +265,6 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
 pub fn init(_xvc_root: &XvcRoot) -> Result<()> {
     Ok(())
 }
+
+/// Crossbeam channel capacity for channels in this crate
+pub const CHANNEL_CAPACITY: usize = 100000;

@@ -19,8 +19,9 @@ use xvc_core::{Diff, XvcCachePath};
 use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputLine};
 
 use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata};
+use crate::common::gitignore::make_ignore_handler;
 use crate::common::{
-    move_xvc_path_to_cache, only_file_targets, recheck_from_cache, targets_from_store,
+    load_targets_from_store, move_xvc_path_to_cache, only_file_targets, recheck_from_cache,
     xvc_path_metadata_map_from_disk,
 };
 use crate::common::{update_store_records, FileTextOrBinary};
@@ -112,7 +113,7 @@ pub fn cmd_carry_in(
     let opts = cli_opts.update_from_conf(conf)?;
     watch!(opts);
     let current_dir = conf.current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -232,6 +233,8 @@ pub fn carry_in(
         "The number of xvc paths and the number of cache paths should be the same."
     }
 
+    let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
+
     let copy_path_to_cache_and_recheck = |xe, xp| {
         let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
         let abs_cache_path = cache_path.to_absolute_path(xvc_root);
@@ -267,8 +270,16 @@ pub fn carry_in(
             info!(output_snd, "[REMOVE] {target_path}");
         }
         let cache_type = uwo!(cache_types.get(xe).cloned(), output_snd);
+
         uwr!(
-            recheck_from_cache(output_snd, xvc_root, xp, &cache_path, cache_type),
+            recheck_from_cache(
+                output_snd,
+                xvc_root,
+                xp,
+                &cache_path,
+                cache_type,
+                &ignore_writer
+            ),
             output_snd
         );
         info!(output_snd, "[RECHECK] {cache_path} -> {xp}");
@@ -283,6 +294,9 @@ pub fn carry_in(
             .iter()
             .for_each(|(xe, xp)| copy_path_to_cache_and_recheck(xe, xp));
     }
+
+    ignore_writer.send(None);
+    ignore_thread.join().unwrap();
 
     Ok(())
 }

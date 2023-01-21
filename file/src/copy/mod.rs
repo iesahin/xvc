@@ -1,13 +1,13 @@
 use std::path::Path;
 
-use crate::common::{targets_from_store, FileTextOrBinary};
+use crate::common::{filter_targets_from_store, load_targets_from_store, FileTextOrBinary};
 use crate::Result;
 use anyhow::anyhow;
 use clap::Parser;
 use crossbeam_channel::Sender;
-use xvc_core::{ContentDigest, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{CacheType, ContentDigest, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{error, XvcOutputLine};
+use xvc_logging::{debug, error, XvcOutputLine};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -68,8 +68,10 @@ pub(crate) fn cmd_copy(
     };
 
     let current_dir = xvc_root.config().current_dir()?;
-    let all_sources = targets_from_store(xvc_root, current_dir, &Some(source_targets))?;
     let all_metadata = xvc_root.load_store::<XvcMetadata>()?;
+    let all_xvc_paths = xvc_root.load_store::<XvcPath>()?;
+    let all_sources =
+        filter_targets_from_store(xvc_root, &all_xvc_paths, current_dir, &Some(source_targets))?;
     let source_metadata = all_metadata.subset(all_sources.keys().copied())?;
     let source_metadata_files = source_metadata.filter(|xe, md| md.is_file());
 
@@ -83,127 +85,160 @@ pub(crate) fn cmd_copy(
     // If target is a directory, check if exists and create if not.
     // If target is a file, check if exists and return error if it does and
     // force is not set.
-    
-    let mut source_dest_store = HStore::<(XvcEntity, XvcPath)>::new();
+    let mut source_dest_store = if opts.destination.ends_with('/') {
+        let dir_path = XvcPath::new(
+            &xvc_root,
+            &xvc_root,
+            Path::new(opts.destination.strip_suffix('/').unwrap()),
+        )?;
 
-    xvc_root.with_r11store_mut(|store: &mut R11Store<XvcPath, XvcMetadata>| {
-        // If target is a directory, we get new targets by appending the sources to the target
-        if opts.destination.ends_with('/') {
-            let dir_path = XvcPath::new(
-                &xvc_root,
-                &xvc_root,
-                Path::new(opts.destination.strip_suffix('/').unwrap()),
-            )?;
+        let current_dir_entity = match all_xvc_paths.entities_for(&dir_path) {
+            Some(v) => Some(v[0]),
+            None => None,
+        };
 
-            let current_dir_entity = match store.left.entities_for(&dir_path) {
-                Some(v) => Some(v[0]),
-                None => None,
-            };
+        let current_dir_metadata = current_dir_entity.and_then(|e| all_metadata.get(&e));
 
-            let current_dir_metadata = current_dir_entity.and_then(|e| store.right.get(&e));
-
-            if let Some(current_dir_metadata) = current_dir_metadata {
-                if !current_dir_metadata.is_dir() {
-                    return Err(anyhow!(
+        if let Some(current_dir_metadata) = current_dir_metadata {
+            if !current_dir_metadata.is_dir() {
+                return Err(anyhow!(
                         "Destination is not recorded as a directory. Please move or delete the destination first."
                     )
                     .into());
+            }
+        }
+
+        let mut source_dest_store = HStore::new();
+
+        for (source_xe, source_path) in source_xvc_path_files.iter() {
+            let dest_path = dir_path.join(source_path).unwrap();
+
+            match all_xvc_paths.entities_for(&dest_path) {
+                Some(v) => {
+                    if !opts.force {
+                        error!(
+                            output_snd,
+                            "Target file {} already exists. Use --force to overwrite.", dest_path
+                        );
+                        continue;
+                    } else {
+                        source_dest_store.insert(*source_xe, (v[0], dest_path));
+                    }
+                }
+                None => {
+                    source_dest_store.insert(*source_xe, (xvc_root.new_entity(), dest_path));
                 }
             }
+        }
+        source_dest_store
+    } else {
+        // Destination doesn't end with '/'
+        if source_xvc_path_files.len() > 1 {
+            return Err(
+                anyhow!("Destination must be a directory if multiple sources are given").into(),
+            );
+        }
 
-            for (source_xe, source_path) in source_xvc_path_files.iter() {
-                let dest_path = dir_path.join(source_path).unwrap();
+        let source_xe = source_xvc_path_files.keys().next().unwrap();
 
+        let store = xvc_root.load_r11store::<XvcPath, XvcMetadata>()?;
+        let mut source_dest_store = HStore::<(XvcEntity, XvcPath)>::with_capacity(1);
+        let dest_path = XvcPath::new(&xvc_root, &current_dir, Path::new(&opts.destination))?;
 
-                match store.left.entities_for(&dest_path) {
-                    Some(v) => {
-                        if !opts.force {
-                            error!(output_snd, "Target file {} already exists. Use --force to overwrite.", dest_path);
-                            continue;
-                        } else {
-                            source_dest_store.insert(*source_xe, (v[0], dest_path));
-                        }
+        match store.left.entities_for(&dest_path) {
+            Some(dest_xe) => {
+                if !opts.force {
+                    return Err(anyhow!(
+                        "Target file {} already exists. Use --force to overwrite.",
+                        dest_path
+                    )
+                    .into());
+                } else {
+                    source_dest_store.insert(*source_xe, (dest_xe[0], dest_path));
+                }
+            }
+            None => {
+                source_dest_store.insert(*source_xe, (xvc_root.new_entity(), dest_path));
+            }
+        }
+        source_dest_store
+    };
+
+    xvc_root.with_r11store_mut(|store: &mut R11Store<XvcPath, XvcMetadata>| {
+        for (source_xe, (dest_xe, dest_path)) in source_dest_store.iter() {
+            let source_md = source_metadata.get(source_xe).unwrap();
+            store.left.insert(*dest_xe, dest_path.clone());
+            // If we recheck, we'll update the metadata with the actual
+            // file metadata below.
+            store.right.insert(*dest_xe, source_md.clone());
+
+            // Create destination parent directory records if they don't exist
+            for parent in dest_path.parents() {
+                let parent_entities = store.left.entities_for(&parent);
+                if parent_entities.is_none() || parent_entities.unwrap().len() == 0 {
+                    let parent_entity = xvc_root.new_entity();
+                    store.left.insert(parent_entity, parent.clone());
+                    store.right.insert(
+                        parent_entity,
+                        XvcMetadata {
+                            file_type: XvcFileType::Directory,
+                            ..Default::default()
+                        },
+                    );
+                }
+            }
+        }
+
+        // Copy XvcDigest to destination
+
+        xvc_root.with_store_mut(|content_digest_store: &mut XvcStore<ContentDigest>| {
+            for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
+                let cd = content_digest_store.get(source_xe);
+                match cd {
+                    Some(cd) => {
+                        content_digest_store.insert(*dest_xe, *cd);
                     }
                     None => {
-                        source_dest_store.insert(*source_xe, (xvc_root.new_entity(), dest_path));
+                        debug!(output_snd, "No content digest found for {}", source_xe);
                     }
                 }
             }
-        } else { // Destination doesn't end with '/'
-            if source_xvc_path_files.len() > 1 {
-                return Err(anyhow!("Destination must be a directory if multiple sources are given").into());
-            }
+            Ok(())
+        })?;
 
-            let source_xe = source_xvc_path_files.keys().next().unwrap();
-
-            let dest_path = XvcPath::new(
-                &xvc_root,
-                &current_dir,
-                Path::new(&opts.destination),
-            )?;
-
-            match store.left.entities_for(&dest_path) {
-                    Some(dest_xe) => if !opts.force {
-                            return Err(anyhow!("Target file {} already exists. Use --force to overwrite.", dest_path).into());
-        } else {
-                            source_dest_store.insert(*source_xe, (dest_xe[0], dest_path));
-                        }
+        xvc_root.with_store_mut(|text_or_binary_store: &mut XvcStore<FileTextOrBinary>| {
+            for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
+                let tob = text_or_binary_store.get(source_xe);
+                match tob {
+                    Some(tob) => {
+                        text_or_binary_store.insert(*dest_xe, *tob);
+                    }
                     None => {
-                        source_dest_store.insert(*source_xe, (xvc_root.new_entity(), dest_path));
+                        debug!(output_snd, "No text or binary found for {}", source_xe);
                     }
                 }
-        };
-          // Copy XvcPath and XvcMetadata to destination
-                for (source_xe, (dest_xe, dest_path)) in source_dest_store.iter() {
-                    let source_md = source_metadata.get(source_xe).unwrap();
-                    store.left.insert(*dest_xe, dest_path.clone());
-                    // If we recheck, we'll update the metadata with the actual
-                    // file metadata below.
-                    store.right.insert(*dest_xe, source_md.clone());
+            }
+            Ok(())
+        })?;
 
+        xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<CacheType>| {
+            for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
+                if let Some(cache_type) = opts.cache_type {
+                    cache_type_store.insert(*dest_xe, cache_type);
+                } else {
+                    let source_cache_type = cache_type_store.get(source_xe).unwrap();
+                    cache_type_store.insert(*dest_xe, *source_cache_type);
                 }
-
-            // Copy XvcDigest to destination
-
-                xvc_root.with_store_mut(|content_digest_store: &mut XvcStore<ContentDigest>| {
-                    for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
-                            content_digest_store.get(source_xe).and_then(|cd| {
-                                content_digest_store.insert(*dest_xe, *cd);
-                            });
-                    }
-                    Ok(())
-                })?;
-
-
-                xvc_root.with_store_mut(|text_or_binary_store: &mut XvcStore<FileTextOrBinary>| {
-                    for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
-                            let text_or_binary = text_or_binary_store.get(source_xe).and_then(|tob| {
-                                text_or_binary_store.insert(*dest_xe, *tob);
-                            });
-                    }
-                    Ok(())
-                })?;
-
-                xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<ContentDigest>| {
-                    for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
-                        if let Some(cache_type) = opts.cache_type {
-                            cache_type_store.insert(*dest_xe, cache_type);
-                        } else {
-                            let source_cache_type = cache_type_store.get(source_xe).unwrap();
-                            cache_type_store.insert(*dest_xe, *source_cache_type);
-       }
-    }
-                    Ok(())
-                })?;
+            }
+            Ok(())
+        })?;
 
         Ok(())
     })?;
 
     // Recheck target files
 
-    if !opts.no_recheck {
-        
-    }
+    if !opts.no_recheck {}
 
     Ok(())
 }

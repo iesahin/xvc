@@ -3,7 +3,7 @@
 //! - [ListCLI] defines the command line options
 //! - [cmd_list]  is the entry point to run the command
 
-use crate::common::{targets_from_disk, targets_from_store, FileTextOrBinary};
+use crate::common::{load_targets_from_store, targets_from_disk, FileTextOrBinary};
 use crate::error::Error;
 use crate::Result;
 use anyhow::anyhow;
@@ -547,7 +547,7 @@ pub fn cmd_list(
 
     let from_disk = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
     watch!(from_disk);
-    let from_store = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let from_store = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(from_store);
     let stored_xvc_metadata = xvc_root.load_store::<XvcMetadata>()?;
     let stored_cache_type = xvc_root.load_store::<CacheType>()?;

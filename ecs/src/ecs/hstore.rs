@@ -80,11 +80,6 @@ where
         Ok(store)
     }
 
-    /// Calls the inner map's insert
-    pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
-        self.map.insert(entity, value)
-    }
-
     /// Returns the inner map's iter_mut
     pub fn iter_mut(&mut self) -> IterMut<'_, XvcEntity, T> {
         self.map.iter_mut()
@@ -121,8 +116,8 @@ impl<T> Default for HStore<T> {
     }
 }
 
-impl<T: Storable> From<XvcStore<T>> for HStore<T> {
-    fn from(store: XvcStore<T>) -> Self {
+impl<T: Storable> From<&XvcStore<T>> for HStore<T> {
+    fn from(store: &XvcStore<T>) -> Self {
         let map = HashMap::from_iter(store.iter().map(|(k, v)| (*k, v.clone())));
         Self { map }
     }
@@ -145,6 +140,11 @@ impl<T> HStore<T> {
         HStore {
             map: HashMap::<XvcEntity, T>::with_capacity(capacity),
         }
+    }
+
+    /// Calls the inner map's insert
+    pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
+        self.map.insert(entity, value)
     }
 
     /// Creates values from `func` and gets new entities from `gen` to create new records.

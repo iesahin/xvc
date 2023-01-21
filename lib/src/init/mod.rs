@@ -7,6 +7,7 @@ use std::fs;
 use std::path::PathBuf;
 use xvc_config::XvcConfigInitParams;
 use xvc_core::default_project_config;
+use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
 use xvc_core::XvcRoot;
 use xvc_logging::watch;
@@ -95,7 +96,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
     };
     watch!(config_opts);
 
-    let xvc_root = XvcRoot::init(&path, config_opts)?;
+    let xvc_root = init_xvc_root(&path, config_opts)?;
     watch!(xvc_root);
     xvc_pipeline::init(&xvc_root)?;
     xvc_file::init(&xvc_root)?;
