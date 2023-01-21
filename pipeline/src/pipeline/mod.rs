@@ -446,7 +446,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
 
         // update pmp with fs events
         //
-        while let Ok(fs_event) = fs_receiver.try_recv() {
+        while let Ok(Some(fs_event)) = fs_receiver.try_recv() {
             match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(xvc_root, xvc_root, &path)?;

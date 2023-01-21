@@ -47,7 +47,7 @@ pub enum PathEvent {
 
 /// A struct that handles [notify::Event]s considering also [IgnoreRules]
 struct PathEventHandler {
-    sender: Sender<PathEvent>,
+    sender: Sender<Option<PathEvent>>,
     ignore_rules: IgnoreRules,
 }
 
@@ -92,10 +92,10 @@ impl PathEventHandler {
         match check_ignore(&self.ignore_rules, &path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
                 self.sender
-                    .send(PathEvent::Create {
+                    .send(Some(PathEvent::Create {
                         path: path.clone(),
                         metadata: path.metadata().map_err(Error::from).unwrap(),
-                    })
+                    }))
                     .unwrap_or_else(|e| warn!("{}", e));
             }
             MatchResult::Ignore => {
@@ -108,10 +108,10 @@ impl PathEventHandler {
         match check_ignore(&self.ignore_rules, &path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
                 self.sender
-                    .send(PathEvent::Create {
+                    .send(Some(PathEvent::Create {
                         path: path.clone(),
                         metadata: path.metadata().map_err(Error::from).unwrap(),
-                    })
+                    }))
                     .unwrap_or_else(|e| {
                         Error::from(e).warn();
                     });
@@ -126,7 +126,7 @@ impl PathEventHandler {
         match check_ignore(&self.ignore_rules, &path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
                 self.sender
-                    .send(PathEvent::Delete { path })
+                    .send(Some(PathEvent::Delete { path }))
                     .unwrap_or_else(|e| warn!("{}", e));
             }
             MatchResult::Ignore => {
@@ -148,7 +148,7 @@ impl PathEventHandler {
 /// Paths ignored by `ignore_rules` do not emit any events.
 pub fn make_watcher(
     ignore_rules: IgnoreRules,
-) -> Result<(RecommendedWatcher, Receiver<PathEvent>)> {
+) -> Result<(RecommendedWatcher, Receiver<Option<PathEvent>>)> {
     let (sender, receiver) = bounded(10000);
     let root = ignore_rules.root.clone();
     let mut watcher = notify::recommended_watcher(PathEventHandler {
@@ -170,7 +170,7 @@ pub fn make_watcher(
 /// performance than [`make_watcher`], but it works in all platforms.
 pub fn make_polling_watcher(
     ignore_rules: IgnoreRules,
-) -> Result<(PollWatcher, Receiver<PathEvent>)> {
+) -> Result<(PollWatcher, Receiver<Option<PathEvent>>)> {
     let (sender, receiver) = bounded(10000);
     let root = ignore_rules.root.clone();
     let mut watcher = notify::poll::PollWatcher::new(
@@ -180,7 +180,7 @@ pub fn make_polling_watcher(
         },
         Config::default().with_poll_interval(Duration::from_secs(2)),
     )?;
-
+   
     watcher.watch(&root, RecursiveMode::Recursive)?;
     watch!(watcher);
     Ok((watcher, receiver))
