@@ -91,8 +91,6 @@ pub fn cmd_recheck(
     let current_dir = conf.current_dir()?;
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
-    let xvc_current_dir = XvcPath::new(xvc_root, current_dir, current_dir)?;
-    watch!(xvc_current_dir);
 
     let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
     watch!(cache_type);
