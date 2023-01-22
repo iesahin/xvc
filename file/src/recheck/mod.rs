@@ -224,13 +224,12 @@ type RecheckOp = Option<RecheckOperation>;
 pub fn make_recheck_handler(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    ignore_handler: &Sender<IgnoreOp>,
-    files_to_recheck: &HStore<&XvcPath>,
+    ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<(Sender<RecheckOp>, JoinHandle<()>)> {
     let (recheck_op_snd, recheck_op_rvc) = crossbeam_channel::bounded(crate::CHANNEL_CAPACITY);
     let output_snd = output_snd.clone();
     let xvc_root = xvc_root.clone();
-    let ignore_handler = ignore_handler.clone();
+    let ignore_handler = ignore_writer.clone();
 
     let handle = thread::spawn(move || {
         while let Ok(Some(op)) = recheck_op_rvc.recv() {
@@ -310,7 +309,7 @@ fn recheck(
         });
     }
 
-    ignore_writer.send(None);
+    ignore_writer.send(None).unwrap();
     ignore_thread.join().unwrap();
 
     Ok(())

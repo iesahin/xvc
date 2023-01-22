@@ -1,7 +1,9 @@
 use std::path::Path;
 
+use crate::common::gitignore::make_ignore_handler;
 use crate::common::{filter_targets_from_store, load_targets_from_store, FileTextOrBinary};
-use crate::Result;
+use crate::recheck::{make_recheck_handler, RecheckOperation};
+use crate::{recheck, Result};
 use anyhow::anyhow;
 use clap::Parser;
 use crossbeam_channel::Sender;
@@ -118,7 +120,8 @@ pub(crate) fn cmd_copy(
                     if !opts.force {
                         error!(
                             output_snd,
-                            "Target file {} already exists. Use --force to overwrite.", dest_path
+                            "Destination file {} already exists. Use --force to overwrite.",
+                            dest_path
                         );
                         continue;
                     } else {
@@ -149,7 +152,7 @@ pub(crate) fn cmd_copy(
             Some(dest_xe) => {
                 if !opts.force {
                     return Err(anyhow!(
-                        "Target file {} already exists. Use --force to overwrite.",
+                        "Destination file {} already exists. Use --force to overwrite.",
                         dest_path
                     )
                     .into());
@@ -236,9 +239,40 @@ pub(crate) fn cmd_copy(
         Ok(())
     })?;
 
-    // Recheck target files
+    // Recheck destination files
+    // TODO: We can interleave this operation with the copy operation above
+    // to speed things up. This looks premature optimization now.
 
-    if !opts.no_recheck {}
+    if !opts.no_recheck {
+        let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
+        let (recheck_handler, recheck_thread) =
+            make_recheck_handler(output_snd, xvc_root, &ignore_writer)?;
+        // We reload to get the latest paths
+        // Interleaving might prevent this.
+        let all_xvc_paths = xvc_root.load_store::<XvcPath>()?;
+        let mut recheck_paths =
+            all_xvc_paths.subset(source_dest_store.values().map(|(xe, _)| *xe))?;
+        let all_content_digests = xvc_root.load_store::<ContentDigest>()?;
+        let all_cache_types = xvc_root.load_store::<CacheType>()?;
+
+        recheck_paths.drain().for_each(|(xe, xvc_path)| {
+            let content_digest = all_content_digests.get(&xe).unwrap();
+            let cache_type = all_cache_types.get(&xe).unwrap();
+            recheck_handler
+                .send(Some(RecheckOperation::Recheck {
+                    xvc_path,
+                    content_digest: *content_digest,
+                    cache_type: *cache_type,
+                }))
+                .unwrap();
+        });
+
+        // Send None to signal end of operations and break the loops.
+        recheck_handler.send(None).unwrap();
+        recheck_thread.join().unwrap();
+        ignore_writer.send(None).unwrap();
+        ignore_thread.join().unwrap();
+    }
 
     Ok(())
 }

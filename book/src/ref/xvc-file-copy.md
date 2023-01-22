@@ -11,22 +11,22 @@ Usage: xvc file copy [OPTIONS] <SOURCE> <TARGET>
 Arguments:
   <SOURCE>
           Source glob.
-          
+
           If the source ends with a slash, it's considered a directory and all files in that directory are copied.
-          
+
           If the number of source files is more than one, the target must be a directory.
 
   <TARGET>
           Target.
-          
+
           If the target ends with a slash, it's considered a directory and created if it doesn't exist.
-          
+
           If the number of source files is more than one, the target must be a directory.
 
 Options:
       --cache-type <CACHE_TYPE>
           How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
-          
+
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
       --no-parallel
@@ -47,10 +47,10 @@ Options:
 
 This command is used to copy a set of files to another location in the workspace.
 
-By default, it doesn't update the recheck method (cache type) of the targets,
-and rechecks them with the same method to the new location.
+By default, it doesn't update the recheck method (cache type) of the targets.
+It rechecks them to the destination with the same method.
 
-It works only with the tracked files.
+`xvc file copy` works only with the tracked files.
 
 ```console
 $ git init
@@ -64,7 +64,7 @@ total[..]
 
 ```
 
-Once you add the file to the cache, you can copy the file to another location. 
+Once you add the file to the cache, you can copy the file to another location.
 
 ```console
 $ xvc file copy data.txt data2.txt
@@ -107,7 +107,7 @@ stack backtrace:
              at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
-$ ls 
+$ ls
 
 ```
 
@@ -208,7 +208,7 @@ Total #: 0 Workspace Size:           0 Cached Size:           0
 
 ```
 
-If the targets you specify are changed, they are not copied. 
+If the targets you specify are changed, they are not copied.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
@@ -306,8 +306,8 @@ ls: data6.txt: No such file or directory
 
 ```
 
-You can also skip rechecking. 
-In this case, xvc won't create copies in the workspace. 
+You can also skip rechecking.
+In this case, xvc won't create copies in the workspace.
 They will be listed with `xvc file list` command.
 
 ```console
@@ -330,7 +330,7 @@ Total #: 2 Workspace Size:         237 Cached Size:           0
 
 ```
 
-Later, you can recheck them. 
+Later, you can recheck them.
 
 ```console
 $ xvc file recheck data7.txt

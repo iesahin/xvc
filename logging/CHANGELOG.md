@@ -65,7 +65,7 @@ tree, and subtasks are marked with indentation.
                  create a gitignore with a single line `*` to ignore all files.
                - After all files are rechecked, we can check whether they are
                  not ignored by Git, and update necessary gitignores.
-        - Create a IgnoreHandler system with crossbeam_channels
+        - Create a IgnoreWriter system with crossbeam_channels
           - The channel will send/receive Option<IgnoreOperation> messages.
           - If it receives a None message, it will stop and the collected
             dir/files will be written to ignore files.
