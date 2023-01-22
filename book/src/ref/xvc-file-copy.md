@@ -6,27 +6,27 @@
 $ xvc file copy --help
 Copy from source to another location in the workspace
 
-Usage: xvc file copy [OPTIONS] <SOURCE> <TARGET>
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
 
 Arguments:
   <SOURCE>
-          Source glob.
-
+          Source file, glob or directory within the workspace.
+          
           If the source ends with a slash, it's considered a directory and all files in that directory are copied.
+          
+          If the number of source files is more than one, the destination must be a directory.
 
-          If the number of source files is more than one, the target must be a directory.
-
-  <TARGET>
-          Target.
-
+  <DESTINATION>
+          Location we copy file(s) to within the workspace.
+          
           If the target ends with a slash, it's considered a directory and created if it doesn't exist.
-
-          If the number of source files is more than one, the target must be a directory.
+          
+          If the number of source files is more than one, the destination must be a directory.
 
 Options:
       --cache-type <CACHE_TYPE>
           How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
-
+          
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
       --no-parallel
@@ -34,6 +34,9 @@ Options:
 
       --force
           Force even if target exists
+
+      --no-recheck
+          Do not recheck the destination files This is useful when you want to copy only records, without updating the workspace
 
   -h, --help
           Print help (see a summary with '-h')
@@ -61,6 +64,7 @@ $ xvc file track data.txt
 
 $ ls -l
 total[..]
+-rw-rw-rw-  1 iex  staff  19 Jan 19 10:47 data.txt
 
 ```
 
@@ -108,6 +112,8 @@ stack backtrace:
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ ls
+data.txt
+data2.txt
 
 ```
 
@@ -156,6 +162,9 @@ note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose bac
 
 $ ls -l
 total[..]
+-rw-rw-rw-  1 iex  staff   19 Jan 19 10:47 data.txt
+-rw-rw-rw-  1 iex  staff   19 Jan 19 10:47 data2.txt
+lrwxr-xr-x  1 iex  staff  180 Jan 22 11:20 data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 ```
 
@@ -203,7 +212,10 @@ stack backtrace:
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ xvc file list another-set/
-Total #: 0 Workspace Size:           0 Cached Size:           0
+FH          19 2023-01-19 07:47:07   another-set/data3.txt  c85f3e81 c85f3e81
+FH          19 2023-01-19 07:47:07   another-set/data2.txt  c85f3e81 c85f3e81
+FH          19 2023-01-19 07:47:07   another-set/data.txt  c85f3e81 c85f3e81
+Total #: 3 Workspace Size:          57 Cached Size:          19
 
 
 ```
@@ -262,7 +274,28 @@ You can copy files _virtually_ without them being in the workspace.
 $ rm -f data.txt
 
 $ xvc file copy data.txt data6.txt
-thread '<unnamed>' panicked at 'not yet implemented', file/src/copy/mod.rs:49:5
+
+$ ls -l data6.txt
+-rw-rw-rw-  1 iex  staff  19 Jan 19 10:47 data6.txt
+
+```
+
+You can also skip rechecking.
+In this case, xvc won't create copies in the workspace.
+They will be listed with `xvc file list` command.
+
+```console
+$ xvc file copy data.txt data7.txt --no-recheck
+
+$ ls
+another-set
+data2.txt
+data3.txt
+data5.txt
+data6.txt
+
+$ xvc file list
+thread '<unnamed>' panicked at 'called `Option::unwrap()` on a `None` value', file/src/list/mod.rs:572:74
 stack backtrace:
    0: rust_begin_unwind
              at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
@@ -294,39 +327,12 @@ stack backtrace:
    3: core::result::Result<T,E>::unwrap
              at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
    4: xvc::cli::dispatch
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:242:5
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:243:5
    5: xvc::main
              at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
    6: core::ops::function::FnOnce::call_once
              at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-
-$ ls -l data6.txt
-ls: data6.txt: No such file or directory
-
-```
-
-You can also skip rechecking.
-In this case, xvc won't create copies in the workspace.
-They will be listed with `xvc file list` command.
-
-```console
-$ xvc file copy data.txt data7.txt --no-recheck
-error: unexpected argument '--no-recheck' found
-
-  note: to pass '--no-recheck' as a value, use '-- --no-recheck'
-
-Usage: xvc file copy <--cache-type <CACHE_TYPE>|--no-parallel|--force|SOURCE|TARGET>
-
-For more information, try '--help'.
-
-$ ls
-
-$ xvc file list
-FX         130 2023-01-18 14:03:32   .xvcignore           ac46bf74
-FX         107 2023-01-18 14:03:32   .gitignore           ce9fcf30
-Total #: 2 Workspace Size:         237 Cached Size:           0
-
 
 ```
 
@@ -336,6 +342,6 @@ Later, you can recheck them.
 $ xvc file recheck data7.txt
 
 $ ls -l data7.txt
-ls: data7.txt: No such file or directory
+-rw-rw-rw-  1 iex  staff  19 Jan 19 10:47 data7.txt
 
 ```
