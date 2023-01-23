@@ -136,8 +136,12 @@ impl XvcPath {
         let mut rp: &RelativePath = &self.0;
 
         while let Some(parent) = rp.parent() {
-            parents.push(Self(parent.to_relative_path_buf()));
-            rp = parent;
+            if parent.as_str().len() > 0 {
+                parents.push(Self(parent.to_relative_path_buf()));
+                rp = parent;
+            } else {
+                break;
+            }
         }
 
         parents
