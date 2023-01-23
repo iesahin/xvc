@@ -567,20 +567,20 @@ pub fn cmd_list(
     for (disk_xvc_path, disk_xvc_md) in from_disk {
         // Group 1 and Group 2
         if let Some(xvc_entity) = from_store.entity_by_value(&disk_xvc_path) {
-            let recorded_md = stored_xvc_metadata.get(&xvc_entity).unwrap();
-            let recorded_path = from_store.get(&xvc_entity).unwrap();
-            let recorded_cache_type = stored_cache_type.get(&xvc_entity).unwrap();
+            let recorded_metadata = stored_xvc_metadata.get(&xvc_entity).cloned();
+            let recorded_path = from_store.get(&xvc_entity).cloned();
+            let recorded_cache_type = stored_cache_type.get(&xvc_entity).cloned();
             found_entities.insert(xvc_entity.clone());
             let pm = PathMatch {
-                xvc_entity: Some(xvc_entity.clone()),
+                xvc_entity: Some(xvc_entity),
                 actual_path: Some(disk_xvc_path),
                 actual_metadata: Some(disk_xvc_md),
                 // digests will be filled later if needed
                 actual_digest: None,
 
-                recorded_metadata: Some(recorded_md.clone()),
-                recorded_path: Some(recorded_path.clone()),
-                recorded_cache_type: Some(recorded_cache_type.clone()),
+                recorded_metadata,
+                recorded_path,
+                recorded_cache_type,
                 recorded_digest: None,
             };
             matches.push(pm);
@@ -610,21 +610,18 @@ pub fn cmd_list(
         .collect::<Vec<_>>();
 
     for xvc_entity in &not_found_entities {
-        let recorded_md = stored_xvc_metadata.get(&xvc_entity).unwrap();
-        let recorded_path = from_store.get(&xvc_entity).unwrap();
-        let recorded_cache_type = stored_cache_type
-            .get(&xvc_entity)
-            .cloned()
-            .unwrap_or_else(|| CacheType::from_conf(conf));
+        let recorded_md = stored_xvc_metadata.get(&xvc_entity).cloned();
+        let recorded_path = from_store.get(&xvc_entity).cloned();
+        let recorded_cache_type = stored_cache_type.get(&xvc_entity).cloned();
         let pm = PathMatch {
-            xvc_entity: Some(xvc_entity.clone()),
+            xvc_entity: Some(*xvc_entity),
             actual_path: None,
             actual_metadata: None,
             // digests will be filled later if needed
             actual_digest: None,
-            recorded_path: Some(recorded_path.clone()),
-            recorded_metadata: Some(recorded_md.clone()),
-            recorded_cache_type: Some(recorded_cache_type.clone()),
+            recorded_path: recorded_path,
+            recorded_metadata: recorded_md,
+            recorded_cache_type: recorded_cache_type,
             recorded_digest: None,
         };
         matches.push(pm);
@@ -662,9 +659,11 @@ pub fn cmd_list(
             matches
                 .into_iter()
                 .filter_map(|pm| {
-                    if pm.actual_path.is_some()
-                        && pm.actual_metadata.is_some()
-                        && pm.actual_metadata.unwrap().file_type == XvcFileType::File
+                    if pm
+                        .actual_path
+                        .as_deref()
+                        .and(pm.actual_metadata.and_then(|md| Some(md.is_file())))
+                        .is_some()
                     {
                         let actual_path = pm.actual_path.as_ref().unwrap();
                         let path = actual_path.to_absolute_path(xvc_root);

@@ -11,22 +11,22 @@ Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
 Arguments:
   <SOURCE>
           Source file, glob or directory within the workspace.
-          
+
           If the source ends with a slash, it's considered a directory and all files in that directory are copied.
-          
+
           If the number of source files is more than one, the destination must be a directory.
 
   <DESTINATION>
           Location we copy file(s) to within the workspace.
-          
+
           If the target ends with a slash, it's considered a directory and created if it doesn't exist.
-          
+
           If the number of source files is more than one, the destination must be a directory.
 
 Options:
       --cache-type <CACHE_TYPE>
           How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
-          
+
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
       --force
@@ -76,16 +76,25 @@ data2.txt
 
 ```
 
-Xvc updates the cache type if the file is not changed.
+Note that, multiple copies of the same content doesn't add up to the cache size.
+
+```console
+$ xvc file list data.txt
+
+$ xvc file list 'data*'
+
+```
+
+Xvc can change the destination file's recheck method.
 
 ```console
 $ xvc file copy data.txt data3.txt --as symlink
 
 $ ls -l
 total[..]
--rw-rw-rw-  1 iex  staff   19 Jan 19 10:47 data.txt
--rw-rw-rw-  1 iex  staff   19 Jan 19 10:47 data2.txt
-lrwxr-xr-x  1 iex  staff  180 Jan 23 05:42 data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+-rw-rw-rw-  1 [..] data.txt
+-rw-rw-rw-  1 [..] data2.txt
+lrwxr-xr-x  1 [..] data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 ```
 
@@ -95,15 +104,16 @@ You can create _views_ of your data by copying it to another location.
 $ xvc file copy 'd*' another-set/ --as hardlink
 
 $ xvc file list another-set/
-FH          19 2023-01-19 07:47:07   another-set/data3.txt  c85f3e81 c85f3e81
-FH          19 2023-01-19 07:47:07   another-set/data2.txt  c85f3e81 c85f3e81
-FH          19 2023-01-19 07:47:07   another-set/data.txt  c85f3e81 c85f3e81
+FH          19 [..]   another-set/data3.txt  c85f3e81 c85f3e81
+FH          19 [..]   another-set/data2.txt  c85f3e81 c85f3e81
+FH          19 [..]   another-set/data.txt  c85f3e81 c85f3e81
 Total #: 3 Workspace Size:          57 Cached Size:          19
 
 
 ```
 
-If the targets you specify are changed, they are not copied.
+If the targets you specify are changed, copy operation is cancelled.
+Please either recheck old versions or carry in new versions.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
@@ -112,7 +122,7 @@ $ xvc file copy data.txt data5.txt
 
 ```
 
-You can copy files _virtually_ without them being in the workspace.
+You can copy files without them being in the workspace if they are in the cache.
 
 ```console
 $ rm -f data.txt
@@ -125,7 +135,7 @@ $ ls -l data6.txt
 ```
 
 You can also skip rechecking.
-In this case, xvc won't create copies in the workspace.
+In this case, xvc won't create any copies in the workspace, and you don't need them to be available in the cache.
 They will be listed with `xvc file list` command.
 
 ```console
@@ -182,7 +192,7 @@ note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose bac
 
 ```
 
-Later, you can recheck them.
+Later, you can recheck them to the workspace.
 
 ```console
 $ xvc file recheck data7.txt
