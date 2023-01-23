@@ -14,7 +14,7 @@ pub use xvc_pipeline as pipeline;
 
 pub use xvc_logging::watch;
 
-use crate::error::Result;
+pub use crate::error::Result;
 
 /// Adds `xvc` as the first elements to `args` and calls [cli::dispatch] after parsing them.
 pub fn dispatch(args: Vec<&str>) -> Result<()> {

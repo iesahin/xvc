@@ -1,39 +1,84 @@
 # Introduction
 
-This document is a change log that I write for the project, as I develop. It's a
-tree and subtasks are marked with indentation.
+This document is a change log that I write for the project as I develop. It's a
+tree, and subtasks are marked with indentation.
 
-## v0.5.0
+## 0.5.0 (2021-09-23)
 
 - Refactor XvcEntity to `(u64, u64)`
   - Issue: <https://github.com/iesahin/xvc/issues/198>
   - PR: <https://github.com/iesahin/xvc/pulls/201>
-  - [x] `From<u128>` and `Into<u128>`
-  - [x] `From<(u64, u64)>` and `Into<(u64, u64)>`
-  - [x] Tests
-    - [x] Add tests for `From<u128>` and `Into<u128>` ecs/src/ecs/mod.rs
-    - [x] Fix doc tests that use `100usize` to create `XvcEntity`
-  - [x] Update the ECS documentation
-    - [x] Update arch/ecs.md
-    - [x] Search for any `XvcEntity` references that may be changed
-- [x] `xvc-test-helper` binary is not produced at builds
-  - [x] Moved it from dev-dependencies to dependencies in workflow_tests/Cargo.toml
-    - [x] Still doesn't work 🛑
-    - [x] We need binary dependencies in cargo: <https://rust-lang.github.io/rfcs/3028-cargo-binary-dependencies.html>,
-    - [x] It's available in nightly: <https://github.com/rust-lang/cargo/issues/9096>
-    - [x] Revert to dev-dependencies
-  - [x] `z_test_docs` fails immediately if no `xvc-test-helper` binary is found.
-  - [x] Run the tests without `-p workflow_tests`
-    - [x] Hypothesis: The reason the test helper binary is not produced is that we run only `workflow_tests` crate.
-    - [x] Looks this hypothesis is not correct.
-  - [x] The best way seems to be adding
+  - `From<u128>` and `Into<u128>`
+  - `From<(u64, u64)>` and `Into<(u64, u64)>`
+  - Tests
+    - Add tests for `From<u128>` and `Into<u128>` ecs/src/ecs/mod.rs
+    - Fix doc tests that use `100usize` to create `XvcEntity`
+  - Update the ECS documentation
+    - Update arch/ecs.md
+    - Search for any `XvcEntity` references that may be changed
+- `xvc-test-helper` binary is not produced at builds
+  - Moved it from dev-dependencies to dependencies in workflow_tests/Cargo.toml
+    - Still doesn't work 🛑
+    - We need binary dependencies in cargo: <https://rust-lang.github.io/rfcs/3028-cargo-binary-dependencies.html>,
+    - It's available in nightly: <https://github.com/rust-lang/cargo/issues/9096>
+    - Revert to dev-dependencies
+  - `z_test_docs` fails immediately if no `xvc-test-helper` binary is found.
+  - Run the tests without `-p workflow_tests`
+    - Hypothesis: The reason the test helper binary is not produced is that we run only `workflow_tests` crate.
+    - Looks this hypothesis is not correct.
+  - The best way seems to be adding
     <https://docs.rs/escargot/latest/escargot/> and building the binary before
     the doc tests.
     - Now builds the binary before running the doc tests. ✅
-- [x] Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
-  - [ ] 
+- Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
+- Add `xvc file copy` command
+  - Issue: https://github.com/iesahin/xvc/issues/179
+  - PR: https://github.com/iesahin/xvc/issues/206
+  - Create the user interface
+    - Add `copy` to `XvcFileCLI`
+    - Created CopyCLI
+  - Write the documentation and doc tests:
+    - Write initial examples: book/src/ref/xvc-file-copy.md
+    - Create a fixture directory `xvc-file-copy.in`
+  - Implement the command
+    - Select source
+    - Select destination
+      - Do we store directories with trailing / or not❓
+        - Write tests for consistency
+          - Added `test_xvc_path_naming` proptests and modified XvcPath
+            constructor to accept absolute paths conditionally. ✅
+        - We don't store directories with trailing / ℹ️
+      - Create destination XvcPaths ✅
+        - Add join function to XvcPath ✅
+      - Create destination cache type, metadata, digest, text-or-binary ✅
+      - Should we create destination directory records❓
+        - It's better to create them to update gitignore files. ✅
+      - Update gitignore files in destinations
+        - Use update_dir_gitignore for new directories and update_file_gitignore for new files.
+        - Move gitignore functions from track/mod.rs to common/gitignore.rs
+          - Gitignore handling is actually a recheck sub-operation.
+            - Git doesn't mind if we don't create anything in the workspace.
+            - We should update gitignores in recheck, but how can we do that for
+              directories that may contain non-tracked files❓
+            - While creating files and parent directories we can update gitignores
+              in the parent directories.
+               - If a directory is not already ignored in creation, we can
+                 create a gitignore with a single line `*` to ignore all files.
+               - After all files are rechecked, we can check whether they are
+                 not ignored by Git, and update necessary gitignores.
+        - Create an IgnoreWriter system with crossbeam_channels
+          - The channel will send/receive Option<IgnoreOperation> messages.
+          - If it receives a None message, it will stop and the collected
+            dir/files will be written to ignore files.
+          - This pattern can be used for all operations.
+      - Split targets_from_store to receive a store struct to filter. ✅
+        - This is to prevent unnecessary reload in copy.
+      - Convert former XvcRoot type to XvcRootInner and XvcRoot to Arc<XvcRootInner>
+        - This is to pass the object to threads easily.
+  - Updated default format string for `xvc file list`
+    - Moved `name` block to the end of the format string ✅
 
-## v0.4.2
+## v0.4.2 (2023-01-17)
 
 - `xvc file carry-in` <https://github.com/iesahin/xvc/issues/174>
   - PR <https://github.com/iesahin/xvc/pull/194>

@@ -61,7 +61,7 @@ fn test_notify() -> Result<()> {
             watch!(receiver);
             let r = receiver.try_recv();
             watch!(r);
-            if let Ok(pe) = r {
+            if let Ok(Some(pe)) = r {
                 err_counter = MAX_ERROR_COUNT;
                 match pe {
                     PathEvent::Create { path, .. } => {

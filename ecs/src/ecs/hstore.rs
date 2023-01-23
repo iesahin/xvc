@@ -13,6 +13,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::iter::{FromIterator, Iterator};
+use std::sync::{Arc, RwLock};
 
 use super::vstore::VStore;
 
@@ -24,6 +25,9 @@ pub struct HStore<T> {
     /// The wrapped map for the store
     pub map: HashMap<XvcEntity, T>,
 }
+
+/// A shared version of [HStore] for use in multithreaded environments.
+pub type SharedHStore<T> = Arc<RwLock<HStore<T>>>;
 
 impl<T> Deref for HStore<T> {
     type Target = HashMap<XvcEntity, T>;
@@ -80,11 +84,6 @@ where
         Ok(store)
     }
 
-    /// Calls the inner map's insert
-    pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
-        self.map.insert(entity, value)
-    }
-
     /// Returns the inner map's iter_mut
     pub fn iter_mut(&mut self) -> IterMut<'_, XvcEntity, T> {
         self.map.iter_mut()
@@ -121,8 +120,8 @@ impl<T> Default for HStore<T> {
     }
 }
 
-impl<T: Storable> From<XvcStore<T>> for HStore<T> {
-    fn from(store: XvcStore<T>) -> Self {
+impl<T: Storable> From<&XvcStore<T>> for HStore<T> {
+    fn from(store: &XvcStore<T>) -> Self {
         let map = HashMap::from_iter(store.iter().map(|(k, v)| (*k, v.clone())));
         Self { map }
     }
@@ -145,6 +144,11 @@ impl<T> HStore<T> {
         HStore {
             map: HashMap::<XvcEntity, T>::with_capacity(capacity),
         }
+    }
+
+    /// Calls the inner map's insert
+    pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
+        self.map.insert(entity, value)
     }
 
     /// Creates values from `func` and gets new entities from `gen` to create new records.

@@ -14,6 +14,7 @@ Commands:
   hash      Get digest hash of files with the supported algorithms
   recheck   Get files from cache by copy or *link
   carry-in  Carry (commit) changed files to cache
+  copy      Copy from source to another location in the workspace
   list      List tracked and untracked elements in the workspace
   send      Send (push, upload) files to external storages
   bring     Bring (download, pull, fetch) files from external storages
@@ -38,9 +39,13 @@ Options:
 ## Subcommands
 
 
-- [`track`](./xvc-file-track.md): Track file versions using XVC
+- [`track`](./xvc-file-track.md): Begin tracking (add) files with XVC
 - [`hash`](./xvc-file-hash.md): Calculate hash of given file
-- [`checkout`](./xvc-file-checkout.md): Add to track files using XVC
+- [`recheck`](./xvc-file-recheck.md): Copy/link files in the cache to the
+  workspace (checkout)
+- [`carry-in`](./xvc-file-carry-in.md): Carry (commit) changed files to cache
+- [`copy`](./xvc-file-copy.md): Copy files in the workspace to another location
 - [`list`](./xvc-file-list.md): List files tracked with XVC
-- [`send`](./xvc-file-send.md): Push files to remote
-- [`bring`](./xvc-file-bring.md): Fetch files from remote
+- [`send`](./xvc-file-send.md): Send (push
+- ) files to remote
+- [`bring`](./xvc-file-bring.md): Bring (pull) files from remote

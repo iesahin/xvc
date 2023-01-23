@@ -3,13 +3,14 @@
 //! Most of these commands require an Xvc repository [XvcRoot] to be present.
 //!
 //! Modules correspond to subcommands, and are documented separately.
-//!  
+//!
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 mod common;
 
 pub mod bring;
 pub mod carry_in;
+pub mod copy;
 pub mod error;
 pub mod hash;
 pub mod list;
@@ -20,6 +21,7 @@ pub mod track;
 use crate::error::{Error, Result};
 use carry_in::CarryInCLI;
 use clap::Subcommand;
+use copy::CopyCLI;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
@@ -32,6 +34,7 @@ use std::path::PathBuf;
 use xvc_config::XvcConfigInitParams;
 use xvc_config::XvcVerbosity;
 use xvc_core::default_project_config;
+use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::XvcRoot;
 use xvc_core::CHANNEL_BOUND;
 use xvc_logging::XvcOutputLine;
@@ -60,6 +63,8 @@ pub enum XvcFileSubCommand {
     /// Carry (commit) changed files to cache
     #[command(alias = "commit")]
     CarryIn(CarryInCLI),
+    /// Copy from source to another location in the workspace
+    Copy(CopyCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
     /// Send (push, upload) files to external storages
@@ -169,6 +174,11 @@ pub fn run(
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
+        XvcFileSubCommand::Copy(opts) => copy::cmd_copy(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
     }
 }
 
@@ -216,7 +226,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
         default_configuration: default_project_config(true),
     };
 
-    let xvc_root = match XvcRoot::new(Path::new(&cli_opts.workdir), xvc_config_params) {
+    let xvc_root = match load_xvc_root(Path::new(&cli_opts.workdir), xvc_config_params) {
         Ok(r) => Some(r),
         Err(e) => {
             e.info();
@@ -255,3 +265,6 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
 pub fn init(_xvc_root: &XvcRoot) -> Result<()> {
     Ok(())
 }
+
+/// Crossbeam channel capacity for channels in this crate
+pub const CHANNEL_CAPACITY: usize = 100000;

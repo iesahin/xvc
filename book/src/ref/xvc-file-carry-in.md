@@ -51,7 +51,7 @@ We first track a file.
 $ xvc file track data.txt
 
 $ xvc file list data.txt
-FC          19 [..]   data.txt  c85f3e81 c85f3e81
+FC          19 [..] c85f3e81 c85f3e81 data.txt
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
@@ -66,7 +66,7 @@ $ cat data.txt
 Oh, deetee, my, deetee
 
 $ xvc file list data.txt
-FC          23 [..]   data.txt  c85f3e81 e37c686a
+FC          23 [..] c85f3e81 e37c686a data.txt
 Total #: 1 Workspace Size:          23 Cached Size:          19
 
 
@@ -78,7 +78,7 @@ Note that the size of the file has increased, as we replace each `a` with an `ee
 $ xvc file carry-in data.txt
 
 $ xvc file list data.txt
-FC          23 [..]   data.txt  e37c686a e37c686a
+FC          23 [..] e37c686a e37c686a data.txt
 Total #: 1 Workspace Size:          23 Cached Size:          19
 
 

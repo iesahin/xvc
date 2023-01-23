@@ -6,7 +6,7 @@
 //! Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
 //! workspace.
 
-use crate::common::{move_to_cache, targets_from_store};
+use crate::common::{load_targets_from_store, move_to_cache};
 
 use crate::{
     recheck::{cmd_recheck, RecheckCLI},
@@ -68,7 +68,7 @@ pub fn fetch(
     let remote = get_storage_record(output_snd, xvc_root, &opts.storage)?;
 
     let current_dir = xvc_root.config().current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     let force = opts.force;
     watch!(targets);
 

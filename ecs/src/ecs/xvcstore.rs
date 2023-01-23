@@ -13,6 +13,7 @@ use std::path::PathBuf;
 
 use std::ops::Deref;
 use std::ops::Index;
+use std::sync::{Arc, RwLock};
 
 /// A database table like store for type `T`
 ///
@@ -31,6 +32,9 @@ where
     previous: EventLog<T>,
     current: EventLog<T>,
 }
+
+/// A shared version of [XvcStore] that we use to pass around for thread safety.
+pub type SharedXStore<T> = Arc<RwLock<XvcStore<T>>>;
 
 impl<T> Deref for XvcStore<T>
 where

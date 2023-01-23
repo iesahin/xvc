@@ -7,6 +7,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
 use xvc_logging::{debug, trace};
@@ -36,7 +37,7 @@ use crate::XVC_DIR;
 ///
 /// Almost all operations receive a reference to this structure.
 #[derive(Debug)]
-pub struct XvcRoot {
+pub struct XvcRootInner {
     absolute_path: AbsolutePath,
     xvc_dir: PathBuf,
     store_dir: PathBuf,
@@ -46,13 +47,16 @@ pub struct XvcRoot {
     entity_generator: XvcEntityGenerator,
 }
 
-impl fmt::Display for XvcRoot {
+/// We wrap the XvcRootInner in an Arc to make it easier to share between threads.
+pub type XvcRoot = Arc<XvcRootInner>;
+
+impl fmt::Display for XvcRootInner {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.absolute_path.to_string_lossy())
     }
 }
 
-impl Deref for XvcRoot {
+impl Deref for XvcRootInner {
     type Target = AbsolutePath;
 
     fn deref(&self) -> &Self::Target {
@@ -60,112 +64,112 @@ impl Deref for XvcRoot {
     }
 }
 
-impl XvcRoot {
-    /// Create a new XvcRoot object from the `path`.
-    /// Configuration is loaded according to [`config_opts`][XvcConfigInitParams].
-    /// The path is not required to be the root of the repository.
-    /// This function searches for the root of the repository using
-    /// [XvcRoot::find_root] and uses it as the root.
-    pub fn new(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
-        match XvcRoot::find_root(path) {
-            Ok(absolute_path) => {
-                let xvc_dir = absolute_path.join(Self::XVC_DIR);
-                let local_config_path = xvc_dir.join(Self::LOCAL_CONFIG_PATH);
-                let project_config_path = xvc_dir.join(Self::PROJECT_CONFIG_PATH);
-                let config_opts = XvcConfigInitParams {
-                    project_config_path: Some(project_config_path.clone()),
-                    local_config_path: Some(local_config_path.clone()),
+/// Create a new XvcRoot object from the `path`.
+/// Configuration is loaded according to [`config_opts`][XvcConfigInitParams].
+/// The path is not required to be the root of the repository.
+/// This function searches for the root of the repository using
+/// [XvcRoot::find_root] and uses it as the root.
+pub fn load_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
+    match XvcRootInner::find_root(path) {
+        Ok(absolute_path) => {
+            let xvc_dir = absolute_path.join(XvcRootInner::XVC_DIR);
+            let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
+            let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
+            let config_opts = XvcConfigInitParams {
+                project_config_path: Some(project_config_path.clone()),
+                local_config_path: Some(local_config_path.clone()),
+                default_configuration: config_opts.default_configuration,
+                current_dir: config_opts.current_dir,
+                include_system_config: config_opts.include_system_config,
+                include_user_config: config_opts.include_user_config,
+                include_environment_config: config_opts.include_environment_config,
+                command_line_config: config_opts.command_line_config,
+            };
+            let config = XvcConfig::new(config_opts)?;
+            let entity_generator =
+                xvc_ecs::load_generator(&xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH))?;
+
+            let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
+            let xvc_root = Arc::new(XvcRootInner {
+                xvc_dir,
+                store_dir,
+                local_config_path,
+                project_config_path,
+                absolute_path,
+                config,
+                entity_generator,
+            });
+            Ok(xvc_root)
+        }
+        Err(e) => Err(e),
+    }
+}
+
+/// Creates a new .xvc dir in `path` and initializes a directory.
+/// *Warning:* This should only be used in `xvc init`, not in other commands.
+pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
+    match XvcRootInner::find_root(path) {
+        Ok(abs_path) => Err(Error::CannotNestXvcRepositories {
+            path: abs_path.to_path_buf(),
+        }),
+        Err(e) => {
+            if matches!(e, Error::CannotFindXvcRoot { .. }) {
+                let path = PathBuf::from(path).canonicalize()?;
+                let xvc_dir = path.join(XvcRootInner::XVC_DIR);
+                fs::create_dir(&xvc_dir)?;
+                let initial_config = config_opts.default_configuration.clone();
+                let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
+                fs::write(&project_config_path, initial_config)?;
+                let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
+                fs::write(
+                    &local_config_path,
+                    "# Please add your local config here. This file is .gitignored",
+                )?;
+
+                let project_config_opts = XvcConfigInitParams {
                     default_configuration: config_opts.default_configuration,
                     current_dir: config_opts.current_dir,
                     include_system_config: config_opts.include_system_config,
                     include_user_config: config_opts.include_user_config,
+                    project_config_path: Some(project_config_path),
+                    local_config_path: Some(local_config_path),
                     include_environment_config: config_opts.include_environment_config,
                     command_line_config: config_opts.command_line_config,
                 };
-                let config = XvcConfig::new(config_opts)?;
-                let entity_generator =
-                    xvc_ecs::load_generator(&xvc_dir.join(Self::ENTITY_GENERATOR_PATH))?;
 
-                let store_dir = xvc_dir.join(Self::STORE_DIR);
-                let xvc_root = XvcRoot {
-                    xvc_dir,
-                    store_dir,
-                    local_config_path,
-                    project_config_path,
-                    absolute_path,
-                    config,
-                    entity_generator,
-                };
-                Ok(xvc_root)
-            }
-            Err(e) => Err(e),
-        }
-    }
+                let config = XvcConfig::new(project_config_opts.clone())?;
+                // We write the initial entity value directly, without init_entity_generator,
+                // because we can't initialize the generator more than once, and we'll read
+                // from this value below
+                let entity_generator_dir = &xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH);
+                fs::create_dir_all(entity_generator_dir)?;
+                let entity_generator_path = entity_generator_dir.join(timestamp());
+                fs::write(&entity_generator_path, "1")?;
+                let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
+                fs::create_dir(&store_dir)?;
+                // TODO: Add crate specific initializations
 
-    /// Creates a new .xvc dir in `path` and initializes a directory.
-    /// *Warning:* This should only be used in `xvc init`, not in other commands.
-    pub fn init(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
-        match XvcRoot::find_root(path) {
-            Ok(abs_path) => Err(Error::CannotNestXvcRepositories {
-                path: abs_path.to_path_buf(),
-            }),
-            Err(e) => {
-                if matches!(e, Error::CannotFindXvcRoot { .. }) {
-                    let path = PathBuf::from(path).canonicalize()?;
-                    let xvc_dir = path.join(Self::XVC_DIR);
-                    fs::create_dir(&xvc_dir)?;
-                    let initial_config = config_opts.default_configuration.clone();
-                    let project_config_path = xvc_dir.join(Self::PROJECT_CONFIG_PATH);
-                    fs::write(&project_config_path, initial_config)?;
-                    let local_config_path = xvc_dir.join(Self::LOCAL_CONFIG_PATH);
-                    fs::write(
-                        &local_config_path,
-                        "# Please add your local config here. This file is .gitignored",
-                    )?;
+                let xvcignore_path = path.join(XVCIGNORE_FILENAME);
+                fs::write(xvcignore_path, XVCIGNORE_INITIAL_CONTENT)?;
 
-                    let project_config_opts = XvcConfigInitParams {
-                        default_configuration: config_opts.default_configuration,
-                        current_dir: config_opts.current_dir,
-                        include_system_config: config_opts.include_system_config,
-                        include_user_config: config_opts.include_user_config,
-                        project_config_path: Some(project_config_path),
-                        local_config_path: Some(local_config_path),
-                        include_environment_config: config_opts.include_environment_config,
-                        command_line_config: config_opts.command_line_config,
-                    };
-
-                    let config = XvcConfig::new(project_config_opts.clone())?;
-                    // We write the initial entity value directly, without init_entity_generator,
-                    // because we can't initialize the generator more than once, and we'll read
-                    // from this value below
-                    let entity_generator_dir = &xvc_dir.join(Self::ENTITY_GENERATOR_PATH);
-                    fs::create_dir_all(entity_generator_dir)?;
-                    let entity_generator_path = entity_generator_dir.join(timestamp());
-                    fs::write(&entity_generator_path, "1")?;
-                    let store_dir = xvc_dir.join(Self::STORE_DIR);
-                    fs::create_dir(&store_dir)?;
-                    // TODO: Add crate specific initializations
-
-                    let xvcignore_path = path.join(XVCIGNORE_FILENAME);
-                    fs::write(xvcignore_path, XVCIGNORE_INITIAL_CONTENT)?;
-
-                    let use_git = config.get_bool("git.use_git")?.option;
-                    if use_git {
-                        let gitignore_path = path.join(&PathBuf::from(".gitignore"));
-                        let mut out = OpenOptions::new()
-                            .create(true)
-                            .append(true)
-                            .open(&gitignore_path)?;
-                        writeln!(out, "{}", GITIGNORE_INITIAL_CONTENT)?;
-                    }
-                    XvcRoot::new(&path, project_config_opts)
-                } else {
-                    Err(e)
+                let use_git = config.get_bool("git.use_git")?.option;
+                if use_git {
+                    let gitignore_path = path.join(&PathBuf::from(".gitignore"));
+                    let mut out = OpenOptions::new()
+                        .create(true)
+                        .append(true)
+                        .open(&gitignore_path)?;
+                    writeln!(out, "{}", GITIGNORE_INITIAL_CONTENT)?;
                 }
+                load_xvc_root(&path, project_config_opts)
+            } else {
+                Err(e)
             }
         }
     }
+}
 
+impl XvcRootInner {
     /// Join `path` to the repository root and return the absolute path of the
     /// given path.
     ///
@@ -257,7 +261,7 @@ impl XvcRoot {
     }
 }
 
-impl Drop for XvcRoot {
+impl Drop for XvcRootInner {
     /// Saves the entity_generator before dropping
     fn drop(&mut self) {
         match self.entity_generator.save(&self.entity_generator_path()) {

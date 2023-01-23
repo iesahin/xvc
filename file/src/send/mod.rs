@@ -2,7 +2,7 @@
 //!
 //! - [`cmd_send`] implements the command
 //! - [`SendCLI`] is the command line interface
-use crate::common::targets_from_store;
+use crate::common::load_targets_from_store;
 use crate::Result;
 
 use clap::Parser;
@@ -41,7 +41,7 @@ pub fn cmd_send(
     let remote = get_storage_record(output_snd, xvc_root, &opts.remote)?;
     watch!(remote);
     let current_dir = xvc_root.config().current_dir()?;
-    let targets = targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
     let target_file_xvc_metadata = xvc_root

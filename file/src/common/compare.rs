@@ -1,17 +1,18 @@
 use crate::error::Error;
 use crate::Result;
 use anyhow::anyhow;
-use crossbeam_channel::Sender;
+use crossbeam_channel::{Receiver, Sender};
 
 use itertools::Itertools;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use std::collections::{BTreeMap, HashSet};
 use std::path::PathBuf;
+use std::thread::{self, JoinHandle};
 
 use xvc_config::FromConfigKey;
 use xvc_core::types::xvcdigest::{CollectionDigest, ContentDigest, MetadataDigest, DIGEST_LENGTH};
-use xvc_ecs::Error as EcsError;
+use xvc_ecs::{Error as EcsError, SharedXStore};
 
 use xvc_core::{
     diff_store, CacheType, Diff, DiffStore, DiffStore2, HashAlgorithm, XvcDigest, XvcFileType,
@@ -19,7 +20,7 @@ use xvc_core::{
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, panic, watch, XvcOutputLine};
+use xvc_logging::{debug, error, panic, watch, XvcOutputLine};
 
 use super::FileTextOrBinary;
 
@@ -233,6 +234,113 @@ pub fn diff_file_content_digest(
     }
 }
 
+/// Used to signal diff channels to calculate diffs of the requested entity.
+pub struct DiffRequest {
+    xe: XvcEntity,
+}
+
+/// This is a channel version of [diff_file_content_digest]. It creates a thread that listens to requests
+/// diff_request channel and sends the calculated diffs to the diff_result channel.
+///
+/// The thread will exit when the other ends of channel is dropped or when the diff_request_rcv gets a None.
+/// It sends a None to the diff_result_snd when it exits.
+
+pub fn make_file_content_digest_diff_handler(
+    output_snd: &Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    stored_xvc_path_store: &SharedXStore<XvcPath>,
+    stored_xvc_metadata_store: &SharedXStore<XvcMetadata>,
+    stored_content_digest_store: &SharedXStore<ContentDigest>,
+    stored_text_or_binary_store: &SharedXStore<FileTextOrBinary>,
+    requested_text_or_binary: Option<FileTextOrBinary>,
+    requested_hash_algorithm: Option<HashAlgorithm>,
+) -> Result<(
+    Sender<Option<DiffRequest>>,
+    Receiver<Option<Diff<ContentDigest>>>,
+    JoinHandle<()>,
+)> {
+    let algorithm: HashAlgorithm =
+        requested_hash_algorithm.unwrap_or_else(|| HashAlgorithm::from_conf(xvc_root.config()));
+
+    let (diff_request_snd, diff_request_rcv) =
+        crossbeam_channel::bounded::<Option<DiffRequest>>(crate::CHANNEL_CAPACITY);
+    let (diff_result_snd, diff_result_rcv) = crossbeam_channel::bounded(crate::CHANNEL_CAPACITY);
+
+    let output_snd = output_snd.clone();
+    let xvc_root = xvc_root.clone();
+    let stored_xvc_path_store = stored_xvc_path_store.clone();
+    let stored_xvc_metadata_store = stored_xvc_metadata_store.clone();
+    let stored_content_digest_store = stored_content_digest_store.clone();
+    let stored_text_or_binary_store = stored_text_or_binary_store.clone();
+
+    let handle = thread::spawn(move || {
+        while let Ok(Some(diff_request)) = diff_request_rcv.recv() {
+            let stored_xvc_path_store = stored_xvc_path_store.read().unwrap();
+            let stored_xvc_metadata_store = stored_xvc_metadata_store.read().unwrap();
+            let stored_content_digest_store = stored_content_digest_store.read().unwrap();
+            let stored_text_or_binary_store = stored_text_or_binary_store.read().unwrap();
+            let xe = diff_request.xe;
+            let xvc_path = stored_xvc_path_store.get(&xe).unwrap();
+            let xvc_metadata = stored_xvc_metadata_store.get(&xe).unwrap();
+            if xvc_metadata.is_file() {
+                let stored_content_digest = stored_content_digest_store.get(&xe);
+                let text_or_binary = requested_text_or_binary.unwrap_or_else(|| {
+                    stored_text_or_binary_store
+                        .get(&xe)
+                        .cloned()
+                        .unwrap_or_default()
+                });
+                let path = xvc_path.to_absolute_path(&xvc_root);
+
+                if path.is_file() {
+                    let actual_content_digest_res =
+                        ContentDigest::from_path(&path, algorithm, text_or_binary.as_inner());
+                    match (actual_content_digest_res, stored_content_digest) {
+                        (Ok(actual), Some(stored)) => {
+                            if actual == *stored {
+                                diff_result_snd.send(Some(Diff::Identical)).unwrap();
+                            } else {
+                                diff_result_snd
+                                    .send(Some(Diff::Different {
+                                        actual,
+                                        record: stored.clone(),
+                                    }))
+                                    .unwrap();
+                            }
+                        }
+                        (Err(e), _) => {
+                            debug!(
+                                output_snd,
+                                "Failed to calculate content digest of {:?}: {}", path, e
+                            );
+                        }
+                        (Ok(actual), None) => {
+                            diff_result_snd
+                                .send(Some(Diff::RecordMissing { actual }))
+                                .unwrap();
+                        }
+                    }
+                } else {
+                    if let Some(stored_content_digest) = stored_content_digest {
+                        diff_result_snd
+                            .send(Some(Diff::ActualMissing {
+                                record: stored_content_digest.clone(),
+                            }))
+                            .unwrap();
+                    } else {
+                        diff_result_snd.send(Some(Diff::Identical)).unwrap();
+                    }
+                }
+            }
+        }
+
+        // Send None to indicate that the thread is exiting.
+        diff_result_snd.send(None).unwrap();
+    });
+
+    Ok((diff_request_snd, diff_result_rcv, handle))
+}
+
 /// Check whether content digests of files and directories in xvc_path_store has
 /// changed.
 ///
@@ -441,133 +549,6 @@ pub fn diff_content_digest(
     diff_store
 }
 
-/// This is used to detect changes in path collections, e.g., directories or
-/// globs.
-/// When a collection list changes, for example a file added to a directory, we
-/// recalculate the collection digest to see if the collection has changed.
-/// TODO: Remove this if not unused in pipelines
-// pub fn diff_path_collection_digest(
-//     stored_collection_digest: Option<&CollectionDigest>,
-//     stored_xvc_path_store: &XvcStore<XvcPath>,
-//     path_diffs: &DiffStore<XvcPath>,
-//     sorted_entities: &[XvcEntity],
-// ) -> Result<Diff<CollectionDigest>> {
-//     let xvc_path_diff = path_diffs.subset(sorted_entities.iter().copied())?;
-//     let stored_xvc_paths = stored_xvc_path_store.subset(sorted_entities.iter().copied())?;
-//     let mut collection_strings = Vec::<String>::new();
-//
-//     for xe in sorted_entities {
-//         let xvc_path_diff = xvc_path_diff.get(xe).expect("xvc_path_diff.get(xe)");
-//         match xvc_path_diff {
-//             Diff::Identical | Diff::Skipped => {
-//                 let path = stored_xvc_paths.get(xe).expect("stored_xvc_paths.get(xe)");
-//                 collection_strings.push(path.to_string());
-//             }
-//             Diff::RecordMissing { actual } => {
-//                 collection_strings.push(actual.to_string());
-//             }
-//             Diff::Different { actual, .. } => {
-//                 collection_strings.push(actual.to_string());
-//             }
-//             Diff::ActualMissing { .. } => {
-//                 // We can do some weird things here, like adding a prefix or
-//                 // reversing the string to change the collection result. I think it's better to use an empty
-//                 // entity string to describe the situation.
-//
-//                 // This is to make sure the collection digest is different when
-//                 // all records are missing.
-//                 collection_strings.push(xe.to_string());
-//             }
-//         }
-//     }
-//
-//     let joined = collection_strings.join("\n");
-//     let actual: CollectionDigest = XvcDigest::from_content(&joined, HashAlgorithm::Blake3).into();
-//
-//     let dg = match stored_collection_digest {
-//         Some(record) => {
-//             if actual != *record {
-//                 Diff::Different {
-//                     record: *record,
-//                     actual,
-//                 }
-//             } else {
-//                 Diff::Identical
-//             }
-//         }
-//         None => Diff::RecordMissing { actual },
-//     };
-//
-//     Ok(dg)
-// }
-//
-/// This is to detect metadata changes in collections, e.g., directories or
-/// globs. When timestamp, size or similar metadata changes, the result changes.
-/// It can be used to detect changes in directories, globs, or other collections
-/// that use [XvcMetadata] to keep individual items' metadata.
-/// TODO: Remove this if not unused in pipelines
-// pub fn diff_dir_metadata_digest(
-//     stored_metadata_digest: Option<&MetadataDigest>,
-//     stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
-//     metadata_diffs: &DiffStore<XvcMetadata>,
-//     sorted_entities: &[XvcEntity],
-// ) -> Result<Diff<MetadataDigest>> {
-//     let xvc_metadata_diff = metadata_diffs.subset(sorted_entities.iter().copied())?;
-//     let mut metadata_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
-//
-//     for xe in sorted_entities {
-//         let xvc_metadata_diff = xvc_metadata_diff
-//             .get(xe)
-//             .ok_or(EcsError::CannotFindEntityInStore { entity: *xe })?;
-//         match xvc_metadata_diff {
-//             Diff::Identical | Diff::Skipped => {
-//                 let metadata = stored_xvc_metadata_store
-//                     .get(xe)
-//                     .ok_or(xvc_ecs::error::Error::CannotFindKeyInStore { key: (*xe).into() })?;
-//                 metadata_digest_bytes.extend(metadata.digest()?.0.unwrap().as_bytes());
-//             }
-//             Diff::RecordMissing { actual } => {
-//                 metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
-//             }
-//             Diff::Different { actual, .. } => {
-//                 metadata_digest_bytes.extend(actual.digest()?.0.unwrap().as_bytes());
-//             }
-//             Diff::ActualMissing { .. } => {
-//                 // This is to make sure the metadata digest is different when
-//                 // all records are missing or their order has changed.
-//                 let entity_bytes: usize = (*xe).into();
-//                 let mut entity_bytes_as_digest = Vec::from([0u8; DIGEST_LENGTH]);
-//                 entity_bytes_as_digest.copy_from_slice(&entity_bytes.to_le_bytes());
-//                 metadata_digest_bytes.extend(
-//                     XvcDigest::from_bytes(&entity_bytes_as_digest, HashAlgorithm::AsIs).digest,
-//                 );
-//             }
-//         }
-//     }
-//
-//     // We always use Blake3 to keep the metadata digest consistent.
-//     let actual = MetadataDigest::from(XvcDigest::from_bytes(
-//         &metadata_digest_bytes,
-//         HashAlgorithm::Blake3,
-//     ));
-//
-//     let digest = match stored_metadata_digest {
-//         Some(record) => {
-//             if actual != *record {
-//                 Diff::Different {
-//                     record: *record,
-//                     actual,
-//                 }
-//             } else {
-//                 Diff::Identical
-//             }
-//         }
-//         None => Diff::RecordMissing { actual },
-//     };
-//
-//     Ok(digest)
-// }
-//
 /// This is used to detect content changes in elements of path collections,
 /// e.g., directories or globs. When the content of these elements change, their
 /// content digests also change. We collect them together and calculate their

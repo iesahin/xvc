@@ -1,0 +1,324 @@
+use std::path::Path;
+
+use crate::common::compare::{
+    diff_content_digest, diff_xvc_path_metadata, make_file_content_digest_diff_handler,
+};
+use crate::common::gitignore::make_ignore_handler;
+use crate::common::{
+    filter_targets_from_store, load_targets_from_store, xvc_path_metadata_map_from_disk,
+    FileTextOrBinary,
+};
+use crate::recheck::{make_recheck_handler, RecheckOperation};
+use crate::{recheck, Result};
+use anyhow::anyhow;
+use clap::Parser;
+use crossbeam_channel::Sender;
+use xvc_core::{CacheType, ContentDigest, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
+use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
+use xvc_logging::{debug, error, XvcOutputLine};
+
+/// CLI for `xvc file copy`.
+#[derive(Debug, Clone, PartialEq, Eq, Parser)]
+#[command(rename_all = "kebab-case", author, version)]
+pub struct CopyCLI {
+    /// How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
+    ///
+    /// Note: Reflink uses copy if the underlying file system doesn't support it.
+    #[arg(long, alias = "as")]
+    pub cache_type: Option<CacheType>,
+
+    /// Force even if target exists.
+    #[arg(long)]
+    pub force: bool,
+
+    /// Do not recheck the destination files
+    /// This is useful when you want to copy only records, without updating the
+    /// workspace.
+    #[arg(long)]
+    pub no_recheck: bool,
+
+    /// Source file, glob or directory within the workspace.
+    ///
+    /// If the source ends with a slash, it's considered a directory and all
+    /// files in that directory are copied.
+    ///
+    /// If the number of source files is more than one, the destination must be a directory.
+    #[arg()]
+    pub source: String,
+
+    /// Location we copy file(s) to within the workspace.
+    ///
+    /// If the target ends with a slash, it's considered a directory and
+    /// created if it doesn't exist.
+    ///
+    /// If the number of source files is more than one, the destination must be a directory.
+    #[arg()]
+    pub destination: String,
+}
+
+pub(crate) fn cmd_copy(
+    output_snd: &Sender<XvcOutputLine>,
+    xvc_root: &XvcRoot,
+    opts: CopyCLI,
+) -> Result<()> {
+    // Get all files to copy
+
+    let source_targets = if opts.source.ends_with("/") {
+        let mut source = opts.source.to_string();
+        source.push('*');
+        vec![source]
+    } else {
+        vec![opts.source.to_string()]
+    };
+
+    let current_dir = xvc_root.config().current_dir()?;
+    let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+    let all_sources = filter_targets_from_store(
+        xvc_root,
+        &stored_xvc_path_store,
+        current_dir,
+        &Some(source_targets),
+    )?;
+    let source_metadata = stored_xvc_metadata_store.subset(all_sources.keys().copied())?;
+    let source_metadata_files = source_metadata.filter(|xe, md| md.is_file());
+
+    if source_metadata_files.len() > 1 && !opts.destination.ends_with("/") {
+        return Err(anyhow!("Target must be a directory if multiple sources are given").into());
+    }
+
+    let source_xvc_path_files = all_sources.subset(source_metadata_files.keys().copied())?;
+
+    // Create targets in the store
+    // If target is a directory, check if exists and create if not.
+    // If target is a file, check if exists and return error if it does and
+    // force is not set.
+    let mut source_dest_store = if opts.destination.ends_with('/') {
+        let dir_path = XvcPath::new(
+            &xvc_root,
+            &xvc_root,
+            Path::new(opts.destination.strip_suffix('/').unwrap()),
+        )?;
+
+        let current_dir_entity = match stored_xvc_path_store.entities_for(&dir_path) {
+            Some(v) => Some(v[0]),
+            None => None,
+        };
+
+        let current_dir_metadata =
+            current_dir_entity.and_then(|e| stored_xvc_metadata_store.get(&e));
+
+        if let Some(current_dir_metadata) = current_dir_metadata {
+            if !current_dir_metadata.is_dir() {
+                return Err(anyhow!(
+                        "Destination is not recorded as a directory. Please move or delete the destination first."
+                    )
+                    .into());
+            }
+        }
+
+        // We don't parallelize the diff operation because we abort all operations if there is a single changed file.
+        let pmm = xvc_path_metadata_map_from_disk(xvc_root, &source_xvc_path_files);
+        let xvc_path_metadata_diff = diff_xvc_path_metadata(
+            xvc_root,
+            &stored_xvc_path_store,
+            &stored_xvc_metadata_store,
+            &pmm,
+        );
+        let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
+        let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
+        let content_digest_diff = diff_content_digest(
+            output_snd,
+            xvc_root,
+            &stored_xvc_path_store,
+            &stored_xvc_metadata_store,
+            &stored_content_digest_store,
+            &stored_text_or_binary_store,
+            &xvc_path_metadata_diff.0,
+            &xvc_path_metadata_diff.1,
+            None,
+            None,
+            true,
+        );
+        let changed_path_entities = content_digest_diff
+            .iter()
+            .filter_map(|(e, v)| {
+                if v.changed() {
+                    Some((*e, stored_xvc_path_store.get(e).cloned().unwrap()))
+                } else {
+                    None
+                }
+            })
+            .collect::<HStore<XvcPath>>();
+
+        if !changed_path_entities.is_empty() {
+            error!(output_snd, "Sources have changed, please carry-in or recheck following files before copying:\n{}", changed_path_entities.values().map(|p| p.to_string()).collect::<Vec<String>>().join("\n"));
+            return Ok(());
+        }
+
+        let mut source_dest_store = HStore::new();
+
+        for (source_xe, source_path) in source_xvc_path_files.iter() {
+            let dest_path = dir_path.join(source_path).unwrap();
+
+            match stored_xvc_path_store.entities_for(&dest_path) {
+                Some(v) => {
+                    if !opts.force {
+                        error!(
+                            output_snd,
+                            "Destination file {} already exists. Use --force to overwrite.",
+                            dest_path
+                        );
+                        continue;
+                    } else {
+                        source_dest_store.insert(*source_xe, (v[0], dest_path));
+                    }
+                }
+                None => {
+                    source_dest_store.insert(*source_xe, (xvc_root.new_entity(), dest_path));
+                }
+            }
+        }
+        source_dest_store
+    } else {
+        // Destination doesn't end with '/'
+        if source_xvc_path_files.len() > 1 {
+            return Err(
+                anyhow!("Destination must be a directory if multiple sources are given").into(),
+            );
+        }
+
+        let source_xe = source_xvc_path_files.keys().next().unwrap();
+
+        let store = xvc_root.load_r11store::<XvcPath, XvcMetadata>()?;
+        let mut source_dest_store = HStore::<(XvcEntity, XvcPath)>::with_capacity(1);
+        let dest_path = XvcPath::new(&xvc_root, &current_dir, Path::new(&opts.destination))?;
+
+        match store.left.entities_for(&dest_path) {
+            Some(dest_xe) => {
+                if !opts.force {
+                    return Err(anyhow!(
+                        "Destination file {} already exists. Use --force to overwrite.",
+                        dest_path
+                    )
+                    .into());
+                } else {
+                    source_dest_store.insert(*source_xe, (dest_xe[0], dest_path));
+                }
+            }
+            None => {
+                source_dest_store.insert(*source_xe, (xvc_root.new_entity(), dest_path));
+            }
+        }
+        source_dest_store
+    };
+
+    xvc_root.with_r11store_mut(|store: &mut R11Store<XvcPath, XvcMetadata>| {
+        for (source_xe, (dest_xe, dest_path)) in source_dest_store.iter() {
+            let source_md = source_metadata.get(source_xe).unwrap();
+            store.left.insert(*dest_xe, dest_path.clone());
+            // If we recheck, we'll update the metadata with the actual
+            // file metadata below.
+            store.right.insert(*dest_xe, source_md.clone());
+
+            // Create destination parent directory records if they don't exist
+            for parent in dest_path.parents() {
+                let parent_entities = store.left.entities_for(&parent);
+                if parent_entities.is_none() || parent_entities.unwrap().len() == 0 {
+                    let parent_entity = xvc_root.new_entity();
+                    store.left.insert(parent_entity, parent.clone());
+                    store.right.insert(
+                        parent_entity,
+                        XvcMetadata {
+                            file_type: XvcFileType::Directory,
+                            ..Default::default()
+                        },
+                    );
+                }
+            }
+        }
+
+        // Copy XvcDigest to destination
+
+        xvc_root.with_store_mut(|content_digest_store: &mut XvcStore<ContentDigest>| {
+            for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
+                let cd = content_digest_store.get(source_xe);
+                match cd {
+                    Some(cd) => {
+                        content_digest_store.insert(*dest_xe, *cd);
+                    }
+                    None => {
+                        debug!(output_snd, "No content digest found for {}", source_xe);
+                    }
+                }
+            }
+            Ok(())
+        })?;
+
+        xvc_root.with_store_mut(|text_or_binary_store: &mut XvcStore<FileTextOrBinary>| {
+            for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
+                let tob = text_or_binary_store.get(source_xe);
+                match tob {
+                    Some(tob) => {
+                        text_or_binary_store.insert(*dest_xe, *tob);
+                    }
+                    None => {
+                        debug!(output_snd, "No text or binary found for {}", source_xe);
+                    }
+                }
+            }
+            Ok(())
+        })?;
+
+        xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<CacheType>| {
+            for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
+                if let Some(cache_type) = opts.cache_type {
+                    cache_type_store.insert(*dest_xe, cache_type);
+                } else {
+                    let source_cache_type = cache_type_store.get(source_xe).unwrap();
+                    cache_type_store.insert(*dest_xe, *source_cache_type);
+                }
+            }
+            Ok(())
+        })?;
+
+        Ok(())
+    })?;
+
+    // Recheck destination files
+    // TODO: We can interleave this operation with the copy operation above
+    // to speed things up. This looks premature optimization now.
+
+    if !opts.no_recheck {
+        let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
+        let (recheck_handler, recheck_thread) =
+            make_recheck_handler(output_snd, xvc_root, &ignore_writer)?;
+        // We reload to get the latest paths
+        // Interleaving might prevent this.
+        let all_xvc_paths = xvc_root.load_store::<XvcPath>()?;
+        let mut recheck_paths =
+            all_xvc_paths.subset(source_dest_store.values().map(|(xe, _)| *xe))?;
+        let all_content_digests = xvc_root.load_store::<ContentDigest>()?;
+        let all_cache_types = xvc_root.load_store::<CacheType>()?;
+
+        recheck_paths.drain().for_each(|(xe, xvc_path)| {
+            let content_digest = all_content_digests.get(&xe).unwrap();
+            let cache_type = all_cache_types.get(&xe).unwrap();
+            recheck_handler
+                .send(Some(RecheckOperation::Recheck {
+                    xvc_path,
+                    content_digest: *content_digest,
+                    cache_type: *cache_type,
+                }))
+                .unwrap();
+        });
+
+        // Send None to signal end of operations and break the loops.
+        recheck_handler.send(None).unwrap();
+        recheck_thread.join().unwrap();
+        ignore_writer.send(None).unwrap();
+        ignore_thread.join().unwrap();
+    }
+
+    Ok(())
+}

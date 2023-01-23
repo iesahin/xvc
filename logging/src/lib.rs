@@ -69,7 +69,7 @@ macro_rules! warn {
 /// Either send [XvcOutputLine::Debug] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! debug {
-    ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
+    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
                     (&$channel).send(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*))).unwrap();
         }
