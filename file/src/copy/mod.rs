@@ -1,7 +1,13 @@
 use std::path::Path;
 
+use crate::common::compare::{
+    diff_content_digest, diff_xvc_path_metadata, make_file_content_digest_diff_handler,
+};
 use crate::common::gitignore::make_ignore_handler;
-use crate::common::{filter_targets_from_store, load_targets_from_store, FileTextOrBinary};
+use crate::common::{
+    filter_targets_from_store, load_targets_from_store, xvc_path_metadata_map_from_disk,
+    FileTextOrBinary,
+};
 use crate::recheck::{make_recheck_handler, RecheckOperation};
 use crate::{recheck, Result};
 use anyhow::anyhow;
@@ -20,10 +26,6 @@ pub struct CopyCLI {
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long, alias = "as")]
     pub cache_type: Option<CacheType>,
-
-    /// Don't use parallelism
-    #[arg(long)]
-    pub no_parallel: bool,
 
     /// Force even if target exists.
     #[arg(long)]
@@ -70,11 +72,15 @@ pub(crate) fn cmd_copy(
     };
 
     let current_dir = xvc_root.config().current_dir()?;
-    let all_metadata = xvc_root.load_store::<XvcMetadata>()?;
-    let all_xvc_paths = xvc_root.load_store::<XvcPath>()?;
-    let all_sources =
-        filter_targets_from_store(xvc_root, &all_xvc_paths, current_dir, &Some(source_targets))?;
-    let source_metadata = all_metadata.subset(all_sources.keys().copied())?;
+    let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+    let all_sources = filter_targets_from_store(
+        xvc_root,
+        &stored_xvc_path_store,
+        current_dir,
+        &Some(source_targets),
+    )?;
+    let source_metadata = stored_xvc_metadata_store.subset(all_sources.keys().copied())?;
     let source_metadata_files = source_metadata.filter(|xe, md| md.is_file());
 
     if source_metadata_files.len() > 1 && !opts.destination.ends_with("/") {
@@ -94,12 +100,13 @@ pub(crate) fn cmd_copy(
             Path::new(opts.destination.strip_suffix('/').unwrap()),
         )?;
 
-        let current_dir_entity = match all_xvc_paths.entities_for(&dir_path) {
+        let current_dir_entity = match stored_xvc_path_store.entities_for(&dir_path) {
             Some(v) => Some(v[0]),
             None => None,
         };
 
-        let current_dir_metadata = current_dir_entity.and_then(|e| all_metadata.get(&e));
+        let current_dir_metadata =
+            current_dir_entity.and_then(|e| stored_xvc_metadata_store.get(&e));
 
         if let Some(current_dir_metadata) = current_dir_metadata {
             if !current_dir_metadata.is_dir() {
@@ -110,12 +117,51 @@ pub(crate) fn cmd_copy(
             }
         }
 
+        // We don't parallelize the diff operation because we abort all operations if there is a single changed file.
+        let pmm = xvc_path_metadata_map_from_disk(xvc_root, &source_xvc_path_files);
+        let xvc_path_metadata_diff = diff_xvc_path_metadata(
+            xvc_root,
+            &stored_xvc_path_store,
+            &stored_xvc_metadata_store,
+            &pmm,
+        );
+        let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
+        let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
+        let content_digest_diff = diff_content_digest(
+            output_snd,
+            xvc_root,
+            &stored_xvc_path_store,
+            &stored_xvc_metadata_store,
+            &stored_content_digest_store,
+            &stored_text_or_binary_store,
+            &xvc_path_metadata_diff.0,
+            &xvc_path_metadata_diff.1,
+            None,
+            None,
+            true,
+        );
+        let changed_path_entities = content_digest_diff
+            .iter()
+            .filter_map(|(e, v)| {
+                if v.changed() {
+                    Some((*e, stored_xvc_path_store.get(e).cloned().unwrap()))
+                } else {
+                    None
+                }
+            })
+            .collect::<HStore<XvcPath>>();
+
+        if !changed_path_entities.is_empty() {
+            error!(output_snd, "Sources have changed, please carry-in or recheck following files before copying:\n{}", changed_path_entities.values().map(|p| p.to_string()).collect::<Vec<String>>().join("\n"));
+            return Ok(());
+        }
+
         let mut source_dest_store = HStore::new();
 
         for (source_xe, source_path) in source_xvc_path_files.iter() {
             let dest_path = dir_path.join(source_path).unwrap();
 
-            match all_xvc_paths.entities_for(&dest_path) {
+            match stored_xvc_path_store.entities_for(&dest_path) {
                 Some(v) => {
                     if !opts.force {
                         error!(
