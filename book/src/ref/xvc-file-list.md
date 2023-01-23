@@ -218,11 +218,11 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-SS         180 [..] e23e79a0          dir-0003/file-0005.bin
-SS         180 [..] 3640687a          dir-0003/file-0004.bin
-SS         180 [..] 2856fe70          dir-0003/file-0003.bin
-SS         180 [..] 8c079454          dir-0003/file-0002.bin
-SS         180 [..] 189fa49f          dir-0003/file-0001.bin
+SS        [..] [..] e23e79a0          dir-0003/file-0005.bin
+SS        [..] [..] 3640687a          dir-0003/file-0004.bin
+SS        [..] [..] 2856fe70          dir-0003/file-0003.bin
+SS        [..] [..] 8c079454          dir-0003/file-0002.bin
+SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
 Total #: 5 Workspace Size:         900 Cached Size:        5015
 
 
@@ -238,7 +238,7 @@ You may use globs to list files.
 $ xvc file list 'dir-*/*-0001.bin' 
 FX        1001 [..]          189fa49f dir-0005/file-0001.bin
 FX        1001 [..]          189fa49f dir-0004/file-0001.bin
-SS         180 [..] 189fa49f          dir-0003/file-0001.bin
+SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
 FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
 FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        4184 Cached Size:        1001
@@ -257,8 +257,8 @@ FX        1002 [..]          8c079454 dir-0005/file-0002.bin
 FX        1001 [..]          189fa49f dir-0005/file-0001.bin
 FX        1002 [..]          8c079454 dir-0004/file-0002.bin
 FX        1001 [..]          189fa49f dir-0004/file-0001.bin
-SS         180 [..] 8c079454          dir-0003/file-0002.bin
-SS         180 [..] 189fa49f          dir-0003/file-0001.bin
+SS        [..] [..] 8c079454          dir-0003/file-0002.bin
+SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
 FH        1002 [..] 8c079454 8c079454 dir-0002/file-0002.bin
 FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
 FC        1002 [..] 8c079454 8c079454 dir-0001/file-0002.bin

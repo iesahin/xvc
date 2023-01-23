@@ -3,7 +3,7 @@
 This document is a change log that I write for the project as I develop. It's a
 tree, and subtasks are marked with indentation.
 
-## Unreleased
+## 0.5.0 (2021-09-23)
 
 - Refactor XvcEntity to `(u64, u64)`
   - Issue: <https://github.com/iesahin/xvc/issues/198>
@@ -31,8 +31,9 @@ tree, and subtasks are marked with indentation.
     the doc tests.
     - Now builds the binary before running the doc tests. ✅
 - Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
-- Implement `xvc file copy` command
+- Add `xvc file copy` command
   - Issue: https://github.com/iesahin/xvc/issues/179
+  - PR: https://github.com/iesahin/xvc/issues/206
   - Create the user interface
     - Add `copy` to `XvcFileCLI`
     - Created CopyCLI
@@ -65,7 +66,7 @@ tree, and subtasks are marked with indentation.
                  create a gitignore with a single line `*` to ignore all files.
                - After all files are rechecked, we can check whether they are
                  not ignored by Git, and update necessary gitignores.
-        - Create a IgnoreWriter system with crossbeam_channels
+        - Create an IgnoreWriter system with crossbeam_channels
           - The channel will send/receive Option<IgnoreOperation> messages.
           - If it receives a None message, it will stop and the collected
             dir/files will be written to ignore files.
@@ -74,8 +75,8 @@ tree, and subtasks are marked with indentation.
         - This is to prevent unnecessary reload in copy.
       - Convert former XvcRoot type to XvcRootInner and XvcRoot to Arc<XvcRootInner>
         - This is to pass the object to threads easily.
-- Updated default format string for `xvc file list`
-  - Moved `name` block to the end of the format string ✅
+  - Updated default format string for `xvc file list`
+    - Moved `name` block to the end of the format string ✅
 
 ## v0.4.2 (2023-01-17)
 

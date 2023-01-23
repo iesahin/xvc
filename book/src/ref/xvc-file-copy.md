@@ -159,7 +159,7 @@ $ xvc file list
 XC             [..] c85f3e81          data7.txt
 FC          19 [..] c85f3e81 c85f3e81 data6.txt
 FC          19 [..] c85f3e81 c85f3e81 data5.txt
-SS         180 [..] c85f3e81          data3.txt
+SS        [..] [..] c85f3e81          data3.txt
 FC          19 [..] c85f3e81 c85f3e81 data2.txt
 XC             [..] c85f3e81          data.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data3.txt
