@@ -663,7 +663,7 @@ pub fn cmd_list(
                         .actual_path
                         .as_deref()
                         .and(pm.actual_metadata.and_then(|md| Some(md.is_file())))
-                        .is_some()
+                        == Some(true)
                     {
                         let actual_path = pm.actual_path.as_ref().unwrap();
                         let path = actual_path.to_absolute_path(xvc_root);
