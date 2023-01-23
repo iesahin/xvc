@@ -11,22 +11,22 @@ Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
 Arguments:
   <SOURCE>
           Source file, glob or directory within the workspace.
-
+          
           If the source ends with a slash, it's considered a directory and all files in that directory are copied.
-
+          
           If the number of source files is more than one, the destination must be a directory.
 
   <DESTINATION>
           Location we copy file(s) to within the workspace.
-
+          
           If the target ends with a slash, it's considered a directory and created if it doesn't exist.
-
+          
           If the number of source files is more than one, the destination must be a directory.
 
 Options:
       --cache-type <CACHE_TYPE>
           How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
-
+          
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
       --force
@@ -61,7 +61,7 @@ $ xvc file track data.txt
 
 $ ls -l
 total[..]
--rw-rw-rw-  1 iex  staff  19 Jan 19 10:47 data.txt
+-rw-rw-rw-  [..] data.txt
 
 ```
 
@@ -80,8 +80,15 @@ Note that, multiple copies of the same content doesn't add up to the cache size.
 
 ```console
 $ xvc file list data.txt
+FC          19 [..] c85f3e81 c85f3e81 data.txt
+Total #: 1 Workspace Size:          19 Cached Size:          19
+
 
 $ xvc file list 'data*'
+FC          19 [..] c85f3e81 c85f3e81 data2.txt
+FC          19 [..] c85f3e81 c85f3e81 data.txt
+Total #: 2 Workspace Size:          38 Cached Size:          19
+
 
 ```
 
@@ -104,9 +111,9 @@ You can create _views_ of your data by copying it to another location.
 $ xvc file copy 'd*' another-set/ --as hardlink
 
 $ xvc file list another-set/
-FH          19 [..]   another-set/data3.txt  c85f3e81 c85f3e81
-FH          19 [..]   another-set/data2.txt  c85f3e81 c85f3e81
-FH          19 [..]   another-set/data.txt  c85f3e81 c85f3e81
+FH          19 [..] c85f3e81 c85f3e81 another-set/data3.txt
+FH          19 [..] c85f3e81 c85f3e81 another-set/data2.txt
+FH          19 [..] c85f3e81 c85f3e81 another-set/data.txt
 Total #: 3 Workspace Size:          57 Cached Size:          19
 
 
@@ -130,7 +137,7 @@ $ rm -f data.txt
 $ xvc file copy data.txt data6.txt
 
 $ ls -l data6.txt
--rw-rw-rw-  1 iex  staff  19 Jan 19 10:47 data6.txt
+-rw-rw-rw-  [..] data6.txt
 
 ```
 
@@ -149,46 +156,20 @@ data5.txt
 data6.txt
 
 $ xvc file list
-thread '<unnamed>' panicked at 'called `Option::unwrap()` on a `None` value', file/src/list/mod.rs:572:74
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::panicking::panic
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:48:5
-   3: core::option::Option<T>::unwrap
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/option.rs:775:21
-   4: xvc_file::list::cmd_list
-             at /Users/iex/github.com/iesahin/xvc/file/src/list/mod.rs:572:39
-   5: xvc_file::run
-             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:162:42
-   6: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:274:24
-   7: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   8: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   9: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:394:6
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::result::unwrap_failed
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
-   3: core::result::Result<T,E>::unwrap
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
-   4: xvc::cli::dispatch
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:243:5
-   5: xvc::main
-             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
-   6: core::ops::function::FnOnce::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+XC             [..] c85f3e81          data7.txt
+FC          19 [..] c85f3e81 c85f3e81 data6.txt
+FC          19 [..] c85f3e81 c85f3e81 data5.txt
+SS         180 [..] c85f3e81          data3.txt
+FC          19 [..] c85f3e81 c85f3e81 data2.txt
+XC             [..] c85f3e81          data.txt
+FH          19 [..] c85f3e81 c85f3e81 another-set/data3.txt
+FH          19 [..] c85f3e81 c85f3e81 another-set/data2.txt
+FH          19 [..] c85f3e81 c85f3e81 another-set/data.txt
+DX         160 [..]                   another-set
+FX         130 [..]          ac46bf74 .xvcignore
+FX         619 [..]          f6a9d7e6 .gitignore
+Total #: 13 Workspace Size:        1203 Cached Size:          19
+
 
 ```
 
@@ -198,6 +179,6 @@ Later, you can recheck them to the workspace.
 $ xvc file recheck data7.txt
 
 $ ls -l data7.txt
--rw-rw-rw-  1 iex  staff  19 Jan 19 10:47 data7.txt
+-rw-rw-rw-  [..] data7.txt
 
 ```

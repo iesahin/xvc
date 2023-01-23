@@ -74,6 +74,8 @@ tree, and subtasks are marked with indentation.
         - This is to prevent unnecessary reload in copy.
       - Convert former XvcRoot type to XvcRootInner and XvcRoot to Arc<XvcRootInner>
         - This is to pass the object to threads easily.
+- Updated default format string for `xvc file list`
+  - Moved `name` block to the end of the format string ✅
 
 ## v0.4.2 (2023-01-17)
 
