@@ -155,7 +155,7 @@ data3.txt
 data5.txt
 data6.txt
 
-$ xvc -vvvv --debug file list
+$ xvc file list
 XC             [..] c85f3e81          data7.txt
 FC          19 [..] c85f3e81 c85f3e81 data6.txt
 FC          19 [..] c85f3e81 c85f3e81 data5.txt
@@ -167,9 +167,8 @@ FH          19 [..] c85f3e81 c85f3e81 another-set/data2.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data.txt
 DX         160 [..]                   another-set
 FX         130 [..]          ac46bf74 .xvcignore
-FX         619 [..]          [..] .gitignore
-XX                                                   
-Total #: 13 Workspace Size:        1203 Cached Size:          19
+FX         619 [..]          d1b6d475 .gitignore
+Total #: 12 Workspace Size:        1203 Cached Size:          19
 
 
 ```
