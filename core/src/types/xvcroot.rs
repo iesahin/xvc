@@ -47,6 +47,7 @@ pub struct XvcRootInner {
     entity_generator: XvcEntityGenerator,
 }
 
+/// We wrap the XvcRootInner in an Arc to make it easier to share between threads.
 pub type XvcRoot = Arc<XvcRootInner>;
 
 impl fmt::Display for XvcRootInner {
