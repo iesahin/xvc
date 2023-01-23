@@ -295,7 +295,7 @@ pub fn carry_in(
             .for_each(|(xe, xp)| copy_path_to_cache_and_recheck(xe, xp));
     }
 
-    ignore_writer.send(None);
+    ignore_writer.send(None).unwrap();
     ignore_thread.join().unwrap();
 
     Ok(())
