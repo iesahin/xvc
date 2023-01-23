@@ -1,6 +1,6 @@
 [package]
 name = "xvc-pipeline"
-version = "0.4.2"
+version = "0.5.0"
 edition = "2021"
 description = "Xvc data pipeline management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,11 +16,11 @@ crate-type = ["rlib"]
 
 
 [dependencies]
-xvc-config = {version = "0.4.2-alpha.0",  path = "../config" }
-xvc-core = { version = "0.4.2-alpha.0", path = "../core" }
-xvc-ecs = { version = "0.4.2-alpha.6", path = "../ecs" }
-xvc-logging = { version = "0.4.2-alpha.6", path = "../logging" }
-xvc-walker = {version = "0.4.2-alpha.0", path = "../walker"}
+xvc-config = {version = "0.5.0",  path = "../config" }
+xvc-core = { version = "0.5.0", path = "../core" }
+xvc-ecs = { version = "0.5.0", path = "../ecs" }
+xvc-logging = { version = "0.5.0", path = "../logging" }
+xvc-walker = {version = "0.5.0", path = "../walker"}
 
 ## Cli and config
 clap = {version = "^4.1", features=["derive"]}
