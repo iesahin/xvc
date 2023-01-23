@@ -29,9 +29,6 @@ Options:
           
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
-      --no-parallel
-          Don't use parallelism
-
       --force
           Force even if target exists
 
@@ -88,7 +85,7 @@ $ ls -l
 total[..]
 -rw-rw-rw-  1 iex  staff   19 Jan 19 10:47 data.txt
 -rw-rw-rw-  1 iex  staff   19 Jan 19 10:47 data2.txt
-lrwxr-xr-x  1 iex  staff  180 Jan 22 11:32 data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+lrwxr-xr-x  1 iex  staff  180 Jan 23 05:42 data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 ```
 
