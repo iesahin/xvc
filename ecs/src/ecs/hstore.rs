@@ -13,6 +13,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::iter::{FromIterator, Iterator};
+use std::sync::{Arc, RwLock};
 
 use super::vstore::VStore;
 
@@ -24,6 +25,9 @@ pub struct HStore<T> {
     /// The wrapped map for the store
     pub map: HashMap<XvcEntity, T>,
 }
+
+/// A shared version of [HStore] for use in multithreaded environments.
+pub type SharedHStore<T> = Arc<RwLock<HStore<T>>>;
 
 impl<T> Deref for HStore<T> {
     type Target = HashMap<XvcEntity, T>;
