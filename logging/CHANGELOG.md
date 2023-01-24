@@ -3,6 +3,11 @@
 This document is a change log that I write for the project as I develop. It's a
 tree, and subtasks are marked with indentation.
 
+## Unreleased
+
+- Fix Build Badge in Readme
+  - Fixed per <https://github.com/badges/shields/issues/8671>
+
 ## 0.5.0 (2021-09-23)
 
 - Refactor XvcEntity to `(u64, u64)`
