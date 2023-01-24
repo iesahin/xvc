@@ -163,35 +163,48 @@ Please check [xvc.netlify.app](https://docs.xvc.dev) for documentation.
 
 xvc stands on the following (giant) crates:
 
+- [trycmd] is used to run all example commands in the [reference and how-to documentation](https://docs.xvc.dev) at
+  every PR. It makes sure that the documentation is always up-to-date and shown commands work as described. We start
+  development by writing documentation and implementing them thanks to [trycmd].
+
 - [serde] allows all data structures to be stored in text files. Special thanks from [`xvc-ecs`] for serializing components in an ECS with a single line of code.
-- Xvc processes files in parallel with pipelines thanks to [crossbeam].
-- Xvc uses [rayon] to calculate content hashes of millions of files in parallel.
+
+- Xvc processes files in parallel with pipelines and parallel iterators thanks to [crossbeam] and [rayon].
+
 - Thanks to [strum], Xvc uses enums extensively and converts almost everything to typed values from strings.
-- Xvc has a deep CLI that has subcommands of subcommands like `xvc storage new s3`, and all these work with minimum bugs thanks to [clap].
+
+- Xvc has a deep CLI that has subcommands of subcommands (e.g. `xvc storage new s3`), and all these work with minimum bugs thanks to [clap].
+
 - Xvc uses [rust-s3] to connect to S3 and compatible storage services. It employs excellent [tokio] for fast async Rust. These cloud storage features can be turned off thanks to Rust conditional compilation.
+
 - Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust [crypto] crate, Xvc couldn't detect file changes so fast.
-- Many thanks to small and well built crates, [reflink], [relative-path], [path-absolutize], [glob] and [wax] for file system and glob handling.
+
+- Many thanks to small and well built crates, [reflink], [relative-path], [path-absolutize], [glob] for file system and glob handling.
+
 - Thanks to [sad_machine] for providing a State Machine implementation that I used in `xvc pipeline run`. A DAG composed of State Machines made running pipeline steps in parallel with a clean separation of process states.
+
 - Thanks to [thiserror] and [anyhow] for making error handling a breeze. These two crates make me feel I'm doing something good for the humanity when handling errors.
+
 - Xvc is split into many crates and owes this organization to [cargo workspaces].
 
-[crossbeam]: https://docs.rs/crossbeam/latest/crossbeam/
+[crossbeam]: https://docs.rs/crossbeam/
 [cargo workspaces]: https://crates.io/crates/cargo-workspaces
-[rayon]: https://docs.rs/rayon/latest/rayon/
-[strum]: https://docs.rs/strum/latest/strum/
-[clap]: https://docs.rs/clap/4.0.18/clap/
+[rayon]: https://docs.rs/rayon/
+[strum]: https://docs.rs/strum/
+[clap]: https://docs.rs/clap/
 [serde]: https://serde.rs
-[blake3]: https://docs.rs/blake3/latest/blake3/
-[crypto]: https://docs.rs/rust-crypto/latest/crypto/
-[reflink]: https://docs.rs/reflink/0.1.3/reflink/
-[relative-path]: https://docs.rs/relative-path/1.7.2/relative_path/
-[path-absolutize]: https://docs.rs/path-absolutize/3.0.14/path_absolutize/
-[glob]: https://docs.rs/glob/0.3.0/glob/
-[wax]: https://docs.rs/wax/0.5.0/wax/
-[sad_machine]: https://docs.rs/sad_machine/1.0.0/sad_machine/
-[thiserror]: https://docs.rs/thiserror/latest/thiserror/
-[anyhow]: https://docs.rs/anyhow/1.0.66/anyhow/
-[rust-s3]: https://docs.rs/rust-s3/0.32.3/s3/
+[blake3]: https://docs.rs/blake3/
+[crypto]: https://docs.rs/rust-crypto/
+[reflink]: https://docs.rs/reflink/
+[relative-path]: https://docs.rs/relative-path/
+[path-absolutize]: https://docs.rs/path-absolutize/
+[glob]: https://docs.rs/glob/
+[wax]: https://docs.rs/wax/
+[trycmd]: https://docs.rs/trycmd/
+[sad_machine]: https://docs.rs/sad_machine/
+[thiserror]: https://docs.rs/thiserror/
+[anyhow]: https://docs.rs/anyhow/
+[rust-s3]: https://docs.rs/rust-s3/
 [`xvc-ecs`]: https://docs.rs/xvc-ecs/
 [tokio]: https://tokio.rs
 
@@ -206,8 +219,24 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 
 - Star this repo. I feel very happy for five minutes for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks.
 - Use xvc. Tell me how it works for you, read the [documentation](https://docs.xvc.dev), [report bugs](https://github.com/iesahin/xvc/issues), [discuss features](https://github.com/iesahin/xvc/discussions).
-- Write a new test with your workflow to increase testing coverage. They are under `workflow_tests` crate.
-- Buy me a coffee ☕ to drink in a virtual meet.
+- Note that, I don't accept large code PRs. Please open an issue to discuss your idea and write/modify a
+  reference page before sending a PR. I'm happy to discuss and help you to implement your idea.
+
+## 📜 License
+
+Xvc is licensed under the [Apache 2.0 License](https://github.com/iesahin/xvc/blob/main/LICENSE).
+
+## 🌦️ Future and Maintenance
+
+This is mostly a one-man project and users may consider the [bus factor](https://en.wikipedia.org/wiki/Bus_factor) before spending time on it.
+
+I'm using Xvc daily and I'm happy with it. I'll maintain it as long as I use it. I'm applying my
+technical/architectural ideas to see their effectiveness and I have more ideas to implement. I don't expect to be bored from this soon.
+
+I'm in a phase of my life where material success doesn't entice me. I have a daily routine that I love and it won't change much if I earn a billion dollars. I don't want to convert Xvc to a business and have
+more than one goal with this project. In my opinion, trying to monetize OSS prematurely deteriorates it more than other factors these days.
+
+Nevertheless, Xvc is like a _running CV_ for me, basically signaling _I can do this and I can do similar software for you._ This is another motivation for me to keep it alive.
 
 ## ⚠️ Disclaimer
 
