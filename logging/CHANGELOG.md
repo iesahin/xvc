@@ -7,7 +7,6 @@ tree, and subtasks are marked with indentation.
 
 - Fix Build Badge in Readme
   - Fixed per <https://github.com/badges/shields/issues/8671>
-  - 
 
 ## 0.5.0 (2021-09-23)
 
