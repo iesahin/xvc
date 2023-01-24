@@ -10,25 +10,25 @@ A fast and robust MLOps tool to manage data and pipelines
 
 ## ⌛ When to use xvc?
 
-- When you manage large number of _unstructured_ data, like images, documents, audio files.
+- When you have a photo, audio, media, or document collection to backup/version with Git, but don't want to copy that huge data to all Git clones.
+- When you manage a large number of _unstructured_ data, like images, documents, and audio files.
 - When you want to version data files, and want to track versions across datasets.
-- When you want to store this data in local, SSH-accessible or S3-compatible storages.
-- When you create data pipelines on top of this data and want to run these pipelines when the data, code or other dependencies change.
+- When you want to store this data in local, SSH-accessible, or S3-compatible cloud storage.
+- When you create data pipelines on top of this data and want to run these pipelines when the data, code, or other dependencies change.
 - When you want to track which subset of the data you're working with, and how it changes by your operations.
-- When you have photo, audio, media, document files to backup on Git, but don't want to copy that huge data to all Git clones.
 - When you have binary artifacts that you use as dependencies and would like to have a `make` alternative that considers _content changes_ rather than timestamps.
 
 ## ✳️ What is xvc for?
 
-- (for x = files) Track large files on Git, store them in the cloud, retrieve when necessary, label and query for subsets
-- (for x = pipelines) Define and run data -> model pipelines whose dependencies may be files, hyperparameters, regex searches, arbitrary URLs and more.
-- (for x = data) Annotate data and run queries and retrieve subsets of it. (Under Construction)
-- (for x = experiments) Run isolated experiments, share them and store them in Git when necessary (TODO)
-- (for x = models) Associate models with datasets, metadata and features, then track, store, and deploy them (TODO)
+- (for x = files) Track large files on Git, store them in the cloud, create view-only subsets, retrieve them only when necessary.
+- (for x = pipelines) Define and run data -> model pipelines whose dependencies may be files, hyperparameters, regex searches, arbitrary URLs, and more.
+- (for x = data) Annotate data and run queries and retrieve subsets of it. ([TODO](https://github.com/iesahin/xvc/discussions/208))
+- (for x = experiments) Run isolated experiments, share them and store them in Git when necessary ([TODO](https://github.com/iesahin/xvc/discussions/207))
+- (for x = models) Associate models with datasets, metadata and features, then track, store, and deploy them ([TODO](https://github.com/iesahin/xvc/discussions/211))
 
 ## 🔽 Installation
 
-You can get the binary files for Linux, macOS and Windows from [releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and copy the file to your `$PATH`.
+You can get the binary files for Linux, macOS, and Windows from [releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and copy the file to your `$PATH`.
 
 Alternatively, if you have Rust [installed], you can build xvc:
 
@@ -47,7 +47,7 @@ $ git init # if you're not already in a Git repository
 $ xvc init
 ```
 
-It initializes the metafiles in `.xvc/` directory and adds `.xvcignore` file in case you want to hide certain elements from Xvc.
+It initializes the metafiles in `.xvc/` directory and adds `.xvcignore` file for paths you may want to hide from Xvc.
 
 Add your data files and directories for tracking.
 
@@ -57,10 +57,10 @@ $ xvc file track my-data/ --cache-type symlink
 
 The command calculates data content hashes (with BLAKE-3, by default) and records them.
 It commits these changes to Git.
-It also copies these files to content addressed directories under `.xvc/b3` and creates read-only symbolic links to them.
+It also copies these files to content-addressed directories under `.xvc/b3` and creates read-only symbolic links to them.
 
 You can specify different types of [cache-types] specific to files and directories, for your use case.
-If you have need to track model files that change frequently, you can set `--cache-type copy` (the default) and make all versions of models available.
+If you need to track model files that change frequently, you can set `--cache-type copy` (the default).
 
 ```shell
 $ xvc file track my-models/ --cache-type copy
@@ -72,13 +72,13 @@ When you want to share them, configure a storage to share the files you added.
 $ xvc storage new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
 ```
 
-You can send the files you're tracking in Xvc to this storage.
+You can send the files to this storage.
 
 ```shell
 $ xvc file send --to my-remote
 ```
 
-When you (or someone else) want to access these files later, you can clone the Git repository and get back the files from file storage.
+When you (or someone else) want to access these files later, you can clone the Git repository and get the files from storage.
 
 ```console
 $ git clone https://example.com/my-machine-learning-project
@@ -86,8 +86,9 @@ $ cd my-machine-learning-project
 $ xvc file bring my-data/ --from my-remote
 ```
 
-(Note that, you don't have to reconfigure the storage but you need to have valid credentials to access the data.
-Xvc doesn't store any credentials.)
+You don't have to reconfigure the storage after cloning, but you need to have valid credentials as environment variables
+to access the storage.
+Xvc doesn't store any credentials.
 
 If you have commands that depend on data or code elements, you can configure a pipeline.
 
