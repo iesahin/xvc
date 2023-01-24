@@ -231,12 +231,18 @@ Xvc is licensed under the [Apache 2.0 License](https://github.com/iesahin/xvc/bl
 This is mostly a one-man project and users may consider the [bus factor](https://en.wikipedia.org/wiki/Bus_factor) before spending time on it.
 
 I'm using Xvc daily and I'm happy with it. I'll maintain it as long as I use it. I'm applying my
-technical/architectural ideas to see their effectiveness and I have more ideas to implement. I don't expect to be bored from this soon.
+technical/architectural ideas to see their effectiveness and I have more ideas to implement.
+I don't expect to be bored from this soon.
 
-I'm in a phase of my life where material success doesn't entice me. I have a daily routine that I love and it won't change much if I earn a billion dollars. I don't want to convert Xvc to a business and have
-more than one goal with this project. In my opinion, trying to monetize OSS prematurely deteriorates it more than other factors these days.
+I'm in a phase of my life where material success doesn't entice me.
+I have a daily routine that I love, which includes spending at least 90 minutes to Xvc.
+That won't change much if I earn a billion dollars.
+I don't want to convert Xvc to a business and have more than one goal with this project.
+In my opinion, trying to monetize FOSS prematurely deteriorates it more than other factors nowadays.
 
-Nevertheless, Xvc is like a _running CV_ for me, basically signaling _I can do this and I can do similar software for you._ This is another motivation for me to keep it alive.
+Xvc is like a _running CV_ for me, basically signaling _I do this and I can do similar software for you._ This is
+another motivation for me to keep it alive. Instead of updating my [vita](https://emresahin.net/cv/), and feeling
+awkward about it, I prefer to show my work.
 
 ## ⚠️ Disclaimer
 
