@@ -1,7 +1,7 @@
 # xvc
 
 [![codecov](https://codecov.io/gh/iesahin/xvc/branch/main/graph/badge.svg?token=xa3ru5KhRq)](https://codecov.io/gh/iesahin/xvc)
-[![build](https://img.shields.io/github/workflow/status/iesahin/xvc/Rust-CI)](https://github.com/iesahin/xvc/actions/workflows/rust.yml)
+[![build](https://img.shields.io/github/actions/workflow/status/iesahin/xvc/rust.yml?branch=main)](https://github.com/iesahin/xvc/actions/workflows/rust.yml)
 [![crates.io](https://img.shields.io/crates/v/xvc)](https://crates.io/crates/xvc)
 [![docs.rs](https://img.shields.io/docsrs/xvc)](https://docs.rs/xvc/)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
@@ -10,12 +10,12 @@ A fast and robust MLOps tool to manage data and pipelines
 
 ## ⌛ When to use xvc?
 
-- When you manage large number of _unstructured_ data, like images, documents, audio files. 
-- When you want to version data files, and want to track versions across datasets. 
+- When you manage large number of _unstructured_ data, like images, documents, audio files.
+- When you want to version data files, and want to track versions across datasets.
 - When you want to store this data in local, SSH-accessible or S3-compatible storages.
 - When you create data pipelines on top of this data and want to run these pipelines when the data, code or other dependencies change.
 - When you want to track which subset of the data you're working with, and how it changes by your operations.
-- When you have photo, audio, media, document files to backup on Git, but don't want to copy that huge data to all Git clones. 
+- When you have photo, audio, media, document files to backup on Git, but don't want to copy that huge data to all Git clones.
 - When you have binary artifacts that you use as dependencies and would like to have a `make` alternative that considers _content changes_ rather than timestamps.
 
 ## ✳️ What is xvc for?
@@ -56,11 +56,11 @@ $ xvc file track my-data/ --cache-type symlink
 ```
 
 The command calculates data content hashes (with BLAKE-3, by default) and records them.
-It commits these changes to Git. 
+It commits these changes to Git.
 It also copies these files to content addressed directories under `.xvc/b3` and creates read-only symbolic links to them.
 
-You can specify different types of [cache-types] specific to files and directories, for your use case. 
-If you have need to track model files that change frequently, you can set `--cache-type copy` (the default) and make all versions of models available. 
+You can specify different types of [cache-types] specific to files and directories, for your use case.
+If you have need to track model files that change frequently, you can set `--cache-type copy` (the default) and make all versions of models available.
 
 ```shell
 $ xvc file track my-models/ --cache-type copy
@@ -91,7 +91,7 @@ Xvc doesn't store any credentials.)
 
 If you have commands that depend on data or code elements, you can configure a pipeline.
 
-Create a step for each command. 
+Create a step for each command.
 
 ```shell
 $ xvc pipeline step new --step-name preprocess --command 'python3 preprocess.py'
@@ -99,7 +99,7 @@ $ xvc pipeline step new --step-name train --command 'python3 train.py'
 $ xvc pipeline step new --step-name test --command 'python3 test.py'
 ```
 
-Then, configure dependencies between these steps. 
+Then, configure dependencies between these steps.
 
 ```console
 $ xvc pipeline step dependency --step-name preprocess --glob 'my-data/*.jpg' \
@@ -114,11 +114,11 @@ $ xvc pipeline step output --step-name train --output-file my-models/model.h5
 ```
 
 
-The above commands define three steps in `default` pipeline. You can have multiple pipelines if you need. 
+The above commands define three steps in `default` pipeline. You can have multiple pipelines if you need.
 
-The first is `preprocess` that depends on 'jpg' files in `my-data/` directory, lines that start with `Name:` in `names.txt`; and the first 1000 lines in `a-long-file.csv`. It also depends on the script itself, so when you make changes to the script itself, it invalidates the step. 
-The second step is called `train`. It depends on `preprocess` step directly, anything that make `preprocess` to rerun, makes `train` to run as well. 
-The `test` step depends on `train` and `preprocess` via their outputs. It's run when these outputs (`test-data.npz` and `model.h5`) are changed. 
+The first is `preprocess` that depends on 'jpg' files in `my-data/` directory, lines that start with `Name:` in `names.txt`; and the first 1000 lines in `a-long-file.csv`. It also depends on the script itself, so when you make changes to the script itself, it invalidates the step.
+The second step is called `train`. It depends on `preprocess` step directly, anything that make `preprocess` to rerun, makes `train` to run as well.
+The `test` step depends on `train` and `preprocess` via their outputs. It's run when these outputs (`test-data.npz` and `model.h5`) are changed.
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
@@ -136,7 +136,7 @@ digraph {
 }
 ```
 
-You can also export and import the pipeline to JSON to edit in your editor. 
+You can also export and import the pipeline to JSON to edit in your editor.
 
 ```console
 $ xvc pipeline export > my-pipeline.json
@@ -150,9 +150,9 @@ You can run the pipeline with.
 $ xvc pipeline run
 ```
 
-If the steps you defined doesn't depend to each other, they are run in parallel. 
+If the steps you defined doesn't depend to each other, they are run in parallel.
 
-You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands. 
+You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands.
 More dependency types like database queries, content from URLs, S3 (and compatible) buckets, REST and GraphQL results are in the backlog.
 Please create an issue or discussion for any other kinds of dependencies that you'd like to be included.
 
@@ -203,10 +203,10 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 
 ## 👐 Contributing
 
-- Star this repo. I feel very happy for five minutes for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks. 
+- Star this repo. I feel very happy for five minutes for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks.
 - Use xvc. Tell me how it works for you, read the [documentation](https://docs.xvc.dev), [report bugs](https://github.com/iesahin/xvc/issues), [discuss features](https://github.com/iesahin/xvc/discussions).
-- Write a new test with your workflow to increase testing coverage. They are under `workflow_tests` crate. 
-- Buy me a coffee ☕ to drink in a virtual meet. 
+- Write a new test with your workflow to increase testing coverage. They are under `workflow_tests` crate.
+- Buy me a coffee ☕ to drink in a virtual meet.
 
 ## ⚠️ Disclaimer
 
