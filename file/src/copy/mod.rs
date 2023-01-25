@@ -343,6 +343,8 @@ pub(crate) fn cmd_copy(
         opts.force,
     )?;
 
+    watch!(source_dest_store);
+
     xvc_root.with_r11store_mut(|store: &mut R11Store<XvcPath, XvcMetadata>| {
         for (source_xe, (dest_xe, dest_path)) in source_dest_store.iter() {
             let source_md = stored_metadata_store.get(source_xe).unwrap();
