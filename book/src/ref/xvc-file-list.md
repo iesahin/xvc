@@ -207,7 +207,7 @@ Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 ```
 
-Note, as hardlinks are actually files with the same inode in the file system
+Note, as hardlinks are files with the same inode in the file system
 with alternative paths, they are detected as `F`.
 
 Symbolic links are typically reported as `SS` in the first letters.
@@ -228,7 +228,7 @@ Total #: 5 Workspace Size:         [..] Cached Size:        5015
 
 ```
 
-Although not all filesystems support, `R` represents reflinks.
+Although not all filesystems support it, `R` represents reflinks.
 
 ## Globs
 
