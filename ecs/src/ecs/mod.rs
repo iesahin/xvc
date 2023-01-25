@@ -21,7 +21,7 @@ use std::fmt;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Once;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -83,8 +83,13 @@ impl From<XvcEntity> for (u64, u64) {
 
 #[derive(Debug)]
 pub struct XvcEntityGenerator {
+    /// The counter is used to generate the first portion of new entities. It's incremented at every [`next_element`] call.
     counter: AtomicU64,
+    /// The random value is used to generate the second portion of new entities. It's generated once at the
+    /// initialization of this struct and never changed.
     random: u64,
+    /// The counter is saved only if its value is changed.
+    dirty: AtomicBool,
 }
 
 static INIT: Once = Once::new();
@@ -126,11 +131,14 @@ impl Iterator for XvcEntityGenerator {
 
 impl XvcEntityGenerator {
     fn new(start: u64) -> XvcEntityGenerator {
-        let counter = AtomicU64::new(0);
-        counter.fetch_add(start, Ordering::SeqCst);
+        let counter = AtomicU64::new(start);
         let mut rng = rngs::StdRng::from_entropy();
         let init_random = rng.next_u64();
+        // When we create a new generator from scratch, we need to save it.
+        // In the load function, we set this to false, as we don't want to save duplicate values.
+        let dirty = AtomicBool::new(true);
         Self {
+            dirty,
             counter,
             random: init_random,
         }
@@ -138,6 +146,7 @@ impl XvcEntityGenerator {
 
     /// Returns the next element by atomically incresing the current value.
     pub fn next_element(&self) -> XvcEntity {
+        self.dirty.store(true, Ordering::SeqCst);
         XvcEntity(self.counter.fetch_add(1, Ordering::SeqCst), self.random)
     }
 
@@ -146,7 +155,18 @@ impl XvcEntityGenerator {
         match path {
             Some(path) => {
                 let current_val = fs::read_to_string(path)?.parse::<u64>()?;
-                Ok(Self::new(current_val))
+                // We don't use new here to set the dirty flag to false.
+                let counter = AtomicU64::new(current_val);
+                let mut rng = rngs::StdRng::from_entropy();
+                let init_random = rng.next_u64();
+                // When we load a new generator from file, we don't need to save it.
+                // In the new function, we set this to true, as we need to save the first value.
+                let dirty = AtomicBool::new(false);
+                Ok(Self {
+                    dirty,
+                    counter,
+                    random: init_random,
+                })
             }
             None => Err(XvcError::CannotRestoreEntityCounter {
                 path: dir.as_os_str().to_owned(),
@@ -156,14 +176,17 @@ impl XvcEntityGenerator {
 
     /// Saves the current XvcEntity counter to path.
     /// It saves only the first (e.0) part of the entity. The second part is
-    /// generated per creation to randomize entities in parallel branches.
+    /// generated randomly to randomize entities in different invocations of the app.
     pub fn save(&self, dir: &Path) -> Result<()> {
-        let (counter, _) = self.next_element().into();
-        if !dir.exists() {
-            fs::create_dir_all(dir)?;
+        if self.dirty.load(Ordering::SeqCst) {
+            if !dir.exists() {
+                fs::create_dir_all(dir)?;
+            }
+            let path = dir.join(timestamp());
+            fs::write(path, format!("{}", self.counter.load(Ordering::SeqCst)))?;
+            // We don't need to save again until changed.
+            self.dirty.store(false, Ordering::SeqCst);
         }
-        let path = dir.join(timestamp());
-        fs::write(path, format!("{}", counter))?;
         Ok(())
     }
 }
@@ -288,6 +311,45 @@ mod tests {
         gen.save(&gen_dir)?;
         let new_val = fs::read_to_string(most_recent_file(&gen_dir)?.unwrap())?.parse::<u64>()?;
         assert_eq!(new_val, r + 2003);
+        Ok(())
+    }
+
+    /// Multiple saves without changed counter should not create new files.
+    /// See: https://github.com/iesahin/xvc/issues/185
+    #[test]
+    fn test_multi_save() -> Result<()> {
+        setup_logging(Some(LevelFilter::Trace), None);
+        let tempdir = TempDir::new("test-xvc-ecs")?;
+        let gen_dir = tempdir.path().join("entity-gen");
+        fs::create_dir_all(&gen_dir)?;
+        // We use new here to circumvent the singleton check.
+        let gen = XvcEntityGenerator::new(10);
+        gen.save(&gen_dir)?;
+        // It must save the counter at first
+        assert!(sorted_files(&gen_dir)?.len() == 1);
+        // It must not save the counter if it's not changed
+        gen.save(&gen_dir)?;
+        assert!(sorted_files(&gen_dir)?.len() == 1);
+        // It must save the counter if it's changed
+        let e = gen.next_element();
+        gen.save(&gen_dir)?;
+        assert!(sorted_files(&gen_dir)?.len() == 2);
+
+        let gen2 = XvcEntityGenerator::load(&gen_dir)?;
+        // Don't save if it's not changed after load
+        gen.save(&gen_dir)?;
+        assert!(sorted_files(&gen_dir)?.len() == 2);
+        // Save if it's changed after load
+        let _e = gen2.next_element();
+        gen2.save(&gen_dir)?;
+        assert!(sorted_files(&gen_dir)?.len() == 3);
+        // Don't save if it's not changed after save
+        gen2.save(&gen_dir)?;
+        gen2.save(&gen_dir)?;
+        gen2.save(&gen_dir)?;
+        gen2.save(&gen_dir)?;
+        assert!(sorted_files(&gen_dir)?.len() == 3);
+
         Ok(())
     }
 

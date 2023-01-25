@@ -8,6 +8,11 @@ tree, and subtasks are marked with indentation.
 - Fix Build Badge in Readme
   - Fixed per <https://github.com/badges/shields/issues/8671>
 - Revised Readme and added _Future and Maintanence_ section.
+- Fix EntityGenerator bug that saves even if no new entity is created
+  - Issue: <https://github.com/iesahin/xvc/issues/185>
+  - Added test_multi_save
+  - Added a dirty flag to EntityGenerator
+  - Separated load and new behavior
 
 ## 0.5.0 (2021-09-23)
 

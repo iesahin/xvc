@@ -331,12 +331,7 @@ where
 
         Ok(map)
     }
-}
 
-impl<T> XvcStore<T>
-where
-    T: Storable,
-{
     fn store_path(store_root: &Path) -> PathBuf {
         store_root.join(format!("{}-store", <T as Storable>::type_description()))
     }
