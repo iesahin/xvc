@@ -224,7 +224,6 @@ pub(crate) fn cmd_move(
         recheck_destination(
             output_snd,
             xvc_root,
-            &stored_xvc_path_store,
             source_dest_store
                 .keys()
                 .copied()
