@@ -284,6 +284,7 @@ pub(crate) fn recheck_destination(
     stored_xvc_path_store: &XvcStore<XvcPath>,
     destination_entities: &[XvcEntity],
 ) -> Result<()> {
+    watch!(destination_entities);
     let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
     let (recheck_handler, recheck_thread) =
         make_recheck_handler(output_snd, xvc_root, &ignore_writer)?;
