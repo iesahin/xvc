@@ -13,7 +13,7 @@ use crate::{recheck, Result};
 use anyhow::anyhow;
 use clap::Parser;
 use crossbeam_channel::Sender;
-use xvc_core::{CacheType, ContentDigest, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{CacheType, ContentDigest, Diff, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
 use xvc_logging::{debug, error, watch, XvcOutputLine};
 
@@ -147,8 +147,9 @@ pub(crate) fn check_if_sources_have_changed(
     );
     let changed_path_entities = content_digest_diff
         .iter()
-        .filter_map(|(e, v)| {
-            if v.changed() {
+        .filter_map(|(e, diff)| {
+            // We only care about changed files, not missing ones
+            if matches!(diff, Diff::<ContentDigest>::Different { .. }) {
                 Some((*e, stored_xvc_path_store.get(e).cloned().unwrap()))
             } else {
                 None
