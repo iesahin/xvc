@@ -26,6 +26,7 @@ tree, and subtasks are marked with indentation.
   - Write cmd_move
     - Wrote modified functions of operations and destination mapping from cmd_copy
     - Other functions from cmd_copy are reused
+  - Add template for xvc-file-move.in
 
 ## 0.5.0 (2021-09-23)
 
