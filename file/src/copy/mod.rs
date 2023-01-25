@@ -431,8 +431,8 @@ pub(crate) fn cmd_copy(
             xvc_root,
             &stored_xvc_path_store,
             source_dest_store
-                .keys()
-                .copied()
+                .iter()
+                .map(|(_, (dest_xe, _))| *dest_xe)
                 .collect::<Vec<XvcEntity>>()
                 .as_slice(),
         )?;
