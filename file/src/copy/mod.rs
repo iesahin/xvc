@@ -281,7 +281,6 @@ pub fn get_copy_source_dest_store(
 pub(crate) fn recheck_destination(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
-    stored_xvc_path_store: &XvcStore<XvcPath>,
     destination_entities: &[XvcEntity],
 ) -> Result<()> {
     watch!(destination_entities);
@@ -290,6 +289,7 @@ pub(crate) fn recheck_destination(
         make_recheck_handler(output_snd, xvc_root, &ignore_writer)?;
     // We reload to get the latest paths
     // Interleaving might prevent this.
+    let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let mut recheck_paths = stored_xvc_path_store.subset(destination_entities.iter().copied())?;
     let all_content_digests = xvc_root.load_store::<ContentDigest>()?;
     let all_cache_types = xvc_root.load_store::<CacheType>()?;
