@@ -28,6 +28,7 @@ use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
 use list::ListCLI;
 use log::{debug, error, info, warn, LevelFilter};
+use mv::MoveCLI;
 use std::io;
 use std::io::Write;
 use std::path::Path;
@@ -178,6 +179,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Copy(opts) => copy::cmd_copy(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Move(opts) => mv::cmd_move(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

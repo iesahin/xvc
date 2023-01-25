@@ -24,7 +24,7 @@ tree, and subtasks are marked with indentation.
     - A function to perform copy operations
     - A function to recheck
   - Write cmd_move
-    - Wrote a modified version operations and destination mapping from cmd_copy
+    - Wrote modified functions of operations and destination mapping from cmd_copy
     - Other functions from cmd_copy are reused
 
 ## 0.5.0 (2021-09-23)

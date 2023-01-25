@@ -96,7 +96,7 @@ pub fn get_move_source_dest_store(
 
         let mut source_dest_store = HStore::new();
 
-        let error_paths = vec![];
+        let mut error_paths = vec![];
 
         for (source_xe, source_path) in source_xvc_paths.iter() {
             let dest_path = dir_path.join(source_path).unwrap();
