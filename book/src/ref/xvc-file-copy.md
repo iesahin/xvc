@@ -68,7 +68,7 @@ total[..]
 Once you add the file to the cache, you can copy the file to another location.
 
 ```console
-$ xvc -vvvv --debug file copy data.txt data2.txt
+$ xvc file copy data.txt data2.txt
 
 $ ls
 data.txt
