@@ -429,7 +429,6 @@ pub(crate) fn cmd_copy(
         recheck_destination(
             output_snd,
             xvc_root,
-            &stored_xvc_path_store,
             source_dest_store
                 .iter()
                 .map(|(_, (dest_xe, _))| *dest_xe)
