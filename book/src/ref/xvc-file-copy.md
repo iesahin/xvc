@@ -152,13 +152,11 @@ $ ls
 another-set
 data2.txt
 data3.txt
-data5.txt
 data6.txt
 
 $ xvc file list
 XC             [..] c85f3e81          data7.txt
 FC          19 [..] c85f3e81 c85f3e81 data6.txt
-FC          19 [..] c85f3e81 c85f3e81 data5.txt
 SS        [..] [..] c85f3e81          data3.txt
 FC          19 [..] c85f3e81 c85f3e81 data2.txt
 XC             [..] c85f3e81          data.txt
@@ -167,8 +165,8 @@ FH          19 [..] c85f3e81 c85f3e81 another-set/data2.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data.txt
 DX         160 [..]                   another-set
 FX         130 [..]          ac46bf74 .xvcignore
-FX         619 [..]          [..] .gitignore
-Total #: 12 Workspace Size:        1203 Cached Size:          19
+FX         534 [..]          85fb7c9f .gitignore
+Total #: 11 Workspace Size:        [..] Cached Size:          19
 
 
 ```
