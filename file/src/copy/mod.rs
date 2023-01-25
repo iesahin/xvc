@@ -15,7 +15,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use xvc_core::{CacheType, ContentDigest, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, XvcOutputLine};
+use xvc_logging::{debug, error, watch, XvcOutputLine};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -330,6 +330,9 @@ pub(crate) fn cmd_copy(
         &opts.source,
         &opts.destination,
     )?;
+
+    watch!(source_xvc_paths);
+    watch!(source_metadata);
 
     let source_dest_store = get_copy_source_dest_store(
         output_snd,
