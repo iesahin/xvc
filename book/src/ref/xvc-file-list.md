@@ -11,51 +11,51 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 Arguments:
   [TARGETS]...
           Files/directories to list.
-          
+
           If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
           A string for each row of the output table
-          
+
           The following are the keys for each row:
-          
+
           - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
-          
+
           - {{acd64}}:  actual content digest. All 64 digits.
-          
+
           - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D), symlink (S), hardlink (H) or reflink (R).
-          
+
           - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB, GB and TB to represent sizes larger than 1MB.
-          
+
           - {{ats}}:  actual timestamp. The timestamp of the workspace file.
-          
+
           - {{name}}: The name of the file or directory.
-          
+
           - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show whether the file timestamp is the same as the cached timestamp, newer, older, not cached or not tracked.
-          
+
           - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
-          
+
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
-          
+
           - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
-          
+
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses MB, GB and TB to represent sizes larged than 1MB.
-          
+
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-          
+
           The default format can be set with file.list.format in the config file.
 
   -s, --sort <SORT>
           Sort criteria.
-          
+
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-          
+
           The default option can be set with file.list.sort in the config file.
 
       --no-summary
           Don't show total number and size of the listed files.
-          
+
           The default option can be set with file.list.no_summary in the config file.
 
   -h, --help
@@ -112,7 +112,7 @@ $ tree
 a repository yet, it lists nothing.
 
 ```console
-$ xvc file list 
+$ xvc file list
 ```
 
 Let's initialize the repository.
@@ -125,7 +125,7 @@ $ xvc init
 
 ```
 
-Now it lists all files and directories. 
+Now it lists all files and directories.
 
 
 ```console
@@ -223,7 +223,7 @@ SS        [..] [..] 3640687a          dir-0003/file-0004.bin
 SS        [..] [..] 2856fe70          dir-0003/file-0003.bin
 SS        [..] [..] 8c079454          dir-0003/file-0002.bin
 SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
-Total #: 5 Workspace Size:         900 Cached Size:        5015
+Total #: 5 Workspace Size:         [..] Cached Size:        5015
 
 
 ```
@@ -235,13 +235,13 @@ Although not all filesystems support, `R` represents reflinks.
 You may use globs to list files.
 
 ```console
-$ xvc file list 'dir-*/*-0001.bin' 
+$ xvc file list 'dir-*/*-0001.bin'
 FX        1001 [..]          189fa49f dir-0005/file-0001.bin
 FX        1001 [..]          189fa49f dir-0004/file-0001.bin
 SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
 FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
 FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
-Total #: 5 Workspace Size:        4184 Cached Size:        1001
+Total #: 5 Workspace Size:        [..] Cached Size:        1001
 
 
 ```
@@ -252,7 +252,7 @@ them takes space in the cache.
 You can also use multiple targets as globs.
 
 ```console
-$ xvc file list '*/*-0001.bin' '*/*-0002.bin' 
+$ xvc file list '*/*-0001.bin' '*/*-0002.bin'
 FX        1002 [..]          8c079454 dir-0005/file-0002.bin
 FX        1001 [..]          189fa49f dir-0005/file-0001.bin
 FX        1002 [..]          8c079454 dir-0004/file-0002.bin
@@ -263,7 +263,7 @@ FH        1002 [..] 8c079454 8c079454 dir-0002/file-0002.bin
 FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
 FC        1002 [..] 8c079454 8c079454 dir-0001/file-0002.bin
 FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
-Total #: 10 Workspace Size:        8372 Cached Size:        2003
+Total #: 10 Workspace Size:        [..] Cached Size:        2003
 
 
 ```
