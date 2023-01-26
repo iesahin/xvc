@@ -182,6 +182,24 @@
                 <div id="content" class="content">
                     <main>
                         {{{ content }}}
+
+
+            <!-- Giscus -->
+            <script src="https://giscus.app/client.js"
+                    data-repo="iesahin/xvc"
+                    data-repo-id="R_kgDOIOeYsw"
+                    data-category="Xvc Book Comments"
+                    data-category-id="DIC_kwDOIOeYs84CT0BS"
+                    data-mapping="pathname"
+                    data-strict="0"
+                    data-reactions-enabled="1"
+                    data-emit-metadata="0"
+                    data-input-position="bottom"
+                    data-theme="preferred_color_scheme"
+                    data-lang="en"
+                    data-loading="lazy"
+                    crossorigin="anonymous" async>
+            </script>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
@@ -292,12 +310,6 @@
         <script type="text/javascript" src="{{ ../path_to_root }}{{this}}"></script>
         {{/each}}
 
-        <!-- Giscus -->
-        <script src="https://giscus.app/client.js" data-repo="iesahin/xvc" data-repo-id="R_kgDOIOeYsw"
-            data-category="Xvc Book Comments" data-category-id="DIC_kwDOIOeYs84CT0BS" data-mapping="pathname" data-strict="0"
-            data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme"
-            data-lang="en" data-loading="lazy" crossorigin="anonymous" async>
-        </script>
 
         {{#if is_print}}
         {{#if mathjax_support}}
