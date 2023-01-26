@@ -6,12 +6,19 @@
         }
     ],
     "grammarly.files.exclude": [
-        "CHANGELOG.md"
+        "**/CHANGELOG.*"
     ],
     "grammarly.files.include": [
         "**/readme.md",
         "**/README.md",
         "**/*.txt",
         "book/**/*.md"
-    ]
+    ],
+    "grammarly.config.documentDialect": "american",
+    "grammarly.config.suggestions.ConjunctionAtStartOfSentence": true,
+    "grammarly.config.suggestions.OxfordComma": true,
+    "grammarly.config.suggestions.PassiveVoice": true,
+    "grammarly.config.suggestions.PrepositionAtTheEndOfSentence": true,
+    "grammarly.config.suggestions.StylisticFragments": true,
+    "grammarly.config.suggestions.UnnecessaryEllipses": true
 }
