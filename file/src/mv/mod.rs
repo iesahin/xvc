@@ -22,7 +22,7 @@ use itertools::Itertools;
 use xvc_config::FromConfigKey;
 use xvc_core::{CacheType, ContentDigest, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, info, watch, XvcOutputLine};
+use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -261,8 +261,9 @@ pub(crate) fn cmd_move(
                 _ => {
                     let source_path = source_path.to_absolute_path(xvc_root);
                     watch!(source_path);
-                    let remove_file_res = fs::remove_file(&source_path);
-                    watch!(remove_file_res);
+                    if source_path.exists() {
+                        uwr!(fs::remove_file(&source_path), output_snd);
+                    }
                     recheck_entities.push(*source_xe);
                     watch!(recheck_entities);
                 }
