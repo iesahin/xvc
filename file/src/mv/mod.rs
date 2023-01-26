@@ -238,7 +238,16 @@ pub(crate) fn cmd_move(
                     let source_path = source_path.to_absolute_path(xvc_root);
                     let dest_path = dest_path.to_absolute_path(xvc_root);
                     if source_path != dest_path {
-                        fs::rename(&source_path, &dest_path)?;
+                        // If no-recheck is given, this effectively works like a delete.
+                        if opts.no_recheck {
+                            fs::remove_file(&source_path)?;
+                        } else {
+                            let parent = dest_path.parent().unwrap();
+                            if !parent.exists() {
+                                fs::create_dir_all(parent)?;
+                            }
+                            fs::rename(&source_path, &dest_path)?;
+                        }
                     } else {
                         info!(
                             output_snd,
