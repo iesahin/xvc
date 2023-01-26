@@ -260,8 +260,10 @@ pub(crate) fn cmd_move(
                 // Moving symlinks relatively etc. is too much complexity for little gain.
                 _ => {
                     let source_path = source_path.to_absolute_path(xvc_root);
+                    watch!(source_path);
                     fs::remove_file(&source_path)?;
                     recheck_entities.push(*source_xe);
+                    watch!(recheck_entities);
                 }
             }
         }
