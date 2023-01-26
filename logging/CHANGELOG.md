@@ -27,6 +27,8 @@ tree, and subtasks are marked with indentation.
     - Wrote modified functions of operations and destination mapping from cmd_copy
     - Other functions from cmd_copy are reused
   - Add template for xvc-file-move.in
+  - Fixed a bug in `xvc file copy` about changed source files.
+  - `xvc file move --no-recheck` deletes the source files.
 
 ## 0.5.0 (2021-09-23)
 
