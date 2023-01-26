@@ -13,6 +13,22 @@ tree, and subtasks are marked with indentation.
   - Added test_multi_save
   - Added a dirty flag to EntityGenerator
   - Separated load and new behavior
+- Add `xvc file move` command.
+  - Issue: <https://github.com/iesahin/xvc/issues/177>
+  - Write the reference page: book/src/ref/xvc-file-move.md
+  - Add `move` to `XvcFileCLI`
+  - Add MoveCLI
+  - Refactor and split cmd_copy
+    - A function to get source files
+    - A function to map source files to destination files
+    - A function to perform copy operations
+    - A function to recheck
+  - Write cmd_move
+    - Wrote modified functions of operations and destination mapping from cmd_copy
+    - Other functions from cmd_copy are reused
+  - Add template for xvc-file-move.in
+  - Fixed a bug in `xvc file copy` about changed source files.
+  - `xvc file move --no-recheck` deletes the source files.
 
 ## 0.5.0 (2021-09-23)
 

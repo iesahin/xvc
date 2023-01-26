@@ -14,6 +14,7 @@ pub mod copy;
 pub mod error;
 pub mod hash;
 pub mod list;
+pub mod mv;
 pub mod recheck;
 pub mod send;
 pub mod track;
@@ -27,6 +28,7 @@ use crossbeam_channel::bounded;
 use crossbeam_channel::Sender;
 use list::ListCLI;
 use log::{debug, error, info, warn, LevelFilter};
+use mv::MoveCLI;
 use std::io;
 use std::io::Write;
 use std::path::Path;
@@ -65,6 +67,8 @@ pub enum XvcFileSubCommand {
     CarryIn(CarryInCLI),
     /// Copy from source to another location in the workspace
     Copy(CopyCLI),
+    /// Move files to another location in the workspace
+    Move(MoveCLI),
     /// List tracked and untracked elements in the workspace
     List(ListCLI),
     /// Send (push, upload) files to external storages
@@ -175,6 +179,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Copy(opts) => copy::cmd_copy(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Move(opts) => mv::cmd_move(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

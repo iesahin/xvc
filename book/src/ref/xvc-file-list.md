@@ -112,7 +112,7 @@ $ tree
 a repository yet, it lists nothing.
 
 ```console
-$ xvc file list 
+$ xvc file list
 ```
 
 Let's initialize the repository.
@@ -125,7 +125,7 @@ $ xvc init
 
 ```
 
-Now it lists all files and directories. 
+Now it lists all files and directories.
 
 
 ```console
@@ -207,7 +207,7 @@ Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 ```
 
-Note, as hardlinks are actually files with the same inode in the file system
+Note, as hardlinks are files with the same inode in the file system
 with alternative paths, they are detected as `F`.
 
 Symbolic links are typically reported as `SS` in the first letters.
@@ -223,25 +223,25 @@ SS        [..] [..] 3640687a          dir-0003/file-0004.bin
 SS        [..] [..] 2856fe70          dir-0003/file-0003.bin
 SS        [..] [..] 8c079454          dir-0003/file-0002.bin
 SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
-Total #: 5 Workspace Size:         900 Cached Size:        5015
+Total #: 5 Workspace Size:         [..] Cached Size:        5015
 
 
 ```
 
-Although not all filesystems support, `R` represents reflinks.
+Although not all filesystems support it, `R` represents reflinks.
 
 ## Globs
 
 You may use globs to list files.
 
 ```console
-$ xvc file list 'dir-*/*-0001.bin' 
+$ xvc file list 'dir-*/*-0001.bin'
 FX        1001 [..]          189fa49f dir-0005/file-0001.bin
 FX        1001 [..]          189fa49f dir-0004/file-0001.bin
 SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
 FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
 FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
-Total #: 5 Workspace Size:        4184 Cached Size:        1001
+Total #: 5 Workspace Size:        [..] Cached Size:        1001
 
 
 ```
@@ -252,7 +252,7 @@ them takes space in the cache.
 You can also use multiple targets as globs.
 
 ```console
-$ xvc file list '*/*-0001.bin' '*/*-0002.bin' 
+$ xvc file list '*/*-0001.bin' '*/*-0002.bin'
 FX        1002 [..]          8c079454 dir-0005/file-0002.bin
 FX        1001 [..]          189fa49f dir-0005/file-0001.bin
 FX        1002 [..]          8c079454 dir-0004/file-0002.bin
@@ -263,7 +263,7 @@ FH        1002 [..] 8c079454 8c079454 dir-0002/file-0002.bin
 FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
 FC        1002 [..] 8c079454 8c079454 dir-0001/file-0002.bin
 FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
-Total #: 10 Workspace Size:        8372 Cached Size:        2003
+Total #: 10 Workspace Size:        [..] Cached Size:        2003
 
 
 ```

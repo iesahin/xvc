@@ -15,6 +15,7 @@ Commands:
   recheck   Get files from cache by copy or *link
   carry-in  Carry (commit) changed files to cache
   copy      Copy from source to another location in the workspace
+  move      Move files to another location in the workspace
   list      List tracked and untracked elements in the workspace
   send      Send (push, upload) files to external storages
   bring     Bring (download, pull, fetch) files from external storages
@@ -39,13 +40,14 @@ Options:
 ## Subcommands
 
 
-- [`track`](./xvc-file-track.md): Begin tracking (add) files with XVC
-- [`hash`](./xvc-file-hash.md): Calculate hash of given file
+- [`track`](./xvc-file-track.md): Track (add) files with Xvc
 - [`recheck`](./xvc-file-recheck.md): Copy/link files in the cache to the
   workspace (checkout)
-- [`carry-in`](./xvc-file-carry-in.md): Carry (commit) changed files to cache
-- [`copy`](./xvc-file-copy.md): Copy files in the workspace to another location
-- [`list`](./xvc-file-list.md): List files tracked with XVC
+- [`carry-in`](./xvc-file-carry-in.md): Carry-in (commit) changed files to cache
+- [`copy`](./xvc-file-copy.md): Copy files to another location in the workspace
+- [`move`](./xvc-file-move.md): Move files to another location in the workspace
+- [`list`](./xvc-file-list.md): List tracked files
 - [`send`](./xvc-file-send.md): Send (push
-- ) files to remote
-- [`bring`](./xvc-file-bring.md): Bring (pull) files from remote
+- ) files to storage
+- [`bring`](./xvc-file-bring.md): Bring (pull) files from storage
+- [`hash`](./xvc-file-hash.md): Calculate hashes with supported algorithms similar to sha256sum, blake2sum, etc.
