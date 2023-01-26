@@ -22,7 +22,7 @@ use itertools::Itertools;
 use xvc_config::FromConfigKey;
 use xvc_core::{CacheType, ContentDigest, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, info, XvcOutputLine};
+use xvc_logging::{debug, error, info, watch, XvcOutputLine};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -144,8 +144,8 @@ pub fn get_move_source_dest_store(
         let mut source_dest_store = HStore::<XvcPath>::with_capacity(1);
         let dest_path = XvcPath::new(&xvc_root, current_dir, Path::new(destination))?;
 
-        match stored_xvc_path_store.entities_for(&dest_path) {
-            Some(dest_xe) => Err(anyhow!(
+        match stored_xvc_path_store.entity_by_value(&dest_path) {
+            Some(_) => Err(anyhow!(
                 "Destination file {} already exists. Delete it first.",
                 dest_path
             )
@@ -212,7 +212,7 @@ pub(crate) fn cmd_move(
     })?;
 
     let mut recheck_entities = Vec::<XvcEntity>::new();
-
+    watch!(source_dest_store);
     xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<CacheType>| {
         for (source_xe, dest_path) in source_dest_store.iter() {
             let source_path = stored_xvc_path_store.get(source_xe).unwrap();
@@ -230,7 +230,8 @@ pub(crate) fn cmd_move(
             if dest_cache_type != source_cache_type {
                 cache_type_store.update(*source_xe, dest_cache_type);
             }
-
+            watch!(source_cache_type);
+            watch!(dest_cache_type);
             match (source_cache_type, dest_cache_type) {
                 // If both are copy, move the file
                 (CacheType::Copy, CacheType::Copy) => {
@@ -257,6 +258,8 @@ pub(crate) fn cmd_move(
         }
         Ok(())
     })?;
+
+    watch!(recheck_entities);
 
     if !opts.no_recheck {
         recheck_destination(output_snd, xvc_root, &recheck_entities)?;
