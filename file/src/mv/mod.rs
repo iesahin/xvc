@@ -189,8 +189,7 @@ pub(crate) fn cmd_move(
     xvc_root.with_store_mut(|xvc_path_store: &mut XvcStore<XvcPath>| {
         xvc_root.with_store_mut(|xvc_metadata_store: &mut XvcStore<XvcMetadata>| {
             for (source_xe, dest_path) in source_dest_store.iter() {
-                xvc_path_store.remove(*source_xe);
-                xvc_path_store.insert(*source_xe, dest_path.clone());
+                xvc_path_store.update(*source_xe, dest_path.clone());
                 // Create destination parent directory records if they don't exist
                 for parent in dest_path.parents() {
                     let parent_entities = xvc_path_store.entities_for(&parent);
@@ -208,49 +207,56 @@ pub(crate) fn cmd_move(
                 }
             }
             Ok(())
-        });
+        })?;
         Ok(())
     })?;
 
-    let cache_type_store = xvc_root.load_store::<CacheType>()?;
     let mut recheck_entities = Vec::<XvcEntity>::new();
-    // For files with recheck method as copy, move the file to destination
-    // For others delete the source
-    for (source_xe, dest_path) in source_dest_store.iter() {
-        let source_path = stored_xvc_path_store.get(source_xe).unwrap();
-        let cache_type = cache_type_store
-            .get(source_xe)
-            .copied()
-            .unwrap_or_else(|| CacheType::from_conf(&xvc_root.config()));
-        match cache_type {
-            CacheType::Copy => {
-                let source_path = source_path.to_absolute_path(xvc_root);
-                let dest_path = dest_path.to_absolute_path(xvc_root);
-                if source_path != dest_path {
-                    fs::rename(&source_path, &dest_path)?;
-                } else {
-                    info!(
-                        output_snd,
-                        "Source and destination are the same. Skipping move for {}", source_path
-                    );
+
+    xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<CacheType>| {
+        for (source_xe, dest_path) in source_dest_store.iter() {
+            let source_path = stored_xvc_path_store.get(source_xe).unwrap();
+            let source_cache_type = cache_type_store
+                .get(source_xe)
+                .copied()
+                .unwrap_or_else(|| CacheType::from_conf(&xvc_root.config()));
+
+            let dest_cache_type = if let Some(given_cache_type) = opts.cache_type {
+                given_cache_type
+            } else {
+                source_cache_type
+            };
+
+            if dest_cache_type != source_cache_type {
+                cache_type_store.update(*source_xe, dest_cache_type);
+            }
+
+            match (source_cache_type, dest_cache_type) {
+                // If both are copy, move the file
+                (CacheType::Copy, CacheType::Copy) => {
+                    let source_path = source_path.to_absolute_path(xvc_root);
+                    let dest_path = dest_path.to_absolute_path(xvc_root);
+                    if source_path != dest_path {
+                        fs::rename(&source_path, &dest_path)?;
+                    } else {
+                        info!(
+                            output_snd,
+                            "Source and destination are the same. Skipping move for {}",
+                            source_path
+                        );
+                    }
+                }
+                // For others just delete the source and recheck.
+                // Moving symlinks relatively etc. is too much complexity for little gain.
+                _ => {
+                    let source_path = source_path.to_absolute_path(xvc_root);
+                    fs::remove_file(&source_path)?;
+                    recheck_entities.push(*source_xe);
                 }
             }
-            CacheType::Symlink | CacheType::Hardlink | CacheType::Reflink => {
-                let source_path = source_path.to_absolute_path(xvc_root);
-                fs::remove_file(&source_path)?;
-                recheck_entities.push(*source_xe);
-            }
         }
-    }
-
-    if let Some(cache_type) = opts.cache_type {
-        xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<CacheType>| {
-            for source_xe in source_dest_store.keys() {
-                cache_type_store.insert(*source_xe, cache_type);
-            }
-            Ok(())
-        })?;
-    }
+        Ok(())
+    })?;
 
     if !opts.no_recheck {
         recheck_destination(output_snd, xvc_root, &recheck_entities)?;
