@@ -76,7 +76,7 @@ data2.txt
 
 ```
 
-Note that, multiple copies of the same content doesn't add up to the cache size.
+Note that, multiple copies of the same content don't add up to the cache size.
 
 ```console
 $ xvc file list data.txt
@@ -119,8 +119,7 @@ Total #: 3 Workspace Size:          57 Cached Size:          19
 
 ```
 
-If the targets you specify are changed, copy operation is cancelled.
-Please either recheck old versions or carry in new versions.
+If the targets you specify are changed, Xvc cancels the copy operation. Please either recheck old versions or carry in new versions.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
@@ -142,7 +141,7 @@ $ ls -l data6.txt
 ```
 
 You can also skip rechecking.
-In this case, xvc won't create any copies in the workspace, and you don't need them to be available in the cache.
+In this case, Xvc won't create any copies in the workspace, and you don't need them to be available in the cache.
 They will be listed with `xvc file list` command.
 
 ```console
@@ -171,7 +170,7 @@ Total #: 11 Workspace Size:        [..] Cached Size:          19
 
 ```
 
-Later, you can recheck them to the workspace.
+Later, you can recheck them to work in the workspace.
 
 ```console
 $ xvc file recheck data7.txt
