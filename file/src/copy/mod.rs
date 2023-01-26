@@ -94,7 +94,6 @@ pub(crate) fn check_if_destination_is_a_directory(
     dir_path: &XvcPath,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_metadata_store: &XvcStore<XvcMetadata>,
-    destination: &str,
 ) -> Result<()> {
     let current_dir_entity = match stored_xvc_path_store.entities_for(&dir_path) {
         Some(v) => Some(v[0]),
@@ -198,7 +197,6 @@ pub fn get_copy_source_dest_store(
             &dir_path,
             stored_xvc_path_store,
             stored_metadata_store,
-            destination,
         )?;
 
         check_if_sources_have_changed(

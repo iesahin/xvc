@@ -82,7 +82,6 @@ pub fn get_move_source_dest_store(
             &dir_path,
             stored_xvc_path_store,
             stored_metadata_store,
-            destination,
         )?;
 
         check_if_sources_have_changed(
