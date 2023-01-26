@@ -261,7 +261,8 @@ pub(crate) fn cmd_move(
                 _ => {
                     let source_path = source_path.to_absolute_path(xvc_root);
                     watch!(source_path);
-                    fs::remove_file(&source_path)?;
+                    let remove_file_res = fs::remove_file(&source_path);
+                    watch!(remove_file_res);
                     recheck_entities.push(*source_xe);
                     watch!(recheck_entities);
                 }
