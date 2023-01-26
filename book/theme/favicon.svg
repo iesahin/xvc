@@ -1,0 +1,26 @@
+<!-- sample rectangle -->
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+
+   // purple \
+   // 3e0b5e
+   <line x1="100" y1="100" x2="200" y2="300" style="stroke:#60308c;stroke-width:20;stroke-linecap:round" />
+
+   // purple /
+   <line x1="100" y1="300" x2="200" y2="100" style="stroke:#60308c;stroke-width:20;stroke-linecap:round" />
+
+   // green \
+   <line x1="171" y1="201" x2="211" y2="281" style="stroke:#509724;stroke-width:20;stroke-linecap:round" />
+
+  // green /
+   <line x1="211" y1="281" x2="311" y2="101" style="stroke:#509724;stroke-width:20;stroke-linecap:round" />
+
+  // yellow \
+   <line x1="267" y1="220" x2="311" y2="281" style="stroke:#eeba0b;stroke-width:20;stroke-linecap:round" />
+
+  // yellow /
+   <line x1="267" y1="220" x2="333" y2="103" style="stroke:#eeba0b;stroke-width:20;stroke-linecap:round" />
+
+  // c36f09
+  // a70b0b
+
+</svg>
