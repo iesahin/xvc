@@ -91,7 +91,7 @@ You can move files without them being in the workspace if they are in the cache.
 ```console
 $ rm -f data3.txt
 
-$ xvc file move data3.txt data4.txt
+$ xvc --debug -vvvv file move data3.txt data4.txt
 
 $ ls -l
 -rw-rw-rw-  [..] data4.txt
