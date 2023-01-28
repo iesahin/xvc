@@ -293,7 +293,7 @@ pub fn recheck_from_cache(
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,
-    cache_type: RecheckMethod,
+    recheck_method: RecheckMethod,
     ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<()> {
     if let Some(parent) = xvc_path.parents().get(0) {
@@ -310,8 +310,8 @@ pub fn recheck_from_cache(
     let cache_path = cache_path.to_absolute_path(xvc_root);
     let path = xvc_path.to_absolute_path(xvc_root);
     watch!(path);
-    watch!(cache_type);
-    match cache_type {
+    watch!(recheck_method);
+    match recheck_method {
         RecheckMethod::Copy => {
             watch!("Before copy");
             fs::copy(&cache_path, &path)?;

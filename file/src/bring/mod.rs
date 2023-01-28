@@ -170,7 +170,7 @@ pub fn cmd_bring(
         watch!(recheck_targets);
 
         let recheck_opts = RecheckCLI {
-            cache_type: opts.recheck_as,
+            recheck_method: opts.recheck_as,
             no_parallel: false,
             force: opts.force,
             targets: recheck_targets,

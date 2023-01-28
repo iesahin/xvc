@@ -25,7 +25,7 @@ pub struct CopyCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long, alias = "as")]
-    pub cache_type: Option<RecheckMethod>,
+    pub recheck_method: Option<RecheckMethod>,
 
     /// Force even if target exists.
     #[arg(long)]
@@ -290,17 +290,17 @@ pub(crate) fn recheck_destination(
     // Interleaving might prevent this.
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let mut recheck_paths = stored_xvc_path_store.subset(destination_entities.iter().copied())?;
-    let all_content_digests = xvc_root.load_store::<ContentDigest>()?;
-    let all_cache_types = xvc_root.load_store::<RecheckMethod>()?;
+    let stored_content_digests = xvc_root.load_store::<ContentDigest>()?;
+    let stored_recheck_methods = xvc_root.load_store::<RecheckMethod>()?;
 
     recheck_paths.drain().for_each(|(xe, xvc_path)| {
-        let content_digest = all_content_digests.get(&xe).unwrap();
-        let cache_type = all_cache_types.get(&xe).unwrap();
+        let content_digest = stored_content_digests.get(&xe).unwrap();
+        let recheck_method = stored_recheck_methods.get(&xe).unwrap();
         recheck_handler
             .send(Some(RecheckOperation::Recheck {
                 xvc_path,
                 content_digest: *content_digest,
-                cache_type: *cache_type,
+                recheck_method: *recheck_method,
             }))
             .unwrap();
     });
@@ -405,13 +405,13 @@ pub(crate) fn cmd_copy(
             Ok(())
         })?;
 
-        xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<RecheckMethod>| {
+        xvc_root.with_store_mut(|recheck_method_store: &mut XvcStore<RecheckMethod>| {
             for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
-                if let Some(cache_type) = opts.cache_type {
-                    cache_type_store.insert(*dest_xe, cache_type);
+                if let Some(recheck_method) = opts.recheck_method {
+                    recheck_method_store.insert(*dest_xe, recheck_method);
                 } else {
-                    let source_cache_type = cache_type_store.get(source_xe).unwrap();
-                    cache_type_store.insert(*dest_xe, *source_cache_type);
+                    let source_recheck_method = recheck_method_store.get(source_xe).unwrap();
+                    recheck_method_store.insert(*dest_xe, *source_recheck_method);
                 }
             }
             Ok(())
