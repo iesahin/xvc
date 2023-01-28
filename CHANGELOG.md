@@ -8,6 +8,7 @@ tree, and subtasks are marked with indentation.
 - Refactor "cache type" to "recheck method" in all code and documentation
   - Issue: <https://github.com/iesahin/xvc/issues/203>
   - Renamed `CacheType` to `RecheckMethod`
+  - Revised documentation for recheck methods
 
 ## 0.5.1 (2023-01-28)
 
