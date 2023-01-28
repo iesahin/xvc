@@ -46,7 +46,7 @@ fn test_file_recheck_serial() -> Result<()> {
         "recheck",
         "--no-parallel",
         "--force",
-        "--cache-type",
+        "--as",
         "symlink",
         file_to_add,
     ])?;
@@ -57,7 +57,7 @@ fn test_file_recheck_serial() -> Result<()> {
         "file",
         "recheck",
         "--no-parallel",
-        "--cache-type",
+        "--as",
         "hardlink",
         file_to_add,
     ])?;

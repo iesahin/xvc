@@ -289,7 +289,7 @@ impl<T: Storable, U: Storable, V: Storable, W: Storable> DiffStore4<T, U, V, W> 
 /// Keep five diffs for the same set of entities
 ///
 /// This is used, for example, to keep path, metadata, digest, text-or-binary,
-/// cache-type diffs for the same files.
+/// recheck-method diffs for the same files.
 pub struct DiffStore5<T, U, V, W, X>(
     DiffStore<T>,
     DiffStore<U>,
