@@ -29,7 +29,7 @@ use crate::error::Result;
 
 use clap::Parser;
 
-use xvc_core::CacheType;
+use xvc_core::RecheckMethod;
 
 use xvc_core::XvcMetadata;
 use xvc_core::XvcPath;
@@ -197,7 +197,7 @@ pub fn cmd_carry_in(
         })
         .collect();
 
-    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
+    let stored_cache_type_store = xvc_root.load_store::<RecheckMethod>()?;
     watch!(xvc_paths_to_carry);
     carry_in(
         output_snd,
@@ -224,7 +224,7 @@ pub fn carry_in(
     xvc_root: &XvcRoot,
     xvc_paths_to_carry: &HStore<XvcPath>,
     cache_paths: &HStore<XvcCachePath>,
-    cache_types: &XvcStore<CacheType>,
+    cache_types: &XvcStore<RecheckMethod>,
     parallel: bool,
     force: bool,
 ) -> Result<()> {

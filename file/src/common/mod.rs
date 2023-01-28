@@ -19,7 +19,7 @@ use xvc_core::types::xvcpath::XvcCachePath;
 use xvc_core::util::file::make_symlink;
 use xvc_core::HashAlgorithm;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, CacheType, ContentDigest, DiffStore, TextOrBinary,
+    all_paths_and_metadata, apply_diff, ContentDigest, DiffStore, RecheckMethod, TextOrBinary,
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 use xvc_logging::{info, warn, watch};
@@ -293,7 +293,7 @@ pub fn recheck_from_cache(
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,
-    cache_type: CacheType,
+    cache_type: RecheckMethod,
     ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<()> {
     if let Some(parent) = xvc_path.parents().get(0) {
@@ -312,7 +312,7 @@ pub fn recheck_from_cache(
     watch!(path);
     watch!(cache_type);
     match cache_type {
-        CacheType::Copy => {
+        RecheckMethod::Copy => {
             watch!("Before copy");
             fs::copy(&cache_path, &path)?;
             info!(output_snd, "[COPY] {} -> {}", cache_path, path);
@@ -322,15 +322,15 @@ pub fn recheck_from_cache(
             watch!(&perm);
             fs::set_permissions(&path, perm)?;
         }
-        CacheType::Hardlink => {
+        RecheckMethod::Hardlink => {
             fs::hard_link(&cache_path, &path)?;
             info!(output_snd, "[HARDLINK] {} -> {}", cache_path, path);
         }
-        CacheType::Symlink => {
+        RecheckMethod::Symlink => {
             make_symlink(&cache_path, &path)?;
             info!(output_snd, "[SYMLINK] {} -> {}", cache_path, path);
         }
-        CacheType::Reflink => {
+        RecheckMethod::Reflink => {
             match reflink::reflink_or_copy(&cache_path, &path) {
                 Ok(None) => {
                     info!(output_snd, "[REFLINK] {} -> {}", cache_path, path);

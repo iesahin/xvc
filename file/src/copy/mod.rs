@@ -13,7 +13,7 @@ use crate::{recheck, Result};
 use anyhow::anyhow;
 use clap::Parser;
 use crossbeam_channel::Sender;
-use xvc_core::{CacheType, ContentDigest, Diff, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
 use xvc_logging::{debug, error, watch, XvcOutputLine};
 
@@ -25,7 +25,7 @@ pub struct CopyCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long, alias = "as")]
-    pub cache_type: Option<CacheType>,
+    pub cache_type: Option<RecheckMethod>,
 
     /// Force even if target exists.
     #[arg(long)]
@@ -291,7 +291,7 @@ pub(crate) fn recheck_destination(
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let mut recheck_paths = stored_xvc_path_store.subset(destination_entities.iter().copied())?;
     let all_content_digests = xvc_root.load_store::<ContentDigest>()?;
-    let all_cache_types = xvc_root.load_store::<CacheType>()?;
+    let all_cache_types = xvc_root.load_store::<RecheckMethod>()?;
 
     recheck_paths.drain().for_each(|(xe, xvc_path)| {
         let content_digest = all_content_digests.get(&xe).unwrap();
@@ -405,7 +405,7 @@ pub(crate) fn cmd_copy(
             Ok(())
         })?;
 
-        xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<CacheType>| {
+        xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<RecheckMethod>| {
             for (source_xe, (dest_xe, _)) in source_dest_store.iter() {
                 if let Some(cache_type) = opts.cache_type {
                     cache_type_store.insert(*dest_xe, cache_type);

@@ -33,7 +33,7 @@ use std::fs::OpenOptions;
 use clap::Parser;
 use std::path::PathBuf;
 
-use xvc_core::CacheType;
+use xvc_core::RecheckMethod;
 use xvc_core::XvcPath;
 use xvc_ecs::{HStore, XvcEntity};
 
@@ -45,7 +45,7 @@ pub struct TrackCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long)]
-    cache_type: Option<CacheType>,
+    cache_type: Option<RecheckMethod>,
 
     /// Do not copy/link added files to the file cache
     #[arg(long)]
@@ -72,7 +72,7 @@ impl UpdateFromXvcConfig for TrackCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let cache_type = self
             .cache_type
-            .unwrap_or_else(|| CacheType::from_conf(conf));
+            .unwrap_or_else(|| RecheckMethod::from_conf(conf));
         let no_commit = self.no_commit || conf.get_bool("file.track.no_commit")?.option;
         let force = self.force || conf.get_bool("file.track.force")?.option;
         let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
@@ -108,11 +108,11 @@ impl UpdateFromXvcConfig for TrackCLI {
 ///     Filter -->|Yes| XvcDigest
 ///     Filter -->|No| Ignore
 ///     XvcDigest --> CacheLocation
-///     CacheLocation --> CacheType{What's the cache type?}
-///     CacheType --> |Copy| Copy
-///     CacheType --> |Symlink| Symlink
-///     CacheType --> |Hardlink| Hardlink
-///     CacheType --> |Reflink| Reflink
+///     CacheLocation --> RecheckMethod
+///     RecheckMethod --> |Copy| Copy
+///     RecheckMethod --> |Symlink| Symlink
+///     RecheckMethod --> |Hardlink| Hardlink
+///     RecheckMethod --> |Reflink| Reflink
 /// ```
 pub fn cmd_track(
     output_snd: &Sender<XvcOutputLine>,
@@ -154,7 +154,7 @@ pub fn cmd_track(
             }))
             .collect();
 
-    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
+    let stored_cache_type_store = xvc_root.load_store::<RecheckMethod>()?;
     let cache_type_diff = diff_cache_type(
         &stored_cache_type_store,
         requested_cache_type,
@@ -259,7 +259,7 @@ pub fn cmd_track(
             })
             .collect();
 
-        let cache_type_store = xvc_root.load_store::<CacheType>()?;
+        let cache_type_store = xvc_root.load_store::<RecheckMethod>()?;
 
         carry_in(
             output_snd,

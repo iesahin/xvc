@@ -18,7 +18,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
 use xvc_core::{
-    apply_diff, CacheType, ContentDigest, Diff, DiffStore, HashAlgorithm, XvcCachePath,
+    apply_diff, ContentDigest, Diff, DiffStore, HashAlgorithm, RecheckMethod, XvcCachePath,
     XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
@@ -42,7 +42,7 @@ pub struct RecheckCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long, alias = "as")]
-    pub cache_type: Option<CacheType>,
+    pub cache_type: Option<RecheckMethod>,
 
     /// Don't use parallelism
     #[arg(long)]
@@ -61,7 +61,7 @@ impl UpdateFromXvcConfig for RecheckCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let cache_type = self
             .cache_type
-            .unwrap_or_else(|| CacheType::from_conf(conf));
+            .unwrap_or_else(|| RecheckMethod::from_conf(conf));
         let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
 
         let force = self.force;
@@ -92,7 +92,7 @@ pub fn cmd_recheck(
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
-    let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
+    let cache_type = opts.cache_type.unwrap_or_else(|| RecheckMethod::default());
     watch!(cache_type);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -100,7 +100,7 @@ pub fn cmd_recheck(
     let target_files = only_file_targets(&stored_xvc_metadata_store, &targets)?;
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
 
-    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
+    let stored_cache_type_store = xvc_root.load_store::<RecheckMethod>()?;
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
     let cache_type_diff = diff_cache_type(&stored_cache_type_store, cache_type, &entities);
@@ -215,7 +215,7 @@ pub enum RecheckOperation {
     Recheck {
         xvc_path: XvcPath,
         content_digest: ContentDigest,
-        cache_type: CacheType,
+        cache_type: RecheckMethod,
     },
 }
 
@@ -263,7 +263,7 @@ fn recheck(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     files_to_recheck: &HStore<&XvcPath>,
-    cache_type_store: &XvcStore<CacheType>,
+    cache_type_store: &XvcStore<RecheckMethod>,
     content_digest_store: &XvcStore<ContentDigest>,
     parallel: bool,
 ) -> Result<()> {

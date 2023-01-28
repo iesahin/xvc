@@ -8,7 +8,7 @@ pub mod root;
 pub mod types;
 pub mod util;
 
-pub use types::cachetype::CacheType;
+pub use types::recheckmethod::RecheckMethod;
 pub use types::hashalgorithm::HashAlgorithm;
 pub use types::xvcdigest::CollectionDigest;
 pub use types::xvcdigest::ContentDigest;

@@ -20,7 +20,7 @@ use strum_macros::{Display as EnumDisplay, EnumString};
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig};
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{
-    CacheType, ContentDigest, HashAlgorithm, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
+    ContentDigest, HashAlgorithm, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::XvcEntity;
 use xvc_logging::{error, output, watch, XvcOutputLine};
@@ -41,8 +41,8 @@ enum ListColumn {
     Name,
     #[strum(serialize = "cst")]
     CacheStatus,
-    #[strum(serialize = "rct")]
-    RecordedCacheType,
+    #[strum(serialize = "rrm")]
+    RecordedRecheckMethod,
     #[strum(serialize = "rcd64")]
     RecordedContentDigest64,
     #[strum(serialize = "rcd8")]
@@ -116,7 +116,7 @@ struct ListRow {
     name: String,
     cache_status: String,
 
-    recorded_cache_type: String,
+    recorded_recheck_method: String,
     recorded_content_digest_str: String,
     recorded_size: u64,
     recorded_size_str: String,
@@ -143,11 +143,12 @@ impl ListRow {
                 "X"
             });
 
-        let recorded_cache_type = if let Some(cache_type) = path_match.recorded_cache_type {
-            format_cache_type(cache_type)
-        } else {
-            "X".to_string()
-        };
+        let recorded_recheck_method =
+            if let Some(recheck_method) = path_match.recorded_recheck_method {
+                format_recheck_method(recheck_method)
+            } else {
+                "X".to_string()
+            };
 
         let actual_content_digest_str = match path_match.actual_digest {
             Some(digest) => format!("{}", digest),
@@ -248,7 +249,7 @@ impl ListRow {
             actual_timestamp_str,
             name,
             cache_status,
-            recorded_cache_type,
+            recorded_recheck_method,
             recorded_content_digest_str,
             recorded_size,
             recorded_size_str,
@@ -258,12 +259,12 @@ impl ListRow {
     }
 }
 
-fn format_cache_type(cache_type: CacheType) -> String {
-    match cache_type {
-        CacheType::Copy => "C".to_string(),
-        CacheType::Symlink => "S".to_string(),
-        CacheType::Hardlink => "H".to_string(),
-        CacheType::Reflink => "R".to_string(),
+fn format_recheck_method(recheck_method: RecheckMethod) -> String {
+    match recheck_method {
+        RecheckMethod::Copy => "C".to_string(),
+        RecheckMethod::Symlink => "S".to_string(),
+        RecheckMethod::Hardlink => "H".to_string(),
+        RecheckMethod::Reflink => "R".to_string(),
     }
 }
 
@@ -313,7 +314,7 @@ struct PathMatch {
     recorded_path: Option<XvcPath>,
     recorded_metadata: Option<XvcMetadata>,
     recorded_digest: Option<ContentDigest>,
-    recorded_cache_type: Option<CacheType>,
+    recorded_recheck_method: Option<RecheckMethod>,
 }
 
 #[derive(Debug, Clone)]
@@ -336,7 +337,7 @@ impl ListRows {
         let mut output = String::new();
         for column in &self.format.columns {
             match column {
-                ListColumn::RecordedCacheType => output.push_str(&row.recorded_cache_type),
+                ListColumn::RecordedRecheckMethod => output.push_str(&row.recorded_recheck_method),
                 ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
                 ListColumn::ActualSize => output.push_str(&row.actual_size_str),
                 ListColumn::ActualContentDigest64 => {
@@ -467,7 +468,7 @@ pub struct ListCLI {
     ///
     /// - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
     ///
-    /// - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace
+    /// - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
     ///   as a copy (C), symlink (S), hardlink (H) or reflink (R).
     ///
     /// - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
@@ -521,7 +522,7 @@ impl UpdateFromXvcConfig for ListCLI {
 ///
 /// XY  <Timestamp>     <Size>     <Name>   <Digest>
 ///
-/// X shows the cache type from [CacheType]
+/// X shows the recheck method from [RecheckMethod]
 /// - C: Copy
 /// - H: Hardlink
 /// - S: Symlink
@@ -531,8 +532,8 @@ impl UpdateFromXvcConfig for ListCLI {
 ///
 /// Y is the current cache status
 /// - =: Recorded and actual file have the same timestamp
-/// - >: Cached file is newer, xvc checkout to update the file
-/// - <: File is newer, xvc commit to update the cache
+/// - >: Cached file is newer, xvc recheck to update the file
+/// - <: File is newer, xvc carry-in to update the cache
 /// TODO: - I: File is ignored
 
 pub fn cmd_list(
@@ -550,7 +551,7 @@ pub fn cmd_list(
     let from_store = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(from_store);
     let stored_xvc_metadata = xvc_root.load_store::<XvcMetadata>()?;
-    let stored_cache_type = xvc_root.load_store::<CacheType>()?;
+    let stored_recheck_method = xvc_root.load_store::<RecheckMethod>()?;
 
     // Now match actual and recorded paths
 
@@ -569,7 +570,7 @@ pub fn cmd_list(
         if let Some(xvc_entity) = from_store.entity_by_value(&disk_xvc_path) {
             let recorded_metadata = stored_xvc_metadata.get(&xvc_entity).cloned();
             let recorded_path = from_store.get(&xvc_entity).cloned();
-            let recorded_cache_type = stored_cache_type.get(&xvc_entity).cloned();
+            let recorded_recheck_method = stored_recheck_method.get(&xvc_entity).cloned();
             found_entities.insert(xvc_entity.clone());
             let pm = PathMatch {
                 xvc_entity: Some(xvc_entity),
@@ -580,7 +581,7 @@ pub fn cmd_list(
 
                 recorded_metadata,
                 recorded_path,
-                recorded_cache_type,
+                recorded_recheck_method,
                 recorded_digest: None,
             };
             matches.push(pm);
@@ -593,7 +594,7 @@ pub fn cmd_list(
                 // digests will be filled later if needed
                 actual_digest: None,
 
-                recorded_cache_type: None,
+                recorded_recheck_method: None,
                 recorded_metadata: None,
                 recorded_path: None,
                 recorded_digest: None,
@@ -612,7 +613,7 @@ pub fn cmd_list(
     for xvc_entity in &not_found_entities {
         let recorded_md = stored_xvc_metadata.get(&xvc_entity).cloned();
         let recorded_path = from_store.get(&xvc_entity).cloned();
-        let recorded_cache_type = stored_cache_type.get(&xvc_entity).cloned();
+        let recorded_recheck_method = stored_recheck_method.get(&xvc_entity).cloned();
         let pm = PathMatch {
             xvc_entity: Some(*xvc_entity),
             actual_path: None,
@@ -621,7 +622,7 @@ pub fn cmd_list(
             actual_digest: None,
             recorded_path: recorded_path,
             recorded_metadata: recorded_md,
-            recorded_cache_type: recorded_cache_type,
+            recorded_recheck_method,
             recorded_digest: None,
         };
         matches.push(pm);

@@ -1,5 +1,5 @@
 //! Xvc basic types used across the whole program
-pub mod cachetype;
+pub mod recheckmethod;
 pub mod diff;
 pub mod hashalgorithm;
 pub mod textorbinary;

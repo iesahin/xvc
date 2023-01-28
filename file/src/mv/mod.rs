@@ -20,7 +20,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use itertools::Itertools;
 use xvc_config::FromConfigKey;
-use xvc_core::{CacheType, ContentDigest, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{ContentDigest, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
 use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine};
 
@@ -32,7 +32,7 @@ pub struct MoveCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long, alias = "as")]
-    pub cache_type: Option<CacheType>,
+    pub cache_type: Option<RecheckMethod>,
 
     /// Do not recheck the destination files
     /// This is useful when you want to copy only records, without updating the
@@ -213,13 +213,13 @@ pub(crate) fn cmd_move(
 
     let mut recheck_entities = Vec::<XvcEntity>::new();
     watch!(source_dest_store);
-    xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<CacheType>| {
+    xvc_root.with_store_mut(|cache_type_store: &mut XvcStore<RecheckMethod>| {
         for (source_xe, dest_path) in source_dest_store.iter() {
             let source_path = stored_xvc_path_store.get(source_xe).unwrap();
             let source_cache_type = cache_type_store
                 .get(source_xe)
                 .copied()
-                .unwrap_or_else(|| CacheType::from_conf(&xvc_root.config()));
+                .unwrap_or_else(|| RecheckMethod::from_conf(&xvc_root.config()));
 
             let dest_cache_type = if let Some(given_cache_type) = opts.cache_type {
                 given_cache_type
@@ -234,7 +234,7 @@ pub(crate) fn cmd_move(
             watch!(dest_cache_type);
             match (source_cache_type, dest_cache_type) {
                 // If both are copy, move the file
-                (CacheType::Copy, CacheType::Copy) => {
+                (RecheckMethod::Copy, RecheckMethod::Copy) => {
                     let source_path = source_path.to_absolute_path(xvc_root);
                     let dest_path = dest_path.to_absolute_path(xvc_root);
                     if source_path != dest_path {

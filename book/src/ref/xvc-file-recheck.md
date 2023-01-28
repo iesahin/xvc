@@ -47,10 +47,58 @@ $ git init
 $ xvc init
 
 $ xvc file track data.txt
+thread '<unnamed>' panicked at 'called `Result::unwrap()` on an `Err` value: ConfigKeyNotFound { key: "file.recheck.method" }', core/src/types/recheckmethod.rs:84:1
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: core::result::unwrap_failed
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
+   3: core::result::Result<T,E>::unwrap
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
+   4: <xvc_core::types::recheckmethod::RecheckMethod as xvc_config::FromConfigKey<xvc_core::types::recheckmethod::RecheckMethod>>::from_conf
+             at /Users/iex/github.com/iesahin/xvc/config/src/lib.rs:648:17
+   5: <xvc_file::track::TrackCLI as xvc_config::UpdateFromXvcConfig>::update_from_conf::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/file/src/track/mod.rs:75:32
+   6: core::option::Option<T>::unwrap_or_else
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/option.rs:825:21
+   7: <xvc_file::track::TrackCLI as xvc_config::UpdateFromXvcConfig>::update_from_conf
+             at /Users/iex/github.com/iesahin/xvc/file/src/track/mod.rs:73:26
+   8: xvc_file::track::cmd_track
+             at /Users/iex/github.com/iesahin/xvc/file/src/track/mod.rs:123:16
+   9: xvc_file::run
+             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:150:43
+  10: xvc::cli::dispatch::{{closure}}::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:274:24
+  11: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
+  12: core::ops::function::FnOnce::call_once{{vtable.shim}}
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+  13: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:394:6
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: core::result::unwrap_failed
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
+   3: core::result::Result<T,E>::unwrap
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
+   4: xvc::cli::dispatch
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:243:5
+   5: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
+   6: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ ls -l
 total[..]
--rw-rw-rw- [..] data.txt
+-rw-r--r--  1 iex  staff  19 Jan 25 11:51 data.txt
 
 ```
 
@@ -67,10 +115,57 @@ Then, recheck the file. By default, it makes a copy of the file.
 
 ```console
 $ xvc file recheck data.txt
+thread '<unnamed>' panicked at 'called `Result::unwrap()` on an `Err` value: ConfigKeyNotFound { key: "file.recheck.method" }', core/src/types/recheckmethod.rs:84:1
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: core::result::unwrap_failed
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
+   3: core::result::Result<T,E>::unwrap
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
+   4: <xvc_core::types::recheckmethod::RecheckMethod as xvc_config::FromConfigKey<xvc_core::types::recheckmethod::RecheckMethod>>::from_conf
+             at /Users/iex/github.com/iesahin/xvc/config/src/lib.rs:648:17
+   5: <xvc_file::recheck::RecheckCLI as xvc_config::UpdateFromXvcConfig>::update_from_conf::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/file/src/recheck/mod.rs:64:32
+   6: core::option::Option<T>::unwrap_or_else
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/option.rs:825:21
+   7: <xvc_file::recheck::RecheckCLI as xvc_config::UpdateFromXvcConfig>::update_from_conf
+             at /Users/iex/github.com/iesahin/xvc/file/src/recheck/mod.rs:62:26
+   8: xvc_file::recheck::cmd_recheck
+             at /Users/iex/github.com/iesahin/xvc/file/src/recheck/mod.rs:90:16
+   9: xvc_file::run
+             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:161:45
+  10: xvc::cli::dispatch::{{closure}}::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:274:24
+  11: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
+  12: core::ops::function::FnOnce::call_once{{vtable.shim}}
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+  13: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:394:6
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: core::result::unwrap_failed
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
+   3: core::result::Result<T,E>::unwrap
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
+   4: xvc::cli::dispatch
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:243:5
+   5: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
+   6: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ ls -l
 total [..]
--rw-rw-rw- [..] data.txt
 
 ```
 
@@ -80,7 +175,7 @@ Xvc updates the cache type if the file is not changed.
 $ xvc file recheck data.txt --as symlink
 
 $ ls -l data.txt
-l[..] data.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+ls: data.txt: No such file or directory
 
 ```
 
@@ -90,21 +185,20 @@ You can delete the symlink, and replace with an updated copy.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
+Can't open data.txt: No such file or directory.
 
 $ xvc file recheck data.txt --as copy
-[ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
 $ rm data.txt
+rm: data.txt: No such file or directory
 
 ```
 
 ```console
 $ xvc -vv file recheck data.txt --as hardlink
-[INFO] [HARDLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
 
 $ ls -l
 total[..]
--r--r--r-- [..] data.txt
 
 ```
 
