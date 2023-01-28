@@ -48,7 +48,3 @@ The rename to `0` means, that this is the whole file.
 In the future, when Xvc will support splitting large files to transfer to remotes, all parts of the file will be put into this directory.
 
 Storages also use the same cache structure, with an added `GUID` part to use single storage for multiple projects.
-
-
-
-
