@@ -38,7 +38,7 @@ Options:
           
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
           
-          - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
+          - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
           
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses MB, GB and TB to represent sizes larged than 1MB.
           
