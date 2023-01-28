@@ -3,7 +3,7 @@
 This document is a change log that I write for the project as I develop. It's a
 tree, and subtasks are marked with indentation.
 
-## Unreleased
+## 0.5.1 (2023-01-28)
 
 - Fix Build Badge in Readme
   - Fixed per <https://github.com/badges/shields/issues/8671>
@@ -13,6 +13,7 @@ tree, and subtasks are marked with indentation.
   - Added test_multi_save
   - Added a dirty flag to EntityGenerator
   - Separated load and new behavior
+    - New makes the generator dirty. Load doesn't.
 - Add `xvc file move` command.
   - Issue: <https://github.com/iesahin/xvc/issues/177>
   - Write the reference page: book/src/ref/xvc-file-move.md
@@ -29,8 +30,11 @@ tree, and subtasks are marked with indentation.
   - Add template for xvc-file-move.in
   - Fixed a bug in `xvc file copy` about changed source files.
   - `xvc file move --no-recheck` deletes the source files.
+- Added Giscus to the documentation
+  - PR: <https://github.com/iesahin/xvc/pull/215>
+  - All docs pages can be commented with Giscus.
 
-## 0.5.0 (2021-09-23)
+## 0.5.0 (2023-01-23)
 
 - Refactor XvcEntity to `(u64, u64)`
   - Issue: <https://github.com/iesahin/xvc/issues/198>
