@@ -2,9 +2,9 @@
 
 The cache is where Xvc copies the files it tracks.
 
-It's located under `.xvc` directory.
+It's located under the `.xvc` directory.
 
-Instead of the file tree that's normally used to _address_ files, it uses _content digest_ of files to organize them.
+Instead of the file tree that's normally used to _address_ files, it uses the _content digest_ of files to organize them.
 
 In a standard file hierarchy, we have files in paths like `/home/iesahin/Photos/my-photo.png`.
 Xvc doesn't use such a tree in its cache.
@@ -36,17 +36,18 @@ The third part in the cache path is these 64 hexadecimal digits in the form `a12
 64 digits are split into directories to keep the number of directories under one directory lower.
 Had Xvc put all cache elements in a single directory, it could lead to degraded performance in some file systems.
 With this arrangement, `b3/` can contain at most 4096 directories, that contain 4096 directories each.
-With usual distribution and good hash algorithms, there won't be more than 4000 elements per directory until 64 billion files in the cache. (4000³)
+With usual distribution and good hash algorithms, there won't be more than 4000 elements per directory until 64 billion
+files are in the cache. (4000³)
 
 The fourth part is the `0.png` part, that's the file itself with the same extension but with `0` as the basename.
-Xvc uses digest as a directory instead of file name.
-There may be times when the file in the cache should be used manually, on remote storages for example.
+Xvc uses digest as a directory instead of the file name.
+There may be times when the file in the cache should be used manually, on cloud storage for example.
 The extension is kept for this reason, to make sure that the OS recognizes the file type correctly.
 
 The rename to `0` means, that this is the whole file.
 In the future, when Xvc will support splitting large files to transfer to remotes, all parts of the file will be put into this directory.
 
-Storages also use the same cache structure, with an added `GUID` part to use a single storage for multiple projects.
+Storages also use the same cache structure, with an added `GUID` part to use single storage for multiple projects.
 
 
 
