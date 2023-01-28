@@ -401,8 +401,8 @@ note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose bac
 $ ls
 
 $ xvc file list
-Frct         130 2023-01-28 17:08:26          ac46bf74 .xvcignore
-Frct         107 2023-01-28 17:08:26          ce9fcf30 .gitignore
+Frct         130 2023-01-28 17:10:38          ac46bf74 .xvcignore
+Frct         107 2023-01-28 17:10:38          ce9fcf30 .gitignore
 Total #: 2 Workspace Size:         237 Cached Size:           0
 
 

@@ -15,40 +15,44 @@ An _entity_ in Xvc is an atomic integer tuple. (`XvcEntity`)
 
 - A component is a bundle of associated data about these entities.
 All semantics of entities are described through components.
-Xvc uses components to keep track of different aspects of file system objects, dependencies, remotes, etc.
+Xvc uses components to keep track of different aspects of file system objects, dependencies, storages, etc.
 
 - A system is where the components are created and modified.
 Xvc considers all modules that interact with components as separate systems.
 
-Suppose you're want to track a new file in Xvc.
+Suppose you want to track a new file in Xvc.
 Xvc creates a new entity for this file.
 Associates the path (`XvcPath`) with this entity.
-Checks the file metadata, creates an instance of `XvcMetadata`, and associates it with this entity.
-If this object is commit to Xvc cache, an `XvcDigest` struct is associated with the entity.
+Creates an instance of `XvcMetadata` that represent file size and timestamp, and associates it with this entity.
+An `XvcDigest` struct is associated with the entity to show the file's content digest.
 
-The difference from OOP is that there is no _basic_ or _main_ object.
-If you want to work only with digests and want to find the workspace paths associated with them, you can write a function (system) that starts from `XvcDigest` records and collect the associated paths.
+The difference from OOP is that there is no _basic_ or _main_ object. There is no `file` object that contains a
+`digest`, or a `directory` object that is inherited from files.
+
+If you want to work only with digests and want to find the workspace paths associated with them, you can write a
+function (system in Entity-Component-System) that starts from `XvcDigest` records and collect the associated paths.
 If you want to get only the files larger than a certain size, you can work with `XvcMetadata`, filter them and get the paths later.
-In contrast, in an OOP setting, these kind of data is associated with paths and when you want to do such operations, you need to load paths and all their associations first.
+In contrast, in an OOP setting, these data are associated with paths and when you want to do such operations, you need to load paths and their associations first.
 OOP way of doing things is usually against the principle of locality.
 
 The whole idea is to be flexible for further changes.
-As of now, Xvc doesn't have different notion of _data_ and _models._
+For example, these days Xvc doesn't have notions of _data_ and _models._ Files are just files.
 It doesn't have different functionality for files that are models or data.
-In the future, however, when this will be added, an `XvcModel` component will be created and associated with the same entity of an `XvcPath`.
-It will allow to work with some paths as model files but it doesn't require _paths_ to be known beforehand.
+When this distinction will be added, an `XvcModel` component will be created and associated with the same entity of an
+`XvcPath`, a set of `XvcFeatures` will be associated in the same way `XvcMetadata` is associated with `XvcPath`.
+It will allow working with some paths as model files but it won't require _paths_ to be known beforehand.
 There may be other metadata, like _features_ or _version_ associated with models that are more important.
 There may be some models without a file system path, maybe living only in memory or in the cloud.
-Those kind of models might be checked by verifying whether the model has a corresponding `XvcPath` component or not.
 
 In contrast, OOP would define this either by _inheritance_ (a model is a path) or _containment_ (a model has a path).
 When you select any of these, it becomes a _relationship_ that must be maintained indefinitely.
 When you only have an integer that identifies these components, it's much easier to describe _models without a path_ later.
-There is no predefined relationship between paths and models.
+There is no predefined relationship between paths and models. You can have paths without models, or models without
+paths.
 
 The architecture is approximately similar to database modeling.
 Components are in-memory tables, albeit they are small and mostly contain a few fields.
-Entities are sequential primary keys.
+Entities are numeric primary keys.
 Systems are _insert_, _query_ and _update_ mechanisms.
 
 ## Stores
@@ -60,7 +64,7 @@ It can be considered a _system_ in the usual ECS sense.
 ### Loading and Saving Stores
 
 As our goal is to track data files with Git, stores save and load binary files' metadata to text files.
-Instead of storing the binary data itself in Git, Xvc stores information about these files to track whether they are changed.  
+Instead of storing the binary data itself in Git, Xvc stores information about these files to track whether they are changed.
 By default, these metadata are persisted to JSON.
 Component types must be serializable because of this.
 They are meant to be stored to disk in JSON format.

@@ -8,8 +8,8 @@ pub mod root;
 pub mod types;
 pub mod util;
 
-pub use types::recheckmethod::RecheckMethod;
 pub use types::hashalgorithm::HashAlgorithm;
+pub use types::recheckmethod::RecheckMethod;
 pub use types::xvcdigest::CollectionDigest;
 pub use types::xvcdigest::ContentDigest;
 pub use types::xvcdigest::MetadataDigest;
@@ -122,11 +122,6 @@ auto_commit = true
 auto_stage = false
 
 [cache]
-# The cache type for XVC. It may take copy, hardlink, symlink, reflink as values.
-# The default is copy to make sure the options is portable.
-# Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file.
-# Note that hardlink and symlink are read-only as they link the files in cache.
-type = "copy"
 # The hash algorithm used for the cache.
 # It may take blake3, blake2, sha2 or sha3 as values.
 # All algorithms are selected to produce 256-bit hashes, so sha2 means SHA2-256, blake2 means BLAKE2s, etc.
@@ -170,7 +165,7 @@ no_parallel = false
 # - {{name}}: The name of the file or directory.
 # - {{rcd64}}:  recorded content digest. All 64 digits.
 # - {{rcd8}}:  recorded content digest. First 8 digits.
-# - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace
+# - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
 #   as a copy (C), symlink (S), hardlink (H) or reflink (R).
 # - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
 #   MB, GB and TB to represent sizes larged than 1MB.
@@ -179,7 +174,7 @@ no_parallel = false
 # There are no escape sequences in the format string.
 # If you want to add a tab, type it to the string.
 # If you want to add a literal double curly brace, open an issue.
-format = "{{{{aft}}}}{{{{rct}}}} {{{{asz}}}} {{{{ats}}}} {{{{rcd8}}}} {{{{acd8}}}} {{{{name}}}}"
+format = "{{{{aft}}}}{{{{rrm}}}} {{{{asz}}}} {{{{ats}}}} {{{{rcd8}}}} {{{{acd8}}}} {{{{name}}}}"
 
 # Default sort order for `xvc file list`.
 # Valid values are
@@ -198,6 +193,13 @@ force = false
 
 # Don't use parallel move/copy in carry-in
 no_parallel = false
+
+[file.recheck]
+# The recheck method for Xvc. It may take copy, hardlink, symlink, reflink as values.
+# The default is copy to make sure the options is portable.
+# Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file.
+# Note that hardlink and symlink are read-only as they link the files in cache.
+method = "copy"
 
 [pipeline]
 # Name of the current pipeline to run

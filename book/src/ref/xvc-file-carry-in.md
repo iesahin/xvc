@@ -102,6 +102,13 @@ $ xvc file list data.txt
 Frct          19 2023-01-25 08:51:03          c85f3e81 data.txt
 Total #: 1 Workspace Size:          19 Cached Size:           0
 
+fatal: Unable to create '[CWD]/.git/index.lock': File exists.
+
+Another git process seems to be running in this repository, e.g.
+an editor opened by 'git commit'. Please make sure all processes
+are terminated then try again. If it still fails, a git process
+may have crashed in this repository earlier:
+remove the file manually to continue.
 
 ```
 
@@ -114,7 +121,7 @@ $ cat data.txt
 Oh, deetee, my, deetee
 
 $ xvc file list data.txt
-Frct          23 2023-01-28 17:08:26          e37c686a data.txt
+Frct          23 2023-01-28 17:10:39          e37c686a data.txt
 Total #: 1 Workspace Size:          23 Cached Size:           0
 
 
@@ -126,7 +133,7 @@ Note that the size of the file has increased, as we replace each `a` with an `ee
 $ xvc file carry-in data.txt
 
 $ xvc file list data.txt
-Frct          23 2023-01-28 17:08:26          e37c686a data.txt
+Frct          23 2023-01-28 17:10:39          e37c686a data.txt
 Total #: 1 Workspace Size:          23 Cached Size:           0
 
 

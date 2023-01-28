@@ -130,38 +130,38 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list --sort name-asc
-Frct         107 2023-01-28 17:08:26          ce9fcf30 .gitignore
-Frct         130 2023-01-28 17:08:26          ac46bf74 .xvcignore
-Drct         224 2023-01-28 17:08:26                   dir-0001
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0001/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0001/file-0002.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0001/file-0003.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0001/file-0004.bin
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0001/file-0005.bin
-Drct         224 2023-01-28 17:08:26                   dir-0002
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0002/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0002/file-0002.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0002/file-0003.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0002/file-0004.bin
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0002/file-0005.bin
-Drct         224 2023-01-28 17:08:26                   dir-0003
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0003/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0003/file-0002.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0003/file-0003.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0003/file-0004.bin
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0003/file-0005.bin
-Drct         224 2023-01-28 17:08:26                   dir-0004
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0004/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0004/file-0002.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0004/file-0003.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0004/file-0004.bin
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0004/file-0005.bin
-Drct         224 2023-01-28 17:08:26                   dir-0005
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0005/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0005/file-0002.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0005/file-0003.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0005/file-0004.bin
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0005/file-0005.bin
+Frct         107 2023-01-28 17:10:39          ce9fcf30 .gitignore
+Frct         130 2023-01-28 17:10:39          ac46bf74 .xvcignore
+Drct         224 2023-01-28 17:10:38                   dir-0001
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0001/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0001/file-0002.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0001/file-0003.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0001/file-0004.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0001/file-0005.bin
+Drct         224 2023-01-28 17:10:38                   dir-0002
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0002/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0002/file-0002.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0002/file-0003.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0002/file-0004.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0002/file-0005.bin
+Drct         224 2023-01-28 17:10:38                   dir-0003
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0003/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0003/file-0002.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0003/file-0003.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0003/file-0004.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0003/file-0005.bin
+Drct         224 2023-01-28 17:10:38                   dir-0004
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0004/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0004/file-0002.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0004/file-0003.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0004/file-0004.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0004/file-0005.bin
+Drct         224 2023-01-28 17:10:38                   dir-0005
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0005/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0005/file-0002.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0005/file-0003.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0005/file-0004.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0005/file-0005.bin
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
@@ -228,11 +228,11 @@ stack backtrace:
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ xvc file list dir-0001/
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0001/file-0005.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0001/file-0004.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0001/file-0003.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0001/file-0002.bin
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0001/file-0001.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0001/file-0005.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0001/file-0004.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0001/file-0003.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0001/file-0002.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        5015 Cached Size:           0
 
 
@@ -245,11 +245,11 @@ print the second letter as `H`.
 $ xvc file track dir-0002 --cache-type hardlink
 
 $ xvc file list dir-0002
-Frct        1005 2023-01-28 17:08:26 e23e79a0 e23e79a0 dir-0002/file-0005.bin
-Frct        1004 2023-01-28 17:08:26 3640687a 3640687a dir-0002/file-0004.bin
-Frct        1003 2023-01-28 17:08:26 2856fe70 2856fe70 dir-0002/file-0003.bin
-Frct        1002 2023-01-28 17:08:26 8c079454 8c079454 dir-0002/file-0002.bin
-Frct        1001 2023-01-28 17:08:26 189fa49f 189fa49f dir-0002/file-0001.bin
+Frct        1005 2023-01-28 17:10:38 e23e79a0 e23e79a0 dir-0002/file-0005.bin
+Frct        1004 2023-01-28 17:10:38 3640687a 3640687a dir-0002/file-0004.bin
+Frct        1003 2023-01-28 17:10:38 2856fe70 2856fe70 dir-0002/file-0003.bin
+Frct        1002 2023-01-28 17:10:38 8c079454 8c079454 dir-0002/file-0002.bin
+Frct        1001 2023-01-28 17:10:38 189fa49f 189fa49f dir-0002/file-0001.bin
 Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
@@ -266,11 +266,11 @@ symbolic links.
 $ xvc file track dir-0003 --cache-type symlink
 
 $ xvc file list dir-0003
-Srct         179 2023-01-28 17:08:28 e23e79a0          dir-0003/file-0005.bin
-Srct         179 2023-01-28 17:08:28 3640687a          dir-0003/file-0004.bin
-Srct         179 2023-01-28 17:08:28 2856fe70          dir-0003/file-0003.bin
-Srct         179 2023-01-28 17:08:28 8c079454          dir-0003/file-0002.bin
-Srct         179 2023-01-28 17:08:28 189fa49f          dir-0003/file-0001.bin
+Srct         179 2023-01-28 17:10:41 e23e79a0          dir-0003/file-0005.bin
+Srct         179 2023-01-28 17:10:41 3640687a          dir-0003/file-0004.bin
+Srct         179 2023-01-28 17:10:41 2856fe70          dir-0003/file-0003.bin
+Srct         179 2023-01-28 17:10:41 8c079454          dir-0003/file-0002.bin
+Srct         179 2023-01-28 17:10:41 189fa49f          dir-0003/file-0001.bin
 Total #: 5 Workspace Size:         895 Cached Size:        5015
 
 
@@ -284,11 +284,11 @@ You may use globs to list files.
 
 ```console
 $ xvc file list 'dir-*/*-0001.bin'
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0005/file-0001.bin
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0004/file-0001.bin
-Srct         179 2023-01-28 17:08:28 189fa49f          dir-0003/file-0001.bin
-Frct        1001 2023-01-28 17:08:26 189fa49f 189fa49f dir-0002/file-0001.bin
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0001/file-0001.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0005/file-0001.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0004/file-0001.bin
+Srct         179 2023-01-28 17:10:41 189fa49f          dir-0003/file-0001.bin
+Frct        1001 2023-01-28 17:10:38 189fa49f 189fa49f dir-0002/file-0001.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        4183 Cached Size:        1001
 
 
@@ -301,16 +301,16 @@ You can also use multiple targets as globs.
 
 ```console
 $ xvc file list '*/*-0001.bin' '*/*-0002.bin'
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0005/file-0002.bin
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0005/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0004/file-0002.bin
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0004/file-0001.bin
-Srct         179 2023-01-28 17:08:28 8c079454          dir-0003/file-0002.bin
-Srct         179 2023-01-28 17:08:28 189fa49f          dir-0003/file-0001.bin
-Frct        1002 2023-01-28 17:08:26 8c079454 8c079454 dir-0002/file-0002.bin
-Frct        1001 2023-01-28 17:08:26 189fa49f 189fa49f dir-0002/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0001/file-0002.bin
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0001/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0005/file-0002.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0005/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0004/file-0002.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0004/file-0001.bin
+Srct         179 2023-01-28 17:10:41 8c079454          dir-0003/file-0002.bin
+Srct         179 2023-01-28 17:10:41 189fa49f          dir-0003/file-0001.bin
+Frct        1002 2023-01-28 17:10:38 8c079454 8c079454 dir-0002/file-0002.bin
+Frct        1001 2023-01-28 17:10:38 189fa49f 189fa49f dir-0002/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0001/file-0002.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0001/file-0001.bin
 Total #: 10 Workspace Size:        8370 Cached Size:        2003
 
 
@@ -325,11 +325,11 @@ Use `--sort` option to specify the sort criteria.
 
 ```console
 $ xvc file list --sort name-desc dir-0001/
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0001/file-0005.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0001/file-0004.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0001/file-0003.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0001/file-0002.bin
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0001/file-0001.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0001/file-0005.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0001/file-0004.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0001/file-0003.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0001/file-0002.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        5015 Cached Size:           0
 
 
@@ -337,11 +337,11 @@ Total #: 5 Workspace Size:        5015 Cached Size:           0
 
 ```console
 $ xvc file list --sort name-asc dir-0001/
-Frct        1001 2023-01-28 17:08:26          189fa49f dir-0001/file-0001.bin
-Frct        1002 2023-01-28 17:08:26          8c079454 dir-0001/file-0002.bin
-Frct        1003 2023-01-28 17:08:26          2856fe70 dir-0001/file-0003.bin
-Frct        1004 2023-01-28 17:08:26          3640687a dir-0001/file-0004.bin
-Frct        1005 2023-01-28 17:08:26          e23e79a0 dir-0001/file-0005.bin
+Frct        1001 2023-01-28 17:10:38          189fa49f dir-0001/file-0001.bin
+Frct        1002 2023-01-28 17:10:38          8c079454 dir-0001/file-0002.bin
+Frct        1003 2023-01-28 17:10:38          2856fe70 dir-0001/file-0003.bin
+Frct        1004 2023-01-28 17:10:38          3640687a dir-0001/file-0004.bin
+Frct        1005 2023-01-28 17:10:38          e23e79a0 dir-0001/file-0005.bin
 Total #: 5 Workspace Size:        5015 Cached Size:           0
 
 

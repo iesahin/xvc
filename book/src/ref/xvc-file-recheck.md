@@ -106,6 +106,8 @@ Once you added the file to the cache, you can delete the workspace copy.
 
 ```console
 $ rm data.txt
+rm: data.txt: No such file or directory
+
 $ ls -l
 total[..]
 
@@ -113,8 +115,6 @@ total[..]
 
 Then, recheck the file. By default, it makes a copy of the file.
 
-```console
-$ xvc file recheck data.txt
 thread '<unnamed>' panicked at 'called `Result::unwrap()` on an `Err` value: ConfigKeyNotFound { key: "file.recheck.method" }', core/src/types/recheckmethod.rs:84:1
 stack backtrace:
    0: rust_begin_unwind
@@ -164,6 +164,8 @@ stack backtrace:
              at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
 $ ls -l
 total [..]
 
@@ -173,8 +175,8 @@ Xvc updates the cache type if the file is not changed.
 
 ```console
 $ xvc file recheck data.txt --as symlink
+ls: data.txt: No such file or directory
 
-$ ls -l data.txt
 ls: data.txt: No such file or directory
 
 ```
@@ -188,8 +190,8 @@ $ perl -i -pe 's/a/ee/g' data.txt
 Can't open data.txt: No such file or directory.
 
 $ xvc file recheck data.txt --as copy
+rm: data.txt: No such file or directory
 
-$ rm data.txt
 rm: data.txt: No such file or directory
 
 ```
