@@ -9,6 +9,9 @@ tree, and subtasks are marked with indentation.
   - Issue: <https://github.com/iesahin/xvc/issues/203>
   - Renamed `CacheType` to `RecheckMethod`
   - Revised documentation for recheck methods
+- Add `xvc file untrack` command.
+  - Issue: <https://github.com/iesahin/xvc/issues/113>
+  - Write the reference page: book/src/ref/xvc-file-untrack.md
 
 ## 0.5.1 (2023-01-28)
 
