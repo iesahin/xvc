@@ -17,7 +17,7 @@ Arguments:
           Files/directories to track
 
 Options:
-      --cache-type <CACHE_TYPE>
+      --recheck-method <RECHECK_METHOD>
           How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
           
           Note: Reflink uses copy if the underlying file system doesn't support it.
