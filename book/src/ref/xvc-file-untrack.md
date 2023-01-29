@@ -1,1 +1,104 @@
-This command is not implemented yet. Please see https://github.com/iesahin/xvc/issues/113. 
+# xvc file untrack
+
+## Synopsis
+
+```console
+$ xvc file untrack --help
+```
+
+
+## Examples
+
+This command removes a file from Xvc tracking and optionally deletes it from the local filesystem, cache and the
+storages.
+
+It only works if the file is tracked by Xvc.
+
+```console
+$ git init
+...
+
+$ xvc init
+
+$ xvc file track 'd*.txt'
+
+$ xvc file list
+```
+
+Without any options, it just removes the file from Xvc tracking, and the cache. It also makes the file visible to git.
+
+```console
+$ xvc file untrack data.txt
+
+$ git status
+```
+
+If you have [rechecked](/concepts/recheck.md) the file as symlink, hardlink or copy, it will be restored to the workspace.
+
+```console
+$ xvc file track data.txt --as symlink
+
+$ ls -l
+
+$ xvc file untrack data.txt
+
+$ ls -l
+```
+
+With the `--delete` option, it also deletes the file from the workspace.
+
+```console
+$ xvc file track data.txt
+
+$ ls -l
+
+$ xvc file untrack --delete data.txt
+
+$ ls -l
+```
+
+If there are multiple versions of the file, it removes them all and restores the latest version.
+
+If you want to restore all versions of the file, you can specify a directory to restore them to.
+
+```console
+$ xvc file track data.txt
+
+$ perl -pi -e 's/a/e/g' data.txt
+
+$ xvc file carry-in data.txt
+
+$ xvc file untrack data.txt --restore-versions data-versions/
+
+$ ls -l data-versions/
+```
+
+You can use this command to remove cached files from storages as well.
+
+```console
+$ xvc file track data.txt
+
+$ xvc storage new local --name local-storage --path '../local-storage'
+
+$ xvc file send data.txt --to local-storage
+
+$ xvc file untrack data.txt --delete --from-storage local-storage
+```
+
+If multiple paths are pointing to the same cache file (deduplication), the cache file will not be
+deleted. In this case, `untrack` reports other paths pointing to the same cache file. You must remove all of them to
+delete the cache file.
+
+```console
+$ xvc file track data.txt
+
+$ xvc file copy data.txt data2.txt --as symlink
+
+$ xvc file untrack data.txt --delete
+
+$ ls -lR .xvc/b3/
+
+$ xvc file untrack data2.txt --delete
+
+$ ls -lR .xvc/b3/
+```

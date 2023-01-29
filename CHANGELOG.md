@@ -12,6 +12,7 @@ tree, and subtasks are marked with indentation.
 - Add `xvc file untrack` command.
   - Issue: <https://github.com/iesahin/xvc/issues/113>
   - Write the reference page: book/src/ref/xvc-file-untrack.md
+  - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
 
 ## 0.5.1 (2023-01-28)
 
