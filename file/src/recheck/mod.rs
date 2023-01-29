@@ -29,7 +29,7 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine};
 /// There are three conditions to recheck a file:
 ///
 /// - If the workspace copy is missing.
-/// - If the workspace copy is not changed but the user wants to change cache type. (e.g. from copy
+/// - If the workspace copy is not changed but the user wants to change recheck method. (e.g. from copy
 /// to symlink.)
 /// - If the `--force` is set.
 ///
@@ -163,7 +163,7 @@ pub fn cmd_recheck(
     watch!(no_digest_targets);
     // We recheck files
     // - if they are not in the workspace
-    // - if their cache type is different from the current cache type
+    // - if their recheck method is different from the current recheck method
     // - if they are in the workspace but force is set
 
     watch!(target_files);

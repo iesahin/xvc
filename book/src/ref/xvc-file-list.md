@@ -168,7 +168,7 @@ Total #: 32 Workspace Size:       26432 Cached Size:           0
 ```
 
 With the default output format, the first two letters show the path type and
-cache type, respectively.
+recheck method, respectively.
 
 For example, if you track `dir-0001` as `copy`, the first letter is `F` for the
 files and `D` for the directories. The second letter is `C` for files, meaning
@@ -211,7 +211,7 @@ Note, as hardlinks are files with the same inode in the file system
 with alternative paths, they are detected as `F`.
 
 Symbolic links are typically reported as `SS` in the first letters.
-It means they are symbolic links on the file system and their cache type is also
+It means they are symbolic links on the file system and their recheck method is also
 symbolic links.
 
 ```console

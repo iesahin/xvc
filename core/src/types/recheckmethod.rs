@@ -1,4 +1,4 @@
-//! Cache types denote how a cached file put into the working directory.
+//! Recheck methods denote how a cached file put into the working directory.
 //! See [CacheType] for different types
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
