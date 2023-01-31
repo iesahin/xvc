@@ -12,6 +12,11 @@ tree, and subtasks are marked with indentation.
 - Add `xvc file untrack` command.
   - Issue: <https://github.com/iesahin/xvc/issues/113>
   - Write the reference page: book/src/ref/xvc-file-untrack.md
+    - I believe there must be two separate commands: `xvc file untrack` and `xvc file remove`. The former is to remove the file from Xvc tracking, and the latter is to remove the file from the workspace, cache, or storages. There are valid use cases to remove the file from cache without untracking it, and vice versa.
+    - There will also be a `xvc file versions` command to list the versions of a file and restore them to a directory.
+    - I think it's better to implement remove and untrack commands in one go.
+    - Added `join` to AbsolutePath.
+    - Added ContentDigest to XvcCachePath to get partial strings
   - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
 
 ## 0.5.1 (2023-01-28)

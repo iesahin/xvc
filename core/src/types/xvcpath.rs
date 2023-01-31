@@ -245,6 +245,18 @@ impl XvcCachePath {
     pub fn inner(&self) -> RelativePathBuf {
         self.0.clone()
     }
+
+    /// Returns the prefix for this digest for reporting purposes
+    /// len is the number of digits to return from
+    pub fn digest_prefix(&self, len: usize) -> String {
+        self.0
+            .to_string()
+            .chars()
+            .take(len)
+            // Convert path separators to '-'
+            .map(|c| if c == '/' { '-' } else { c })
+            .collect()
+    }
 }
 
 impl AsRef<RelativePath> for XvcCachePath {

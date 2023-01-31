@@ -51,6 +51,11 @@ where
         Self(Vec::new())
     }
 
+    /// Create an event log already initialized
+    pub fn from_events(events: Vec<Event<T>>) -> Self {
+        Self(events)
+    }
+
     /// Convert the log to a Json array containing ([XvcEntity], `T`) values.
     /// This is used to record [XvcStore] to files.
     pub fn to_json(&self) -> Result<JsonValue> {

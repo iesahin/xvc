@@ -18,6 +18,7 @@ pub mod mv;
 pub mod recheck;
 pub mod send;
 pub mod track;
+pub mod untrack;
 
 use crate::error::{Error, Result};
 use carry_in::CarryInCLI;
@@ -33,6 +34,7 @@ use std::io;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use untrack::UntrackCLI;
 use xvc_config::XvcConfigInitParams;
 use xvc_config::XvcVerbosity;
 use xvc_core::default_project_config;
@@ -75,6 +77,8 @@ pub enum XvcFileSubCommand {
     Send(SendCLI),
     /// Bring (download, pull, fetch) files from external storages
     Bring(BringCLI),
+    /// Untrack (delete) files from Xvc and possibly storages
+    Untrack(UntrackCLI),
 }
 
 /// Operations on data files
@@ -184,6 +188,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Move(opts) => mv::cmd_move(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Untrack(opts) => untrack::cmd_untrack(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

@@ -40,6 +40,12 @@ impl AbsolutePath {
     pub fn as_path(&self) -> &Path {
         &self.0
     }
+
+    /// Appends a relative path to this path to get another absolute path
+    pub fn join(&self, p: &Path) -> AbsolutePath {
+        assert!(!p.is_absolute());
+        Self(self.0.join(p))
+    }
 }
 
 impl From<&PathBuf> for AbsolutePath {

@@ -29,6 +29,7 @@
       - [`xvc file bring`](./ref/xvc-file-bring.md)
       - [`xvc file move`](./ref/xvc-file-move.md)
       - [`xvc file copy`](./ref/xvc-file-copy.md)
+      - [`xvc file remove`](./ref/xvc-file-remove.md)
     - [Data-Model Pipelines (`xvc pipeline`)](./ref/xvc-pipeline.md)
       - [`xvc pipeline new`](./ref/xvc-pipeline-new.md)
       - [`xvc pipeline list`](./ref/xvc-pipeline-list.md)
