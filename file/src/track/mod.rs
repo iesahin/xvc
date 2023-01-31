@@ -22,7 +22,7 @@ use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
 use crate::carry_in::carry_in;
 use crate::common::compare::{
-    diff_cache_type, diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata,
+    diff_content_digest, diff_recheck_method, diff_text_or_binary, diff_xvc_path_metadata,
 };
 use crate::common::gitignore::{update_dir_gitignores, update_file_gitignores};
 use crate::common::{targets_from_disk, update_store_records, FileTextOrBinary};
@@ -33,7 +33,7 @@ use std::fs::OpenOptions;
 use clap::Parser;
 use std::path::PathBuf;
 
-use xvc_core::CacheType;
+use xvc_core::RecheckMethod;
 use xvc_core::XvcPath;
 use xvc_ecs::{HStore, XvcEntity};
 
@@ -45,7 +45,7 @@ pub struct TrackCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long)]
-    cache_type: Option<CacheType>,
+    recheck_method: Option<RecheckMethod>,
 
     /// Do not copy/link added files to the file cache
     #[arg(long)]
@@ -70,9 +70,9 @@ impl UpdateFromXvcConfig for TrackCLI {
     /// Command line options take precedence over other sources.
     /// If options are not given, they are supplied from [XvcConfig]
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
-        let cache_type = self
-            .cache_type
-            .unwrap_or_else(|| CacheType::from_conf(conf));
+        let recheck_method = self
+            .recheck_method
+            .unwrap_or_else(|| RecheckMethod::from_conf(conf));
         let no_commit = self.no_commit || conf.get_bool("file.track.no_commit")?.option;
         let force = self.force || conf.get_bool("file.track.force")?.option;
         let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
@@ -83,7 +83,7 @@ impl UpdateFromXvcConfig for TrackCLI {
 
         Ok(Box::new(Self {
             targets: self.targets.clone(),
-            cache_type: Some(cache_type),
+            recheck_method: Some(recheck_method),
             no_commit,
             force,
             no_parallel,
@@ -108,11 +108,11 @@ impl UpdateFromXvcConfig for TrackCLI {
 ///     Filter -->|Yes| XvcDigest
 ///     Filter -->|No| Ignore
 ///     XvcDigest --> CacheLocation
-///     CacheLocation --> CacheType{What's the cache type?}
-///     CacheType --> |Copy| Copy
-///     CacheType --> |Symlink| Symlink
-///     CacheType --> |Hardlink| Hardlink
-///     CacheType --> |Reflink| Reflink
+///     CacheLocation --> RecheckMethod
+///     RecheckMethod --> |Copy| Copy
+///     RecheckMethod --> |Symlink| Symlink
+///     RecheckMethod --> |Hardlink| Hardlink
+///     RecheckMethod --> |Reflink| Reflink
 /// ```
 pub fn cmd_track(
     output_snd: &Sender<XvcOutputLine>,
@@ -124,7 +124,7 @@ pub fn cmd_track(
     let current_dir = conf.current_dir()?;
     let targets = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
-    let requested_cache_type = opts.cache_type.unwrap_or_default();
+    let requested_recheck_method = opts.recheck_method.unwrap_or_default();
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
 
@@ -154,10 +154,10 @@ pub fn cmd_track(
             }))
             .collect();
 
-    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
-    let cache_type_diff = diff_cache_type(
-        &stored_cache_type_store,
-        requested_cache_type,
+    let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
+    let recheck_method_diff = diff_recheck_method(
+        &stored_recheck_method_store,
+        requested_recheck_method,
         &changed_entities,
     );
 
@@ -190,7 +190,7 @@ pub fn cmd_track(
 
     update_store_records(xvc_root, &xvc_path_diff, true, false)?;
     update_store_records(xvc_root, &xvc_metadata_diff, true, false)?;
-    update_store_records(xvc_root, &cache_type_diff, true, false)?;
+    update_store_records(xvc_root, &recheck_method_diff, true, false)?;
     update_store_records(xvc_root, &text_or_binary_diff, true, false)?;
     update_store_records(xvc_root, &content_digest_diff, true, false)?;
 
@@ -259,14 +259,14 @@ pub fn cmd_track(
             })
             .collect();
 
-        let cache_type_store = xvc_root.load_store::<CacheType>()?;
+        let recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
 
         carry_in(
             output_snd,
             xvc_root,
             &xvc_paths_to_carry,
             &cache_paths,
-            &cache_type_store,
+            &recheck_method_store,
             !no_parallel,
             opts.force,
         )?;

@@ -15,7 +15,7 @@ use crate::{
 
 use clap::Parser;
 use crossbeam_channel::Sender;
-use xvc_core::{CacheType, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
+use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{debug, uwr, warn, watch, XvcOutputLine};
 
@@ -45,9 +45,9 @@ pub struct BringCLI {
     no_recheck: bool,
 
     /// Recheck (checkout) the file in one of the four alternative ways.
-    /// (See `xvc file recheck`) and [CacheType]
-    #[arg(long)]
-    recheck_as: Option<CacheType>,
+    /// (See `xvc file recheck`) and [RecheckMethod]
+    #[arg(long, alias = "as")]
+    recheck_as: Option<RecheckMethod>,
 
     /// Targets to bring from the storage
     #[arg()]
@@ -170,7 +170,7 @@ pub fn cmd_bring(
         watch!(recheck_targets);
 
         let recheck_opts = RecheckCLI {
-            cache_type: opts.recheck_as,
+            recheck_method: opts.recheck_as,
             no_parallel: false,
             force: opts.force,
             targets: recheck_targets,

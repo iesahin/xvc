@@ -6,7 +6,7 @@ use std::collections::HashSet;
 use std::thread::JoinHandle;
 use std::{fs, thread};
 
-use crate::common::compare::{diff_cache_type, diff_content_digest, diff_xvc_path_metadata};
+use crate::common::compare::{diff_content_digest, diff_recheck_method, diff_xvc_path_metadata};
 use crate::common::gitignore::{make_ignore_handler, IgnoreOp};
 use crate::common::{
     load_targets_from_store, only_file_targets, xvc_path_metadata_map_from_disk, FileTextOrBinary,
@@ -18,7 +18,7 @@ use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
 use xvc_core::{
-    apply_diff, CacheType, ContentDigest, Diff, DiffStore, HashAlgorithm, XvcCachePath,
+    apply_diff, ContentDigest, Diff, DiffStore, HashAlgorithm, RecheckMethod, XvcCachePath,
     XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
@@ -29,7 +29,7 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine};
 /// There are three conditions to recheck a file:
 ///
 /// - If the workspace copy is missing.
-/// - If the workspace copy is not changed but the user wants to change cache type. (e.g. from copy
+/// - If the workspace copy is not changed but the user wants to change recheck method. (e.g. from copy
 /// to symlink.)
 /// - If the `--force` is set.
 ///
@@ -42,7 +42,7 @@ pub struct RecheckCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     #[arg(long, alias = "as")]
-    pub cache_type: Option<CacheType>,
+    pub recheck_method: Option<RecheckMethod>,
 
     /// Don't use parallelism
     #[arg(long)]
@@ -59,16 +59,16 @@ pub struct RecheckCLI {
 
 impl UpdateFromXvcConfig for RecheckCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
-        let cache_type = self
-            .cache_type
-            .unwrap_or_else(|| CacheType::from_conf(conf));
+        let recheck_method = self
+            .recheck_method
+            .unwrap_or_else(|| RecheckMethod::from_conf(conf));
         let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
 
         let force = self.force;
 
         Ok(Box::new(Self {
             targets: self.targets,
-            cache_type: Some(cache_type),
+            recheck_method: Some(recheck_method),
             force,
             no_parallel,
         }))
@@ -92,19 +92,22 @@ pub fn cmd_recheck(
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
-    let cache_type = opts.cache_type.unwrap_or_else(|| CacheType::default());
-    watch!(cache_type);
+    let recheck_method = opts
+        .recheck_method
+        .unwrap_or_else(|| RecheckMethod::default());
+    watch!(recheck_method);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
     let target_files = only_file_targets(&stored_xvc_metadata_store, &targets)?;
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
 
-    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
+    let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
-    let cache_type_diff = diff_cache_type(&stored_cache_type_store, cache_type, &entities);
-    let mut cache_type_targets = cache_type_diff.filter(|_, d| d.changed());
+    let recheck_method_diff =
+        diff_recheck_method(&stored_recheck_method_store, recheck_method, &entities);
+    let mut recheck_method_targets = recheck_method_diff.filter(|_, d| d.changed());
 
     let xvc_path_metadata_diff = diff_xvc_path_metadata(
         xvc_root,
@@ -133,7 +136,7 @@ pub fn cmd_recheck(
     );
 
     watch!(content_digest_diff);
-    cache_type_targets.retain(|xe, _| {
+    recheck_method_targets.retain(|xe, _| {
         watch!(content_digest_diff.get(xe));
         if content_digest_diff.contains_key(xe)
             && matches!(
@@ -160,33 +163,34 @@ pub fn cmd_recheck(
     watch!(no_digest_targets);
     // We recheck files
     // - if they are not in the workspace
-    // - if their cache type is different from the current cache type
+    // - if their recheck method is different from the current recheck method
     // - if they are in the workspace but force is set
 
     watch!(target_files);
 
     let files_to_recheck = target_files.filter(|xe, _| {
-        opts.force || cache_type_targets.contains_key(xe) || no_digest_targets.contains_key(xe)
+        opts.force || recheck_method_targets.contains_key(xe) || no_digest_targets.contains_key(xe)
     });
 
     watch!(files_to_recheck);
 
     // We only record the diffs if they are in files to recheck
-    let recordable_cache_type_diff = cache_type_diff.subset(files_to_recheck.keys().copied())?;
+    let recordable_recheck_method_diff =
+        recheck_method_diff.subset(files_to_recheck.keys().copied())?;
     let recordable_content_digest_diff =
         content_digest_diff.subset(files_to_recheck.keys().copied())?;
 
-    watch!(recordable_cache_type_diff);
+    watch!(recordable_recheck_method_diff);
     watch!(recordable_content_digest_diff);
 
-    let updated_cache_type_store = apply_diff(
-        &stored_cache_type_store,
-        &recordable_cache_type_diff,
+    let updated_recheck_method_store = apply_diff(
+        &stored_recheck_method_store,
+        &recordable_recheck_method_diff,
         true,
         false,
     )?;
 
-    watch!(updated_cache_type_store);
+    watch!(updated_recheck_method_store);
 
     let updated_content_digest_store = apply_diff(
         &stored_content_digest_store,
@@ -200,12 +204,12 @@ pub fn cmd_recheck(
         output_snd,
         xvc_root,
         &files_to_recheck,
-        &updated_cache_type_store,
+        &updated_recheck_method_store,
         &updated_content_digest_store,
         opts.no_parallel,
     )?;
 
-    xvc_root.save_store(&updated_cache_type_store)?;
+    xvc_root.save_store(&updated_recheck_method_store)?;
     xvc_root.save_store(&updated_content_digest_store)?;
 
     Ok(())
@@ -215,7 +219,7 @@ pub enum RecheckOperation {
     Recheck {
         xvc_path: XvcPath,
         content_digest: ContentDigest,
-        cache_type: CacheType,
+        recheck_method: RecheckMethod,
     },
 }
 
@@ -237,7 +241,7 @@ pub fn make_recheck_handler(
                 RecheckOperation::Recheck {
                     xvc_path,
                     content_digest,
-                    cache_type,
+                    recheck_method,
                 } => {
                     let cache_path = XvcCachePath::new(&xvc_path, &content_digest).unwrap();
                     uwr!(
@@ -246,7 +250,7 @@ pub fn make_recheck_handler(
                             &xvc_root,
                             &xvc_path,
                             &cache_path,
-                            cache_type,
+                            recheck_method,
                             &ignore_handler,
                         ),
                         output_snd
@@ -263,7 +267,7 @@ fn recheck(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
     files_to_recheck: &HStore<&XvcPath>,
-    cache_type_store: &XvcStore<CacheType>,
+    recheck_method_store: &XvcStore<RecheckMethod>,
     content_digest_store: &XvcStore<ContentDigest>,
     parallel: bool,
 ) -> Result<()> {
@@ -281,13 +285,13 @@ fn recheck(
                 fs::remove_file(&target_path)?;
                 info!(output_snd, "[REMOVE] {target_path}");
             }
-            let cache_type = cache_type_store[&xe];
+            let recheck_method = recheck_method_store[&xe];
             recheck_from_cache(
                 &output_snd,
                 xvc_root,
                 xvc_path,
                 &cache_path,
-                cache_type,
+                recheck_method,
                 &ignore_writer,
             )
         } else {

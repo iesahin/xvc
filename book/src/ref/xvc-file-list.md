@@ -11,51 +11,51 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 Arguments:
   [TARGETS]...
           Files/directories to list.
-          
+
           If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
           A string for each row of the output table
-          
+
           The following are the keys for each row:
-          
+
           - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
-          
+
           - {{acd64}}:  actual content digest. All 64 digits.
-          
+
           - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D), symlink (S), hardlink (H) or reflink (R).
-          
+
           - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB, GB and TB to represent sizes larger than 1MB.
-          
+
           - {{ats}}:  actual timestamp. The timestamp of the workspace file.
-          
+
           - {{name}}: The name of the file or directory.
-          
+
           - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show whether the file timestamp is the same as the cached timestamp, newer, older, not cached or not tracked.
-          
+
           - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
-          
+
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
-          
-          - {{rct}}:  recorded cache type. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
-          
+
+          - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
+
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses MB, GB and TB to represent sizes larged than 1MB.
-          
+
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-          
+
           The default format can be set with file.list.format in the config file.
 
   -s, --sort <SORT>
           Sort criteria.
-          
+
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-          
+
           The default option can be set with file.list.sort in the config file.
 
       --no-summary
           Don't show total number and size of the listed files.
-          
+
           The default option can be set with file.list.no_summary in the config file.
 
   -h, --help
@@ -168,7 +168,7 @@ Total #: 32 Workspace Size:       26432 Cached Size:           0
 ```
 
 With the default output format, the first two letters show the path type and
-cache type, respectively.
+recheck method, respectively.
 
 For example, if you track `dir-0001` as `copy`, the first letter is `F` for the
 files and `D` for the directories. The second letter is `C` for files, meaning
@@ -194,7 +194,7 @@ If you add another set of files as hardlinks to the cached copies, it will
 print the second letter as `H`.
 
 ```console
-$ xvc file track dir-0002 --cache-type hardlink
+$ xvc file track dir-0002 --recheck-method hardlink
 
 $ xvc file list dir-0002
 FH        1005 [..] e23e79a0 e23e79a0 dir-0002/file-0005.bin
@@ -211,11 +211,11 @@ Note, as hardlinks are files with the same inode in the file system
 with alternative paths, they are detected as `F`.
 
 Symbolic links are typically reported as `SS` in the first letters.
-It means they are symbolic links on the file system and their cache type is also
+It means they are symbolic links on the file system and their recheck method is also
 symbolic links.
 
 ```console
-$ xvc file track dir-0003 --cache-type symlink
+$ xvc file track dir-0003 --recheck-method symlink
 
 $ xvc file list dir-0003
 SS        [..] [..] e23e79a0          dir-0003/file-0005.bin

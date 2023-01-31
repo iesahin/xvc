@@ -52,21 +52,21 @@ It initializes the metafiles in `.xvc/` directory and adds `.xvcignore` file for
 Add your data files and directories for tracking.
 
 ```shell
-$ xvc file track my-data/ --cache-type symlink
+$ xvc file track my-data/ --as symlink
 ```
 
 The command calculates data content hashes (with BLAKE-3, by default) and records them.
 It commits these changes to Git.
 It also copies these files to content-addressed directories under `.xvc/b3` and creates read-only symbolic links to them.
 
-You can specify different types of [cache-types] specific to files and directories, for your use case.
-If you need to track model files that change frequently, you can set `--cache-type copy` (the default).
+You can specify different [recheck methods] for files and directories, depending on your use case.
+If you need to track model files that change frequently, you can set recheck method `--as copy` (the default).
 
 ```shell
-$ xvc file track my-models/ --cache-type copy
+$ xvc file track my-models/ --as copy
 ```
 
-When you want to share them, configure a storage to share the files you added.
+When you want to share them, configure a cloud storage to share the files you added.
 
 ```shell
 $ xvc storage new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
@@ -78,7 +78,8 @@ You can send the files to this storage.
 $ xvc file send --to my-remote
 ```
 
-When you (or someone else) want to access these files later, you can clone the Git repository and get the files from storage.
+When you (or someone else) want to access these files later, you can clone the Git repository and get the files from the
+storage.
 
 ```console
 $ git clone https://example.com/my-machine-learning-project
@@ -157,7 +158,7 @@ You can define fairly complex dependencies with globs, files, directories, regul
 More dependency types like database queries, content from URLs, S3 (and compatible) buckets, REST and GraphQL results are in the backlog.
 Please create an issue or discussion for any other kinds of dependencies that you'd like to be included.
 
-Please check [xvc.netlify.app](https://docs.xvc.dev) for documentation.
+Please check [`docs.xvc.dev`](https://docs.xvc.dev) for documentation.
 
 ## 🤟 Big Thanks
 
@@ -230,20 +231,24 @@ Xvc is licensed under the [Apache 2.0 License](https://github.com/iesahin/xvc/bl
 
 This is mostly a one-man project and users may consider the [bus factor](https://en.wikipedia.org/wiki/Bus_factor) before spending time on it.
 
-I'm using Xvc daily and I'm happy with it. I'll maintain it as long as I use it. I'm applying my
-technical/architectural ideas to see their effectiveness and I have more ideas to implement.
-I don't expect to be bored from this soon.
+I'm using Xvc daily and I'm happy with it. Tracking all my files with Git via arbitrary servers and cloud providers is
+something I always need. I'm happy to improve and maintain it as long as I use it.
+
+Also, I'm applying my technical/architectural ideas to see their effectiveness
+and I have more ideas to implement. I don't expect to be bored from this soon.
 
 I'm in a phase of my life where material success doesn't entice me.
-I have a daily routine that I love, which includes spending at least 90 minutes to Xvc.
-That won't change much if I earn a billion dollars.
-I don't want to convert Xvc to a business and have more than one goal with this project.
-In my opinion, trying to monetize FOSS prematurely deteriorates it more than other factors nowadays.
+I have a daily routine that I love, which includes spending 1-2 hours to Xvc.
+That probably won't change much even if I earn a billion dollars.
+I don't want to convert Xvc to a business.
+I may create paid apps that use Xvc as a library if I think they will be useful but these will probably be separate projects.
+In my opinion, trying to monetize FOSS prematurely deteriorates it more than other factors.
 
-Xvc is like a _running CV_ for me, basically signaling _I do this and I can do similar software for you._ This is
-another motivation for me to keep it alive. Instead of updating my [vita](https://emresahin.net/cv/), and feeling
-awkward about it, I prefer to show my work.
+Xvc is like a _runnable CV_ for me. It signals _I built this and I can built similar software for you._ This is
+another motivation for me to keep it alive. I hate updating my [vita](https://emresahin.net/cv/), and instead of
+updating it, I prefer to show my work.
 
 ## ⚠️ Disclaimer
 
-This software is fresh and ambitious. Although I use it and test it close to real world conditions, it didn't go under test of time. **Xvc can eat your files and spit them to eternal void!**
+This software is fresh and ambitious. Although I use it and test it close to real-world conditions, it didn't go under
+the test of time. **Xvc can eat your files and spit them into the eternal void!** Please take backups.

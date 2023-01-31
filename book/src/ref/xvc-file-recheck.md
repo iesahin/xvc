@@ -13,7 +13,7 @@ Arguments:
           Files/directories to recheck
 
 Options:
-      --cache-type <CACHE_TYPE>
+      --recheck-method <RECHECK_METHOD>
           How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
           
           Note: Reflink uses copy if the underlying file system doesn't support it.
@@ -74,7 +74,7 @@ total [..]
 
 ```
 
-Xvc updates the cache type if the file is not changed.
+Xvc only updates the recheck method if the file is not changed.
 
 ```console
 $ xvc file recheck data.txt --as symlink
@@ -84,8 +84,8 @@ l[..] data.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824e
 
 ```
 
-Symlink and hardlinks are read-only. 
-You can delete the symlink, and replace with an updated copy. 
+Symlink and hardlinks are read-only.
+You can delete the symlink, and replace with an updated copy.
 (As `perl -i` does below.)
 
 ```console

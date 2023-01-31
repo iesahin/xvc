@@ -93,7 +93,7 @@ fn test_file_list() -> Result<()> {
         );
     }
 
-    // TODO: Test for other formatting options, cache types, cache status.
+    // TODO: Test for other formatting options, recheck methods, cache status.
     // Some of these tests are done in `xvc-file-list.md` file in the reference.
 
     clean_up(&xvc_root)

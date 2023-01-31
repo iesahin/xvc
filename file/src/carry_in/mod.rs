@@ -29,7 +29,7 @@ use crate::error::Result;
 
 use clap::Parser;
 
-use xvc_core::CacheType;
+use xvc_core::RecheckMethod;
 
 use xvc_core::XvcMetadata;
 use xvc_core::XvcPath;
@@ -197,14 +197,14 @@ pub fn cmd_carry_in(
         })
         .collect();
 
-    let stored_cache_type_store = xvc_root.load_store::<CacheType>()?;
+    let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
     watch!(xvc_paths_to_carry);
     carry_in(
         output_snd,
         xvc_root,
         &xvc_paths_to_carry,
         &cache_paths_to_carry,
-        &stored_cache_type_store,
+        &stored_recheck_method_store,
         !opts.no_parallel,
         opts.force,
     )?;
@@ -224,7 +224,7 @@ pub fn carry_in(
     xvc_root: &XvcRoot,
     xvc_paths_to_carry: &HStore<XvcPath>,
     cache_paths: &HStore<XvcCachePath>,
-    cache_types: &XvcStore<CacheType>,
+    recheck_methods: &XvcStore<RecheckMethod>,
     parallel: bool,
     force: bool,
 ) -> Result<()> {
@@ -269,7 +269,7 @@ pub fn carry_in(
             uwr!(fs::remove_file(&target_path), output_snd);
             info!(output_snd, "[REMOVE] {target_path}");
         }
-        let cache_type = uwo!(cache_types.get(xe).cloned(), output_snd);
+        let recheck_method = uwo!(recheck_methods.get(xe).cloned(), output_snd);
 
         uwr!(
             recheck_from_cache(
@@ -277,7 +277,7 @@ pub fn carry_in(
                 xvc_root,
                 xp,
                 &cache_path,
-                cache_type,
+                recheck_method,
                 &ignore_writer
             ),
             output_snd

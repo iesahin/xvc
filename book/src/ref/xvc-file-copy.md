@@ -24,7 +24,7 @@ Arguments:
           If the number of source files is more than one, the destination must be a directory.
 
 Options:
-      --cache-type <CACHE_TYPE>
+      --recheck-method <RECHECK_METHOD>
           How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
           
           Note: Reflink uses copy if the underlying file system doesn't support it.

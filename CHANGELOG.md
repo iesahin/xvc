@@ -3,6 +3,13 @@
 This document is a change log that I write for the project as I develop. It's a
 tree, and subtasks are marked with indentation.
 
+## Unreleased
+
+- Refactor "cache type" to "recheck method" in all code and documentation
+  - Issue: <https://github.com/iesahin/xvc/issues/203>
+  - Renamed `CacheType` to `RecheckMethod`
+  - Revised documentation for recheck methods
+
 ## 0.5.1 (2023-01-28)
 
 - Fix Build Badge in Readme

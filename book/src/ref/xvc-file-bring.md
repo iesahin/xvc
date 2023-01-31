@@ -25,7 +25,7 @@ Options:
           This makes the command similar to `git fetch` in Git. It just updates the cache, and doesn't copy/link the file to workspace.
 
       --recheck-as <RECHECK_AS>
-          Recheck (checkout) the file in one of the four alternative ways. (See `xvc file recheck`) and [CacheType]
+          Recheck (checkout) the file in one of the four alternative ways. (See `xvc file recheck`) and [RecheckMethod]
 
   -h, --help
           Print help (see a summary with '-h')

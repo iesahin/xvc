@@ -15,7 +15,7 @@ use xvc_core::types::xvcdigest::{CollectionDigest, ContentDigest, MetadataDigest
 use xvc_ecs::{Error as EcsError, SharedXStore};
 
 use xvc_core::{
-    diff_store, CacheType, Diff, DiffStore, DiffStore2, HashAlgorithm, XvcDigest, XvcFileType,
+    diff_store, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod, XvcDigest, XvcFileType,
     XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
@@ -32,7 +32,7 @@ pub struct PathComparisonParams {
     pub content_digest_store: XvcStore<ContentDigest>,
     pub metadata_digest_store: XvcStore<MetadataDigest>,
     pub collection_digest_store: XvcStore<CollectionDigest>,
-    pub cache_type_store: XvcStore<CacheType>,
+    pub recheck_method_store: XvcStore<RecheckMethod>,
     pub text_or_binary_store: XvcStore<FileTextOrBinary>,
     pub algorithm: HashAlgorithm,
 }
@@ -76,19 +76,19 @@ pub fn diff_xvc_path_metadata(
     DiffStore2(xvc_path_diff, xvc_metadata_diff)
 }
 
-/// For each command, we have a single requested_cache_type.
+/// For each command, we have a single requested_recheck_method.
 /// We build an actual store by repeating it for all entities we have.
-pub fn diff_cache_type(
-    stored_cache_type_store: &XvcStore<CacheType>,
-    requested_cache_type: CacheType,
+pub fn diff_recheck_method(
+    stored_recheck_method_store: &XvcStore<RecheckMethod>,
+    requested_recheck_method: RecheckMethod,
     entities: &HashSet<XvcEntity>,
-) -> DiffStore<CacheType> {
-    let requested_cache_type_store: HStore<CacheType> =
-        HStore::from_iter(entities.iter().map(|x| (*x, requested_cache_type)));
+) -> DiffStore<RecheckMethod> {
+    let requested_recheck_method_store: HStore<RecheckMethod> =
+        HStore::from_iter(entities.iter().map(|x| (*x, requested_recheck_method)));
 
     let cache_store_diff = diff_store(
-        stored_cache_type_store,
-        &requested_cache_type_store,
+        stored_recheck_method_store,
+        &requested_recheck_method_store,
         Some(entities),
     );
 
