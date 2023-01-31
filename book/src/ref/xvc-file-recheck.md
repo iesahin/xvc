@@ -15,7 +15,7 @@ Arguments:
 Options:
       --recheck-method <RECHECK_METHOD>
           How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
-
+          
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
       --no-parallel
@@ -92,7 +92,7 @@ You can delete the symlink, and replace with an updated copy.
 $ perl -i -pe 's/a/ee/g' data.txt
 
 $ xvc file recheck data.txt --as copy
-[ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck.
+[ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
 $ rm data.txt
 
