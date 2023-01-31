@@ -173,10 +173,10 @@ pub struct XvcConfigInitParams {
     pub include_user_config: bool,
     /// Where should we load the project's (public) configuration?
     /// If `None`, it's ignored.
-    pub project_config_path: Option<PathBuf>,
+    pub project_config_path: Option<AbsolutePath>,
     /// Where should we load the project's (private) configuration?
     /// If `None`, it's ignored.
-    pub local_config_path: Option<PathBuf>,
+    pub local_config_path: Option<AbsolutePath>,
     /// Should we include configuration from the environment.
     /// If `true`, look for all variables in the form
     ///
@@ -491,33 +491,36 @@ impl XvcConfig {
             source: XvcConfigOptionSource::Runtime,
         };
 
-        let mut update = |source, file: std::result::Result<PathBuf, Error>| match file {
-            Ok(config_file) => match config.update_from_file(&config_file, source) {
+        let mut update = |source, file: std::result::Result<&Path, &Error>| match file {
+            Ok(config_file) => match config.update_from_file(config_file, source) {
                 Ok(new_config) => config = new_config,
                 Err(err) => {
                     err.debug();
                 }
             },
             Err(err) => {
-                err.debug();
+                debug!("{}", err);
             }
         };
 
         if p.include_system_config {
             let f = Self::system_config_file();
-            update(XvcConfigOptionSource::System, f);
+            update(XvcConfigOptionSource::System, f.as_deref());
         }
 
         if p.include_user_config {
-            update(XvcConfigOptionSource::Global, Self::user_config_file());
+            update(
+                XvcConfigOptionSource::Global,
+                Self::user_config_file().as_deref(),
+            );
         }
 
         if let Some(project_config_path) = p.project_config_path {
-            update(XvcConfigOptionSource::Project, Ok(project_config_path));
+            update(XvcConfigOptionSource::Project, Ok(&project_config_path));
         }
 
         if let Some(local_config_path) = p.local_config_path {
-            update(XvcConfigOptionSource::Local, Ok(local_config_path));
+            update(XvcConfigOptionSource::Local, Ok(&local_config_path));
         }
 
         if p.include_environment_config {

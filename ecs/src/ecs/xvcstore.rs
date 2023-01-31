@@ -98,7 +98,7 @@ where
     pub fn all_event_log_for_entity(&self, entity: XvcEntity) -> Result<EventLog<T>> {
         let mut prev_events = Self::filter_event_log_by_entity(&self.previous, entity)?;
         let mut current_events = Self::filter_event_log_by_entity(&self.current, entity)?;
-        prev_events.append(current_events);
+        prev_events.append(&mut current_events);
         Ok(EventLog::from_events(prev_events))
     }
 
