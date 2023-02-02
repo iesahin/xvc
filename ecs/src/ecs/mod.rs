@@ -331,7 +331,7 @@ mod tests {
         gen.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 1);
         // It must save the counter if it's changed
-        let e = gen.next_element();
+        let _e = gen.next_element();
         gen.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 2);
 

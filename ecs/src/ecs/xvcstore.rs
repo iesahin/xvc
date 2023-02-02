@@ -116,7 +116,7 @@ where
         let events = event_log
             .iter()
             .filter_map(|e| match e {
-                event @ Event::Add { entity, value } => {
+                event @ Event::Add { entity, .. } => {
                     if *entity == xe {
                         Some(event.clone())
                     } else {

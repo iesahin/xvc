@@ -17,6 +17,7 @@ tree, and subtasks are marked with indentation.
     - I think it's better to implement remove and untrack commands in one go.
     - Added `join` to AbsolutePath.
     - Added ContentDigest to XvcCachePath to get partial strings
+    - Change all PathBuf elements in XvcRoot to AbsolutePath
   - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
 
 ## 0.5.1 (2023-01-28)
