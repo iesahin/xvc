@@ -46,7 +46,7 @@ impl AbsolutePath {
     where
         T: AsRef<Path>,
     {
-        assert!(p.as_ref().is_absolute());
+        assert!(!p.as_ref().is_absolute());
         Self(self.0.join(p))
     }
 }
