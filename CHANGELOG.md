@@ -17,8 +17,8 @@ tree, and subtasks are marked with indentation.
     - I think it's better to implement remove and untrack commands in one go.
     - Added `join` to AbsolutePath.
       - Assert the parameter is not absolute.
-        - Caused error in xvc init: Fixed
-        - Caused error in updating gitignores
+        - Caused error in xvc init: Fixed ✅
+        - Caused error in updating gitignores: Fixed ✅
     - Added ContentDigest to XvcCachePath to get partial strings
     - Change all PathBuf elements in XvcRoot to AbsolutePath
   - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
