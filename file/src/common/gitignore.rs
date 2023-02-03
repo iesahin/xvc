@@ -28,8 +28,8 @@ pub fn make_ignore_handler(
     let xvc_root = xvc_root.absolute_path().clone();
 
     let handle = std::thread::spawn(move || {
-        let mut ignore_dirs = Vec::<PathBuf>::new();
-        let mut ignore_files = Vec::<PathBuf>::new();
+        let mut ignore_dirs = Vec::<XvcPath>::new();
+        let mut ignore_files = Vec::<XvcPath>::new();
 
         let gitignore = build_gitignore(&xvc_root).unwrap();
         for op in receiver {
@@ -38,18 +38,18 @@ pub fn make_ignore_handler(
                     IgnoreOperation::IgnoreDir { dir } => {
                         let path = dir.to_absolute_path(&xvc_root).to_path_buf();
 
-                        if !ignore_dirs.contains(&path)
+                        if !ignore_dirs.contains(&dir)
                             && matches!(check_ignore(&gitignore, &path), MatchResult::NoMatch)
                         {
-                            ignore_dirs.push(path);
+                            ignore_dirs.push(dir);
                         }
                     }
                     IgnoreOperation::IgnoreFile { file } => {
                         let path = file.to_absolute_path(&xvc_root).to_path_buf();
-                        if !ignore_files.contains(&path)
+                        if !ignore_files.contains(&file)
                             && matches!(check_ignore(&gitignore, &path), MatchResult::NoMatch)
                         {
-                            ignore_files.push(path);
+                            ignore_files.push(file);
                         }
                     }
                 }
@@ -84,16 +84,16 @@ pub fn update_dir_gitignores(
     xvc_root: &AbsolutePath,
     current_dir: &AbsolutePath,
     current_gitignore: &IgnoreRules,
-    dirs: &[PathBuf],
+    dirs: &[XvcPath],
 ) -> Result<()> {
     // Check if dirs are already ignored
-    let dir_map: HashMap<PathBuf, PathBuf> = dirs
+    let dir_map: HashMap<XvcPath, PathBuf> = dirs
         .iter()
-        .filter_map(|f| {
-            let abs_path = if f.ends_with("/") {
-                current_dir.join(f)
+        .filter_map(|dir| {
+            let abs_path = if dir.ends_with("/") {
+                current_dir.join(dir.to_string())
             } else {
-                current_dir.join(format!("{}/", f.to_string_lossy()))
+                current_dir.join(format!("{}/", dir.to_string()))
             };
 
             let ignore_res = check_ignore(current_gitignore, &abs_path);
@@ -104,8 +104,8 @@ pub fn update_dir_gitignores(
                     None
                 }
                 MatchResult::NoMatch => {
-                    Some((f.clone(),
-                          f.parent()
+                    Some((dir.clone(),
+                          abs_path.parent()
                             .map(|p| p.join(".gitignore"))
                             .unwrap_or_else(|| PathBuf::from(".gitignore"))))
                 }
@@ -129,7 +129,7 @@ pub fn update_dir_gitignores(
         let path_v = changes.get_mut(&gi).unwrap();
         path_v.push(
             d.file_name()
-                .map(|d| format!("/{}/", d.to_string_lossy()))
+                .map(|d| format!("/{}/", d))
                 .unwrap_or_else(|| "## Path Contains final ..".to_string()),
         );
     }

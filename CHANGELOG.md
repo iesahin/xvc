@@ -16,6 +16,9 @@ tree, and subtasks are marked with indentation.
     - There will also be a `xvc file versions` command to list the versions of a file and restore them to a directory.
     - I think it's better to implement remove and untrack commands in one go.
     - Added `join` to AbsolutePath.
+      - Assert the parameter is not absolute.
+        - Caused error in xvc init: Fixed
+        - Caused error in updating gitignores
     - Added ContentDigest to XvcCachePath to get partial strings
     - Change all PathBuf elements in XvcRoot to AbsolutePath
   - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
