@@ -19,6 +19,7 @@ Commands:
   list      List tracked and untracked elements in the workspace
   send      Send (push, upload) files to external storages
   bring     Bring (download, pull, fetch) files from external storages
+  untrack   Untrack (delete) files from Xvc and possibly storages
   help      Print this message or the help of the given subcommand(s)
 
 Options:
