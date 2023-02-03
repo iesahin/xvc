@@ -195,11 +195,11 @@ pub fn cmd_track(
     update_store_records(xvc_root, &content_digest_diff, true, false)?;
 
     watch!(targets);
-    let file_targets: Vec<PathBuf> = targets
+    let file_targets: Vec<XvcPath> = targets
         .iter()
         .filter_map(|(xp, xmd)| {
             if xmd.file_type == XvcFileType::File {
-                Some(xp.to_absolute_path(xvc_root).to_path_buf())
+                Some(xp.clone())
             } else {
                 None
             }
@@ -227,10 +227,10 @@ pub fn cmd_track(
     watch!(file_targets);
     watch!(dir_targets);
 
-    update_dir_gitignores(xvc_root, current_dir, &current_gitignore, &dir_targets)?;
+    update_dir_gitignores(xvc_root, &current_gitignore, &dir_targets)?;
     // We reload gitignores here to make sure we ignore the given dirs
     let current_gitignore = build_gitignore(xvc_root)?;
-    update_file_gitignores(xvc_root, current_dir, &current_gitignore, &file_targets)?;
+    update_file_gitignores(xvc_root, &current_gitignore, &file_targets)?;
 
     if !opts.no_commit {
         let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;

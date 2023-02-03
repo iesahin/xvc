@@ -1,5 +1,6 @@
 use chrono::Utc;
 use crossbeam_channel::Sender;
+use relative_path::RelativePathBuf;
 use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::Write;
@@ -60,14 +61,14 @@ pub fn make_ignore_handler(
         }
         debug!(output_snd, "Writing directories to .gitignore");
         uwr!(
-            update_dir_gitignores(&xvc_root, &xvc_root, &gitignore, &ignore_dirs),
+            update_dir_gitignores(&xvc_root, &gitignore, &ignore_dirs),
             output_snd
         );
         // Load again to get ignored directories
         let gitignore = build_gitignore(&xvc_root).unwrap();
         debug!(output_snd, "Writing files to .gitignore");
         uwr!(
-            update_file_gitignores(&xvc_root, &xvc_root, &gitignore, &ignore_files),
+            update_file_gitignores(&xvc_root, &gitignore, &ignore_files),
             output_snd
         );
     });
@@ -82,18 +83,17 @@ pub fn make_ignore_handler(
 ///
 pub fn update_dir_gitignores(
     xvc_root: &AbsolutePath,
-    current_dir: &AbsolutePath,
     current_gitignore: &IgnoreRules,
     dirs: &[XvcPath],
 ) -> Result<()> {
     // Check if dirs are already ignored
-    let dir_map: HashMap<XvcPath, PathBuf> = dirs
+    let dirs: Vec<XvcPath> = dirs
         .iter()
         .filter_map(|dir| {
             let abs_path = if dir.ends_with("/") {
-                current_dir.join(dir.to_string())
+                xvc_root.join(dir.to_string())
             } else {
-                current_dir.join(format!("{}/", dir.to_string()))
+                xvc_root.join(format!("{}/", dir.to_string()))
             };
 
             let ignore_res = check_ignore(current_gitignore, &abs_path);
@@ -104,10 +104,7 @@ pub fn update_dir_gitignores(
                     None
                 }
                 MatchResult::NoMatch => {
-                    Some((dir.clone(),
-                          abs_path.parent()
-                            .map(|p| p.join(".gitignore"))
-                            .unwrap_or_else(|| PathBuf::from(".gitignore"))))
+                    Some(dir.clone())
                 }
                 MatchResult::Whitelist => {
                     error!("Path is whitelisted in Git. Please remove/modify the whitelisting rule: {}",
@@ -116,19 +113,22 @@ pub fn update_dir_gitignores(
                 }
             }}).collect();
 
-    watch!(dir_map);
-
     // Check if files are already ignored
-    let mut changes = HashMap::<PathBuf, Vec<String>>::new();
+    let mut changes = HashMap::<RelativePathBuf, Vec<String>>::new();
 
-    for (d, gi) in dir_map {
+    for dir in dirs {
+        let gi = dir
+            .parent()
+            .map(|p| p.join(".gitignore"))
+            .unwrap_or_else(|| RelativePathBuf::from(".gitignore"));
+
         if !changes.contains_key(&gi) {
             changes.insert(gi.clone(), Vec::<String>::new());
         }
 
         let path_v = changes.get_mut(&gi).unwrap();
         path_v.push(
-            d.file_name()
+            dir.file_name()
                 .map(|d| format!("/{}/", d))
                 .unwrap_or_else(|| "## Path Contains final ..".to_string()),
         );
@@ -141,7 +141,7 @@ pub fn update_dir_gitignores(
             Utc::now().to_rfc2822(),
             values.join("\n")
         );
-        let gitignore_path = xvc_root.join(gitignore_file);
+        let gitignore_path = gitignore_file.to_path(xvc_root);
 
         let mut file_o = OpenOptions::new()
             .create(true)
@@ -156,40 +156,31 @@ pub fn update_dir_gitignores(
 
 pub fn update_file_gitignores(
     xvc_root: &AbsolutePath,
-    current_dir: &AbsolutePath,
     current_gitignore: &IgnoreRules,
-    files: &[PathBuf],
+    files: &[XvcPath],
 ) -> Result<()> {
-    // Check if files are already ignored
-    let file_map: HashMap<PathBuf, PathBuf> = files
-        .iter()
-        .filter_map(|f| {
-                    let abs_path = current_dir.join(f);
-
-            match check_ignore(current_gitignore, &abs_path) {
+    // Filter already ignored files
+    let files: Vec<XvcPath> = files.iter().filter_map(|f| match check_ignore(current_gitignore, &f.to_absolute_path(xvc_root)) {
                 MatchResult::NoMatch => {
-
-                    Some((f.clone(),
-                          f.parent()
-                            .map(|p| p.join(".gitignore"))
-                            .unwrap_or_else(|| PathBuf::from(".gitignore"))))
+                    Some(f.clone())
                 }
                 MatchResult::Ignore => {
-                    info!("Already gitignored: {}", &abs_path.to_string_lossy());
+                    info!("Already gitignored: {}", f.to_string());
                     None
                 }
                 MatchResult::Whitelist => {
-                    error!("Path is whitelisted in Gitignore, please modify/remove the whitelisting rule: {}", &abs_path.to_string_lossy());
+                    error!("Path is whitelisted in Gitignore, please modify/remove the whitelisting rule: {}", f.to_string());
                 None
-            }}
-            })
-        .collect();
+            }}).collect();
 
-    watch!(file_map);
+    let mut changes = HashMap::<RelativePathBuf, Vec<String>>::new();
 
-    let mut changes = HashMap::<PathBuf, Vec<String>>::new();
+    for f in files {
+        let gi = f
+            .parent()
+            .map(|p| p.join(".gitignore"))
+            .unwrap_or_else(|| RelativePathBuf::from(".gitignore"));
 
-    for (f, gi) in file_map {
         if !changes.contains_key(&gi) {
             changes.insert(gi.clone(), Vec::<String>::new());
         }
@@ -197,7 +188,7 @@ pub fn update_file_gitignores(
         let path_v = changes.get_mut(&gi).unwrap();
         path_v.push(
             f.file_name()
-                .map(|f| format!("/{}", f.to_string_lossy()))
+                .map(|f| format!("/{}", f.to_string()))
                 .unwrap_or_else(|| "## Path Contains final ..".to_string()),
         );
     }
@@ -209,7 +200,7 @@ pub fn update_file_gitignores(
             Utc::now().to_rfc2822(),
             values.join("\n")
         );
-        let gitignore_path = xvc_root.join(gitignore_file);
+        let gitignore_path = gitignore_file.to_path(&xvc_root);
 
         let mut file_o = OpenOptions::new()
             .create(true)
