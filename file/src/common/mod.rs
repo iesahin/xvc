@@ -288,6 +288,9 @@ pub fn xvc_path_metadata_map_from_disk(
         .collect()
 }
 
+/// Copies / links `cache_path` to `xvc_path` with `recheck_method`.
+/// WARNING: If `xvc_path` is already present, it will be deleted first.
+/// It also sends an ignore operation to `ignore_writer`.
 pub fn recheck_from_cache(
     output_snd: &Sender<XvcOutputLine>,
     xvc_root: &XvcRoot,
@@ -309,6 +312,11 @@ pub fn recheck_from_cache(
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
     let path = xvc_path.to_absolute_path(xvc_root);
+    // If the file already exists, we delete it.
+    if path.exists() {
+        fs::remove_file(&path)?;
+    }
+
     watch!(path);
     watch!(recheck_method);
     match recheck_method {

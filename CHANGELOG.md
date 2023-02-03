@@ -19,7 +19,8 @@ tree, and subtasks are marked with indentation.
       - Assert the parameter is not absolute.
         - Caused error in xvc init: Fixed ✅
         - Caused error in updating gitignores: Fixed ✅
-    - Added ContentDigest to XvcCachePath to get partial strings
+    - Error in recheck for existing paths: Fixed ✅
+    - XvcCachePath returns a partial path for reporting
     - Change all PathBuf elements in XvcRoot to AbsolutePath
   - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
 
