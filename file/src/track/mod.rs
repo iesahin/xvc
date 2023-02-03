@@ -44,7 +44,7 @@ pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long)]
+    #[arg(long, alias = "as")]
     recheck_method: Option<RecheckMethod>,
 
     /// Do not copy/link added files to the file cache

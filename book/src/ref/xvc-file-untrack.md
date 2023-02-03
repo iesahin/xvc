@@ -4,13 +4,27 @@
 
 ```console
 $ xvc file untrack --help
+Untrack (delete) files from Xvc and possibly storages
+
+Usage: xvc file untrack [OPTIONS] [TARGETS]...
+
+Arguments:
+  [TARGETS]...  Files/directories to untrack
+
+Options:
+      --restore-versions <RESTORE_VERSIONS>
+          Restore all versions to a directory before deleting the cache files
+      --delete-from-storages <DELETE_FROM_STORAGES>
+          Delete all files also from given storages
+  -h, --help
+          Print help
+
 ```
 
 
 ## Examples
 
-This command removes a file from Xvc tracking and optionally deletes it from the local filesystem, cache and the
-storages.
+This command removes a file from Xvc tracking and optionally deletes it from the local filesystem, cache, and the storages.
 
 It only works if the file is tracked by Xvc.
 
@@ -23,14 +37,29 @@ $ xvc init
 $ xvc file track 'd*.txt'
 
 $ xvc file list
+FC          19 [..] c85f3e81 c85f3e81 data.txt
+FX         130 [..]          ac46bf74 .xvcignore
+FX         191 [..]          d3815b7e .gitignore
+Total #: 3 Workspace Size:         340 Cached Size:          19
+
+
 ```
 
-Without any options, it removes the file from Xvc tracking and the cache. It also makes the file visible to git.
+Without any options, it removes the file from Xvc tracking and the cache.
+
+```admonition warning
+
+`xvc file untrack` doesn't modify the `.gitignore` files to remove the previously tracked files. You must do it manually if you want to track the file with Git.
+
+```
 
 ```console
 $ xvc file untrack data.txt
 
 $ git status
+On branch main
+nothing to commit, working tree clean
+
 ```
 
 If you have [rechecked](/concepts/recheck.md) the file as symlink or reflink, it will be copied to the workspace.
