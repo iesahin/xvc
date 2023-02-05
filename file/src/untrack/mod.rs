@@ -163,7 +163,8 @@ pub fn cmd_untrack(
                 uwr!(fs::create_dir_all(&destination_dir), output_snd);
             }
 
-            vec_cp.par_iter().for_each(|xcp| {
+            // TODO: Parallelize this if we have a lot of versions
+            vec_cp.iter().sorted().for_each(|xcp| {
                 let from = xcp.to_absolute_path(xvc_root);
                 // The suffix will be like b3-123-456-789
                 let xcp_suffix = xcp.digest_string(VERSION_ID_LEN);

@@ -22,6 +22,7 @@ tree, and subtasks are marked with indentation.
     - Error in recheck for existing paths: Fixed ✅
     - XvcCachePath returns a partial path for reporting
     - Change all PathBuf elements in XvcRoot to AbsolutePath
+    - Sort results of `--restore-versions` by entity id ✅
   - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
 
 ## 0.5.1 (2023-01-28)
