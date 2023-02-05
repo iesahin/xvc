@@ -29,7 +29,7 @@ use crossbeam_channel::Sender;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{watch, XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
@@ -136,34 +136,30 @@ impl Display for XvcStorage {
 pub trait XvcStorageOperations {
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)>
     where
         Self: Sized;
 
-    fn list(
-        &self,
-        output: &Sender<XvcOutputLine>,
-        xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageListEvent>;
+    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent>;
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<XvcStorageSendEvent>;
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)>;
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent>;
@@ -172,7 +168,7 @@ pub trait XvcStorageOperations {
 impl XvcStorageOperations for XvcStorage {
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         match self {
@@ -221,11 +217,7 @@ impl XvcStorageOperations for XvcStorage {
         }
     }
 
-    fn list(
-        &self,
-        output: &Sender<XvcOutputLine>,
-        xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageListEvent> {
+    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         match self {
             XvcStorage::Local(lr) => lr.list(output, xvc_root),
             XvcStorage::Generic(gr) => gr.list(output, xvc_root),
@@ -247,7 +239,7 @@ impl XvcStorageOperations for XvcStorage {
 
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -273,7 +265,7 @@ impl XvcStorageOperations for XvcStorage {
 
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -300,7 +292,7 @@ impl XvcStorageOperations for XvcStorage {
 
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -411,7 +403,7 @@ impl From<Uuid> for XvcStorageGuid {
 pub const XVC_STORAGE_GUID_FILENAME: &str = ".xvc-guid";
 
 pub fn get_storage_record(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     identifier: &StorageIdentifier,
 ) -> Result<XvcStorage> {

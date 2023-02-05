@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{info, uwr, warn, watch, XvcOutputLine};
+use xvc_logging::{info, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -24,7 +24,7 @@ use super::{
 /// If the connection options are not valid, [XvcRsyncStorage::init] will fail,
 /// and this function will return an error before recording the storage.
 pub fn cmd_new_rsync(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: String,
     host: String,
@@ -244,7 +244,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     /// Initialize the repository by copying guid file to remote storage directory.
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
     ) -> Result<(super::XvcStorageInitEvent, Self)> {
         // "--init",
@@ -290,11 +290,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     /// Lists all files in the remote directory that match to regex:
     ///
     /// {XVC_GUID}/[a-zA-Z][0-9]/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{58}/0
-    fn list(
-        &self,
-        output: &Sender<XvcOutputLine>,
-        xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageListEvent> {
+    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         // "--list",
         // "ssh {URL} 'ls -1R {STORAGE_DIR}'",
         //
@@ -325,7 +321,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         _force: bool,
@@ -374,7 +370,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -431,7 +427,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {

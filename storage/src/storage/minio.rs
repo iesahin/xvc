@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use tokio;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{watch, XvcOutputLine, XvcOutputSender};
 
 use crate::storage::XvcStorageReceiveEvent;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -31,7 +31,7 @@ use super::{
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_minio(
     input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: String,
     endpoint: String,
@@ -131,7 +131,7 @@ impl XvcMinioStorage {
 
     async fn a_init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
@@ -161,7 +161,7 @@ impl XvcMinioStorage {
 
     async fn a_list(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let credentials = self.credentials()?;
@@ -226,7 +226,7 @@ impl XvcMinioStorage {
 
     async fn a_send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -278,7 +278,7 @@ impl XvcMinioStorage {
 
     async fn a_receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -335,7 +335,7 @@ impl XvcMinioStorage {
 
     async fn a_delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -346,7 +346,7 @@ impl XvcMinioStorage {
 impl XvcStorageOperations for XvcMinioStorage {
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -359,7 +359,7 @@ impl XvcStorageOperations for XvcMinioStorage {
     /// List the bucket contents that start with `self.remote_prefix`
     fn list(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> crate::Result<super::XvcStorageListEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -371,7 +371,7 @@ impl XvcStorageOperations for XvcMinioStorage {
 
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -385,7 +385,7 @@ impl XvcStorageOperations for XvcMinioStorage {
 
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -399,7 +399,7 @@ impl XvcStorageOperations for XvcMinioStorage {
 
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {

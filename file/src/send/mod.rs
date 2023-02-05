@@ -9,7 +9,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{error, watch, XvcOutputLine};
+use xvc_logging::{error, watch, XvcOutputLine, XvcOutputSender};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 
 /// Send (upload) tracked files to storage
@@ -33,11 +33,7 @@ pub struct SendCLI {
 }
 
 /// Send a targets in `opts.targets` in `xvc_root`  to `opt.remote`
-pub fn cmd_send(
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    opts: SendCLI,
-) -> Result<()> {
+pub fn cmd_send(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: SendCLI) -> Result<()> {
     let remote = get_storage_record(output_snd, xvc_root, &opts.remote)?;
     watch!(remote);
     let current_dir = xvc_root.config().current_dir()?;

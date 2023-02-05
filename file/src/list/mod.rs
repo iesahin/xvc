@@ -23,7 +23,7 @@ use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::XvcEntity;
-use xvc_logging::{error, output, watch, XvcOutputLine};
+use xvc_logging::{error, output, watch, XvcOutputLine, XvcOutputSender};
 
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
 enum ListColumn {
@@ -536,11 +536,8 @@ impl UpdateFromXvcConfig for ListCLI {
 /// - <: File is newer, xvc carry-in to update the cache
 /// TODO: - I: File is ignored
 
-pub fn cmd_list(
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    cli_opts: ListCLI,
-) -> Result<()> {
+pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
+
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
 

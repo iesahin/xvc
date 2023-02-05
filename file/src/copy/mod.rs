@@ -15,7 +15,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, watch, XvcOutputLine};
+use xvc_logging::{debug, error, watch, XvcOutputLine, XvcOutputSender};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -114,7 +114,7 @@ pub(crate) fn check_if_destination_is_a_directory(
 }
 
 pub(crate) fn check_if_sources_have_changed(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_metadata_store: &XvcStore<XvcMetadata>,
@@ -172,7 +172,7 @@ pub(crate) fn check_if_sources_have_changed(
 }
 
 pub fn get_copy_source_dest_store(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_metadata_store: &XvcStore<XvcMetadata>,
@@ -278,7 +278,7 @@ pub fn get_copy_source_dest_store(
 }
 
 pub(crate) fn recheck_destination(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     destination_entities: &[XvcEntity],
 ) -> Result<()> {
@@ -315,7 +315,7 @@ pub(crate) fn recheck_destination(
 }
 
 pub(crate) fn cmd_copy(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: CopyCLI,
 ) -> Result<()> {

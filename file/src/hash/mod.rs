@@ -12,7 +12,7 @@ use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
 };
-use xvc_logging::{output, watch, XvcOutputLine};
+use xvc_logging::{output, watch, XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::common::{calc_digest, pipe_path_digest};
@@ -56,7 +56,7 @@ impl UpdateFromXvcConfig for HashCLI {
 ///
 /// Calculate hash of given files in `opts.targets` and send to `output_snd`.
 pub fn cmd_hash(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: Option<&XvcRoot>,
     opts: HashCLI,
 ) -> Result<()> {

@@ -22,7 +22,7 @@ use xvc_core::{
     all_paths_and_metadata, apply_diff, ContentDigest, DiffStore, RecheckMethod, TextOrBinary,
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_logging::{info, warn, watch};
+use xvc_logging::{info, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 use xvc_logging::XvcOutputLine;
@@ -292,7 +292,7 @@ pub fn xvc_path_metadata_map_from_disk(
 /// WARNING: If `xvc_path` is already present, it will be deleted first.
 /// It also sends an ignore operation to `ignore_writer`.
 pub fn recheck_from_cache(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,

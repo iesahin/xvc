@@ -22,7 +22,7 @@ use xvc_core::{
     XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine};
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
 
 /// Check out file from cache by a copy or link
 ///
@@ -82,7 +82,7 @@ impl UpdateFromXvcConfig for RecheckCLI {
 /// Uses [PathComparisonParams] to get the overview of all elements in the repository.
 /// After getting the list of file targets, runs either [recheck_serial] or [recheck_parallel].
 pub fn cmd_recheck(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     cli_opts: RecheckCLI,
 ) -> Result<()> {
@@ -226,7 +226,7 @@ pub enum RecheckOperation {
 type RecheckOp = Option<RecheckOperation>;
 
 pub fn make_recheck_handler(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<(Sender<RecheckOp>, JoinHandle<()>)> {
@@ -264,7 +264,7 @@ pub fn make_recheck_handler(
 }
 
 fn recheck(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     files_to_recheck: &HStore<&XvcPath>,
     recheck_method_store: &XvcStore<RecheckMethod>,

@@ -6,7 +6,7 @@ use crossbeam_channel::Sender;
 use regex::Regex;
 use xvc_core::{XvcPath, XvcRoot};
 use xvc_ecs::{R1NStore, XvcEntity};
-use xvc_logging::{debug, XvcOutputLine};
+use xvc_logging::{debug, XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
@@ -16,7 +16,7 @@ use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep}
 ///
 /// Parses dependencies using member functions, in order to avoid a single function with a lot of parameters.
 pub struct XvcDependencyList<'a> {
-    output_snd: &'a Sender<XvcOutputLine>,
+    output_snd: &'a XvcOutputSender,
     xvc_root: &'a XvcRoot,
     current_dir: &'a AbsolutePath,
     pipeline_e: XvcEntity,
@@ -30,7 +30,7 @@ impl<'a> XvcDependencyList<'a> {
     ///
     /// Finds the pipeline and the step with their names, and creates a new dependency list.
     pub fn new(
-        output_snd: &'a Sender<XvcOutputLine>,
+        output_snd: &'a XvcOutputSender,
         xvc_root: &'a XvcRoot,
         pipeline_name: &'a str,
         step_name: &'a str,

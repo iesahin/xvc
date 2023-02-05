@@ -8,7 +8,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::XvcCachePath;
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
 
 use anyhow::anyhow;
 
@@ -31,7 +31,7 @@ use super::{
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_gcs(
     input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &xvc_core::XvcRoot,
     name: String,
     bucket_name: String,
@@ -129,7 +129,7 @@ impl XvcGcsStorage {
 
     async fn a_init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output_snd: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
@@ -151,7 +151,7 @@ impl XvcGcsStorage {
         match res_response {
             Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output_snd, "Error: {}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -159,7 +159,7 @@ impl XvcGcsStorage {
 
     async fn a_list(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output_snd: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let credentials = self.credentials()?;
@@ -207,7 +207,7 @@ impl XvcGcsStorage {
             }
 
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output_snd, "Error: {}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -224,7 +224,7 @@ impl XvcGcsStorage {
 
     async fn a_send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -252,18 +252,12 @@ impl XvcGcsStorage {
 
             match res_response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            abs_cache_path,
-                            remote_path.as_str()
-                        )))
-                        .unwrap();
+                    info!(output, "{} -> {}", abs_cache_path, remote_path.as_str());
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                    error!(output, "Error: {}", err);
                 }
             }
         }
@@ -276,7 +270,7 @@ impl XvcGcsStorage {
 
     async fn a_receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -306,18 +300,12 @@ impl XvcGcsStorage {
 
             match response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            remote_path.as_str(),
-                            abs_cache_path,
-                        )))
-                        .unwrap();
+                    info!(output, "{} -> {}", remote_path.as_str(), abs_cache_path);
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "Error: {}", err);
                 }
             }
         }
@@ -333,7 +321,7 @@ impl XvcGcsStorage {
 
     async fn a_delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -344,7 +332,7 @@ impl XvcGcsStorage {
 impl XvcStorageOperations for XvcGcsStorage {
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -357,7 +345,7 @@ impl XvcStorageOperations for XvcGcsStorage {
     /// List the bucket contents that start with `self.remote_prefix`
     fn list(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> crate::Result<super::XvcStorageListEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -369,7 +357,7 @@ impl XvcStorageOperations for XvcGcsStorage {
 
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -383,7 +371,7 @@ impl XvcStorageOperations for XvcGcsStorage {
 
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -397,7 +385,7 @@ impl XvcStorageOperations for XvcGcsStorage {
 
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {

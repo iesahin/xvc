@@ -41,8 +41,8 @@ use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::XvcRoot;
 use xvc_core::CHANNEL_BOUND;
-use xvc_logging::XvcOutputLine;
 use xvc_logging::{setup_logging, watch};
+use xvc_logging::{XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use bring::BringCLI;
@@ -145,7 +145,7 @@ pub struct XvcFileCLI {
 ///
 /// It runs the subcommand specified in the command line arguments.
 pub fn run(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: Option<&XvcRoot>,
     opts: XvcFileCLI,
 ) -> Result<()> {
@@ -253,10 +253,10 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
     };
 
     thread::scope(move |s| {
-        let (output_snd, output_rec) = bounded::<XvcOutputLine>(CHANNEL_BOUND);
+        let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
         s.spawn(move |_| {
             let mut output = io::stdout();
-            while let Ok(output_line) = output_rec.recv() {
+            while let Ok(Some(output_line)) = output_rec.recv() {
                 match output_line {
                     XvcOutputLine::Output(m) => writeln!(output, "{}", m).unwrap(),
                     XvcOutputLine::Info(m) => info!("[INFO] {}", m),

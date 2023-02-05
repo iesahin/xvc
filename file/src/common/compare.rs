@@ -20,7 +20,7 @@ use xvc_core::{
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, panic, watch, XvcOutputLine};
+use xvc_logging::{debug, error, panic, watch, XvcOutputLine, XvcOutputSender};
 
 use super::FileTextOrBinary;
 
@@ -116,7 +116,7 @@ pub fn diff_text_or_binary(
 }
 
 pub fn diff_file_content_digest(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     xe: XvcEntity,
     xvc_path_diff: &Diff<XvcPath>,
@@ -246,7 +246,7 @@ pub struct DiffRequest {
 /// It sends a None to the diff_result_snd when it exits.
 
 pub fn make_file_content_digest_diff_handler(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &SharedXStore<XvcPath>,
     stored_xvc_metadata_store: &SharedXStore<XvcMetadata>,
@@ -347,7 +347,7 @@ pub fn make_file_content_digest_diff_handler(
 /// This is used to identify the files that requires attention in several
 /// commands, like recheck or carry-in.
 pub fn diff_content_digest(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_xvc_metadata_store: &XvcStore<XvcMetadata>,

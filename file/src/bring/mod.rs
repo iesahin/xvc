@@ -17,7 +17,7 @@ use clap::Parser;
 use crossbeam_channel::Sender;
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{debug, uwr, warn, watch, XvcOutputLine};
+use xvc_logging::{debug, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
 
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
@@ -60,11 +60,7 @@ pub struct BringCLI {
 /// - Expands globs in `opts.targets`.
 /// - Gets the corresponding cache path for each file target.
 /// - Calls `storage.receive` for each of these targets.
-pub fn fetch(
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    opts: &BringCLI,
-) -> Result<()> {
+pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) -> Result<()> {
     let remote = get_storage_record(output_snd, xvc_root, &opts.storage)?;
 
     let current_dir = xvc_root.config().current_dir()?;
@@ -158,11 +154,7 @@ pub fn fetch(
 ///
 /// - [fetch] targets from the storage
 /// - [checkout][cmd_checkout] them from storage if `opts.no_checkout` is false. (default)
-pub fn cmd_bring(
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    opts: BringCLI,
-) -> Result<()> {
+pub fn cmd_bring(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: BringCLI) -> Result<()> {
     fetch(output_snd, xvc_root, &opts)?;
     watch!("Fetch completed");
     if !opts.no_recheck {

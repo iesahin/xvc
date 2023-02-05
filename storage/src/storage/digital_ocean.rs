@@ -9,7 +9,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -30,7 +30,7 @@ use super::{
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_digital_ocean(
     input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: String,
     bucket_name: String,
@@ -124,7 +124,7 @@ impl XvcDigitalOceanStorage {
 
     async fn a_init(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output_snd: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, XvcDigitalOceanStorage)> {
         let bucket = self.get_bucket()?;
@@ -146,7 +146,7 @@ impl XvcDigitalOceanStorage {
         match res_response {
             Ok(_) => Ok((XvcStorageInitEvent { guid }, self.clone())),
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output_snd, "{}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -154,7 +154,7 @@ impl XvcDigitalOceanStorage {
 
     async fn a_list(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let credentials = self.credentials()?;
@@ -202,7 +202,7 @@ impl XvcDigitalOceanStorage {
             }
 
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output, "{}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -219,7 +219,7 @@ impl XvcDigitalOceanStorage {
 
     async fn a_send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output_snd: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -247,18 +247,12 @@ impl XvcDigitalOceanStorage {
 
             match res_response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            abs_cache_path,
-                            remote_path.as_str()
-                        )))
-                        .unwrap();
+                    info!(output_snd, "{} -> {}", abs_cache_path, remote_path.as_str());
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                    error!(output_snd, "{}", err);
                 }
             }
         }
@@ -271,7 +265,7 @@ impl XvcDigitalOceanStorage {
 
     async fn a_receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output_snd: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -300,18 +294,12 @@ impl XvcDigitalOceanStorage {
 
             match response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            remote_path.as_str(),
-                            abs_cache_path,
-                        )))
-                        .unwrap();
+                    info!(output_snd, "{} -> {}", remote_path.as_str(), abs_cache_path);
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output_snd, "{}", err);
                 }
             }
         }
@@ -327,7 +315,7 @@ impl XvcDigitalOceanStorage {
 
     async fn a_delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -338,7 +326,7 @@ impl XvcDigitalOceanStorage {
 impl XvcStorageOperations for XvcDigitalOceanStorage {
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -351,7 +339,7 @@ impl XvcStorageOperations for XvcDigitalOceanStorage {
     /// List the bucket contents that start with `self.remote_prefix`
     fn list(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> crate::Result<super::XvcStorageListEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -363,7 +351,7 @@ impl XvcStorageOperations for XvcDigitalOceanStorage {
 
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -377,7 +365,7 @@ impl XvcStorageOperations for XvcDigitalOceanStorage {
 
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
@@ -391,7 +379,7 @@ impl XvcStorageOperations for XvcDigitalOceanStorage {
 
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {

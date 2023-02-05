@@ -241,7 +241,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     }
 
     thread::scope(move |s| {
-        let (output_snd, output_rec) = bounded::<XvcOutputLine>(CHANNEL_BOUND);
+        let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
 
         s.spawn(move |_| -> Result<()> {
             match cli_opts.command {
@@ -328,7 +328,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         });
 
         s.spawn(move |_| {
-            while let Ok(output_line) = output_rec.recv() {
+            while let Ok(Some(output_line)) = output_rec.recv() {
                 // output_str.push_str(&output_line);
                 match term_log_level {
                     LevelFilter::Off => match output_line {

@@ -17,7 +17,7 @@ use xvc_core::types::recheckmethod;
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::ecs::event::EventLog;
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, output, panic, uwo, uwr, watch};
+use xvc_logging::{debug, error, output, panic, uwo, uwr, watch, XvcOutputSender};
 
 /// Remove files from tracking and possibly delete them
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
@@ -37,7 +37,7 @@ pub struct UntrackCLI {
 }
 
 pub fn cmd_untrack(
-    output_snd: &Sender<xvc_logging::XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: UntrackCLI,
 ) -> Result<()> {

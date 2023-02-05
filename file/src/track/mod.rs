@@ -17,7 +17,7 @@ use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
 use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
-use xvc_logging::{error, info, watch, XvcOutputLine};
+use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
 
 use crate::carry_in::carry_in;
 use crate::common::compare::{
@@ -114,7 +114,7 @@ impl UpdateFromXvcConfig for TrackCLI {
 ///     RecheckMethod --> |Reflink| Reflink
 /// ```
 pub fn cmd_track(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     cli_opts: TrackCLI,
 ) -> Result<()> {

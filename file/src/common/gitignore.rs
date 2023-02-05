@@ -10,7 +10,7 @@ use xvc_core::util::git::build_gitignore;
 
 use crate::Result;
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine};
+use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine, XvcOutputSender};
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
 pub enum IgnoreOperation {
@@ -21,7 +21,7 @@ pub enum IgnoreOperation {
 pub type IgnoreOp = Option<IgnoreOperation>;
 
 pub fn make_ignore_handler(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
 ) -> Result<(Sender<IgnoreOp>, JoinHandle<()>)> {
     let (sender, receiver) = crossbeam_channel::unbounded();

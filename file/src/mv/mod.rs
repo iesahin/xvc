@@ -22,7 +22,7 @@ use itertools::Itertools;
 use xvc_config::FromConfigKey;
 use xvc_core::{ContentDigest, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine};
+use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine, XvcOutputSender};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -60,7 +60,7 @@ pub struct MoveCLI {
 }
 
 pub fn get_move_source_dest_store(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_metadata_store: &XvcStore<XvcMetadata>,
@@ -160,7 +160,7 @@ pub fn get_move_source_dest_store(
 
 /// Entry point for `xvc file move`
 pub(crate) fn cmd_move(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: MoveCLI,
 ) -> Result<()> {

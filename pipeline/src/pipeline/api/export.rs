@@ -8,7 +8,7 @@ use xvc_core::{
     XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{XvcOutputLine, XvcOutputSender};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},
@@ -23,7 +23,7 @@ use crate::{
 /// If `name` is None, uses the default pipeline name from the config.
 /// If `format` is None, uses the default format from [XvcSchemaSerializationFormat::default()]
 pub fn cmd_export(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: Option<String>,
     file: Option<PathBuf>,
