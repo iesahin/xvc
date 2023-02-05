@@ -310,7 +310,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 );
             }
         }
-        s.spawn(move |_| -> Result<()> {
+        let command_thread = s.spawn(move |_| -> Result<()> {
             match cli_opts.command {
                 XvcSubCommand::Init(opts) => {
                     let use_git = !opts.no_git;
@@ -398,7 +398,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             Ok(())
         });
 
-        drop(output_rec_clone);
+        uwr!(command_thread.join(), output_snd_clone);
         output_snd_clone.send(None).unwrap();
         output_thread.join().unwrap();
     })
