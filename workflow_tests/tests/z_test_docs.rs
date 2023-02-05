@@ -8,7 +8,7 @@ use std::{
 use anyhow::anyhow;
 use jwalk;
 use trycmd;
-use trycmd::cargo::cargo_bin;
+
 use which;
 use xvc::error::Result;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};

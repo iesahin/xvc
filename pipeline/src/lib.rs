@@ -16,7 +16,7 @@ pub use crate::pipeline::api::{
 
 use clap::Parser;
 
-use crossbeam_channel::Sender;
+
 use pipeline::api::step_dependency::XvcDependencyList;
 use pipeline::deps;
 use pipeline::schema::XvcSchemaSerializationFormat;
@@ -27,7 +27,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_ecs::XvcStore;
-use xvc_logging::{XvcOutputLine, XvcOutputSender};
+use xvc_logging::{XvcOutputSender};
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;

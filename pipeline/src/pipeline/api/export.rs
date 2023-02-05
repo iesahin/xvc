@@ -1,5 +1,5 @@
 use crate::error::{Error, Result};
-use crossbeam_channel::Sender;
+
 use itertools::Itertools;
 use std::{fs, path::PathBuf};
 use xvc_config::FromConfigKey;
@@ -8,7 +8,7 @@ use xvc_core::{
     XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
-use xvc_logging::{output, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},

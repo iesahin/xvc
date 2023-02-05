@@ -1,9 +1,9 @@
 use crate::error::Result;
 use comfy_table::Table;
-use crossbeam_channel::Sender;
+
 use xvc_core::XvcRoot;
 use xvc_ecs::R11Store;
-use xvc_logging::{output, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 

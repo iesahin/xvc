@@ -2,8 +2,8 @@ mod common;
 use common::*;
 
 use proptest::prelude::*;
-use xvc_core::XvcPath;
-use xvc_walker::AbsolutePath;
+
+
 
 use std::path::Path;
 use std::thread::sleep;
