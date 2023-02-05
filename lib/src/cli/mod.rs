@@ -238,9 +238,9 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
 
         let output_snd_clone = output_snd.clone();
+        let output_rec_clone = output_rec.clone();
 
         let output_thread = s.spawn(move |_| {
-            let output_rec = output_rec.clone();
             while let Ok(Some(output_line)) = output_rec.recv() {
                 // output_str.push_str(&output_line);
                 match term_log_level {
@@ -389,12 +389,16 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 }
 
                 None => {
-                    warn!("Xvc is outside of a project, no need to handle Git operations.");
+                    debug!(
+                        output_snd,
+                        "Xvc is outside of a project, no need to handle Git operations."
+                    );
                 }
             }
             Ok(())
         });
 
+        drop(output_rec_clone);
         output_snd_clone.send(None).unwrap();
         output_thread.join().unwrap();
     })
