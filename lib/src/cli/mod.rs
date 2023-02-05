@@ -13,7 +13,7 @@ use std::io;
 use subprocess::Exec;
 use which;
 use xvc_core::types::xvcroot::load_xvc_root;
-use xvc_logging::{debug, error, info, uwr, warn, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{debug, error, info, output, uwr, warn, XvcOutputLine, XvcOutputSender};
 
 use std::path::Path;
 use xvc_config::{XvcConfigInitParams, XvcVerbosity};
@@ -398,7 +398,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             Ok(())
         });
 
-        uwr!(command_thread.join(), output_snd_clone);
+        command_thread.join().unwrap().unwrap();
         output_snd_clone.send(None).unwrap();
         output_thread.join().unwrap();
     })

@@ -157,7 +157,6 @@ macro_rules! uwr {
         match $e {
             Ok(v) => v,
             Err(e) => {
-                watch!(e);
                 (&$channel)
                     .send(Some(::xvc_logging::XvcOutputLine::Panic(format!(
                         "{:?}, [{}::{}]",
