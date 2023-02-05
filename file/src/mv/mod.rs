@@ -1,28 +1,23 @@
 use std::fs;
 use std::path::Path;
 
-use crate::common::compare::{
-    diff_content_digest, diff_xvc_path_metadata, make_file_content_digest_diff_handler,
-};
-use crate::common::gitignore::make_ignore_handler;
-use crate::common::{
-    filter_targets_from_store, load_targets_from_store, xvc_path_metadata_map_from_disk,
-    FileTextOrBinary,
-};
+
+
+
 use crate::copy::{
     check_if_destination_is_a_directory, check_if_sources_have_changed, get_source_path_metadata,
     recheck_destination,
 };
-use crate::recheck::{make_recheck_handler, RecheckOperation};
-use crate::{recheck, Result};
+
+use crate::{Result};
 use anyhow::anyhow;
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use itertools::Itertools;
 use xvc_config::FromConfigKey;
-use xvc_core::{ContentDigest, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine, XvcOutputSender};
+use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
+use xvc_ecs::{HStore, XvcEntity, XvcStore};
+use xvc_logging::{info, uwr, watch, XvcOutputSender};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -66,7 +61,7 @@ pub fn get_move_source_dest_store(
     stored_metadata_store: &XvcStore<XvcMetadata>,
     source_xvc_paths: &HStore<XvcPath>,
     source_metadata: &HStore<XvcMetadata>,
-    source: &str,
+    _source: &str,
     destination: &str,
 ) -> Result<HStore<XvcPath>> {
     // Create targets in the store
@@ -103,7 +98,7 @@ pub fn get_move_source_dest_store(
             let dest_path = dir_path.join(source_path).unwrap();
 
             match stored_xvc_path_store.entities_for(&dest_path) {
-                Some(v) => {
+                Some(_v) => {
                     error_paths.push(dest_path);
                 }
                 None => {

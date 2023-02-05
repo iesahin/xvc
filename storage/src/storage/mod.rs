@@ -25,11 +25,11 @@ pub use event::{
 
 pub use local::XvcLocalStorage;
 
-use crossbeam_channel::Sender;
+
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{panic, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{panic, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};

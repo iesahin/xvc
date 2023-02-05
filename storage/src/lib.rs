@@ -9,7 +9,7 @@ use std::str::FromStr;
 pub use crate::error::{Error, Result};
 use clap::{Parser, Subcommand};
 
-use crossbeam_channel::Sender;
+
 use derive_more::Display;
 pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
@@ -19,7 +19,7 @@ use xvc_ecs;
 use xvc_ecs::XvcStore;
 
 use xvc_core::XvcRoot;
-use xvc_logging::{output, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 
 /// Storage (on the cloud) management commands
 #[derive(Debug, Parser)]
@@ -349,7 +349,7 @@ fn cmd_storage_new(
             delete_command,
             max_processes,
             url,
-            storage_dir: storage_dir,
+            storage_dir,
         } => storage::generic::cmd_storage_new_generic(
             input,
             output_snd,
@@ -470,10 +470,10 @@ fn cmd_storage_new(
 ///
 /// This doesn't remove the history associated with them.
 fn cmd_storage_remove(
-    input: std::io::StdinLock,
-    output_snd: &XvcOutputSender,
-    xvc_root: &XvcRoot,
-    name: String,
+    _input: std::io::StdinLock,
+    _output_snd: &XvcOutputSender,
+    _xvc_root: &XvcRoot,
+    _name: String,
 ) -> Result<()> {
     todo!()
 }

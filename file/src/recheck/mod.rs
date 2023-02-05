@@ -22,7 +22,7 @@ use xvc_core::{
     XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 /// Check out file from cache by a copy or link
 ///

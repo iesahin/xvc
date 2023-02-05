@@ -9,7 +9,7 @@ use crate::Result;
 use anyhow::anyhow;
 use chrono;
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
@@ -23,7 +23,7 @@ use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::XvcEntity;
-use xvc_logging::{error, output, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, output, watch, XvcOutputSender};
 
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
 enum ListColumn {

@@ -2,7 +2,7 @@ pub mod compare;
 pub mod gitignore;
 
 use std::fs::{self};
-use std::sync::Arc;
+
 use std::{
     fs::Metadata,
     path::{Path, PathBuf},
@@ -25,7 +25,7 @@ use xvc_core::{
 use xvc_logging::{info, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
-use xvc_logging::XvcOutputLine;
+
 use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder};
 
 use self::gitignore::IgnoreOp;

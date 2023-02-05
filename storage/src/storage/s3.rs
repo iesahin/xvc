@@ -2,14 +2,14 @@ use std::str::FromStr;
 use std::{env, fs};
 
 use anyhow::anyhow;
-use crossbeam_channel::Sender;
+
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, watch, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -332,9 +332,9 @@ impl XvcS3Storage {
 
     async fn a_delete(
         &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[XvcCachePath],
+        _output: &XvcOutputSender,
+        _xvc_root: &xvc_core::XvcRoot,
+        _paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
         // TODO: Implement delete for S3
         todo!();

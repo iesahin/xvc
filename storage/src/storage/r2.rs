@@ -1,14 +1,14 @@
 use std::str::FromStr;
 use std::{env, fs};
 
-use crossbeam_channel::Sender;
+
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, watch, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -29,7 +29,7 @@ use super::{
 /// [init][XvcR2Storage::init] function to create/update guid, and
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
 pub fn cmd_new_r2(
-    input: std::io::StdinLock,
+    _input: std::io::StdinLock,
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: String,
@@ -128,7 +128,7 @@ impl XvcR2Storage {
     async fn a_init(
         self,
         output_snd: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
+        _xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
         let guid = self.guid.clone();
@@ -220,7 +220,7 @@ impl XvcR2Storage {
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> crate::Result<super::XvcStorageSendEvent> {
         let repo_guid = xvc_root
             .config()
@@ -266,7 +266,7 @@ impl XvcR2Storage {
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let repo_guid = xvc_root
             .config()
@@ -314,9 +314,9 @@ impl XvcR2Storage {
 
     async fn a_delete(
         &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[XvcCachePath],
+        _output: &XvcOutputSender,
+        _xvc_root: &xvc_core::XvcRoot,
+        _paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
         todo!();
     }

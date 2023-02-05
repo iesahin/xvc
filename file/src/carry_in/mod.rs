@@ -3,7 +3,7 @@
 //! The command is used to move (commit) files to Xvc cache.
 //! It is used after [`xvc file track`][crate::track] or separately to update
 //! the cache with changed files.
-use crossbeam_channel::Sender;
+
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
@@ -16,7 +16,7 @@ use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::ContentDigest;
 use xvc_core::XvcRoot;
 use xvc_core::{Diff, XvcCachePath};
-use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputSender};
 
 use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;

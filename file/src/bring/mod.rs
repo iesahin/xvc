@@ -14,10 +14,10 @@ use crate::{
 };
 
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{debug, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{debug, uwr, warn, watch, XvcOutputSender};
 
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};

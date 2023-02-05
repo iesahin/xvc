@@ -1,14 +1,14 @@
 use std::str::FromStr;
 use std::{env, fs};
 
-use crossbeam_channel::Sender;
+
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::XvcCachePath;
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, output, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, output, watch, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -152,7 +152,7 @@ impl XvcWasabiStorage {
     async fn a_init(
         self,
         output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
+        _xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
         let guid = self.guid.clone();
@@ -244,7 +244,7 @@ impl XvcWasabiStorage {
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> crate::Result<super::XvcStorageSendEvent> {
         let repo_guid = xvc_root
             .config()
@@ -290,7 +290,7 @@ impl XvcWasabiStorage {
         output_snd: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let repo_guid = xvc_root
             .config()
@@ -338,9 +338,9 @@ impl XvcWasabiStorage {
 
     async fn a_delete(
         &self,
-        output_snd: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[XvcCachePath],
+        _output_snd: &XvcOutputSender,
+        _xvc_root: &xvc_core::XvcRoot,
+        _paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
         // TODO: Implement a_delete for wasabi
         todo!();

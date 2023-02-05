@@ -6,10 +6,10 @@ use crate::common::load_targets_from_store;
 use crate::Result;
 
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{error, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, watch, XvcOutputSender};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 
 /// Send (upload) tracked files to storage

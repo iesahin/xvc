@@ -26,7 +26,7 @@ use clap::Subcommand;
 use copy::CopyCLI;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
-use crossbeam_channel::Sender;
+
 use list::ListCLI;
 use log::{debug, error, info, warn, LevelFilter};
 use mv::MoveCLI;

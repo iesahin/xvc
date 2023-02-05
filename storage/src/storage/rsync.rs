@@ -1,12 +1,12 @@
 use std::{env, fs};
 
-use crossbeam_channel::Sender;
+
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -245,7 +245,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     fn init(
         self,
         output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
+        _xvc_root: &XvcRoot,
     ) -> Result<(super::XvcStorageInitEvent, Self)> {
         // "--init",
         // "ssh {URL} 'mkdir -p {STORAGE_DIR}' ; rsync -av {LOCAL_GUID_FILE_PATH} {URL}:{STORAGE_GUID_FILE_PATH}",
@@ -291,7 +291,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
     /// Lists all files in the remote directory that match to regex:
     ///
     /// {XVC_GUID}/[a-zA-Z][0-9]/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{58}/0
-    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
+    fn list(&self, _output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         // "--list",
         // "ssh {URL} 'ls -1R {STORAGE_DIR}'",
         //
@@ -340,7 +340,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
         paths.iter().for_each(|cache_path| {
             let local_path = cache_path.to_absolute_path(xvc_root);
             let remote_url = self.rsync_cache_url(&xvc_guid, cache_path);
-            let remote_dir_res = self.create_storage_dir(&ssh_executable, &xvc_guid, cache_path);
+            let _remote_dir_res = self.create_storage_dir(&ssh_executable, &xvc_guid, cache_path);
             // TODO: Handle possible error.
             let cmd_output =
                 self.rsync_copy_to_storage(&rsync_executable, &local_path, &remote_url);
@@ -374,7 +374,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         // "--download",
         // "mkdir -p {ABSOLUTE_CACHE_DIR} ; rsync -av {URL}:{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH} {ABSOLUTE_CACHE_PATH}",

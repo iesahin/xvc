@@ -20,7 +20,7 @@ use xvc_core::{
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, panic, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{debug, error, panic, watch, XvcOutputSender};
 
 use super::FileTextOrBinary;
 

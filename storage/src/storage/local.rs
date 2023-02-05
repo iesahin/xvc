@@ -4,12 +4,12 @@ use std::{
     str::FromStr,
 };
 
-use crossbeam_channel::Sender;
+
 use serde::{Deserialize, Serialize};
-use tempfile::TempDir;
+
 use xvc_core::XvcRoot;
 use xvc_ecs::R1NStore;
-use xvc_logging::{info, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{info, watch, XvcOutputSender};
 
 use super::{
     XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent, XvcStorageListEvent,
@@ -19,7 +19,7 @@ use super::{
 use crate::{Result, XvcStorage, XvcStorageEvent};
 
 pub fn cmd_storage_new_local(
-    input: std::io::StdinLock,
+    _input: std::io::StdinLock,
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     path: PathBuf,
@@ -58,7 +58,7 @@ impl XvcStorageOperations for XvcLocalStorage {
     fn init(
         self,
         output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
+        _xvc_root: &XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let guid_filename = self.path.join(XVC_STORAGE_GUID_FILENAME);
         // If guid filename exists, we can report a reinit and exit.
@@ -106,7 +106,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         ))
     }
 
-    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
+    fn list(&self, _output: &XvcOutputSender, _xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         todo!()
     }
 
@@ -158,7 +158,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let repo_guid = xvc_root
             .config()
@@ -201,9 +201,9 @@ impl XvcStorageOperations for XvcLocalStorage {
 
     fn delete(
         &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        paths: &[XvcCachePath],
+        _output: &XvcOutputSender,
+        _xvc_root: &XvcRoot,
+        _paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
         todo!()
     }

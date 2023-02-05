@@ -1,16 +1,16 @@
 use std::{collections::HashMap, env, fs, path::Path};
 
-use anyhow::anyhow;
-use crossbeam_channel::Sender;
+
+
 use regex::Regex;
 use relative_path::RelativePath;
 use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, warn, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, warn, watch, XvcOutputSender};
 
-use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
+use crate::{Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
@@ -18,7 +18,7 @@ use super::{
 };
 
 pub fn cmd_storage_new_generic(
-    input: std::io::StdinLock,
+    _input: std::io::StdinLock,
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: String,
@@ -290,7 +290,7 @@ impl XvcStorageOperations for XvcGenericStorage {
     fn init(
         self,
         output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
+        _xvc_root: &XvcRoot,
     ) -> Result<(super::XvcStorageInitEvent, Self)> {
         let mut address_map = self.address_map();
         watch!(address_map);
@@ -341,7 +341,7 @@ impl XvcStorageOperations for XvcGenericStorage {
     ///
     /// {XVC_GUID}/[a-zA-Z][0-9]/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{58}/0
     ///
-    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
+    fn list(&self, _output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.list_command, &address_map);
         let cmd_output = Exec::shell(prepared_cmd).capture()?.stdout_str();
@@ -391,7 +391,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let address_map = self.address_map();
         watch!(address_map);

@@ -5,19 +5,19 @@
 //! - [`update_file_gitignores`] and [`update_dir_gitignores`] are functions to
 //!   update `.gitignore` files with the tracked paths.
 //! - [`carry_in`] is a specialized carry in function for `xvc file track`.
-use chrono::Utc;
-use crossbeam_channel::Sender;
+
+
 use derive_more::From;
 
-use std::collections::{HashMap, HashSet};
-use std::io::Write;
+use std::collections::{HashSet};
+
 
 use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
 use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
-use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{watch, XvcOutputSender};
 
 use crate::carry_in::carry_in;
 use crate::common::compare::{
@@ -27,7 +27,7 @@ use crate::common::gitignore::{update_dir_gitignores, update_file_gitignores};
 use crate::common::{targets_from_disk, update_store_records, FileTextOrBinary};
 use crate::error::Result;
 
-use std::fs::OpenOptions;
+
 
 use clap::Parser;
 use std::path::PathBuf;

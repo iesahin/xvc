@@ -1,23 +1,23 @@
 use std::collections::{HashMap, HashSet};
-use std::fs::{self, create_dir_all};
+use std::fs::{self};
 use std::path::PathBuf;
 
 use crate::common::gitignore::make_ignore_handler;
 use crate::common::{
-    filter_targets_from_store, load_targets_from_store, recheck_from_cache, FileTextOrBinary,
+    filter_targets_from_store, FileTextOrBinary,
 };
 use crate::recheck::{make_recheck_handler, RecheckOperation};
-use crate::{recheck, Result};
+use crate::{Result};
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use derive_more::From;
 use itertools::Itertools;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
-use xvc_core::types::recheckmethod;
+
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::ecs::event::EventLog;
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, output, panic, uwo, uwr, watch, XvcOutputSender};
+use xvc_logging::{debug, error, output, panic, uwr, watch, XvcOutputSender};
 
 /// Remove files from tracking and possibly delete them
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
@@ -61,7 +61,7 @@ pub fn cmd_untrack(
         let cache_paths = path_digest_events
             .iter()
             .filter_map(|cd_event| match cd_event {
-                xvc_ecs::ecs::event::Event::Add { entity, value } => {
+                xvc_ecs::ecs::event::Event::Add { entity: _, value } => {
                     let xcp = uwr!(XvcCachePath::new(xp, value), output_snd
                  );
 
@@ -91,7 +91,7 @@ pub fn cmd_untrack(
             if !entities_for_cache_path.contains_key(cp) {
                 entities_for_cache_path.insert(cp.clone(), HashSet::new());
             }
-            let mut entity_set = entities_for_cache_path.get_mut(cp).unwrap();
+            let entity_set = entities_for_cache_path.get_mut(cp).unwrap();
             entity_set.insert(*xe);
         }
     }
