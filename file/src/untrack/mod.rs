@@ -249,6 +249,10 @@ pub fn cmd_untrack(
     for cp in &deletable_paths {
         let abs_cp = cp.to_absolute_path(xvc_root);
         if abs_cp.exists() {
+            // Set to writable
+            let mut perm = abs_cp.metadata()?.permissions();
+            perm.set_readonly(false);
+            fs::set_permissions(&abs_cp, perm)?;
             uwr!(fs::remove_file(&abs_cp), output_snd);
             output!(output_snd, "[DELETE] {}", abs_cp.to_str().unwrap());
         }
@@ -256,6 +260,9 @@ pub fn cmd_untrack(
         let rel_path = cp.inner();
         while let Some(parent) = rel_path.parent() {
             let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
+            let mut perm = parent_abs_cp.metadata()?.permissions();
+            perm.set_readonly(false);
+            fs::set_permissions(&parent_abs_cp, perm)?;
             if parent_abs_cp.exists() {
                 if parent_abs_cp.is_dir() {
                     if parent_abs_cp.read_dir().unwrap().count() == 0 {
