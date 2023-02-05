@@ -4,12 +4,12 @@ use crate::util::expand_globs_to_paths;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcPath, XvcRoot, XVCIGNORE_FILENAME};
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use log::trace;
 use std::io::BufRead;
 use std::path::{Path, PathBuf};
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
-use xvc_logging::{output, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 use xvc_walker::{build_ignore_rules, check_ignore, IgnoreRules, MatchResult, WalkOptions};
 
 // DIFFERENCES from DVC

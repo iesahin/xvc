@@ -2,9 +2,9 @@
 use crate::error::Result;
 use crate::types::xvcroot::XvcRoot;
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use relative_path::RelativePath;
-use xvc_logging::{output, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{output, watch, XvcOutputSender};
 
 #[derive(Debug, Parser)]
 #[command(name = "root")]

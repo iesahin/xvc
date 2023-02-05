@@ -1,8 +1,8 @@
 //! Print command aliases to be sourced in shells.
 use crate::error::Result;
 use clap::Parser;
-use crossbeam_channel::Sender;
-use xvc_logging::{output, XvcOutputLine, XvcOutputSender};
+
+use xvc_logging::{output, XvcOutputSender};
 
 #[derive(Debug, Parser)]
 #[command(name = "aliases")]
