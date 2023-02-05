@@ -55,8 +55,8 @@ Without any options, it removes the file from Xvc tracking and the cache.
 
 ```console
 $ xvc --debug -vvvv file untrack data.txt
-[DEBUG][logging/src/lib.rs::233] Terminal logger enabled with level: Trace
-[DEBUG][logging/src/lib.rs::236] File logger enabled with level: Trace to "/var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T//xvc.log"
+[DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Trace
+[DEBUG][logging/src/lib.rs::240] File logger enabled with level: Trace to "/var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T//xvc.log"
 [TRACE][core/src/types/xvcroot.rs::247] "."
 [DEBUG][core/src/types/xvcroot.rs::253] XVC DIR: "[CWD]"
 [DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
@@ -84,32 +84,53 @@ $ xvc --debug -vvvv file untrack data.txt
         XvcConfigMap {
             source: Default,
             map: {
-                "file.recheck.method": String(
-                    "copy",
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "pipeline.default": String(
+                    "default",
                 ),
                 "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
                     false,
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
-                "git.command": String(
-                    "git",
+                "core.guid": String(
+                    "f50e0dbbe67547af",
                 ),
-                "file.track.text_or_binary": String(
-                    "auto",
+                "git.use_git": Boolean(
+                    true,
                 ),
-                "file.track.no_commit": Boolean(
-                    false,
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
                 ),
                 "git.auto_stage": Boolean(
                     false,
                 ),
-                "core.guid": String(
-                    "301d24b0b7717281",
+                "pipeline.current_pipeline": String(
+                    "default",
                 ),
-                "file.list.sort": String(
-                    "name-desc",
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "file.track.force": Boolean(
                     false,
@@ -117,103 +138,82 @@ $ xvc --debug -vvvv file untrack data.txt
                 "file.list.recursive": Boolean(
                     false,
                 ),
-                "file.list.no_summary": Boolean(
-                    false,
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "cache.algorithm": String(
-                    "blake3",
+                "file.recheck.method": String(
+                    "copy",
                 ),
                 "file.list.format": String(
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "pipeline.default": String(
-                    "default",
-                ),
-                "git.use_git": Boolean(
-                    true,
+                "git.command": String(
+                    "git",
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "pipeline.default": String(
-                    "default",
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "git.command": String(
-                    "git",
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "file.list.no_summary": Boolean(
-                    false,
-                ),
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "git.auto_stage": Boolean(
-                    false,
-                ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "file.list.recursive": Boolean(
-                    false,
-                ),
-                "core.guid": String(
-                    "4dcbdb49b5e881ba",
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
                 "file.track.no_parallel": Boolean(
                     false,
                 ),
                 "file.track.force": Boolean(
                     false,
                 ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
                 "file.carry-in.force": Boolean(
                     false,
+                ),
+                "pipeline.default": String(
+                    "default",
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "core.guid": String(
+                    "16566b3d09dbeeff",
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "git.auto_stage": Boolean(
+                    false,
+                ),
+                "file.list.recursive": Boolean(
+                    false,
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
                 "file.track.no_commit": Boolean(
                     false,
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                ),
+                "file.recheck.method": String(
+                    "copy",
                 ),
             },
         },
@@ -238,7 +238,37 @@ $ xvc --debug -vvvv file untrack data.txt
         },
     ],
     the_config: {
+        "file.list.recursive": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.command": XvcConfigValue {
+            source: Project,
+            value: String(
+                "git",
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "16566b3d09dbeeff",
+            ),
+        },
+        "pipeline.current_pipeline": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
         "file.carry-in.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -248,6 +278,30 @@ $ xvc --debug -vvvv file untrack data.txt
             source: Project,
             value: Boolean(
                 true,
+            ),
+        },
+        "file.track.text_or_binary": XvcConfigValue {
+            source: Project,
+            value: String(
+                "auto",
+            ),
+        },
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.list.format": XvcConfigValue {
+            source: Project,
+            value: String(
+                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+            ),
+        },
+        "file.list.no_summary": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
             ),
         },
         "git.auto_stage": XvcConfigValue {
@@ -262,13 +316,43 @@ $ xvc --debug -vvvv file untrack data.txt
                 false,
             ),
         },
-        "file.track.no_commit": XvcConfigValue {
+        "core.verbosity": XvcConfigValue {
+            source: CommandLine,
+            value: String(
+                "debug",
+            ),
+        },
+        "file.track.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "file.track.force": XvcConfigValue {
+        "file.track.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
+            ),
+        },
+        "git.auto_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "file.list.sort": XvcConfigValue {
+            source: Project,
+            value: String(
+                "name-desc",
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -280,94 +364,10 @@ $ xvc --debug -vvvv file untrack data.txt
                 "copy",
             ),
         },
-        "file.list.sort": XvcConfigValue {
-            source: Project,
-            value: String(
-                "name-desc",
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "file.carry-in.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.list.format": XvcConfigValue {
-            source: Project,
-            value: String(
-                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-            ),
-        },
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
-        "file.list.recursive": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "pipeline.current_pipeline": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
-            ),
-        },
-        "file.track.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
         "cache.algorithm": XvcConfigValue {
             source: Project,
             value: String(
                 "blake3",
-            ),
-        },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "4dcbdb49b5e881ba",
-            ),
-        },
-        "core.verbosity": XvcConfigValue {
-            source: CommandLine,
-            value: String(
-                "debug",
-            ),
-        },
-        "file.track.text_or_binary": XvcConfigValue {
-            source: Project,
-            value: String(
-                "auto",
-            ),
-        },
-        "git.auto_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "file.list.no_summary": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
             ),
         },
     },
@@ -377,7 +377,7 @@ $ xvc --debug -vvvv file untrack data.txt
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"301d24b0b7717281/"
+guid = /"f50e0dbbe67547af/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -516,9 +516,9 @@ default_params_file = /"params.yaml/"
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1675597171914583",
-    "[CWD]/.xvc/ec/1675597171918049",
-    "[CWD]/.xvc/ec/1675597172477294",
+    "[CWD]/.xvc/ec/1675617931519319",
+    "[CWD]/.xvc/ec/1675617931522700",
+    "[CWD]/.xvc/ec/1675617932294802",
 ]
 [TRACE][file/src/lib.rs::152] opts: XvcFileCLI {
     verbosity: 0,
@@ -551,7 +551,7 @@ default_params_file = /"params.yaml/"
     map: {
         XvcEntity(
             2,
-            9215311559423342125,
+            10215539900868363258,
         ): XvcPath(
             "data.txt",
         ),
@@ -561,7 +561,7 @@ default_params_file = /"params.yaml/"
     map: {
         XvcEntity(
             2,
-            9215311559423342125,
+            10215539900868363258,
         ): XvcPath(
             "data.txt",
         ),
@@ -587,11 +587,11 @@ $ git status
 On branch main
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	.xvc/store/content-digest-store/1675597172960052.json
-	.xvc/store/file-text-or-binary-store/1675597172960178.json
-	.xvc/store/recheck-method-store/1675597172960281.json
-	.xvc/store/xvc-metadata-store/1675597172960365.json
-	.xvc/store/xvc-path-store/1675597172960447.json
+	.xvc/store/content-digest-store/1675617932743675.json
+	.xvc/store/file-text-or-binary-store/1675617932743855.json
+	.xvc/store/recheck-method-store/1675617932743952.json
+	.xvc/store/xvc-metadata-store/1675617932744053.json
+	.xvc/store/xvc-path-store/1675617932744154.json
 
 nothing added to commit but untracked files present (use "git add" to track)
 
@@ -635,7 +635,7 @@ $ xvc file untrack data.txt --restore-versions data-versions/
 
 $ ls -l data-versions/
 total 16
--r--r--r--  1 iex  staff  19 Feb  5 14:39 data-b3-660-2cf-f6a4.txt
+-r--r--r--  1 iex  staff  19 Feb  5 20:25 data-b3-660-2cf-f6a4.txt
 -r--r--r--  1 iex  staff  19 Jan 31 11:00 data-b3-c85-f3e-8108.txt
 
 ```
