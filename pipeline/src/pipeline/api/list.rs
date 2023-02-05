@@ -3,7 +3,7 @@ use comfy_table::Table;
 use crossbeam_channel::Sender;
 use xvc_core::XvcRoot;
 use xvc_ecs::R11Store;
-use xvc_logging::{XvcOutputLine, XvcOutputSender};
+use xvc_logging::{output, XvcOutputLine, XvcOutputSender};
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
@@ -23,7 +23,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<()> 
                 };
                 table.add_row(vec![&pipeline.name, &rundir_str]);
             }
-            output_snd.send(format!("{}", table).into())?;
+            output!(output_snd, "{}", table);
             Ok(())
         })?,
     )
