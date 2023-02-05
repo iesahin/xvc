@@ -8,7 +8,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::XvcCachePath;
 use xvc_ecs::R1NStore;
-use xvc_logging::{output, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, output, watch, XvcOutputLine, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -173,7 +173,7 @@ impl XvcWasabiStorage {
         match res_response {
             Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output, "Error while initializing Wasabi storage: {}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -224,7 +224,7 @@ impl XvcWasabiStorage {
             }
 
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output, "{}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -269,18 +269,12 @@ impl XvcWasabiStorage {
 
             match res_response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            abs_cache_path,
-                            remote_path.as_str()
-                        )))
-                        .unwrap();
+                    info!(output, "{} -> {}", abs_cache_path, remote_path.as_str());
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                    error!(output, "{}", err);
                 }
             }
         }
@@ -328,9 +322,7 @@ impl XvcWasabiStorage {
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output_snd
-                        .send(XvcOutputLine::Error(err.to_string()))
-                        .unwrap();
+                    error!(output_snd, "{}", err);
                 }
             }
         }

@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use xvc_core::XvcRoot;
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{info, watch, XvcOutputLine, XvcOutputSender};
 
 use super::{
     XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent, XvcStorageListEvent,
@@ -67,11 +67,12 @@ impl XvcStorageOperations for XvcLocalStorage {
         if guid_filename.exists() {
             let already_available_guid =
                 XvcStorageGuid::from_str(&fs::read_to_string(guid_filename)?)?;
-            output.send(XvcOutputLine::Info(format!(
+            info!(
+                output,
                 "Found previous storage {} with GUID: {}",
                 self.path.to_string_lossy(),
-                already_available_guid,
-            )))?;
+                already_available_guid
+            );
 
             let new_self = XvcLocalStorage {
                 guid: already_available_guid.clone(),
@@ -90,11 +91,12 @@ impl XvcStorageOperations for XvcLocalStorage {
         }
 
         fs::write(guid_filename, format!("{}", self.guid))?;
-        output.send(XvcOutputLine::Info(format!(
+        info!(
+            output,
             "Created local remote directory {} with guid: {}",
             self.path.to_string_lossy(),
-            self.guid,
-        )));
+            self.guid
+        );
 
         Ok((
             XvcStorageInitEvent {
@@ -137,13 +139,12 @@ impl XvcStorageOperations for XvcLocalStorage {
             fs::copy(&abs_cache_path, &abs_remote_path)?;
             copied_paths.push(remote_path);
             watch!(copied_paths.len());
-            output
-                .send(XvcOutputLine::Info(format!(
-                    "{} -> {}",
-                    abs_cache_path,
-                    abs_remote_path.to_string_lossy()
-                )))
-                .unwrap();
+            info!(
+                output,
+                "{} -> {}",
+                abs_cache_path,
+                abs_remote_path.to_string_lossy()
+            );
         }
 
         Ok(XvcStorageSendEvent {
@@ -181,13 +182,12 @@ impl XvcStorageOperations for XvcLocalStorage {
             watch!(abs_cache_path.exists());
             copied_paths.push(remote_path);
             watch!(copied_paths.len());
-            output
-                .send(XvcOutputLine::Info(format!(
-                    "{} -> {}",
-                    abs_remote_path.to_string_lossy(),
-                    abs_cache_path,
-                )))
-                .unwrap();
+            info!(
+                output,
+                "{} -> {}",
+                abs_remote_path.to_string_lossy(),
+                abs_cache_path
+            );
         }
 
         Ok((

@@ -2,7 +2,7 @@ use crossbeam_channel::Sender;
 use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity};
-use xvc_logging::{XvcOutputLine, XvcOutputSender};
+use xvc_logging::{XvcOutputLine, XvcOutputSender, output};
 
 use std::{fs::File, io::Write};
 
@@ -155,7 +155,7 @@ pub fn cmd_dag(
     };
 
     match file {
-        None => Ok(output_snd.send(format!("{}", out_string).into()).unwrap()),
+        None => Ok(output!(output_snd, "{}", out_string)),
         Some(file) => {
             let mut f = File::create(file)?;
             Ok(writeln!(f, "{}", out_string)?)

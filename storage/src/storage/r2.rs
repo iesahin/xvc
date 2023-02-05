@@ -8,7 +8,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -127,7 +127,7 @@ impl XvcR2Storage {
 
     async fn a_init(
         self,
-        output: &XvcOutputSender,
+        output_snd: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         let bucket = self.get_bucket()?;
@@ -149,7 +149,7 @@ impl XvcR2Storage {
         match res_response {
             Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output_snd, "{}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -200,7 +200,7 @@ impl XvcR2Storage {
             }
 
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output, "{}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -245,18 +245,12 @@ impl XvcR2Storage {
 
             match res_response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            abs_cache_path,
-                            remote_path.as_str()
-                        )))
-                        .unwrap();
+                    info!(output, "{} -> {}", abs_cache_path, remote_path.as_str());
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                    error!(output, "{}", err);
                 }
             }
         }
@@ -299,18 +293,12 @@ impl XvcR2Storage {
 
             match response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            remote_path.as_str(),
-                            abs_cache_path,
-                        )))
-                        .unwrap();
+                    info!(output, "{} -> {}", remote_path.as_str(), abs_cache_path);
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "{}", err);
                 }
             }
         }

@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, warn, watch, XvcOutputLine, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
@@ -197,7 +197,7 @@ impl XvcGenericStorage {
     // create paths.
     fn run_for_paths_in_temp_dir(
         &self,
-        output: &XvcOutputSender,
+        output_snd: &XvcOutputSender,
         xvc_root: &XvcRoot,
         prepared_cmd: &str,
         temp_dir: &XvcStorageTempDir,
@@ -220,18 +220,18 @@ impl XvcGenericStorage {
                     watch!(stderr_str);
 
                     if cmd_output.success() {
-                        output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                        info!(output_snd, "{}", stdout_str);
+                        warn!(output_snd, "{}", stderr_str);
                         let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                         storage_paths.push(storage_path);
                     } else {
-                        output.send(XvcOutputLine::Error(stderr_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stdout_str)).unwrap();
+                        error!(output_snd, "{}", stderr_str);
+                        warn!(output_snd, "{}", stdout_str);
                     }
                 }
 
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output_snd, "{}", err);
                 }
             }
         });
@@ -262,18 +262,18 @@ impl XvcGenericStorage {
                     watch!(stderr_str);
 
                     if cmd_output.success() {
-                        output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                        info!(output, "{}", stdout_str);
+                        warn!(output, "{}", stderr_str);
                         let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                         storage_paths.push(storage_path);
                     } else {
-                        output.send(XvcOutputLine::Error(stderr_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stdout_str)).unwrap();
+                        error!(output, "{}", stderr_str);
+                        warn!(output, "{}", stdout_str);
                     }
                 }
 
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "{}", err);
                 }
             }
         });
@@ -319,10 +319,10 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         watch!(init_output);
 
-        output.send(XvcOutputLine::Info(format!(
-            "Run init command:\n{}\n{}\n",
-            prepared_init_cmd, init_output,
-        )))?;
+        info!(
+            output,
+            "Run init command:\n{}\n{}\n", prepared_init_cmd, init_output
+        );
 
         fs::remove_file(&local_guid_path)?;
 

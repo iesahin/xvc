@@ -9,7 +9,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, watch, XvcOutputLine, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -167,7 +167,7 @@ impl XvcS3Storage {
         match res_response {
             Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output, "Error while initializing S3 storage: {}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -218,7 +218,7 @@ impl XvcS3Storage {
             }
 
             Err(err) => {
-                output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                error!(output, "{}", err);
                 Err(Error::S3Error { source: err })
             }
         }
@@ -263,18 +263,12 @@ impl XvcS3Storage {
 
             match res_response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            abs_cache_path,
-                            remote_path.as_str()
-                        )))
-                        .unwrap();
+                    info!(output, "{} -> {}", abs_cache_path, remote_path.as_str());
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(xvc_logging::XvcOutputLine::Error(err.to_string()))?;
+                    error!(output, "{}", err);
                 }
             }
         }
@@ -317,18 +311,12 @@ impl XvcS3Storage {
 
             match response {
                 Ok(_) => {
-                    output
-                        .send(XvcOutputLine::Info(format!(
-                            "{} -> {}",
-                            remote_path.as_str(),
-                            abs_cache_path,
-                        )))
-                        .unwrap();
+                    info!(output, "{} -> {}", remote_path.as_str(), abs_cache_path);
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "{}", err);
                 }
             }
         }

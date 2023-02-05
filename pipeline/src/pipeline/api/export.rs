@@ -8,7 +8,7 @@ use xvc_core::{
     XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
-use xvc_logging::{XvcOutputLine, XvcOutputSender};
+use xvc_logging::{output, XvcOutputLine, XvcOutputSender};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},
@@ -124,7 +124,7 @@ pub fn cmd_export(
         Some(format) => format,
     };
 
-    let output = match output_format {
+    let export_output = match output_format {
         XvcSchemaSerializationFormat::Json => {
             let value = to_json(&pipeline_schema)?;
             serde_json::to_string_pretty(&value)?
@@ -132,7 +132,10 @@ pub fn cmd_export(
         XvcSchemaSerializationFormat::Yaml => to_yaml(&pipeline_schema)?,
     };
     match file {
-        Some(path) => fs::write(path, output).map_err(|e| e.into()),
-        None => Ok(output_snd.send(format!("{}", output).into()).unwrap()),
+        Some(path) => fs::write(path, export_output).map_err(|e| e.into()),
+        None => {
+            output!(output_snd, "{}", export_output);
+            Ok(())
+        }
     }
 }

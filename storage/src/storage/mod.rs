@@ -29,7 +29,7 @@ use crossbeam_channel::Sender;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{panic, watch, XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
@@ -446,19 +446,9 @@ pub fn get_storage_record(
     });
 
     if remote_store.is_empty() {
-        output_snd
-            .send(XvcOutputLine::Panic(format!(
-                "Cannot find remote {}",
-                identifier
-            )))
-            .unwrap();
+        panic!(output_snd, "Cannot find remote {}", identifier);
     } else if remote_store.len() > 1 {
-        output_snd
-            .send(XvcOutputLine::Panic(format!(
-                "Ambigious remote identifier: {}",
-                identifier
-            )))
-            .unwrap();
+        panic!(output_snd, "Ambigious remote identifier: {}", identifier);
     }
 
     let (_, remote) =

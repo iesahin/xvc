@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{info, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -271,11 +271,12 @@ impl XvcStorageOperations for XvcRsyncStorage {
             self.rsync_copy_to_storage(&rsync_executable, &local_guid_path, &remote_guid_path)?;
         watch!(rsync_result);
 
-        output.send(XvcOutputLine::Info(format!(
+        info!(
+            output,
             "Initialized:\n{}\n{}\n",
             remote_guid_path,
             rsync_result.stdout_str()
-        )))?;
+        );
 
         fs::remove_file(&local_guid_path)?;
 
@@ -350,14 +351,14 @@ impl XvcStorageOperations for XvcRsyncStorage {
                     let stderr_str = cmd_output.stderr_str();
                     watch!(stdout_str);
                     watch!(stderr_str);
-                    output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                    output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                    info!(output, "{}", stdout_str);
+                    warn!(output, "{}", stderr_str);
                     let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                     storage_paths.push(storage_path);
                 }
 
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "{}", err);
                 }
             }
         });
@@ -404,14 +405,14 @@ impl XvcStorageOperations for XvcRsyncStorage {
                     let stderr_str = cmd_output.stderr_str();
                     watch!(stdout_str);
                     watch!(stderr_str);
-                    output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                    output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                    info!(output, "{}", stdout_str);
+                    warn!(output, "{}", stderr_str);
                     let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                     storage_paths.push(storage_path);
                 }
 
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "{}", err);
                 }
             }
         });
@@ -455,7 +456,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
                 }
 
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "{}", err);
                 }
             }
         });
