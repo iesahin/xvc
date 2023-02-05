@@ -243,5 +243,29 @@ pub fn cmd_untrack(
         }
         Ok(())
     })?;
+
+    // Remove all deletable paths from the cache
+
+    for cp in &deletable_paths {
+        let abs_cp = cp.to_absolute_path(xvc_root);
+        if abs_cp.exists() {
+            uwr!(fs::remove_file(&abs_cp), output_snd);
+            output!(output_snd, "[DELETE] {}", abs_cp.to_str().unwrap());
+        }
+
+        let rel_path = cp.inner();
+        while let Some(parent) = rel_path.parent() {
+            let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
+            if parent_abs_cp.exists() {
+                if parent_abs_cp.is_dir() {
+                    if parent_abs_cp.read_dir().unwrap().count() == 0 {
+                        uwr!(fs::remove_dir(&parent_abs_cp), output_snd);
+                        output!(output_snd, "[DELETE] {}", parent_abs_cp.to_str().unwrap());
+                    }
+                }
+            }
+        }
+    }
+
     Ok(())
 }
