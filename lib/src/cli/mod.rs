@@ -237,6 +237,8 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
 
+        let output_snd_clone = output_snd.clone();
+
         let output_thread = s.spawn(move |_| {
             let output_rec = output_rec.clone();
             while let Ok(Some(output_line)) = output_rec.recv() {
@@ -299,8 +301,6 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 }
             }
         });
-
-        let output_snd_clone = output_snd.clone();
 
         if let Some(ref xvc_root) = xvc_root_opt {
             if let Some(from_ref) = cli_opts.from_ref {
