@@ -54,11 +54,21 @@ Without any options, it removes the file from Xvc tracking and the cache.
 ```
 
 ```console
-$ xvc file untrack data.txt
+$ xvc --debug -vvvv file untrack data.txt
+[DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+[DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
 
 $ git status
 On branch main
-nothing to commit, working tree clean
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.xvc/store/content-digest-store/1675596367767119.json
+	.xvc/store/file-text-or-binary-store/1675596367767334.json
+	.xvc/store/recheck-method-store/1675596367767495.json
+	.xvc/store/xvc-metadata-store/1675596367767624.json
+	.xvc/store/xvc-path-store/1675596367767759.json
+
+nothing added to commit but untracked files present (use "git add" to track)
 
 ```
 
