@@ -250,9 +250,15 @@ pub fn cmd_untrack(
         let abs_cp = cp.to_absolute_path(xvc_root);
         if abs_cp.exists() {
             // Set to writable
-            let mut perm = abs_cp.metadata()?.permissions();
-            perm.set_readonly(false);
-            fs::set_permissions(&abs_cp, perm)?;
+            let parent = abs_cp.parent().unwrap();
+            let mut dir_perm = parent.metadata()?.permissions();
+            dir_perm.set_readonly(false);
+            fs::set_permissions(&parent, dir_perm)?;
+
+            let mut file_perm = abs_cp.metadata()?.permissions();
+            file_perm.set_readonly(false);
+            fs::set_permissions(&abs_cp, file_perm)?;
+
             uwr!(fs::remove_file(&abs_cp), output_snd);
             output!(output_snd, "[DELETE] {}", abs_cp.to_str().unwrap());
         }
