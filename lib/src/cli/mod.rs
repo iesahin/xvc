@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use crate::init;
+use assert_cmd::output;
 use clap::Parser;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -562,24 +563,37 @@ fn git_auto_commit(
     match exec_git(
         &git_command,
         xvc_root_str,
-        &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
+        // We check the output of the git add command to see if there were any files added.
+        // "--verbose" is required to get the output we need.
+        &[
+            "add",
+            "--verbose",
+            &xvc_dir_str,
+            "*.gitignore",
+            "*.xvcignore",
+        ],
     ) {
-        Ok(_) => {
-            match exec_git(
-                &git_command,
-                xvc_root_str,
-                &[
-                    "commit",
-                    "-m",
-                    &format!("Xvc auto-commit after '{xvc_cmd}'"),
-                ],
-            ) {
-                Ok(res_git_commit) => {
-                    debug!(output_snd, "Committing .xvc/ to git: {res_git_commit}");
-                }
-                Err(e) => {
-                    debug!(output_snd, "Error committing .xvc/ to git: {e}");
-                    return Err(e);
+        Ok(git_add_output) => {
+            if git_add_output.trim().len() == 0 {
+                debug!(output_snd, "No files to commit");
+                return Ok(());
+            } else {
+                match exec_git(
+                    &git_command,
+                    xvc_root_str,
+                    &[
+                        "commit",
+                        "-m",
+                        &format!("Xvc auto-commit after '{xvc_cmd}'"),
+                    ],
+                ) {
+                    Ok(res_git_commit) => {
+                        debug!(output_snd, "Committing .xvc/ to git: {res_git_commit}");
+                    }
+                    Err(e) => {
+                        debug!(output_snd, "Error committing .xvc/ to git: {e}");
+                        return Err(e);
+                    }
                 }
             }
         }
