@@ -25,10 +25,6 @@ pub struct UntrackCLI {
     #[arg(long)]
     restore_versions: Option<String>,
 
-    /// Delete all files also from given storages
-    #[arg(long)]
-    delete_from_storages: Option<Vec<String>>,
-
     /// Files/directories to untrack
     #[arg()]
     targets: Vec<String>,

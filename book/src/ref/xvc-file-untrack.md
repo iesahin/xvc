@@ -115,26 +115,8 @@ $ xvc file untrack data.txt --restore-versions data-versions/
 
 $ ls -l data-versions/
 total 16
--r--r--r--  1 iex  staff  19 Feb  6 12:29 data-b3-660-2cf-f6a4.txt
--r--r--r--  1 iex  staff  19 Jan 31 11:00 data-b3-c85-f3e-8108.txt
-
-```
-
-With `--delete-from-storages`, this command removes the cached files from (remote) storages.
-
-```console
-$ xvc file track data.txt
-
-$ xvc storage new local --name local-storage --path '../local-storage'
-
-$ xvc file send data.txt --to local-storage
-
-$ xvc file untrack data.txt --delete-from-storages local-storage
-[DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt
-[DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-[DELETE] [CWD]/.xvc/b3/660/2cf
-[DELETE] [CWD]/.xvc/b3/660
-[DELETE] [CWD]/.xvc/b3
+-r--r--r--  [..] data-b3-660-2cf-f6a4.txt
+-r--r--r--  [..] data-b3-c85-f3e-8108.txt
 
 ```
 
@@ -167,95 +149,8 @@ $ xvc file untrack data2.txt
 [DELETE] [CWD]/.xvc/b3
 
 $ tree .xvc/b3/
-.xvc/
-├── config.local.toml
-├── config.toml
-├── ec
-│   ├── 1675675777573863
-│   ├── 1675675777577799
-│   ├── 1675675778068509
-│   ├── 1675675778878118
-│   ├── 1675675779306978
-│   ├── 1675675779839786
-│   ├── 1675675779929794
-│   ├── 1675675780420030
-│   └── 1675675780615919
-└── store
-    ├── content-digest-store
-    │   ├── 1675675778052274.json
-    │   ├── 1675675778516231.json
-    │   ├── 1675675778860444.json
-    │   ├── 1675675778979816.json
-    │   ├── 1675675779282414.json
-    │   ├── 1675675779447491.json
-    │   ├── 1675675779532185.json
-    │   ├── 1675675779819592.json
-    │   ├── 1675675780082188.json
-    │   ├── 1675675780389323.json
-    │   ├── 1675675780602445.json
-    │   ├── 1675675780707313.json
-    │   └── 1675675780799664.json
-    ├── file-text-or-binary-store
-    │   ├── 1675675778052141.json
-    │   ├── 1675675778516399.json
-    │   ├── 1675675778860268.json
-    │   ├── 1675675778979993.json
-    │   ├── 1675675779282133.json
-    │   ├── 1675675779532334.json
-    │   ├── 1675675779819377.json
-    │   ├── 1675675780082351.json
-    │   ├── 1675675780389024.json
-    │   ├── 1675675780602775.json
-    │   ├── 1675675780707505.json
-    │   └── 1675675780799846.json
-    ├── recheck-method-store
-    │   ├── 1675675778051973.json
-    │   ├── 1675675778516485.json
-    │   ├── 1675675778860108.json
-    │   ├── 1675675778980085.json
-    │   ├── 1675675779281318.json
-    │   ├── 1675675779532420.json
-    │   ├── 1675675779819199.json
-    │   ├── 1675675780082426.json
-    │   ├── 1675675780388764.json
-    │   ├── 1675675780603028.json
-    │   ├── 1675675780707586.json
-    │   └── 1675675780799948.json
-    ├── remote-store
-    │   └── 1675675779929178.json
-    ├── storage-event-remote-r1n-store
-    │   └── 1675675779929576.json
-    ├── storage-event-store
-    │   └── 1675675779929348.json
-    ├── xvc-metadata-store
-    │   ├── 1675675778051644.json
-    │   ├── 1675675778516582.json
-    │   ├── 1675675778859889.json
-    │   ├── 1675675778980184.json
-    │   ├── 1675675779281087.json
-    │   ├── 1675675779532507.json
-    │   ├── 1675675779818994.json
-    │   ├── 1675675780082499.json
-    │   ├── 1675675780388430.json
-    │   ├── 1675675780603185.json
-    │   ├── 1675675780707669.json
-    │   └── 1675675780800039.json
-    ├── xvc-path-store
-    │   ├── 1675675778051427.json
-    │   ├── 1675675778516662.json
-    │   ├── 1675675778859626.json
-    │   ├── 1675675778980278.json
-    │   ├── 1675675779280642.json
-    │   ├── 1675675779532591.json
-    │   ├── 1675675779818721.json
-    │   ├── 1675675780082580.json
-    │   ├── 1675675780371349.json
-    │   ├── 1675675780603107.json
-    │   ├── 1675675780707758.json
-    │   └── 1675675780800150.json
-    └── xvc-pipeline-store
-        └── 1675675777577452.json
+.xvc/b3/  [error opening dir]
 
-12 directories, 76 files
+0 directories, 0 files
 
 ```
