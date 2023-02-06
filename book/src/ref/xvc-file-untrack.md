@@ -14,8 +14,6 @@ Arguments:
 Options:
       --restore-versions <RESTORE_VERSIONS>
           Restore all versions to a directory before deleting the cache files
-      --delete-from-storages <DELETE_FROM_STORAGES>
-          Delete all files also from given storages
   -h, --help
           Print help
 
