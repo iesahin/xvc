@@ -559,22 +559,35 @@ fn git_auto_commit(
     }
 
     // Add and commit `.xvc`
-    let res_git_add = exec_git(
+    match exec_git(
         &git_command,
         xvc_root_str,
         &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
-    )?;
-    debug!(output_snd, "Adding .xvc/ to git: {res_git_add}");
-    let res_git_commit = exec_git(
-        &git_command,
-        xvc_root_str,
-        &[
-            "commit",
-            "-m",
-            &format!("Xvc auto-commit after '{xvc_cmd}'"),
-        ],
-    )?;
-    debug!(output_snd, "Committing .xvc/ to git: {res_git_commit}");
+    ) {
+        Ok(_) => {
+            match exec_git(
+                &git_command,
+                xvc_root_str,
+                &[
+                    "commit",
+                    "-m",
+                    &format!("Xvc auto-commit after '{xvc_cmd}'"),
+                ],
+            ) {
+                Ok(res_git_commit) => {
+                    debug!(output_snd, "Committing .xvc/ to git: {res_git_commit}");
+                }
+                Err(e) => {
+                    debug!(output_snd, "Error committing .xvc/ to git: {e}");
+                    return Err(e);
+                }
+            }
+        }
+        Err(e) => {
+            debug!(output_snd, "Error adding .xvc/ to git: {e}");
+            return Err(e);
+        }
+    }
 
     // Pop the stash if there were files we stashed
 
