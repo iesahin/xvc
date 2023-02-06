@@ -401,7 +401,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         });
 
         match command_thread.join().unwrap() {
-            Ok(_) => debug!(output_snd, "Command completed successfully."),
+            Ok(_) => debug!(output_snd_clone, "Command completed successfully."),
             Err(e) => error!(output_snd_clone, "{}", e),
         }
         output_snd_clone.send(None).unwrap();
