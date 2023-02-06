@@ -1,5 +1,6 @@
 //! Main CLI interface for XVC
 use std::env::ArgsOs;
+use std::f32::consts::E;
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -399,7 +400,10 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             Ok(())
         });
 
-        command_thread.join().unwrap().unwrap();
+        match command_thread.join().unwrap() {
+            Ok(_) => debug!(output_snd, "Command completed successfully."),
+            Err(e) => error!(output_snd_clone, "{}", e),
+        }
         output_snd_clone.send(None).unwrap();
         output_thread.join().unwrap();
     })
