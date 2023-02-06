@@ -3,11 +3,9 @@ use std::fs::{self};
 use std::path::PathBuf;
 
 use crate::common::gitignore::make_ignore_handler;
-use crate::common::{
-    filter_targets_from_store, FileTextOrBinary,
-};
+use crate::common::{filter_targets_from_store, FileTextOrBinary};
 use crate::recheck::{make_recheck_handler, RecheckOperation};
-use crate::{Result};
+use crate::Result;
 use clap::Parser;
 
 use derive_more::From;
@@ -248,9 +246,11 @@ pub fn cmd_untrack(
 
     for cp in &deletable_paths {
         let abs_cp = cp.to_absolute_path(xvc_root);
+        watch!(abs_cp);
         if abs_cp.exists() {
             // Set to writable
             let parent = abs_cp.parent().unwrap();
+            watch!(parent);
             let mut dir_perm = parent.metadata()?.permissions();
             dir_perm.set_readonly(false);
             fs::set_permissions(&parent, dir_perm)?;
@@ -264,8 +264,10 @@ pub fn cmd_untrack(
         }
 
         let rel_path = cp.inner();
+        watch!(rel_path);
         while let Some(parent) = rel_path.parent() {
             let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
+            watch!(parent_abs_cp);
             let mut perm = parent_abs_cp.metadata()?.permissions();
             perm.set_readonly(false);
             fs::set_permissions(&parent_abs_cp, perm)?;
