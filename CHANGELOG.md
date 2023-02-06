@@ -24,8 +24,10 @@ tree, and subtasks are marked with indentation.
     - Change all PathBuf elements in XvcRoot to AbsolutePath
     - Sort results of `--restore-versions` by entity id ✅
     - Delete cache files
-    - Remove empty directories after untracking
-  - [ ] Update book/src/start/from-dvc.md for `xvc file untrack`
+    - Remove empty directories after untracking ✅
+  - Update book/src/start/from-dvc.md for `xvc file untrack` ✅
+- Restructure output channel to send/receive `Option<XvcOutputLine>` instead of `XvcOutputLine`
+  - Refactor all commands to use the new output channel ✅
 
 ## 0.5.1 (2023-01-28)
 

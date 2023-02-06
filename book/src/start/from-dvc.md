@@ -44,6 +44,9 @@ Both of these use DAGs to represent pipelines.
 
 - `dvc add` can be replaced by [`xvc file track`](/ref/xvc-file-track.md).  `dvc add` creates a `.dvc` file (formatted in YAML) in the repository. Xvc doesn't create separate files for tracked paths.
 
+- Instead of deleting `.dvc` files to remove a file from DVC, you can use [`xvc file
+  untrack`](/ref/xvc-file-untrack.md). It can also restore all versions of an untracked file to a directory.
+
 - `dvc check-ignore` can be replaced by `xvc check-ignore`. Xvc version can be used against any other ignore filename. (`.gitignore`,`.ignore`, `.fooignore`...)
 
 - `dvc checkout` is replaced by [`xvc file recheck`](/ref/xvc-file-recheck.md). There is a `--recheck-method` (shortened as `--as`) option in several Xvc commands to tell whether to check out as symlink, hardlink, reflink or copy.
@@ -62,7 +65,7 @@ Both of these use DAGs to represent pipelines.
 - There is no command similar to `dvc diff` in Xvc.
 
 - There is no command similar to `dvc doctor` or `dvc version`. Version information should be visible in the help text.
-  Unless [compiled from source with feature flags](/intro/install.md), Xvc binaries doesn't have any feature changes.
+  Unless [compiled from source with feature flags](/intro/install.md), Xvc binaries don't have feature differences.
 
 - Currently, there are no commands corresponding to `dvc exp` set of commands. This is on the roadmap for Xvc. Scope, implementation, and actual commands may differ.
 
@@ -70,7 +73,7 @@ Both of these use DAGs to represent pipelines.
 
 - Instead of freezing "pipeline stages" as in `dvc freeze`, and unfreezing with `dvc unfreeze`, `xvc pipeline step update --changed [never|always|by_dependencies]` can be used to specify if/when to run a pipeline step.
 
-- Instead of `dvc gc` to "garbage-collect" files, you can use [`xvc file delete`](/ref/xvc-file-delete.md)  with various options.
+- Instead of `dvc gc` to "garbage-collect" files, you can use [`xvc file remove`](/ref/xvc-file-remove.md) with various options.
 
 - There is no corresponding command for `dvc get-url` in Xvc. You can use `wget` or `curl` instead.
 
@@ -80,7 +83,8 @@ Both of these use DAGs to represent pipelines.
 
 - There is no corresponding command for `dvc list-url`.
 
-- `dvc list` is replaced by [`xvc file list`](/ref/xvc-file-list.md) for local paths. Its remote capabilities are not implemented but on the roadmap.
+- `dvc list` is replaced by [`xvc file list`](/ref/xvc-file-list.md) for local paths. Its remote capabilities are not
+  implemented but is on the roadmap.
 
 - Currently, there is no params/metrics tracking/diff similar to `dvc params`, `dvc metrics` or `dvc plots` commands in Xvc.
 
@@ -123,7 +127,7 @@ Both of these use DAGs to represent pipelines.
 
 - DVC uses Object-Oriented Programming in Python. Xvc tries to minimize function/data coupling and uses an Entity-Component System (`xvc-ecs`) in its core.
 
-- DVC remotes are identical to their cache in structure, and multiple DVC repositories use the same remote by mixing files. This leads to inter-repository deduplication. Xvc uses separate directory for each repository. This means identical files in separate Xvc repositories are duplicated.
+- DVC remotes are identical to their cache in structure, and multiple DVC repositories use the same remote by mixing files. This provides inter-repository deduplication. Xvc uses separate directory for each repository. This means identical files in separate Xvc repositories are duplicated.
 
 - DVC considers directories as file-equivalent entities to track with `.dvc` files pointing to `.json` files in the cache. Xvc doesn't track directories as identical to files. They are considered collections of files.
 
