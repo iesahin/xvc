@@ -263,7 +263,7 @@ pub fn cmd_untrack(
             output!(output_snd, "[DELETE] {}", abs_cp.to_str().unwrap());
         }
 
-        let rel_path = cp.inner();
+        let mut rel_path = cp.inner();
         watch!(rel_path);
         while let Some(parent) = rel_path.parent() {
             let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
@@ -279,6 +279,8 @@ pub fn cmd_untrack(
                     }
                 }
             }
+
+            rel_path = parent.to_relative_path_buf();
         }
     }
 
