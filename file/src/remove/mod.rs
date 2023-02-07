@@ -39,14 +39,14 @@ pub struct RemoveCLI {
     /// Remove all versions of the targets larger than the given size.
     /// Size can be specified like 1 KiB, 1 TB or 1.5 MB.
     /// See https://docs.rs/parse-size/latest/parse_size/ for more details.
-    #[arg(long, parse_from_str = parse_size)]
-    larger_than: Option<u64>,
+    #[arg(long)]
+    larger_than: Option<String>,
 
     /// Remove all versions of the targets smaller than the given size.
     /// Size can be specified like 1 KiB, 1 TB or 1.5 MB.
     /// See https://docs.rs/parse-size/latest/parse_size/ for more details.
-    #[arg(long, parse_from_str = parse_size)]
-    smaller_than: Option<u64>,
+    #[arg(long)]
+    smaller_than: Option<String>,
 
     /// Remove the targets even if they are used by other targets (via deduplication)
     #[arg(long)]
