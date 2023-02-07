@@ -31,6 +31,7 @@ use crossbeam_channel::bounded;
 use list::ListCLI;
 use log::{debug, error, info, warn, LevelFilter};
 use mv::MoveCLI;
+use remove::RemoveCLI;
 use std::io;
 use std::io::Write;
 use std::path::Path;
