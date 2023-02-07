@@ -20,7 +20,24 @@ Options:
           
           The following are the keys for each row:
           
-          - {{acd8}}:  actual content digest from the workspace file. First 8 digits. - {{acd64}}:  actual content digest. All 64 digits. - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D), symlink (S), hardlink (H) or reflink (R). - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB, GB and TB to represent sizes larger than 1MB. - {{ats}}:  actual timestamp. The timestamp of the workspace file. - {{name}}: The name of the file or directory. - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show whether the file timestamp is the same as the cached timestamp, newer, older, not cached or not tracked. - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits. - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits. - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R). - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses MB, GB and TB to represent sizes larged than 1MB. - {{rts}}:  recorded timestamp. The timestamp of the cached content.
+          - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
+          - {{acd64}}:  actual content digest. All 64 digits.
+          - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
+            symlink (S), hardlink (H) or reflink (R).
+          - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB,
+            GB and TB to represent sizes larger than 1MB.
+          - {{ats}}:  actual timestamp. The timestamp of the workspace file.
+          - {{name}}: The name of the file or directory.
+          - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
+            whether the file timestamp is the same as the cached timestamp, newer,
+            older, not cached or not tracked.
+          - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
+          - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
+          - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
+            as a copy (C), symlink (S), hardlink (H) or reflink (R).
+          - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
+            MB, GB and TB to represent sizes larged than 1MB.
+          - {{rts}}:  recorded timestamp. The timestamp of the cached content.
           
           The default format can be set with file.list.format in the config file.
 
