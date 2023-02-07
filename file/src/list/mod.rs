@@ -439,7 +439,7 @@ impl Display for ListRows {
 ///
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[command(rename_all = "kebab-case")]
+#[command(rename_all = "kebab-case", verbatim_doc_comment)]
 
 pub struct ListCLI {
     /// A string for each row of the output table
@@ -537,7 +537,6 @@ impl UpdateFromXvcConfig for ListCLI {
 /// TODO: - I: File is ignored
 
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
-
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
 
