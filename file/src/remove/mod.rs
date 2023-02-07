@@ -5,7 +5,9 @@ use xvc_core::XvcRoot;
 use xvc_logging::XvcOutputSender;
 use xvc_storage::StorageIdentifier;
 
+/// Remove files from Xvc cache or storage
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
+#[command(rename_all = "kebab-case", author, version)]
 pub struct RemoveCLI {
     /// Remove files from cache
     #[arg(long)]
