@@ -11,51 +11,51 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 Arguments:
   [TARGETS]...
           Files/directories to list.
-
+          
           If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
           A string for each row of the output table
-
+          
           The following are the keys for each row:
-
+          
           - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
-
+          
           - {{acd64}}:  actual content digest. All 64 digits.
-
+          
           - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D), symlink (S), hardlink (H) or reflink (R).
-
+          
           - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB, GB and TB to represent sizes larger than 1MB.
-
+          
           - {{ats}}:  actual timestamp. The timestamp of the workspace file.
-
+          
           - {{name}}: The name of the file or directory.
-
+          
           - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show whether the file timestamp is the same as the cached timestamp, newer, older, not cached or not tracked.
-
+          
           - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
-
+          
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
-
+          
           - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
-
+          
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses MB, GB and TB to represent sizes larged than 1MB.
-
+          
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-
+          
           The default format can be set with file.list.format in the config file.
 
   -s, --sort <SORT>
           Sort criteria.
-
+          
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-
+          
           The default option can be set with file.list.sort in the config file.
 
       --no-summary
           Don't show total number and size of the listed files.
-
+          
           The default option can be set with file.list.no_summary in the config file.
 
   -h, --help
