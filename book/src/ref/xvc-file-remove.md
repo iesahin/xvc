@@ -22,6 +22,7 @@ Options:
       --smaller-than <SMALLER_THAN>  Remove all versions of the targets smaller than the given size. Size can be specified like 1 KiB, 1 TB or 1.5 MB. See https://docs.rs/parse-size/latest/parse_size/ for more details
       --force                        Remove the targets even if they are used by other targets (via deduplication)
   -h, --help                         Print help
+  -V, --version                      Print version
 
 ```
 
@@ -42,8 +43,8 @@ $ xvc file track 'd*.txt'
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-07 09:31:50          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:31:51          59d8f058 .gitignore
+FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
+FX         191 2023-02-07 09:34:03          063346d9 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -63,8 +64,8 @@ For more information, try '--help'.
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-07 09:31:50          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:31:51          59d8f058 .gitignore
+FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
+FX         191 2023-02-07 09:34:03          063346d9 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -105,8 +106,8 @@ $ xvc file carry-in data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-07 09:31:50          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:31:51          59d8f058 .gitignore
+FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
+FX         191 2023-02-07 09:34:03          063346d9 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -120,9 +121,9 @@ $ perl -pi -e 's/a/e/g' data.txt
 $ xvc file carry-in data.txt
 
 $ xvc file list
-FC          19 2023-02-07 09:31:52 6602cff6 6602cff6 data.txt
-FX         130 2023-02-07 09:31:50          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:31:51          59d8f058 .gitignore
+FC          19 2023-02-07 09:34:04 6602cff6 6602cff6 data.txt
+FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
+FX         191 2023-02-07 09:34:03          063346d9 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -146,7 +147,7 @@ $ xvc storage new local --name local-storage --path '../local-storage'
 $ xvc file send data.txt --to local-storage
 
 $ xvc file remove data.txt --from-storage local-storage
-thread '<unnamed>' panicked at 'not yet implemented', file/src/remove/mod.rs:65:5
+thread '<unnamed>' panicked at 'not yet implemented', file/src/remove/mod.rs:67:5
 stack backtrace:
    0: rust_begin_unwind
              at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
@@ -155,7 +156,7 @@ stack backtrace:
    2: core::panicking::panic
              at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:48:5
    3: xvc_file::remove::cmd_remove
-             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:65:5
+             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:67:5
    4: xvc_file::run
              at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:204:44
    5: xvc::cli::dispatch::{{closure}}::{{closure}}
@@ -220,28 +221,28 @@ For more information, try '--help'.
 
 $ ls -lR .xvc/b3/
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 660
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 c85
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 660
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 c85
 
 .xvc/b3//660:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 2cf
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 2cf
 
 .xvc/b3//660/2cf:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 12:31 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+dr-xr-xr-x  3 iex  staff  96 Feb  7 12:34 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
 
 .xvc/b3//660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367:
 total 8
--r--r--r--  1 iex  staff  19 Feb  7 12:31 0.txt
+-r--r--r--  1 iex  staff  19 Feb  7 12:34 0.txt
 
 .xvc/b3//c85:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 f3e
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 f3e
 
 .xvc/b3//c85/f3e:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 12:31 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+dr-xr-xr-x  3 iex  staff  96 Feb  7 12:34 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
 
 .xvc/b3//c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496:
 total 8
@@ -257,28 +258,28 @@ For more information, try '--help'.
 
 $ ls -lR .xvc/b3/
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 660
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 c85
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 660
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 c85
 
 .xvc/b3//660:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 2cf
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 2cf
 
 .xvc/b3//660/2cf:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 12:31 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+dr-xr-xr-x  3 iex  staff  96 Feb  7 12:34 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
 
 .xvc/b3//660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367:
 total 8
--r--r--r--  1 iex  staff  19 Feb  7 12:31 0.txt
+-r--r--r--  1 iex  staff  19 Feb  7 12:34 0.txt
 
 .xvc/b3//c85:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 12:31 f3e
+drwxr-xr-x  3 iex  staff  96 Feb  7 12:34 f3e
 
 .xvc/b3//c85/f3e:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 12:31 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+dr-xr-xr-x  3 iex  staff  96 Feb  7 12:34 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
 
 .xvc/b3//c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496:
 total 8
