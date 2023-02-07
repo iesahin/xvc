@@ -16,6 +16,7 @@ pub mod hash;
 pub mod list;
 pub mod mv;
 pub mod recheck;
+pub mod remove;
 pub mod send;
 pub mod track;
 pub mod untrack;
@@ -77,6 +78,8 @@ pub enum XvcFileSubCommand {
     Send(SendCLI),
     /// Bring (download, pull, fetch) files from external storages
     Bring(BringCLI),
+    /// Remove files from Xvc and possibly storages
+    Remove(RemoveCLI),
     /// Untrack (delete) files from Xvc and possibly storages
     Untrack(UntrackCLI),
 }
@@ -193,6 +196,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Untrack(opts) => untrack::cmd_untrack(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Remove(opts) => remove::cmd_remove(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
