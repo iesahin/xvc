@@ -28,6 +28,8 @@ tree, and subtasks are marked with indentation.
   - Update book/src/start/from-dvc.md for `xvc file untrack` ✅
 - Restructure output channel to send/receive `Option<XvcOutputLine>` instead of `XvcOutputLine`
   - Refactor all commands to use the new output channel ✅
+- Add `xvc file remove` command
+  - Add RemoveCLI and the command dispatcher ✅
 
 ## 0.5.1 (2023-01-28)
 

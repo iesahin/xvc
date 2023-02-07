@@ -1,3 +1,4 @@
+use crate::Result;
 use clap::Parser;
 use parse_size::parse_size;
 use xvc_core::XvcRoot;
