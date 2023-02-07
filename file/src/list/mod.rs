@@ -439,7 +439,7 @@ impl Display for ListRows {
 ///
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
-#[command(rename_all = "kebab-case", verbatim_doc_comment)]
+#[command(rename_all = "kebab-case")]
 
 pub struct ListCLI {
     /// A string for each row of the output table
@@ -466,7 +466,7 @@ pub struct ListCLI {
     /// - {{rts}}:  recorded timestamp. The timestamp of the cached content.
     ///
     /// The default format can be set with file.list.format in the config file.
-    #[arg(long, short = 'f')]
+    #[arg(long, short = 'f', verbatim_doc_comment)]
     format: Option<ListFormat>,
     /// Sort criteria.
     ///

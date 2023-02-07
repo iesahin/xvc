@@ -64,7 +64,7 @@ $ xvc file track 'd*.txt'
 $ xvc file list
 FC        [..] c85f3e81 c85f3e81 data.txt
 FX        [..]          ac46bf74 .xvcignore
-FX         191 2023-02-07 11:02:14          b10c9a9d .gitignore
+FX         191 2023-02-07 11:03:33          2c6ebabe .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -166,8 +166,8 @@ $ xvc file carry-in data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-07 11:02:13          ac46bf74 .xvcignore
-FX         191 2023-02-07 11:02:14          b10c9a9d .gitignore
+FX         130 2023-02-07 11:03:32          ac46bf74 .xvcignore
+FX         191 2023-02-07 11:03:33          2c6ebabe .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -181,9 +181,9 @@ $ perl -pi -e 's/a/e/g' data.txt
 $ xvc file carry-in data.txt
 
 $ xvc file list
-FC          19 2023-02-07 11:02:15 6602cff6 6602cff6 data.txt
-FX         130 2023-02-07 11:02:13          ac46bf74 .xvcignore
-FX         191 2023-02-07 11:02:14          b10c9a9d .gitignore
+FC          19 2023-02-07 11:03:34 6602cff6 6602cff6 data.txt
+FX         130 2023-02-07 11:03:32          ac46bf74 .xvcignore
+FX         191 2023-02-07 11:03:33          2c6ebabe .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -321,28 +321,28 @@ note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose bac
 
 $ ls -lR .xvc/b3/
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 660
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 c85
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 660
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 c85
 
 .xvc/b3//660:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 2cf
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 2cf
 
 .xvc/b3//660/2cf:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 14:02 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+dr-xr-xr-x  3 iex  staff  96 Feb  7 14:03 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
 
 .xvc/b3//660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367:
 total 8
--r--r--r--  1 iex  staff  19 Feb  7 14:02 0.txt
+-r--r--r--  1 iex  staff  19 Feb  7 14:03 0.txt
 
 .xvc/b3//c85:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 f3e
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 f3e
 
 .xvc/b3//c85/f3e:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 14:02 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+dr-xr-xr-x  3 iex  staff  96 Feb  7 14:03 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
 
 .xvc/b3//c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496:
 total 8
@@ -387,28 +387,28 @@ note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose bac
 
 $ ls -lR .xvc/b3/
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 660
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 c85
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 660
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 c85
 
 .xvc/b3//660:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 2cf
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 2cf
 
 .xvc/b3//660/2cf:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 14:02 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+dr-xr-xr-x  3 iex  staff  96 Feb  7 14:03 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
 
 .xvc/b3//660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367:
 total 8
--r--r--r--  1 iex  staff  19 Feb  7 14:02 0.txt
+-r--r--r--  1 iex  staff  19 Feb  7 14:03 0.txt
 
 .xvc/b3//c85:
 total 0
-drwxr-xr-x  3 iex  staff  96 Feb  7 14:02 f3e
+drwxr-xr-x  3 iex  staff  96 Feb  7 14:03 f3e
 
 .xvc/b3//c85/f3e:
 total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  7 14:02 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+dr-xr-xr-x  3 iex  staff  96 Feb  7 14:03 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
 
 .xvc/b3//c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496:
 total 8
