@@ -29,9 +29,13 @@ Options:
 
 ## Examples
 
-This command files from the cache, the workspace or storages. It doesn't remove the file from Xvc tracking.
+This command deletes files from the Xvc cache or storage. It doesn't remove the file from Xvc tracking.
 
-It only works if the file is tracked by Xvc.
+```admonition tip
+If you want to remove a workspace file or link, you can use usual `rm` command. If the file is tracked and carried in to the cache, you can always [recheck](xvc-file-recheck.md) it.
+```
+
+This command only works if the file is tracked by Xvc.
 
 ```console
 $ git init
@@ -42,46 +46,13 @@ $ xvc init
 $ xvc file track 'd*.txt'
 
 $ xvc file list
-FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:34:03          063346d9 .gitignore
+FC        [..] c85f3e81 c85f3e81 data.txt
+FX        [..]          ac46bf74 .xvcignore
+FX        [..]          243fae81 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
 ```
-
-You can remove the file from the workspace.
-
-```console
-$ xvc file remove --from-workspace data.txt
-error: unexpected argument '--from-workspace' found
-
-  note: argument '--from-storage' exists
-
-Usage: xvc file remove <--from-cache|--from-storage <FROM_STORAGE>|--all-versions|--only-version <ONLY_VERSION>|--before <BEFORE>|--after <AFTER>|--larger-than <LARGER_THAN>|--smaller-than <SMALLER_THAN>|--force|TARGETS>
-
-For more information, try '--help'.
-
-$ xvc file list
-FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:34:03          063346d9 .gitignore
-Total #: 3 Workspace Size:         340 Cached Size:          19
-
-
-```
-
-You can recheck the file if it still resides in the cache.
-
-```console
-$ xvc file recheck data.txt
-
-$ ls -l
-total 8
--rw-rw-rw-  1 iex  staff  19 Jan 31 11:00 data.txt
-
-```
-
 You can remove the file from the cache and keep the workspace version.
 
 ```console
@@ -106,8 +77,8 @@ $ xvc file carry-in data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:34:03          063346d9 .gitignore
+FX         130 2023-02-07 09:34:22          ac46bf74 .xvcignore
+FX         191 2023-02-07 09:34:22          243fae81 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -121,9 +92,9 @@ $ perl -pi -e 's/a/e/g' data.txt
 $ xvc file carry-in data.txt
 
 $ xvc file list
-FC          19 2023-02-07 09:34:04 6602cff6 6602cff6 data.txt
-FX         130 2023-02-07 09:34:02          ac46bf74 .xvcignore
-FX         191 2023-02-07 09:34:03          063346d9 .gitignore
+FC          19 2023-02-07 09:34:24 6602cff6 6602cff6 data.txt
+FX         130 2023-02-07 09:34:22          ac46bf74 .xvcignore
+FX         191 2023-02-07 09:34:22          243fae81 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 

@@ -15,13 +15,14 @@ pub struct RemoveCLI {
 
     /// Remove files from storage
     #[arg(long)]
-    from_storage: StorageIdentifier,
+    from_storage: Option<StorageIdentifier>,
 
     /// Remove all versions of the file
     #[arg(long)]
     all_versions: bool,
 
     /// Remove only the specified version of the file
+    ///
     /// Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least
     /// 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail.
     /// Dashes are optional.
@@ -64,5 +65,12 @@ pub(crate) fn cmd_remove(
     xvc_root: &XvcRoot,
     opts: RemoveCLI,
 ) -> Result<()> {
-    todo!()
+    if !opts.from_cache && opts.from_storage.is_none() {
+        return Err(anyhow::anyhow!(
+            "At least one of --from-cache or --from-storage must be specified"
+        )
+        .into());
+    }
+
+    Ok(())
 }
