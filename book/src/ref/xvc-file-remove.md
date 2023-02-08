@@ -24,7 +24,7 @@ Options:
 
       --only-version <ONLY_VERSION>
           Remove only the specified version of the file
-          
+
           Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail. Dashes are optional.
 
       --before <BEFORE>
@@ -72,7 +72,7 @@ $ xvc file track 'd*.txt'
 $ xvc file list
 FC        [..] c85f3e81 c85f3e81 data.txt
 FX        [..]          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:04:37          c02c5fe7 .gitignore
+FX        [..] .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -82,7 +82,7 @@ If you don't specify either `--from-cache` or `--from-storage`, this command doe
 
 ```console
 $ xvc file remove data.txt
-[ERROR] File Error: General Xvc File Error. At least one of --from-cache or --from-storage must be specified
+[ERROR] File Error: At least one of --from-cache or --from-storage must be specified
 
 ```
 
@@ -98,15 +98,15 @@ total 8
 
 ```
 
-You can carry-in the file from the workspace to the cache.
+You can recheck the file from the cache to the workspace.
 
 ```console
-$ xvc file carry-in data.txt
+$ xvc file recheck data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-08 10:04:36          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:04:37          c02c5fe7 .gitignore
+FX         130 2023-02-08 10:07:54          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:07:55          9b99c7d6 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -120,9 +120,9 @@ $ perl -pi -e 's/a/e/g' data.txt
 $ xvc file carry-in data.txt
 
 $ xvc file list
-FC          19 2023-02-08 10:04:37 6602cff6 6602cff6 data.txt
-FX         130 2023-02-08 10:04:36          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:04:37          c02c5fe7 .gitignore
+FC          19 2023-02-08 10:07:56 6602cff6 6602cff6 data.txt
+FX         130 2023-02-08 10:07:54          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:07:55          9b99c7d6 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -130,87 +130,88 @@ $ xvc file remove --from-cache --all-versions data.txt
 
 ```
 
-You can use this command to remove the files from storages as well.
+It's possible to filter the cache versions by size or timestamp to remove.
+
+Suppose you have three versions of `data.txt` in the cache. The first version is 19 bytes, the second is 2000 bytes and
+the third is 3000 bytes.
 
 ```console
+$ rm data.txt
+$ xvc-test-helper generate-random-file --size 2000 data.txt
 $ xvc file carry-in data.txt
+$ rm data.txt
+$ xvc-test-helper generate-random-file --size 3000 data.txt
+$ xvc file carry-in data.txt
+$ ls -l .xvc/b3/*/*/*/0.*
+```
 
+You can remove all versions of the file larger than 2000 bytes.
+
+```console
+$ xvc file remove --from-cache --larger-than 2000 data.txt
+$ ls -lR .xvc/b3/*/*/*/0.*
+```
+
+You can remove all versions of the file smaller than 500 bytes.
+
+```console
+$ xvc file remove --from-cache --smaller-than 500 data.txt
+$ ls -lR .xvc/b3/*/*/*/0.*
+```
+
+You can remove all versions carried in before or after a certain timestamp.
+
+```console
+$ xvc-test-helper generate-random-file --size 2000 data.txt
+$ touch -t 202201010000 data.txt
+$ xvc file carry-in data.txt
+$ xvc-test-helper generate-random-file --size 2000 data.txt
+$ touch -t 202301010000 data.txt
+$ xvc file carry-in data.txt
+$ xvc-test-helper generate-random-file --size 2000 data.txt
+$ touch -t 202401010000 data.txt
+$ xvc file carry-in data.txt
+$ ls -lR .xvc/b3/*/*/*/0.*
+```
+
+Now remove all versions carried in before 2023-01-01.
+
+```console
+$ xvc file remove --from-cache --before 2023-01-01 data.txt
+$ ls -lR .xvc/b3/*/*/*/0.*
+```
+
+Remove all versions carried in after 2023-01-02.
+
+```console
+$ xvc file remove --from-cache --after 2023-01-02 data.txt
+$ ls -lR .xvc/b3/*/*/*/0.*
+```
+
+You can use this command to remove cached files from (remote) storages as well.
+
+```console
 $ xvc storage new local --name local-storage --path '../local-storage'
 
 $ xvc file send data.txt --to local-storage
+$ ls -lR ../local-storage
 
 $ xvc file remove data.txt --from-storage local-storage
-
+$ ls -lR ../local-storage
 ```
+
 
 If multiple paths are pointing to the same cache file (deduplication), the cache file will not be deleted.
 In this case, `remove` reports other paths pointing to the same cache file. You must `--force` delete the cache file.
 
 ```console
-$ xvc file track data.txt
+$ xvc-test-helper generate-random-file --size 2000 data.txt
+$ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
+$ xvc file list
 
 $ xvc file remove --from-cache data.txt
 
-$ ls -lR .xvc/b3/
-total 0
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 660
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 c85
-
-.xvc/b3//660:
-total 0
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 2cf
-
-.xvc/b3//660/2cf:
-total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  8 13:04 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-
-.xvc/b3//660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367:
-total 8
--r--r--r--  1 iex  staff  19 Feb  8 13:04 0.txt
-
-.xvc/b3//c85:
-total 0
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 f3e
-
-.xvc/b3//c85/f3e:
-total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  8 13:04 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
-
-.xvc/b3//c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496:
-total 8
--r--r--r--  1 iex  staff  19 Jan 31 11:00 0.txt
-
-$ xvc file remove --from-cache --force data.txt
-
-$ ls -lR .xvc/b3/
-total 0
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 660
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 c85
-
-.xvc/b3//660:
-total 0
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 2cf
-
-.xvc/b3//660/2cf:
-total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  8 13:04 f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-
-.xvc/b3//660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367:
-total 8
--r--r--r--  1 iex  staff  19 Feb  8 13:04 0.txt
-
-.xvc/b3//c85:
-total 0
-drwxr-xr-x  3 iex  staff  96 Feb  8 13:04 f3e
-
-.xvc/b3//c85/f3e:
-total 0
-dr-xr-xr-x  3 iex  staff  96 Feb  8 13:04 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
-
-.xvc/b3//c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496:
-total 8
--r--r--r--  1 iex  staff  19 Jan 31 11:00 0.txt
-
+$ ls -l .xvc/b3/*/*/*/0.*
 ```
