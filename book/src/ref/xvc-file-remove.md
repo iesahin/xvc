@@ -76,6 +76,8 @@ FX        [..] .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
+$ tree .xvc/b3/
+
 ```
 
 If you don't specify either `--from-cache` or `--from-storage`, this command does nothing.
@@ -105,8 +107,8 @@ $ xvc file recheck data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-08 10:41:26          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:41:26          0a268a9d .gitignore
+FX         130 2023-02-08 10:42:33          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:42:33          4c888070 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -120,17 +122,22 @@ $ perl -pi -e 's/a/e/g' data.txt
 $ xvc file carry-in data.txt
 
 $ tree .xvc/b3/
-total 24
-drwxr-xr-x  4 iex  staff   128 Feb  8 13:41 b3
--rw-r--r--  1 iex  staff    61 Feb  8 13:41 config.local.toml
--rw-r--r--  1 iex  staff  4579 Feb  8 13:41 config.toml
-drwxr-xr-x  5 iex  staff   160 Feb  8 13:41 ec
-drwxr-xr-x  8 iex  staff   256 Feb  8 13:41 store
+.xvc/b3/
+├── 660
+│   └── 2cf
+│       └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+│           └── 0.txt
+└── c85
+    └── f3e
+        └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+            └── 0.txt
+
+7 directories, 2 files
 
 $ xvc file list
-FC          19 2023-02-08 10:41:27 6602cff6 6602cff6 data.txt
-FX         130 2023-02-08 10:41:26          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:41:26          0a268a9d .gitignore
+FC          19 2023-02-08 10:42:34 6602cff6 6602cff6 data.txt
+FX         130 2023-02-08 10:42:33          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:42:33          4c888070 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -245,11 +252,11 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         181 2023-02-08 10:41:28 80f7f561          data2.txt
-FC        3000 2023-02-08 10:41:28 80f7f561 80f7f561 data.txt
-FX         130 2023-02-08 10:41:26          ac46bf74 .xvcignore
-FX         276 2023-02-08 10:41:28          07f626d7 .gitignore
-Total #: 4 Workspace Size:        3587 Cached Size:          19
+SS         182 2023-02-08 10:42:36 360a6fc7          data2.txt
+FC        3000 2023-02-08 10:42:36 360a6fc7 360a6fc7 data.txt
+FX         130 2023-02-08 10:42:33          ac46bf74 .xvcignore
+FX         276 2023-02-08 10:42:36          614f1c35 .gitignore
+Total #: 4 Workspace Size:        3588 Cached Size:          19
 
 
 $ xvc file remove --from-cache data.txt
