@@ -105,8 +105,8 @@ $ xvc file recheck data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-08 10:41:02          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:41:02          f756d064 .gitignore
+FX         130 2023-02-08 10:41:26          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:41:26          0a268a9d .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -119,13 +119,18 @@ $ perl -pi -e 's/a/e/g' data.txt
 
 $ xvc file carry-in data.txt
 
-$ ls -l .xvc/
-ls: .xvc/b3/*/*: No such file or directory
+$ tree .xvc/b3/
+total 24
+drwxr-xr-x  4 iex  staff   128 Feb  8 13:41 b3
+-rw-r--r--  1 iex  staff    61 Feb  8 13:41 config.local.toml
+-rw-r--r--  1 iex  staff  4579 Feb  8 13:41 config.toml
+drwxr-xr-x  5 iex  staff   160 Feb  8 13:41 ec
+drwxr-xr-x  8 iex  staff   256 Feb  8 13:41 store
 
 $ xvc file list
-FC          19 2023-02-08 10:41:03 6602cff6 6602cff6 data.txt
-FX         130 2023-02-08 10:41:02          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:41:02          f756d064 .gitignore
+FC          19 2023-02-08 10:41:27 6602cff6 6602cff6 data.txt
+FX         130 2023-02-08 10:41:26          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:41:26          0a268a9d .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -240,11 +245,11 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-08 10:41:05 847c7f6e          data2.txt
-FC        3000 2023-02-08 10:41:05 847c7f6e 847c7f6e data.txt
-FX         130 2023-02-08 10:41:02          ac46bf74 .xvcignore
-FX         276 2023-02-08 10:41:05          f5b9c496 .gitignore
-Total #: 4 Workspace Size:        3588 Cached Size:          19
+SS         181 2023-02-08 10:41:28 80f7f561          data2.txt
+FC        3000 2023-02-08 10:41:28 80f7f561 80f7f561 data.txt
+FX         130 2023-02-08 10:41:26          ac46bf74 .xvcignore
+FX         276 2023-02-08 10:41:28          07f626d7 .gitignore
+Total #: 4 Workspace Size:        3587 Cached Size:          19
 
 
 $ xvc file remove --from-cache data.txt
