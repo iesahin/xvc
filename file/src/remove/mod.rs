@@ -27,29 +27,29 @@ pub struct RemoveCLI {
     /// Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least
     /// 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail.
     /// Dashes are optional.
-    #[arg(long, conflicts_with = "all-versions")]
+    #[arg(long, conflicts_with = "all_versions")]
     only_version: Option<String>,
 
     /// Remove all versions of the file carried in earlier than the given timestamp.
     /// Timestamps are specified like 2023-01-01T12:34:56Z in RFC3339 format.
-    #[arg(long, conflicts_with = "all-versions")]
+    #[arg(long, conflicts_with = "all_versions")]
     before: Option<String>,
 
     /// Remove all versions of the file carried in after than the given timestamp.
     /// Timestamps are specified like 2023-01-01T12:34:56Z in RFC3339 format.
-    #[arg(long, conflicts_with = "all-versions")]
+    #[arg(long, conflicts_with = "all_versions")]
     after: Option<String>,
 
     /// Remove all versions of the targets larger than the given size.
     /// Size can be specified like 1 KiB, 1 TB or 1.5 MB.
     /// See https://docs.rs/parse-size/latest/parse_size/ for more details.
-    #[arg(long, conflicts_with = "all-versions")]
+    #[arg(long, conflicts_with = "all_versions")]
     larger_than: Option<String>,
 
     /// Remove all versions of the targets smaller than the given size.
     /// Size can be specified like 1 KiB, 1 TB or 1.5 MB.
     /// See https://docs.rs/parse-size/latest/parse_size/ for more details.
-    #[arg(long, conflicts_with = "all-versions")]
+    #[arg(long, conflicts_with = "all_versions")]
     smaller_than: Option<String>,
 
     /// Remove the targets even if they are used by other targets (via deduplication)
