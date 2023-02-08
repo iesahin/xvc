@@ -105,8 +105,8 @@ $ xvc file recheck data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-08 10:36:42          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:36:42          3a1889e0 .gitignore
+FX         130 2023-02-08 10:40:28          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:40:28          2957d4dd .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -119,12 +119,13 @@ $ perl -pi -e 's/a/e/g' data.txt
 
 $ xvc file carry-in data.txt
 
-$ ls -l .xvc/b3/*/*/*/0.*
+$ ls -l .xvc/b3/*/*
+ls: .xvc/b3/*/*/*/0.*: No such file or directory
 
 $ xvc file list
-FC          19 2023-02-08 10:36:43 6602cff6 6602cff6 data.txt
-FX         130 2023-02-08 10:36:42          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:36:42          3a1889e0 .gitignore
+FC          19 2023-02-08 10:40:29 6602cff6 6602cff6 data.txt
+FX         130 2023-02-08 10:40:28          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:40:28          2957d4dd .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
@@ -239,10 +240,10 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-08 10:36:45 1cdcf0e1          data2.txt
-FC        3000 2023-02-08 10:36:45 1cdcf0e1 1cdcf0e1 data.txt
-FX         130 2023-02-08 10:36:42          ac46bf74 .xvcignore
-FX         276 2023-02-08 10:36:45          8d1bba7b .gitignore
+SS         182 2023-02-08 10:40:31 d49c40e4          data2.txt
+FC        3000 2023-02-08 10:40:30 d49c40e4 d49c40e4 data.txt
+FX         130 2023-02-08 10:40:28          ac46bf74 .xvcignore
+FX         276 2023-02-08 10:40:31          6090c9e7 .gitignore
 Total #: 4 Workspace Size:        3588 Cached Size:          19
 
 
