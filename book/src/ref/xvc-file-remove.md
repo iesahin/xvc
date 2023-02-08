@@ -77,6 +77,13 @@ Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
 $ tree .xvc/b3/
+.xvc/b3/
+└── c85
+    └── f3e
+        └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+            └── 0.txt
+
+4 directories, 1 file
 
 ```
 
@@ -89,7 +96,7 @@ $ xvc file remove data.txt
 ```
 
 
-You can remove the file from the cache and keep the workspace version.
+You can remove the file from the cache. The file is still tracked by Xvc and available in the workspace.
 
 ```console
 $ xvc file remove --from-cache data.txt
@@ -98,23 +105,28 @@ $ ls -l
 total 8
 -rw-rw-rw-  1 iex  staff  19 Jan 31 11:00 data.txt
 
+$ tree .xvc/b3/
+
 ```
 
-You can recheck the file from the cache to the workspace.
+You can carry-in the missing file from the workspace to the cache.
 
 ```console
-$ xvc file recheck data.txt
+$ xvc file carry-in data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-08 10:42:33          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:42:33          4c888070 .gitignore
+FX         130 2023-02-08 10:44:09          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:44:09          eb676f07 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
+$ tree .xvc/b3/
 
 ```
 
-You can remove all versions of a file from the cache.
+You can specify a version of a file to delete from the cache. The versions are specified like `b3-123-456-789abcd` where
+`b3` is the hash algorithm prefix and the rest is a (at least 3 digit) prefix of the content hash. Prefix must be
+unique.
 
 ```console
 $ perl -pi -e 's/a/e/g' data.txt
@@ -135,13 +147,24 @@ $ tree .xvc/b3/
 7 directories, 2 files
 
 $ xvc file list
-FC          19 2023-02-08 10:42:34 6602cff6 6602cff6 data.txt
-FX         130 2023-02-08 10:42:33          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:42:33          4c888070 .gitignore
+FC          19 2023-02-08 10:44:10 6602cff6 6602cff6 data.txt
+FX         130 2023-02-08 10:44:09          ac46bf74 .xvcignore
+FX         191 2023-02-08 10:44:09          eb676f07 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
+$ xvc file remove --from-cache --only-version b3-c85-f3e data.txt
+
+$ tree .xvc/b3/
+
+```
+
+You can also remove all versions of a file from the cache.
+
+```console
+
 $ xvc file remove --from-cache --all-versions data.txt
+$ tree .xvc/b3/
 
 ```
 
@@ -252,10 +275,10 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-08 10:42:36 360a6fc7          data2.txt
-FC        3000 2023-02-08 10:42:36 360a6fc7 360a6fc7 data.txt
-FX         130 2023-02-08 10:42:33          ac46bf74 .xvcignore
-FX         276 2023-02-08 10:42:36          614f1c35 .gitignore
+SS         182 2023-02-08 10:44:12 d8e64688          data2.txt
+FC        3000 2023-02-08 10:44:12 d8e64688 d8e64688 data.txt
+FX         130 2023-02-08 10:44:09          ac46bf74 .xvcignore
+FX         276 2023-02-08 10:44:12          5a975193 .gitignore
 Total #: 4 Workspace Size:        3588 Cached Size:          19
 
 

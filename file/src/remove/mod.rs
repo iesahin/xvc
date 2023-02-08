@@ -82,5 +82,7 @@ pub(crate) fn cmd_remove(
     let current_dir = xvc_root.config().current_dir()?;
     let targets = load_targets_from_store(xvc_root, current_dir, &Some(opts.targets))?;
 
+    
+
     Ok(())
 }
