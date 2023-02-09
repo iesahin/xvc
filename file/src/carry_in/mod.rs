@@ -4,7 +4,6 @@
 //! It is used after [`xvc file track`][crate::track] or separately to update
 //! the cache with changed files.
 
-
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
 use std::collections::HashSet;
@@ -210,6 +209,7 @@ pub fn cmd_carry_in(
     )?;
 
     // We only update the records for existing paths.
+    update_store_records(xvc_root, &xvc_metadata_diff, false, false)?;
     update_store_records(xvc_root, &text_or_binary_diff, false, false)?;
     update_store_records(xvc_root, &content_digest_diff, false, false)?;
 

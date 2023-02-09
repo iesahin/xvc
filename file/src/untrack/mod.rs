@@ -3,7 +3,7 @@ use std::fs::{self};
 use std::path::PathBuf;
 
 use crate::common::gitignore::make_ignore_handler;
-use crate::common::{filter_targets_from_store, FileTextOrBinary};
+use crate::common::{cache_paths_for_xvc_paths, filter_targets_from_store, FileTextOrBinary};
 use crate::recheck::{make_recheck_handler, RecheckOperation};
 use crate::Result;
 use clap::Parser;
@@ -42,41 +42,9 @@ pub fn cmd_untrack(
     let untrack_targets =
         filter_targets_from_store(xvc_root, &all_paths, current_dir, &Some(opts.targets))?;
 
-    // Get cache paths for each
+    let all_cache_paths = cache_paths_for_xvc_paths(output_snd, &all_paths, &all_content_digests)?;
 
-    let mut all_cache_paths: HStore<Vec<XvcCachePath>> = HStore::new();
-
-    // Find all cache paths
-    // We have 1-1 relationship between content digests and paths.
-    // So, in order to get earlier versions, we check the event log.
-    for (xe, xp) in all_paths.iter() {
-        let path_digest_events: EventLog<ContentDigest> =
-            all_content_digests.all_event_log_for_entity(*xe)?;
-        let cache_paths = path_digest_events
-            .iter()
-            .filter_map(|cd_event| match cd_event {
-                xvc_ecs::ecs::event::Event::Add { entity: _, value } => {
-                    let xcp = uwr!(XvcCachePath::new(xp, value), output_snd
-                 );
-
-                    Some(xcp)
-                }
-                xvc_ecs::ecs::event::Event::Remove { entity } => {
-                    // We don't delete ContentDigests of available XvcPaths.
-                    // This is an error.
-                    error!(
-                    output_snd,
-                    "There shouldn't be a remove event for content digest of {xp}. Please report this. {}",
-                    entity
-                );
-                    None
-                }
-            })
-            .collect();
-        all_cache_paths.insert(*xe, cache_paths);
-    }
-
-    // Get inverted index
+    // Recheck untrack targets with RecheckMethod::Copy, the links will be broken after deletion.
 
     let mut entities_for_cache_path: HashMap<XvcCachePath, HashSet<XvcEntity>> = HashMap::new();
 
@@ -89,9 +57,6 @@ pub fn cmd_untrack(
             entity_set.insert(*xe);
         }
     }
-
-    // Recheck untrack targets with RecheckMethod::Copy, the links will be broken after deletion.
-
     let (ignore_snd, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
     let (recheck_op_snd, recheck_thread) = make_recheck_handler(output_snd, xvc_root, &ignore_snd)?;
 
@@ -240,45 +205,9 @@ pub fn cmd_untrack(
 
     // Remove all deletable paths from the cache
 
-    for cp in &deletable_paths {
-        let abs_cp = cp.to_absolute_path(xvc_root);
-        watch!(abs_cp);
-        if abs_cp.exists() {
-            // Set to writable
-            let parent = abs_cp.parent().unwrap();
-            watch!(parent);
-            let mut dir_perm = parent.metadata()?.permissions();
-            dir_perm.set_readonly(false);
-            fs::set_permissions(&parent, dir_perm)?;
-
-            let mut file_perm = abs_cp.metadata()?.permissions();
-            file_perm.set_readonly(false);
-            fs::set_permissions(&abs_cp, file_perm)?;
-
-            uwr!(fs::remove_file(&abs_cp), output_snd);
-            output!(output_snd, "[DELETE] {}", abs_cp.to_str().unwrap());
-        }
-
-        let mut rel_path = cp.inner();
-        watch!(rel_path);
-        while let Some(parent) = rel_path.parent() {
-            let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
-            watch!(parent_abs_cp);
-            let mut perm = parent_abs_cp.metadata()?.permissions();
-            perm.set_readonly(false);
-            fs::set_permissions(&parent_abs_cp, perm)?;
-            if parent_abs_cp.exists() {
-                if parent_abs_cp.is_dir() {
-                    if parent_abs_cp.read_dir().unwrap().count() == 0 {
-                        uwr!(fs::remove_dir(&parent_abs_cp), output_snd);
-                        output!(output_snd, "[DELETE] {}", parent_abs_cp.to_str().unwrap());
-                    }
-                }
-            }
-
-            rel_path = parent.to_relative_path_buf();
-        }
-    }
+    deletable_paths
+        .iter()
+        .for_each(|xcp| xcp.remove(output_snd, xvc_root)?);
 
     Ok(())
 }

@@ -25,10 +25,6 @@ use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 use crate::XvcMetadata;
 
 use super::xvcignore::walk_parallel;
-
-/// Cache paths are relative to `.xvc/`
-pub struct XvcCachePath(RelativePathBuf);
-
 /// A hashmap to store [XvcMetadata] for [XvcPath]
 pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;
 

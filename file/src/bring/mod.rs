@@ -61,7 +61,7 @@ pub struct BringCLI {
 /// - Gets the corresponding cache path for each file target.
 /// - Calls `storage.receive` for each of these targets.
 pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) -> Result<()> {
-    let remote = get_storage_record(output_snd, xvc_root, &opts.storage)?;
+    let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
 
     let current_dir = xvc_root.config().current_dir()?;
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
@@ -116,7 +116,7 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
 
     watch!(cache_paths);
 
-    let (temp_dir, event) = remote
+    let (temp_dir, event) = storage
         .receive(
             output_snd,
             xvc_root,

@@ -366,6 +366,50 @@ pub fn recheck_from_cache(
     Ok(())
 }
 
+/// All cache paths for all xvc paths.
+/// There are extracted from the event logs.
+pub fn cache_paths_for_xvc_paths(
+    output_snd: &XvcOutputSender,
+    all_paths: &XvcStore<XvcPath>,
+    all_content_digests: &XvcStore<ContentDigest>,
+) -> Result<HStore<Vec<XvcCachePath>>> {
+    // Get cache paths for each
+
+    let mut all_cache_paths: HStore<Vec<XvcCachePath>> = HStore::new();
+
+    // Find all cache paths
+    // We have 1-1 relationship between content digests and paths.
+    // So, in order to get earlier versions, we check the event log.
+    for (xe, xp) in all_paths.iter() {
+        let path_digest_events: EventLog<ContentDigest> =
+            all_content_digests.all_event_log_for_entity(*xe)?;
+        let cache_paths = path_digest_events
+            .iter()
+            .filter_map(|cd_event| match cd_event {
+                xvc_ecs::ecs::event::Event::Add { entity: _, value } => {
+                    let xcp = uwr!(XvcCachePath::new(xp, value), output_snd
+                 );
+
+                    Some(xcp)
+                }
+                xvc_ecs::ecs::event::Event::Remove { entity } => {
+                    // We don't delete ContentDigests of available XvcPaths.
+                    // This is an error.
+                    error!(
+                    output_snd,
+                    "There shouldn't be a remove event for content digest of {xp}. Please report this. {}",
+                    entity
+                );
+                    None
+                }
+            })
+            .collect();
+        all_cache_paths.insert(*xe, cache_paths);
+    }
+
+    Ok(all_cache_paths)
+}
+
 pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<()> {
     let cache_dir = cache_path.parent().ok_or(Error::InternalError {
         message: "Cache path has no parent.".to_string(),
