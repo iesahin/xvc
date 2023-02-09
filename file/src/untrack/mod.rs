@@ -207,7 +207,7 @@ pub fn cmd_untrack(
 
     deletable_paths
         .iter()
-        .for_each(|xcp| xcp.remove(output_snd, xvc_root)?);
+        .for_each(|xcp| uwr!(xcp.remove(output_snd, xvc_root), output_snd));
 
     Ok(())
 }

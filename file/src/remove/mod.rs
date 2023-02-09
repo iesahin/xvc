@@ -9,7 +9,7 @@ use parse_size::parse_size;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_logging::{output, warn, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
-use xvc_storage::StorageIdentifier;
+use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
 /// Remove files from Xvc cache or storage
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
