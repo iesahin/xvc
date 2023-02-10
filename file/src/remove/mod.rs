@@ -78,7 +78,12 @@ pub(crate) fn cmd_remove(
     let candidate_paths = if opts.all_versions {
         cache_paths_for_targets
             .iter()
-            .map(|(xe, vec_cp)| vec_cp.iter().map(|cp| (xe, cp)).collect::<Vec<_>>())
+            .map(|(xe, vec_cp)| {
+                vec_cp
+                    .iter()
+                    .map(|cp| (*xe, cp.clone()))
+                    .collect::<Vec<_>>()
+            })
             .flatten()
             .collect::<Vec<_>>()
     } else {
@@ -106,8 +111,8 @@ pub(crate) fn cmd_remove(
                 .iter()
                 .map(|(xe, xp)| {
                     (
-                        xe,
-                        XvcCachePath::new(xp, all_content_digests.get(xe).unwrap()),
+                        *xe,
+                        XvcCachePath::new(xp, all_content_digests.get(xe).unwrap()).unwrap(),
                     )
                 })
                 .collect::<Vec<_>>()
