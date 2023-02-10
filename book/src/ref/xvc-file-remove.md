@@ -154,8 +154,6 @@ It's possible to filter the cache versions by size or timestamp to remove.
 Suppose you have three versions of `data.txt` in the cache. The first version is 19 bytes, the second is 2000 bytes and
 the third is 3000 bytes.
 
-```console
-
 $ rm data.txt
 
 $ xvc-test-helper generate-random-file --size 2000 --filename data.txt
@@ -170,8 +168,6 @@ $ xvc file carry-in data.txt
 
 $ ls -l .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
-
-```
 
 You can remove all versions of the file larger than 2000 bytes.
 
