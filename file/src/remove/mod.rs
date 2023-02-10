@@ -94,8 +94,9 @@ pub(crate) fn cmd_remove(
             let version_cmp_str = version.replace("-", "");
             watch!(version_cmp_str);
             let version_cmp = |v: &&XvcCachePath| {
-                let digest_str = v.digest_string(DIGEST_LENGTH).replace("-", "/");
-
+                let digest_str = v.digest_string(DIGEST_LENGTH).replace("-", "");
+                watch!(digest_str);
+                // We skip the first two characters because they are the hash algorithm identifier
                 digest_str[2..].starts_with(&version_cmp_str)
             };
             let paths = cache_paths_for_targets
