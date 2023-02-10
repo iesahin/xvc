@@ -20,7 +20,7 @@ use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 #[command(rename_all = "kebab-case", author, version)]
 pub struct RemoveCLI {
     /// Remove files from cache
-    #[arg(long)]
+    #[arg(long, required_unless_present = "from_storage")]
     from_cache: bool,
 
     /// Remove files from storage
@@ -33,9 +33,9 @@ pub struct RemoveCLI {
 
     /// Remove only the specified version of the file
     ///
-    /// Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least
-    /// 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail.
+    /// Versions are specified with the content hash 123-456-789abcd.
     /// Dashes are optional.
+    /// Prefix must be unique. If the prefix is not unique, the command will fail.
     #[arg(long, conflicts_with = "all_versions")]
     only_version: Option<String>,
 
