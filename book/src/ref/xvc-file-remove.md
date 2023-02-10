@@ -115,8 +115,6 @@ $ tree .xvc/b3/
 You can specify a version of a file to delete from the cache. The versions can
 be specified like `123-456-789abcd`. Dashes are optional. The prefix must be unique.
 
-```console
-
 $ perl -pi -e 's/a/e/g' data.txt
 
 $ xvc file carry-in data.txt
@@ -141,10 +139,9 @@ FX         191 2023-02-08 10:44:09          eb676f07 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
-$ xvc file remove --from-cache --only-version b3-c85-f3e data.txt
+$ xvc file remove --from-cache --only-version c85-f3e data.txt
 
 $ tree .xvc/b3/
-```
 
 You can also remove all versions of a file from the cache.
 
