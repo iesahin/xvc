@@ -146,9 +146,4 @@ $ xvc file untrack data2.txt
 [DELETE] [CWD]/.xvc/b3/660
 [DELETE] [CWD]/.xvc/b3
 
-$ tree .xvc/b3/
-.xvc/b3/  [error opening dir]
-
-0 directories, 0 files
-
 ```
