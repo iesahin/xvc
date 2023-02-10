@@ -11,7 +11,7 @@ use parse_size::parse_size;
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity};
-use xvc_logging::{output, uwo, uwr, warn, XvcOutputSender};
+use xvc_logging::{output, uwo, uwr, warn, watch, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
@@ -116,6 +116,8 @@ pub(crate) fn cmd_remove(
                     },
                 );
 
+            watch!(paths);
+
             if paths.len() > 1 {
                 return Err(anyhow::anyhow!(
                     "Version prefix is not unique:\n{}",
@@ -140,6 +142,8 @@ pub(crate) fn cmd_remove(
                 .collect::<Vec<(XvcEntity, XvcCachePath)>>()
         }
     };
+
+    watch!(candidate_paths);
 
     let mut entities_for_cache_path: HashMap<XvcCachePath, HashSet<XvcEntity>> = HashMap::new();
 
