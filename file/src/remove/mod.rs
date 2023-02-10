@@ -114,6 +114,10 @@ pub(crate) fn cmd_remove(
                         None
                     }
                 })
+                .map(|f| {
+                    watch!(f);
+                    f
+                })
                 .fold(
                     Vec::<(XvcEntity, XvcCachePath)>::new(),
                     |mut acc, (xe, vec_cp)| {
