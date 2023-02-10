@@ -107,20 +107,11 @@ pub(crate) fn cmd_remove(
                         .filter(version_cmp)
                         .cloned()
                         .collect::<Vec<XvcCachePath>>();
-                    watch!(possible_paths.len());
-                    if possible_paths.len() > 1 {
-                        watch!(possible_paths);
+                    if !possible_paths.is_empty() {
                         Some((*xe, possible_paths))
                     } else {
-                        watch!(possible_paths);
                         None
                     }
-                })
-                .collect::<HStore<Vec<XvcCachePath>>>()
-                .into_iter()
-                .map(|f| {
-                    watch!(f);
-                    f
                 })
                 .fold(
                     Vec::<(XvcEntity, XvcCachePath)>::new(),
