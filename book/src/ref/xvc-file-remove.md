@@ -111,41 +111,47 @@ $ tree .xvc/b3/
 
 ```
 
-You can carry in the missing file from the workspace to the cache.
+You can carry in the missing file from the workspace to the cache. Use `--force` to overwrite the cache as carry-in
+doesn't overwrite the cache by default.
 
 ```console
 $ xvc file carry-in --force data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-10 08:17:47          ac46bf74 .xvcignore
-FX         191 2023-02-10 08:17:48          f7fc434b .gitignore
+FX         130 2023-02-10 08:20:21          ac46bf74 .xvcignore
+FX         191 2023-02-10 08:20:22          e015ccc5 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
-$ tree .xvc/
+$ tree .xvc/b3/
 .xvc/
+├── b3
+│   └── c85
+│       └── f3e
+│           └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+│               └── 0.txt
 ├── config.local.toml
 ├── config.toml
 ├── ec
-│   ├── 1676017067548911
-│   ├── 1676017067552618
-│   └── 1676017068076104
+│   ├── 1676017221840009
+│   ├── 1676017221843958
+│   └── 1676017222277732
 └── store
     ├── content-digest-store
-    │   └── 1676017068061761.json
+    │   └── 1676017222261400.json
     ├── file-text-or-binary-store
-    │   └── 1676017068061613.json
+    │   └── 1676017222261284.json
     ├── recheck-method-store
-    │   └── 1676017068061442.json
+    │   └── 1676017222261160.json
     ├── xvc-metadata-store
-    │   └── 1676017068061255.json
+    │   └── 1676017222261000.json
     ├── xvc-path-store
-    │   └── 1676017068061046.json
+    │   └── 1676017222260041.json
     └── xvc-pipeline-store
-        └── 1676017067551973.json
+        └── 1676017221843636.json
 
-9 directories, 11 files
+13 directories, 12 files
 
 ```
 
@@ -159,30 +165,38 @@ $ xvc file carry-in data.txt
 
 $ tree .xvc/b3/
 .xvc/b3/
-└── 660
-    └── 2cf
-        └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+├── 660
+│   └── 2cf
+│       └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+│           └── 0.txt
+└── c85
+    └── f3e
+        └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
             └── 0.txt
 
-4 directories, 1 file
+7 directories, 2 files
 
 $ xvc file list
-FC          19 2023-02-10 08:17:49 6602cff6 6602cff6 data.txt
-FX         130 2023-02-10 08:17:47          ac46bf74 .xvcignore
-FX         191 2023-02-10 08:17:48          f7fc434b .gitignore
+FC          19 2023-02-10 08:20:23 6602cff6 6602cff6 data.txt
+FX         130 2023-02-10 08:20:21          ac46bf74 .xvcignore
+FX         191 2023-02-10 08:20:22          e015ccc5 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
-$ xvc file remove --from-cache --only-version c85-f3e data.txt
+$ xvc -vvvv file remove --from-cache --only-version c85-f3e data.txt
 
 $ tree .xvc/b3/
 .xvc/b3/
-└── 660
-    └── 2cf
-        └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+├── 660
+│   └── 2cf
+│       └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+│           └── 0.txt
+└── c85
+    └── f3e
+        └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
             └── 0.txt
 
-4 directories, 1 file
+7 directories, 2 files
 
 ```
 
@@ -387,15 +401,15 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-10 08:17:50 1f83cd30          data2.txt
-FC        2000 2023-02-10 08:17:50 1f83cd30 1f83cd30 data.txt
-FX         130 2023-02-10 08:17:47          ac46bf74 .xvcignore
-FX         276 2023-02-10 08:17:50          23bf2fc5 .gitignore
+SS         182 2023-02-10 08:20:24 c196d3e7          data2.txt
+FC        2000 2023-02-10 08:20:24 c196d3e7 c196d3e7 data.txt
+FX         130 2023-02-10 08:20:21          ac46bf74 .xvcignore
+FX         276 2023-02-10 08:20:24          65de6fd1 .gitignore
 Total #: 4 Workspace Size:        2588 Cached Size:        2000
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/1f8/3cd/30a644da0e094f30a759185f8632dbebc52d391dc729d071621d895343/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/c19/6d3/e7dd55e7af9ef25395a3a67ef1beeb2657b90550930e9f3e68e5854e3d/0.txt (for data.txt) because it's also used by data2.txt
 
 $ ls -l .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
