@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use crate::common::{
     cache_paths_for_xvc_paths, filter_targets_from_store, load_targets_from_store,
 };
@@ -7,7 +9,8 @@ use clap::Parser;
 use itertools::Itertools;
 use parse_size::parse_size;
 use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_logging::{output, warn, XvcOutputSender};
+use xvc_ecs::XvcEntity;
+use xvc_logging::{output, uwr, warn, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
@@ -81,12 +84,13 @@ pub(crate) fn cmd_remove(
     } else {
         if let Some(version) = opts.only_version {
             let version_cmp_str = version.replace("-", "");
-            let version_cmp = |v| v.replace("/", "").starts_with(version_cmp_str);
+            let version_cmp =
+                |v: &&XvcCachePath| v.to_string().replace("/", "").starts_with(&version_cmp_str);
             let paths = cache_paths_for_targets
                 .iter()
                 .map(|(xe, vec_cp)| vec_cp.iter().filter(version_cmp).collect())
                 .flatten()
-                .collect::<Vec<_>>();
+                .collect::<Vec<(XvcEntity, XvcCachePath)>>();
 
             if paths.len() > 1 {
                 return Err(anyhow::anyhow!(
@@ -124,11 +128,10 @@ pub(crate) fn cmd_remove(
 
     let mut deletable_paths = Vec::<XvcCachePath>::new();
     // Report the differences if found
-    let removable_entities = remove_targets.keys().collect();
+    let removable_entities = remove_targets.keys().copied().collect();
     for (xe, cp) in candidate_paths {
         let entities_pointing_to_cp =
             HashSet::from_iter(entities_for_cache_path[&cp].iter().copied());
-
         let mut deletable = true;
         entities_pointing_to_cp
             .difference(&removable_entities)
@@ -163,7 +166,7 @@ pub(crate) fn cmd_remove(
     if opts.from_cache {
         deletable_paths
             .iter()
-            .for_each(|xcp| xcp.remove(output_snd, xvc_root)?);
+            .for_each(|xcp| uwr!(xcp.remove(output_snd, xvc_root), output_snd));
     }
 
     if let Some(storage) = opts.from_storage {

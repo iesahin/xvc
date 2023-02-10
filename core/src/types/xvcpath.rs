@@ -260,6 +260,8 @@ impl XvcCachePath {
             .collect()
     }
 
+    /// Remove a path from the cache.
+    /// Removes all empty parent directories of the file as well.
     pub fn remove(&self, output_snd: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<()> {
         let abs_cp = self.to_absolute_path(xvc_root);
         watch!(abs_cp);

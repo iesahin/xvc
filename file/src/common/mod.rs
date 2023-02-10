@@ -22,7 +22,8 @@ use xvc_core::{
     all_paths_and_metadata, apply_diff, ContentDigest, DiffStore, RecheckMethod, TextOrBinary,
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_logging::{info, warn, watch, XvcOutputSender};
+use xvc_ecs::ecs::event::EventLog;
+use xvc_logging::{info, warn, watch, XvcOutputSender, uwr, error};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
