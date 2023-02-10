@@ -92,8 +92,11 @@ pub(crate) fn cmd_remove(
         if let Some(version) = opts.only_version {
             // Return only the cache paths that match the version prefix
             let version_cmp_str = version.replace("-", "");
-            let version_cmp =
-                |v: &&XvcCachePath| v.digest_string(DIGEST_LENGTH).starts_with(&version_cmp_str);
+            watch!(version_cmp_str);
+            let version_cmp = |v: &&XvcCachePath| {
+                watch!(v);
+                v.digest_string(DIGEST_LENGTH).starts_with(&version_cmp_str)
+            };
             let paths = cache_paths_for_targets
                 .iter()
                 .filter_map(|(xe, vec_cp)| {
@@ -102,6 +105,7 @@ pub(crate) fn cmd_remove(
                         .filter(version_cmp)
                         .cloned()
                         .collect::<Vec<XvcCachePath>>();
+                    watch!(possible_paths);
                     if possible_paths.len() > 1 {
                         Some((*xe, possible_paths))
                     } else {
