@@ -118,6 +118,7 @@ pub(crate) fn cmd_remove(
                     Vec::<(XvcEntity, XvcCachePath)>::new(),
                     |mut acc, (xe, vec_cp)| {
                         vec_cp.into_iter().for_each(|xcp| acc.push((xe, xcp)));
+                        watch!(acc);
                         acc
                     },
                 );
