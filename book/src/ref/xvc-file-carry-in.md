@@ -79,7 +79,7 @@ $ xvc file carry-in data.txt
 
 $ xvc file list data.txt
 FC          23 [..] e37c686a e37c686a data.txt
-Total #: 1 Workspace Size:          23 Cached Size:          19
+Total #: 1 Workspace Size:          23 Cached Size:          23
 
 
 ```
