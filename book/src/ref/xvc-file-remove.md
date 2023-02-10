@@ -111,7 +111,7 @@ $ tree .xvc/b3/
 
 ```
 
-You can carry-in the missing file from the workspace to the cache.
+You can carry in the missing file from the workspace to the cache.
 
 ```console
 $ xvc file carry-in --force data.txt
