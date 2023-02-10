@@ -113,7 +113,7 @@ $ tree .xvc/b3/
 ```
 
 You can specify a version of a file to delete from the cache. The versions can
-be specified like `123-456-789abcd`. The prefix must be unique.
+be specified like `123-456-789abcd`. Dashes are optional. The prefix must be unique.
 
 ```console
 
