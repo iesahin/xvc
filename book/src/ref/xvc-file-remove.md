@@ -145,15 +145,12 @@ $ xvc file remove --from-cache --only-version b3-c85-f3e data.txt
 
 $ tree .xvc/b3/
 ```
-You can also remove all versions of a file from the cache.
 
-```console
+You can also remove all versions of a file from the cache.
 
 $ xvc file remove --from-cache --all-versions data.txt
 
 $ tree .xvc/b3/
-
-```
 
 It's possible to filter the cache versions by size or timestamp to remove.
 
