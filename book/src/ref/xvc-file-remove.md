@@ -114,19 +114,38 @@ $ tree .xvc/b3/
 You can carry-in the missing file from the workspace to the cache.
 
 ```console
-$ xvc file carry-in data.txt
+$ xvc file carry-in --force data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-10 08:14:02          ac46bf74 .xvcignore
-FX         191 2023-02-10 08:14:03          938c78b6 .gitignore
+FX         130 2023-02-10 08:17:47          ac46bf74 .xvcignore
+FX         191 2023-02-10 08:17:48          f7fc434b .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
 $ tree .xvc/
-.xvc/b3/  [error opening dir]
+.xvc/
+├── config.local.toml
+├── config.toml
+├── ec
+│   ├── 1676017067548911
+│   ├── 1676017067552618
+│   └── 1676017068076104
+└── store
+    ├── content-digest-store
+    │   └── 1676017068061761.json
+    ├── file-text-or-binary-store
+    │   └── 1676017068061613.json
+    ├── recheck-method-store
+    │   └── 1676017068061442.json
+    ├── xvc-metadata-store
+    │   └── 1676017068061255.json
+    ├── xvc-path-store
+    │   └── 1676017068061046.json
+    └── xvc-pipeline-store
+        └── 1676017067551973.json
 
-0 directories, 0 files
+9 directories, 11 files
 
 ```
 
@@ -140,27 +159,31 @@ $ xvc file carry-in data.txt
 
 $ tree .xvc/b3/
 .xvc/b3/
-├── 660
-│   └── 2cf
-│       └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-│           └── 0.txt
-└── c85
-    └── f3e
-        └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+└── 660
+    └── 2cf
+        └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
             └── 0.txt
 
-7 directories, 2 files
+4 directories, 1 file
 
 $ xvc file list
-FC          19 2023-02-08 10:44:10 6602cff6 6602cff6 data.txt
-FX         130 2023-02-08 10:44:09          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:44:09          eb676f07 .gitignore
+FC          19 2023-02-10 08:17:49 6602cff6 6602cff6 data.txt
+FX         130 2023-02-10 08:17:47          ac46bf74 .xvcignore
+FX         191 2023-02-10 08:17:48          f7fc434b .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
 $ xvc file remove --from-cache --only-version c85-f3e data.txt
 
 $ tree .xvc/b3/
+.xvc/b3/
+└── 660
+    └── 2cf
+        └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+            └── 0.txt
+
+4 directories, 1 file
+
 ```
 
 You can also remove all versions of a file from the cache.
@@ -364,15 +387,15 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-10 08:14:05 35fbe2c0          data2.txt
-FC        2000 2023-02-10 08:14:05 35fbe2c0 35fbe2c0 data.txt
-FX         130 2023-02-10 08:14:02          ac46bf74 .xvcignore
-FX         276 2023-02-10 08:14:05          fbe84f6b .gitignore
+SS         182 2023-02-10 08:17:50 1f83cd30          data2.txt
+FC        2000 2023-02-10 08:17:50 1f83cd30 1f83cd30 data.txt
+FX         130 2023-02-10 08:17:47          ac46bf74 .xvcignore
+FX         276 2023-02-10 08:17:50          23bf2fc5 .gitignore
 Total #: 4 Workspace Size:        2588 Cached Size:        2000
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/35f/be2/c00fa7c7f1599604c46250fc01b54567bdf7a9bb4504a27f6f69dc08b5/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/1f8/3cd/30a644da0e094f30a759185f8632dbebc52d391dc729d071621d895343/0.txt (for data.txt) because it's also used by data2.txt
 
 $ ls -l .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
