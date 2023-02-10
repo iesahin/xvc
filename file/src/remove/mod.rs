@@ -24,7 +24,7 @@ pub struct RemoveCLI {
     from_cache: bool,
 
     /// Remove files from storage
-    #[arg(long)]
+    #[arg(long, required_unless_present = "from_cache")]
     from_storage: Option<StorageIdentifier>,
 
     /// Remove all versions of the file
@@ -36,7 +36,7 @@ pub struct RemoveCLI {
     /// Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least
     /// 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail.
     /// Dashes are optional.
-    #[arg(long, conflicts_with_all = ["all_versions", "before", "after", "larger_than", "smaller_than"])]
+    #[arg(long, conflicts_with = "all_versions")]
     only_version: Option<String>,
 
     /// Remove the targets even if they are used by other targets (via deduplication)

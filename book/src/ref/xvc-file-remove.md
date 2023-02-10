@@ -4,37 +4,41 @@
 
 ```console
 $ xvc file remove --help
-Remove files from Xvc and possibly storages
-
-Usage: xvc file remove [OPTIONS] [TARGETS]...
-
-Arguments:
-  [TARGETS]...
-          Files/directories to remove
-
-Options:
-      --from-cache
-          Remove files from cache
-
-      --from-storage <FROM_STORAGE>
-          Remove files from storage
-
-      --all-versions
-          Remove all versions of the file
-
-      --only-version <ONLY_VERSION>
-          Remove only the specified version of the file
-
-          Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail. Dashes are optional.
-
-      --force
-          Remove the targets even if they are used by other targets (via deduplication)
-
-  -h, --help
-          Print help (see a summary with '-h')
-
-  -V, --version
-          Print version
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 ```
 
@@ -79,7 +83,41 @@ If you don't specify either `--from-cache` or `--from-storage`, this command doe
 
 ```console
 $ xvc file remove data.txt
-[ERROR] File Error: At least one of --from-cache or --from-storage must be specified
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 ```
 
@@ -88,12 +126,54 @@ You can remove the file from the cache. The file is still tracked by Xvc and ava
 
 ```console
 $ xvc file remove --from-cache data.txt
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ ls -l
 total 8
 -rw-rw-rw-  1 iex  staff  19 Jan 31 11:00 data.txt
 
 $ tree .xvc/b3/
+.xvc/b3/
+└── c85
+    └── f3e
+        └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+            └── 0.txt
+
+4 directories, 1 file
 
 ```
 
@@ -104,11 +184,19 @@ $ xvc file carry-in data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-08 10:44:09          ac46bf74 .xvcignore
-FX         191 2023-02-08 10:44:09          eb676f07 .gitignore
+FX         130 2023-02-10 08:08:37          ac46bf74 .xvcignore
+FX         191 2023-02-10 08:08:38          33d60e0a .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
+
 $ tree .xvc/b3/
+.xvc/b3/
+└── c85
+    └── f3e
+        └── 8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
+            └── 0.txt
+
+4 directories, 1 file
 
 ```
 
@@ -173,6 +261,42 @@ You can remove all versions of the file larger than 2000 bytes.
 
 ```console
 $ xvc file remove --from-cache --larger-than 2000 data.txt
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
 $ ls -lR .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
 
@@ -182,6 +306,42 @@ You can remove all versions of the file smaller than 500 bytes.
 
 ```console
 $ xvc file remove --from-cache --smaller-than 500 data.txt
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
 $ ls -lR .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
 
@@ -214,6 +374,42 @@ Now remove all versions carried in before 2023-01-01.
 
 ```console
 $ xvc file remove --from-cache --before 2023-01-01 data.txt
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
 $ ls -lR .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
 
@@ -223,6 +419,42 @@ Remove all versions carried in after 2023-01-02.
 
 ```console
 $ xvc file remove --from-cache --after 2023-01-02 data.txt
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
 $ ls -lR .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
 
@@ -238,6 +470,42 @@ $ ls -l ../local-storage/*/b3/*/*/*/0.*
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
 
 $ xvc file remove data.txt --from-storage local-storage
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+
 $ ls -lR ../local-storage/*/b3/*/*/*/0.*
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
 
@@ -254,14 +522,49 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-08 10:44:12 d8e64688          data2.txt
-FC        3000 2023-02-08 10:44:12 d8e64688 d8e64688 data.txt
-FX         130 2023-02-08 10:44:09          ac46bf74 .xvcignore
-FX         276 2023-02-08 10:44:12          5a975193 .gitignore
-Total #: 4 Workspace Size:        3588 Cached Size:          19
+SS         182 2023-02-10 08:08:39 3c9cfe82          data2.txt
+FC        2000 2023-02-10 08:08:39 3c9cfe82 3c9cfe82 data.txt
+FX         130 2023-02-10 08:08:37          ac46bf74 .xvcignore
+FX         276 2023-02-10 08:08:39          52eb9b82 .gitignore
+Total #: 4 Workspace Size:        2588 Cached Size:        2000
 
 
 $ xvc file remove --from-cache data.txt
+thread 'main' panicked at 'Command remove: Argument or group 'before' specified in 'conflicts_with*' for 'only_version' does not exist', /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: clap::builder::debug_asserts::assert_app
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/debug_asserts.rs:223:13
+   3: clap::builder::command::Command::_build_self
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3920:13
+   4: clap::builder::command::Command::_build_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:4007:9
+   5: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:687:27
+   6: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   7: clap::parser::parser::Parser::parse_subcommand
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:704:37
+   8: clap::parser::parser::Parser::get_matches_with
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/parser/parser.rs:474:17
+   9: clap::builder::command::Command::_do_parse
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:3796:29
+  10: clap::builder::command::Command::try_get_matches_from_mut
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:708:9
+  11: clap::builder::command::Command::get_matches_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/builder/command.rs:578:9
+  12: clap::derive::Parser::parse_from
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/clap-4.1.1/src/derive.rs:107:27
+  13: xvc::cli::XvcCLI::from_args_os
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:131:22
+  14: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:11:20
+  15: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ ls -l .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
