@@ -107,10 +107,12 @@ pub(crate) fn cmd_remove(
                         .filter(version_cmp)
                         .cloned()
                         .collect::<Vec<XvcCachePath>>();
-                    watch!(possible_paths);
+                    watch!(possible_paths.len());
                     if possible_paths.len() > 1 {
+                        watch!(possible_paths);
                         Some((*xe, possible_paths))
                     } else {
+                        watch!(possible_paths);
                         None
                     }
                 })
