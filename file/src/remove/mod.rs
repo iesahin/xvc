@@ -114,6 +114,8 @@ pub(crate) fn cmd_remove(
                         None
                     }
                 })
+                .collect::<HStore<Vec<XvcCachePath>>>()
+                .into_iter()
                 .map(|f| {
                     watch!(f);
                     f
