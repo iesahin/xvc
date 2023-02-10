@@ -112,11 +112,11 @@ $ tree .xvc/b3/
 
 ```
 
-You can specify a version of a file to delete from the cache. The versions are specified like `b3-123-456-789abcd` where
-`b3` is the hash algorithm prefix and the rest is a (at least 3 digit) prefix of the content hash. Prefix must be
-unique.
+You can specify a version of a file to delete from the cache. The versions can
+be specified like `123-456-789abcd`. The prefix must be unique.
 
 ```console
+
 $ perl -pi -e 's/a/e/g' data.txt
 
 $ xvc file carry-in data.txt
