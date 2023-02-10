@@ -24,8 +24,8 @@ Options:
 
       --only-version <ONLY_VERSION>
           Remove only the specified version of the file
-          
-          Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail. Dashes are optional.
+
+          Versions are specified with the content hash 123-456-789abcd. Dashes are optional. Prefix must be unique. If the prefix is not unique, the command will fail.
 
       --force
           Remove the targets even if they are used by other targets (via deduplication)
@@ -80,9 +80,10 @@ If you don't specify either `--from-cache` or `--from-storage`, this command doe
 ```console
 $ xvc file remove data.txt
 error: the following required arguments were not provided:
+  --from-cache
   --from-storage <FROM_STORAGE>
 
-Usage: xvc file remove --from-storage <FROM_STORAGE> <TARGETS>...
+Usage: xvc file remove --from-cache --from-storage <FROM_STORAGE> <TARGETS>...
 
 For more information, try '--help'.
 
@@ -117,12 +118,12 @@ $ xvc file carry-in data.txt
 
 $ xvc file list
 FC          19 2023-01-31 08:00:58 c85f3e81 c85f3e81 data.txt
-FX         130 2023-02-10 08:11:21          ac46bf74 .xvcignore
-FX         191 2023-02-10 08:11:23          af8ea862 .gitignore
+FX         130 2023-02-10 08:14:02          ac46bf74 .xvcignore
+FX         191 2023-02-10 08:14:03          938c78b6 .gitignore
 Total #: 3 Workspace Size:         340 Cached Size:          19
 
 
-$ tree .xvc/b3/
+$ tree .xvc/
 .xvc/b3/  [error opening dir]
 
 0 directories, 0 files
@@ -132,6 +133,7 @@ $ tree .xvc/b3/
 You can specify a version of a file to delete from the cache. The versions can
 be specified like `123-456-789abcd`. Dashes are optional. The prefix must be unique.
 
+```console
 $ perl -pi -e 's/a/e/g' data.txt
 
 $ xvc file carry-in data.txt
@@ -159,6 +161,7 @@ Total #: 3 Workspace Size:         340 Cached Size:          19
 $ xvc file remove --from-cache --only-version c85-f3e data.txt
 
 $ tree .xvc/b3/
+```
 
 You can also remove all versions of a file from the cache.
 
@@ -361,15 +364,15 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-10 08:11:24 92df9757          data2.txt
-FC        2000 2023-02-10 08:11:24 92df9757 92df9757 data.txt
-FX         130 2023-02-10 08:11:21          ac46bf74 .xvcignore
-FX         276 2023-02-10 08:11:24          990bed90 .gitignore
+SS         182 2023-02-10 08:14:05 35fbe2c0          data2.txt
+FC        2000 2023-02-10 08:14:05 35fbe2c0 35fbe2c0 data.txt
+FX         130 2023-02-10 08:14:02          ac46bf74 .xvcignore
+FX         276 2023-02-10 08:14:05          fbe84f6b .gitignore
 Total #: 4 Workspace Size:        2588 Cached Size:        2000
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/92d/f97/57dc5ee00ecab50bd2e3918bced47e290450ffa64cd441941e2a885ef2/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/35f/be2/c00fa7c7f1599604c46250fc01b54567bdf7a9bb4504a27f6f69dc08b5/0.txt (for data.txt) because it's also used by data2.txt
 
 $ ls -l .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
