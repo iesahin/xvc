@@ -144,9 +144,7 @@ Total #: 3 Workspace Size:         340 Cached Size:          19
 $ xvc file remove --from-cache --only-version b3-c85-f3e data.txt
 
 $ tree .xvc/b3/
-
 ```
-
 You can also remove all versions of a file from the cache.
 
 ```console
