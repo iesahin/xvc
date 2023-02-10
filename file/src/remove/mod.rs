@@ -8,9 +8,10 @@ use chrono::DateTime;
 use clap::Parser;
 use itertools::Itertools;
 use parse_size::parse_size;
+use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_ecs::XvcEntity;
-use xvc_logging::{output, uwr, warn, XvcOutputSender};
+use xvc_ecs::{HStore, XvcEntity};
+use xvc_logging::{output, uwo, uwr, warn, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
@@ -76,6 +77,7 @@ pub(crate) fn cmd_remove(
 
     let cache_paths_for_targets = all_cache_paths.subset(remove_targets.keys().copied())?;
     let candidate_paths = if opts.all_versions {
+        // Return all cache paths used by the targets
         cache_paths_for_targets
             .iter()
             .map(|(xe, vec_cp)| {
@@ -88,19 +90,39 @@ pub(crate) fn cmd_remove(
             .collect::<Vec<_>>()
     } else {
         if let Some(version) = opts.only_version {
+            // Return only the cache paths that match the version prefix
             let version_cmp_str = version.replace("-", "");
             let version_cmp =
-                |v: &&XvcCachePath| v.to_string().replace("/", "").starts_with(&version_cmp_str);
+                |v: &&XvcCachePath| v.digest_string(DIGEST_LENGTH).starts_with(&version_cmp_str);
             let paths = cache_paths_for_targets
                 .iter()
-                .map(|(xe, vec_cp)| vec_cp.iter().filter(version_cmp).collect())
-                .flatten()
-                .collect::<Vec<(XvcEntity, XvcCachePath)>>();
+                .filter_map(|(xe, vec_cp)| {
+                    let possible_paths = vec_cp
+                        .iter()
+                        .filter(version_cmp)
+                        .cloned()
+                        .collect::<Vec<XvcCachePath>>();
+                    if possible_paths.len() > 1 {
+                        Some((*xe, possible_paths))
+                    } else {
+                        None
+                    }
+                })
+                .fold(
+                    Vec::<(XvcEntity, XvcCachePath)>::new(),
+                    |mut acc, (xe, vec_cp)| {
+                        vec_cp.into_iter().for_each(|xcp| acc.push((xe, xcp)));
+                        acc
+                    },
+                );
 
             if paths.len() > 1 {
                 return Err(anyhow::anyhow!(
                     "Version prefix is not unique:\n{}",
-                    paths.iter().map(|(_, xcp)| xcp.to_string()).join("\n")
+                    paths
+                        .iter()
+                        .map(|(_, xcp)| xcp.digest_string(DIGEST_LENGTH))
+                        .join("\n")
                 )
                 .into());
             } else {
@@ -115,7 +137,7 @@ pub(crate) fn cmd_remove(
                         XvcCachePath::new(xp, all_content_digests.get(xe).unwrap()).unwrap(),
                     )
                 })
-                .collect::<Vec<_>>()
+                .collect::<Vec<(XvcEntity, XvcCachePath)>>()
         }
     };
 
