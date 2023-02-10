@@ -27,18 +27,6 @@ Options:
 
           Versions are specified like b3-123-456-789abcd where b3 is the hash algorithm prefix and the rest is a (at least 3 digit) prefix of the content hash. Prefix must be unique. If the prefix is not unique, the command will fail. Dashes are optional.
 
-      --before <BEFORE>
-          Remove all versions of the file carried in earlier than the given timestamp. Timestamps are specified like 2023-01-01T12:34:56Z in RFC3339 format
-
-      --after <AFTER>
-          Remove all versions of the file carried in after than the given timestamp. Timestamps are specified like 2023-01-01T12:34:56Z in RFC3339 format
-
-      --larger-than <LARGER_THAN>
-          Remove all versions of the targets larger than the given size. Size can be specified like 1 KiB, 1 TB or 1.5 MB. See https://docs.rs/parse-size/latest/parse_size/ for more details
-
-      --smaller-than <SMALLER_THAN>
-          Remove all versions of the targets smaller than the given size. Size can be specified like 1 KiB, 1 TB or 1.5 MB. See https://docs.rs/parse-size/latest/parse_size/ for more details
-
       --force
           Remove the targets even if they are used by other targets (via deduplication)
 
@@ -164,6 +152,7 @@ You can also remove all versions of a file from the cache.
 ```console
 
 $ xvc file remove --from-cache --all-versions data.txt
+
 $ tree .xvc/b3/
 
 ```
@@ -174,7 +163,9 @@ Suppose you have three versions of `data.txt` in the cache. The first version is
 the third is 3000 bytes.
 
 ```console
+
 $ rm data.txt
+
 $ xvc-test-helper generate-random-file --size 2000 --filename data.txt
 
 $ xvc file carry-in data.txt
