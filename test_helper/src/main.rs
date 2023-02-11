@@ -114,11 +114,11 @@ fn main() -> Result<()> {
         }
         XvcTestHelperSubcommandCLI::GenerateFilledFile {
             size,
-            fill,
+            value,
             filename,
         } => {
             let path = PathBuf::from(filename);
-            generate_filled_file(&path, size, fill);
+            generate_filled_file(&path, size, value);
         }
         XvcTestHelperSubcommandCLI::GenerateRandomTextFile { lines, filename } => {
             let path = PathBuf::from(filename);
