@@ -183,20 +183,120 @@ $ tree .xvc/b3/
 You can also remove all versions of a file from the cache.
 
 ```console
-$ xvc-test-helper generate-random-file --size 1000 --filename data.txt
+$ xvc-test-helper generate-filled-file --fill 0 --filename data.txt
 $ xvc file carry-in data.txt
 
 $ rm data.txt
 
-$ xvc-test-helper generate-random-file --size 3000 --filename data.txt
+$ xvc-test-helper generate-fill-file --fill 1 --filename data.txt
 
 $ xvc file carry-in data.txt
 
 $ tree .xvc/b3/
+.xvc/b3/
+├── 0b5
+│   └── 4ff
+│       └── c9950f8e3d46ae41415782a0d69998e631d9d9d41ba69fcc4e8cf919c2
+│           └── 0.txt
+├── 435
+│   └── f82
+│       └── 9b83c89a68796e4989dad6c46c778c4c266a14a89345fa599fa4e62e59
+│           └── 0.txt
+└── 660
+    └── 2cf
+        └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+            └── 0.txt
 
-$ xvc file remove --from-cache --all-versions data.txt
+10 directories, 3 files
+
+$ xvc -vvvv file remove --from-cache --all-versions data.txt
+thread '<unnamed>' panicked at 'IoError { source: Os { code: 2, kind: NotFound, message: "No such file or directory" } }', file/src/remove/mod.rs:206:29
+stack backtrace:
+thread '<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 2, kind: NotFound, message: "No such file or directory" } }, [file/src/remove/mod.rs::206]', lib/src/cli/mod.rs:263:52
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: xvc_file::remove::cmd_remove::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:206:29
+   3: <core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::for_each
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/slice/iter/macros.rs:211:21
+   4: xvc_file::remove::cmd_remove
+             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:204:9
+   5: xvc_file::run
+             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:204:44
+   6: xvc::cli::dispatch::{{closure}}::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:343:24
+   7: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
+   8: core::ops::function::FnOnce::call_once{{vtable.shim}}
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+   9: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: xvc::cli::dispatch::{{closure}}::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:263:52
+   3: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
+   4: core::ops::function::FnOnce::call_once{{vtable.shim}}
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+   5: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
+stack backtrace:
+   0: rust_begin_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
+   1: core::panicking::panic_fmt
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
+   2: core::result::unwrap_failed
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
+   3: core::result::Result<T,E>::unwrap
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
+   4: xvc::cli::dispatch::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:403:15
+   5: crossbeam_utils::thread::scope::{{closure}}
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:65
+   6: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panic/unwind_safe.rs:271:9
+   7: std::panicking::try::do_call
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:492:40
+   8: ___rust_try
+   9: std::panicking::try
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:456:19
+  10: std::panic::catch_unwind
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panic.rs:137:14
+  11: crossbeam_utils::thread::scope
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:18
+  12: xvc::cli::dispatch
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:239:5
+  13: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
+  14: core::ops::function::FnOnce::call_once
+             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ tree .xvc/b3/
+.xvc/b3/
+├── 0b5
+│   └── 4ff
+│       └── c9950f8e3d46ae41415782a0d69998e631d9d9d41ba69fcc4e8cf919c2
+│           └── 0.txt
+├── 435
+│   └── f82
+│       └── 9b83c89a68796e4989dad6c46c778c4c266a14a89345fa599fa4e62e59
+│           └── 0.txt
+└── 660
+    └── 2cf
+        └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+            └── 0.txt
+
+10 directories, 3 files
 
 ```
 
@@ -283,15 +383,15 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-10 08:53:02 f73371b1          data2.txt
-FC        2000 2023-02-10 08:53:02 f73371b1 f73371b1 data.txt
-FX         130 2023-02-10 08:52:59          ac46bf74 .xvcignore
-FX         276 2023-02-10 08:53:02          3a75808c .gitignore
-Total #: 4 Workspace Size:        2588 Cached Size:        2000
+SS         182 2023-02-11 09:19:16 271eca20          data2.txt
+FC        3000 2023-02-11 09:19:15 271eca20 271eca20 data.txt
+FX         130 2023-02-11 09:19:13          ac46bf74 .xvcignore
+FX         276 2023-02-11 09:19:16          08ee9343 .gitignore
+Total #: 4 Workspace Size:        3588 Cached Size:        3000
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/f73/371/b16032d16f7cb100cd62ec56234638b85a58c87dec14a3a3e70d4db60d/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/271/eca/20756139f3574189c2629b863fc16270a66e590cda9581b329cc8c6678/0.txt (for data.txt) because it's also used by data2.txt
 
 $ ls -l .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory

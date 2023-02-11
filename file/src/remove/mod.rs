@@ -201,9 +201,10 @@ pub(crate) fn cmd_remove(
     }
 
     if opts.from_cache {
-        deletable_paths
-            .iter()
-            .for_each(|xcp| uwr!(xcp.remove(output_snd, xvc_root), output_snd));
+        deletable_paths.iter().for_each(|xcp| {
+            watch!(xcp);
+            uwr!(xcp.remove(output_snd, xvc_root), output_snd)
+        });
     }
 
     if let Some(storage) = opts.from_storage {
