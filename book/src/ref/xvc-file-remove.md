@@ -241,16 +241,25 @@ $ xvc file carry-in data.txt
 $ xvc storage new local --name local-storage --path '../local-storage'
 $ xvc file send data.txt --to local-storage
 
-$ ls -l ../local-storage/*/b3/*/*/*/0.*
+$ tree ../local-storage/
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
 
 $ xvc file remove data.txt --from-storage local-storage
 
 $ tree ../local-storage/
-ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
+../local-storage/
+└── 63e043d20b7fd53c
+    └── b3
+        └── fa8
+            └── af1
+                └── 7567c147993830cdd42cea9d8a8f157c9b98b4e7ef5677f417a5d8ae61
+
+6 directories, 0 files
 
 ```
 
+Note that, storage delete implementations differ slightly not to remove the directories. This is to avoid unnecessary
+round trip existence checks.
 
 If multiple paths are pointing to the same cache file (deduplication), the cache file will not be deleted.
 In this case, `remove` reports other paths pointing to the same cache file. You must `--force` delete the cache file.
@@ -262,11 +271,11 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         181 2023-02-11 18:20:44 ba3d2f3e          data2.txt
-FC        1024 2023-02-11 18:20:43 ba3d2f3e ba3d2f3e data.txt
-FX         130 2023-02-11 18:20:41          ac46bf74 .xvcignore
-FX         276 2023-02-11 18:20:44          f51c1826 .gitignore
-Total #: 4 Workspace Size:        1611 Cached Size:        1024
+SS         182 2023-02-11 18:21:34 ba3d2f3e          data2.txt
+FC        1024 2023-02-11 18:21:33 ba3d2f3e ba3d2f3e data.txt
+FX         130 2023-02-11 18:21:31          ac46bf74 .xvcignore
+FX         276 2023-02-11 18:21:34          17bf0d72 .gitignore
+Total #: 4 Workspace Size:        1612 Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt
