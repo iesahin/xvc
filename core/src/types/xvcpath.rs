@@ -286,12 +286,12 @@ impl XvcCachePath {
         while let Some(parent) = rel_path.parent() {
             let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
             watch!(parent_abs_cp);
-            fs::set_permissions(&parent_abs_cp, perm)?;
             if parent_abs_cp.exists() {
                 if parent_abs_cp.is_dir() {
                     if parent_abs_cp.read_dir().unwrap().count() == 0 {
                         let mut perm = parent_abs_cp.metadata()?.permissions();
                         perm.set_readonly(false);
+                        fs::set_permissions(&parent_abs_cp, perm)?;
                         uwr!(fs::remove_dir(&parent_abs_cp), output_snd);
                         output!(output_snd, "[DELETE] {}", parent_abs_cp.to_str().unwrap());
                     }
