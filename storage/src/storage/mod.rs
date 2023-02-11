@@ -25,7 +25,6 @@ pub use event::{
 
 pub use local::XvcLocalStorage;
 
-
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
@@ -338,7 +337,9 @@ impl XvcStorageTempDir {
     }
 }
 
-#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
+/// The storage path relative to `$STORAGE_ROOT/$REPO_GUID/`.
+/// It uses [RelativePathBuf] internally.
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize, Display)]
 pub struct XvcStoragePath(RelativePathBuf);
 persist!(XvcStoragePath, "remote-path");
 
@@ -371,15 +372,21 @@ impl XvcStoragePath {
         Self(rel_path)
     }
 
+    /// String representation of the internal [RelativePathBuf]
     pub fn as_str(&self) -> &str {
         self.0.as_str()
     }
 }
 
+/// A unique identifier for (remote) storages.
+/// These can be used in commands to identify the storages.
+/// Uses [Uuid] internally.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize, Display)]
 pub struct XvcStorageGuid(Uuid);
 
 impl XvcStorageGuid {
+    /// Create a new storage guid to be stored in [XvcStore<XvcStorage>] and storage's [XVC_STORAGE_GUID_FILENAME]
+    /// Used to identify a storage uniquely
     pub fn new() -> Self {
         let guid = uuid::Uuid::new_v4();
         Self(guid)
@@ -400,8 +407,10 @@ impl From<Uuid> for XvcStorageGuid {
     }
 }
 
+/// Contains the filename that the storage GUID is store in storage root
 pub const XVC_STORAGE_GUID_FILENAME: &str = ".xvc-guid";
 
+/// Retrieve [XvcStorage] from [StorageIdentifier] by trying to match the name first and if not found, guid.
 pub fn get_storage_record(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,

@@ -319,21 +319,21 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-11 09:54:25 1ebbc14e          data2.txt
-FC        2000 2023-02-11 09:54:25 1ebbc14e 1ebbc14e data.txt
-FX         130 2023-02-11 09:54:23          ac46bf74 .xvcignore
-FX         276 2023-02-11 09:54:25          6d687a2d .gitignore
-Total #: 4 Workspace Size:        2588 Cached Size:        2000
+SS         182 [..] ba3d2f3e          data2.txt
+FC        1024 [..] ba3d2f3e ba3d2f3e data.txt
+FX         130 [..]          ac46bf74 .xvcignore
+FX         276 [..]          [..] .gitignore
+Total #: 4 Workspace Size:        1612 Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/1eb/bc1/4ef628e1795c0079c506f4b6085879419bdcdc5b06c5353f91d4d999eb/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/ba3/d2f/3e2f90b8f4a3365b29ed29bd31d4b3483c876811ee6e4b2ddd3d74af01/0.txt (for data.txt) because it's also used by data2.txt
 
 $ tree .xvc/b3/
 .xvc/b3/
-├── 1eb
-│   └── bc1
-│       └── 4ef628e1795c0079c506f4b6085879419bdcdc5b06c5353f91d4d999eb
+├── ba3
+│   └── d2f
+│       └── 3e2f90b8f4a3365b29ed29bd31d4b3483c876811ee6e4b2ddd3d74af01
 │           └── 0.txt
 └── fa8
     └── af1

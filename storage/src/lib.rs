@@ -9,7 +9,6 @@ use std::str::FromStr;
 pub use crate::error::{Error, Result};
 use clap::{Parser, Subcommand};
 
-
 use derive_more::Display;
 pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,

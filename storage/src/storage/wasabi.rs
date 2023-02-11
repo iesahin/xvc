@@ -1,7 +1,6 @@
 use std::str::FromStr;
 use std::{env, fs};
 
-
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
@@ -338,12 +337,30 @@ impl XvcWasabiStorage {
 
     async fn a_delete(
         &self,
-        _output_snd: &XvcOutputSender,
-        _xvc_root: &xvc_core::XvcRoot,
-        _paths: &[XvcCachePath],
+        output_snd: &XvcOutputSender,
+        xvc_root: &xvc_core::XvcRoot,
+        paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
-        // TODO: Implement a_delete for wasabi
-        todo!();
+        let repo_guid = xvc_root
+            .config()
+            .guid()
+            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
+        let mut deleted_paths = Vec::<XvcStoragePath>::new();
+
+        let bucket = self.get_bucket()?;
+
+        for cache_path in paths {
+            watch!(cache_path);
+            let remote_path = self.build_remote_path(&repo_guid, cache_path);
+            bucket.delete_object(remote_path.as_str()).await?;
+            info!(output_snd, "[DELETE] {}", remote_path.as_str());
+            deleted_paths.push(remote_path);
+        }
+
+        Ok(XvcStorageDeleteEvent {
+            guid: self.guid.clone(),
+            paths: deleted_paths,
+        })
     }
 }
 
