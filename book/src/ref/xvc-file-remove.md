@@ -194,13 +194,12 @@ $ xvc file remove --from-cache --all-versions data.txt
 $ tree .xvc/b3/
 
 
-
-
-
+```
 
 You can use this command to remove cached files from (remote) storages as well.
 
 ```console
+
 $ xvc storage new local --name local-storage --path '../local-storage'
 
 $ xvc file send data.txt --to local-storage
