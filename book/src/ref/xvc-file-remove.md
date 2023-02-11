@@ -203,9 +203,7 @@ $ tree .xvc/b3/
 You can use this command to remove cached files from (remote) storages as well.
 
 ```console
-
 $ xvc storage new local --name local-storage --path '../local-storage'
-
 $ xvc file send data.txt --to local-storage
 $ ls -l ../local-storage/*/b3/*/*/*/0.*
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
