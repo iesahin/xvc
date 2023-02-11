@@ -242,13 +242,21 @@ $ xvc storage new local --name local-storage --path '../local-storage'
 $ xvc file send data.txt --to local-storage
 
 $ tree ../local-storage/
-ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
+../local-storage/
+└── [..]
+    └── b3
+        └── fa8
+            └── af1
+                └── 7567c147993830cdd42cea9d8a8f157c9b98b4e7ef5677f417a5d8ae61
+                    └── 0.txt
+
+6 directories, 1 file
 
 $ xvc file remove data.txt --from-storage local-storage
 
 $ tree ../local-storage/
 ../local-storage/
-└── 63e043d20b7fd53c
+└── [..]
     └── b3
         └── fa8
             └── af1
@@ -271,11 +279,11 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-11 18:21:34 ba3d2f3e          data2.txt
-FC        1024 2023-02-11 18:21:33 ba3d2f3e ba3d2f3e data.txt
-FX         130 2023-02-11 18:21:31          ac46bf74 .xvcignore
-FX         276 2023-02-11 18:21:34          17bf0d72 .gitignore
-Total #: 4 Workspace Size:        1612 Cached Size:        1024
+SS        [..] [..] ba3d2f3e          data2.txt
+FC        1024 [..] ba3d2f3e ba3d2f3e data.txt
+FX         130 [..]          ac46bf74 .xvcignore
+FX         276 [..]          [..]     .gitignore
+Total #: 4 Workspace Size:        [..] Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt
