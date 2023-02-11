@@ -313,23 +313,33 @@ If multiple paths are pointing to the same cache file (deduplication), the cache
 In this case, `remove` reports other paths pointing to the same cache file. You must `--force` delete the cache file.
 
 ```console
-$ xvc-test-helper generate-random-file --size 2000 --filename data.txt
+$ xvc-test-helper generate-filled-file --value 3 --filename data.txt
 
 $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS       [..] 61626525          data2.txt
-FC       [..] 61626525 61626525 data.txt
-FX       [..]          ac46bf74 .xvcignore
-FX       [..]          [..] .gitignore
+SS         182 2023-02-11 09:54:25 1ebbc14e          data2.txt
+FC        2000 2023-02-11 09:54:25 1ebbc14e 1ebbc14e data.txt
+FX         130 2023-02-11 09:54:23          ac46bf74 .xvcignore
+FX         276 2023-02-11 09:54:25          6d687a2d .gitignore
 Total #: 4 Workspace Size:        2588 Cached Size:        2000
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/616/265/257a3561e5b0df5a5f192045d7e4eb03c1d9525adf9c02007ae01eb466/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/1eb/bc1/4ef628e1795c0079c506f4b6085879419bdcdc5b06c5353f91d4d999eb/0.txt (for data.txt) because it's also used by data2.txt
 
 $ tree .xvc/b3/
-ls: .xvc/b3/*/*/*/0.*: No such file or directory
+.xvc/b3/
+├── 1eb
+│   └── bc1
+│       └── 4ef628e1795c0079c506f4b6085879419bdcdc5b06c5353f91d4d999eb
+│           └── 0.txt
+└── fa8
+    └── af1
+        └── 7567c147993830cdd42cea9d8a8f157c9b98b4e7ef5677f417a5d8ae61
+            └── 0.txt
+
+7 directories, 2 files
 
 ```
