@@ -104,7 +104,7 @@ $ ls -l
 total 8
 -rw-rw-rw-  1 iex  staff  19 Jan 31 11:00 data.txt
 
-$ tree .xvc/b3/
+$ ls .xvc/
 .xvc/b3/  [error opening dir]
 
 0 directories, 0 files
@@ -225,10 +225,7 @@ $ xvc file remove --from-cache --all-versions data.txt
 [DELETE] [CWD]/.xvc/b3/88d
 [DELETE] [CWD]/.xvc/b3
 
-$ tree .xvc/b3/
-.xvc/b3/  [error opening dir]
-
-0 directories, 0 files
+$ ls .xvc/
 
 ```
 

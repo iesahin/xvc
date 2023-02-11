@@ -5,6 +5,9 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+
+## 0.5.2 (2023-02-11)
+
 - Refactor "cache type" to "recheck method" in all code and documentation
   - Issue: <https://github.com/iesahin/xvc/issues/203>
   - Renamed `CacheType` to `RecheckMethod`
@@ -30,6 +33,11 @@ tree, and subtasks are marked with indentation.
   - Refactor all commands to use the new output channel ✅
 - Add `xvc file remove` command
   - Add RemoveCLI and the command dispatcher ✅
+  - Implemented remove for local cache
+    - Implement `--all-versions`
+    - Implement `--only-version`
+  - Implement `--from-remote`
+  - Implement `XvcStorageOperations::delete` for all storage types
 
 ## 0.5.1 (2023-01-28)
 
