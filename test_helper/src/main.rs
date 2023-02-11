@@ -63,8 +63,8 @@ enum XvcTestHelperSubcommandCLI {
         #[arg(short, long, default_value = "1024")]
         size: usize,
         /// The byte to fill the file with
-        #[arg(short, long, default_value = "0")]
-        fill: u8,
+        #[arg(short, long, alias = "fill", default_value = "0")]
+        value: u8,
         /// The filename to write to
         #[arg(short, long)]
         filename: String,
