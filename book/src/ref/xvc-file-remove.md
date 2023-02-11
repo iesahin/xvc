@@ -24,7 +24,7 @@ Options:
 
       --only-version <ONLY_VERSION>
           Remove only the specified version of the file
-          
+
           Versions are specified with the content hash 123-456-789abcd. Dashes are optional. Prefix must be unique. If the prefix is not unique, the command will fail.
 
       --force
@@ -210,7 +210,7 @@ $ tree .xvc/b3/
 
 10 directories, 3 files
 
-$ xvc -vvvv file remove --from-cache --all-versions data.txt
+$ xvc file remove --from-cache --all-versions data.txt
 [DEBUG][logging/src/lib.rs::236] Terminal logger enabled with level: Trace
 [TRACE][core/src/types/xvcroot.rs::247] "."
 [DEBUG][core/src/types/xvcroot.rs::253] XVC DIR: "[CWD]"
@@ -239,38 +239,53 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
         XvcConfigMap {
             source: Default,
             map: {
-                "file.recheck.method": String(
-                    "copy",
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "file.list.recursive": Boolean(
-                    false,
+                "core.guid": String(
+                    "4c75703f7a4d96bf",
+                ),
+                "git.command": String(
+                    "git",
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
-                "file.track.no_commit": Boolean(
+                "file.list.no_summary": Boolean(
                     false,
                 ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
+                "file.list.sort": String(
+                    "name-desc",
                 ),
                 "file.carry-in.no_parallel": Boolean(
                     false,
                 ),
-                "core.guid": String(
-                    "c9f38a1ff2b87dd1",
+                "git.auto_stage": Boolean(
+                    false,
                 ),
-                "cache.algorithm": String(
-                    "blake3",
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
+                ),
+                "git.auto_commit": Boolean(
+                    true,
                 ),
                 "file.track.no_parallel": Boolean(
                     false,
+                ),
+                "pipeline.default": String(
+                    "default",
+                ),
+                "file.recheck.method": String(
+                    "copy",
                 ),
                 "file.carry-in.force": Boolean(
                     false,
@@ -278,84 +293,57 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
                 "git.use_git": Boolean(
                     true,
                 ),
-                "file.list.no_summary": Boolean(
+                "file.list.recursive": Boolean(
                     false,
                 ),
-                "pipeline.default": String(
-                    "default",
+                "cache.algorithm": String(
+                    "blake3",
                 ),
-                "git.command": String(
-                    "git",
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "git.auto_stage": Boolean(
+                "file.track.force": Boolean(
                     false,
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "git.auto_commit": Boolean(
-                    true,
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "git.auto_stage": Boolean(
-                    false,
-                ),
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
                 "git.command": String(
                     "git",
                 ),
                 "file.list.no_summary": Boolean(
                     false,
                 ),
+                "pipeline.default": String(
+                    "default",
+                ),
                 "file.list.format": String(
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "file.list.recursive": Boolean(
-                    false,
-                ),
-                "core.verbosity": String(
-                    "error",
-                ),
                 "core.guid": String(
-                    "67647e684349ed10",
+                    "763ac94f6f5feabc",
                 ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "file.track.force": Boolean(
+                "git.auto_stage": Boolean(
                     false,
                 ),
                 "cache.algorithm": String(
                     "blake3",
                 ),
-                "file.track.no_commit": Boolean(
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.recheck.method": String(
+                    "copy",
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "file.list.recursive": Boolean(
                     false,
                 ),
-                "pipeline.default": String(
+                "pipeline.current_pipeline": String(
                     "default",
                 ),
-                "file.track.no_parallel": Boolean(
+                "file.carry-in.force": Boolean(
                     false,
                 ),
                 "git.auto_commit": Boolean(
@@ -364,11 +352,23 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
                 "file.track.text_or_binary": String(
                     "auto",
                 ),
-                "pipeline.current_pipeline": String(
-                    "default",
+                "file.track.no_commit": Boolean(
+                    false,
                 ),
-                "git.use_git": Boolean(
-                    true,
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "core.verbosity": String(
+                    "error",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
                 ),
             },
         },
@@ -393,13 +393,43 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
         },
     ],
     the_config: {
-        "file.list.no_summary": XvcConfigValue {
+        "file.list.format": XvcConfigValue {
+            source: Project,
+            value: String(
+                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
+            ),
+        },
+        "file.list.recursive": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "file.track.no_parallel": XvcConfigValue {
+        "git.auto_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "cache.algorithm": XvcConfigValue {
+            source: Project,
+            value: String(
+                "blake3",
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "763ac94f6f5feabc",
+            ),
+        },
+        "file.list.no_summary": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -411,10 +441,40 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
                 "name-desc",
             ),
         },
+        "file.track.no_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.auto_stage": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
         "file.carry-in.no_parallel": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
+            ),
+        },
+        "git.use_git": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "file.track.text_or_binary": XvcConfigValue {
+            source: Project,
+            value: String(
+                "auto",
             ),
         },
         "git.command": XvcConfigValue {
@@ -429,34 +489,16 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
                 "debug",
             ),
         },
-        "file.track.force": XvcConfigValue {
+        "file.recheck.method": XvcConfigValue {
+            source: Project,
+            value: String(
+                "copy",
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
-            ),
-        },
-        "file.track.no_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "cache.algorithm": XvcConfigValue {
-            source: Project,
-            value: String(
-                "blake3",
-            ),
-        },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
-            ),
-        },
-        "git.auto_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
             ),
         },
         "pipeline.current_pipeline": XvcConfigValue {
@@ -465,55 +507,13 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
                 "default",
             ),
         },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "67647e684349ed10",
-            ),
-        },
-        "file.recheck.method": XvcConfigValue {
-            source: Project,
-            value: String(
-                "copy",
-            ),
-        },
-        "file.list.format": XvcConfigValue {
-            source: Project,
-            value: String(
-                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-            ),
-        },
-        "file.list.recursive": XvcConfigValue {
+        "file.track.no_parallel": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "git.use_git": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "git.auto_stage": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.track.text_or_binary": XvcConfigValue {
-            source: Project,
-            value: String(
-                "auto",
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "file.carry-in.force": XvcConfigValue {
+        "file.track.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -532,7 +532,7 @@ $ xvc -vvvv file remove --from-cache --all-versions data.txt
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"c9f38a1ff2b87dd1/"
+guid = /"4c75703f7a4d96bf/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -671,9 +671,9 @@ default_params_file = /"params.yaml/"
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1676108020603661",
-    "[CWD]/.xvc/ec/1676108020607673",
-    "[CWD]/.xvc/ec/1676108020984543",
+    "[CWD]/.xvc/ec/1676108453558163",
+    "[CWD]/.xvc/ec/1676108453561482",
+    "[CWD]/.xvc/ec/1676108454221817",
 ]
 [TRACE][file/src/lib.rs::156] opts: XvcFileCLI {
     verbosity: 0,
@@ -709,7 +709,7 @@ default_params_file = /"params.yaml/"
     map: {
         XvcEntity(
             2,
-            14678594030447128508,
+            9106514083182793651,
         ): XvcPath(
             "data.txt",
         ),
@@ -719,7 +719,7 @@ default_params_file = /"params.yaml/"
     map: {
         XvcEntity(
             2,
-            14678594030447128508,
+            9106514083182793651,
         ): XvcPath(
             "data.txt",
         ),
@@ -729,7 +729,7 @@ default_params_file = /"params.yaml/"
     (
         XvcEntity(
             2,
-            14678594030447128508,
+            9106514083182793651,
         ),
         XvcCachePath(
             "b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt",
@@ -738,7 +738,7 @@ default_params_file = /"params.yaml/"
     (
         XvcEntity(
             2,
-            14678594030447128508,
+            9106514083182793651,
         ),
         XvcCachePath(
             "b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt",
@@ -747,7 +747,7 @@ default_params_file = /"params.yaml/"
     (
         XvcEntity(
             2,
-            14678594030447128508,
+            9106514083182793651,
         ),
         XvcCachePath(
             "b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917/0.txt",
@@ -756,7 +756,7 @@ default_params_file = /"params.yaml/"
     (
         XvcEntity(
             2,
-            14678594030447128508,
+            9106514083182793651,
         ),
         XvcCachePath(
             "b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420/0.txt",
@@ -771,93 +771,89 @@ default_params_file = /"params.yaml/"
 )
 [TRACE][core/src/types/xvcpath.rs::285] rel_path: "b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt"
 [TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496"
-thread '<unnamed>' panicked at 'IoError { source: Os { code: 2, kind: NotFound, message: "No such file or directory" } }', file/src/remove/mod.rs:206:13
-stack backtrace:
-thread '<unnamed>' panicked at '[PANIC] IoError { source: Os { code: 2, kind: NotFound, message: "No such file or directory" } }, [file/src/remove/mod.rs::206]', lib/src/cli/mod.rs:300:52
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc_file::remove::cmd_remove::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:206:13
-   3: <core::slice::iter::Iter<T> as core::iter::traits::iterator::Iterator>::for_each
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/slice/iter/macros.rs:211:21
-   4: xvc_file::remove::cmd_remove
-             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:204:9
-   5: xvc_file::run
-             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:204:44
-   6: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:343:24
-   7: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   8: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   9: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:300:52
-   3: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   4: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   5: <alloc::boxed::Box<F,A> asthread ' maincore' panicked at '::called `Result::unwrap()` on an `Err` value: Any { .. }ops', ::lib/src/cli/mod.rsfunction::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9:
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-403:37
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::result::unwrap_failed
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
-   3: core::result::Result<T,E>::unwrap
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
-   4: xvc::cli::dispatch::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:403:15
-   5: crossbeam_utils::thread::scope::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:65
-   6: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panic/unwind_safe.rs:271:9
-   7: std::panicking::try::do_call
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:492:40
-   8: ___rust_try
-   9: std::panicking::try
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:456:19
-  10: std::panic::catch_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panic.rs:137:14
-  11: crossbeam_utils::thread::scope
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:18
-  12: xvc::cli::dispatch
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:239:5
-  13: xvc::main
-             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
-  14: core::ops::function::FnOnce::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/c85/f3e"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/c85"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc"
+[TRACE][file/src/remove/mod.rs::205] xcp: XvcCachePath(
+    "b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt",
+)
+[TRACE][core/src/types/xvcpath.rs::267] abs_cp: AbsolutePath(
+    "[CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt",
+)
+[TRACE][core/src/types/xvcpath.rs::271] parent: "[CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367"
+[TRACE][core/src/types/xvcpath.rs::285] rel_path: "b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/660/2cf"
+[DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt
+[DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
+[DELETE] [CWD]/.xvc/b3/660/2cf
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/660"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc"
+[TRACE][file/src/remove/mod.rs::205] xcp: XvcCachePath(
+    "b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917/0.txt",
+)
+[TRACE][core/src/types/xvcpath.rs::267] abs_cp: AbsolutePath(
+    "[CWD]/.xvc/b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917/0.txt",
+)
+[TRACE][core/src/types/xvcpath.rs::271] parent: "[CWD]/.xvc/b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917"
+[TRACE][core/src/types/xvcpath.rs::285] rel_path: "b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917/0.txt"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/d6f/d9d"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/d6f"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc"
+[TRACE][file/src/remove/mod.rs::205] xcp: XvcCachePath(
+    "b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420/0.txt",
+)
+[TRACE][core/src/types/xvcpath.rs::267] abs_cp: AbsolutePath(
+    "[CWD]/.xvc/b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420/0.txt",
+)
+[TRACE][core/src/types/xvcpath.rs::271] parent: "[CWD]/.xvc/b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420"
+[TRACE][core/src/types/xvcpath.rs::285] rel_path: "b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420/0.txt"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/88d/ba6"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3/88d"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc/b3"
+[TRACE][core/src/types/xvcpath.rs::288] parent_abs_cp: "[CWD]/.xvc"
+[TRACE][lib/src/cli/mod.rs::381] "Before handle_git_automation": "Before handle_git_automation"
+[TRACE][lib/src/cli/mod.rs::384] &cli_opts.command_string: "/Users/iex/github.com/iesahin/xvc/target/debug/xvc -vvvv file remove --from-cache --all-versions data.txt"
+[DELETE] [CWD]/.xvc/b3/660
+[DELETE] [CWD]/.xvc/b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917/0.txt
+[DELETE] [CWD]/.xvc/b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917
+[DELETE] [CWD]/.xvc/b3/d6f/d9d
+[DELETE] [CWD]/.xvc/b3/d6f
+[DELETE] [CWD]/.xvc/b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420/0.txt
+[DELETE] [CWD]/.xvc/b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420
+[DELETE] [CWD]/.xvc/b3/88d/ba6
+[DELETE] [CWD]/.xvc/b3/88d
+[DELETE] [CWD]/.xvc/b3
+[TRACE][lib/src/cli/mod.rs::433] args: [
+    "-C",
+    "[CWD]",
+    "diff",
+    "--name-only",
+    "--cached",
+]
+[DEBUG] Using Git: /opt/homebrew/bin/git
+[TRACE][lib/src/cli/mod.rs::463] git_diff_staged_out: ""
+[TRACE][lib/src/cli/mod.rs::433] args: [
+    "-C",
+    "[CWD]",
+    "add",
+    "--verbose",
+    "[CWD]/.xvc",
+    "*.gitignore",
+    "*.xvcignore",
+]
+[DEBUG] No files to commit
+[DEBUG] Command completed successfully.
 
 $ tree .xvc/b3/
-.xvc/b3/
-├── 660
-│   └── 2cf
-│       └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-│           └── 0.txt
-├── 88d
-│   └── ba6
-│       └── ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420
-│           └── 0.txt
-└── d6f
-    └── d9d
-        └── e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917
-            └── 0.txt
+.xvc/b3/  [error opening dir]
 
-10 directories, 3 files
+0 directories, 0 files
 
 ```
 
@@ -866,6 +862,8 @@ You can use this command to remove cached files from (remote) storages as well.
 ```console
 $ xvc storage new local --name local-storage --path '../local-storage'
 $ xvc file send data.txt --to local-storage
+[ERROR] File Error: Xvc Core Error: General Xvc Core Error: Remote error: I/O Error: No such file or directory (os error 2)
+
 $ ls -l ../local-storage/*/b3/*/*/*/0.*
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
 
@@ -944,15 +942,15 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-11 09:33:42 b8e70f2b          data2.txt
-FC        2000 2023-02-11 09:33:42 b8e70f2b b8e70f2b data.txt
-FX         130 2023-02-11 09:33:40          ac46bf74 .xvcignore
-FX         276 2023-02-11 09:33:42          370ffbe4 .gitignore
+SS         182 2023-02-11 09:40:56 f2d9be57          data2.txt
+FC        2000 2023-02-11 09:40:56 f2d9be57 f2d9be57 data.txt
+FX         130 2023-02-11 09:40:53          ac46bf74 .xvcignore
+FX         276 2023-02-11 09:40:56          251c3d24 .gitignore
 Total #: 4 Workspace Size:        2588 Cached Size:        2000
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/b8e/70f/2b90aa9e36235d4aaa9523953214ad6dee778149cad2159ec11e05c0ae/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/f2d/9be/57d5e0b96deda5900487904d6aac75872488b271c04ea29d2e8ede9744/0.txt (for data.txt) because it's also used by data2.txt
 
 $ ls -l .xvc/b3/*/*/*/0.*
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
