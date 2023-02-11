@@ -237,15 +237,9 @@ You can use this command to remove cached files from (remote) storages as well.
 ```console
 $ xvc-test-helper generate-filled-file --value 2 --filename data.txt
 $ xvc file carry-in data.txt
-error: unrecognized subcommand 'carry-in'
-
-Usage: xvc [OPTIONS] <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc storage new local --name local-storage --path '../local-storage'
 $ xvc file send data.txt --to local-storage
-[ERROR] File Error: Xvc Core Error: General Xvc Core Error: Remote error: I/O Error: No such file or directory (os error 2)
 
 $ ls -l ../local-storage/*/b3/*/*/*/0.*
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
@@ -325,17 +319,17 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-11 09:45:08 d0e582b6          data2.txt
-FC        2000 2023-02-11 09:45:07 d0e582b6 d0e582b6 data.txt
-FX         130 2023-02-11 09:45:05          ac46bf74 .xvcignore
-FX         276 2023-02-11 09:45:08          506142bb .gitignore
+SS       [..] 61626525          data2.txt
+FC       [..] 61626525 61626525 data.txt
+FX       [..]          ac46bf74 .xvcignore
+FX       [..]          [..] .gitignore
 Total #: 4 Workspace Size:        2588 Cached Size:        2000
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/d0e/582/b63193885ee8210ae6885a28dfb4b762f1ccd43feccb7de1289f6d1ed4/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/616/265/257a3561e5b0df5a5f192045d7e4eb03c1d9525adf9c02007ae01eb466/0.txt (for data.txt) because it's also used by data2.txt
 
-$ ls -l .xvc/b3/*/*/*/0.*
+$ tree .xvc/b3/
 ls: .xvc/b3/*/*/*/0.*: No such file or directory
 
 ```
