@@ -185,14 +185,20 @@ You can also remove all versions of a file from the cache.
 ```console
 
 $ xvc-test-helper generate-random-file --size 2000 --filename data.txt
+
 $ xvc file carry-in data.txt
+
 $ rm data.txt
+
 $ xvc-test-helper generate-random-file --size 3000 --filename data.txt
+
 $ xvc file carry-in data.txt
-$ tree .xvc/b3/
-$ xvc file remove --from-cache --all-versions data.txt
+
 $ tree .xvc/b3/
 
+$ xvc file remove --from-cache --all-versions data.txt
+
+$ tree .xvc/b3/
 
 ```
 
