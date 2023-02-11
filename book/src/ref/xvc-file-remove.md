@@ -245,65 +245,8 @@ $ ls -l ../local-storage/*/b3/*/*/*/0.*
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
 
 $ xvc file remove data.txt --from-storage local-storage
-thread '<unnamed>' panicked at 'not yet implemented', storage/src/storage/local.rs:208:9
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::panicking::panic
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:48:5
-   3: <xvc_storage::storage::local::XvcLocalStorage as xvc_storage::storage::XvcStorageOperations>::delete
-             at /Users/iex/github.com/iesahin/xvc/storage/src/storage/local.rs:208:9
-   4: <xvc_storage::storage::XvcStorage as xvc_storage::storage::XvcStorageOperations>::delete
-             at /Users/iex/github.com/iesahin/xvc/storage/src/storage/mod.rs:300:38
-   5: xvc_file::remove::cmd_remove
-             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:212:9
-   6: xvc_file::run
-             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:204:44
-   7: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:343:24
-   8: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   9: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-  10: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::result::unwrap_failed
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
-   3: core::result::Result<T,E>::unwrap
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
-   4: xvc::cli::dispatch::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:403:15
-   5: crossbeam_utils::thread::scope::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:65
-   6: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panic/unwind_safe.rs:271:9
-   7: std::panicking::try::do_call
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:492:40
-   8: ___rust_try
-   9: std::panicking::try
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:456:19
-  10: std::panic::catch_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panic.rs:137:14
-  11: crossbeam_utils::thread::scope
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:18
-  12: xvc::cli::dispatch
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:239:5
-  13: xvc::main
-             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
-  14: core::ops::function::FnOnce::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
-$ ls -lR ../local-storage/*/b3/*/*/*/0.*
+$ tree ../local-storage/
 ls: ../local-storage/*/b3/*/*/*/0.*: No such file or directory
 
 ```
@@ -319,11 +262,11 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 [..] ba3d2f3e          data2.txt
-FC        1024 [..] ba3d2f3e ba3d2f3e data.txt
-FX         130 [..]          ac46bf74 .xvcignore
-FX         276 [..]          [..] .gitignore
-Total #: 4 Workspace Size:        1612 Cached Size:        1024
+SS         181 2023-02-11 18:20:44 ba3d2f3e          data2.txt
+FC        1024 2023-02-11 18:20:43 ba3d2f3e ba3d2f3e data.txt
+FX         130 2023-02-11 18:20:41          ac46bf74 .xvcignore
+FX         276 2023-02-11 18:20:44          f51c1826 .gitignore
+Total #: 4 Workspace Size:        1611 Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt
