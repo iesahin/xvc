@@ -282,7 +282,7 @@ $ xvc file list
 SS        [..] [..] ba3d2f3e          data2.txt
 FC        1024 [..] ba3d2f3e ba3d2f3e data.txt
 FX         130 [..]          ac46bf74 .xvcignore
-FX         276 [..]          [..]     .gitignore
+FX         276 [..]          [..] .gitignore
 Total #: 4 Workspace Size:        [..] Cached Size:        1024
 
 
