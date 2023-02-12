@@ -38,7 +38,6 @@ Options:
 
 ```
 
-
 ## Examples
 
 This command deletes files from the Xvc cache or storage. It doesn't remove the file from Xvc tracking.
@@ -89,7 +88,6 @@ Usage: xvc file remove --from-cache --from-storage <FROM_STORAGE> <TARGETS>...
 For more information, try '--help'.
 
 ```
-
 
 You can remove the file from the cache. The file is still tracked by Xvc and available in the workspace.
 

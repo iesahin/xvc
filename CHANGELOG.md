@@ -5,7 +5,6 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
-
 ## 0.5.2 (2023-02-11)
 
 - Refactor "cache type" to "recheck method" in all code and documentation
@@ -99,8 +98,8 @@ tree, and subtasks are marked with indentation.
     - Now builds the binary before running the doc tests. ✅
 - Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
 - Add `xvc file copy` command
-  - Issue: https://github.com/iesahin/xvc/issues/179
-  - PR: https://github.com/iesahin/xvc/issues/206
+  - Issue: <https://github.com/iesahin/xvc/issues/179>
+  - PR: <https://github.com/iesahin/xvc/issues/206>
   - Create the user interface
     - Add `copy` to `XvcFileCLI`
     - Created CopyCLI
@@ -129,18 +128,16 @@ tree, and subtasks are marked with indentation.
               directories that may contain non-tracked files❓
             - While creating files and parent directories we can update gitignores
               in the parent directories.
-               - If a directory is not already ignored in creation, we can
-                 create a gitignore with a single line `*` to ignore all files.
-               - After all files are rechecked, we can check whether they are
-                 not ignored by Git, and update necessary gitignores.
+              - If a directory is not already ignored in creation, we can create a gitignore with a single line `*` to ignore all files.
+              - After all files are rechecked, we can check whether they are not ignored by Git, and update necessary gitignores.
         - Create an IgnoreWriter system with crossbeam_channels
-          - The channel will send/receive Option<IgnoreOperation> messages.
+          - The channel will send/receive `Option<IgnoreOperation>` messages.
           - If it receives a None message, it will stop and the collected
             dir/files will be written to ignore files.
           - This pattern can be used for all operations.
       - Split targets_from_store to receive a store struct to filter. ✅
         - This is to prevent unnecessary reload in copy.
-      - Convert former XvcRoot type to XvcRootInner and XvcRoot to Arc<XvcRootInner>
+      - Convert former XvcRoot type to XvcRootInner and XvcRoot to `Arc<XvcRootInner>`
         - This is to pass the object to threads easily.
   - Updated default format string for `xvc file list`
     - Moved `name` block to the end of the format string ✅
