@@ -1,3 +1,6 @@
+//! The home of `xvc file remove` command.
+//!
+//! [`RemoveCLI`] defines the options of the command, and [`cmd_remove`] is the entry point.
 use std::collections::{HashMap, HashSet};
 
 use crate::common::{

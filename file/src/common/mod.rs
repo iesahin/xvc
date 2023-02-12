@@ -23,7 +23,7 @@ use xvc_core::{
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::ecs::event::EventLog;
-use xvc_logging::{info, warn, watch, XvcOutputSender, uwr, error};
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
@@ -306,9 +306,12 @@ pub fn recheck_from_cache(
         if !parent_dir.exists() {
             watch!(&parent_dir);
             fs::create_dir_all(parent_dir)?;
-            ignore_writer.send(Some(IgnoreOperation::IgnoreDir {
-                dir: parent.clone(),
-            }));
+            uwr!(
+                ignore_writer.send(Some(IgnoreOperation::IgnoreDir {
+                    dir: parent.clone(),
+                })),
+                output_snd
+            );
         }
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
@@ -360,9 +363,9 @@ pub fn recheck_from_cache(
             };
         }
     }
-    ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
+    uwr!(ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
         file: xvc_path.clone(),
-    }));
+    })), output_snd);
     watch!("Before return");
     Ok(())
 }

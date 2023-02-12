@@ -1,3 +1,6 @@
+//! Home of the `xvc file untrack` command.
+//!
+//! [`UntrackCLI`] defines the command line options and [`cmd_untrack`] is the entry point for the implementation.
 use std::collections::{HashMap, HashSet};
 use std::fs::{self};
 use std::path::PathBuf;
@@ -30,6 +33,7 @@ pub struct UntrackCLI {
     targets: Vec<String>,
 }
 
+/// Entry point for `xvc file untrack` command.
 pub fn cmd_untrack(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,

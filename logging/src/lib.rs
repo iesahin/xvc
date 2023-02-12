@@ -269,6 +269,7 @@ pub enum XvcOutputLine {
     Tick(usize),
 }
 
+/// The channel type to send and receive output/log/debug messages
 pub type XvcOutputSender = Sender<Option<XvcOutputLine>>;
 
 impl XvcOutputLine {
