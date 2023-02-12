@@ -79,6 +79,7 @@ If you don't specify either `--from-cache` or `--from-storage`, this command doe
 
 ```console
 $ xvc file remove data.txt
+? failed
 error: the following required arguments were not provided:
   --from-cache
   --from-storage <FROM_STORAGE>
@@ -105,9 +106,10 @@ total 8
 -rw-rw-rw-  1 iex  staff  19 Jan 31 11:00 data.txt
 
 $ ls .xvc/
-.xvc/b3/  [error opening dir]
-
-0 directories, 0 files
+config.local.toml
+config.toml
+ec
+store
 
 ```
 
@@ -226,6 +228,10 @@ $ xvc file remove --from-cache --all-versions data.txt
 [DELETE] [CWD]/.xvc/b3
 
 $ ls .xvc/
+config.local.toml
+config.toml
+ec
+store
 
 ```
 
