@@ -1,17 +1,17 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::common::{
-    cache_paths_for_xvc_paths, filter_targets_from_store, load_targets_from_store,
+    cache_paths_for_xvc_paths, filter_targets_from_store,
 };
 use crate::Result;
-use chrono::DateTime;
+
 use clap::Parser;
 use itertools::Itertools;
-use parse_size::parse_size;
+
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_ecs::{HStore, XvcEntity};
-use xvc_logging::{output, uwo, uwr, warn, watch, XvcOutputSender};
+use xvc_ecs::{XvcEntity};
+use xvc_logging::{output, uwr, warn, watch, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 

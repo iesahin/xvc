@@ -13,9 +13,9 @@ use itertools::Itertools;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcMetadata, XvcPath, XvcRoot};
-use xvc_ecs::ecs::event::EventLog;
+
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, output, panic, uwr, watch, XvcOutputSender};
+use xvc_logging::{debug, output, panic, uwr, watch, XvcOutputSender};
 
 /// Remove files from tracking and possibly delete them
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]

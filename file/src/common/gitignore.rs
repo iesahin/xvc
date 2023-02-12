@@ -10,7 +10,7 @@ use xvc_core::util::git::build_gitignore;
 
 use crate::Result;
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_logging::{debug, error, info, uwr, watch, XvcOutputSender};
+use xvc_logging::{debug, error, info, uwr, XvcOutputSender};
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
 pub enum IgnoreOperation {

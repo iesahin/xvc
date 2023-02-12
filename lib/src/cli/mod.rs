@@ -1,12 +1,12 @@
 //! Main CLI interface for XVC
 use std::env::ArgsOs;
-use std::f32::consts::E;
+
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
 use crate::init;
-use assert_cmd::output;
+
 use clap::Parser;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -15,7 +15,7 @@ use std::io;
 use subprocess::Exec;
 use which;
 use xvc_core::types::xvcroot::load_xvc_root;
-use xvc_logging::{debug, error, info, output, uwr, warn, XvcOutputLine, XvcOutputSender};
+use xvc_logging::{debug, error, uwr, XvcOutputLine, XvcOutputSender};
 
 use std::path::Path;
 use xvc_config::{XvcConfigInitParams, XvcVerbosity};
@@ -240,7 +240,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
 
         let output_snd_clone = output_snd.clone();
-        let output_rec_clone = output_rec.clone();
+        let _output_rec_clone = output_rec.clone();
 
         let output_thread = s.spawn(move |_| {
             while let Ok(Some(output_line)) = output_rec.recv() {

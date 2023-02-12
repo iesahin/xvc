@@ -3,7 +3,7 @@ use cached::proc_macro::cached;
 use cached::UnboundCache;
 use glob::Pattern as GlobPattern;
 use regex::Regex;
-use relative_path::RelativePathBuf;
+
 use std::collections::HashMap;
 use std::fs::{self, Metadata};
 use std::io::{self, Read};
