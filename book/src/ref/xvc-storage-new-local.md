@@ -60,14 +60,6 @@ Now, you can define a local directory as storage and begin to use it.
 
 ```console
 $ xvc storage new local --name backup --path '../my-local-storage'
-error: unrecognized subcommand 'new-local'
-
-  note: subcommand 'new' exists
-  note: to pass 'new-local' as a value, use 'xvc storage -- new-local'
-
-Usage: xvc storage <COMMAND>
-
-For more information, try '--help'.
 
 ```
 
@@ -75,74 +67,6 @@ Send files to this storage.
 
 ```console
 $ xvc file send dir-0001 --to backup
-thread '<unnamed>' panicked at 'Cannot find remote backup', storage/src/storage/mod.rs:458:9
-stack backtrace:
-thread '<unnamed>' panicked at '[PANIC] Cannot find remote backup [storage/src/storage/mod.rs::458]', lib/src/cli/mod.rs:263:52
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc_storage::storage::get_storage_record
-             at /Users/iex/github.com/iesahin/xvc/storage/src/storage/mod.rs:458:9
-   3: xvc_file::send::cmd_send
-             at /Users/iex/github.com/iesahin/xvc/file/src/send/mod.rs:37:18
-   4: xvc_file::run
-             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:179:42
-   5: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:343:24
-   6: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   7: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   8: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-stack backtrace:
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:263:52
-   3: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   4: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   5: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::result::unwrap_failed
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
-   3: core::result::Result<T,E>::unwrap
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
-   4: xvc::cli::dispatch::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:403:15
-   5: crossbeam_utils::thread::scope::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:65
-   6: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panic/unwind_safe.rs:271:9
-   7: std::panicking::try::do_call
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:492:40
-   8: ___rust_try
-   9: std::panicking::try
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:456:19
-  10: std::panic::catch_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panic.rs:137:14
-  11: crossbeam_utils::thread::scope
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:18
-  12: xvc::cli::dispatch
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:239:5
-  13: xvc::main
-             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
-  14: core::ops::function::FnOnce::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 ```
 
@@ -150,14 +74,14 @@ You can remove the files you sent from your cache and workspace.
 
 ```console
 $ xvc file remove --from-cache dir-0001/
-[DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin
-[DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88
-[DELETE] [CWD]/.xvc/b3/1bc/b82
-[DELETE] [CWD]/.xvc/b3/1bc
 [DELETE] [CWD]/.xvc/b3/863/86d/62e50462e37699d86e9b436526cb3fe40c66e38030e4e25ae4e168193a/0.bin
 [DELETE] [CWD]/.xvc/b3/863/86d/62e50462e37699d86e9b436526cb3fe40c66e38030e4e25ae4e168193a
 [DELETE] [CWD]/.xvc/b3/863/86d
 [DELETE] [CWD]/.xvc/b3/863
+[DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin
+[DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88
+[DELETE] [CWD]/.xvc/b3/1bc/b82
+[DELETE] [CWD]/.xvc/b3/1bc
 [DELETE] [CWD]/.xvc/b3/f60/f11/901bf063f1448d095f336929929e153025a3ec238128a42ff6e5f080ef/0.bin
 [DELETE] [CWD]/.xvc/b3/f60/f11/901bf063f1448d095f336929929e153025a3ec238128a42ff6e5f080ef
 [DELETE] [CWD]/.xvc/b3/f60/f11
@@ -171,81 +95,14 @@ Then get back them from the storage.
 
 ```console
 $ xvc file bring --from backup dir-0001
-thread '<unnamed>' panicked at 'Cannot find remote backup', storage/src/storage/mod.rs:458:9
-thread '<unnamed>stack backtrace:
-' panicked at '[PANIC] Cannot find remote backup [storage/src/storage/mod.rs::458]', lib/src/cli/mod.rs:263:52
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc_storage::storage::get_storage_record
-             at /Users/iex/github.com/iesahin/xvc/storage/src/storage/mod.rs:458:9
-   3: xvc_file::bring::fetch
-             at /Users/iex/github.com/iesahin/xvc/file/src/bring/mod.rs:64:19
-   4: xvc_file::bring::cmd_bring
-             at /Users/iex/github.com/iesahin/xvc/file/src/bring/mod.rs:158:5
-   5: xvc_file::run
-             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:184:43
-   6: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:343:24
-   7: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   8: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   9: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:263:52
-   3: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   4: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   5: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::result::unwrap_failed
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
-   3: core::result::Result<T,E>::unwrap
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
-   4: xvc::cli::dispatch::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:403:15
-   5: crossbeam_utils::thread::scope::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:65
-   6: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panic/unwind_safe.rs:271:9
-   7: std::panicking::try::do_call
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:492:40
-   8: ___rust_try
-   9: std::panicking::try
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:456:19
-  10: std::panic::catch_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panic.rs:137:14
-  11: crossbeam_utils::thread::scope
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:18
-  12: xvc::cli::dispatch
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:239:5
-  13: xvc::main
-             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
-  14: core::ops::function::FnOnce::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 $ tree dir-0001
-dir-0001  [error opening dir]
+dir-0001
+├── file-0001.bin
+├── file-0002.bin
+└── file-0003.bin
 
-0 directories, 0 files
+1 directory, 3 files
 
 ```
 
@@ -285,74 +142,6 @@ Options:
   -V, --version                Print version
 
 $ xvc file remove --from-storage backup dir-0001/
-thread '<unnamed>' panicked at 'Cannot find remote backup', storage/src/storage/mod.rs:458:9
-stack backtrace:
-thread '<unnamed>' panicked at '[PANIC] Cannot find remote backup [storage/src/storage/mod.rs::458]', lib/src/cli/mod.rs:263:52
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc_storage::storage::get_storage_record
-             at /Users/iex/github.com/iesahin/xvc/storage/src/storage/mod.rs:458:9
-   3: xvc_file::remove::cmd_remove
-             at /Users/iex/github.com/iesahin/xvc/file/src/remove/mod.rs:214:23
-   4: xvc_file::run
-             at /Users/iex/github.com/iesahin/xvc/file/src/lib.rs:204:44
-   5: xvc::cli::dispatch::{{closure}}::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:343:24
-   6: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   7: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   8: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: xvc::cli::dispatch::{{thread 'closuremain}' panicked at '}called `Result::unwrap()` on an `Err` value: Any { .. }::', {lib/src/cli/mod.rs{:closure403}:}37
-
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:263:52
-   3: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
-   4: core::ops::function::FnOnce::call_once{{vtable.shim}}
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-   5: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/alloc/src/boxed.rs:1940:9
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
-stack backtrace:
-   0: rust_begin_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:584:5
-   1: core::panicking::panic_fmt
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panicking.rs:142:14
-   2: core::result::unwrap_failed
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1785:5
-   3: core::result::Result<T,E>::unwrap
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/result.rs:1107:23
-   4: xvc::cli::dispatch::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:403:15
-   5: crossbeam_utils::thread::scope::{{closure}}
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:65
-   6: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/panic/unwind_safe.rs:271:9
-   7: std::panicking::try::do_call
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:492:40
-   8: ___rust_try
-   9: std::panicking::try
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panicking.rs:456:19
-  10: std::panic::catch_unwind
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/std/src/panic.rs:137:14
-  11: crossbeam_utils::thread::scope
-             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:18
-  12: xvc::cli::dispatch
-             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:239:5
-  13: xvc::main
-             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
-  14: core::ops::function::FnOnce::call_once
-             at /rustc/897e37553bba8b42751c67658967889d11ecd120/library/core/src/ops/function.rs:248:5
-note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 ```
 
