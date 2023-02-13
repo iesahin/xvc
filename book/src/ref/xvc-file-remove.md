@@ -24,7 +24,7 @@ Options:
 
       --only-version <ONLY_VERSION>
           Remove only the specified version of the file
-          
+
           Versions are specified with the content hash 123-456-789abcd. Dashes are optional. Prefix must be unique. If the prefix is not unique, the command will fail.
 
       --force
@@ -99,9 +99,9 @@ $ xvc file remove --from-cache data.txt
 [DELETE] [CWD]/.xvc/b3/c85
 [DELETE] [CWD]/.xvc/b3
 
-$ ls -l
+$ ls
 total 8
--rw-rw-rw-  1 iex  staff  19 Jan 31 11:00 data.txt
+-rw-rw-rw-  1 iex  staff  19 Feb 13 12:01 data.txt
 
 $ ls .xvc/
 config.local.toml
