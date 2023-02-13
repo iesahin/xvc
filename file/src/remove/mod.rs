@@ -3,9 +3,7 @@
 //! [`RemoveCLI`] defines the options of the command, and [`cmd_remove`] is the entry point.
 use std::collections::{HashMap, HashSet};
 
-use crate::common::{
-    cache_paths_for_xvc_paths, filter_targets_from_store,
-};
+use crate::common::{cache_paths_for_xvc_paths, filter_targets_from_store};
 use crate::Result;
 
 use clap::Parser;
@@ -13,7 +11,7 @@ use itertools::Itertools;
 
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_ecs::{XvcEntity};
+use xvc_ecs::XvcEntity;
 use xvc_logging::{output, uwr, warn, watch, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
@@ -168,7 +166,8 @@ pub(crate) fn cmd_remove(
 
     let mut deletable_paths = Vec::<XvcCachePath>::new();
     // Report the differences if found
-    let removable_entities: HashSet<XvcEntity> = remove_targets.keys().copied().collect();
+    // We sort the keys to have a stable output.
+    let removable_entities: HashSet<XvcEntity> = remove_targets.keys().copied().sorted().collect();
     for (xe, cp) in candidate_paths {
         let entities_pointing_to_cp =
             HashSet::from_iter(entities_for_cache_path[&cp].iter().copied());
