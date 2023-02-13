@@ -183,13 +183,13 @@ $ tree .xvc/b3/
 You can also remove all versions of a file from the cache.
 
 ```console
-$ xvc-test-helper generate-filled-file --value 0 --filename data.txt
+$ xvc-test-helper generate-random-file --seed 0 data.txt
 
 $ xvc file carry-in data.txt
 
 $ rm data.txt
 
-$ xvc-test-helper generate-filled-file --value 1 --filename data.txt
+$ xvc-test-helper generate-random-file --seed 1 data.txt
 
 $ xvc file carry-in data.txt
 
@@ -236,7 +236,7 @@ store
 You can use this command to remove cached files from (remote) storages as well.
 
 ```console
-$ xvc-test-helper generate-filled-file --value 2 --filename data.txt
+$ xvc-test-helper generate-random-file --seed 2 data.txt
 $ xvc file carry-in data.txt
 
 $ xvc storage new local --name local-storage --path '../local-storage'
@@ -274,7 +274,7 @@ If multiple paths are pointing to the same cache file (deduplication), the cache
 In this case, `remove` reports other paths pointing to the same cache file. You must `--force` delete the cache file.
 
 ```console
-$ xvc-test-helper generate-filled-file --value 3 --filename data.txt
+$ xvc-test-helper generate-random-file --seed 3 data.txt
 
 $ xvc file carry-in data.txt
 
