@@ -4,6 +4,7 @@
 //! Downstream crates (xvc, xvc-file, etc.) use this crate not to use stdout, stderr directly.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
+use crossbeam_channel::Sender;
 use log::LevelFilter;
 use std::env;
 use std::path::Path;
@@ -26,7 +27,7 @@ macro_rules! watch {
 macro_rules! error {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*))).unwrap();
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*)))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -41,7 +42,7 @@ macro_rules! error {
 macro_rules! info {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(::xvc_logging::XvcOutputLine::Info(format!($fmt $(,$x)*))).unwrap();
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Info(format!($fmt $(,$x)*)))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -56,7 +57,10 @@ macro_rules! info {
 macro_rules! warn {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(::xvc_logging::XvcOutputLine::Warn(format!($fmt $(,$x)*))).unwrap();
+            (&$channel).send(
+                Some(
+                    ::xvc_logging::XvcOutputLine::Warn(
+                        format!($fmt $(, $x)*)))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -71,7 +75,7 @@ macro_rules! warn {
 macro_rules! debug {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-                    (&$channel).send(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*))).unwrap();
+                    (&$channel).send(Some(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*)))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -86,7 +90,7 @@ macro_rules! debug {
 macro_rules! trace {
     ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
         {
-                    (&$channel).send(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!()))).unwrap();
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!())))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -101,7 +105,7 @@ macro_rules! trace {
 macro_rules! output {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*))).unwrap();
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
         }
     };
     ($fmt:literal $(, $x:expr )* ) => {
@@ -116,8 +120,8 @@ macro_rules! output {
 macro_rules! panic {
     ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]",
-                                                                 format!($fmt $(, $x)*), file!(), line!()))).unwrap();
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]",
+                                                                 format!($fmt $(, $x)*), file!(), line!())))).unwrap();
             ::std::panic!($fmt $(, $x)*);
         }
     };
@@ -134,7 +138,7 @@ macro_rules! panic {
 macro_rules! tick {
     ( $channel:ident, $n:literal) => {{
         (&$channel)
-            .send(::xvc_logging::XvcOutputLine::Tick($n))
+            .send(Some(::xvc_logging::XvcOutputLine::Tick($n)))
             .unwrap();
     }};
     ($n:literal) => {{
@@ -153,14 +157,13 @@ macro_rules! uwr {
         match $e {
             Ok(v) => v,
             Err(e) => {
-                watch!(e);
                 (&$channel)
-                    .send(::xvc_logging::XvcOutputLine::Panic(format!(
+                    .send(Some(::xvc_logging::XvcOutputLine::Panic(format!(
                         "{:?}, [{}::{}]",
                         e,
                         file!(),
                         line!()
-                    )))
+                    ))))
                     .unwrap();
                 ::std::panic!("{:?}", e);
             }
@@ -185,7 +188,7 @@ macro_rules! uwo {
                     line!()
                 );
                 (&$channel)
-                    .send(::xvc_logging::XvcOutputLine::Panic(msg.clone()))
+                    .send(Some(::xvc_logging::XvcOutputLine::Panic(msg.clone())))
                     .unwrap();
                 ::std::panic!("{}", msg);
             }
@@ -265,6 +268,9 @@ pub enum XvcOutputLine {
     /// Self::Info is also used for Tick(1)
     Tick(usize),
 }
+
+/// The channel type to send and receive output/log/debug messages
+pub type XvcOutputSender = Sender<Option<XvcOutputLine>>;
 
 impl XvcOutputLine {
     /// print [INFO] `s`

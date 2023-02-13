@@ -94,6 +94,47 @@ where
         }
     }
 
+    /// Returns all events associated with the entity
+    pub fn all_event_log_for_entity(&self, entity: XvcEntity) -> Result<EventLog<T>> {
+        let mut prev_events = Self::filter_event_log_by_entity(&self.previous, entity)?;
+        let mut current_events = Self::filter_event_log_by_entity(&self.current, entity)?;
+        prev_events.append(&mut current_events);
+        Ok(EventLog::from_events(prev_events))
+    }
+
+    /// Returns (loaded) previous events for the entity
+    ///
+    /// Doesn't return events in the current invocation
+    pub fn previous_event_log_for_entity(&self, entity: XvcEntity) -> Result<EventLog<T>> {
+        Ok(EventLog::from_events(Self::filter_event_log_by_entity(
+            &self.previous,
+            entity,
+        )?))
+    }
+
+    fn filter_event_log_by_entity(event_log: &EventLog<T>, xe: XvcEntity) -> Result<Vec<Event<T>>> {
+        let events = event_log
+            .iter()
+            .filter_map(|e| match e {
+                event @ Event::Add { entity, .. } => {
+                    if *entity == xe {
+                        Some(event.clone())
+                    } else {
+                        None
+                    }
+                }
+                event @ Event::Remove { entity } => {
+                    if *entity == xe {
+                        Some(event.clone())
+                    } else {
+                        None
+                    }
+                }
+            })
+            .collect();
+        Ok(events)
+    }
+
     /// Inserts an entity into the current event log, the map and the index.
     ///
     /// Note that this shouldn't be used in store conversions (from [crate::VStore] or

@@ -25,11 +25,10 @@ pub use event::{
 
 pub use local::XvcLocalStorage;
 
-use crossbeam_channel::Sender;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{panic, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
@@ -136,34 +135,30 @@ impl Display for XvcStorage {
 pub trait XvcStorageOperations {
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)>
     where
         Self: Sized;
 
-    fn list(
-        &self,
-        output: &Sender<XvcOutputLine>,
-        xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageListEvent>;
+    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent>;
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<XvcStorageSendEvent>;
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)>;
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent>;
@@ -172,7 +167,7 @@ pub trait XvcStorageOperations {
 impl XvcStorageOperations for XvcStorage {
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
     ) -> Result<(XvcStorageInitEvent, Self)> {
         match self {
@@ -221,11 +216,7 @@ impl XvcStorageOperations for XvcStorage {
         }
     }
 
-    fn list(
-        &self,
-        output: &Sender<XvcOutputLine>,
-        xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageListEvent> {
+    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         match self {
             XvcStorage::Local(lr) => lr.list(output, xvc_root),
             XvcStorage::Generic(gr) => gr.list(output, xvc_root),
@@ -247,7 +238,7 @@ impl XvcStorageOperations for XvcStorage {
 
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -273,7 +264,7 @@ impl XvcStorageOperations for XvcStorage {
 
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         force: bool,
@@ -300,7 +291,7 @@ impl XvcStorageOperations for XvcStorage {
 
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
@@ -346,7 +337,9 @@ impl XvcStorageTempDir {
     }
 }
 
-#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
+/// The storage path relative to `$STORAGE_ROOT/$REPO_GUID/`.
+/// It uses [RelativePathBuf] internally.
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize, Display)]
 pub struct XvcStoragePath(RelativePathBuf);
 persist!(XvcStoragePath, "remote-path");
 
@@ -379,15 +372,21 @@ impl XvcStoragePath {
         Self(rel_path)
     }
 
+    /// String representation of the internal [RelativePathBuf]
     pub fn as_str(&self) -> &str {
         self.0.as_str()
     }
 }
 
+/// A unique identifier for (remote) storages.
+/// These can be used in commands to identify the storages.
+/// Uses [Uuid] internally.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize, Display)]
 pub struct XvcStorageGuid(Uuid);
 
 impl XvcStorageGuid {
+    /// Create a new storage guid to be stored in [XvcStore<XvcStorage>] and storage's [XVC_STORAGE_GUID_FILENAME]
+    /// Used to identify a storage uniquely
     pub fn new() -> Self {
         let guid = uuid::Uuid::new_v4();
         Self(guid)
@@ -408,10 +407,12 @@ impl From<Uuid> for XvcStorageGuid {
     }
 }
 
+/// Contains the filename that the storage GUID is store in storage root
 pub const XVC_STORAGE_GUID_FILENAME: &str = ".xvc-guid";
 
+/// Retrieve [XvcStorage] from [StorageIdentifier] by trying to match the name first and if not found, guid.
 pub fn get_storage_record(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     identifier: &StorageIdentifier,
 ) -> Result<XvcStorage> {
@@ -454,19 +455,9 @@ pub fn get_storage_record(
     });
 
     if remote_store.is_empty() {
-        output_snd
-            .send(XvcOutputLine::Panic(format!(
-                "Cannot find remote {}",
-                identifier
-            )))
-            .unwrap();
+        panic!(output_snd, "Cannot find remote {}", identifier);
     } else if remote_store.len() > 1 {
-        output_snd
-            .send(XvcOutputLine::Panic(format!(
-                "Ambigious remote identifier: {}",
-                identifier
-            )))
-            .unwrap();
+        panic!(output_snd, "Ambigious remote identifier: {}", identifier);
     }
 
     let (_, remote) =

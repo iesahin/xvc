@@ -5,10 +5,40 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+## 0.5.2 (2023-02-13)
+
 - Refactor "cache type" to "recheck method" in all code and documentation
   - Issue: <https://github.com/iesahin/xvc/issues/203>
   - Renamed `CacheType` to `RecheckMethod`
   - Revised documentation for recheck methods
+- Add `xvc file untrack` command.
+  - Issue: <https://github.com/iesahin/xvc/issues/113>
+  - Write the reference page: book/src/ref/xvc-file-untrack.md
+    - I believe there must be two separate commands: `xvc file untrack` and `xvc file remove`. The former is to remove the file from Xvc tracking, and the latter is to remove the file from the workspace, cache, or storages. There are valid use cases to remove the file from cache without untracking it, and vice versa.
+    - There will also be a `xvc file versions` command to list the versions of a file and restore them to a directory.
+    - I think it's better to implement remove and untrack commands in one go.
+    - Added `join` to AbsolutePath.
+      - Assert the parameter is not absolute.
+        - Caused error in xvc init: Fixed ✅
+        - Caused error in updating gitignores: Fixed ✅
+    - Error in recheck for existing paths: Fixed ✅
+    - XvcCachePath returns a partial path for reporting
+    - Change all PathBuf elements in XvcRoot to AbsolutePath
+    - Sort results of `--restore-versions` by entity id ✅
+    - Delete cache files
+    - Remove empty directories after untracking ✅
+  - Update book/src/start/from-dvc.md for `xvc file untrack` ✅
+- Restructure output channel to send/receive `Option<XvcOutputLine>` instead of `XvcOutputLine`
+  - Refactor all commands to use the new output channel ✅
+- Add `xvc file remove` command
+  - Add RemoveCLI and the command dispatcher ✅
+  - Implemented remove for local cache
+    - Implement `--all-versions`
+    - Implement `--only-version`
+  - Implement `--from-remote`
+  - Implement `XvcStorageOperations::delete` for all storage types
+- Update `xvc-test-helper generate-random-file` and `create-directory-tree` to receive random seed
+- Update `xvc storage new local` ref page to include examples
 
 ## 0.5.1 (2023-01-28)
 
@@ -70,8 +100,8 @@ tree, and subtasks are marked with indentation.
     - Now builds the binary before running the doc tests. ✅
 - Write pipelines code documentation <https://github.com/iesahin/xvc/issues/88>
 - Add `xvc file copy` command
-  - Issue: https://github.com/iesahin/xvc/issues/179
-  - PR: https://github.com/iesahin/xvc/issues/206
+  - Issue: <https://github.com/iesahin/xvc/issues/179>
+  - PR: <https://github.com/iesahin/xvc/issues/206>
   - Create the user interface
     - Add `copy` to `XvcFileCLI`
     - Created CopyCLI
@@ -100,18 +130,16 @@ tree, and subtasks are marked with indentation.
               directories that may contain non-tracked files❓
             - While creating files and parent directories we can update gitignores
               in the parent directories.
-               - If a directory is not already ignored in creation, we can
-                 create a gitignore with a single line `*` to ignore all files.
-               - After all files are rechecked, we can check whether they are
-                 not ignored by Git, and update necessary gitignores.
+              - If a directory is not already ignored in creation, we can create a gitignore with a single line `*` to ignore all files.
+              - After all files are rechecked, we can check whether they are not ignored by Git, and update necessary gitignores.
         - Create an IgnoreWriter system with crossbeam_channels
-          - The channel will send/receive Option<IgnoreOperation> messages.
+          - The channel will send/receive `Option<IgnoreOperation>` messages.
           - If it receives a None message, it will stop and the collected
             dir/files will be written to ignore files.
           - This pattern can be used for all operations.
       - Split targets_from_store to receive a store struct to filter. ✅
         - This is to prevent unnecessary reload in copy.
-      - Convert former XvcRoot type to XvcRootInner and XvcRoot to Arc<XvcRootInner>
+      - Convert former XvcRoot type to XvcRootInner and XvcRoot to `Arc<XvcRootInner>`
         - This is to pass the object to threads easily.
   - Updated default format string for `xvc file list`
     - Moved `name` block to the end of the format string ✅

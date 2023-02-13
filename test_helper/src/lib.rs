@@ -5,12 +5,14 @@
 #![forbid(unsafe_code)]
 use log::LevelFilter;
 use rand::distributions::Alphanumeric;
+use rand::rngs::{StdRng, ThreadRng};
 use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
 use std::cmp;
 use std::env;
 use std::fs::OpenOptions;
+use std::thread::Thread;
 use std::{
     fs::{self, File},
     process::Command,
@@ -115,7 +117,7 @@ pub fn temp_git_dir() -> PathBuf {
 }
 
 /// Generate a random binary file
-pub fn generate_random_file(filename: &Path, size: usize) {
+pub fn generate_random_file(filename: &Path, size: usize, seed: Option<u64>) {
     let f = OpenOptions::new()
         .create(true)
         .write(true)
@@ -123,7 +125,9 @@ pub fn generate_random_file(filename: &Path, size: usize) {
         .unwrap();
     let mut writer = BufWriter::new(f);
 
-    let mut rng = rand::thread_rng();
+    let mut rng: StdRng = seed
+        .map(|state| StdRng::seed_from_u64(state))
+        .unwrap_or_else(|| StdRng::from_entropy());
     let mut buffer = [0u8; 1024];
     let mut remaining_size = size;
 
@@ -173,7 +177,7 @@ pub fn create_directory_tree(
     root: &Path,
     n_dirs: usize,
     n_files_per_dir: usize,
-    fill_value: Option<u8>,
+    seed: Option<u64>,
 ) -> Result<Vec<PathBuf>> {
     let mut paths = Vec::<PathBuf>::with_capacity(n_dirs * n_files_per_dir);
     let dirs: Vec<String> = (1..=n_dirs).map(|i| format!("dir-{:04}", i)).collect();
@@ -184,10 +188,7 @@ pub fn create_directory_tree(
         std::fs::create_dir_all(root.join(Path::new(&dir)))?;
         paths.extend(files.iter().map(|(name, size)| {
             let filename = PathBuf::from(&format!("{}/{}/{}", root.to_string_lossy(), dir, name));
-            match fill_value {
-                Some(byte) => generate_filled_file(&filename, *size, byte),
-                None => generate_random_file(&filename, *size),
-            }
+            generate_random_file(&filename, *size, seed);
             filename
         }));
     }

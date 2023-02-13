@@ -11,51 +11,46 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 Arguments:
   [TARGETS]...
           Files/directories to list.
-
+          
           If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
           A string for each row of the output table
-
+          
           The following are the keys for each row:
-
+          
           - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
-
           - {{acd64}}:  actual content digest. All 64 digits.
-
-          - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D), symlink (S), hardlink (H) or reflink (R).
-
-          - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB, GB and TB to represent sizes larger than 1MB.
-
+          - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
+            symlink (S), hardlink (H) or reflink (R).
+          - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB,
+            GB and TB to represent sizes larger than 1MB.
           - {{ats}}:  actual timestamp. The timestamp of the workspace file.
-
           - {{name}}: The name of the file or directory.
-
-          - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show whether the file timestamp is the same as the cached timestamp, newer, older, not cached or not tracked.
-
+          - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
+            whether the file timestamp is the same as the cached timestamp, newer,
+            older, not cached or not tracked.
           - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
-
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
-
-          - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace as a copy (C), symlink (S), hardlink (H) or reflink (R).
-
-          - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses MB, GB and TB to represent sizes larged than 1MB.
-
+          - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
+            as a copy (C), symlink (S), hardlink (H) or reflink (R).
+          - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
+            MB, GB and TB to represent sizes larged than 1MB.
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-
+          
           The default format can be set with file.list.format in the config file.
 
   -s, --sort <SORT>
           Sort criteria.
-
+          
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-
+          
           The default option can be set with file.list.sort in the config file.
 
       --no-summary
           Don't show total number and size of the listed files.
-
+          
           The default option can be set with file.list.no_summary in the config file.
 
   -h, --help
@@ -69,7 +64,7 @@ For these examples, we'll create a directory tree with five directories, each
 having a file.
 
 ```console
-$ xvc-test-helper create-directory-tree --directories 5 --files 5 --fill 23
+$ xvc-test-helper create-directory-tree --directories 5 --files 5 --seed 20230213
 
 $ tree
 .
@@ -109,10 +104,12 @@ $ tree
 ```
 
 `xvc file list` command works only in Xvc repositories. As we didn't initialize
-a repository yet, it lists nothing.
+a repository yet, it reports an error.
 
 ```console
 $ xvc file list
+[ERROR] File Error: [E2004] Requires xvc repository.
+
 ```
 
 Let's initialize the repository.
@@ -127,41 +124,40 @@ $ xvc init
 
 Now it lists all files and directories.
 
-
 ```console
 $ xvc file list --sort name-asc
 FX         107 [..]          ce9fcf30 .gitignore
 FX         130 [..]          ac46bf74 .xvcignore
 DX         224 [..]                   dir-0001
-FX        1001 [..]          189fa49f dir-0001/file-0001.bin
-FX        1002 [..]          8c079454 dir-0001/file-0002.bin
-FX        1003 [..]          2856fe70 dir-0001/file-0003.bin
-FX        1004 [..]          3640687a dir-0001/file-0004.bin
-FX        1005 [..]          e23e79a0 dir-0001/file-0005.bin
+FX        1001 [..]          3ba625b7 dir-0001/file-0001.bin
+FX        1002 [..]          4578c0bf dir-0001/file-0002.bin
+FX        1003 [..]          78a2a461 dir-0001/file-0003.bin
+FX        1004 [..]          742a78f2 dir-0001/file-0004.bin
+FX        1005 [..]          8cb7d894 dir-0001/file-0005.bin
 DX         224 [..]                   dir-0002
-FX        1001 [..]          189fa49f dir-0002/file-0001.bin
-FX        1002 [..]          8c079454 dir-0002/file-0002.bin
-FX        1003 [..]          2856fe70 dir-0002/file-0003.bin
-FX        1004 [..]          3640687a dir-0002/file-0004.bin
-FX        1005 [..]          e23e79a0 dir-0002/file-0005.bin
+FX        1001 [..]          3ba625b7 dir-0002/file-0001.bin
+FX        1002 [..]          4578c0bf dir-0002/file-0002.bin
+FX        1003 [..]          78a2a461 dir-0002/file-0003.bin
+FX        1004 [..]          742a78f2 dir-0002/file-0004.bin
+FX        1005 [..]          8cb7d894 dir-0002/file-0005.bin
 DX         224 [..]                   dir-0003
-FX        1001 [..]          189fa49f dir-0003/file-0001.bin
-FX        1002 [..]          8c079454 dir-0003/file-0002.bin
-FX        1003 [..]          2856fe70 dir-0003/file-0003.bin
-FX        1004 [..]          3640687a dir-0003/file-0004.bin
-FX        1005 [..]          e23e79a0 dir-0003/file-0005.bin
+FX        1001 [..]          3ba625b7 dir-0003/file-0001.bin
+FX        1002 [..]          4578c0bf dir-0003/file-0002.bin
+FX        1003 [..]          78a2a461 dir-0003/file-0003.bin
+FX        1004 [..]          742a78f2 dir-0003/file-0004.bin
+FX        1005 [..]          8cb7d894 dir-0003/file-0005.bin
 DX         224 [..]                   dir-0004
-FX        1001 [..]          189fa49f dir-0004/file-0001.bin
-FX        1002 [..]          8c079454 dir-0004/file-0002.bin
-FX        1003 [..]          2856fe70 dir-0004/file-0003.bin
-FX        1004 [..]          3640687a dir-0004/file-0004.bin
-FX        1005 [..]          e23e79a0 dir-0004/file-0005.bin
+FX        1001 [..]          3ba625b7 dir-0004/file-0001.bin
+FX        1002 [..]          4578c0bf dir-0004/file-0002.bin
+FX        1003 [..]          78a2a461 dir-0004/file-0003.bin
+FX        1004 [..]          742a78f2 dir-0004/file-0004.bin
+FX        1005 [..]          8cb7d894 dir-0004/file-0005.bin
 DX         224 [..]                   dir-0005
-FX        1001 [..]          189fa49f dir-0005/file-0001.bin
-FX        1002 [..]          8c079454 dir-0005/file-0002.bin
-FX        1003 [..]          2856fe70 dir-0005/file-0003.bin
-FX        1004 [..]          3640687a dir-0005/file-0004.bin
-FX        1005 [..]          e23e79a0 dir-0005/file-0005.bin
+FX        1001 [..]          3ba625b7 dir-0005/file-0001.bin
+FX        1002 [..]          4578c0bf dir-0005/file-0002.bin
+FX        1003 [..]          78a2a461 dir-0005/file-0003.bin
+FX        1004 [..]          742a78f2 dir-0005/file-0004.bin
+FX        1005 [..]          8cb7d894 dir-0005/file-0005.bin
 Total #: 32 Workspace Size:       26432 Cached Size:           0
 
 
@@ -180,11 +176,11 @@ directories are considered as collection of files.
 $ xvc file track dir-0001/
 
 $ xvc file list dir-0001/
-FC        1005 [..] e23e79a0 e23e79a0 dir-0001/file-0005.bin
-FC        1004 [..] 3640687a 3640687a dir-0001/file-0004.bin
-FC        1003 [..] 2856fe70 2856fe70 dir-0001/file-0003.bin
-FC        1002 [..] 8c079454 8c079454 dir-0001/file-0002.bin
-FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
+FC        1005 [..] 8cb7d894 8cb7d894 dir-0001/file-0005.bin
+FC        1004 [..] 742a78f2 742a78f2 dir-0001/file-0004.bin
+FC        1003 [..] 78a2a461 78a2a461 dir-0001/file-0003.bin
+FC        1002 [..] 4578c0bf 4578c0bf dir-0001/file-0002.bin
+FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
@@ -197,11 +193,11 @@ print the second letter as `H`.
 $ xvc file track dir-0002 --recheck-method hardlink
 
 $ xvc file list dir-0002
-FH        1005 [..] e23e79a0 e23e79a0 dir-0002/file-0005.bin
-FH        1004 [..] 3640687a 3640687a dir-0002/file-0004.bin
-FH        1003 [..] 2856fe70 2856fe70 dir-0002/file-0003.bin
-FH        1002 [..] 8c079454 8c079454 dir-0002/file-0002.bin
-FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
+FH        1005 [..] 8cb7d894 8cb7d894 dir-0002/file-0005.bin
+FH        1004 [..] 742a78f2 742a78f2 dir-0002/file-0004.bin
+FH        1003 [..] 78a2a461 78a2a461 dir-0002/file-0003.bin
+FH        1002 [..] 4578c0bf 4578c0bf dir-0002/file-0002.bin
+FH        1001 [..] 3ba625b7 3ba625b7 dir-0002/file-0001.bin
 Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
@@ -218,11 +214,11 @@ symbolic links.
 $ xvc file track dir-0003 --recheck-method symlink
 
 $ xvc file list dir-0003
-SS        [..] [..] e23e79a0          dir-0003/file-0005.bin
-SS        [..] [..] 3640687a          dir-0003/file-0004.bin
-SS        [..] [..] 2856fe70          dir-0003/file-0003.bin
-SS        [..] [..] 8c079454          dir-0003/file-0002.bin
-SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
+SS         [..] [..] 8cb7d894          dir-0003/file-0005.bin
+SS         [..] [..] 742a78f2          dir-0003/file-0004.bin
+SS         [..] [..] 78a2a461          dir-0003/file-0003.bin
+SS         [..] [..] 4578c0bf          dir-0003/file-0002.bin
+SS         [..] [..] 3ba625b7          dir-0003/file-0001.bin
 Total #: 5 Workspace Size:         [..] Cached Size:        5015
 
 
@@ -236,11 +232,11 @@ You may use globs to list files.
 
 ```console
 $ xvc file list 'dir-*/*-0001.bin'
-FX        1001 [..]          189fa49f dir-0005/file-0001.bin
-FX        1001 [..]          189fa49f dir-0004/file-0001.bin
-SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
-FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
-FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
+FX        1001 [..]          3ba625b7 dir-0005/file-0001.bin
+FX        1001 [..]          3ba625b7 dir-0004/file-0001.bin
+SS        [..] [..] 3ba625b7          dir-0003/file-0001.bin
+FH        1001 [..] 3ba625b7 3ba625b7 dir-0002/file-0001.bin
+FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        [..] Cached Size:        1001
 
 
@@ -253,16 +249,16 @@ You can also use multiple targets as globs.
 
 ```console
 $ xvc file list '*/*-0001.bin' '*/*-0002.bin'
-FX        1002 [..]          8c079454 dir-0005/file-0002.bin
-FX        1001 [..]          189fa49f dir-0005/file-0001.bin
-FX        1002 [..]          8c079454 dir-0004/file-0002.bin
-FX        1001 [..]          189fa49f dir-0004/file-0001.bin
-SS        [..] [..] 8c079454          dir-0003/file-0002.bin
-SS        [..] [..] 189fa49f          dir-0003/file-0001.bin
-FH        1002 [..] 8c079454 8c079454 dir-0002/file-0002.bin
-FH        1001 [..] 189fa49f 189fa49f dir-0002/file-0001.bin
-FC        1002 [..] 8c079454 8c079454 dir-0001/file-0002.bin
-FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
+FX        1002 [..]          4578c0bf dir-0005/file-0002.bin
+FX        1001 [..]          3ba625b7 dir-0005/file-0001.bin
+FX        1002 [..]          4578c0bf dir-0004/file-0002.bin
+FX        1001 [..]          3ba625b7 dir-0004/file-0001.bin
+SS        [..] [..] 4578c0bf          dir-0003/file-0002.bin
+SS        [..] [..] 3ba625b7          dir-0003/file-0001.bin
+FH        1002 [..] 4578c0bf 4578c0bf dir-0002/file-0002.bin
+FH        1001 [..] 3ba625b7 3ba625b7 dir-0002/file-0001.bin
+FC        1002 [..] 4578c0bf 4578c0bf dir-0001/file-0002.bin
+FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
 Total #: 10 Workspace Size:        [..] Cached Size:        2003
 
 
@@ -277,11 +273,11 @@ Use `--sort` option to specify the sort criteria.
 
 ```console
 $ xvc file list --sort name-desc dir-0001/
-FC        1005 [..] e23e79a0 e23e79a0 dir-0001/file-0005.bin
-FC        1004 [..] 3640687a 3640687a dir-0001/file-0004.bin
-FC        1003 [..] 2856fe70 2856fe70 dir-0001/file-0003.bin
-FC        1002 [..] 8c079454 8c079454 dir-0001/file-0002.bin
-FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
+FC        1005 [..] 8cb7d894 8cb7d894 dir-0001/file-0005.bin
+FC        1004 [..] 742a78f2 742a78f2 dir-0001/file-0004.bin
+FC        1003 [..] 78a2a461 78a2a461 dir-0001/file-0003.bin
+FC        1002 [..] 4578c0bf 4578c0bf dir-0001/file-0002.bin
+FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
@@ -289,12 +285,12 @@ Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 ```console
 $ xvc file list --sort name-asc dir-0001/
-FC        1001 [..] 189fa49f 189fa49f dir-0001/file-0001.bin
-FC        1002 [..] 8c079454 8c079454 dir-0001/file-0002.bin
-FC        1003 [..] 2856fe70 2856fe70 dir-0001/file-0003.bin
-FC        1004 [..] 3640687a 3640687a dir-0001/file-0004.bin
-FC        1005 [..] e23e79a0 e23e79a0 dir-0001/file-0005.bin
-Total #: 5 Workspace Size:        5015 Cached Size:        5015
+FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
+FC        1002 [..] 4578c0bf 4578c0bf dir-0001/file-0002.bin
+FC        1003 [..] 78a2a461 78a2a461 dir-0001/file-0003.bin
+FC        1004 [..] 742a78f2 742a78f2 dir-0001/file-0004.bin
+FC        1005 [..] 8cb7d894 8cb7d894 dir-0001/file-0005.bin
+Total #: 5 Workspace Size:        [..] Cached Size:        5015
 
 
 ```
@@ -316,7 +312,7 @@ $ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0001/
        1003 dir-0001/file-0003.bin
        1002 dir-0001/file-0002.bin
        1001 dir-0001/file-0001.bin
-Total #: 5 Workspace Size:        5015 Cached Size:        5015
+Total #: 5 Workspace Size:        [..] Cached Size:        5015
 
 
 ```
@@ -325,11 +321,11 @@ If you want to compare the recorded (cached) hashes and actual hashes in the wor
 
 ```console
 $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
-189fa49f 189fa49f dir-0001/file-0001.bin
-8c079454 8c079454 dir-0001/file-0002.bin
-2856fe70 2856fe70 dir-0001/file-0003.bin
-3640687a 3640687a dir-0001/file-0004.bin
-e23e79a0 e23e79a0 dir-0001/file-0005.bin
+3ba625b7 3ba625b7 dir-0001/file-0001.bin
+4578c0bf 4578c0bf dir-0001/file-0002.bin
+78a2a461 78a2a461 dir-0001/file-0003.bin
+742a78f2 742a78f2 dir-0001/file-0004.bin
+8cb7d894 8cb7d894 dir-0001/file-0005.bin
 Total #: 5 Workspace Size:        5015 Cached Size:        5015
 
 
@@ -343,7 +339,7 @@ If you want to get a quick glimpse of what needs to carried in, or rechecked,
 you can use cache status `{{cst}}` column.
 
 ```console
-$ xvc-test-helper generate-random-file --size 100 --filename dir-0001/a-new-file.bin
+$ xvc-test-helper generate-random-file --size 100 dir-0001/a-new-file.bin
 
 $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0005.bin
@@ -352,7 +348,7 @@ $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0002.bin
 = dir-0001/file-0001.bin
 X dir-0001/a-new-file.bin
-Total #: 6 Workspace Size:        5115 Cached Size:        5015
+Total #: 6 Workspace Size:        [..] Cached Size:        5015
 
 
 ```

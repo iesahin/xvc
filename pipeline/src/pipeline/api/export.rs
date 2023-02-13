@@ -1,5 +1,5 @@
 use crate::error::{Error, Result};
-use crossbeam_channel::Sender;
+
 use itertools::Itertools;
 use std::{fs, path::PathBuf};
 use xvc_config::FromConfigKey;
@@ -8,7 +8,7 @@ use xvc_core::{
     XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{output, XvcOutputSender};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},
@@ -23,7 +23,7 @@ use crate::{
 /// If `name` is None, uses the default pipeline name from the config.
 /// If `format` is None, uses the default format from [XvcSchemaSerializationFormat::default()]
 pub fn cmd_export(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: Option<String>,
     file: Option<PathBuf>,
@@ -124,7 +124,7 @@ pub fn cmd_export(
         Some(format) => format,
     };
 
-    let output = match output_format {
+    let export_output = match output_format {
         XvcSchemaSerializationFormat::Json => {
             let value = to_json(&pipeline_schema)?;
             serde_json::to_string_pretty(&value)?
@@ -132,7 +132,10 @@ pub fn cmd_export(
         XvcSchemaSerializationFormat::Yaml => to_yaml(&pipeline_schema)?,
     };
     match file {
-        Some(path) => fs::write(path, output).map_err(|e| e.into()),
-        None => Ok(output_snd.send(format!("{}", output).into()).unwrap()),
+        Some(path) => fs::write(path, export_output).map_err(|e| e.into()),
+        None => {
+            output!(output_snd, "{}", export_output);
+            Ok(())
+        }
     }
 }

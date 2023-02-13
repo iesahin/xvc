@@ -9,7 +9,7 @@ use crate::Result;
 use anyhow::anyhow;
 use chrono;
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
@@ -23,7 +23,7 @@ use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::XvcEntity;
-use xvc_logging::{error, output, watch, XvcOutputLine};
+use xvc_logging::{error, output, watch, XvcOutputSender};
 
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
 enum ListColumn {
@@ -447,37 +447,26 @@ pub struct ListCLI {
     /// The following are the keys for each row:
     ///
     /// - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
-    ///
     /// - {{acd64}}:  actual content digest. All 64 digits.
-    ///
     /// - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
     ///   symlink (S), hardlink (H) or reflink (R).
-    ///
     /// - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB,
     ///   GB and TB to represent sizes larger than 1MB.
-    ///
     /// - {{ats}}:  actual timestamp. The timestamp of the workspace file.
-    ///
     /// - {{name}}: The name of the file or directory.
-    ///
     /// - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
     ///   whether the file timestamp is the same as the cached timestamp, newer,
     ///   older, not cached or not tracked.
-    ///
     /// - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
-    ///
     /// - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
-    ///
     /// - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
     ///   as a copy (C), symlink (S), hardlink (H) or reflink (R).
-    ///
     /// - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
     ///   MB, GB and TB to represent sizes larged than 1MB.
-    ///
     /// - {{rts}}:  recorded timestamp. The timestamp of the cached content.
     ///
     /// The default format can be set with file.list.format in the config file.
-    #[arg(long, short = 'f')]
+    #[arg(long, short = 'f', verbatim_doc_comment)]
     format: Option<ListFormat>,
     /// Sort criteria.
     ///
@@ -536,11 +525,7 @@ impl UpdateFromXvcConfig for ListCLI {
 /// - <: File is newer, xvc carry-in to update the cache
 /// TODO: - I: File is ignored
 
-pub fn cmd_list(
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    cli_opts: ListCLI,
-) -> Result<()> {
+pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
 

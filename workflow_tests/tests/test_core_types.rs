@@ -2,8 +2,6 @@ mod common;
 use common::*;
 
 use proptest::prelude::*;
-use xvc_core::XvcPath;
-use xvc_walker::AbsolutePath;
 
 use std::path::Path;
 use std::thread::sleep;
@@ -24,7 +22,7 @@ fn test_xvc_file_metadata(filesize in 0..100000u64, filestr in "file-[0-9][0-9][
     let dir = common::run_in_temp_dir();
 
     let filename = Path::new(&filestr);
-    common::generate_random_file(&filename, filesize as usize);
+    common::generate_random_file(&filename, filesize as usize, None);
     // Wait the file to be written, the test fails sometimes for this
     sleep(Duration::from_millis(10));
     let file_md = filename.metadata()?;

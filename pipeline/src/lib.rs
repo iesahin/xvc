@@ -16,7 +16,7 @@ pub use crate::pipeline::api::{
 
 use clap::Parser;
 
-use crossbeam_channel::Sender;
+
 use pipeline::api::step_dependency::XvcDependencyList;
 use pipeline::deps;
 use pipeline::schema::XvcSchemaSerializationFormat;
@@ -27,7 +27,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_ecs::XvcStore;
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{XvcOutputSender};
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;
@@ -165,7 +165,7 @@ pub enum PipelineSubCommand {
 
         /// Input format. One of json or yaml. If not set, the format is
         /// guessed from the file extension. If the file extension is not set,
-        /// json is used as default.        
+        /// json is used as default.
         #[arg(long)]
         format: Option<XvcSchemaSerializationFormat>,
 
@@ -391,7 +391,7 @@ pub fn init(xvc_root: &XvcRoot) -> Result<()> {
 /// It dispatches to the subcommands using [PipelineCLI] argument.
 pub fn cmd_pipeline<R: BufRead>(
     input: R,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     command: PipelineCLI,
 ) -> Result<()> {
@@ -441,7 +441,7 @@ pub fn cmd_pipeline<R: BufRead>(
 
 /// Dispatch `xvc pipeline step` subcommands.
 pub fn handle_step_cli(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     pipeline_name: &str,
     command: StepCLI,

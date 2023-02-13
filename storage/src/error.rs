@@ -108,31 +108,39 @@ where
         }
     }
 }
-//
+
 impl Error {
+    /// Write error message to stderr using [log::debug] and return the error
     pub fn debug(self) -> Self {
         debug!("{}", self);
         self
     }
+    /// Write error message to stderr using [log::trace] and return the error
     pub fn trace(self) -> Self {
         trace!("{}", self);
         self
     }
+
+    /// Write error message to stderr using [log::warn] and return the error
     pub fn warn(self) -> Self {
         warn!("{}", self);
         self
     }
+    /// Write error message to stderr using [log::error] and return the error
     pub fn error(self) -> Self {
         error!("{}", self);
         self
     }
+    /// Write error message to stderr using [log::info] and return the error
     pub fn info(self) -> Self {
         info!("{}", self);
         self
     }
+    /// Write error message to stderr using [panic!] and quit.
     pub fn panic(self) -> Self {
         panic!("{}", self);
     }
 }
 
+/// Result type for xvc-storage crate
 pub type Result<T> = std::result::Result<T, Error>;

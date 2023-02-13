@@ -22,7 +22,7 @@ use xvc_core::{
     XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, info, uwr, warn, watch, XvcOutputLine};
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 /// Check out file from cache by a copy or link
 ///
@@ -82,7 +82,7 @@ impl UpdateFromXvcConfig for RecheckCLI {
 /// Uses [PathComparisonParams] to get the overview of all elements in the repository.
 /// After getting the list of file targets, runs either [recheck_serial] or [recheck_parallel].
 pub fn cmd_recheck(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     cli_opts: RecheckCLI,
 ) -> Result<()> {
@@ -215,18 +215,29 @@ pub fn cmd_recheck(
     Ok(())
 }
 
+/// Recheck messages to be sent to the channel created by [`make_recheck_handler`].
 pub enum RecheckOperation {
+    /// Recheck message to copy/link path described by `content_digest` to `xvc_path`.
     Recheck {
+        /// The destination of the message.
         xvc_path: XvcPath,
+        /// The content digest of the file to recheck.
         content_digest: ContentDigest,
+        /// The recheck method that defines whether to recheck by copy, hardlink, symlink, reflink.
         recheck_method: RecheckMethod,
     },
 }
 
-type RecheckOp = Option<RecheckOperation>;
+/// The actual messages in channels are `Option<T>` to close the channel by sending `None` when the operation ends.
+pub type RecheckOp = Option<RecheckOperation>;
 
+/// Build a recheck handler in a separate thread and connect it with a channel.
+/// You must build an ignore writer with [`make_ignore_handler`] before building this.
+/// All rechecked files are gitignored using given `ignore_handler`.
+/// Use the returned channel to send [`RecheckOp`] messages to recheck files, then send `None` to the channel to exit
+/// from the loop and join the returned thread.
 pub fn make_recheck_handler(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<(Sender<RecheckOp>, JoinHandle<()>)> {
@@ -264,7 +275,7 @@ pub fn make_recheck_handler(
 }
 
 fn recheck(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     files_to_recheck: &HStore<&XvcPath>,
     recheck_method_store: &XvcStore<RecheckMethod>,

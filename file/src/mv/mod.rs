@@ -1,28 +1,23 @@
+//! The home of `xvc file move` command.
+//!
+//! It contains [`MoveCLI`] to define command line for the command [`cmd_move`] as the entry point.
 use std::fs;
 use std::path::Path;
 
-use crate::common::compare::{
-    diff_content_digest, diff_xvc_path_metadata, make_file_content_digest_diff_handler,
-};
-use crate::common::gitignore::make_ignore_handler;
-use crate::common::{
-    filter_targets_from_store, load_targets_from_store, xvc_path_metadata_map_from_disk,
-    FileTextOrBinary,
-};
 use crate::copy::{
     check_if_destination_is_a_directory, check_if_sources_have_changed, get_source_path_metadata,
     recheck_destination,
 };
-use crate::recheck::{make_recheck_handler, RecheckOperation};
-use crate::{recheck, Result};
+
+use crate::Result;
 use anyhow::anyhow;
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use itertools::Itertools;
 use xvc_config::FromConfigKey;
-use xvc_core::{ContentDigest, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, info, uwr, watch, XvcOutputLine};
+use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
+use xvc_ecs::{HStore, XvcEntity, XvcStore};
+use xvc_logging::{info, uwr, watch, XvcOutputSender};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -59,14 +54,18 @@ pub struct MoveCLI {
     pub destination: String,
 }
 
+/// Return movable [`XvcPath`] entities.
+/// Unlike [`get_copy_source_dest_store`], this function doesn't create any new entities. The move sources should
+/// already be recorded.
+/// `stored_xvc_path_store` and `stored_xvc_metadata_store` are results of `load_targets_from_store`, and
+/// `source_xvc_paths` and `source_xvc_metadata` are loaded from `targets_from_disk`. 
 pub fn get_move_source_dest_store(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
-    stored_metadata_store: &XvcStore<XvcMetadata>,
+    stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
     source_xvc_paths: &HStore<XvcPath>,
-    source_metadata: &HStore<XvcMetadata>,
-    source: &str,
+    source_xvc_metadata: &HStore<XvcMetadata>,
     destination: &str,
 ) -> Result<HStore<XvcPath>> {
     // Create targets in the store
@@ -83,16 +82,16 @@ pub fn get_move_source_dest_store(
         check_if_destination_is_a_directory(
             &dir_path,
             stored_xvc_path_store,
-            stored_metadata_store,
+            stored_xvc_metadata_store,
         )?;
 
         check_if_sources_have_changed(
             output_snd,
             xvc_root,
             stored_xvc_path_store,
-            stored_metadata_store,
+            stored_xvc_metadata_store,
             source_xvc_paths,
-            source_metadata,
+            source_xvc_metadata,
         )?;
 
         let mut source_dest_store = HStore::new();
@@ -103,7 +102,7 @@ pub fn get_move_source_dest_store(
             let dest_path = dir_path.join(source_path).unwrap();
 
             match stored_xvc_path_store.entities_for(&dest_path) {
-                Some(v) => {
+                Some(_v) => {
                     error_paths.push(dest_path);
                 }
                 None => {
@@ -133,9 +132,9 @@ pub fn get_move_source_dest_store(
             output_snd,
             xvc_root,
             stored_xvc_path_store,
-            stored_metadata_store,
+            stored_xvc_metadata_store,
             source_xvc_paths,
-            source_metadata,
+            source_xvc_metadata,
         )?;
 
         let current_dir = xvc_root.config().current_dir()?;
@@ -160,7 +159,7 @@ pub fn get_move_source_dest_store(
 
 /// Entry point for `xvc file move`
 pub(crate) fn cmd_move(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: MoveCLI,
 ) -> Result<()> {
@@ -182,7 +181,6 @@ pub(crate) fn cmd_move(
         &stored_metadata_store,
         &source_xvc_paths,
         &source_metadata,
-        &opts.source,
         &opts.destination,
     )?;
 

@@ -91,6 +91,7 @@ hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.3", features = ["serde"] }
 itertools = "^0.10"
 derive_more = "^0.99"
+parse-size = "^1.0"
 
 
 [dev-dependencies]

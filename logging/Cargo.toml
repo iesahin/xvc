@@ -23,3 +23,5 @@ log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
 fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
 
+crossbeam-channel = "^0.5"
+

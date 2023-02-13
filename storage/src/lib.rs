@@ -9,7 +9,6 @@ use std::str::FromStr;
 pub use crate::error::{Error, Result};
 use clap::{Parser, Subcommand};
 
-use crossbeam_channel::Sender;
 use derive_more::Display;
 pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
@@ -19,7 +18,7 @@ use xvc_ecs;
 use xvc_ecs::XvcStore;
 
 use xvc_core::XvcRoot;
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{output, XvcOutputSender};
 
 /// Storage (on the cloud) management commands
 #[derive(Debug, Parser)]
@@ -310,7 +309,7 @@ impl FromStr for StorageIdentifier {
 /// Other arguments are passed to subcommands.
 pub fn cmd_storage(
     input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: StorageCLI,
 ) -> Result<()> {
@@ -332,7 +331,7 @@ pub fn cmd_storage(
 /// feature flags, that also guard the modules.
 fn cmd_storage_new(
     input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     sc: StorageNewSubCommand,
 ) -> Result<()> {
@@ -349,7 +348,7 @@ fn cmd_storage_new(
             delete_command,
             max_processes,
             url,
-            storage_dir: storage_dir,
+            storage_dir,
         } => storage::generic::cmd_storage_new_generic(
             input,
             output_snd,
@@ -460,15 +459,9 @@ fn cmd_storage_new(
             port,
             user,
             storage_dir,
-        } => storage::rsync::cmd_new_rsync(
-            output_snd,
-            xvc_root,
-            name,
-            host,
-            port,
-            user,
-            storage_dir,
-        ),
+        } => {
+            storage::rsync::cmd_new_rsync(output_snd, xvc_root, name, host, port, user, storage_dir)
+        }
     }
 }
 
@@ -476,10 +469,10 @@ fn cmd_storage_new(
 ///
 /// This doesn't remove the history associated with them.
 fn cmd_storage_remove(
-    input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
-    xvc_root: &XvcRoot,
-    name: String,
+    _input: std::io::StdinLock,
+    _output_snd: &XvcOutputSender,
+    _xvc_root: &XvcRoot,
+    _name: String,
 ) -> Result<()> {
     todo!()
 }
@@ -490,13 +483,13 @@ fn cmd_storage_remove(
 /// `output_snd`.
 fn cmd_storage_list(
     _input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
 ) -> Result<()> {
     let store: XvcStore<XvcStorage> = xvc_root.load_store()?;
 
     for (_, s) in store.iter() {
-        output_snd.send(XvcOutputLine::Output(format!("{}\n", s)))?;
+        output!(output_snd, "{}\n", s);
     }
 
     Ok(())

@@ -3,7 +3,6 @@
 //! The command is used to move (commit) files to Xvc cache.
 //! It is used after [`xvc file track`][crate::track] or separately to update
 //! the cache with changed files.
-use crossbeam_channel::Sender;
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
@@ -16,7 +15,7 @@ use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::ContentDigest;
 use xvc_core::XvcRoot;
 use xvc_core::{Diff, XvcCachePath};
-use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputLine};
+use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputSender};
 
 use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;
@@ -103,7 +102,7 @@ impl UpdateFromXvcConfig for CarryInCLI {
 ///
 
 pub fn cmd_carry_in(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     cli_opts: CarryInCLI,
 ) -> Result<()> {
@@ -210,6 +209,7 @@ pub fn cmd_carry_in(
     )?;
 
     // We only update the records for existing paths.
+    update_store_records(xvc_root, &xvc_metadata_diff, false, false)?;
     update_store_records(xvc_root, &text_or_binary_diff, false, false)?;
     update_store_records(xvc_root, &content_digest_diff, false, false)?;
 
@@ -220,7 +220,7 @@ pub fn cmd_carry_in(
 /// Returns the store of carried in elements. These should be rechecked to the
 /// remote.
 pub fn carry_in(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     xvc_paths_to_carry: &HStore<XvcPath>,
     cache_paths: &HStore<XvcCachePath>,

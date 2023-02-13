@@ -13,7 +13,7 @@ use thiserror::Error as ThisError;
 pub enum Error {
     #[error("Sorry. {0} is not implemented yet")]
     Todo(&'static str),
-    #[error("General Xvc File Error. {source}")]
+    #[error("{source}")]
     AnyhowError {
         #[from]
         source: anyhow::Error,

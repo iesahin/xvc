@@ -5,20 +5,19 @@
 //! - [`update_file_gitignores`] and [`update_dir_gitignores`] are functions to
 //!   update `.gitignore` files with the tracked paths.
 //! - [`carry_in`] is a specialized carry in function for `xvc file track`.
-use chrono::Utc;
-use crossbeam_channel::Sender;
+
+
 use derive_more::From;
 
-use std::collections::{HashMap, HashSet};
-use std::io::Write;
+use std::collections::{HashSet};
+
 
 use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
 use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
-use xvc_logging::{error, info, watch, XvcOutputLine};
-use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
+use xvc_logging::{watch, XvcOutputSender};
 
 use crate::carry_in::carry_in;
 use crate::common::compare::{
@@ -28,7 +27,7 @@ use crate::common::gitignore::{update_dir_gitignores, update_file_gitignores};
 use crate::common::{targets_from_disk, update_store_records, FileTextOrBinary};
 use crate::error::Result;
 
-use std::fs::OpenOptions;
+
 
 use clap::Parser;
 use std::path::PathBuf;
@@ -44,7 +43,7 @@ pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long)]
+    #[arg(long, alias = "as")]
     recheck_method: Option<RecheckMethod>,
 
     /// Do not copy/link added files to the file cache
@@ -115,7 +114,7 @@ impl UpdateFromXvcConfig for TrackCLI {
 ///     RecheckMethod --> |Reflink| Reflink
 /// ```
 pub fn cmd_track(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     cli_opts: TrackCLI,
 ) -> Result<()> {
@@ -195,11 +194,11 @@ pub fn cmd_track(
     update_store_records(xvc_root, &content_digest_diff, true, false)?;
 
     watch!(targets);
-    let file_targets: Vec<PathBuf> = targets
+    let file_targets: Vec<XvcPath> = targets
         .iter()
         .filter_map(|(xp, xmd)| {
             if xmd.file_type == XvcFileType::File {
-                Some(xp.to_absolute_path(xvc_root).to_path_buf())
+                Some(xp.clone())
             } else {
                 None
             }
@@ -208,14 +207,14 @@ pub fn cmd_track(
 
     // Warning: This one uses `opts.targets` instead of `targets` because
     // `targets` has been filtered to only include files.
-    let dir_targets: Vec<PathBuf> = opts
+    let dir_targets: Vec<XvcPath> = opts
         .targets
         .unwrap_or_else(|| vec![current_dir.to_string()])
         .iter()
         .filter_map(|t| {
             let p = PathBuf::from(t);
             if p.is_dir() {
-                Some(p)
+                XvcPath::new(xvc_root, current_dir, &p).ok()
             } else {
                 None
             }
@@ -227,10 +226,10 @@ pub fn cmd_track(
     watch!(file_targets);
     watch!(dir_targets);
 
-    update_dir_gitignores(xvc_root, current_dir, &current_gitignore, &dir_targets)?;
+    update_dir_gitignores(xvc_root, &current_gitignore, &dir_targets)?;
     // We reload gitignores here to make sure we ignore the given dirs
     let current_gitignore = build_gitignore(xvc_root)?;
-    update_file_gitignores(xvc_root, current_dir, &current_gitignore, &file_targets)?;
+    update_file_gitignores(xvc_root, &current_gitignore, &file_targets)?;
 
     if !opts.no_commit {
         let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;

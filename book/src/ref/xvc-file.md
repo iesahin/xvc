@@ -19,6 +19,8 @@ Commands:
   list      List tracked and untracked elements in the workspace
   send      Send (push, upload) files to external storages
   bring     Bring (download, pull, fetch) files from external storages
+  remove    Remove files from Xvc and possibly storages
+  untrack   Untrack (delete) files from Xvc and possibly storages
   help      Print this message or the help of the given subcommand(s)
 
 Options:
@@ -51,3 +53,5 @@ Options:
 - ) files to storage
 - [`bring`](./xvc-file-bring.md): Bring (pull) files from storage
 - [`hash`](./xvc-file-hash.md): Calculate hashes with supported algorithms similar to sha256sum, blake2sum, etc.
+- [`remove`](./xvc-file-remove.md): Remove files from Xvc cache or storages
+- [`untrack`](./xvc-file-untrack.md): Untrack (delete) files from Xvc

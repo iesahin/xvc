@@ -2,7 +2,7 @@ pub mod compare;
 pub mod gitignore;
 
 use std::fs::{self};
-use std::sync::Arc;
+
 use std::{
     fs::Metadata,
     path::{Path, PathBuf},
@@ -22,10 +22,11 @@ use xvc_core::{
     all_paths_and_metadata, apply_diff, ContentDigest, DiffStore, RecheckMethod, TextOrBinary,
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
-use xvc_logging::{info, warn, watch};
+use xvc_ecs::ecs::event::EventLog;
+use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
-use xvc_logging::XvcOutputLine;
+
 use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder};
 
 use self::gitignore::IgnoreOp;
@@ -288,8 +289,11 @@ pub fn xvc_path_metadata_map_from_disk(
         .collect()
 }
 
+/// Copies / links `cache_path` to `xvc_path` with `recheck_method`.
+/// WARNING: If `xvc_path` is already present, it will be deleted first.
+/// It also sends an ignore operation to `ignore_writer`.
 pub fn recheck_from_cache(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,
@@ -302,13 +306,21 @@ pub fn recheck_from_cache(
         if !parent_dir.exists() {
             watch!(&parent_dir);
             fs::create_dir_all(parent_dir)?;
-            ignore_writer.send(Some(IgnoreOperation::IgnoreDir {
-                dir: parent.clone(),
-            }));
+            uwr!(
+                ignore_writer.send(Some(IgnoreOperation::IgnoreDir {
+                    dir: parent.clone(),
+                })),
+                output_snd
+            );
         }
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
     let path = xvc_path.to_absolute_path(xvc_root);
+    // If the file already exists, we delete it.
+    if path.exists() {
+        fs::remove_file(&path)?;
+    }
+
     watch!(path);
     watch!(recheck_method);
     match recheck_method {
@@ -351,11 +363,55 @@ pub fn recheck_from_cache(
             };
         }
     }
-    ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
+    uwr!(ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
         file: xvc_path.clone(),
-    }));
+    })), output_snd);
     watch!("Before return");
     Ok(())
+}
+
+/// All cache paths for all xvc paths.
+/// There are extracted from the event logs.
+pub fn cache_paths_for_xvc_paths(
+    output_snd: &XvcOutputSender,
+    all_paths: &XvcStore<XvcPath>,
+    all_content_digests: &XvcStore<ContentDigest>,
+) -> Result<HStore<Vec<XvcCachePath>>> {
+    // Get cache paths for each
+
+    let mut all_cache_paths: HStore<Vec<XvcCachePath>> = HStore::new();
+
+    // Find all cache paths
+    // We have 1-1 relationship between content digests and paths.
+    // So, in order to get earlier versions, we check the event log.
+    for (xe, xp) in all_paths.iter() {
+        let path_digest_events: EventLog<ContentDigest> =
+            all_content_digests.all_event_log_for_entity(*xe)?;
+        let cache_paths = path_digest_events
+            .iter()
+            .filter_map(|cd_event| match cd_event {
+                xvc_ecs::ecs::event::Event::Add { entity: _, value } => {
+                    let xcp = uwr!(XvcCachePath::new(xp, value), output_snd
+                 );
+
+                    Some(xcp)
+                }
+                xvc_ecs::ecs::event::Event::Remove { entity } => {
+                    // We don't delete ContentDigests of available XvcPaths.
+                    // This is an error.
+                    error!(
+                    output_snd,
+                    "There shouldn't be a remove event for content digest of {xp}. Please report this. {}",
+                    entity
+                );
+                    None
+                }
+            })
+            .collect();
+        all_cache_paths.insert(*xe, cache_paths);
+    }
+
+    Ok(all_cache_paths)
 }
 
 pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<()> {

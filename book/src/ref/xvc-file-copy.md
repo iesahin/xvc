@@ -125,6 +125,8 @@ If the targets you specify are changed, Xvc cancels the copy operation. Please e
 $ perl -i -pe 's/a/ee/g' data.txt
 
 $ xvc file copy data.txt data5.txt
+[ERROR] File Error: Sources have changed, please carry-in or recheck following files before copying:
+data.txt
 
 ```
 

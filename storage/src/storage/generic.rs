@@ -1,16 +1,16 @@
 use std::{collections::HashMap, env, fs, path::Path};
 
-use anyhow::anyhow;
-use crossbeam_channel::Sender;
+
+
 use regex::Regex;
 use relative_path::RelativePath;
 use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputLine};
+use xvc_logging::{error, info, warn, watch, XvcOutputSender};
 
-use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
+use crate::{Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
@@ -18,8 +18,8 @@ use super::{
 };
 
 pub fn cmd_storage_new_generic(
-    input: std::io::StdinLock,
-    output_snd: &Sender<XvcOutputLine>,
+    _input: std::io::StdinLock,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     name: String,
     url: Option<String>,
@@ -197,7 +197,7 @@ impl XvcGenericStorage {
     // create paths.
     fn run_for_paths_in_temp_dir(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output_snd: &XvcOutputSender,
         xvc_root: &XvcRoot,
         prepared_cmd: &str,
         temp_dir: &XvcStorageTempDir,
@@ -220,18 +220,18 @@ impl XvcGenericStorage {
                     watch!(stderr_str);
 
                     if cmd_output.success() {
-                        output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                        info!(output_snd, "{}", stdout_str);
+                        warn!(output_snd, "{}", stderr_str);
                         let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                         storage_paths.push(storage_path);
                     } else {
-                        output.send(XvcOutputLine::Error(stderr_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stdout_str)).unwrap();
+                        error!(output_snd, "{}", stderr_str);
+                        warn!(output_snd, "{}", stdout_str);
                     }
                 }
 
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output_snd, "{}", err);
                 }
             }
         });
@@ -240,7 +240,7 @@ impl XvcGenericStorage {
     }
     fn run_for_paths(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         prepared_cmd: &str,
         paths: &[XvcCachePath],
@@ -262,18 +262,18 @@ impl XvcGenericStorage {
                     watch!(stderr_str);
 
                     if cmd_output.success() {
-                        output.send(XvcOutputLine::Info(stdout_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stderr_str)).unwrap();
+                        info!(output, "{}", stdout_str);
+                        warn!(output, "{}", stderr_str);
                         let storage_path = XvcStoragePath::new(xvc_root, cache_path);
                         storage_paths.push(storage_path);
                     } else {
-                        output.send(XvcOutputLine::Error(stderr_str)).unwrap();
-                        output.send(XvcOutputLine::Warn(stdout_str)).unwrap();
+                        error!(output, "{}", stderr_str);
+                        warn!(output, "{}", stdout_str);
                     }
                 }
 
                 Err(err) => {
-                    output.send(XvcOutputLine::Error(err.to_string())).unwrap();
+                    error!(output, "{}", err);
                 }
             }
         });
@@ -289,8 +289,8 @@ impl XvcStorageOperations for XvcGenericStorage {
     /// upload the guid file.
     fn init(
         self,
-        output: &Sender<XvcOutputLine>,
-        xvc_root: &XvcRoot,
+        output: &XvcOutputSender,
+        _xvc_root: &XvcRoot,
     ) -> Result<(super::XvcStorageInitEvent, Self)> {
         let mut address_map = self.address_map();
         watch!(address_map);
@@ -319,10 +319,10 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         watch!(init_output);
 
-        output.send(XvcOutputLine::Info(format!(
-            "Run init command:\n{}\n{}\n",
-            prepared_init_cmd, init_output,
-        )))?;
+        info!(
+            output,
+            "Run init command:\n{}\n{}\n", prepared_init_cmd, init_output
+        );
 
         fs::remove_file(&local_guid_path)?;
 
@@ -341,11 +341,7 @@ impl XvcStorageOperations for XvcGenericStorage {
     ///
     /// {XVC_GUID}/[a-zA-Z][0-9]/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{3}/[0-9A-Fa-f]{58}/0
     ///
-    fn list(
-        &self,
-        output: &Sender<XvcOutputLine>,
-        xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageListEvent> {
+    fn list(&self, _output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.list_command, &address_map);
         let cmd_output = Exec::shell(prepared_cmd).capture()?.stdout_str();
@@ -372,7 +368,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
     fn send(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         _force: bool,
@@ -392,10 +388,10 @@ impl XvcStorageOperations for XvcGenericStorage {
 
     fn receive(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
-        force: bool,
+        _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let address_map = self.address_map();
         watch!(address_map);
@@ -417,7 +413,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
     fn delete(
         &self,
-        output: &Sender<XvcOutputLine>,
+        output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {

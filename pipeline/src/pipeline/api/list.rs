@@ -1,15 +1,15 @@
 use crate::error::Result;
 use comfy_table::Table;
-use crossbeam_channel::Sender;
+
 use xvc_core::XvcRoot;
 use xvc_ecs::R11Store;
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{output, XvcOutputSender};
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
 /// Entry point for `xvc pipeline list` command.
 /// Lists all pipelines and their run directories.
-pub fn cmd_list(output_snd: &Sender<XvcOutputLine>, xvc_root: &XvcRoot) -> Result<()> {
+pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<()> {
     Ok(
         xvc_root.with_r11store(|rs: &R11Store<XvcPipeline, XvcPipelineRunDir>| {
             let mut table = Table::new();
@@ -23,7 +23,7 @@ pub fn cmd_list(output_snd: &Sender<XvcOutputLine>, xvc_root: &XvcRoot) -> Resul
                 };
                 table.add_row(vec![&pipeline.name, &rundir_str]);
             }
-            output_snd.send(format!("{}", table).into())?;
+            output!(output_snd, "{}", table);
             Ok(())
         })?,
     )

@@ -3,6 +3,7 @@
 //! [XvcPath] is the basic path type to represent repository paths in Xvc. It
 //! corresponds to a path relative to the [XvcRoot]. It can be converted from a
 //! [fs::path::Path] and actually is a wrapper around [RelativePathBuf].
+use std::fs;
 use std::{fmt::Display, path::Path};
 
 use crate::{error::Result, ContentDigest};
@@ -11,6 +12,7 @@ use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString};
+use xvc_logging::{output, uwr, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use std::ops::Deref;
@@ -244,6 +246,62 @@ impl XvcCachePath {
     /// e.g. in [xvc_storage::XvcStorageTempDir] to create temporary cache files.
     pub fn inner(&self) -> RelativePathBuf {
         self.0.clone()
+    }
+
+    /// Returns the prefix for this digest for reporting purposes
+    /// len is the number of digits to return from
+    pub fn digest_string(&self, len: usize) -> String {
+        self.0
+            .to_string()
+            .chars()
+            .take(len)
+            // Convert path separators to '-'
+            .map(|c| if c == '/' { '-' } else { c })
+            .collect()
+    }
+
+    /// Remove a path from the cache.
+    /// Removes all empty parent directories of the file as well.
+    pub fn remove(&self, output_snd: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<()> {
+        let abs_cp = self.to_absolute_path(xvc_root);
+        watch!(abs_cp);
+        if abs_cp.exists() {
+            // Set to writable
+            let parent = abs_cp.parent().unwrap();
+            watch!(parent);
+            let mut dir_perm = parent.metadata()?.permissions();
+            dir_perm.set_readonly(false);
+            fs::set_permissions(&parent, dir_perm)?;
+
+            let mut file_perm = abs_cp.metadata()?.permissions();
+            file_perm.set_readonly(false);
+            fs::set_permissions(&abs_cp, file_perm)?;
+
+            uwr!(fs::remove_file(&abs_cp), output_snd);
+            output!(output_snd, "[DELETE] {}", abs_cp.to_str().unwrap());
+        }
+
+        let mut rel_path = self.inner();
+        watch!(rel_path);
+        while let Some(parent) = rel_path.parent() {
+            let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
+            watch!(parent_abs_cp);
+            if parent_abs_cp.exists() {
+                if parent_abs_cp.is_dir() {
+                    if parent_abs_cp.read_dir().unwrap().count() == 0 {
+                        let mut perm = parent_abs_cp.metadata()?.permissions();
+                        perm.set_readonly(false);
+                        fs::set_permissions(&parent_abs_cp, perm)?;
+                        uwr!(fs::remove_dir(&parent_abs_cp), output_snd);
+                        output!(output_snd, "[DELETE] {}", parent_abs_cp.to_str().unwrap());
+                    }
+                }
+            }
+
+            rel_path = parent.to_relative_path_buf();
+        }
+
+        Ok(())
     }
 }
 

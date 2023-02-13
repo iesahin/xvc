@@ -3,7 +3,7 @@ use cached::proc_macro::cached;
 use cached::UnboundCache;
 use glob::Pattern as GlobPattern;
 use regex::Regex;
-use relative_path::RelativePathBuf;
+
 use std::collections::HashMap;
 use std::fs::{self, Metadata};
 use std::io::{self, Read};
@@ -25,10 +25,6 @@ use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 use crate::XvcMetadata;
 
 use super::xvcignore::walk_parallel;
-
-/// Cache paths are relative to `.xvc/`
-pub struct XvcCachePath(RelativePathBuf);
-
 /// A hashmap to store [XvcMetadata] for [XvcPath]
 pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;
 

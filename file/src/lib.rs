@@ -16,8 +16,10 @@ pub mod hash;
 pub mod list;
 pub mod mv;
 pub mod recheck;
+pub mod remove;
 pub mod send;
 pub mod track;
+pub mod untrack;
 
 use crate::error::{Error, Result};
 use carry_in::CarryInCLI;
@@ -25,22 +27,24 @@ use clap::Subcommand;
 use copy::CopyCLI;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
-use crossbeam_channel::Sender;
+
 use list::ListCLI;
 use log::{debug, error, info, warn, LevelFilter};
 use mv::MoveCLI;
+use remove::RemoveCLI;
 use std::io;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use untrack::UntrackCLI;
 use xvc_config::XvcConfigInitParams;
 use xvc_config::XvcVerbosity;
 use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::XvcRoot;
 use xvc_core::CHANNEL_BOUND;
-use xvc_logging::XvcOutputLine;
 use xvc_logging::{setup_logging, watch};
+use xvc_logging::{XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use bring::BringCLI;
@@ -75,6 +79,10 @@ pub enum XvcFileSubCommand {
     Send(SendCLI),
     /// Bring (download, pull, fetch) files from external storages
     Bring(BringCLI),
+    /// Remove files from Xvc and possibly storages
+    Remove(RemoveCLI),
+    /// Untrack (delete) files from Xvc and possibly storages
+    Untrack(UntrackCLI),
 }
 
 /// Operations on data files
@@ -141,7 +149,7 @@ pub struct XvcFileCLI {
 ///
 /// It runs the subcommand specified in the command line arguments.
 pub fn run(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: Option<&XvcRoot>,
     opts: XvcFileCLI,
 ) -> Result<()> {
@@ -184,6 +192,16 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Move(opts) => mv::cmd_move(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Untrack(opts) => untrack::cmd_untrack(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Remove(opts) => remove::cmd_remove(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
@@ -244,10 +262,10 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
     };
 
     thread::scope(move |s| {
-        let (output_snd, output_rec) = bounded::<XvcOutputLine>(CHANNEL_BOUND);
+        let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
         s.spawn(move |_| {
             let mut output = io::stdout();
-            while let Ok(output_line) = output_rec.recv() {
+            while let Ok(Some(output_line)) = output_rec.recv() {
                 match output_line {
                     XvcOutputLine::Output(m) => writeln!(output, "{}", m).unwrap(),
                     XvcOutputLine::Info(m) => info!("[INFO] {}", m),

@@ -4,12 +4,12 @@ use crate::util::expand_globs_to_paths;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcPath, XvcRoot, XVCIGNORE_FILENAME};
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use log::trace;
 use std::io::BufRead;
 use std::path::{Path, PathBuf};
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
-use xvc_logging::XvcOutputLine;
+use xvc_logging::{output, XvcOutputSender};
 use xvc_walker::{build_ignore_rules, check_ignore, IgnoreRules, MatchResult, WalkOptions};
 
 // DIFFERENCES from DVC
@@ -68,7 +68,7 @@ impl UpdateFromXvcConfig for CheckIgnoreCLI {
 /// ## Errors
 pub fn cmd_check_ignore<R: BufRead>(
     input: R,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: CheckIgnoreCLI,
 ) -> Result<()> {
@@ -101,7 +101,7 @@ pub fn cmd_check_ignore<R: BufRead>(
 
 fn check_ignore_stdin<R: BufRead>(
     input: R,
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: &CheckIgnoreCLI,
     ignore_rules: &IgnoreRules,
@@ -115,7 +115,7 @@ fn check_ignore_stdin<R: BufRead>(
             let absolute_path = xvc_path.to_absolute_path(xvc_root);
             let res = check_ignore_line(ignore_rules, &absolute_path, opts.non_matching);
             if !res.trim().is_empty() {
-                output_snd.send(format!("{}", res).into())?;
+                output!(output_snd, "{}", res);
             }
             buffer.clear();
         }

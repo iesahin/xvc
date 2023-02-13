@@ -1,21 +1,19 @@
+//! Home for `xvc file copy` command.
+//!
+//! It contains [`CopyCLI`] to handle command line options and [`cmd_copy`] to execute the command.
 use std::path::Path;
 
-use crate::common::compare::{
-    diff_content_digest, diff_xvc_path_metadata, make_file_content_digest_diff_handler,
-};
+use crate::common::compare::{diff_content_digest, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;
-use crate::common::{
-    filter_targets_from_store, load_targets_from_store, xvc_path_metadata_map_from_disk,
-    FileTextOrBinary,
-};
+use crate::common::{filter_targets_from_store, xvc_path_metadata_map_from_disk, FileTextOrBinary};
 use crate::recheck::{make_recheck_handler, RecheckOperation};
-use crate::{recheck, Result};
+use crate::Result;
 use anyhow::anyhow;
 use clap::Parser;
-use crossbeam_channel::Sender;
+
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, watch, XvcOutputLine};
+use xvc_logging::{debug, error, watch, XvcOutputSender};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -79,7 +77,7 @@ pub(crate) fn get_source_path_metadata(
         &Some(source_targets),
     )?;
     let source_metadata = stored_xvc_metadata_store.subset(all_sources.keys().copied())?;
-    let source_metadata_files = source_metadata.filter(|xe, md| md.is_file()).cloned();
+    let source_metadata_files = source_metadata.filter(|_xe, md| md.is_file()).cloned();
 
     if source_metadata_files.len() > 1 && !destination.ends_with("/") {
         return Err(anyhow!("Target must be a directory if multiple sources are given").into());
@@ -114,12 +112,12 @@ pub(crate) fn check_if_destination_is_a_directory(
 }
 
 pub(crate) fn check_if_sources_have_changed(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_metadata_store: &XvcStore<XvcMetadata>,
     source_xvc_paths: &HStore<XvcPath>,
-    source_metadata: &HStore<XvcMetadata>,
+    _source_metadata: &HStore<XvcMetadata>,
 ) -> Result<()> {
     // We don't parallelize the diff operation because we abort all operations if there is a single changed file.
     let pmm = xvc_path_metadata_map_from_disk(xvc_root, &source_xvc_paths);
@@ -171,14 +169,17 @@ pub(crate) fn check_if_sources_have_changed(
     }
 }
 
+/// Build a store to match destination path entities with source path entities.
+/// It creates the destination entities with [`XvcRoot::new_entity()`] if they are not already found.
+/// `stored_xvc_path_store` and `stored_xvc_metadata_store` are loaded with `XvcRoot::load_store`, and
+/// `source_xvc_paths` and `source_xvc_metadata` are the results of [`targets_from_disk`].
 pub fn get_copy_source_dest_store(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     stored_xvc_path_store: &XvcStore<XvcPath>,
-    stored_metadata_store: &XvcStore<XvcMetadata>,
+    stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
     source_xvc_paths: &HStore<XvcPath>,
-    source_metadata: &HStore<XvcMetadata>,
-    source: &str,
+    source_xvc_metadata: &HStore<XvcMetadata>,
     destination: &str,
     force: bool,
 ) -> Result<HStore<(XvcEntity, XvcPath)>> {
@@ -186,7 +187,7 @@ pub fn get_copy_source_dest_store(
     // If destination is a directory, check if exists and create if not.
     // If destination is a file, check if exists and return error if it does and
     // force is not set.
-    let mut source_dest_store = if destination.ends_with('/') {
+    let source_dest_store = if destination.ends_with('/') {
         let dir_path = XvcPath::new(
             &xvc_root,
             &xvc_root,
@@ -196,16 +197,16 @@ pub fn get_copy_source_dest_store(
         check_if_destination_is_a_directory(
             &dir_path,
             stored_xvc_path_store,
-            stored_metadata_store,
+            stored_xvc_metadata_store,
         )?;
 
         check_if_sources_have_changed(
             output_snd,
             xvc_root,
             stored_xvc_path_store,
-            stored_metadata_store,
+            stored_xvc_metadata_store,
             source_xvc_paths,
-            source_metadata,
+            source_xvc_metadata,
         )?;
 
         let mut source_dest_store = HStore::new();
@@ -244,9 +245,9 @@ pub fn get_copy_source_dest_store(
             output_snd,
             xvc_root,
             stored_xvc_path_store,
-            stored_metadata_store,
+            stored_xvc_metadata_store,
             source_xvc_paths,
-            source_metadata,
+            source_xvc_metadata,
         )?;
 
         let current_dir = xvc_root.config().current_dir()?;
@@ -278,7 +279,7 @@ pub fn get_copy_source_dest_store(
 }
 
 pub(crate) fn recheck_destination(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     destination_entities: &[XvcEntity],
 ) -> Result<()> {
@@ -315,7 +316,7 @@ pub(crate) fn recheck_destination(
 }
 
 pub(crate) fn cmd_copy(
-    output_snd: &Sender<XvcOutputLine>,
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     opts: CopyCLI,
 ) -> Result<()> {
@@ -341,7 +342,6 @@ pub(crate) fn cmd_copy(
         &stored_metadata_store,
         &source_xvc_paths,
         &source_metadata,
-        &opts.source,
         &opts.destination,
         opts.force,
     )?;
