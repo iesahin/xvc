@@ -166,7 +166,6 @@ pub(crate) fn cmd_remove(
 
     let mut deletable_paths = Vec::<XvcCachePath>::new();
     // Report the differences if found
-    // We sort the keys to have a stable output.
     let removable_entities: HashSet<XvcEntity> = remove_targets.keys().copied().collect();
     for (xe, cp) in candidate_paths {
         let entities_pointing_to_cp =
@@ -202,6 +201,7 @@ pub(crate) fn cmd_remove(
         }
     }
 
+    // We sort the paths to have a stable output.
     deletable_paths.sort_unstable();
 
     if opts.from_cache {

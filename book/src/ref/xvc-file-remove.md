@@ -211,6 +211,10 @@ $ tree .xvc/b3/
 10 directories, 3 files
 
 $ xvc file remove --from-cache --all-versions data.txt
+[DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0/0.txt
+[DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0
+[DELETE] [CWD]/.xvc/b3/017/ad8
+[DELETE] [CWD]/.xvc/b3/017
 [DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt
 [DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
 [DELETE] [CWD]/.xvc/b3/660/2cf
@@ -219,10 +223,6 @@ $ xvc file remove --from-cache --all-versions data.txt
 [DELETE] [CWD]/.xvc/b3/fef/e16/d9668f4c96ee7e719517f056aa23653fe9aaeddc9bfe81324fff534152
 [DELETE] [CWD]/.xvc/b3/fef/e16
 [DELETE] [CWD]/.xvc/b3/fef
-[DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0/0.txt
-[DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0
-[DELETE] [CWD]/.xvc/b3/017/ad8
-[DELETE] [CWD]/.xvc/b3/017
 [DELETE] [CWD]/.xvc/b3
 
 $ ls .xvc/
