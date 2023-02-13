@@ -13,7 +13,7 @@ fn test_is_text_file() {
     for i in 1..10 {
         let bin_fn = format!("test-{}.bin", i);
         let bin_p = Path::new(&bin_fn);
-        common::generate_random_file(bin_p, 100000);
+        common::generate_random_file(bin_p, 100000, None);
         assert!(
             !is_text_file(bin_p).unwrap(),
             "{:?} seems text file incorrectly",

@@ -34,7 +34,7 @@ enum XvcTestHelperSubcommandCLI {
         files: usize,
         /// Fill value
         #[arg(long)]
-        fill: Option<u8>,
+        seed: Option<u64>,
     },
 
     RandomDirName {
@@ -54,8 +54,12 @@ enum XvcTestHelperSubcommandCLI {
         /// The size of the file to generate
         #[arg(short, long, default_value = "1024")]
         size: usize,
-        #[arg(short, long)]
-        filename: String,
+        /// Seed for the filename content.
+        #[arg(long)]
+        seed: Option<u64>,
+        // Filename to generate
+        #[arg()]
+        filename: PathBuf,
     },
 
     GenerateFilledFile {
@@ -66,8 +70,8 @@ enum XvcTestHelperSubcommandCLI {
         #[arg(short, long, alias = "fill", default_value = "0")]
         value: u8,
         /// The filename to write to
-        #[arg(short, long)]
-        filename: String,
+        #[arg()]
+        filename: PathBuf,
     },
 
     GenerateRandomTextFile {
@@ -92,10 +96,10 @@ fn main() -> Result<()> {
             root,
             directories,
             files,
-            fill,
+            seed,
         } => {
             let root = root.unwrap_or_else(|| std::env::current_dir().unwrap());
-            create_directory_tree(&root, directories, files, fill)?;
+            create_directory_tree(&root, directories, files, seed)?;
         }
         XvcTestHelperSubcommandCLI::RandomDirName { seed, prefix } => {
             let name = random_dir_name(
@@ -108,9 +112,12 @@ fn main() -> Result<()> {
             let dir = random_temp_dir(prefix.as_deref());
             println!("{}", dir.to_string_lossy());
         }
-        XvcTestHelperSubcommandCLI::GenerateRandomFile { size, filename } => {
-            let path = PathBuf::from(filename);
-            generate_random_file(&path, size);
+        XvcTestHelperSubcommandCLI::GenerateRandomFile {
+            size,
+            filename,
+            seed,
+        } => {
+            generate_random_file(&filename, size, seed);
         }
         XvcTestHelperSubcommandCLI::GenerateFilledFile {
             size,

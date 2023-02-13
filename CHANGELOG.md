@@ -37,6 +37,7 @@ tree, and subtasks are marked with indentation.
     - Implement `--only-version`
   - Implement `--from-remote`
   - Implement `XvcStorageOperations::delete` for all storage types
+- Update `xvc-test-helper generate-random-file` and `create-directory-tree` to receive random seed
 
 ## 0.5.1 (2023-01-28)
 
