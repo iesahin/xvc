@@ -24,7 +24,7 @@ Options:
 
       --only-version <ONLY_VERSION>
           Remove only the specified version of the file
-
+          
           Versions are specified with the content hash 123-456-789abcd. Dashes are optional. Prefix must be unique. If the prefix is not unique, the command will fail.
 
       --force
@@ -195,17 +195,17 @@ $ xvc file carry-in data.txt
 
 $ tree .xvc/b3/
 .xvc/b3/
+├── 017
+│   └── ad8
+│       └── 6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0
+│           └── 0.txt
 ├── 660
 │   └── 2cf
 │       └── f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
 │           └── 0.txt
-├── 88d
-│   └── ba6
-│       └── ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420
-│           └── 0.txt
-└── d6f
-    └── d9d
-        └── e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917
+└── fef
+    └── e16
+        └── d9668f4c96ee7e719517f056aa23653fe9aaeddc9bfe81324fff534152
             └── 0.txt
 
 10 directories, 3 files
@@ -215,14 +215,14 @@ $ xvc file remove --from-cache --all-versions data.txt
 [DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
 [DELETE] [CWD]/.xvc/b3/660/2cf
 [DELETE] [CWD]/.xvc/b3/660
-[DELETE] [CWD]/.xvc/b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917/0.txt
-[DELETE] [CWD]/.xvc/b3/d6f/d9d/e5bccf223f523b316c9cd1cf9a9d87ea42473d68e011dad13f09bf8917
-[DELETE] [CWD]/.xvc/b3/d6f/d9d
-[DELETE] [CWD]/.xvc/b3/d6f
-[DELETE] [CWD]/.xvc/b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420/0.txt
-[DELETE] [CWD]/.xvc/b3/88d/ba6/ea92dd3ced3c319072cc2c814c7b8eb3269b920ac8c83e6b5c33699420
-[DELETE] [CWD]/.xvc/b3/88d/ba6
-[DELETE] [CWD]/.xvc/b3/88d
+[DELETE] [CWD]/.xvc/b3/fef/e16/d9668f4c96ee7e719517f056aa23653fe9aaeddc9bfe81324fff534152/0.txt
+[DELETE] [CWD]/.xvc/b3/fef/e16/d9668f4c96ee7e719517f056aa23653fe9aaeddc9bfe81324fff534152
+[DELETE] [CWD]/.xvc/b3/fef/e16
+[DELETE] [CWD]/.xvc/b3/fef
+[DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0/0.txt
+[DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0
+[DELETE] [CWD]/.xvc/b3/017/ad8
+[DELETE] [CWD]/.xvc/b3/017
 [DELETE] [CWD]/.xvc/b3
 
 $ ls .xvc/
@@ -246,9 +246,9 @@ $ tree ../local-storage/
 ../local-storage/
 └── [..]
     └── b3
-        └── fa8
-            └── af1
-                └── 7567c147993830cdd42cea9d8a8f157c9b98b4e7ef5677f417a5d8ae61
+        └── 218
+            └── 2b7
+                └── 7f5a61c7a82b34da4c754cce1fe6834fc3f07b3f7c7e0920d1add59881
                     └── 0.txt
 
 6 directories, 1 file
@@ -259,9 +259,9 @@ $ tree ../local-storage/
 ../local-storage/
 └── [..]
     └── b3
-        └── fa8
-            └── af1
-                └── 7567c147993830cdd42cea9d8a8f157c9b98b4e7ef5677f417a5d8ae61
+        └── 218
+            └── 2b7
+                └── 7f5a61c7a82b34da4c754cce1fe6834fc3f07b3f7c7e0920d1add59881
 
 6 directories, 0 files
 
@@ -280,25 +280,25 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS        [..] [..] ba3d2f3e          data2.txt
-FC        1024 [..] ba3d2f3e ba3d2f3e data.txt
-FX         130 [..]          ac46bf74 .xvcignore
-FX         276 [..]          [..] .gitignore
-Total #: 4 Workspace Size:        [..] Cached Size:        1024
+SS         181 2023-02-13 08:22:01 4a2e9d7c          data2.txt
+FC        1024 2023-02-13 08:22:01 4a2e9d7c 4a2e9d7c data.txt
+FX         130 2023-02-13 08:21:59          ac46bf74 .xvcignore
+FX         276 2023-02-13 08:22:01          35c21be9 .gitignore
+Total #: 4 Workspace Size:        1611 Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt
-Not deleting b3/ba3/d2f/3e2f90b8f4a3365b29ed29bd31d4b3483c876811ee6e4b2ddd3d74af01/0.txt (for data.txt) because it's also used by data2.txt
+Not deleting b3/4a2/e9d/7c40d2cf892c41351a2465b54b85f62a0052e25a63950c8ab4ac48b2ee/0.txt (for data.txt) because it's also used by data2.txt
 
 $ tree .xvc/b3/
 .xvc/b3/
-├── ba3
-│   └── d2f
-│       └── 3e2f90b8f4a3365b29ed29bd31d4b3483c876811ee6e4b2ddd3d74af01
+├── 218
+│   └── 2b7
+│       └── 7f5a61c7a82b34da4c754cce1fe6834fc3f07b3f7c7e0920d1add59881
 │           └── 0.txt
-└── fa8
-    └── af1
-        └── 7567c147993830cdd42cea9d8a8f157c9b98b4e7ef5677f417a5d8ae61
+└── 4a2
+    └── e9d
+        └── 7c40d2cf892c41351a2465b54b85f62a0052e25a63950c8ab4ac48b2ee
             └── 0.txt
 
 7 directories, 2 files
