@@ -280,10 +280,10 @@ $ xvc file carry-in data.txt
 
 $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
-SS         182 2023-02-13 08:29:06 4a2e9d7c          data2.txt
-FC        1024 2023-02-13 08:29:06 4a2e9d7c 4a2e9d7c data.txt
-FX         130 2023-02-13 08:29:04          ac46bf74 .xvcignore
-FX         276 2023-02-13 08:29:06          e8d87e05 .gitignore
+SS         182 2023-02-13 08:31:25 4a2e9d7c          data2.txt
+FC        1024 2023-02-13 08:31:25 4a2e9d7c 4a2e9d7c data.txt
+FX         130 2023-02-13 08:31:22          ac46bf74 .xvcignore
+FX         276 2023-02-13 08:31:25          f08637e7 .gitignore
 Total #: 4 Workspace Size:        1612 Cached Size:        1024
 
 
