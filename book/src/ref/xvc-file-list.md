@@ -11,15 +11,15 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 Arguments:
   [TARGETS]...
           Files/directories to list.
-          
+
           If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
           A string for each row of the output table
-          
+
           The following are the keys for each row:
-          
+
           - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
           - {{acd64}}:  actual content digest. All 64 digits.
           - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
@@ -38,19 +38,19 @@ Options:
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
             MB, GB and TB to represent sizes larged than 1MB.
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-          
+
           The default format can be set with file.list.format in the config file.
 
   -s, --sort <SORT>
           Sort criteria.
-          
+
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-          
+
           The default option can be set with file.list.sort in the config file.
 
       --no-summary
           Don't show total number and size of the listed files.
-          
+
           The default option can be set with file.list.no_summary in the config file.
 
   -h, --help
@@ -123,7 +123,6 @@ $ xvc init
 ```
 
 Now it lists all files and directories.
-
 
 ```console
 $ xvc file list --sort name-asc
@@ -220,7 +219,7 @@ SS         [..] [..] 742a78f2          dir-0003/file-0004.bin
 SS         [..] [..] 78a2a461          dir-0003/file-0003.bin
 SS         [..] [..] 4578c0bf          dir-0003/file-0002.bin
 SS         [..] [..] 3ba625b7          dir-0003/file-0001.bin
-Total #: 5 Workspace Size:         900 Cached Size:        5015
+Total #: 5 Workspace Size:         [..] Cached Size:        5015
 
 
 ```
@@ -238,7 +237,7 @@ FX        1001 [..]          3ba625b7 dir-0004/file-0001.bin
 SS        [..] [..] 3ba625b7          dir-0003/file-0001.bin
 FH        1001 [..] 3ba625b7 3ba625b7 dir-0002/file-0001.bin
 FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
-Total #: 5 Workspace Size:        4184 Cached Size:        1001
+Total #: 5 Workspace Size:        [..] Cached Size:        1001
 
 
 ```
@@ -260,7 +259,7 @@ FH        1002 [..] 4578c0bf 4578c0bf dir-0002/file-0002.bin
 FH        1001 [..] 3ba625b7 3ba625b7 dir-0002/file-0001.bin
 FC        1002 [..] 4578c0bf 4578c0bf dir-0001/file-0002.bin
 FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
-Total #: 10 Workspace Size:        8372 Cached Size:        2003
+Total #: 10 Workspace Size:        [..] Cached Size:        2003
 
 
 ```
@@ -291,7 +290,7 @@ FC        1002 [..] 4578c0bf 4578c0bf dir-0001/file-0002.bin
 FC        1003 [..] 78a2a461 78a2a461 dir-0001/file-0003.bin
 FC        1004 [..] 742a78f2 742a78f2 dir-0001/file-0004.bin
 FC        1005 [..] 8cb7d894 8cb7d894 dir-0001/file-0005.bin
-Total #: 5 Workspace Size:        5015 Cached Size:        5015
+Total #: 5 Workspace Size:        [..] Cached Size:        5015
 
 
 ```
@@ -313,7 +312,7 @@ $ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0001/
        1003 dir-0001/file-0003.bin
        1002 dir-0001/file-0002.bin
        1001 dir-0001/file-0001.bin
-Total #: 5 Workspace Size:        5015 Cached Size:        5015
+Total #: 5 Workspace Size:        [..] Cached Size:        5015
 
 
 ```
