@@ -215,11 +215,11 @@ symbolic links.
 $ xvc file track dir-0003 --recheck-method symlink
 
 $ xvc file list dir-0003
-SS         180 [..] 8cb7d894          dir-0003/file-0005.bin
-SS         180 [..] 742a78f2          dir-0003/file-0004.bin
-SS         180 [..] 78a2a461          dir-0003/file-0003.bin
-SS         180 [..] 4578c0bf          dir-0003/file-0002.bin
-SS         180 [..] 3ba625b7          dir-0003/file-0001.bin
+SS         [..] [..] 8cb7d894          dir-0003/file-0005.bin
+SS         [..] [..] 742a78f2          dir-0003/file-0004.bin
+SS         [..] [..] 78a2a461          dir-0003/file-0003.bin
+SS         [..] [..] 4578c0bf          dir-0003/file-0002.bin
+SS         [..] [..] 3ba625b7          dir-0003/file-0001.bin
 Total #: 5 Workspace Size:         900 Cached Size:        5015
 
 
@@ -235,7 +235,7 @@ You may use globs to list files.
 $ xvc file list 'dir-*/*-0001.bin'
 FX        1001 [..]          3ba625b7 dir-0005/file-0001.bin
 FX        1001 [..]          3ba625b7 dir-0004/file-0001.bin
-SS         180 [..] 3ba625b7          dir-0003/file-0001.bin
+SS        [..] [..] 3ba625b7          dir-0003/file-0001.bin
 FH        1001 [..] 3ba625b7 3ba625b7 dir-0002/file-0001.bin
 FC        1001 [..] 3ba625b7 3ba625b7 dir-0001/file-0001.bin
 Total #: 5 Workspace Size:        4184 Cached Size:        1001
@@ -254,8 +254,8 @@ FX        1002 [..]          4578c0bf dir-0005/file-0002.bin
 FX        1001 [..]          3ba625b7 dir-0005/file-0001.bin
 FX        1002 [..]          4578c0bf dir-0004/file-0002.bin
 FX        1001 [..]          3ba625b7 dir-0004/file-0001.bin
-SS         180 [..] 4578c0bf          dir-0003/file-0002.bin
-SS         180 [..] 3ba625b7          dir-0003/file-0001.bin
+SS        [..] [..] 4578c0bf          dir-0003/file-0002.bin
+SS        [..] [..] 3ba625b7          dir-0003/file-0001.bin
 FH        1002 [..] 4578c0bf 4578c0bf dir-0002/file-0002.bin
 FH        1001 [..] 3ba625b7 3ba625b7 dir-0002/file-0001.bin
 FC        1002 [..] 4578c0bf 4578c0bf dir-0001/file-0002.bin
@@ -341,13 +341,6 @@ you can use cache status `{{cst}}` column.
 
 ```console
 $ xvc-test-helper generate-random-file --size 100 dir-0001/a-new-file.bin
-error: unexpected argument '--filename' found
-
-  note: to pass '--filename' as a value, use '-- --filename'
-
-Usage: xvc-test-helper generate-random-file <--size <SIZE>|--seed <SEED>|FILENAME>
-
-For more information, try '--help'.
 
 $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0005.bin
@@ -355,7 +348,8 @@ $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0003.bin
 = dir-0001/file-0002.bin
 = dir-0001/file-0001.bin
-Total #: 5 Workspace Size:        5015 Cached Size:        5015
+X dir-0001/a-new-file.bin
+Total #: 6 Workspace Size:        [..] Cached Size:        5015
 
 
 ```
