@@ -11,15 +11,15 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 Arguments:
   [TARGETS]...
           Files/directories to list.
-
+          
           If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
           A string for each row of the output table
-
+          
           The following are the keys for each row:
-
+          
           - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
           - {{acd64}}:  actual content digest. All 64 digits.
           - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
@@ -38,19 +38,19 @@ Options:
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
             MB, GB and TB to represent sizes larged than 1MB.
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-
+          
           The default format can be set with file.list.format in the config file.
 
   -s, --sort <SORT>
           Sort criteria.
-
+          
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-
+          
           The default option can be set with file.list.sort in the config file.
 
       --no-summary
           Don't show total number and size of the listed files.
-
+          
           The default option can be set with file.list.no_summary in the config file.
 
   -h, --help
