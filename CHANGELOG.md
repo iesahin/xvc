@@ -5,7 +5,7 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
-## 0.5.2 (2023-02-11)
+## 0.5.2 (2023-02-13)
 
 - Refactor "cache type" to "recheck method" in all code and documentation
   - Issue: <https://github.com/iesahin/xvc/issues/203>
