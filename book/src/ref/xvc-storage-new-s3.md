@@ -17,12 +17,12 @@ Usage: xvc storage new s3 [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME> --
 Options:
   -n, --name <NAME>
           Name of the storage
-
+          
           This must be unique among all storages of the project
 
       --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
-
+          
           [default: ]
 
       --bucket-name <BUCKET_NAME>

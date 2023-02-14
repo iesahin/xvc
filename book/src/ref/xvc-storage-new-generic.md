@@ -20,27 +20,27 @@ Usage: xvc storage new generic [OPTIONS] --name <NAME> --init <INIT_COMMAND> --l
 Options:
   -n, --name <NAME>
           Name of the storage.
-
+          
           Recommended to keep this name unique to refer easily.
 
   -i, --init <INIT_COMMAND>
           Command to initialize the storage. This command is run once after defining the storage.
-
+          
           You can use {URL} and {STORAGE_DIR}  as shortcuts.
 
   -l, --list <LIST_COMMAND>
           Command to list the files in storage
-
+          
           You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
 
   -d, --download <DOWNLOAD_COMMAND>
           Command to download a file from storage.
-
+          
           You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
 
   -u, --upload <UPLOAD_COMMAND>
           Command to upload a file to storage.
-
+          
           You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
 
   -D, --delete <DELETE_COMMAND>
@@ -48,7 +48,7 @@ Options:
 
   -M, --processes <MAX_PROCESSES>
           Number of maximum processes to run simultaneously
-
+          
           [default: 1]
 
       --url <URL>

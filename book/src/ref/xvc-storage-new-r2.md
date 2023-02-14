@@ -17,7 +17,7 @@ Usage: xvc storage new r2 [OPTIONS] --name <NAME> --account-id <ACCOUNT_ID> --bu
 Options:
   -n, --name <NAME>
           Name of the storage
-
+          
           This must be unique among all storages of the project
 
       --account-id <ACCOUNT_ID>
@@ -28,7 +28,7 @@ Options:
 
       --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
-
+          
           [default: ]
 
   -h, --help
