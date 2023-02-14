@@ -1,3 +1,8 @@
+//! Xvc storage management commands.
+//!
+//! Contains several modules to implement connection, upload and download of files to a storage.
+//! Most of the functionality is behind feature flags that are on by default. If you want to customize the functionality
+//! of this crate, you can disable the features you don't need.
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod error;
@@ -124,6 +129,7 @@ pub enum StorageNewSubCommand {
     ///
     /// Uses rsync in separate processes to communicate.
     /// This can be used when you already have an SSH/Rsync connection.
+    /// It doesn't prompt for any passwords. The connection must be set up with ssh keys beforehand.
     #[command()]
     Rsync {
         /// Name of the storage.
@@ -150,6 +156,10 @@ pub enum StorageNewSubCommand {
 
     #[cfg(feature = "s3")]
     /// Add a new S3 storage
+    ///
+    /// Reads credentials from `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables.
+    /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
+    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
     #[command()]
     S3 {
         /// Name of the storage
@@ -171,9 +181,9 @@ pub enum StorageNewSubCommand {
     #[cfg(feature = "minio")]
     /// Add a new Minio storage
     ///
-    /// `MINIO_ACCESS_KEY` and `MINIO_SECRET_ACCESS_KEY` environment variables must be set.
+    /// Reads credentials from `MINIO_ACCESS_KEY` and `MINIO_SECRET_ACCESS_KEY` environment variables.
     /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
-    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages.
+    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
     #[command()]
     Minio {
         /// Name of the storage
@@ -197,6 +207,10 @@ pub enum StorageNewSubCommand {
 
     #[cfg(feature = "digital-ocean")]
     /// Add a new Digital Ocean storage
+    ///
+    /// Reads credentials from `DIGITAL_OCEAN_ACCESS_KEY_ID` and `DIGITAL_OCEAN_SECRET_ACCESS_KEY` environment variables.
+    /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
+    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
     #[command()]
     DigitalOcean {
         /// Name of the storage
@@ -217,6 +231,10 @@ pub enum StorageNewSubCommand {
 
     #[cfg(feature = "r2")]
     /// Add a new R2 storage
+    ///
+    /// Reads credentials from `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` environment variables.
+    /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
+    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
     #[command()]
     R2 {
         /// Name of the storage
@@ -237,6 +255,10 @@ pub enum StorageNewSubCommand {
 
     #[cfg(feature = "gcs")]
     /// Add a new Google Cloud Storage storage
+    ///
+    /// Reads credentials from `GCS_ACCESS_KEY_ID` and `GCS_SECRET_ACCESS_KEY` environment variables.
+    /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
+    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
     #[command()]
     Gcs {
         /// Name of the storage
@@ -257,6 +279,10 @@ pub enum StorageNewSubCommand {
 
     #[cfg(feature = "wasabi")]
     /// Add a new Wasabi storage
+    ///
+    /// Reads credentials from `WASABI_ACCESS_KEY_ID` and `WASABI_SECRET_ACCESS_KEY` environment variables.
+    /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
+    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
     #[command()]
     Wasabi {
         /// Name of the storage
