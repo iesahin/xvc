@@ -17,7 +17,7 @@ Usage: xvc storage new digital-ocean [OPTIONS] --name <NAME> --bucket-name <BUCK
 Options:
   -n, --name <NAME>
           Name of the storage
-
+          
           This must be unique among all storages of the project
 
       --bucket-name <BUCKET_NAME>
@@ -28,7 +28,7 @@ Options:
 
       --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
-
+          
           [default: ]
 
   -h, --help
