@@ -17,7 +17,7 @@ Usage: xvc storage new wasabi [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME
 Options:
   -n, --name <NAME>
           Name of the storage
-          
+
           This must be unique among all storages of the project
 
       --bucket-name <BUCKET_NAME>
@@ -25,14 +25,14 @@ Options:
 
       --endpoint <ENDPOINT>
           Endpoint for the server, complete with the region if there is
-          
+
           e.g. for eu-central-1 region, use s3.eu-central-1.wasabisys.com as the endpoint.
-          
+
           [default: s3.wasabisys.com]
 
       --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
-          
+
           [default: ]
 
   -h, --help
@@ -113,9 +113,9 @@ Then get back them from the storage.
 
 ```console
 $ xvc file bring --from backup dir-0001
-xvc-storage/352bc2cff0a36825/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin -> /var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T/.tmpG1E7tc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin
-xvc-storage/352bc2cff0a36825/b3/863/86d/62e50462e37699d86e9b436526cb3fe40c66e38030e4e25ae4e168193a/0.bin -> /var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T/.tmpG1E7tc/b3/863/86d/62e50462e37699d86e9b436526cb3fe40c66e38030e4e25ae4e168193a/0.bin
-xvc-storage/352bc2cff0a36825/b3/f60/f11/901bf063f1448d095f336929929e153025a3ec238128a42ff6e5f080ef/0.bin -> /var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T/.tmpG1E7tc/b3/f60/f11/901bf063f1448d095f336929929e153025a3ec238128a42ff6e5f080ef/0.bin
+xvc-storage/[..]/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin -> /var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T/.tmp22ZtVX/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin
+xvc-storage/[..]/b3/863/86d/62e50462e37699d86e9b436526cb3fe40c66e38030e4e25ae4e168193a/0.bin -> /var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T/.tmp22ZtVX/b3/863/86d/62e50462e37699d86e9b436526cb3fe40c66e38030e4e25ae4e168193a/0.bin
+xvc-storage/75035be765579c2e/b3/f60/f11/901bf063f1448d095f336929929e153025a3ec238128a42ff6e5f080ef/0.bin -> /var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T/.tmp22ZtVX/b3/f60/f11/901bf063f1448d095f336929929e153025a3ec238128a42ff6e5f080ef/0.bin
 
 $ tree dir-0001
 dir-0001
