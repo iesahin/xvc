@@ -10,6 +10,8 @@ Configure a [Digital Ocean Spaces](https://www.digitalocean.com/products/spaces)
 $ xvc storage new digital-ocean --help
 Add a new Digital Ocean storage
 
+Reads credentials from `DIGITAL_OCEAN_ACCESS_KEY_ID` and `DIGITAL_OCEAN_SECRET_ACCESS_KEY` environment variables. Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
+
 Usage: xvc storage new digital-ocean [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME> --region <REGION>
 
 Options:
