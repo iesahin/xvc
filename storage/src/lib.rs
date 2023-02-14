@@ -76,7 +76,7 @@ pub enum StorageNewSubCommand {
     /// You may damage your repository and local and remote files with incorrect configurations.
     ///
     /// Please see https://docs.xvc.dev/ref/xvc-storage-new-generic.html for examples and make
-    /// necessary backups before continuing.
+    /// necessary backups.
     #[command()]
     Generic {
         /// Name of the storage.
@@ -170,6 +170,10 @@ pub enum StorageNewSubCommand {
 
     #[cfg(feature = "minio")]
     /// Add a new Minio storage
+    ///
+    /// `MINIO_ACCESS_KEY` and `MINIO_SECRET_ACCESS_KEY` environment variables must be set.
+    /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
+    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages.
     #[command()]
     Minio {
         /// Name of the storage
