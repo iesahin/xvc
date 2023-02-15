@@ -16,7 +16,6 @@ pub use crate::pipeline::api::{
 
 use clap::Parser;
 
-
 use pipeline::api::step_dependency::XvcDependencyList;
 use pipeline::deps;
 use pipeline::schema::XvcSchemaSerializationFormat;
@@ -27,7 +26,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_ecs::XvcStore;
-use xvc_logging::{XvcOutputSender};
+use xvc_logging::XvcOutputSender;
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;
@@ -71,10 +70,6 @@ pub enum PipelineSubCommand {
         /// Default working directory
         #[arg(short, long)]
         workdir: Option<PathBuf>,
-
-        /// Set this pipeline as default
-        #[arg(long)]
-        set_default: bool,
     },
 
     /// Rename, change dir or set a pipeline as default
@@ -402,11 +397,7 @@ pub fn cmd_pipeline<R: BufRead>(
     match command.subcommand {
         PipelineSubCommand::Run { name } => cmd_run(xvc_root, name),
 
-        PipelineSubCommand::New {
-            name,
-            workdir,
-            set_default,
-        } => cmd_new(xvc_root, &name, workdir, set_default),
+        PipelineSubCommand::New { name, workdir } => cmd_new(xvc_root, &name, workdir),
         PipelineSubCommand::Update {
             name,
             rename,
