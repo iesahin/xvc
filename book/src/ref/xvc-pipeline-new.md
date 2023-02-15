@@ -50,7 +50,6 @@ If you want to define a pipeline specific to a directory, you can set the workin
 ```console
 $ xvc-test-helper create-directory-tree --directories 1 --files 3  --seed 20230215
 $ xvc pipeline new --name another-pipeline --workdir dir-0001
-[ERROR] Pipeline Error: Xvc Core Error: ECS Error: Key is already in the store: my-pipeline
 
 ```
 
@@ -58,4 +57,14 @@ The pipeline will run the commands in the specified directory.
 
 ```console
 $ xvc pipeline list
++------------------+----------+
+| Name             | Run Dir  |
++=============================+
+| default          |          |
+|------------------+----------|
+| my-pipeline      |          |
+|------------------+----------|
+| another-pipeline | dir-0001 |
++------------------+----------+
+
 ```
