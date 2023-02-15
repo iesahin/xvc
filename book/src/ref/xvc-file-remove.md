@@ -99,9 +99,8 @@ $ xvc file remove --from-cache data.txt
 [DELETE] [CWD]/.xvc/b3/c85
 [DELETE] [CWD]/.xvc/b3
 
-$ ls -l
-total 8
--rw-rw-rw-  1 iex  staff  19 Jan 31 11:00 data.txt
+$ ls
+data.txt
 
 $ ls .xvc/
 config.local.toml

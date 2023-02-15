@@ -60,7 +60,7 @@ $ xvc file untrack data.txt
 [DELETE] [CWD]/.xvc/b3
 
 $ git status
-On branch main
+On branch [..]
 nothing to commit, working tree clean
 
 ```

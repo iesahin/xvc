@@ -316,7 +316,7 @@ impl XvcWasabiStorage {
 
             match response {
                 Ok(_) => {
-                    output!(output_snd, "{} -> {}", remote_path.as_str(), abs_cache_path);
+                    info!(output_snd, "{} -> {}", remote_path.as_str(), abs_cache_path);
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }

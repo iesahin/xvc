@@ -5,6 +5,10 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+- Added reference examples for `xvc storage new ...` commands.
+  - PR: <https://github.com/iesahin/xvc/pull/222>
+  - Issue: <https://github.com/iesahin/xvc/issue/221>
+
 ## 0.5.2 (2023-02-13)
 
 - Refactor "cache type" to "recheck method" in all code and documentation
