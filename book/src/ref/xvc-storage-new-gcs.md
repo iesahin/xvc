@@ -17,7 +17,7 @@ Usage: xvc storage new gcs [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME> -
 Options:
   -n, --name <NAME>
           Name of the storage
-          
+
           This must be unique among all storages of the project
 
       --bucket-name <BUCKET_NAME>
@@ -28,7 +28,7 @@ Options:
 
       --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
-          
+
           [default: ]
 
   -h, --help
@@ -39,6 +39,7 @@ Options:
 ## Examples
 
 
+Please [configure S3 compatible interface to your Google Cloud Storage account](https://bitmovin.com/docs/encoding/faqs/how-can-i-create-access-secret-keys-for-google-cloud-storage) before using this command.
 
 Before calling any commands that use this storage, you must set the following environment variables.
 
