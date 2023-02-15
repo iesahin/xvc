@@ -36,8 +36,9 @@ You can create a new step with a name.
 $ xvc pipeline step new --step-name my-step
 ```
 
-You can get the list of steps in the pipeline.
+You can get the list of steps in the pipeline with `export` or `dag`.
 
 ```console
-$ xvc pipeline dag
+$ xvc pipeline export
+
 ```
