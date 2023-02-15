@@ -196,7 +196,7 @@ pub enum StepSubCommand {
 
         /// Step command to run
         #[arg(long, short)]
-        command: Option<String>,
+        command: String,
 
         /// When to run the command. One of always, never, by_dependencies (default).
         /// This is used to freeze or invalidate a step manually.

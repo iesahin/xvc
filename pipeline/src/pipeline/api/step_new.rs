@@ -9,7 +9,7 @@ pub fn cmd_step_new(
     xvc_root: &XvcRoot,
     pipeline_name: &str,
     step_name: String,
-    command: Option<String>,
+    command: String,
     changed: Option<XvcStepInvalidate>,
 ) -> Result<()> {
     let (pipeline_e, pipeline) = XvcPipeline::from_name(xvc_root, pipeline_name)?;
