@@ -22,5 +22,18 @@ Options:
 
 ## Examples
 
+This command works only in Xvc repositories.
+
+```console
+$ git init
+...
+$ xvc init
+```
+
+You can create a new step with a name.
+
+```console
+$ xvc pipeline step new --step-name my-step
+```
 
 ## Caveats
