@@ -73,6 +73,7 @@ pub fn cmd_dag(
         XvcPath::root_path()?
     };
 
+    watch!(pipeline_steps);
     add_explicit_dependencies(&pipeline_steps, &all_deps, &mut dependency_graph)?;
     add_implicit_dependencies(
         xvc_root,
