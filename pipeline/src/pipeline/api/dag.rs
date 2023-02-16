@@ -74,7 +74,12 @@ pub fn cmd_dag(
     };
 
     watch!(pipeline_steps);
-    add_explicit_dependencies(pipeline_e, &pipeline_steps, &all_deps, &mut dependency_graph)?;
+    add_explicit_dependencies(
+        pipeline_e,
+        &pipeline_steps,
+        &all_deps,
+        &mut dependency_graph,
+    )?;
     add_implicit_dependencies(
         xvc_root,
         &pmm,
@@ -88,9 +93,22 @@ pub fn cmd_dag(
     watch!(dependency_graph);
 
     let step_desc = |e: &XvcEntity| {
-        let step = &pipeline_steps[e];
-        let changes = consider_changed[e];
-        let command = &step_commands[e];
+        // Start step has no name
+        let step = pipeline_steps.get(e).cloned().unwrap_or_else(|| XvcStep {
+            name: "start".to_string(),
+        });
+        // Start step runs always
+        let changes = consider_changed
+            .get(e)
+            .copied()
+            .unwrap_or_else(|| XvcStepInvalidate::Always);
+        // Start step has no command
+        let command = step_commands
+            .get(e)
+            .cloned()
+            .unwrap_or_else(|| XvcStepCommand {
+                command: "".to_string(),
+            });
         format!("step: {} ({}, {})", step.name, changes, command)
     };
 
