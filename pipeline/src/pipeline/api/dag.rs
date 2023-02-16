@@ -62,10 +62,10 @@ pub fn cmd_dag(
 
     // Create start and end nodes
     let start_step = XvcStep {
-        name: "start".to_string(),
+        name: "START".to_string(),
     };
     let end_step = XvcStep {
-        name: "end".to_string(),
+        name: "END".to_string(),
     };
     let start_e = xvc_root.new_entity();
     let end_e = xvc_root.new_entity();
@@ -118,37 +118,54 @@ pub fn cmd_dag(
     watch!(dependency_graph);
 
     let step_desc = |e: &XvcEntity| {
-        let step = match *e {
-            start_e => start_step,
-            end_e => end_step,
-            _ => pipeline_steps.get(&e).cloned().unwrap(),
+        let step = if *e == start_e {
+            start_step.clone()
+        } else if *e == end_e {
+            end_step.clone()
+        } else {
+            pipeline_steps.get(e).cloned().unwrap()
         };
 
         // Start step runs always
-        let changes = match *e {
-            start_e => XvcStepInvalidate::Always,
-            end_e => XvcStepInvalidate::Never,
-            _ => consider_changed.get(e).copied().unwrap(),
+        let changes = if *e == start_e {
+            XvcStepInvalidate::Always
+        } else if *e == end_e {
+            XvcStepInvalidate::Never
+        } else {
+            consider_changed.get(e).copied().unwrap()
         };
+
         // Start step has no command
-        let command = match *e {
-            start_e => XvcStepCommand {
+        let command = if *e == start_e {
+            XvcStepCommand {
                 command: "".to_string(),
-            },
-            end_e => XvcStepCommand {
+            }
+        } else if *e == end_e {
+            XvcStepCommand {
                 command: "".to_string(),
-            },
-            _ => step_commands.get(e).cloned().unwrap(),
+            }
+        } else {
+            step_commands.get(e).cloned().unwrap()
         };
 
         format!("step: {} ({}, {})", step.name, changes, command)
     };
 
+    let mut output_graph = Graph::<&str, &str>::with_capacity(
+        dependency_graph.node_count() + dependency_graph.edge_count(),
+        dependency_graph.edge_count() * dependency_graph.node_count(),
+    );
+
+    let step_descs: HStore<String> = dependency_graph
+        .nodes()
+        .map(|n| (n, step_desc(&n)))
+        .collect();
+
     let dep_desc = |dep: &XvcDependency| match dep {
         XvcDependency::Step { name } => {
             let (step_e, _) = XvcStep::from_name(xvc_root, &pipeline_e, name)
                 .expect("Cannot find step in pipeline");
-            step_desc(&step_e)
+            step_descs[&step_e].clone()
         }
         XvcDependency::Pipeline { name } => format!("pipeline: {}", name),
         XvcDependency::File { path } => format!("file: {}", path),
@@ -163,15 +180,6 @@ pub fn cmd_dag(
         XvcDependency::Url { url } => format!("url: {}", url),
     };
 
-    let mut output_graph = Graph::<&str, &str>::with_capacity(
-        dependency_graph.node_count() + dependency_graph.edge_count(),
-        dependency_graph.edge_count() * dependency_graph.node_count(),
-    );
-
-    let step_descs: HStore<String> = dependency_graph
-        .nodes()
-        .map(|n| (n, step_desc(&n)))
-        .collect();
     let mut dep_descs = HStore::<String>::new();
     for n in dependency_graph.nodes() {
         for (_, e_to, dep) in dependency_graph.edges(n) {

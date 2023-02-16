@@ -262,12 +262,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         XvcPath::root_path()?
     };
 
-    add_explicit_dependencies(
-        pipeline_e,
-        &pipeline_steps,
-        &all_deps,
-        &mut dependency_graph,
-    )?;
+    add_explicit_dependencies(&pipeline_steps, &all_deps, &mut dependency_graph)?;
     add_implicit_dependencies(
         xvc_root,
         &pmm,
