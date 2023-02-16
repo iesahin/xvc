@@ -60,10 +60,40 @@ pub fn cmd_dag(
 
     let pipeline_len = pipeline_steps.len();
 
+    // Create start and end nodes
+    let start_step = XvcStep {
+        name: "start".to_string(),
+    };
+    let end_step = XvcStep {
+        name: "end".to_string(),
+    };
+    let start_e = xvc_root.new_entity();
+    let end_e = xvc_root.new_entity();
+
+    // All pipeline steps depend on start step
+
     let mut dependency_graph = DiGraphMap::<XvcEntity, XvcDependency>::with_capacity(
         pipeline_len,
         pipeline_len * pipeline_len,
     );
+
+    for (step_e, step) in pipeline_steps.iter() {
+        dependency_graph.add_edge(
+            start_e,
+            *step_e,
+            XvcDependency::Step {
+                name: step.name.clone(),
+            },
+        );
+
+        dependency_graph.add_edge(
+            *step_e,
+            end_e,
+            XvcDependency::Step {
+                name: end_step.name.clone(),
+            },
+        );
+    }
 
     let bs_pipeline_rundir = xvc_root.load_store::<XvcPipelineRunDir>()?;
     let pipeline_rundir = if bs_pipeline_rundir.contains_key(&pipeline_e) {
@@ -74,12 +104,7 @@ pub fn cmd_dag(
     };
 
     watch!(pipeline_steps);
-    add_explicit_dependencies(
-        pipeline_e,
-        &pipeline_steps,
-        &all_deps,
-        &mut dependency_graph,
-    )?;
+    add_explicit_dependencies(&pipeline_steps, &all_deps, &mut dependency_graph)?;
     add_implicit_dependencies(
         xvc_root,
         &pmm,
@@ -93,22 +118,29 @@ pub fn cmd_dag(
     watch!(dependency_graph);
 
     let step_desc = |e: &XvcEntity| {
-        // Start step has no name
-        let step = pipeline_steps.get(e).cloned().unwrap_or_else(|| XvcStep {
-            name: "start".to_string(),
-        });
+        let step = match *e {
+            start_e => start_step,
+            end_e => end_step,
+            _ => pipeline_steps.get(&e).cloned().unwrap(),
+        };
+
         // Start step runs always
-        let changes = consider_changed
-            .get(e)
-            .copied()
-            .unwrap_or_else(|| XvcStepInvalidate::Always);
+        let changes = match *e {
+            start_e => XvcStepInvalidate::Always,
+            end_e => XvcStepInvalidate::Never,
+            _ => consider_changed.get(e).copied().unwrap(),
+        };
         // Start step has no command
-        let command = step_commands
-            .get(e)
-            .cloned()
-            .unwrap_or_else(|| XvcStepCommand {
+        let command = match *e {
+            start_e => XvcStepCommand {
                 command: "".to_string(),
-            });
+            },
+            end_e => XvcStepCommand {
+                command: "".to_string(),
+            },
+            _ => step_commands.get(e).cloned().unwrap(),
+        };
+
         format!("step: {} ({}, {})", step.name, changes, command)
     };
 

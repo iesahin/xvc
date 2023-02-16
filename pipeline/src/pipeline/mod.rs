@@ -70,24 +70,10 @@ impl Default for XvcStepInvalidate {
 /// All steps depend on the `start_step_entity` step that's run always. It's used to collect all independent (parallel)
 /// steps into the graph.
 pub fn add_explicit_dependencies(
-    start_step_entity: XvcEntity,
     pipeline_steps: &HStore<XvcStep>,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
     graph: &mut DiGraphMap<XvcEntity, XvcDependency>,
 ) -> Result<()> {
-    let start_step = XvcStep {
-        name: "start".to_string(),
-    };
-    for (step_e, step) in pipeline_steps.iter() {
-        graph.add_edge(
-            start_step_entity,
-            *step_e,
-            XvcDependency::Step {
-                name: step.name.clone(),
-            },
-        );
-    }
-
     for (from_step_e, from_step) in pipeline_steps.iter() {
         let deps = all_deps.children_of(from_step_e)?;
         for (_to_step_e, to_step) in deps.iter() {
