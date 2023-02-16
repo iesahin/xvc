@@ -181,10 +181,16 @@ pub fn cmd_dag(
     };
 
     let mut dep_descs = HStore::<String>::new();
-    for n in dependency_graph.nodes() {
-        for (_, e_to, dep) in dependency_graph.edges(n) {
-            let dep = dep_desc(dep);
-            dep_descs.insert(e_to, dep);
+    for e_from in dependency_graph.nodes() {
+        for (_, e_to, dep) in dependency_graph.edges(e_from) {
+            if e_to == start_e {
+                dep_descs.insert(e_to, step_descs[&e_to].clone());
+            } else if e_to == end_e {
+                dep_descs.insert(e_to, step_descs[&e_to].clone());
+            } else {
+                let dep = dep_desc(dep);
+                dep_descs.insert(e_to, dep);
+            }
         }
     }
 
