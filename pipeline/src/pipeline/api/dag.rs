@@ -84,6 +84,8 @@ pub fn cmd_dag(
         &mut dependency_graph,
     )?;
 
+    watch!(dependency_graph);
+
     let step_desc = |e: &XvcEntity| {
         let step = &pipeline_steps[e];
         let changes = consider_changed[e];
