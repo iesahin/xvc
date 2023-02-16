@@ -10,7 +10,7 @@ Create a new step in the pipeline.
 $ xvc pipeline step new --help
 Add a new step
 
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME>
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
 
 Options:
   -s, --step-name <STEP_NAME>  Name of the new step
@@ -54,5 +54,7 @@ $ xvc pipeline export
   "version": 1,
   "workdir": ""
 }
+
+$ xvc pipeline dag
 
 ```
