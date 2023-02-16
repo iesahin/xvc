@@ -1,7 +1,7 @@
 use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity};
-use xvc_logging::{output, XvcOutputSender};
+use xvc_logging::{output, watch, XvcOutputSender};
 
 use std::{fs::File, io::Write};
 

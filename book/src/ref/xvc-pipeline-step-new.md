@@ -50,6 +50,7 @@ If you want a step to never run, you can set `--when` to `never`.
 $ xvc pipeline step new --step-name never --command "echo never" --when never
 ```
 
+You can update when the step will run with [`xvc pipeline step update`](/ref/xvc-pipeline-step-update.md).
 
 You can get the list of steps in the pipeline with `export` or `dag`.
 
