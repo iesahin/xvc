@@ -36,6 +36,21 @@ You can create a new step with a name and a command.
 $ xvc pipeline step new --step-name hello --command "echo hello"
 ```
 
+By default a step will run only if its dependencies have changed. (`--when by_dependencies`).
+
+If you want to run the command always, regardless of the changes in dependencies, you can set `--when` to `always`.
+
+```console
+$ xvc pipeline step new --step-name world --command "echo world" --when always
+```
+
+If you want a step to never run, you can set `--when` to `never`.
+
+```console
+$ xvc pipeline step new --step-name never --command "echo never" --when never
+```
+
+
 You can get the list of steps in the pipeline with `export` or `dag`.
 
 ```console
@@ -55,6 +70,9 @@ $ xvc pipeline export
   "workdir": ""
 }
 
-$ xvc pipeline dag
+$ xvc -vvvv pipeline dag
+digraph {
+}
+
 
 ```
