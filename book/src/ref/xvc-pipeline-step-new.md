@@ -85,7 +85,7 @@ $ xvc pipeline export
   "workdir": ""
 }
 
-$ xvc pipeline dag
+$ xvc pipeline dag --format mermaid
 digraph {
     0 [ label = "step: START (always, )" ]
     1 [ label = "step: hello (by_dependencies, echo hello)" ]

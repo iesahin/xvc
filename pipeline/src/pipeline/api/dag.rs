@@ -1,3 +1,4 @@
+use petgraph::visit::{IntoEdgesDirected, IntoNodeReferences};
 use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity};
@@ -218,7 +219,7 @@ pub fn cmd_dag(
     watch!(output_graph);
     let out_string = match format {
         XvcPipelineDagFormat::Dot => dot_from_graph(output_graph)?,
-        XvcPipelineDagFormat::Mermaid => todo!(),
+        XvcPipelineDagFormat::Mermaid => mermaid_from_graph(output_graph)?,
     };
 
     match file {
@@ -228,4 +229,32 @@ pub fn cmd_dag(
             Ok(writeln!(f, "{}", out_string)?)
         }
     }
+}
+
+/// Create a mermaid diagram from the given Graph.
+/// Graph nodes are step descriptions, edges are dependencies.
+fn mermaid_from_graph(output_graph: Graph<&str, &str>) -> Result<String> {
+    let mut out_string = String::new();
+    out_string.push_str("graph TD\n");
+    let sanitize_node = |s: &str| {
+        let node_name = s.replace(" ", "_").replace("(", "").replace(")", "");
+        if node_name != s {
+            format!("{node_name}[{s}]")
+        } else {
+            node_name
+        }
+    };
+    for e in output_graph.edge_indices() {
+        let (from, to) = output_graph.edge_endpoints(e).unwrap();
+
+        let from_label = sanitize_node(output_graph[from]);
+        let to_label = sanitize_node(output_graph[to]);
+        let edge_label = output_graph.edge_weight(e).unwrap_or(&"");
+        out_string.push_str(&format!(
+            "{} --> |{}|{}\n",
+            from_label, to_label, edge_label
+        ));
+    }
+
+    Ok(out_string)
 }
