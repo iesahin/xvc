@@ -251,7 +251,7 @@ fn mermaid_from_graph(output_graph: Graph<&str, &str>) -> Result<String> {
         let to_label = sanitize_node(output_graph[to]);
         let edge_label = output_graph.edge_weight(e).unwrap_or(&"");
         out_string.push_str(&format!(
-            "{} --> |{}|{}\n",
+            "\t{} --> |{}|{}\n",
             from_label, to_label, edge_label
         ));
     }

@@ -86,19 +86,13 @@ $ xvc pipeline export
 }
 
 $ xvc pipeline dag --format mermaid
-digraph {
-    0 [ label = "step: START (always, )" ]
-    1 [ label = "step: hello (by_dependencies, echo hello)" ]
-    2 [ label = "step: END (never, )" ]
-    3 [ label = "step: world (always, echo world)" ]
-    4 [ label = "step: never (never, echo never)" ]
-    0 -> 1 [ label = "" ]
-    0 -> 3 [ label = "" ]
-    0 -> 4 [ label = "" ]
-    1 -> 2 [ label = "" ]
-    3 -> 2 [ label = "" ]
-    4 -> 2 [ label = "" ]
-}
+graph TD
+step:_START_always,_[step: START (always, )] --> |step:_hello_by_dependencies,_echo_hello[step: hello (by_dependencies, echo hello)]|
+step:_START_always,_[step: START (always, )] --> |step:_world_always,_echo_world[step: world (always, echo world)]|
+step:_START_always,_[step: START (always, )] --> |step:_never_never,_echo_never[step: never (never, echo never)]|
+step:_hello_by_dependencies,_echo_hello[step: hello (by_dependencies, echo hello)] --> |step:_END_never,_[step: END (never, )]|
+step:_world_always,_echo_world[step: world (always, echo world)] --> |step:_END_never,_[step: END (never, )]|
+step:_never_never,_echo_never[step: never (never, echo never)] --> |step:_END_never,_[step: END (never, )]|
 
 
 ```
