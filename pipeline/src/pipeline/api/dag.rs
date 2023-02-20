@@ -46,12 +46,13 @@ fn step_desc(
     let step = pipeline_steps.get(&step_e).cloned().unwrap();
 
     // Start step runs always
+    watch!(step_e, start_e, end_e);
     let changes = if step_e == start_e {
         XvcStepInvalidate::Always
     } else if step_e == end_e {
         XvcStepInvalidate::Never
     } else {
-        invalidations.get(&step_e).copied().unwrap()
+        invalidations.get(&step_e).copied().unwrap_or_default()
     };
 
     // Start step has no command
