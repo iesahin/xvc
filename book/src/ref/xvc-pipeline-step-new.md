@@ -87,12 +87,12 @@ $ xvc pipeline export
 
 $ xvc pipeline dag --format mermaid
 graph TD
-step:_START_always,_[step: START (always, )] --> |step:_hello_by_dependencies,_echo_hello[step: hello (by_dependencies, echo hello)]|
-step:_START_always,_[step: START (always, )] --> |step:_world_always,_echo_world[step: world (always, echo world)]|
-step:_START_always,_[step: START (always, )] --> |step:_never_never,_echo_never[step: never (never, echo never)]|
-step:_hello_by_dependencies,_echo_hello[step: hello (by_dependencies, echo hello)] --> |step:_END_never,_[step: END (never, )]|
-step:_world_always,_echo_world[step: world (always, echo world)] --> |step:_END_never,_[step: END (never, )]|
-step:_never_never,_echo_never[step: never (never, echo never)] --> |step:_END_never,_[step: END (never, )]|
+	step:_START_always,_[step: START (always, )] --> |step:_hello_by_dependencies,_echo_hello[step: hello (by_dependencies, echo hello)]|
+	step:_START_always,_[step: START (always, )] --> |step:_never_never,_echo_never[step: never (never, echo never)]|
+	step:_START_always,_[step: START (always, )] --> |step:_world_always,_echo_world[step: world (always, echo world)]|
+	step:_hello_by_dependencies,_echo_hello[step: hello (by_dependencies, echo hello)] --> |step:_END_never,_[step: END (never, )]|
+	step:_never_never,_echo_never[step: never (never, echo never)] --> |step:_END_never,_[step: END (never, )]|
+	step:_world_always,_echo_world[step: world (always, echo world)] --> |step:_END_never,_[step: END (never, )]|
 
 
 ```
