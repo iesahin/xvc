@@ -85,8 +85,8 @@ $ xvc pipeline export
   "workdir": ""
 }
 
-$ xvc pipeline dag --format mermaid
-thread '<unnamed>' panicked at 'called `Option::unwrap()` on a `None` value', pipeline/src/pipeline/api/dag.rs:54:45
+$ xvc -vvvv pipeline dag --format mermaid
+thread '<unnamed>' panicked at 'called `Option::unwrap()` on a `None` value', pipeline/src/pipeline/api/dag.rs:68:45
 stack backtrace:
    0: _rust_begin_unwind
    1: core::panicking::panic_fmt
@@ -94,9 +94,9 @@ stack backtrace:
    3: core::option::Option<T>::unwrap
              at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/option.rs:778:21
    4: xvc_pipeline::pipeline::api::dag::step_desc
-             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:54:9
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:68:9
    5: xvc_pipeline::pipeline::api::dag::cmd_dag::{{closure}}
-             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:193:17
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:194:17
    6: core::iter::adapters::map::map_fold::{{closure}}
              at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/adapters/map.rs:84:28
    7: core::iter::traits::iterator::Iterator::fold
@@ -116,7 +116,7 @@ stack backtrace:
   14: core::iter::traits::iterator::Iterator::collect
              at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/traits/iterator.rs:1836:9
   15: xvc_pipeline::pipeline::api::dag::cmd_dag
-             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:188:38
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:189:38
   16: xvc_pipeline::cmd_pipeline
              at /Users/iex/github.com/iesahin/xvc/pipeline/src/lib.rs:419:13
   17: xvc::cli::dispatch::{{closure}}::{{closure}}
