@@ -132,9 +132,12 @@ pub fn cmd_dag(
     let end_step = XvcStep {
         name: "END".to_string(),
     };
-    let start_e = xvc_root.new_entity();
-    let end_e = xvc_root.new_entity();
+    let start_e = (0, 0).into();
+    let end_e = (u64::MAX, 0).into();
 
+    // We add these steps to the pipeline steps temporarily to make the graph
+    pipeline_steps.insert(start_e, start_step.clone());
+    pipeline_steps.insert(end_e, end_step.clone());
     // All pipeline steps depend on start step
 
     let mut dependency_graph = DiGraphMap::<XvcEntity, XvcDependency>::with_capacity(
@@ -155,14 +158,10 @@ pub fn cmd_dag(
             *step_e,
             end_e,
             XvcDependency::Step {
-                name: end_step.name.clone(),
+                name: end_step.clone().name,
             },
         );
     }
-
-    // We add these steps to the pipeline steps temporarily to make the graph
-    pipeline_steps.insert((0, 0).into(), start_step);
-    pipeline_steps.insert((u64::MAX, 0).into(), end_step);
 
     let bs_pipeline_rundir = xvc_root.load_store::<XvcPipelineRunDir>()?;
     let pipeline_rundir = if bs_pipeline_rundir.contains_key(&pipeline_e) {
