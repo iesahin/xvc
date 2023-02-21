@@ -309,10 +309,10 @@ fn make_mermaid_graph(
         dependency_graph.edges(e_from).for_each(|(_, e_to, dep)| {
             let to_desc = &pipeline_steps[&e_to].name;
             let to_node_name = sanitize_node(to_desc);
-            let edge_label = dep_desc(pipeline_steps, step_descs, dep);
+            let node_desc = dep_desc(pipeline_steps, step_descs, dep);
             out_string.push_str(&format!(
-                "\t{} --> |\"{}\"| {}\n",
-                from_node_name, edge_label, to_node_name
+                "\t{} --> {} [\"{}\"]\n",
+                from_node_name, to_node_name, node_desc
             ));
         });
     });

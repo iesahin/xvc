@@ -87,12 +87,12 @@ $ xvc pipeline export
 
 $ xvc pipeline dag --format mermaid
 flowchart TD
-	START --> |step: world (always, echo world)|world
-	START --> |step: hello (by_dependencies, echo hello)|hello
-	START --> |step: never (never, echo never)|never
-	world --> |step: END (never, )|END
-	hello --> |step: END (never, )|END
-	never --> |step: END (never, )|END
+	START --> |"step: world (always, echo world)"| world
+	START --> |"step: hello (by_dependencies, echo hello)"| hello
+	START --> |"step: never (never, echo never)"| never
+	world --> |"step: END (never, )"| END
+	hello --> |"step: END (never, )"| END
+	never --> |"step: END (never, )"| END
 
 
 ```
