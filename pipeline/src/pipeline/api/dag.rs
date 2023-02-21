@@ -72,16 +72,16 @@ fn step_desc(
 }
 
 fn dep_desc(
-    xvc_root: &XvcRoot,
-    pipeline_e: XvcEntity,
+    pipeline_steps: &HStore<XvcStep>,
     step_descs: &HStore<String>,
     dep: &XvcDependency,
 ) -> String {
     match dep {
         XvcDependency::Step { name } => {
-            let (step_e, _) = XvcStep::from_name(xvc_root, &pipeline_e, name)
-                .expect("Cannot find step in pipeline");
-            step_descs[&step_e].clone()
+            let step_e = pipeline_steps
+                .entity_by_value(&XvcStep { name: name.clone() })
+                .expect(&format!("Cannot find step {} in pipeline.", name));
+            step_descs.get(&step_e).unwrap().clone()
         }
         XvcDependency::Pipeline { name } => format!("pipeline: {}", name),
         XvcDependency::File { path } => format!("file: {}", path),
@@ -206,12 +206,10 @@ pub fn cmd_dag(
 
     let out_string = match format {
         XvcPipelineDagFormat::Dot => {
-            make_dot_graph(xvc_root, pipeline_e, &dependency_graph, &step_descs)?
+            make_dot_graph(&pipeline_steps, &dependency_graph, &step_descs)?
         }
         XvcPipelineDagFormat::Mermaid => make_mermaid_graph(
-            xvc_root,
             &pipeline_steps,
-            pipeline_e,
             &pipeline_name,
             &dependency_graph,
             &step_descs,
@@ -228,15 +226,14 @@ pub fn cmd_dag(
 }
 
 fn make_dot_graph(
-    xvc_root: &XvcRoot,
-    pipeline_e: XvcEntity,
+    pipeline_steps: &HStore<XvcStep>,
     dependency_graph: &DiGraphMap<XvcEntity, XvcDependency>,
     step_descs: &HStore<String>,
 ) -> Result<String> {
     let mut dep_descs = HStore::<String>::new();
-    dependency_graph.nodes().map(|e_from| {
+    dependency_graph.nodes().for_each(|e_from| {
         dependency_graph.edges(e_from).for_each(|(_, e_to, dep)| {
-            let dep = dep_desc(xvc_root, pipeline_e, step_descs, dep);
+            let dep = dep_desc(pipeline_steps, step_descs, dep);
             dep_descs.insert(e_to, dep);
         })
     });
@@ -275,9 +272,7 @@ fn make_dot_graph(
 /// Create a mermaid diagram from the given Graph.
 /// Graph nodes are step descriptions, edges are dependencies.
 fn make_mermaid_graph(
-    xvc_root: &XvcRoot,
     pipeline_steps: &HStore<XvcStep>,
-    pipeline_e: XvcEntity,
     pipeline_name: &str,
     dependency_graph: &DiGraphMap<XvcEntity, XvcDependency>,
     step_descs: &HStore<String>,
@@ -314,7 +309,7 @@ fn make_mermaid_graph(
         dependency_graph.edges(e_from).for_each(|(_, e_to, dep)| {
             let to_desc = &step_descs[&e_to];
             let to_node_name = sanitize_node(to_desc);
-            let edge_label = dep_desc(xvc_root, pipeline_e, step_descs, dep);
+            let edge_label = dep_desc(pipeline_steps, step_descs, dep);
             out_string.push_str(&format!(
                 "\t{} --> |{}|{}\n",
                 from_node_name, edge_label, to_node_name

@@ -114,41 +114,53 @@ $ xvc -vvvv pipeline dag --format mermaid
         XvcConfigMap {
             source: Default,
             map: {
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "core.guid": String(
-                    "3bb4a658b2e3f5ca",
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "file.list.no_summary": Boolean(
-                    false,
-                ),
-                "file.track.no_parallel": Boolean(
-                    false,
+                "git.use_git": Boolean(
+                    true,
                 ),
                 "file.track.force": Boolean(
-                    false,
-                ),
-                "file.carry-in.no_parallel": Boolean(
                     false,
                 ),
                 "file.list.format": String(
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "git.command": String(
-                    "git",
+                "file.carry-in.force": Boolean(
+                    false,
                 ),
-                "pipeline.current_pipeline": String(
+                "pipeline.default": String(
                     "default",
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "git.auto_stage": Boolean(
                     false,
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.list.recursive": Boolean(
+                    false,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "core.guid": String(
+                    "0169c1f4ba954571",
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "file.list.sort": String(
+                    "name-desc",
                 ),
                 "file.recheck.method": String(
                     "copy",
@@ -156,26 +168,14 @@ $ xvc -vvvv pipeline dag --format mermaid
                 "git.auto_commit": Boolean(
                     true,
                 ),
-                "cache.algorithm": String(
-                    "blake3",
+                "file.track.no_parallel": Boolean(
+                    false,
                 ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "pipeline.default": String(
+                "pipeline.current_pipeline": String(
                     "default",
                 ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "file.list.recursive": Boolean(
-                    false,
+                "core.verbosity": String(
+                    "error",
                 ),
             },
         },
@@ -185,65 +185,65 @@ $ xvc -vvvv pipeline dag --format mermaid
                 "file.list.recursive": Boolean(
                     false,
                 ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "file.list.no_summary": Boolean(
+                "file.carry-in.no_parallel": Boolean(
                     false,
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "git.command": String(
-                    "git",
-                ),
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "file.recheck.method": String(
-                    "copy",
                 ),
                 "file.track.no_parallel": Boolean(
                     false,
                 ),
-                "git.auto_stage": Boolean(
-                    false,
+                "pipeline.default_params_file": String(
+                    "params.yaml",
                 ),
                 "pipeline.default": String(
-                    "default",
-                ),
-                "pipeline.current_pipeline": String(
                     "default",
                 ),
                 "file.track.text_or_binary": String(
                     "auto",
                 ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "core.guid": String(
-                    "8492b4f47b57d22d",
-                ),
                 "file.track.force": Boolean(
                     false,
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
                 ),
                 "file.list.sort": String(
                     "name-desc",
                 ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "git.auto_stage": Boolean(
+                    false,
+                ),
+                "core.guid": String(
+                    "de1421e94b5123de",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "core.verbosity": String(
+                    "error",
+                ),
+                "file.recheck.method": String(
+                    "copy",
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
                 "file.list.format": String(
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
                 ),
             },
         },
@@ -268,49 +268,7 @@ $ xvc -vvvv pipeline dag --format mermaid
         },
     ],
     the_config: {
-        "file.track.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.carry-in.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "cache.algorithm": XvcConfigValue {
-            source: Project,
-            value: String(
-                "blake3",
-            ),
-        },
         "git.auto_stage": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "core.verbosity": XvcConfigValue {
-            source: CommandLine,
-            value: String(
-                "debug",
-            ),
-        },
-        "git.use_git": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
-        "file.list.recursive": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -322,58 +280,10 @@ $ xvc -vvvv pipeline dag --format mermaid
                 false,
             ),
         },
-        "file.recheck.method": XvcConfigValue {
-            source: Project,
-            value: String(
-                "copy",
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "file.track.text_or_binary": XvcConfigValue {
-            source: Project,
-            value: String(
-                "auto",
-            ),
-        },
-        "file.list.format": XvcConfigValue {
-            source: Project,
-            value: String(
-                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-            ),
-        },
-        "git.auto_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
         "core.guid": XvcConfigValue {
             source: Project,
             value: String(
-                "8492b4f47b57d22d",
-            ),
-        },
-        "file.track.no_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.track.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
-            value: Boolean(
-                false,
+                "de1421e94b5123de",
             ),
         },
         "file.list.sort": XvcConfigValue {
@@ -382,14 +292,104 @@ $ xvc -vvvv pipeline dag --format mermaid
                 "name-desc",
             ),
         },
+        "file.list.format": XvcConfigValue {
+            source: Project,
+            value: String(
+                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+            ),
+        },
+        "file.track.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
         "pipeline.default_params_file": XvcConfigValue {
             source: Project,
             value: String(
                 "params.yaml",
             ),
         },
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "git.command": XvcConfigValue {
+            source: Project,
+            value: String(
+                "git",
+            ),
+        },
+        "git.auto_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "file.track.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.use_git": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "cache.algorithm": XvcConfigValue {
+            source: Project,
+            value: String(
+                "blake3",
+            ),
+        },
+        "file.track.text_or_binary": XvcConfigValue {
+            source: Project,
+            value: String(
+                "auto",
+            ),
+        },
         "file.list.no_summary": XvcConfigValue {
             source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.carry-in.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.list.recursive": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "core.verbosity": XvcConfigValue {
+            source: CommandLine,
+            value: String(
+                "debug",
+            ),
+        },
+        "file.recheck.method": XvcConfigValue {
+            source: Project,
+            value: String(
+                "copy",
+            ),
+        },
+        "core.quiet": XvcConfigValue {
+            source: CommandLine,
             value: Boolean(
                 false,
             ),
@@ -407,7 +407,7 @@ $ xvc -vvvv pipeline dag --format mermaid
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"3bb4a658b2e3f5ca/"
+guid = /"0169c1f4ba954571/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -546,11 +546,11 @@ default_params_file = /"params.yaml/"
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1676885022702589",
-    "[CWD]/.xvc/ec/1676885022710225",
-    "[CWD]/.xvc/ec/1676885022816919",
-    "[CWD]/.xvc/ec/1676885022903388",
-    "[CWD]/.xvc/ec/1676885023041828",
+    "[CWD]/.xvc/ec/1676885112932969",
+    "[CWD]/.xvc/ec/1676885112935867",
+    "[CWD]/.xvc/ec/1676885113024222",
+    "[CWD]/.xvc/ec/1676885113149027",
+    "[CWD]/.xvc/ec/1676885113248756",
 ]
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs::431] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
 [TRACE][core/src/types/xvcpath.rs::83] abs_path: "[CWD]/.gitignore"
@@ -567,14 +567,8 @@ default_params_file = /"params.yaml/"
 [TRACE][core/src/types/xvcpath.rs::85] xvc_root.absolute_path(): AbsolutePath(
     "[CWD]",
 )
-[TRACE][pipeline/src/pipeline/api/dag.rs::174] pipeline_steps: HStore {
+[TRACE][pipeline/src/pipeline/api/dag.rs::176] pipeline_steps: HStore {
     map: {
-        XvcEntity(
-            3,
-            17356145921792013174,
-        ): XvcStep {
-            name: "world",
-        },
         XvcEntity(
             18446744073709551615,
             0,
@@ -582,14 +576,20 @@ default_params_file = /"params.yaml/"
             name: "END",
         },
         XvcEntity(
+            3,
+            12673839661135423835,
+        ): XvcStep {
+            name: "world",
+        },
+        XvcEntity(
             4,
-            15593584941083291268,
+            7753799923088695756,
         ): XvcStep {
             name: "never",
         },
         XvcEntity(
             2,
-            9458491973238797831,
+            12429354558646706870,
         ): XvcStep {
             name: "hello",
         },
@@ -601,50 +601,36 @@ default_params_file = /"params.yaml/"
         },
     },
 }
-[TRACE][pipeline/src/pipeline/api/dag.rs::186] dependency_graph: {
+[TRACE][pipeline/src/pipeline/api/dag.rs::188] dependency_graph: {
     XvcEntity(
         0,
         0,
     ): [
         (
             XvcEntity(
-                3,
-                17356145921792013174,
-            ),
-            Outgoing,
-        ),
-        (
-            XvcEntity(
-                18446744073709551615,
-                0,
-            ),
-            Outgoing,
-        ),
-        (
-            XvcEntity(
                 4,
-                15593584941083291268,
+                7753799923088695756,
             ),
             Outgoing,
         ),
         (
             XvcEntity(
                 2,
-                9458491973238797831,
+                12429354558646706870,
             ),
             Outgoing,
         ),
         (
             XvcEntity(
-                0,
-                0,
+                3,
+                12673839661135423835,
             ),
             Outgoing,
         ),
     ],
     XvcEntity(
-        3,
-        17356145921792013174,
+        4,
+        7753799923088695756,
     ): [
         (
             XvcEntity(
@@ -667,43 +653,29 @@ default_params_file = /"params.yaml/"
     ): [
         (
             XvcEntity(
-                3,
-                17356145921792013174,
-            ),
-            Incoming,
-        ),
-        (
-            XvcEntity(
-                0,
-                0,
-            ),
-            Incoming,
-        ),
-        (
-            XvcEntity(
-                18446744073709551615,
-                0,
-            ),
-            Outgoing,
-        ),
-        (
-            XvcEntity(
                 4,
-                15593584941083291268,
+                7753799923088695756,
             ),
             Incoming,
         ),
         (
             XvcEntity(
                 2,
-                9458491973238797831,
+                12429354558646706870,
+            ),
+            Incoming,
+        ),
+        (
+            XvcEntity(
+                3,
+                12673839661135423835,
             ),
             Incoming,
         ),
     ],
     XvcEntity(
-        4,
-        15593584941083291268,
+        2,
+        12429354558646706870,
     ): [
         (
             XvcEntity(
@@ -721,8 +693,8 @@ default_params_file = /"params.yaml/"
         ),
     ],
     XvcEntity(
-        2,
-        9458491973238797831,
+        3,
+        12673839661135423835,
     ): [
         (
             XvcEntity(
@@ -741,8 +713,8 @@ default_params_file = /"params.yaml/"
     ],
 }
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] step_e: XvcEntity(
-    3,
-    17356145921792013174,
+    18446744073709551615,
+    0,
 )
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] start_e: XvcEntity(
     0,
@@ -753,8 +725,8 @@ default_params_file = /"params.yaml/"
     0,
 )
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] step_e: XvcEntity(
-    18446744073709551615,
-    0,
+    3,
+    12673839661135423835,
 )
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] start_e: XvcEntity(
     0,
@@ -766,7 +738,7 @@ default_params_file = /"params.yaml/"
 )
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] step_e: XvcEntity(
     4,
-    15593584941083291268,
+    7753799923088695756,
 )
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] start_e: XvcEntity(
     0,
@@ -778,7 +750,7 @@ default_params_file = /"params.yaml/"
 )
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] step_e: XvcEntity(
     2,
-    9458491973238797831,
+    12429354558646706870,
 )
 [TRACE][pipeline/src/pipeline/api/dag.rs::49] start_e: XvcEntity(
     0,
@@ -800,6 +772,74 @@ default_params_file = /"params.yaml/"
     18446744073709551615,
     0,
 )
-[ERROR] Pipeline Error: Pipeline Steps Contain Cycle
+thread '<unnamed>' panicked at 'Cannot find step in pipeline: StepNotFoundInPipeline { step: "END" }', pipeline/src/pipeline/api/dag.rs:83:18
+stack backtrace:
+   0: _rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::result::unwrap_failed
+   3: core::result::Result<T,E>::expect
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/result.rs:1070:23
+   4: xvc_pipeline::pipeline::api::dag::dep_desc
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:82:31
+   5: xvc_pipeline::pipeline::api::dag::make_mermaid_graph::{{closure}}::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:317:30
+   6: core::iter::traits::iterator::Iterator::for_each::call::{{closure}}
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/traits/iterator.rs:828:29
+   7: core::iter::traits::iterator::Iterator::fold
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/traits/iterator.rs:2414:21
+   8: core::iter::traits::iterator::Iterator::for_each
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/traits/iterator.rs:831:9
+   9: xvc_pipeline::pipeline::api::dag::make_mermaid_graph::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:314:9
+  10: core::iter::traits::iterator::Iterator::for_each::call::{{closure}}
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/traits/iterator.rs:828:29
+  11: core::iter::traits::iterator::Iterator::fold
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/traits/iterator.rs:2414:21
+  12: core::iter::traits::iterator::Iterator::for_each
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/iter/traits/iterator.rs:831:9
+  13: xvc_pipeline::pipeline::api::dag::make_mermaid_graph
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:311:5
+  14: xvc_pipeline::pipeline::api::dag::cmd_dag
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/pipeline/api/dag.rs:211:42
+  15: xvc_pipeline::cmd_pipeline
+             at /Users/iex/github.com/iesahin/xvc/pipeline/src/lib.rs:419:13
+  16: xvc::cli::dispatch::{{closure}}::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:349:24
+  17: crossbeam_utils::thread::ScopedThreadBuilder::spawn::{{closure}}
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:438:31
+  18: core::ops::function::FnOnce::call_once{{vtable.shim}}
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/ops/function.rs:507:5
+  19: <alloc::boxed::Box<F,A> as core::ops::function::FnOnce<Args>>::call_once
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/alloc/src/boxed.rs:2000:9
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
+stack backtrace:
+   0: _rust_begin_unwind
+   1: core::panicking::panic_fmt
+   2: core::result::unwrap_failed
+   3: core::result::Result<T,E>::unwrap
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/result.rs:1113:23
+   4: xvc::cli::dispatch::{{closure}}
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:403:15
+   5: crossbeam_utils::thread::scope::{{closure}}
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:65
+   6: <core::panic::unwind_safe::AssertUnwindSafe<F> as core::ops::function::FnOnce<()>>::call_once
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/panic/unwind_safe.rs:271:9
+   7: std::panicking::try::do_call
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/std/src/panicking.rs:483:40
+   8: ___rust_try
+   9: std::panicking::try
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/std/src/panicking.rs:447:19
+  10: std::panic::catch_unwind
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/std/src/panic.rs:137:14
+  11: crossbeam_utils::thread::scope
+             at /Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/crossbeam-utils-0.8.14/src/thread.rs:161:18
+  12: xvc::cli::dispatch
+             at /Users/iex/github.com/iesahin/xvc/lib/src/cli/mod.rs:239:5
+  13: xvc::main
+             at /Users/iex/github.com/iesahin/xvc/workflow_tests/src/main.rs:12:5
+  14: core::ops::function::FnOnce::call_once
+             at /private/tmp/rust-20230210-12080-46tpq2/rustc-1.67.1-src/library/core/src/ops/function.rs:507:5
+note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 
 ```
