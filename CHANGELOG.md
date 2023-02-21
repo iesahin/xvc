@@ -10,7 +10,7 @@ tree, and subtasks are marked with indentation.
   - Issue: <https://github.com/iesahin/xvc/issue/221>
 - Add `xvc pipeline new` reference examples.
   - Remove `--set-default` option from the command.
--
+- Add `--format mermaid` to `xvc pipeline dag`
 
 - Added reference examples for `xvc storage new ...` commands.
   - PR: <https://github.com/iesahin/xvc/pull/222>
