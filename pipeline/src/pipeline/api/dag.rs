@@ -311,7 +311,7 @@ fn make_mermaid_graph(
             let to_node_name = sanitize_node(to_desc);
             let edge_label = dep_desc(pipeline_steps, step_descs, dep);
             out_string.push_str(&format!(
-                "\t{} --> |{}|{}\n",
+                "\t{} --> |\"{}\"| {}\n",
                 from_node_name, edge_label, to_node_name
             ));
         });
