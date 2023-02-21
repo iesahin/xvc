@@ -87,12 +87,12 @@ $ xvc pipeline export
 
 $ xvc pipeline dag --format mermaid
 flowchart TD
-	START --> hello["step: hello (by_dependencies, echo hello)"]
-	START --> never["step: never (never, echo never)"]
-	START --> world["step: world (always, echo world)"]
-	hello --> END["step: END (never, )"]
-	never --> END["step: END (never, )"]
-	world --> END["step: END (never, )"]
+	START --> world[step: world (always, echo world)]
+	START --> hello[step: hello (by_dependencies, echo hello)]
+	START --> never[step: never (never, echo never)]
+	world --> END[step: END (never, )]
+	hello --> END[step: END (never, )]
+	never --> END[step: END (never, )]
 
 
 ```
