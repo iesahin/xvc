@@ -289,7 +289,7 @@ fn make_mermaid_graph(
         }
     };
     let mut out_string = String::new();
-    out_string.push_str("graph TD\n");
+    out_string.push_str("flowchart TD\n");
     let sanitize_node = |s: &str| {
         let node_name = s
             .replace(" ", "_")
