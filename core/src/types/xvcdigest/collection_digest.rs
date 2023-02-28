@@ -33,7 +33,7 @@ impl CollectionDigest {
 }
 
 impl AttributeDigest<CollectionDigest> for CollectionDigest {
-    fn attribute(&self) -> String {
+    fn attribute() -> String {
         "collection-digest".to_string()
     }
 }

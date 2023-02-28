@@ -48,7 +48,7 @@ impl ContentDigest {
 }
 
 impl AttributeDigest<ContentDigest> for ContentDigest {
-    fn attribute(_: Self) -> String {
+    fn attribute() -> String {
         "content-digest".to_string()
     }
     fn digest(&self) -> XvcDigest {

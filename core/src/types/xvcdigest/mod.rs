@@ -151,11 +151,11 @@ persist!(XvcDigests, "xvc-digests");
 
 impl<T> From<T> for XvcDigests
 where
-    T: AttributeDigest<T>,
+    T: From<XvcDigest> + AttributeDigest<T>,
 {
     fn from(digest: T) -> Self {
         let mut map = BTreeMap::new();
-        map.insert(<T as AttributeDigest>::attribute(), digest.digest());
+        map.insert(<T as AttributeDigest<T>>::attribute(), digest.digest());
         Self(map)
     }
 }
