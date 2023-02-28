@@ -5,14 +5,14 @@
 #![forbid(unsafe_code)]
 use log::LevelFilter;
 use rand::distributions::Alphanumeric;
-use rand::rngs::{StdRng, ThreadRng};
+use rand::rngs::{StdRng};
 use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
 use std::cmp;
 use std::env;
 use std::fs::OpenOptions;
-use std::thread::Thread;
+
 use std::{
     fs::{self, File},
     process::Command,
