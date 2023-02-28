@@ -10,10 +10,15 @@ pub mod util;
 
 pub use types::hashalgorithm::HashAlgorithm;
 pub use types::recheckmethod::RecheckMethod;
-pub use types::xvcdigest::CollectionDigest;
-pub use types::xvcdigest::ContentDigest;
-pub use types::xvcdigest::MetadataDigest;
+
+pub use types::xvcdigest::collection_digest::CollectionDigest;
+pub use types::xvcdigest::content_digest::ContentDigest;
+pub use types::xvcdigest::stdout_digest::StdoutDigest;
+pub use types::xvcdigest::url_get_digest::UrlGetDigest;
+pub use types::xvcdigest::url_head_digest::UrlHeadDigest;
+pub use types::xvcdigest::AttributeDigest;
 pub use types::xvcdigest::XvcDigest;
+pub use types::xvcdigest::XvcDigests;
 
 pub use types::diff::Diff;
 pub use types::diff::DiffStore;
@@ -28,6 +33,7 @@ pub use types::diff::update_with_actual;
 
 pub use types::xvcfiletype::XvcFileType;
 pub use types::xvcmetadata::XvcMetadata;
+pub use types::xvcmetadata::XvcMetadataDigest;
 pub use types::xvcpath::TextOrBinary;
 pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
@@ -37,7 +43,7 @@ pub use error::Error;
 pub use error::Result;
 
 pub use util::file::{
-    all_paths_and_metadata, dir_includes, directory_paths, glob_includes, glob_paths,
+    all_paths_and_metadata, dir_includes, filter_paths_by_directory, glob_includes, glob_paths,
     XvcPathMetadataMap,
 };
 

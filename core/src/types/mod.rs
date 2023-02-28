@@ -1,7 +1,7 @@
 //! Xvc basic types used across the whole program
-pub mod recheckmethod;
 pub mod diff;
 pub mod hashalgorithm;
+pub mod recheckmethod;
 pub mod textorbinary;
 pub mod xvcdigest;
 pub mod xvcfiletype;

@@ -83,7 +83,7 @@ fn dep_desc(
                 .expect(&format!("Cannot find step {} in pipeline.", name));
             step_descs.get(&step_e).unwrap().clone()
         }
-        XvcDependency::Pipeline { name } => format!("pipeline: {}", name),
+        XvcDependency::Generic { generic_command } => format!("generic: {}", generic_command),
         XvcDependency::File { path } => format!("file: {}", path),
         XvcDependency::Directory { path } => format!("dir: {}", path),
         XvcDependency::Import { url, path } => format!("import: {} as {}", url, path),
@@ -311,7 +311,7 @@ fn make_mermaid_graph(
             let to_node_name = sanitize_node(to_desc);
             let node_desc = dep_desc(pipeline_steps, step_descs, dep);
             out_string.push_str(&format!(
-                "\t{} --> {}["{}"]\n",
+                "\t{} --> {}[\"{}\"]\n",
                 from_node_name, to_node_name, node_desc
             ));
         });

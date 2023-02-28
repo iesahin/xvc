@@ -10,7 +10,7 @@ use self::deps::XvcDependency;
 use self::outs::XvcOutput;
 use self::step::XvcStep;
 
-use crate::deps::compare::{compare_deps, DependencyComparisonParams, XvcDependencyChange};
+use crate::deps::compare::{compare_deps, DependencyComparisonParams, XvcDependencyDiff};
 use crate::deps::{dependencies_to_path, dependency_paths};
 use crate::error::{Error, Result};
 use crate::{XvcPipeline, XvcPipelineRunDir};
@@ -360,6 +360,9 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
     let stored_dependency_collection_digests =
         xvc_root.load_r11store::<XvcDependency, CollectionDigest>()?;
     let stored_dependency_paths = xvc_root.load_r1nstore::<XvcDependency, XvcPath>()?;
+    let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
+    let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
+    let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
     let stored_path_metadata = xvc_root.load_r11store::<XvcPath, XvcMetadata>()?;
     let stored_path_content_digest = xvc_root.load_r11store::<XvcPath, ContentDigest>()?;
     let stored_path_metadata_digest = xvc_root.load_r11store::<XvcPath, MetadataDigest>()?;
@@ -369,7 +372,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
 
     while continue_running {
         let mut next_states = step_states.clone();
-        let mut dependency_changes = HStore::<XvcDependencyChange>::new();
+        let mut dependency_changes = HStore::<XvcDependencyDiff>::new();
 
         for (step_e, step_s) in step_states.iter() {
             let params = StateParams {
@@ -406,14 +409,10 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                         pmm: &pmm,
                         algorithm: &algorithm,
                         all_dependencies: &all_deps.children,
-                        stored_dependency_paths: &stored_dependency_paths,
-                        stored_path_metadata: &stored_path_metadata,
-                        stored_dependency_collection_digest: &stored_dependency_collection_digests,
-                        stored_dependency_content_digest: &stored_dependency_content_digests,
-                        stored_dependency_metadata_digest: &stored_dependency_metadata_digests,
-                        stored_path_collection_digest: &stored_path_collection_digest,
-                        stored_path_content_digest: &stored_path_content_digest,
-                        stored_path_metadata_digest: &stored_path_metadata_digest,
+                        dependency_paths: &stored_dependency_paths,
+                        xvc_path_store: &xvc_path_store,
+                        xvc_digests_store: &xvc_digests_store,
+                        xvc_metadata_store: &xvc_metadata_store,
                         text_files: &text_files,
                     };
                     s_checking_dependency_content_digest(
@@ -510,7 +509,7 @@ fn s_checking_dependency_content_digest(
     s: &CheckingDependencyContentDigestState,
     params: StateParams,
     dependency_comparison_params: &DependencyComparisonParams,
-    dependency_changes: &mut HStore<XvcDependencyChange>,
+    dependency_changes: &mut HStore<XvcDependencyDiff>,
 ) -> Result<XvcStepState> {
     if params.run_conditions.ignore_content_digest_comparison {
         return Ok(s.content_digest_ignored());
@@ -519,7 +518,7 @@ fn s_checking_dependency_content_digest(
     // PANIC: If RStore.left doesn't have `step_e` as key.
     let deps = params.all_dependencies.children_of(step_e).unwrap();
 
-    let mut comparison_results = HStore::<XvcDependencyChange>::with_capacity(deps.len());
+    let mut comparison_results = HStore::<XvcDependencyDiff>::with_capacity(deps.len());
 
     // We update the comparison parameters as we iterate through the dependencies
     let cmp_params = dependency_comparison_params.clone();
@@ -531,7 +530,7 @@ fn s_checking_dependency_content_digest(
     }
     if comparison_results.iter().all(|(_, dc)| {
         dc.updated_collection_digest.is_none()
-            && dc.updated_metadata.is_none()
+            && dc.metadata_diff.is_none()
             && dc.updated_content_digests.is_none()
     }) {
         Ok(s.content_digest_not_changed())

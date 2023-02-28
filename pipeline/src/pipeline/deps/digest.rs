@@ -9,7 +9,9 @@ use url::Url;
 use crate::error::{Error, Result};
 
 use xvc_core::types::xvcdigest::collection_digest;
-use xvc_core::util::file::{compiled_regex, directory_paths, glob_paths, XvcPathMetadataMap};
+use xvc_core::util::file::{
+    compiled_regex, filter_paths_by_directory, glob_paths, XvcPathMetadataMap,
+};
 use xvc_core::{
     CollectionDigest, ContentDigest, HashAlgorithm, MetadataDigest, XvcDigest, XvcPath, XvcRoot,
 };
@@ -98,7 +100,7 @@ fn directory_content_digest(
     params: &DependencyDigestParams,
     directory: &XvcPath,
 ) -> Result<ContentDigest> {
-    let paths = directory_paths(params.pmm, directory);
+    let paths = filter_paths_by_directory(params.pmm, directory);
     paths_content_digest(params, &paths)
 }
 
@@ -106,15 +108,15 @@ fn directory_metadata_digest(
     params: &DependencyDigestParams,
     directory: &XvcPath,
 ) -> Result<MetadataDigest> {
-    let paths = directory_paths(params.pmm, directory);
-    paths_metadata_digest(params, &paths)
+    let paths = filter_paths_by_directory(params.pmm, directory);
+    actual_paths_metadata_digest(params, &paths)
 }
 
 fn directory_collection_digest(
     params: &DependencyDigestParams,
     directory: &XvcPath,
 ) -> Result<CollectionDigest> {
-    let paths = directory_paths(params.pmm, directory);
+    let paths = filter_paths_by_directory(params.pmm, directory);
     paths_collection_digest(params, &paths).into()
 }
 
@@ -125,7 +127,7 @@ fn glob_content_digest(params: &DependencyDigestParams, glob: &str) -> Result<Co
 
 fn glob_metadata_digest(params: &DependencyDigestParams, glob: &str) -> Result<MetadataDigest> {
     let paths = glob_paths(params.xvc_root, params.pmm, params.pipeline_rundir, glob)?;
-    paths_metadata_digest(params, &paths)
+    actual_paths_metadata_digest(params, &paths)
 }
 
 /// Calculates the digest from a list of files defined by a glob
@@ -157,18 +159,10 @@ fn xvc_path_metadata_digest(
 }
 
 /// Returns a stable digest of the list of paths.
-pub fn paths_collection_digest(
+pub fn actual_paths_metadata_digest(
     params: &DependencyDigestParams,
     paths: &XvcPathMetadataMap,
-) -> Result<CollectionDigest> {
-    collection_digest(paths, *params.algorithm).map_err(|e| e.into())
-}
-
-/// Returns a stable digest of the list of paths.
-pub fn paths_metadata_digest(
-    params: &DependencyDigestParams,
-    paths: &XvcPathMetadataMap,
-) -> Result<MetadataDigest> {
+) -> Result<XvcMetadataDigest> {
     let algorithm = params.algorithm;
     // These use string representations because of possible endianness changes across systems. It might be optimized but I don't think it will matter much.
     let md_str = paths.values().fold("".to_string(), |mut s, md| {
@@ -199,7 +193,7 @@ fn paths_content_digest(
     let mut whole_content = Vec::<u8>::with_capacity(digests.len() * 32);
     for (i, digest) in digests.values().enumerate() {
         // TODO: What about a zero copy operation here?
-        whole_content[i * 32..(i + 1) * 32].copy_from_slice(&digest.0.unwrap().digest);
+        whole_content[i * 32..(i + 1) * 32].copy_from_slice(digest.digest().digest);
     }
 
     Ok(XvcDigest::from_bytes(&whole_content, *params.algorithm).into())

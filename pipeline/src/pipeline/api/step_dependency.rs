@@ -127,18 +127,11 @@ impl<'a> XvcDependencyList<'a> {
     /// Add pipeline dependencies via their names.
     ///
     /// Note that, these are not implemented yet in the `run` command.
-    pub fn pipelines(&mut self, pipelines: Option<Vec<String>>) -> Result<&mut Self> {
-        if let Some(pipelines) = pipelines {
+    pub fn generic_commands(&mut self, generics: Option<Vec<String>>) -> Result<&mut Self> {
+        if let Some(generics) = generics {
             let mut deps = self.deps.borrow_mut();
-            for pipeline_name in pipelines {
-                let (dep_pipeline_e, dep_pipeline) =
-                    XvcPipeline::from_name(self.xvc_root, &pipeline_name)?;
-                if dep_pipeline_e == self.pipeline_e {
-                    return Err(Error::PipelineCannotDependToItself);
-                }
-                deps.push(XvcDependency::Pipeline {
-                    name: dep_pipeline.name,
-                });
+            for generic_command in generics {
+                deps.push(XvcDependency::Generic { generic_command });
             }
         }
         Ok(self)

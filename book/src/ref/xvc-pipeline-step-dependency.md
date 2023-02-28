@@ -28,4 +28,71 @@ Options:
 
 ## Examples
 
+This command works only in Xvc repositories.
+
+```console
+$ git init
+...
+$ xvc init
+```
+
+Begin by adding a new step.
+
+```console
+$ xvc pipeline step new --step-name file-dependency --command "echo data.txt has changed"
+```
+
+Add a file dependency to the step.
+
+```console
+$ xvc pipeline step dependency --step-name file-dependency --file data.txt
+```
+
+When you run the command, it will print `data.txt has changed` if the file `data.txt` has changed.
+
+```console
+$ xvc pipeline run
+```
+
+You can add multiple dependencies to a step with multiple invocations.
+
+```console
+$ xvc pipeline step dependency --step-name file-dependency --file data2.txt
+```
+
+A step will run if any of its dependencies have changed.
+
+```console
+$ xvc pipeline run
+```
+
+Normally, they are not run if none of the dependencies have changed.
+
+```console
+$ xvc pipeline run
+```
+
+However, if you want to run the step even if none of the dependencies have changed, you can set the `--when` option to `always`.
+
+```console
+$ xvc pipeline step update --step-name file-dependency --when always
+```
+
+Now the step will run even if none of the dependencies have changed.
+
+```console
+$ xvc pipeline run
+```
+
+
+
 ## Caveats
+
+## Tips
+
+You can add another Xvc pipeline as a dependency by creating a step with the command `xvc pipeline run --name <pipeline-name>`.
+
+Most shells support editing longer commands with an editor. For bash, you can use `Ctrl+X Ctrl+E`.
+
+Pipeline commands can especially get longer quickly. You can use [xvc aliases](/ref/xvc-aliases.md) for shorter
+versions. Type `source $(xvc aliases)` to load the aliases into your shell.

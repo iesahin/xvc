@@ -6,6 +6,7 @@
 //! Two [Storable] types are compared and the result is a [Diff] of the same
 //! type.
 //! These diffs make up a store, which is a [DiffStore].
+use std::collections::btree_set::Difference;
 use std::collections::HashSet;
 
 use crate::Result;
@@ -321,5 +322,25 @@ where
             self.3.get(&xe).cloned().expect("Missing diff4"),
             self.4.get(&xe).cloned().expect("Missing diff5"),
         )
+    }
+}
+
+pub trait Diffable<T>
+where
+    T: Storable,
+{
+    fn diff(record: Option<T>, actual: Option<T>) -> Diff<T> {
+        match (record, actual) {
+            (None, None) => Diff::Identical,
+            (None, Some(actual)) => Diff::RecordMissing { actual },
+            (Some(record), None) => Diff::ActualMissing { record },
+            (Some(record), Some(actual)) => {
+                if record == actual {
+                    Diff::Identical
+                } else {
+                    Diff::Different { record, actual }
+                }
+            }
+        }
     }
 }

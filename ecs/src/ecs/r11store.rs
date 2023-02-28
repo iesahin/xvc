@@ -126,6 +126,22 @@ where
         self.left.remove(entity);
         self.right.remove(entity);
     }
+
+    /// Search the right value by left
+    pub fn lookup_by_left(&self, left_element: &T) -> Option<&U> {
+        match self.left.entity_by_value(left_element) {
+            None => None,
+            Some(xe) => self.right.get(&xe),
+        }
+    }
+
+    /// Search the left value by right
+    pub fn lookup_by_right(&self, right_element: &U) -> Option<&T> {
+        match self.right.entity_by_value(right_element) {
+            None => None,
+            Some(xe) => self.left.get(&xe),
+        }
+    }
 }
 
 impl<T, U> R11Store<T, U>

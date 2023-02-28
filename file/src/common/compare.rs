@@ -24,19 +24,6 @@ use xvc_logging::{debug, error, panic, watch, XvcOutputSender};
 
 use super::FileTextOrBinary;
 
-#[derive(Debug)]
-pub struct PathComparisonParams {
-    pub xvc_path_store: XvcStore<XvcPath>,
-    pub xvc_path_imap: BTreeMap<XvcPath, XvcEntity>,
-    pub xvc_metadata_store: XvcStore<XvcMetadata>,
-    pub content_digest_store: XvcStore<ContentDigest>,
-    pub metadata_digest_store: XvcStore<MetadataDigest>,
-    pub collection_digest_store: XvcStore<CollectionDigest>,
-    pub recheck_method_store: XvcStore<RecheckMethod>,
-    pub text_or_binary_store: XvcStore<FileTextOrBinary>,
-    pub algorithm: HashAlgorithm,
-}
-
 /// Compare the records and the actual info from `pmm` to find the differences
 /// in paths.
 /// This is used to detect changes between actual paths and our records.

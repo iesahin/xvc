@@ -12,7 +12,8 @@ use crate::error::{Error, Result};
 use url::Url;
 use xvc_config::XvcConfig;
 use xvc_core::{
-    dir_includes, directory_paths, glob_includes, glob_paths, XvcPath, XvcPathMetadataMap, XvcRoot,
+    dir_includes, filter_paths_by_directory, glob_includes, glob_paths, XvcPath,
+    XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::{persist, HStore, XvcStore};
 
@@ -25,47 +26,45 @@ pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
 /// compile time errors when we miss something about dependencies.
 #[derive(Debug, Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum XvcDependency {
-    /// A pipeline dependency when a step depends on another pipeline
-    Pipeline {
-        /// The name of the pipeline
-        name: String,
-    },
-    /// A step dependency when a step depends on another step
+    /// A generic dependency that's invalidated when the given command's output has changed.
+    Generic { generic_command: String },
+
+    /// Invalidates when the dependency step is invalidated.
     Step {
         /// The name of the step
         name: String,
     },
-    /// A file dependency within the workspace
+    /// Invalidates when the file content changes.
     File {
         /// The path in the workspace
         path: XvcPath,
     },
-    /// A glob dependency to describe a set of files
+    /// Invalidates when contents in any of the files this glob describes
     Glob {
         /// The glob pattern that will be converted to a [Glob]
         glob: String,
     },
-    /// When a step depends all files in a dependency
+    /// Invalidates when contents of any of the files in the directory changes.
     Directory {
         /// The path in the workspace
         path: XvcPath,
     },
-    /// When a step depends to a URL
+    /// Invalidates when header of the URL get request changes.
     Url {
         /// URL like https://example.com/my-file.html
         url: Url,
     },
-    /// When a step depends to a URL that corresponds to a path in the workspace
+    /// Invalidates when content of the URL get request is different from the given path.
     Import {
         /// URL like https://example.com/my-file.html
         url: Url,
         /// A workspace file that is downloaded from the URL
         path: XvcPath,
     },
-    /// When a step depends to a (hyper)parameter in a JSON, YAML or similar
-    /// file.
+    /// Invalidates when key in params file in path changes.
     Param {
-        /// Format of the params file
+        /// Format of the params file.
+        /// This is inferred from extension if not given.
         format: XvcParamFormat,
         /// Path of the file in the workspace
         path: XvcPath,
@@ -89,8 +88,6 @@ pub enum XvcDependency {
         /// The end of range
         end: usize,
     },
-    // TODO: Generic { generic-command } to denote a command where we check its output and decide
-    // whether it has changed.
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
     // TODO: DatabaseQuery { database, query } to specify the result of queries
@@ -116,7 +113,7 @@ impl XvcDependency {
             XvcDependency::Regex { path, .. } => Some(path.clone()),
             XvcDependency::Lines { path, .. } => Some(path.clone()),
             XvcDependency::Import { path, .. } => Some(path.clone()),
-            XvcDependency::Pipeline { .. } => None,
+            XvcDependency::Generic { .. } => None,
             XvcDependency::Step { .. } => None,
             XvcDependency::Glob { .. } => None,
             XvcDependency::Url { .. } => None,
@@ -195,13 +192,13 @@ pub fn dependency_paths(
 
     let empty = XvcPathMetadataMap::with_capacity(0);
     match dep {
-        XvcDependency::Pipeline { .. } => empty,
+        XvcDependency::Generic { .. } => empty,
         XvcDependency::Step { .. } => empty,
         XvcDependency::File { path } => make_map(path),
         XvcDependency::Glob { glob } => {
             glob_paths(xvc_root, pmm, pipeline_rundir, glob).unwrap_or(empty)
         }
-        XvcDependency::Directory { path } => directory_paths(pmm, path),
+        XvcDependency::Directory { path } => filter_paths_by_directory(pmm, path),
         XvcDependency::Url { .. } => empty,
         XvcDependency::Import { path, .. } => make_map(path),
         XvcDependency::Param { path, .. } => make_map(path),

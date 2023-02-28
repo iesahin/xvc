@@ -116,6 +116,13 @@ pub enum Error {
         #[from]
         source: std::path::StripPrefixError,
     },
+
+    #[error("Request Error: {source}")]
+    ReqwestError {
+        #[from]
+        source: reqwest::Error,
+    },
+
     #[error("Crossbeam Send Error for Type: {t:?} {cause:?}")]
     CrossbeamSendError { t: String, cause: String },
     #[error("Relative Path Conversion Error: {source}")]

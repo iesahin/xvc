@@ -465,7 +465,7 @@ pub fn handle_step_cli(
             .globs(globs)?
             .params(params)?
             .steps(steps)?
-            .pipelines(pipelines)?
+            .generic_commands(pipelines)?
             .regexes(regexps)?
             .lines(lines)?
             .record(),
