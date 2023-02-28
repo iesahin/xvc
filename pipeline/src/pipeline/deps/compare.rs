@@ -189,7 +189,7 @@ fn compare_deps_url(
 
         let actual = UrlHeadDigest::new(url, cmp_params.algorithm)?;
         let recorded_xvc_digests= cmp_params.xvc_digests_store.get(stored_dependency_e).unwrap_or_default();
-        let record: Option<UrlHeadDigest> = recorded_xvc_digests.get(&actual.attribute()).cloned().into();
+        let record: Option<UrlHeadDigest> = recorded_xvc_digests.get<UrlHeadDigest>().cloned().into();
 
         let head_diff = UrlHeadDigest::diff(record, actual);
 
@@ -201,7 +201,7 @@ fn compare_deps_url(
                 Ok(Diff::RecordMissing { actual })
             }
             Diff::ActualMissing { record } => {
-                let record_get_diff = recorded_xvc_digests.get(&AttributeDigest::attribute(UrlGetDigest)).cloned().into();
+                let record_get_diff = recorded_xvc_digests.get<UrlGetDigest>().cloned().into();
                 record.insert(record_get_diff.attribute(), record);
                 Ok(Diff::ActualMissing { record })
             },
@@ -212,7 +212,7 @@ fn compare_deps_url(
                 } else {
                     let actual_get_diff = UrlGetDigest::new(url, cmp_params.algorithm)?;
                     actual.insert(actual_get_diff.attribute(), actual);
-                    let record_get_diff = recorded_xvc_digests.get(&AttributeDigest::attribute(UrlGetDigest)).cloned().into();
+                    let record_get_diff = recorded_xvc_digests.get<UrlGetDigest>().cloned().into();
                     record.insert(record_get_diff.attribute(), record);
                     Ok(Diff::Different { record, actual })
                 }
@@ -266,7 +266,7 @@ fn compare_deps_multiple_paths(
     let xvc_metadata_diffs = paths.iter().map(|(path, md)| {
         let actual_xvc_metadata_digest = XvcMetadataDigest::new(md)?;
         let xe = cmp_params.xvc_path_store.entity_by_value(path).ok_or(anyhow!("Cannot find XvcEntity for path {}.", path))?;
-        let recorded_xvc_metadata_digest = cmp_params.xvc_digests_store.get(&xe).map(|xvc_digests| xvc_digests.get(actual_xvc_metadata_digest.attribute()).unwrap_or(None)).cloned();
+        let recorded_xvc_metadata_digest = cmp_params.xvc_digests_store.get(&xe).map(|xvc_digests| xvc_digests.get<XvcMetadataDigest>().unwrap_or(None)).cloned();
         let xvc_metadata_diff = XvcMetadataDigest::diff(recorded_xvc_metadata_digest, Some(actual_xvc_metadata_digest));
         Ok((xe, xvc_metadata_diff))
     }).collect::<DiffStore<XvcMetadataDigest>>();
@@ -287,14 +287,14 @@ fn compare_deps_multiple_paths(
                     Diff::RecordMissing { actual }
                 }
                 Diff::ActualMissing { record } => {
-                    let recorded_content_digest = cmp_params.xvc_digests_store.get(&xe).map(|xvc_digests| xvc_digests.get(&AttributeDigest::attribute(ContentDigest)).unwrap_or(None)).cloned();
+                    let recorded_content_digest = cmp_params.xvc_digests_store.get(&xe).map(|xvc_digests| xvc_digests.get<ContentDigest>().unwrap_or(None)).cloned();
                     record.insert(recorded_content_digest.attribute(), recorded_content_digest);
                     Diff::ActualMissing { record }
                 }
                 Diff::Different { record, actual } => {
                     let text_or_binary = cmp_params.text_files.get(&xe).unwrap_or_default();
                     let actual_content_digest = ContentDigest::new(path, algorithm, text_or_binary)?;
-                    let recorded_content_digest = cmp_params.xvc_digests_store.get(&xe).map(|xvc_digests| xvc_digests.get(&AttributeDigest::attribute(ContentDigest)).unwrap_or(None)).cloned();
+                    let recorded_content_digest = cmp_params.xvc_digests_store.get(&xe).map(|xvc_digests| xvc_digests.get<ContentDigest>().unwrap_or(None)).cloned();
                     actual.insert(actual_content_digest.attribute(), actual_content_digest);
                     record.insert(recorded_content_digest.attribute(), recorded_content_digest);
                     if record == actual {

@@ -133,9 +133,14 @@ impl Display for XvcDigest {
     }
 }
 
-pub trait AttributeDigest {
-    fn attribute(_: Self) -> String;
-    fn digest(&self) -> XvcDigest;
+pub trait AttributeDigest<T>
+where
+    T: From<XvcDigest>,
+{
+    fn attribute() -> String;
+    fn digest(&self) -> XvcDigest {
+        self.into()
+    }
 }
 
 /// An entity can contain more than one digest, e.g., a file can have a digest from its metadata and a digest from its content.
@@ -144,26 +149,39 @@ pub trait AttributeDigest {
 pub struct XvcDigests(pub BTreeMap<String, XvcDigest>);
 persist!(XvcDigests, "xvc-digests");
 
-impl From<Box<dyn AttributeDigest>> for XvcDigests {
-    fn from(digest: Box<dyn AttributeDigest>) -> Self {
+impl<T> From<T> for XvcDigests
+where
+    T: AttributeDigest<T>,
+{
+    fn from(digest: T) -> Self {
         let mut map = BTreeMap::new();
-        map.insert(digest.attribute(), digest.digest());
+        map.insert(<T as AttributeDigest>::attribute(), digest.digest());
         Self(map)
+    }
+}
+
+impl XvcDigests {
+    pub fn insert<T>(&mut self, attribute_digest: T)
+    where
+        T: From<XvcDigest> + AttributeDigest<T>,
+    {
+        self.0.insert(
+            <T as AttributeDigest>::attribute(),
+            attribute_digest.digest(),
+        );
+    }
+
+    pub fn get<T>(&self) -> Option<&T>
+    where
+        T: From<XvcDigest> + AttributeDigest<T>,
+    {
+        self.0.get(&<T as AttributeDigest>::attribute()).into()
     }
 }
 
 impl XvcDigests {
     pub fn new() -> Self {
         Self(BTreeMap::new())
-    }
-
-    pub fn insert(&mut self, attribute_digest: impl AttributeDigest) {
-        self.0
-            .insert(attribute_digest.attribute(), attribute_digest.digest());
-    }
-
-    pub fn get(&self, attribute: &str) -> Option<&XvcDigest> {
-        self.0.get(attribute)
     }
 
     pub fn has_digest_kind(&self, attribute: &str) -> bool {

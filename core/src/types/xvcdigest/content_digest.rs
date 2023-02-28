@@ -47,7 +47,7 @@ impl ContentDigest {
     }
 }
 
-impl AttributeDigest for ContentDigest {
+impl AttributeDigest<ContentDigest> for ContentDigest {
     fn attribute(_: Self) -> String {
         "content-digest".to_string()
     }

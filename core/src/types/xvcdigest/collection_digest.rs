@@ -32,13 +32,9 @@ impl CollectionDigest {
     }
 }
 
-impl AttributeDigest for CollectionDigest {
-    fn attribute(_: Self) -> String {
+impl AttributeDigest<CollectionDigest> for CollectionDigest {
+    fn attribute(&self) -> String {
         "collection-digest".to_string()
-    }
-
-    fn digest(&self) -> XvcDigest {
-        self.0
     }
 }
 

@@ -35,8 +35,8 @@ impl UrlGetDigest {
     }
 }
 
-impl AttributeDigest for UrlGetDigest {
-    fn attribute(_: Self) -> String {
+impl AttributeDigest<UrlGetDigest> for UrlGetDigest {
+    fn attribute() -> String {
         "url-get-digest".to_string()
     }
     fn digest(&self) -> XvcDigest {

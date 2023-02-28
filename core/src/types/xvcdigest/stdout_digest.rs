@@ -28,8 +28,8 @@ impl StdoutDigest {
     }
 }
 
-impl AttributeDigest for StdoutDigest {
-    fn attribute(_: Self) -> String {
+impl AttributeDigest<StdoutDigest> for StdoutDigest {
+    fn attribute() -> String {
         "stdout-digest".to_string()
     }
     fn digest(&self) -> XvcDigest {

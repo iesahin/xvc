@@ -162,8 +162,8 @@ impl XvcMetadataDigest {
     }
 }
 
-impl AttributeDigest for XvcMetadataDigest {
-    fn attribute(_: Self) -> String {
+impl AttributeDigest<XvcMetadataDigest> for XvcMetadataDigest {
+    fn attribute() -> String {
         "xvc-metadata-digest".to_string()
     }
     fn digest(&self) -> XvcDigest {

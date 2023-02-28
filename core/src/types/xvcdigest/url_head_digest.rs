@@ -51,8 +51,8 @@ impl UrlHeadDigest {
     }
 }
 
-impl AttributeDigest for UrlHeadDigest {
-    fn attribute(_: Self) -> String {
+impl AttributeDigest<UrlHeadDigest> for UrlHeadDigest {
+    fn attribute() -> String {
         "url-head-digest".to_string()
     }
     fn digest(&self) -> XvcDigest {
