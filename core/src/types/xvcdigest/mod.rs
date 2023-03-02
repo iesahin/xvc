@@ -227,22 +227,20 @@ impl XvcDigests {
 
     pub fn get<T: AttributeDigest>(&self) -> Option<T> {
         let attribute = T::attribute();
-        self.0.get(&attribute).cloned().into()
+        self.0.get(&attribute).cloned().map(|d| d.into())
     }
     pub fn has_attribute<T: AttributeDigest>(&self) -> bool {
         self.0.contains_key(&T::attribute())
     }
 
-    pub fn remove<T: AttributeDigest>(&self) -> Option<T> {
+    pub fn remove<T: AttributeDigest>(&mut self) -> Option<T> {
         let attribute = T::attribute();
         self.0.remove(&attribute).map(|d| d.into())
     }
+}
 
-    pub fn iter<T: AttributeDigest>(&self) -> impl Iterator<Item = (&String, &T)> {
-        self.0.iter()
-    }
-
-    pub fn values<T: AttributeDigest>(&self) -> impl Iterator<Item = &T> {
-        self.0.values()
+impl AsRef<BTreeMap<String, XvcDigest>> for XvcDigests {
+    fn as_ref(&self) -> &BTreeMap<String, XvcDigest> {
+        &self.0
     }
 }
