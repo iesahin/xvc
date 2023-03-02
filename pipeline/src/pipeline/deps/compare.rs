@@ -9,20 +9,16 @@ use xvc_file;
 use anyhow::anyhow;
 use log::{debug, info};
 use subprocess::Exec;
-use xvc_core::types::digest_kind::KindfulDigest;
-use xvc_core::types::xvcdigest::DigestKind;
 use xvc_core::util::file::{filter_paths_by_directory, glob_paths, XvcPathMetadataMap};
-use xvc_core::util::store;
 use xvc_core::{
-    CollectionDigest, ContentDigest, Diff, HashAlgorithm, MetadataDigest, TextOrBinary, XvcDigest,
-    XvcDigests, XvcFileType, XvcMetadata, XvcPath, XvcRoot, StdoutDigest, UrlGetDigest, UrlHeadDigest, AttributeDigest, XvcMetadataDigest,
+    CollectionDigest, ContentDigest, Diff, HashAlgorithm, XvcMetadataDigest, TextOrBinary,
+    XvcDigests, XvcMetadata, XvcPath, XvcRoot, StdoutDigest, UrlHeadDigest, AttributeDigest,
 };
 use xvc_ecs::{R11Store, R1NStore, XvcStore};
-use xvc_file::compare::diff_xvc_path_metadata;
+
 
 use super::digest::{
-    dependency_content_digest, paths_collection_digest, actual_paths_metadata_digest,
-    xvc_path_content_digest, DependencyDigestParams,
+    DependencyDigestParams,
 };
 
 use super::XvcDependency;

@@ -72,7 +72,7 @@ pub fn calc_digest(
     algorithm: HashAlgorithm,
     text_or_binary: TextOrBinary,
 ) -> Result<ContentDigest> {
-    Ok(ContentDigest::from_path(path, algorithm, text_or_binary)?)
+    Ok(ContentDigest::new(path, algorithm, text_or_binary)?)
 }
 
 pub fn pipe_path_digest(
@@ -363,9 +363,12 @@ pub fn recheck_from_cache(
             };
         }
     }
-    uwr!(ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
-        file: xvc_path.clone(),
-    })), output_snd);
+    uwr!(
+        ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
+            file: xvc_path.clone(),
+        })),
+        output_snd
+    );
     watch!("Before return");
     Ok(())
 }

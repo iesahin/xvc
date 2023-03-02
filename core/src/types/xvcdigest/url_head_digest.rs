@@ -26,11 +26,8 @@ attribute_digest!(UrlHeadDigest, "url-head-digest");
 impl UrlHeadDigest {
     pub fn new(url: &Url, algorithm: HashAlgorithm) -> Result<Self> {
         let client = HttpClient::new();
-        let headers = client
-            .head(url.as_str())
-            .send()?
-            .error_for_status()?
-            .headers();
+        let response = client.head(url.as_str()).send()?.error_for_status()?;
+        let headers = response.headers();
         let mut response = String::new();
 
         // TODO: We can make this configurable if other fields are also important.
