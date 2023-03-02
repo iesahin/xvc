@@ -7,7 +7,7 @@ use std::{fs, io};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{AttributeDigest, HashAlgorithm, XvcDigest, XvcFileType};
+use crate::{attribute_digest, AttributeDigest, HashAlgorithm, XvcDigest, XvcFileType};
 use xvc_ecs::persist;
 
 use super::diff::Diffable;
@@ -130,8 +130,9 @@ impl Diffable<XvcMetadata> for XvcMetadata {}
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct XvcMetadataDigest(XvcDigest);
+attribute_digest!(XvcMetadataDigest, "xvc-metadata-digest");
+impl Diffable<XvcMetadataDigest> for XvcMetadataDigest {}
 
-persist!(XvcMetadataDigest, "xvc-metadata-digest");
 impl XvcMetadataDigest {
     /// Return metadata information aligned to 32-bytes to compare quickly
     /// It uses HashAlgorithm::AsIs without making any calculations.
@@ -161,26 +162,3 @@ impl XvcMetadataDigest {
         }))
     }
 }
-
-impl AttributeDigest<XvcMetadataDigest> for XvcMetadataDigest {
-    fn attribute() -> String {
-        "xvc-metadata-digest".to_string()
-    }
-    fn digest(&self) -> XvcDigest {
-        self.0
-    }
-}
-
-impl From<XvcMetadata> for XvcMetadataDigest {
-    fn from(xvc_metadata: XvcMetadata) -> Self {
-        Self::new(&xvc_metadata).unwrap()
-    }
-}
-
-impl From<XvcDigest> for XvcMetadataDigest {
-    fn from(digest: XvcDigest) -> Self {
-        Self(digest)
-    }
-}
-
-impl Diffable<XvcMetadataDigest> for XvcMetadataDigest {}

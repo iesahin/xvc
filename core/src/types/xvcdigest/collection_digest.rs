@@ -1,6 +1,6 @@
 use crate::util::file::is_text_file;
+use crate::{attribute_digest, TextOrBinary, XvcDigest, XvcMetadata};
 use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
-use crate::{TextOrBinary, XvcDigest, XvcMetadata};
 use reqwest::Url;
 use std::collections::{HashMap, HashSet};
 use std::time::SystemTime;
@@ -20,7 +20,7 @@ use super::AttributeDigest;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 /// Returns a stable digest of the list of paths.
 pub struct CollectionDigest(XvcDigest);
-persist!(CollectionDigest, "collection-digest");
+attribute_digest!(CollectionDigest, "collection-digest");
 impl CollectionDigest {
     pub fn new(paths: &XvcPathMetadataMap, algorithm: HashAlgorithm) -> Result<Self> {
         let paths_str = paths.keys().fold("".to_string(), |mut s, xp| {
@@ -29,17 +29,5 @@ impl CollectionDigest {
         });
 
         Ok(Self(XvcDigest::from_content(&paths_str, algorithm)))
-    }
-}
-
-impl AttributeDigest<CollectionDigest> for CollectionDigest {
-    fn attribute() -> String {
-        "collection-digest".to_string()
-    }
-}
-
-impl From<XvcDigest> for CollectionDigest {
-    fn from(digest: XvcDigest) -> Self {
-        Self(digest)
     }
 }

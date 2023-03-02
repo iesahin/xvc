@@ -10,9 +10,11 @@ use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
 use crate::{TextOrBinary, XvcMetadata};
 use reqwest::Url;
 use std::collections::{BTreeMap, HashMap};
+use std::rc::Rc;
+use std::sync::Arc;
 use std::time::SystemTime;
 use std::{fmt::Display, fs, path::Path};
-use xvc_ecs::persist;
+use xvc_ecs::{persist, Storable};
 
 use crate::error::Result;
 use blake2::{Blake2s, Digest};
@@ -133,14 +135,56 @@ impl Display for XvcDigest {
     }
 }
 
-pub trait AttributeDigest<T>
-where
-    T: From<XvcDigest>,
-{
-    fn attribute() -> String;
-    fn digest(&self) -> XvcDigest {
-        self.into()
+pub trait AttributeDigest: Storable + From<XvcDigest> + Into<XvcDigest> + AsRef<XvcDigest> {
+    fn attribute() -> String {
+        <Self as Storable>::type_description()
     }
+
+    fn digest(&self) -> XvcDigest {
+        <Self as Into<XvcDigest>>::into(*self)
+    }
+}
+
+#[macro_export]
+/// Specifies an attribute digest
+///
+/// ## Example
+/// ```rust,ignore
+/// attribute_digest!(MyDigestType, "my-digest-type");
+/// ```
+///
+/// makes `MyType` to implement [xvc_ecs::Storable], From<XvcDigest> and Into<XvcDigest> traits.
+/// It also implements [xvc_core::AttributeDigest] trait.
+/// This trait has a `attribute` function that returns the specified string.
+/// This string is then used in [XvcDigests] as a key to store the digest.
+macro_rules! attribute_digest {
+    ( $t:ty, $desc:literal ) => {
+        impl ::xvc_ecs::Storable for $t {
+            fn type_description() -> String {
+                $desc.to_string()
+            }
+        }
+
+        impl From<$crate::XvcDigest> for $t {
+            fn from(digest: $crate::XvcDigest) -> Self {
+                Self(digest)
+            }
+        }
+
+        impl From<$t> for $crate::XvcDigest {
+            fn from(digest: $t) -> Self {
+                digest.digest()
+            }
+        }
+
+        impl AsRef<$crate::XvcDigest> for $t {
+            fn as_ref(&self) -> &$crate::XvcDigest {
+                &self.0
+            }
+        }
+
+        impl $crate::AttributeDigest for $t {}
+    };
 }
 
 /// An entity can contain more than one digest, e.g., a file can have a digest from its metadata and a digest from its content.
@@ -151,31 +195,12 @@ persist!(XvcDigests, "xvc-digests");
 
 impl<T> From<T> for XvcDigests
 where
-    T: From<XvcDigest> + AttributeDigest<T>,
+    T: AttributeDigest,
 {
     fn from(digest: T) -> Self {
         let mut map = BTreeMap::new();
-        map.insert(<T as AttributeDigest<T>>::attribute(), digest.digest());
+        map.insert(<T as AttributeDigest>::attribute(), digest.digest());
         Self(map)
-    }
-}
-
-impl XvcDigests {
-    pub fn insert<T>(&mut self, attribute_digest: T)
-    where
-        T: From<XvcDigest> + AttributeDigest<T>,
-    {
-        self.0.insert(
-            <T as AttributeDigest>::attribute(),
-            attribute_digest.digest(),
-        );
-    }
-
-    pub fn get<T>(&self) -> Option<&T>
-    where
-        T: From<XvcDigest> + AttributeDigest<T>,
-    {
-        self.0.get(&<T as AttributeDigest>::attribute()).into()
     }
 }
 
@@ -183,25 +208,8 @@ impl XvcDigests {
     pub fn new() -> Self {
         Self(BTreeMap::new())
     }
-
-    pub fn has_digest_kind(&self, attribute: &str) -> bool {
-        self.0.contains_key(attribute)
-    }
-
-    pub fn remove(&mut self, attribute: String) -> Option<XvcDigest> {
-        self.0.remove(&attribute)
-    }
-
-    pub fn iter(&self) -> impl Iterator<Item = (&String, &XvcDigest)> {
-        self.0.iter()
-    }
-
     pub fn keys(&self) -> impl Iterator<Item = &String> {
         self.0.keys()
-    }
-
-    pub fn values(&self) -> impl Iterator<Item = &XvcDigest> {
-        self.0.values()
     }
 
     pub fn len(&self) -> usize {
@@ -210,5 +218,31 @@ impl XvcDigests {
 
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+
+    pub fn insert<T: AttributeDigest>(&mut self, attribute_digest: T) {
+        self.0
+            .insert(T::attribute().into(), attribute_digest.digest());
+    }
+
+    pub fn get<T: AttributeDigest>(&self) -> Option<T> {
+        let attribute = T::attribute();
+        self.0.get(&attribute).cloned().into()
+    }
+    pub fn has_attribute<T: AttributeDigest>(&self) -> bool {
+        self.0.contains_key(&T::attribute())
+    }
+
+    pub fn remove<T: AttributeDigest>(&self) -> Option<T> {
+        let attribute = T::attribute();
+        self.0.remove(&attribute).map(|d| d.into())
+    }
+
+    pub fn iter<T: AttributeDigest>(&self) -> impl Iterator<Item = (&String, &T)> {
+        self.0.iter()
+    }
+
+    pub fn values<T: AttributeDigest>(&self) -> impl Iterator<Item = &T> {
+        self.0.values()
     }
 }

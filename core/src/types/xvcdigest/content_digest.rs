@@ -1,6 +1,6 @@
 use crate::util::file::is_text_file;
+use crate::{attribute_digest, TextOrBinary, XvcDigest, XvcMetadata};
 use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
-use crate::{TextOrBinary, XvcDigest, XvcMetadata};
 use reqwest::Url;
 use std::collections::{HashMap, HashSet};
 use std::time::SystemTime;
@@ -19,7 +19,7 @@ use super::AttributeDigest;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct ContentDigest(XvcDigest);
-persist!(ContentDigest, "content-digest");
+attribute_digest!(ContentDigest, "content-digest");
 impl ContentDigest {
     /// Returns the content hash of the file in `path` calculated by `algorithm`.
     ///
@@ -44,20 +44,5 @@ impl ContentDigest {
             }
         };
         Ok(Self(digest))
-    }
-}
-
-impl AttributeDigest<ContentDigest> for ContentDigest {
-    fn attribute() -> String {
-        "content-digest".to_string()
-    }
-    fn digest(&self) -> XvcDigest {
-        self.0
-    }
-}
-
-impl From<XvcDigest> for ContentDigest {
-    fn from(digest: XvcDigest) -> Self {
-        Self(digest)
     }
 }
