@@ -140,9 +140,7 @@ pub trait AttributeDigest: Storable + From<XvcDigest> + Into<XvcDigest> + AsRef<
         <Self as Storable>::type_description()
     }
 
-    fn digest(&self) -> XvcDigest {
-        <Self as Into<XvcDigest>>::into(*self)
-    }
+    fn digest(&self) -> XvcDigest;
 }
 
 #[macro_export]
@@ -183,7 +181,11 @@ macro_rules! attribute_digest {
             }
         }
 
-        impl $crate::AttributeDigest for $t {}
+        impl $crate::AttributeDigest for $t {
+            fn digest(&self) -> XvcDigest {
+                self.0
+            }
+        }
     };
 }
 
