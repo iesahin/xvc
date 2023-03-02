@@ -6,7 +6,7 @@
 //! Two [Storable] types are compared and the result is a [Diff] of the same
 //! type.
 //! These diffs make up a store, which is a [DiffStore].
-use std::collections::btree_set::Difference;
+
 use std::collections::HashSet;
 
 use crate::Result;

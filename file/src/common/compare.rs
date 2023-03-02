@@ -6,13 +6,13 @@ use crossbeam_channel::{Receiver, Sender};
 use itertools::Itertools;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{HashSet};
 use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 
 use xvc_config::FromConfigKey;
 use xvc_core::types::xvcdigest::{
-    collection_digest::CollectionDigest, content_digest::ContentDigest, DIGEST_LENGTH,
+    content_digest::ContentDigest, DIGEST_LENGTH,
 };
 use xvc_ecs::{Error as EcsError, SharedXStore};
 

@@ -5,21 +5,21 @@ pub mod stdout_digest;
 pub mod url_get_digest;
 pub mod url_head_digest;
 
-use crate::util::file::is_text_file;
-use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
-use crate::{TextOrBinary, XvcMetadata};
-use reqwest::Url;
-use std::collections::{BTreeMap, HashMap};
-use std::rc::Rc;
-use std::sync::Arc;
-use std::time::SystemTime;
+
+use crate::{types::hashalgorithm::HashAlgorithm};
+
+
+use std::collections::{BTreeMap};
+
+
+
 use std::{fmt::Display, fs, path::Path};
 use xvc_ecs::{persist, Storable};
 
 use crate::error::Result;
 use blake2::{Blake2s, Digest};
 use relative_path::RelativePathBuf;
-use reqwest::blocking::Client as HttpClient;
+
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 use sha3::Sha3_256;
