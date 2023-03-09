@@ -304,7 +304,7 @@ fn compare_deps_multiple_paths(
     let collection_digest_diff =
         CollectionDigest::diff(stored_collection_digest, actual_collection_digest);
 
-    let xvc_metadata_diffs = paths
+    let mut xvc_metadata_diffs = paths
         .iter()
         .map(|(path, md)| {
             let actual_xvc_metadata_digest = XvcMetadataDigest::new(md).unwrap();
@@ -318,7 +318,7 @@ fn compare_deps_multiple_paths(
                 .get(&xe)
                 .and_then(|xvc_digests| xvc_digests.get::<XvcMetadataDigest>());
 
-            let mut xvc_metadata_diff = XvcMetadataDigest::diff(
+            let xvc_metadata_diff = XvcMetadataDigest::diff(
                 recorded_xvc_metadata_digest,
                 Some(actual_xvc_metadata_digest),
             );
@@ -357,7 +357,7 @@ fn compare_deps_multiple_paths(
                             text_or_binary,
                         )
                         .unwrap();
-                        let actual: XvcDigests = actual.into();
+                        let mut actual: XvcDigests = actual.into();
                         actual.insert(actual_content_digest);
                         Diff::RecordMissing { actual }
                     }
@@ -367,11 +367,11 @@ fn compare_deps_multiple_paths(
                             .get(&xe)
                             .and_then(|xvc_digests| xvc_digests.get::<ContentDigest>())
                             .unwrap();
-                        let record: XvcDigests = record.into();
+                        let mut record: XvcDigests = record.into();
                         record.insert(recorded_content_digest);
                         Diff::ActualMissing { record }
                     }
-                    Diff::Different { record, actual } => {
+                    Diff::Different { .. } => {
                         let text_or_binary =
                             cmp_params.text_files.get(&xe).copied().unwrap_or_default();
                         let actual_content_digest = ContentDigest::new(

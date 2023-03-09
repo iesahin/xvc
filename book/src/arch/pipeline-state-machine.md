@@ -1,6 +1,5 @@
 # Xvc Pipelines State Machine
 
-
 Xvc pipelines use a state machine to track the progress of each step.
 Each step has a state that is updated as the pipeline is executed.
 
@@ -48,7 +47,8 @@ If this option is set to `never`, the step will never run and will move to the `
 If this option is set to `always`, the step will run regardless of the changes in the dependencies and will move to the
 `WaitingDependencySteps` even if dependencies are missing, broken, or have not changed.
 
-If the `--when` option is set to `by_dependencies`, the steps check the following conditions before running:
+If `--when` option is set to `by_dependencies`, the steps check the following conditions before running:
+
 - All dependency steps must be in the `Done` state.
 - There should be no missing dependency files.
 - There should be no broken dependency processes.
