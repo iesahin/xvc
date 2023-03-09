@@ -578,6 +578,7 @@ fn git_auto_commit(
         ],
     ) {
         Ok(git_add_output) => {
+            watch!(git_add_output);
             if git_add_output.trim().len() == 0 {
                 debug!(output_snd, "No files to commit");
                 return Ok(());
