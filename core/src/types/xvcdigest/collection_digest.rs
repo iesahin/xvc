@@ -3,7 +3,6 @@ use crate::{attribute_digest, XvcDigest};
 use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
 
 use crate::error::Result;
-use blake2::Digest;
 
 use serde::{Deserialize, Serialize};
 

@@ -325,10 +325,12 @@ where
     }
 }
 
+/// Used to find out if record and actual are different for type T.
 pub trait Diffable<T>
 where
     T: Storable,
 {
+    /// Return possible differences between record and actual.
     fn diff(record: Option<T>, actual: Option<T>) -> Diff<T> {
         match (record, actual) {
             (None, None) => Diff::Identical,

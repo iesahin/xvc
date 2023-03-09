@@ -45,8 +45,8 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     watch!(prepared);
     let output = prepared.output()?;
 
-    watch!(output);
-
+    dbg!(output);
+    dbg!(output.status);
     assert!(output.status.success(), "Command failed: {:?}", prepared);
 
     let output_str = String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n");
