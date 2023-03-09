@@ -1,5 +1,5 @@
 use petgraph::algo::toposort;
-use petgraph::visit::{IntoEdgeReferences, IntoEdgesDirected, IntoNodeReferences};
+
 use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};

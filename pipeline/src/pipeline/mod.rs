@@ -16,7 +16,7 @@ use crate::error::{Error, Result};
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use chrono::Utc;
-use crossbeam_channel::{Receiver, Select, Sender};
+use crossbeam_channel::{Receiver, Sender};
 use xvc_walker::notify::{make_watcher, PathEvent};
 
 use log::{info, warn};
@@ -35,7 +35,7 @@ use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
     all_paths_and_metadata, CollectionDigest, ContentDigest, Diff, HashAlgorithm, TextOrBinary,
-    XvcDigests, XvcFileType, XvcMetadata, XvcMetadataDigest, XvcPath, XvcPathMetadataMap, XvcRoot,
+    XvcDigests, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
@@ -360,9 +360,9 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
     let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
     let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
-    let stored_path_metadata = xvc_root.load_r11store::<XvcPath, XvcMetadata>()?;
-    let stored_path_content_digest = xvc_root.load_r11store::<XvcPath, ContentDigest>()?;
-    let stored_path_collection_digest = xvc_root.load_r11store::<XvcPath, CollectionDigest>()?;
+    let _stored_path_metadata = xvc_root.load_r11store::<XvcPath, XvcMetadata>()?;
+    let _stored_path_content_digest = xvc_root.load_r11store::<XvcPath, ContentDigest>()?;
+    let _stored_path_collection_digest = xvc_root.load_r11store::<XvcPath, CollectionDigest>()?;
     let text_files = xvc_root.load_store::<TextOrBinary>()?;
     let algorithm = HashAlgorithm::from_conf(conf);
 

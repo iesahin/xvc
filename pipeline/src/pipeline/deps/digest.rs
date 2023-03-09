@@ -1,9 +1,9 @@
-use blake2::digest::crypto_common::AlgorithmName;
-use blake3::Hash;
+
+
 use log::warn;
-use petgraph::algo;
+
 use rayon::prelude::*;
-use rayon::str::Lines;
+
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -11,21 +11,20 @@ use std::io::{self, BufRead};
 use std::path::Path;
 use xvc_core::types::diff::Diffable;
 
-use anyhow::{anyhow, Context};
-use url::Url;
+
+
 
 use crate::error::{Error, Result};
 
-use xvc_core::types::xvcdigest::collection_digest;
+
 use xvc_core::util::file::{
     compiled_regex, filter_paths_by_directory, glob_paths, XvcPathMetadataMap,
 };
 use xvc_core::{
-    attribute_digest, AttributeDigest, CollectionDigest, ContentDigest, HashAlgorithm, XvcDigest,
-    XvcDigests, XvcMetadataDigest, XvcPath, XvcRoot,
+    attribute_digest, AttributeDigest, CollectionDigest, ContentDigest, HashAlgorithm, XvcDigest, XvcMetadataDigest, XvcPath, XvcRoot,
 };
 
-use super::{XvcDependency, XvcParamFormat, XvcParamPair};
+use super::{XvcParamFormat, XvcParamPair};
 
 pub struct DependencyDigestParams<'a> {
     pub xvc_root: &'a XvcRoot,

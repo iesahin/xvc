@@ -1,22 +1,22 @@
-use std::cmp;
+
 
 use crate::error::{Error, Result};
 use crate::XvcEntity;
 use anyhow::anyhow;
-use log::{debug, info};
-use serde::__private::de::Content;
+
+
 use subprocess::Exec;
 use url::Url;
 use xvc_core::types::diff::Diffable;
 use xvc_core::util::file::{filter_paths_by_directory, glob_paths, XvcPathMetadataMap};
 use xvc_core::{
-    AttributeDigest, CollectionDigest, ContentDigest, Diff, DiffStore, HashAlgorithm, StdoutDigest,
+    CollectionDigest, ContentDigest, Diff, DiffStore, HashAlgorithm, StdoutDigest,
     TextOrBinary, UrlGetDigest, UrlHeadDigest, XvcDigests, XvcMetadata, XvcMetadataDigest, XvcPath,
     XvcRoot,
 };
-use xvc_ecs::{HStore, R11Store, R1NStore, XvcStore};
-use xvc_file;
-use xvc_logging::{uwr, warn};
+use xvc_ecs::{HStore, R1NStore, XvcStore};
+
+
 
 use super::digest::DependencyDigestParams;
 
@@ -72,7 +72,7 @@ pub fn compare_deps(
             format: _,
             key: _,
         } => compare_deps_single_path(cmp_params, stored_dependency_e, path),
-        XvcDependency::Regex { path, regex } => {
+        XvcDependency::Regex { path, regex: _ } => {
             compare_deps_single_path(cmp_params, stored_dependency_e, path)
         }
         XvcDependency::Lines {
@@ -132,7 +132,7 @@ fn compare_deps_single_path(
     xvc_path: &XvcPath,
 ) -> Result<HStore<DigestDiff>> {
     if let Some(stored) = cmp_params.all_dependencies.get(&stored_dependency_e) {
-        if !matches!(stored, XvcDependency::File { path }) {
+        if !matches!(stored, XvcDependency::File { path: _ }) {
             return Err(
                 anyhow!("Dependency record is different from called path. Please report.").into(),
             );
@@ -152,7 +152,7 @@ fn compare_deps_single_path(
         let diff = match diff_xvc_metadata {
             // If there is no change in metadata, we don't check further
             Diff::Identical | Diff::Skipped => Diff::Identical,
-            Diff::RecordMissing { actual } => {
+            Diff::RecordMissing { actual: _ } => {
                 let text_or_binary = cmp_params
                     .text_files
                     .get(&xe_path)
@@ -164,7 +164,7 @@ fn compare_deps_single_path(
                         .into();
                 Diff::RecordMissing { actual }
             }
-            Diff::ActualMissing { record } => {
+            Diff::ActualMissing { record: _ } => {
                 let record = cmp_params
                     .xvc_digests_store
                     .get(&xe_path)
@@ -175,7 +175,7 @@ fn compare_deps_single_path(
                     .into();
                 Diff::ActualMissing { record }
             }
-            Diff::Different { record, actual } => {
+            Diff::Different { record: _, actual: _ } => {
                 let record = cmp_params
                     .xvc_digests_store
                     .get(&xe_path)
@@ -212,7 +212,7 @@ fn compare_deps_url(
     url: &Url,
 ) -> Result<HStore<DigestDiff>> {
     if let Some(stored) = cmp_params.all_dependencies.get(&stored_dependency_e) {
-        if !matches!(stored, XvcDependency::Url { url }) {
+        if !matches!(stored, XvcDependency::Url { url: _ }) {
             return Err(anyhow!("Dependency record is different from called url.").into());
         }
 
@@ -236,7 +236,7 @@ fn compare_deps_url(
                 })
             }
             Diff::ActualMissing {
-                record: record_head_digest,
+                record: _record_head_digest,
             } => Ok(Diff::ActualMissing {
                 record: record_xvc_digests.cloned().unwrap(),
             }),
@@ -269,7 +269,7 @@ fn compare_deps_directory(
     directory: &XvcPath,
 ) -> Result<HStore<DigestDiff>> {
     if let Some(stored) = cmp_params.all_dependencies.get(&stored_dependency_e) {
-        if !matches!(stored, XvcDependency::File { path }) {
+        if !matches!(stored, XvcDependency::File { path: _ }) {
             return Err(anyhow!("Dependency directory is different from called path.").into());
         }
 
@@ -289,7 +289,7 @@ fn compare_deps_multiple_paths(
     let algorithm = cmp_params.algorithm;
     let pmm = cmp_params.pmm;
     let pipeline_rundir = cmp_params.pipeline_rundir;
-    let dep_digest_params = DependencyDigestParams {
+    let _dep_digest_params = DependencyDigestParams {
         xvc_root,
         algorithm,
         pipeline_rundir,
@@ -331,9 +331,9 @@ fn compare_deps_multiple_paths(
         && xvc_metadata_diffs.values().all(|x| *x == Diff::Identical)
     {
         // The return map will contain Skipped values for all paths.
-        let mut xvc_digests = xvc_metadata_diffs
+        let xvc_digests = xvc_metadata_diffs
             .drain()
-            .map(|(xe, xmd)| (xe, Diff::Skipped))
+            .map(|(xe, _xmd)| (xe, Diff::Skipped))
             .collect::<HStore<DigestDiff>>();
         Ok(xvc_digests)
     } else {
@@ -398,8 +398,8 @@ fn compare_deps_multiple_paths(
                                 record: record.into(),
                             },
                             Diff::Different { record, actual } => {
-                                let mut record: XvcDigests = record.into();
-                                let mut actual: XvcDigests = actual.into();
+                                let record: XvcDigests = record.into();
+                                let actual: XvcDigests = actual.into();
                                 Diff::Different { record, actual }
                             }
                         }
@@ -435,7 +435,7 @@ fn compare_deps_multiple_paths(
 fn compare_deps_glob(
     cmp_params: DependencyComparisonParams,
     stored_dependency_e: XvcEntity,
-    glob: &str,
+    _glob: &str,
 ) -> Result<HStore<DigestDiff>> {
     let stored = &cmp_params.all_dependencies[&stored_dependency_e];
     if let XvcDependency::Glob { glob } = stored {
