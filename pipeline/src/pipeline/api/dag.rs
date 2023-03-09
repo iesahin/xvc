@@ -86,7 +86,6 @@ fn dep_desc(
         XvcDependency::Generic { generic_command } => format!("generic: {}", generic_command),
         XvcDependency::File { path } => format!("file: {}", path),
         XvcDependency::Directory { path } => format!("dir: {}", path),
-        XvcDependency::Import { url, path } => format!("import: {} as {}", url, path),
         XvcDependency::Lines { path, begin, end } => {
             format!("lines: {}::{}-{}", path, begin, end)
         }

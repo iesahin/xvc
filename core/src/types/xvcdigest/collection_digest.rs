@@ -1,19 +1,11 @@
-
+use crate::types::diff::Diffable;
 use crate::{attribute_digest, XvcDigest};
 use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
 
-
-
-
-
-
 use crate::error::Result;
-use blake2::{Digest};
-
+use blake2::Digest;
 
 use serde::{Deserialize, Serialize};
-
-
 
 use super::AttributeDigest;
 
@@ -21,6 +13,8 @@ use super::AttributeDigest;
 /// Returns a stable digest of the list of paths.
 pub struct CollectionDigest(XvcDigest);
 attribute_digest!(CollectionDigest, "collection-digest");
+impl Diffable<CollectionDigest> for CollectionDigest {}
+
 impl CollectionDigest {
     pub fn new(paths: &XvcPathMetadataMap, algorithm: HashAlgorithm) -> Result<Self> {
         let paths_str = paths.keys().fold("".to_string(), |mut s, xp| {

@@ -54,13 +54,6 @@ pub enum XvcDependency {
         /// URL like https://example.com/my-file.html
         url: Url,
     },
-    /// Invalidates when content of the URL get request is different from the given path.
-    Import {
-        /// URL like https://example.com/my-file.html
-        url: Url,
-        /// A workspace file that is downloaded from the URL
-        path: XvcPath,
-    },
     /// Invalidates when key in params file in path changes.
     Param {
         /// Format of the params file.
@@ -112,7 +105,6 @@ impl XvcDependency {
             XvcDependency::Param { path, .. } => Some(path.clone()),
             XvcDependency::Regex { path, .. } => Some(path.clone()),
             XvcDependency::Lines { path, .. } => Some(path.clone()),
-            XvcDependency::Import { path, .. } => Some(path.clone()),
             XvcDependency::Generic { .. } => None,
             XvcDependency::Step { .. } => None,
             XvcDependency::Glob { .. } => None,
@@ -153,11 +145,12 @@ pub fn dependencies_to_path(
                     e.warn();
                     false
                 }),
-            XvcDependency::Import { path, .. } => *path == *to_path,
             XvcDependency::Param { path, .. } => *path == *to_path,
             XvcDependency::Regex { path, .. } => *path == *to_path,
             XvcDependency::Lines { path, .. } => *path == *to_path,
-            _ => false,
+            XvcDependency::Generic { .. }
+            | XvcDependency::Step { .. }
+            | XvcDependency::Url { .. } => false,
         };
 
         if has_path {
@@ -200,7 +193,6 @@ pub fn dependency_paths(
         }
         XvcDependency::Directory { path } => filter_paths_by_directory(pmm, path),
         XvcDependency::Url { .. } => empty,
-        XvcDependency::Import { path, .. } => make_map(path),
         XvcDependency::Param { path, .. } => make_map(path),
         XvcDependency::Regex { path, .. } => make_map(path),
         XvcDependency::Lines { path, .. } => make_map(path),

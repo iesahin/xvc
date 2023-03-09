@@ -55,6 +55,43 @@ impl XvcStep {
 }
 
 // TODO: Link to the Documentation after it's written: https://github.com/iesahin/xvc/issues/202
+// ```mermaid
+//
+// stateDiagram-v2
+//
+//     [*] --> Begin
+//     Begin --> NoNeedToRun: RunNever
+//     Begin --> WaitingDependencySteps: RunConditional
+//     WaitingDependencySteps --> WaitingDependencySteps: DependencyStepsRunning
+//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedSuccessfully
+//     WaitingDependencySteps --> Broken: DependencyStepsFinishedBroken
+//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedBrokenIgnored
+//     CheckingMissingDependencies --> CheckingMissingDependencies: MissingDependenciesIgnored
+//     CheckingMissingDependencies --> Broken: HasMissingDependencies
+//     CheckingMissingDependencies --> CheckingMissingOutputs: NoMissingDependencies
+//     CheckingMissingOutputs --> CheckingMissingOutputs: MissingOutputsIgnored
+//     CheckingMissingOutputs --> CheckingTimestamps: NoMissingOutputs
+//     CheckingMissingOutputs --> WaitingToRun: HasMissingOutputs
+//     CheckingTimestamps --> CheckingTimestamps: TimestampsIgnored
+//     CheckingTimestamps --> CheckingDependencyContentDigest: HasNoNewerDependencies
+//     CheckingTimestamps --> WaitingToRun: HasNewerDependencies
+//     CheckingDependencyContentDigest --> CheckingDependencyContentDigest: ContentDigestIgnored
+//     CheckingDependencyContentDigest --> NoNeedToRun: ContentDigestNotChanged
+//     CheckingDependencyContentDigest --> WaitingToRun: ContentDigestChanged
+//     NoNeedToRun --> Done: CompletedWithoutRunningStep
+//     WaitingToRun --> WaitingToRun: ProcessPoolFull
+//     WaitingToRun --> Running: StartProcess
+//     WaitingToRun --> Broken: CannotStartProcess
+//     Running --> Running: WaitProcess
+//     Running --> Broken: ProcessTimeout
+//     Running --> Done: ProcessCompletedSuccessfully
+//     Running --> Broken: ProcessReturnedNonZero
+//     Broken --> Broken: HasBroken
+//     Done --> Done: HasDone
+//     Done --> [*]
+//     Broken --> [*]
+//
+// ```
 state_machine! {
     XvcStepState {
         InitialStates { Begin }

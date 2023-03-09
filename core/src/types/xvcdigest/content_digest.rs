@@ -1,25 +1,22 @@
+use crate::types::diff::Diffable;
+use crate::types::hashalgorithm::HashAlgorithm;
 use crate::util::file::is_text_file;
 use crate::{attribute_digest, TextOrBinary, XvcDigest};
-use crate::{types::hashalgorithm::HashAlgorithm};
-
-
 
 use std::{fmt::Display, path::Path};
 
-
 use crate::error::Result;
-use blake2::{Digest};
-
+use blake2::Digest;
 
 use serde::{Deserialize, Serialize};
-
-
 
 use super::AttributeDigest;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct ContentDigest(XvcDigest);
 attribute_digest!(ContentDigest, "content-digest");
+impl Diffable<ContentDigest> for ContentDigest {}
+
 impl ContentDigest {
     /// Returns the content hash of the file in `path` calculated by `algorithm`.
     ///

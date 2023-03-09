@@ -73,11 +73,11 @@ pub enum Error {
     FormatSpecificationRequired,
     #[error("Process Error - stdout: {stdout}\nstderr: {stderr}")]
     ProcessError { stdout: String, stderr: String },
-    // #[error("Process Exec Error: {source}")]
-    // ProcessExecError {
-    //     #[from]
-    //     source: subprocess::PopenError,
-    // },
+    #[error("Process Exec Error: {source}")]
+    ProcessExecError {
+        #[from]
+        source: subprocess::PopenError,
+    },
     // #[error("Cannot find XVC Root: {path}")]
     // CannotFindXvcRoot { path: PathBuf },
     //
@@ -195,10 +195,12 @@ pub enum Error {
         #[from]
         source: io::Error,
     },
-    // #[error("Cannot convert enum type from string: {cause_key}")]
-    // EnumTypeConversionError { cause_key: String },
-    // #[error("Unicode/UTF-8 Error: {cause:?}")]
-    // UnicodeError { cause: OsString },
+
+    #[error("Unicode/UTF-8 Error: {source:?}")]
+    UnicodeError {
+        #[from]
+        source: std::string::FromUtf8Error,
+    },
     //
     // #[error("Path must be file, not symlink or directory")]
     // RequiresAFile { path: PathBuf },

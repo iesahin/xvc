@@ -1,19 +1,13 @@
-
+use crate::types::diff::Diffable;
+use crate::types::hashalgorithm::HashAlgorithm;
 use crate::{attribute_digest, XvcDigest};
-use crate::{types::hashalgorithm::HashAlgorithm};
 use reqwest::Url;
 
-
-
-
-
 use crate::error::Result;
-use blake2::{Digest};
+use blake2::Digest;
 
 use reqwest::blocking::Client as HttpClient;
 use serde::{Deserialize, Serialize};
-
-
 
 use super::AttributeDigest;
 
@@ -22,6 +16,8 @@ use super::AttributeDigest;
 #[derive(Debug, Clone, PartialEq, Eq, Ord, PartialOrd, Serialize, Deserialize)]
 pub struct UrlHeadDigest(XvcDigest);
 attribute_digest!(UrlHeadDigest, "url-head-digest");
+
+impl Diffable<UrlHeadDigest> for UrlHeadDigest {}
 
 impl UrlHeadDigest {
     pub fn new(url: &Url, algorithm: HashAlgorithm) -> Result<Self> {

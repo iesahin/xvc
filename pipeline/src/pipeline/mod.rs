@@ -10,13 +10,13 @@ use self::deps::XvcDependency;
 use self::outs::XvcOutput;
 use self::step::XvcStep;
 
-use crate::deps::compare::{compare_deps, DependencyComparisonParams, XvcDependencyDiff};
+use crate::deps::compare::{compare_deps, DependencyComparisonParams};
 use crate::deps::{dependencies_to_path, dependency_paths};
 use crate::error::{Error, Result};
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use chrono::Utc;
-use crossbeam_channel::{Receiver, Sender};
+use crossbeam_channel::{Receiver, Select, Sender};
 use xvc_walker::notify::{make_watcher, PathEvent};
 
 use log::{info, warn};
@@ -34,11 +34,11 @@ use std::time::{Duration, Instant, SystemTime};
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, CollectionDigest, ContentDigest, HashAlgorithm, MetadataDigest,
-    TextOrBinary, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, CollectionDigest, ContentDigest, Diff, HashAlgorithm, TextOrBinary,
+    XvcDigests, XvcFileType, XvcMetadata, XvcMetadataDigest, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
-use xvc_ecs::{persist, HStore, R1NStore, XvcEntity};
+use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
 
 use sp::ExitStatus;
 use subprocess as sp;
@@ -199,6 +199,9 @@ struct CommandProcess {
     stdout_receiver: RefCell<Receiver<String>>,
     stderr_receiver: RefCell<Receiver<String>>,
 }
+
+type XvcDependencyDiff = Diff<XvcDigests>;
+
 /// # XVC Pipeline Dependency Graph Rules
 ///
 /// The dependency graph shows which steps of the pipeline depends on other
@@ -353,26 +356,19 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
 
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
-    let stored_dependency_content_digests =
-        xvc_root.load_r11store::<XvcDependency, ContentDigest>()?;
-    let stored_dependency_metadata_digests =
-        xvc_root.load_r11store::<XvcDependency, MetadataDigest>()?;
-    let stored_dependency_collection_digests =
-        xvc_root.load_r11store::<XvcDependency, CollectionDigest>()?;
     let stored_dependency_paths = xvc_root.load_r1nstore::<XvcDependency, XvcPath>()?;
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
     let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
     let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
     let stored_path_metadata = xvc_root.load_r11store::<XvcPath, XvcMetadata>()?;
     let stored_path_content_digest = xvc_root.load_r11store::<XvcPath, ContentDigest>()?;
-    let stored_path_metadata_digest = xvc_root.load_r11store::<XvcPath, MetadataDigest>()?;
     let stored_path_collection_digest = xvc_root.load_r11store::<XvcPath, CollectionDigest>()?;
-    let text_files = xvc_root.load_r11store::<XvcPath, TextOrBinary>()?;
+    let text_files = xvc_root.load_store::<TextOrBinary>()?;
     let algorithm = HashAlgorithm::from_conf(conf);
 
     while continue_running {
         let mut next_states = step_states.clone();
-        let mut dependency_changes = HStore::<XvcDependencyDiff>::new();
+        let mut dependency_changes = HStore::<Diff<XvcDigests>>::new();
 
         for (step_e, step_s) in step_states.iter() {
             let params = StateParams {
@@ -403,7 +399,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                 XvcStepState::CheckingTimestamps(s) => s_checking_timestamps(s, params),
                 XvcStepState::WaitingToRun(s) => s_waiting_to_run(s, params, &mut process_pool),
                 XvcStepState::CheckingDependencyContentDigest(s) => {
-                    let dep_comparison_params = DependencyComparisonParams {
+                    let dependency_comparison_params = DependencyComparisonParams {
                         xvc_root,
                         pipeline_rundir: &pipeline_rundir,
                         pmm: &pmm,
@@ -418,7 +414,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                     s_checking_dependency_content_digest(
                         s,
                         params,
-                        &dep_comparison_params,
+                        &dependency_comparison_params,
                         &mut dependency_changes,
                     )
                 }
@@ -525,14 +521,13 @@ fn s_checking_dependency_content_digest(
 
     for (dep_e, _) in deps.iter() {
         // We wait step and pipeline dependencies in an earlier state
-        let comparison_result = compare_deps(cmp_params.clone(), dep_e)?;
-        comparison_results.map.insert(*dep_e, comparison_result);
+        compare_deps(cmp_params.clone(), *dep_e)?
+            .drain()
+            .for_each(|(dep_e, cmp_result)| {
+                comparison_results.insert(dep_e, cmp_result);
+            });
     }
-    if comparison_results.iter().all(|(_, dc)| {
-        dc.updated_collection_digest.is_none()
-            && dc.metadata_diff.is_none()
-            && dc.updated_content_digests.is_none()
-    }) {
+    if comparison_results.iter().all(|(_, dc)| !dc.changed()) {
         Ok(s.content_digest_not_changed())
     } else {
         // We'll update all elements

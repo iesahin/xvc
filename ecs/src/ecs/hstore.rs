@@ -321,3 +321,11 @@ impl<T: PartialEq> HStore<T> {
         }
     }
 }
+
+impl<T> From<(XvcEntity, T)> for HStore<T> {
+    fn from((e, v): (XvcEntity, T)) -> Self {
+        let mut store = HStore::<T>::new();
+        store.insert(e, v);
+        store
+    }
+}
