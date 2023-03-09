@@ -6,12 +6,18 @@ use crate::{attribute_digest, TextOrBinary, XvcDigest};
 use std::{fmt::Display, path::Path};
 
 use crate::error::Result;
-use blake2::Digest;
 
 use serde::{Deserialize, Serialize};
 
 use super::AttributeDigest;
 
+/// Digest for the content of a file.
+///
+/// It's calculated by reading the file contents and hashing them with the given algortthm.
+/// The digest is stable, i.e. it doesn't change if the file is moved or renamed.
+/// The digest is not affected by the file's path.
+/// If the file is a text file (see [`is_text_file`]), the digest is calculated by
+/// removing line endings before hashing.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct ContentDigest(XvcDigest);
 attribute_digest!(ContentDigest, "content-digest");
