@@ -101,7 +101,7 @@ impl Diffs {
                 },
 
                 Diff::RecordMissing {
-                    actual: current_xvc_digests,
+                    actual: mut current_xvc_digests,
                 } => Diff::RecordMissing {
                     actual: {
                         current_xvc_digests.insert(incoming_attribute_digest);

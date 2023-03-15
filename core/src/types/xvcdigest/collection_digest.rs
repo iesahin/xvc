@@ -1,7 +1,7 @@
 //! Digest of a list of paths, e.g., a glob or a directory.
 use crate::types::diff::Diffable;
 use crate::{attribute_digest, XvcDigest, XvcPath};
-use crate::{types::hashalgorithm::HashAlgorithm, XvcPathMetadataMap};
+use crate::{types::hashalgorithm::HashAlgorithm};
 use itertools::Itertools;
 
 use crate::error::Result;
