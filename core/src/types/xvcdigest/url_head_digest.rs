@@ -1,3 +1,4 @@
+//! Digest of Etag and Last-Modified headers of a URL.
 use crate::types::diff::Diffable;
 use crate::types::hashalgorithm::HashAlgorithm;
 use crate::{attribute_digest, XvcDigest};

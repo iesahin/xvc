@@ -5,13 +5,9 @@ pub mod stdout_digest;
 pub mod url_get_digest;
 pub mod url_head_digest;
 
+use crate::types::hashalgorithm::HashAlgorithm;
 
-use crate::{types::hashalgorithm::HashAlgorithm};
-
-
-use std::collections::{BTreeMap};
-
-
+use std::collections::BTreeMap;
 
 use std::{fmt::Display, fs, path::Path};
 use xvc_ecs::{persist, Storable};
@@ -238,6 +234,20 @@ impl XvcDigests {
     pub fn remove<T: AttributeDigest>(&mut self) -> Option<T> {
         let attribute = T::attribute();
         self.0.remove(&attribute).map(|d| d.into())
+    }
+
+    pub fn insert_with_arbitrary_attribute(&mut self, attribute: String, digest: XvcDigest) {
+        self.0.insert(attribute, digest);
+    }
+
+    pub fn merge_with(&mut self, other: &Self) {
+        self.0.extend(other.0.clone());
+    }
+
+    pub fn from_attribute_digest<T: AttributeDigest>(attribute_digest: T) -> Self {
+        let mut s = Self::new();
+        s.insert(attribute_digest);
+        s
     }
 }
 

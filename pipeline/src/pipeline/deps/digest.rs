@@ -1,5 +1,3 @@
-
-
 use log::warn;
 
 use rayon::prelude::*;
@@ -11,17 +9,14 @@ use std::io::{self, BufRead};
 use std::path::Path;
 use xvc_core::types::diff::Diffable;
 
-
-
-
 use crate::error::{Error, Result};
-
 
 use xvc_core::util::file::{
     compiled_regex, filter_paths_by_directory, glob_paths, XvcPathMetadataMap,
 };
 use xvc_core::{
-    attribute_digest, AttributeDigest, CollectionDigest, ContentDigest, HashAlgorithm, XvcDigest, XvcMetadataDigest, XvcPath, XvcRoot,
+    attribute_digest, AttributeDigest, CollectionDigest, ContentDigest, HashAlgorithm, XvcDigest,
+    XvcMetadataDigest, XvcPath, XvcRoot,
 };
 
 use super::{XvcParamFormat, XvcParamPair};
@@ -54,7 +49,8 @@ fn directory_collection_digest(
     directory: &XvcPath,
 ) -> Result<CollectionDigest> {
     let paths = filter_paths_by_directory(params.pmm, directory);
-    CollectionDigest::new(&paths, *params.algorithm).map_err(|e| e.into())
+    CollectionDigest::new(paths.into_iter().map(|(p, _)| p), *params.algorithm)
+        .map_err(|e| e.into())
 }
 
 fn glob_content_digest(params: &DependencyDigestParams, glob: &str) -> Result<ContentDigest> {
@@ -70,7 +66,8 @@ fn glob_metadata_digest(params: &DependencyDigestParams, glob: &str) -> Result<X
 /// Calculates the digest from a list of files defined by a glob
 fn glob_collection_digest(params: &DependencyDigestParams, glob: &str) -> Result<CollectionDigest> {
     let paths = glob_paths(params.xvc_root, params.pmm, params.pipeline_rundir, glob)?;
-    CollectionDigest::new(&paths, *params.algorithm).map_err(|e| e.into())
+    CollectionDigest::new(paths.into_iter().map(|(p, _)| p), *params.algorithm)
+        .map_err(|e| e.into())
 }
 
 /// Compare digest from actual `path` metadata with its stored version

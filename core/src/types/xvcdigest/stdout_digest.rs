@@ -1,4 +1,4 @@
-
+//! Digest of a command output.
 use crate::{attribute_digest, XvcDigest};
 use crate::{types::hashalgorithm::HashAlgorithm};
 

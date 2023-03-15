@@ -26,6 +26,7 @@ pub struct XvcMetadata {
 }
 
 persist!(XvcMetadata, "xvc-metadata");
+impl Diffable<XvcMetadata> for XvcMetadata {}
 
 impl XvcMetadata {
     /// Return metadata information aligned to 32-bytes to compare quickly
@@ -125,8 +126,6 @@ impl From<&fs::Metadata> for XvcMetadata {
         }
     }
 }
-
-impl Diffable<XvcMetadata> for XvcMetadata {}
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct XvcMetadataDigest(XvcDigest);

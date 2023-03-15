@@ -20,6 +20,7 @@ use std::ops::Deref;
 use crate::{AttributeDigest, ContentDigest, HashAlgorithm};
 use xvc_ecs::persist;
 
+use super::diff::Diffable;
 use super::xvcroot::XvcRoot;
 
 /// A file, symlink or a directory _relative to_ XvcRoot
@@ -27,6 +28,7 @@ use super::xvcroot::XvcRoot;
 pub struct XvcPath(RelativePathBuf);
 
 persist!(XvcPath, "xvc-path");
+impl Diffable<XvcPath> for XvcPath {}
 
 impl Deref for XvcPath {
     type Target = RelativePathBuf;

@@ -1,19 +1,13 @@
-
+//! Digest from contents of a GET request to a URL.
+use crate::types::hashalgorithm::HashAlgorithm;
 use crate::{attribute_digest, XvcDigest};
-use crate::{types::hashalgorithm::HashAlgorithm};
 use reqwest::Url;
 
-
-
-
-
 use crate::error::Result;
-use blake2::{Digest};
+use blake2::Digest;
 
 use reqwest::blocking::Client as HttpClient;
 use serde::{Deserialize, Serialize};
-
-
 
 use super::AttributeDigest;
 

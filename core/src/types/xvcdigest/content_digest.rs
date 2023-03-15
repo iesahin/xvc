@@ -1,3 +1,4 @@
+//! Digest of file content
 use crate::types::diff::Diffable;
 use crate::types::hashalgorithm::HashAlgorithm;
 use crate::util::file::is_text_file;

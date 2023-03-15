@@ -6,6 +6,7 @@ pub mod schema;
 pub mod step;
 
 use self::command::XvcStepCommand;
+use self::deps::compare::Diffs;
 use self::deps::XvcDependency;
 use self::outs::XvcOutput;
 use self::step::XvcStep;
@@ -368,7 +369,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
 
     while continue_running {
         let mut next_states = step_states.clone();
-        let mut dependency_changes = HStore::<Diff<XvcDigests>>::new();
+        let mut dependency_diffs = HStore::<Diffs>::new();
 
         for (step_e, step_s) in step_states.iter() {
             let params = StateParams {
@@ -415,7 +416,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                         s,
                         params,
                         &dependency_comparison_params,
-                        &mut dependency_changes,
+                        &mut dependency_diffs,
                     )
                 }
                 XvcStepState::Done(s) => s_done(s, params),
@@ -505,7 +506,7 @@ fn s_checking_dependency_content_digest(
     s: &CheckingDependencyContentDigestState,
     params: StateParams,
     dependency_comparison_params: &DependencyComparisonParams,
-    dependency_changes: &mut HStore<XvcDependencyDiff>,
+    dependency_changes: &mut HStore<Diffs>,
 ) -> Result<XvcStepState> {
     if params.run_conditions.ignore_content_digest_comparison {
         return Ok(s.content_digest_ignored());
@@ -518,24 +519,24 @@ fn s_checking_dependency_content_digest(
 
     // We update the comparison parameters as we iterate through the dependencies
     let cmp_params = dependency_comparison_params.clone();
+    let mut collected_diffs = Diffs::new();
 
     for (dep_e, _) in deps.iter() {
         // We wait step and pipeline dependencies in an earlier state
-        compare_deps(cmp_params.clone(), *dep_e)?
-            .drain()
-            .for_each(|(dep_e, cmp_result)| {
-                comparison_results.insert(dep_e, cmp_result);
-            });
+        collected_diffs = compare_deps(cmp_params.clone(), *dep_e, collected_diffs)?;
     }
-    if comparison_results.iter().all(|(_, dc)| !dc.changed()) {
-        Ok(s.content_digest_not_changed())
-    } else {
-        // We'll update all elements
-        dependency_changes
-            .map
-            .extend(comparison_results.map.drain());
-        Ok(s.content_digest_changed())
-    }
+    dependency_changes[step_e] = collected_diffs;
+    collected_diffs
+        .xvc_digests_diff
+        .read()
+        .and_then(|xvc_digests_diff| {
+            if xvc_digests_diff.iter().any(|(_, d)| d.changed()) {
+                Ok(s.content_digest_changed())
+            } else {
+                Ok(s.content_digest_not_changed())
+            }
+        })
+        .map_err(|e| e.into())
 }
 
 fn s_checking_timestamps(s: &CheckingTimestampsState, params: StateParams) -> Result<XvcStepState> {
