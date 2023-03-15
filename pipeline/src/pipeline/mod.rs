@@ -515,7 +515,7 @@ fn s_checking_dependency_content_digest(
     // PANIC: If RStore.left doesn't have `step_e` as key.
     let deps = params.all_dependencies.children_of(step_e).unwrap();
 
-    let mut comparison_results = HStore::<XvcDependencyDiff>::with_capacity(deps.len());
+    let _comparison_results = HStore::<XvcDependencyDiff>::with_capacity(deps.len());
 
     // We update the comparison parameters as we iterate through the dependencies
     let cmp_params = dependency_comparison_params.clone();

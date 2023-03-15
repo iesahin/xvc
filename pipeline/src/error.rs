@@ -5,7 +5,7 @@ use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
 use std::path::PathBuf;
-use std::sync::{PoisonError, RwLockReadGuard};
+use std::sync::{PoisonError};
 use thiserror::Error as ThisError;
 
 #[derive(ThisError, Debug)]

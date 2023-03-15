@@ -1,20 +1,19 @@
-use std::collections::{BTreeMap, HashMap};
-use std::sync::{Arc, RwLock, RwLockReadGuard};
+
+use std::sync::{Arc, RwLock};
 
 use crate::error::{Error, Result};
 use crate::XvcEntity;
 use anyhow::anyhow;
 
-use itertools::merge;
+
 use subprocess::Exec;
 use url::Url;
 use xvc_core::types::diff::Diffable;
 use xvc_core::util::file::{filter_paths_by_directory, glob_paths, XvcPathMetadataMap};
-use xvc_core::util::store;
+
 use xvc_core::{
-    AttributeDigest, CollectionDigest, ContentDigest, Diff, DiffStore, HashAlgorithm, StdoutDigest,
-    TextOrBinary, UrlGetDigest, UrlHeadDigest, XvcDigest, XvcDigests, XvcMetadata,
-    XvcMetadataDigest, XvcPath, XvcRoot,
+    AttributeDigest, CollectionDigest, ContentDigest, Diff, HashAlgorithm, StdoutDigest,
+    TextOrBinary, UrlGetDigest, UrlHeadDigest, XvcDigests, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, R1NStore, XvcStore};
 
@@ -287,7 +286,7 @@ fn compare_deps_single_path(
         if matches!(
             stored,
             XvcDependency::File {
-                path: recorded_path
+                path: _recorded_path
             }
         ) {
             let actual_xvc_metadata = cmp_params.pmm.get(xvc_path).cloned();
@@ -541,7 +540,7 @@ pub fn compare_deps_multiple_paths(
                             .get(&xe)
                             .map(|p| (xe, p.clone()))
                             .expect("Entity should exist in the store"),
-                        Diff::Different { record, actual } => (xe, actual.clone()),
+                        Diff::Different { record: _, actual } => (xe, actual.clone()),
                         Diff::Identical => cmp_params
                             .xvc_path_store
                             .get(&xe)
@@ -583,7 +582,7 @@ pub fn compare_deps_multiple_paths(
                         }
                     }
 
-                    Some(Diff::ActualMissing { record }) => {
+                    Some(Diff::ActualMissing { record: _ }) => {
                         let recorded_content_digest = cmp_params
                             .xvc_digests_store
                             .get(&xe)
