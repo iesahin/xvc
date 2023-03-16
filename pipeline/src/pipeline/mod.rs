@@ -539,12 +539,18 @@ fn s_checking_dependency_content_digest(
     dependency_comparison_params: &DependencyComparisonParams,
     dependency_changes: &mut HStore<Diffs>,
 ) -> Result<XvcStepState> {
+    watch!(params.run_conditions);
     if params.run_conditions.ignore_content_digest_comparison {
         return Ok(s.content_digest_ignored());
     }
+
     let step_e = params.step_e;
     // PANIC: If RStore.left doesn't have `step_e` as key.
     let deps = params.all_dependencies.children_of(step_e).unwrap();
+
+    if deps.is_empty() {
+        return Ok(s.content_digest_ignored());
+    }
 
     let _comparison_results = HStore::<XvcDependencyDiff>::with_capacity(deps.len());
 
@@ -556,6 +562,7 @@ fn s_checking_dependency_content_digest(
         // We wait step and pipeline dependencies in an earlier state
         compare_deps(cmp_params.clone(), *dep_e, &mut collected_diffs)?;
     }
+    watch!(&collected_diffs);
     dependency_changes.insert(*step_e, collected_diffs.clone());
     collected_diffs
         .xvc_digests_diff
