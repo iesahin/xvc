@@ -18,6 +18,7 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use chrono::Utc;
 use crossbeam_channel::{Receiver, Sender};
+use xvc_logging::watch;
 use xvc_walker::notify::{make_watcher, PathEvent};
 
 use log::{info, warn};
@@ -252,6 +253,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
     let (_fs_watcher, fs_receiver) = make_watcher(ignore_rules)?;
 
     let pipeline_len = pipeline_steps.len();
+    watch!(pipeline_len);
 
     let mut dependency_graph = DiGraphMap::<XvcEntity, XvcDependency>::with_capacity(
         pipeline_len,
@@ -267,6 +269,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
     };
 
     add_explicit_dependencies(&pipeline_steps, &all_deps, &mut dependency_graph)?;
+    watch!(&dependency_graph);
     add_implicit_dependencies(
         xvc_root,
         &pmm,
