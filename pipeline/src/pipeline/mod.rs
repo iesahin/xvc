@@ -347,7 +347,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
             watch!(dependency_graph
                 .edges_directed(*step_e, Direction::Outgoing)
                 .map(|e| e.0)
-                .collect::<Vec<XvcEntity>());
+                .collect::<Vec<XvcEntity>>());
             match consider_changed[step_e] {
                 // If the step has no dependencies, we run it always
                 XvcStepInvalidate::ByDependencies => {
