@@ -173,8 +173,9 @@ pub fn cmd_dag(
     };
 
     watch!(pipeline_steps);
-    add_explicit_dependencies(&pipeline_steps, &all_deps, &mut dependency_graph)?;
+    add_explicit_dependencies(output_snd, &pipeline_steps, &all_deps, &mut dependency_graph)?;
     add_implicit_dependencies(
+        output_snd,
         xvc_root,
         &pmm,
         &pipeline_rundir,

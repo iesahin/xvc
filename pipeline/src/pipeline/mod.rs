@@ -19,10 +19,9 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 use chrono::Utc;
 use crossbeam_channel::{Receiver, Sender};
 use petgraph::Direction;
-use xvc_logging::watch;
+use xvc_logging::{info, output, warn, watch, XvcOutputSender};
 use xvc_walker::notify::{make_watcher, PathEvent};
 
-use log::{info, warn};
 use petgraph::algo::toposort;
 use petgraph::data::Build;
 use petgraph::dot::Dot;
@@ -73,6 +72,7 @@ impl Default for XvcStepInvalidate {
 /// All steps depend on the `start_step_entity` step that's run always. It's used to collect all independent (parallel)
 /// steps into the graph.
 pub fn add_explicit_dependencies(
+    output_snd: &XvcOutputSender,
     pipeline_steps: &HStore<XvcStep>,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
     graph: &mut DiGraphMap<XvcEntity, XvcDependency>,
@@ -89,8 +89,8 @@ pub fn add_explicit_dependencies(
                     Some(entity) => {
                         graph.update_edge(*from_step_e, entity, to_step.clone());
                         info!(
-                            "Found explicit dependency: {:?} -> {:?}",
-                            from_step, to_step
+                            output_snd,
+                            "Found explicit dependency: {:?} -> {:?}", from_step, to_step
                         );
                     }
                     None => {
@@ -109,6 +109,7 @@ pub fn add_explicit_dependencies(
 /// If `step-A` outputs `file-X`  and `step-B` depends on `file-X`, `step-B` is considered as
 /// depending to `step-A`.
 pub fn add_implicit_dependencies(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     pmm: &XvcPathMetadataMap,
     pipeline_rundir: &XvcPath,
@@ -144,6 +145,7 @@ pub fn add_implicit_dependencies(
                     // Note that we don't require `all_outs` and `all_deps` limited to the
                     // current pipeline.
                     warn!(
+                        output_snd,
                         "{:?}",
                         Error::StepNotFoundInPipeline {
                             step: from_step.name.clone()
@@ -238,7 +240,11 @@ type XvcDependencyDiff = Diff<XvcDigests>;
 ///
 /// creates a dependency between `training` and `evaluation` steps.
 
-pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Result<()> {
+pub fn the_grand_pipeline_loop(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    pipeline_name: String,
+) -> Result<()> {
     let conf = xvc_root.config();
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
 
@@ -274,9 +280,15 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         dependency_graph.add_node(*step_e);
     }
 
-    add_explicit_dependencies(&pipeline_steps, &all_deps, &mut dependency_graph)?;
+    add_explicit_dependencies(
+        output_snd,
+        &pipeline_steps,
+        &all_deps,
+        &mut dependency_graph,
+    )?;
     watch!(&dependency_graph);
     add_implicit_dependencies(
+        output_snd,
         xvc_root,
         &pmm,
         &pipeline_rundir,
@@ -459,7 +471,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
                     next_states.map.insert(*step_e, state.clone());
                 }
                 Err(e) => {
-                    warn!("{}", e);
+                    warn!(output_snd, "{}", e);
                     continue_running = false;
                     break;
                 }
@@ -469,8 +481,12 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         for (_, cp) in process_pool.iter() {
             let stdout = cp.stdout_receiver.borrow();
             let stderr = cp.stderr_receiver.borrow();
-            stdout.try_iter().for_each(|m| warn!("[OUT] {}", m));
-            stderr.try_iter().for_each(|m| warn!("[ERR] {}", m));
+            stdout
+                .try_iter()
+                .for_each(|m| output!(output_snd, "[OUT] {}", m));
+            stderr
+                .try_iter()
+                .for_each(|m| warn!(output_snd, "[ERR] {}", m));
         }
 
         // update pmp with fs events
