@@ -4,7 +4,7 @@
 
 ```console
 $ xvc pipeline run --help
-Run an Xvc pipeline
+Run a pipeline
 
 Usage: xvc pipeline run [OPTIONS]
 
@@ -28,6 +28,12 @@ Xvc defines a default pipeline and any steps added without specifying the pipeli
 
 ```console
 $ xvc pipeline list
++---------+---------+
+| Name    | Run Dir |
++===================+
+| default |         |
++---------+---------+
+
 ```
 
 Create a new step in this pipeline with [`xvc pipeline step new`](/ref/xvc-pipeline-step-new.md) command.
@@ -36,8 +42,13 @@ Create a new step in this pipeline with [`xvc pipeline step new`](/ref/xvc-pipel
 $ xvc pipeline step new --step-name hello --command "echo hello"
 ```
 
+```console
+$ xvc pipeline dag
+```
+
+
 You can run the default pipeline without specifying its name.
 
 ```console
-$ xvc pipeline run
+$ xvc -vvvvv pipeline run
 ```
