@@ -52,6 +52,10 @@ When you run the command, it will print `data.txt has changed` if the file `data
 
 ```console
 $ xvc pipeline run
+[OUT] data.txt has changed
+
+[OUT] [EXIT] Successfully
+
 ```
 
 You can add multiple dependencies to a step with multiple invocations.
@@ -64,12 +68,20 @@ A step will run if any of its dependencies have changed.
 
 ```console
 $ xvc pipeline run
+[OUT] data.txt has changed
+
+[OUT] [EXIT] Successfully
+
 ```
 
 Normally, they are not run if none of the dependencies have changed.
 
 ```console
 $ xvc pipeline run
+[OUT] data.txt has changed
+
+[OUT] [EXIT] Successfully
+
 ```
 
 However, if you want to run the step even if none of the dependencies have changed, you can set the `--when` option to `always`.
@@ -82,6 +94,10 @@ Now the step will run even if none of the dependencies have changed.
 
 ```console
 $ xvc pipeline run
+[OUT] data.txt has changed
+
+[OUT] [EXIT] Successfully
+
 ```
 
 

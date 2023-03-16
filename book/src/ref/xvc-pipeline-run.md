@@ -60,6 +60,9 @@ You can run the default pipeline without specifying its name.
 
 ```console
 $ xvc pipeline run
+[OUT] hello
+
+[OUT] [EXIT] Successfully
 
 ```
 
