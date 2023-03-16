@@ -349,6 +349,8 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         .map(|(step_e, _)| (*step_e, step::XvcStepState::begin()))
         .collect();
 
+    watch!(step_states);
+
     let mut continue_running = true;
     // the following definitions should be moved to config
     // let break_for_nonzero_exit = true;
@@ -369,9 +371,6 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
     let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
     let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
-    let _stored_path_metadata = xvc_root.load_r11store::<XvcPath, XvcMetadata>()?;
-    let _stored_path_content_digest = xvc_root.load_r11store::<XvcPath, ContentDigest>()?;
-    let _stored_path_collection_digest = xvc_root.load_r11store::<XvcPath, CollectionDigest>()?;
     let text_files = xvc_root.load_store::<TextOrBinary>()?;
     let algorithm = HashAlgorithm::from_conf(conf);
 
@@ -380,6 +379,7 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         let mut dependency_diffs = HStore::<Diffs>::new();
 
         for (step_e, step_s) in step_states.iter() {
+            watch!((step_e, step_s));
             let params = StateParams {
                 step_e,
                 dependency_graph: &dependency_graph,
