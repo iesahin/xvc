@@ -161,7 +161,7 @@ state_machine! {
         }
 
         ContentDigestIgnored {
-            CheckingDependencyContentDigest => NoNeedToRun
+            CheckingDependencyContentDigest => WaitingToRun
         }
 
         ContentDigestChanged {
