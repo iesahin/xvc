@@ -75,7 +75,7 @@ impl XvcStep {
 //     CheckingTimestamps --> CheckingTimestamps: TimestampsIgnored
 //     CheckingTimestamps --> CheckingDependencyContentDigest: HasNoNewerDependencies
 //     CheckingTimestamps --> WaitingToRun: HasNewerDependencies
-//     CheckingDependencyContentDigest --> CheckingDependencyContentDigest: ContentDigestIgnored
+//     CheckingDependencyContentDigest --> WaitingToRun: ContentDigestIgnored
 //     CheckingDependencyContentDigest --> NoNeedToRun: ContentDigestNotChanged
 //     CheckingDependencyContentDigest --> WaitingToRun: ContentDigestChanged
 //     NoNeedToRun --> Done: CompletedWithoutRunningStep
