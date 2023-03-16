@@ -268,6 +268,11 @@ pub fn the_grand_pipeline_loop(xvc_root: &XvcRoot, pipeline_name: String) -> Res
         XvcPath::root_path()?
     };
 
+    // Add all steps as nodes to the pipeline
+    for (step_e, _) in pipeline_steps.iter() {
+        dependency_graph.add_node(*step_e);
+    }
+
     add_explicit_dependencies(&pipeline_steps, &all_deps, &mut dependency_graph)?;
     watch!(&dependency_graph);
     add_implicit_dependencies(
