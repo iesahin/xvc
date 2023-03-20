@@ -131,6 +131,8 @@ impl Display for XvcDigest {
     }
 }
 
+/// A digest that's used as an attribute of an entity
+/// e.g., [ContentDigest], [CollectionDigest], [XvcMetadataDigest]
 pub trait AttributeDigest: Storable + From<XvcDigest> + Into<XvcDigest> + AsRef<XvcDigest> {
     fn attribute() -> String {
         <Self as Storable>::type_description()

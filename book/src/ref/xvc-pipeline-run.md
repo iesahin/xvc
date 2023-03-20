@@ -69,9 +69,17 @@ $ xvc pipeline run
 Note that, when a step has no dependencies, it's set to always run if it's not set to run never explicitly.
 
 ```console
-$ xvc pipeline step update --step-name hello --run-when never
+$ xvc pipeline step update --step-name hello --when never
+error: unexpected argument '--run-when' found
+
+Usage: xvc pipeline step update <--step-name <STEP_NAME>|--command <COMMAND>|--when <WHEN>>
+
+For more information, try '--help'.
+
 $ xvc pipeline run
+[OUT] hello
 
 [OUT] [EXIT] Successfully
 
 ```
+
