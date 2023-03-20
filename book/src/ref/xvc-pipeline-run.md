@@ -75,3 +75,15 @@ $ xvc pipeline run
 
 ```
 
+### Run a specific pipeline
+
+You can run a specific pipeline by specifying its name with `--name` option.
+
+```console
+$ xvc pipeline new --name my-pipeline
+$ xvc pipeline --name my-pipeline step new --step-name my-hello --command "echo 'hello from my-pipeline'"
+```
+
+```console
+$ xvc pipeline run --name my-pipeline
+```
