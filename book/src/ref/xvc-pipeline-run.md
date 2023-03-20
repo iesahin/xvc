@@ -67,3 +67,11 @@ $ xvc pipeline run
 ```
 
 Note that, when a step has no dependencies, it's set to always run if it's not set to run never explicitly.
+
+```console
+$ xvc pipeline step update --step-name hello --run-when never
+$ xvc pipeline run
+
+[OUT] [EXIT] Successfully
+
+```
