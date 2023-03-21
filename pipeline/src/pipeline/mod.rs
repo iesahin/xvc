@@ -245,7 +245,7 @@ pub fn the_grand_pipeline_loop(
     xvc_root: &XvcRoot,
     pipeline_name: String,
 ) -> Result<()> {
-    let conf = xvc_root.config();
+    let config = xvc_root.config();
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
 
     let pipeline_steps = xvc_root
@@ -407,7 +407,7 @@ pub fn the_grand_pipeline_loop(
     let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
     let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
     let text_files = xvc_root.load_store::<TextOrBinary>()?;
-    let algorithm = HashAlgorithm::from_conf(conf);
+    let algorithm = HashAlgorithm::from_conf(config);
 
     while continue_running {
         let mut next_states = step_states.clone();

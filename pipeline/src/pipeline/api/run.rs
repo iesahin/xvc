@@ -15,10 +15,10 @@ pub fn cmd_run(
     xvc_root: &XvcRoot,
     name: Option<String>,
 ) -> Result<()> {
-    let conf = xvc_root.config();
+    let config = xvc_root.config();
     let pipeline_name = match name {
         Some(name) => name,
-        None => XvcPipeline::from_conf(conf).name,
+        None => XvcPipeline::from_conf(config).name,
     };
     watch!(pipeline_name);
     the_grand_pipeline_loop(output_snd, xvc_root, pipeline_name)

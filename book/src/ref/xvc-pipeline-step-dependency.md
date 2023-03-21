@@ -142,13 +142,27 @@ $ xvc pipeline --name generic step dependency --step-name yearly --generic 'date
 When the year changes, the step is invalidated and run again.
 
 ```console
-$ xvc pipeline --name generic run
+$ xvc -vvvv pipeline --name generic run
+[OUT] data.txt has changed
+
+[OUT] [EXIT] Successfully
+[OUT] world
+
+[OUT] [EXIT] Successfully
+
 ```
 
 The step won't run until the next year.
 
 ```console
 $ xvc pipeline --name generic run
+[OUT] data.txt has changed
+
+[OUT] [EXIT] Successfully
+[OUT] world
+
+[OUT] [EXIT] Successfully
+
 ```
 
 
