@@ -399,7 +399,10 @@ pub fn cmd_pipeline<R: BufRead>(
     // This should already be filled from the conf if not given
     let pipeline_name = command.name.unwrap();
     match command.subcommand {
-        PipelineSubCommand::Run { name } => cmd_run(output_snd, xvc_root, name),
+        PipelineSubCommand::Run { name } => {
+            watch!(name);
+            cmd_run(output_snd, xvc_root, name)
+        }
 
         PipelineSubCommand::New { name, workdir } => cmd_new(xvc_root, &name, workdir),
         PipelineSubCommand::Update {
