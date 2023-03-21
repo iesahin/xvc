@@ -126,6 +126,31 @@ $ xvc pipeline run
 
 ```
 
+### Generic Command Dependencies
+
+You can use the output of a command as a dependency to a step. When the command is run, the output hash is saved to
+compare and to invalidate the step when the output has changed.
+
+You can use this for any command that outputs a string.
+
+```console
+$ xvc pipeline new --name generic
+$ xvc pipeline --name generic step new --step-name yearly --command "echo 'Happy new year! Welcome `(date +%Y)`!'"
+$ xvc pipeline --name generic step dependency --step-name yearly --generic 'date +%Y'
+```
+
+When the year changes, the step is invalidated and run again.
+
+```console
+$ xvc pipeline --name generic run
+```
+
+The step won't run until the next year.
+
+```console
+$ xvc pipeline --name generic run
+```
+
 
 ## Caveats
 
