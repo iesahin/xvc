@@ -86,4 +86,8 @@ $ xvc pipeline --name my-pipeline step new --step-name my-hello --command "echo 
 
 ```console
 $ xvc pipeline run --name my-pipeline
+[OUT] hello from my-pipeline
+
+[OUT] [EXIT] Successfully
+
 ```
