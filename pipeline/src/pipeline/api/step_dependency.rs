@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use crate::error::{Error, Result};
 
 use regex::Regex;
+use url::Url;
 use xvc_core::{XvcPath, XvcRoot};
 use xvc_ecs::{R1NStore, XvcEntity};
 use xvc_logging::{debug, XvcOutputSender};
@@ -199,6 +200,17 @@ impl<'a> XvcDependencyList<'a> {
             }
         }
 
+        Ok(self)
+    }
+
+    pub fn urls(&mut self, urls: Option<Vec<String>>) -> Result<&mut Self> {
+        if let Some(urls) = urls {
+            let mut deps = self.deps.borrow_mut();
+            for url in urls {
+                let url = Url::parse(&url)?;
+                deps.push(XvcDependency::Url { url });
+            }
+        }
         Ok(self)
     }
 

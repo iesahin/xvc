@@ -228,6 +228,15 @@ pub enum StepSubCommand {
         #[arg(long, short)]
         step_name: String,
 
+        /// Add a generic command output as a dependency. Can be used multiple times.
+        /// Please delimit the command with ' ' to avoid shell expansion.
+        #[arg(long = "generic")]
+        generics: Option<Vec<String>>,
+
+        /// Add a URL dependency to the step. Can be used multiple times.
+        #[arg(long = "url")]
+        urls: Option<Vec<String>>,
+
         /// Add a file dependency to the step. Can be used multiple times.
         #[arg(long = "file")]
         files: Option<Vec<String>>,
@@ -236,11 +245,6 @@ pub enum StepSubCommand {
         /// Steps are referred with their names.
         #[arg(long = "step")]
         steps: Option<Vec<String>>,
-
-        /// Add a pipeline dependency to a step. Can be used multiple times.
-        /// Pipelines are referred with their names.
-        #[arg(long = "pipeline")]
-        pipelines: Option<Vec<String>>,
 
         /// Add a directory dependency to the step. Can be used multiple times.
         #[arg(long = "directory")]
@@ -451,12 +455,13 @@ pub fn handle_step_cli(
 
         StepSubCommand::Dependency {
             step_name,
+            generics,
+            urls,
             files,
             directories,
             globs,
             params,
             steps,
-            pipelines,
             regexps,
             lines,
         } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
@@ -465,9 +470,10 @@ pub fn handle_step_cli(
             .globs(globs)?
             .params(params)?
             .steps(steps)?
-            .generic_commands(pipelines)?
+            .generic_commands(generics)?
             .regexes(regexps)?
             .lines(lines)?
+            .urls(urls)?
             .record(),
         StepSubCommand::Output {
             step_name,

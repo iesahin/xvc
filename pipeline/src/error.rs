@@ -5,7 +5,7 @@ use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
 use std::path::PathBuf;
-use std::sync::{PoisonError};
+use std::sync::PoisonError;
 use thiserror::Error as ThisError;
 
 #[derive(ThisError, Debug)]
@@ -159,6 +159,12 @@ pub enum Error {
     CrossbeamSendError { t: String, cause: String },
     #[error("Cannot find Pipeline: {name}")]
     CannotFindPipeline { name: String },
+
+    #[error("Cannot parse url: {source}")]
+    CannotParseUrl {
+        #[from]
+        source: url::ParseError,
+    },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

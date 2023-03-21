@@ -109,19 +109,20 @@ changed files or directories.
 $ xvc pipeline step new --step-name world --command "echo world"
 $ xvc pipeline step new --step-name hello --command "echo hello"
 $ xvc pipeline step dependency --step-name world --step hello
+$ xvc pipeline step dependency --step-name hello --step file-dependency
 ```
 
 When run, the dependency will be run first and the step will be run after.
 
 ```console
 $ xvc pipeline run
-[OUT] world
-
-[OUT] [EXIT] Successfully
 [OUT] data.txt has changed
 
 [OUT] [EXIT] Successfully
 [OUT] hello
+
+[OUT] [EXIT] Successfully
+[OUT] world
 
 [OUT] [EXIT] Successfully
 
@@ -132,9 +133,7 @@ $ xvc pipeline run
 
 ## Tips
 
-You can add another Xvc pipeline as a dependency by creating a step with the command `xvc pipeline run --name <pipeline-name>`.
-
 Most shells support editing longer commands with an editor. For bash, you can use `Ctrl+X Ctrl+E`.
 
-Pipeline commands can especially get longer quickly. You can use [xvc aliases](/ref/xvc-aliases.md) for shorter
+Pipeline commands can get longer quickly. You can use [xvc aliases](/ref/xvc-aliases.md) for shorter
 versions. Type `source $(xvc aliases)` to load the aliases into your shell.
