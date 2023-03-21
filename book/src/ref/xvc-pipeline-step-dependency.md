@@ -102,19 +102,29 @@ $ xvc pipeline run
 
 ### Step Dependencies
 
-You can add a step dependency to a step. These steps specify dependency relationships explicityly, without relying on
+You can add a step dependency to a step. These steps specify dependency relationships explicitly, without relying on
 changed files or directories.
 
 ```console
 $ xvc pipeline step new --step-name world --command "echo world"
 $ xvc pipeline step new --step-name hello --command "echo hello"
-$ xvc pipeline step dependency --step-name hello --step world
+$ xvc pipeline step dependency --step-name world --step hello
 ```
 
 When run, the dependency will be run first and the step will be run after.
 
 ```console
 $ xvc pipeline run
+[OUT] world
+
+[OUT] [EXIT] Successfully
+[OUT] data.txt has changed
+
+[OUT] [EXIT] Successfully
+[OUT] hello
+
+[OUT] [EXIT] Successfully
+
 ```
 
 
