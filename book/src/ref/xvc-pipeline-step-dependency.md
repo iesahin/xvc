@@ -134,9 +134,9 @@ compare and to invalidate the step when the output has changed.
 You can use this for any command that outputs a string.
 
 ```console
-$ xvc pipeline new --name generic
-$ xvc pipeline --name generic step new --step-name yearly --command "echo 'Happy new year! Welcome `(date +%Y)`!'"
-$ xvc pipeline --name generic step dependency --step-name yearly --generic 'date +%Y'
+$ xvc -vvvv pipeline new --name generic
+$ xvc -vvvv pipeline --name generic step new --step-name yearly --command "echo 'Happy new year! Welcome `(date +%Y)`!'"
+$ xvc -vvvv pipeline --name generic step dependency --step-name yearly --generic 'date +%Y'
 ```
 
 When the year changes, the step is invalidated and run again.
@@ -171,67 +171,67 @@ $ xvc -vvvv pipeline --name generic run
         XvcConfigMap {
             source: Default,
             map: {
-                "git.command": String(
-                    "git",
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "core.guid": String(
-                    "1646d5fa0c75f6e3",
+                "file.carry-in.no_parallel": Boolean(
+                    false,
                 ),
                 "file.list.no_summary": Boolean(
                     false,
                 ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "git.auto_stage": Boolean(
+                "file.list.recursive": Boolean(
                     false,
                 ),
                 "file.track.no_parallel": Boolean(
                     false,
                 ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "pipeline.default": String(
-                    "default",
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
                 "file.track.text_or_binary": String(
                     "auto",
                 ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "file.list.recursive": Boolean(
+                "file.track.no_commit": Boolean(
                     false,
                 ),
                 "file.recheck.method": String(
                     "copy",
                 ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "pipeline.default": String(
+                    "default",
+                ),
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                ),
                 "pipeline.default_params_file": String(
                     "params.yaml",
                 ),
-                "file.track.no_commit": Boolean(
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "core.guid": String(
+                    "4e69b6ac75e02ac3",
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "core.verbosity": String(
+                    "error",
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "git.auto_stage": Boolean(
                     false,
                 ),
             },
@@ -239,40 +239,28 @@ $ xvc -vvvv pipeline --name generic run
         XvcConfigMap {
             source: Project,
             map: {
-                "core.guid": String(
-                    "730ff012d5644260",
-                ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "file.carry-in.no_parallel": Boolean(
+                "file.list.no_summary": Boolean(
                     false,
                 ),
-                "file.recheck.method": String(
-                    "copy",
+                "pipeline.default_params_file": String(
+                    "params.yaml",
                 ),
                 "git.use_git": Boolean(
                     true,
                 ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "file.list.recursive": Boolean(
-                    false,
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "git.auto_stage": Boolean(
                     false,
                 ),
-                "git.auto_commit": Boolean(
-                    true,
+                "pipeline.default": String(
+                    "default",
                 ),
-                "file.track.no_commit": Boolean(
+                "file.track.force": Boolean(
                     false,
                 ),
-                "file.track.no_parallel": Boolean(
+                "file.list.recursive": Boolean(
                     false,
                 ),
                 "file.carry-in.force": Boolean(
@@ -281,26 +269,38 @@ $ xvc -vvvv pipeline --name generic run
                 "core.verbosity": String(
                     "error",
                 ),
-                "pipeline.default": String(
-                    "default",
+                "core.guid": String(
+                    "82b9fff713961ce1",
                 ),
-                "file.track.force": Boolean(
+                "file.track.no_commit": Boolean(
                     false,
                 ),
-                "file.track.text_or_binary": String(
-                    "auto",
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
                 ),
                 "pipeline.current_pipeline": String(
                     "default",
                 ),
-                "file.list.no_summary": Boolean(
-                    false,
+                "file.recheck.method": String(
+                    "copy",
+                ),
+                "cache.algorithm": String(
+                    "blake3",
                 ),
                 "git.command": String(
                     "git",
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.list.sort": String(
+                    "name-desc",
                 ),
             },
         },
@@ -325,67 +325,7 @@ $ xvc -vvvv pipeline --name generic run
         },
     ],
     the_config: {
-        "file.carry-in.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
-            value: Boolean(
-                false,
-            ),
-        },
-        "pipeline.current_pipeline": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "file.recheck.method": XvcConfigValue {
-            source: Project,
-            value: String(
-                "copy",
-            ),
-        },
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
-        "git.auto_stage": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "git.use_git": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "file.list.format": XvcConfigValue {
-            source: Project,
-            value: String(
-                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-            ),
-        },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "730ff012d5644260",
-            ),
-        },
-        "file.track.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.carry-in.force": XvcConfigValue {
+        "file.list.recursive": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -397,34 +337,22 @@ $ xvc -vvvv pipeline --name generic run
                 "debug",
             ),
         },
-        "file.list.recursive": XvcConfigValue {
+        "file.track.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "pipeline.default_params_file": XvcConfigValue {
+        "git.command": XvcConfigValue {
             source: Project,
             value: String(
-                "params.yaml",
+                "git",
             ),
         },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "git.auto_commit": XvcConfigValue {
+        "file.carry-in.no_parallel": XvcConfigValue {
             source: Project,
             value: Boolean(
-                true,
-            ),
-        },
-        "cache.algorithm": XvcConfigValue {
-            source: Project,
-            value: String(
-                "blake3",
+                false,
             ),
         },
         "file.track.no_commit": XvcConfigValue {
@@ -433,16 +361,40 @@ $ xvc -vvvv pipeline --name generic run
                 false,
             ),
         },
+        "cache.algorithm": XvcConfigValue {
+            source: Project,
+            value: String(
+                "blake3",
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "82b9fff713961ce1",
+            ),
+        },
         "file.list.sort": XvcConfigValue {
             source: Project,
             value: String(
                 "name-desc",
             ),
         },
-        "file.track.force": XvcConfigValue {
+        "pipeline.default": XvcConfigValue {
             source: Project,
-            value: Boolean(
-                false,
+            value: String(
+                "default",
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
+            ),
+        },
+        "file.list.format": XvcConfigValue {
+            source: Project,
+            value: String(
+                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
             ),
         },
         "file.track.text_or_binary": XvcConfigValue {
@@ -451,8 +403,56 @@ $ xvc -vvvv pipeline --name generic run
                 "auto",
             ),
         },
+        "pipeline.current_pipeline": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.use_git": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "git.auto_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "file.track.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.recheck.method": XvcConfigValue {
+            source: Project,
+            value: String(
+                "copy",
+            ),
+        },
         "file.list.no_summary": XvcConfigValue {
             source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.auto_stage": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "core.quiet": XvcConfigValue {
+            source: CommandLine,
             value: Boolean(
                 false,
             ),
@@ -464,7 +464,7 @@ $ xvc -vvvv pipeline --name generic run
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"1646d5fa0c75f6e3/"
+guid = /"4e69b6ac75e02ac3/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -603,19 +603,20 @@ default_params_file = /"params.yaml/"
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1679393195571791",
-    "[CWD]/.xvc/ec/1679393195575199",
-    "[CWD]/.xvc/ec/1679393195669367",
-    "[CWD]/.xvc/ec/1679393195900863",
-    "[CWD]/.xvc/ec/1679393196805798",
-    "[CWD]/.xvc/ec/1679393198568548",
-    "[CWD]/.xvc/ec/1679393198651981",
-    "[CWD]/.xvc/ec/1679393198737889",
-    "[CWD]/.xvc/ec/1679393198819068",
-    "[CWD]/.xvc/ec/1679393199550893",
-    "[CWD]/.xvc/ec/1679393199635269",
-    "[CWD]/.xvc/ec/1679393199733704",
+    "[CWD]/.xvc/ec/1679393488571692",
+    "[CWD]/.xvc/ec/1679393488576554",
+    "[CWD]/.xvc/ec/1679393488683432",
+    "[CWD]/.xvc/ec/1679393488814163",
+    "[CWD]/.xvc/ec/1679393489599222",
+    "[CWD]/.xvc/ec/1679393491440458",
+    "[CWD]/.xvc/ec/1679393491556222",
+    "[CWD]/.xvc/ec/1679393491640129",
+    "[CWD]/.xvc/ec/1679393491735566",
+    "[CWD]/.xvc/ec/1679393492576756",
+    "[CWD]/.xvc/ec/1679393492686427",
+    "[CWD]/.xvc/ec/1679393492766480",
 ]
+[TRACE][pipeline/src/lib.rs::403] name: None
 [TRACE][pipeline/src/pipeline/api/run.rs::23] pipeline_name: "default"
 [DEBUG][/Users/iex/.cargo/registry/src/github.com-1ecc6299db9ec823/globset-0.4.9/src/lib.rs::431] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
 [TRACE][core/src/types/xvcpath.rs::85] abs_path: "[CWD]/.gitignore"
@@ -633,14 +634,14 @@ default_params_file = /"params.yaml/"
     "[CWD]",
 )
 [TRACE][walker/src/notify.rs::160] watcher: FsEventWatcher {
-    paths: 0x0000000146f0bf40,
+    paths: 0x00000001420041c0,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000000146f0be70,
+    event_handler: 0x0000000142005e30,
     runloop: Some(
         (
-            0x0000000146f06d10,
+            0x0000000142006dd0,
             JoinHandle { .. },
         ),
     ),
@@ -649,139 +650,121 @@ default_params_file = /"params.yaml/"
     },
 }
 [TRACE][pipeline/src/pipeline/mod.rs::263] pipeline_len: 3
+[INFO] Found explicit dependency: XvcStep { name: "hello" } -> Step { name: "file-dependency" }
+[INFO] Found explicit dependency: XvcStep { name: "world" } -> Step { name: "hello" }
 [TRACE][pipeline/src/pipeline/mod.rs::289] &dependency_graph: {
     XvcEntity(
-        5,
-        16100407702741146529,
+        2,
+        15905620610839839433,
     ): [
         (
             XvcEntity(
                 6,
-                13085317351497307281,
+                4257634729513389678,
             ),
-            Outgoing,
+            Incoming,
         ),
     ],
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ): [
         (
             XvcEntity(
-                5,
-                16100407702741146529,
-            ),
-            Incoming,
-        ),
-        (
-            XvcEntity(
                 2,
-                14051453913713823386,
+                15905620610839839433,
             ),
             Outgoing,
         ),
+        (
+            XvcEntity(
+                5,
+                14421916681554840747,
+            ),
+            Incoming,
+        ),
     ],
     XvcEntity(
-        2,
-        14051453913713823386,
+        5,
+        14421916681554840747,
     ): [
         (
             XvcEntity(
                 6,
-                13085317351497307281,
+                4257634729513389678,
             ),
-            Incoming,
+            Outgoing,
         ),
     ],
 }
 [INFO][pipeline/src/pipeline/mod.rs::303] Pipeline Graph:
 digraph {
-    0 [ label = "(5, 16100407702741146529)" ]
-    1 [ label = "(6, 13085317351497307281)" ]
-    2 [ label = "(2, 14051453913713823386)" ]
-    0 -> 1 [ label = "Step" ]
-    1 -> 2 [ label = "Step" ]
+    0 [ label = "(2, 15905620610839839433)" ]
+    1 [ label = "(6, 4257634729513389678)" ]
+    2 [ label = "(5, 14421916681554840747)" ]
+    1 -> 0 [ label = "Step" ]
+    2 -> 1 [ label = "Step" ]
 }
 
 
+[TRACE][pipeline/src/pipeline/mod.rs::354] dependency_graph.edges_directed(*step_e,
+            Direction::Incoming).map(|e| e.0).collect::<Vec<XvcEntity>>(): [
+    XvcEntity(
+        6,
+        4257634729513389678,
+    ),
+]
+[TRACE][pipeline/src/pipeline/mod.rs::359] dependency_graph.edges_directed(*step_e,
+            Direction::Outgoing).map(|e| e.0).collect::<Vec<XvcEntity>>(): []
+[TRACE][pipeline/src/pipeline/mod.rs::354] dependency_graph.edges_directed(*step_e,
+            Direction::Incoming).map(|e| e.0).collect::<Vec<XvcEntity>>(): [
+    XvcEntity(
+        5,
+        14421916681554840747,
+    ),
+]
+[TRACE][pipeline/src/pipeline/mod.rs::359] dependency_graph.edges_directed(*step_e,
+            Direction::Outgoing).map(|e| e.0).collect::<Vec<XvcEntity>>(): [
+    XvcEntity(
+        6,
+        4257634729513389678,
+    ),
+]
 [TRACE][pipeline/src/pipeline/mod.rs::354] dependency_graph.edges_directed(*step_e,
             Direction::Incoming).map(|e| e.0).collect::<Vec<XvcEntity>>(): []
 [TRACE][pipeline/src/pipeline/mod.rs::359] dependency_graph.edges_directed(*step_e,
             Direction::Outgoing).map(|e| e.0).collect::<Vec<XvcEntity>>(): [
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
 ]
-[TRACE][pipeline/src/pipeline/mod.rs::354] dependency_graph.edges_directed(*step_e,
-            Direction::Incoming).map(|e| e.0).collect::<Vec<XvcEntity>>(): [
-    XvcEntity(
-        5,
-        16100407702741146529,
-    ),
-]
-[TRACE][pipeline/src/pipeline/mod.rs::359] dependency_graph.edges_directed(*step_e,
-            Direction::Outgoing).map(|e| e.0).collect::<Vec<XvcEntity>>(): [
-    XvcEntity(
-        6,
-        13085317351497307281,
-    ),
-]
-[TRACE][pipeline/src/pipeline/mod.rs::354] dependency_graph.edges_directed(*step_e,
-            Direction::Incoming).map(|e| e.0).collect::<Vec<XvcEntity>>(): [
-    XvcEntity(
-        6,
-        13085317351497307281,
-    ),
-]
-[TRACE][pipeline/src/pipeline/mod.rs::359] dependency_graph.edges_directed(*step_e,
-            Direction::Outgoing).map(|e| e.0).collect::<Vec<XvcEntity>>(): []
 [TRACE][pipeline/src/pipeline/mod.rs::387] step_states: HStore {
     map: {
         XvcEntity(
+            2,
+            15905620610839839433,
+        ): Begin(
+            FromInit,
+        ),
+        XvcEntity(
             5,
-            16100407702741146529,
+            14421916681554840747,
         ): Begin(
             FromInit,
         ),
         XvcEntity(
             6,
-            13085317351497307281,
-        ): Begin(
-            FromInit,
-        ),
-        XvcEntity(
-            2,
-            14051453913713823386,
+            4257634729513389678,
         ): Begin(
             FromInit,
         ),
     },
 }
-[INFO] Found explicit dependency: XvcStep { name: "world" } -> Step { name: "hello" }
-[INFO] Found explicit dependency: XvcStep { name: "hello" } -> Step { name: "file-dependency" }
-[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
-    XvcEntity(
-        5,
-        16100407702741146529,
-    ),
-    Begin(
-        FromInit,
-    ),
-)
-[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
-    XvcEntity(
-        6,
-        13085317351497307281,
-    ),
-    Begin(
-        FromInit,
-    ),
-)
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Begin(
         FromInit,
@@ -790,25 +773,25 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
-    WaitingDependencySteps(
-        FromRunConditional,
+    Begin(
+        FromInit,
     ),
 )
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
-    WaitingDependencySteps(
-        FromRunConditional,
+    Begin(
+        FromInit,
     ),
 )
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     WaitingDependencySteps(
         FromRunConditional,
@@ -817,25 +800,25 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
-        FromDependencyStepsRunning,
+        FromRunConditional,
     ),
 )
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     WaitingDependencySteps(
-        FromDependencyStepsRunning,
+        FromRunConditional,
     ),
 )
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     CheckingMissingDependencies(
         FromDependencyStepsFinishedSuccessfully,
@@ -844,7 +827,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -853,7 +836,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -862,7 +845,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     CheckingMissingOutputs(
         FromMissingDependenciesIgnored,
@@ -871,7 +854,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -880,7 +863,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -889,7 +872,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     CheckingTimestamps(
         FromHasNoMissingOutputs,
@@ -898,7 +881,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -907,7 +890,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -916,7 +899,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     CheckingDependencyContentDigest(
         FromTimestampsIgnored,
@@ -934,7 +917,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -943,7 +926,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -952,7 +935,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     WaitingToRun(
         FromContentDigestIgnored,
@@ -961,7 +944,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -970,7 +953,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -979,10 +962,28 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Running(
         FromStartProcess,
+    ),
+)
+[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
+    XvcEntity(
+        5,
+        14421916681554840747,
+    ),
+    WaitingDependencySteps(
+        FromDependencyStepsRunning,
+    ),
+)
+[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
+    XvcEntity(
+        6,
+        4257634729513389678,
+    ),
+    WaitingDependencySteps(
+        FromDependencyStepsRunning,
     ),
 )
 [OUT] data.txt has changed
@@ -990,26 +991,8 @@ digraph {
 [OUT] [EXIT] Successfully
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
-        5,
-        16100407702741146529,
-    ),
-    WaitingDependencySteps(
-        FromDependencyStepsRunning,
-    ),
-)
-[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
-    XvcEntity(
-        6,
-        13085317351497307281,
-    ),
-    WaitingDependencySteps(
-        FromDependencyStepsRunning,
-    ),
-)
-[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
-    XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromProcessCompletedSuccessfully,
@@ -1018,7 +1001,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -1027,7 +1010,34 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
+    ),
+    WaitingDependencySteps(
+        FromDependencyStepsRunning,
+    ),
+)
+[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
+    XvcEntity(
+        2,
+        15905620610839839433,
+    ),
+    Done(
+        FromHasDone,
+    ),
+)
+[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
+    XvcEntity(
+        5,
+        14421916681554840747,
+    ),
+    WaitingDependencySteps(
+        FromDependencyStepsRunning,
+    ),
+)
+[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
+    XvcEntity(
+        6,
+        4257634729513389678,
     ),
     CheckingMissingDependencies(
         FromDependencyStepsFinishedSuccessfully,
@@ -1036,7 +1046,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1045,7 +1055,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -1054,7 +1064,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     CheckingMissingOutputs(
         FromNoMissingDependencies,
@@ -1063,7 +1073,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1072,7 +1082,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -1081,7 +1091,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     CheckingTimestamps(
         FromHasNoMissingOutputs,
@@ -1090,7 +1100,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1099,7 +1109,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -1108,7 +1118,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     CheckingDependencyContentDigest(
         FromHasNoNewerDependencies,
@@ -1156,7 +1166,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1165,7 +1175,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -1174,7 +1184,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     NoNeedToRun(
         FromContentDigestNotChanged,
@@ -1183,7 +1193,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1192,7 +1202,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingDependencySteps(
         FromDependencyStepsRunning,
@@ -1201,7 +1211,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     Done(
         FromCompletedWithoutRunningStep,
@@ -1210,7 +1220,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1219,7 +1229,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     CheckingMissingDependencies(
         FromDependencyStepsFinishedSuccessfully,
@@ -1228,7 +1238,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     Done(
         FromHasDone,
@@ -1237,7 +1247,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1246,7 +1256,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     CheckingMissingOutputs(
         FromMissingDependenciesIgnored,
@@ -1255,7 +1265,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     Done(
         FromHasDone,
@@ -1264,7 +1274,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1273,7 +1283,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     CheckingTimestamps(
         FromHasNoMissingOutputs,
@@ -1282,7 +1292,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     Done(
         FromHasDone,
@@ -1291,7 +1301,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1300,7 +1310,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     CheckingDependencyContentDigest(
         FromTimestampsIgnored,
@@ -1318,7 +1328,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     Done(
         FromHasDone,
@@ -1327,7 +1337,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1336,7 +1346,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     WaitingToRun(
         FromContentDigestIgnored,
@@ -1345,7 +1355,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
+        4257634729513389678,
     ),
     Done(
         FromHasDone,
@@ -1354,7 +1364,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         2,
-        14051453913713823386,
+        15905620610839839433,
     ),
     Done(
         FromHasDone,
@@ -1363,7 +1373,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         5,
-        16100407702741146529,
+        14421916681554840747,
     ),
     Running(
         FromStartProcess,
@@ -1372,16 +1382,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
     XvcEntity(
         6,
-        13085317351497307281,
-    ),
-    Done(
-        FromHasDone,
-    ),
-)
-[TRACE][pipeline/src/pipeline/mod.rs::417] (step_e, step_s): (
-    XvcEntity(
-        2,
-        14051453913713823386,
+        4257634729513389678,
     ),
     Done(
         FromHasDone,
@@ -1399,6 +1400,7 @@ digraph {
     "--name-only",
     "--cached",
 ]
+[DEBUG] Using Git: /opt/homebrew/bin/git
 [TRACE][lib/src/cli/mod.rs::463] git_diff_staged_out: ""
 [TRACE][lib/src/cli/mod.rs::433] args: [
     "-C",
@@ -1409,7 +1411,6 @@ digraph {
     "*.gitignore",
     "*.xvcignore",
 ]
-[DEBUG] Using Git: /opt/homebrew/bin/git
 [TRACE][lib/src/cli/mod.rs::582] git_add_output: ""
 [DEBUG] No files to commit
 [DEBUG] Command completed successfully.
