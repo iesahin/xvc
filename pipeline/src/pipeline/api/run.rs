@@ -13,13 +13,7 @@ use crate::XvcPipeline;
 pub fn cmd_run(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    name: Option<String>,
+    pipeline_name: String,
 ) -> Result<()> {
-    let config = xvc_root.config();
-    let pipeline_name = match name {
-        Some(name) => name,
-        None => XvcPipeline::from_conf(config).name,
-    };
-    watch!(pipeline_name);
     the_grand_pipeline_loop(output_snd, xvc_root, pipeline_name)
 }

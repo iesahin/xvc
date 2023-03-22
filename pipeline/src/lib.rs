@@ -401,8 +401,8 @@ pub fn cmd_pipeline<R: BufRead>(
     let pipeline_name = command.name.unwrap();
     match command.subcommand {
         PipelineSubCommand::Run { name } => {
-            watch!(name);
-            cmd_run(output_snd, xvc_root, name)
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_run(output_snd, xvc_root, pipeline_name)
         }
 
         PipelineSubCommand::New { name, workdir } => cmd_new(xvc_root, &name, workdir),
