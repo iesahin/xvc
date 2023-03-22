@@ -101,12 +101,11 @@ fn dep_desc(
 pub fn cmd_dag(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    name: Option<String>,
+    pipeline_name: String,
     file: Option<PathBuf>,
     format: XvcPipelineDagFormat,
 ) -> Result<()> {
     let conf = xvc_root.config();
-    let pipeline_name = name.unwrap_or_else(|| XvcPipeline::from_conf(conf).name);
 
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
 
@@ -173,7 +172,12 @@ pub fn cmd_dag(
     };
 
     watch!(pipeline_steps);
-    add_explicit_dependencies(output_snd, &pipeline_steps, &all_deps, &mut dependency_graph)?;
+    add_explicit_dependencies(
+        output_snd,
+        &pipeline_steps,
+        &all_deps,
+        &mut dependency_graph,
+    )?;
     add_implicit_dependencies(
         output_snd,
         xvc_root,

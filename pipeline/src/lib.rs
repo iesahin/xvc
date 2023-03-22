@@ -421,17 +421,22 @@ pub fn cmd_pipeline<R: BufRead>(
         PipelineSubCommand::List => cmd_list(output_snd, xvc_root),
         PipelineSubCommand::Delete { name } => cmd_delete(xvc_root, name),
         PipelineSubCommand::Export { name, file, format } => {
-            cmd_export(output_snd, xvc_root, name, file, format)
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_export(output_snd, xvc_root, pipeline_name, file, format)
         }
         PipelineSubCommand::Dag { name, file, format } => {
-            cmd_dag(output_snd, xvc_root, name, file, format)
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_dag(output_snd, xvc_root, pipeline_name, file, format)
         }
         PipelineSubCommand::Import {
             name,
             file,
             format,
             overwrite,
-        } => cmd_import(input, xvc_root, name, file, format, overwrite),
+        } => {
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_import(input, xvc_root, pipeline_name, file, format, overwrite)
+        }
         PipelineSubCommand::Step(step_cli) => {
             handle_step_cli(output_snd, xvc_root, &pipeline_name, step_cli)
         }

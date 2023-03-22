@@ -25,16 +25,11 @@ use crate::{
 pub fn cmd_export(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    name: Option<String>,
+    name: String,
     file: Option<PathBuf>,
     format: Option<XvcSchemaSerializationFormat>,
 ) -> Result<()> {
     let conf = xvc_root.config();
-    let name = match name {
-        Some(name) => name,
-        None => XvcPipeline::from_conf(conf).name,
-    };
-
     let mut p_res: Result<(XvcEntity, XvcPipeline)> =
         Err(Error::CannotFindPipeline { name: name.clone() });
 

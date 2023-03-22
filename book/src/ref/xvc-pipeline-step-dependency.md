@@ -144,6 +144,58 @@ $ xvc  pipeline --name generic step dependency --step-name yearly --generic 'dat
 
 ```console
 $ xvc pipeline --name generic export
+{
+  "name": "default",
+  "steps": [
+    {
+      "command": "echo data.txt has changed",
+      "dependencies": [
+        {
+          "File": {
+            "path": "data.txt"
+          }
+        },
+        {
+          "File": {
+            "path": "data2.txt"
+          }
+        }
+      ],
+      "invalidate": "Always",
+      "name": "file-dependency",
+      "outputs": []
+    },
+    {
+      "command": "echo world",
+      "dependencies": [
+        {
+          "Step": {
+            "name": "hello"
+          }
+        }
+      ],
+      "invalidate": "ByDependencies",
+      "name": "world",
+      "outputs": []
+    },
+    {
+      "command": "echo hello",
+      "dependencies": [
+        {
+          "Step": {
+            "name": "file-dependency"
+          }
+        }
+      ],
+      "invalidate": "ByDependencies",
+      "name": "hello",
+      "outputs": []
+    }
+  ],
+  "version": 1,
+  "workdir": ""
+}
+
 ```
 
 When the year changes, the step is invalidated and run again.

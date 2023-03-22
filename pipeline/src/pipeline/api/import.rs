@@ -19,7 +19,7 @@ use crate::{
 pub fn cmd_import<R: BufRead>(
     input: R,
     xvc_root: &XvcRoot,
-    name: Option<String>,
+    pipeline_name: String,
     file: Option<PathBuf>,
     format: Option<XvcSchemaSerializationFormat>,
     overwrite: bool,
@@ -59,11 +59,6 @@ pub fn cmd_import<R: BufRead>(
     };
 
     assert!(schema.version == 1);
-
-    let pipeline_name = match name {
-        None => schema.name,
-        Some(name) => name,
-    };
 
     if let Ok((pipeline_e, pipeline)) = XvcPipeline::from_name(xvc_root, &pipeline_name) {
         if !overwrite {
