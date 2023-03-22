@@ -19,7 +19,7 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 use chrono::Utc;
 use crossbeam_channel::{Receiver, Sender};
 use petgraph::Direction;
-use xvc_logging::{info, output, warn, watch, XvcOutputSender};
+use xvc_logging::{info, output, uwr, warn, watch, XvcOutputSender};
 use xvc_walker::notify::{make_watcher, PathEvent};
 
 use petgraph::algo::toposort;
@@ -36,8 +36,8 @@ use std::time::{Duration, Instant, SystemTime};
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, CollectionDigest, ContentDigest, Diff, HashAlgorithm, TextOrBinary,
-    XvcDigests, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, apply_diff, CollectionDigest, ContentDigest, Diff, HashAlgorithm,
+    TextOrBinary, XvcDigests, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
@@ -403,9 +403,13 @@ pub fn the_grand_pipeline_loop(
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
     let stored_dependency_paths = xvc_root.load_r1nstore::<XvcDependency, XvcPath>()?;
+    let mut updated_dependencies = all_deps.children.clone();
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
+    let mut updated_xvc_path_store = xvc_path_store.clone();
     let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
+    let mut updated_xvc_metadata_store = xvc_metadata_store.clone();
     let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
+    let mut updated_xvc_digests_store = xvc_digests_store.clone();
     let text_files = xvc_root.load_store::<TextOrBinary>()?;
     let algorithm = HashAlgorithm::from_conf(config);
 
@@ -478,6 +482,61 @@ pub fn the_grand_pipeline_loop(
             }
         }
 
+        dependency_diffs.iter().for_each(|(step_e, diffs)| {
+            diffs
+                .xvc_digests_diff
+                .read()
+                .and_then(|xvc_digests_diffs| {
+                    updated_xvc_digests_store = uwr!(
+                        apply_diff(&updated_xvc_digests_store, &xvc_digests_diffs, true, false),
+                        output_snd
+                    );
+                    Ok(())
+                })
+                .unwrap();
+
+            diffs
+                .xvc_dependency_diff
+                .read()
+                .and_then(|xvc_dependency_diffs| {
+                    updated_dependencies = uwr!(
+                        apply_diff(&updated_dependencies, &xvc_dependency_diffs, true, false),
+                        output_snd
+                    );
+                    Ok(())
+                })
+                .unwrap();
+
+            diffs
+                .xvc_metadata_diff
+                .read()
+                .and_then(|xvc_metadata_diffs| {
+                    updated_xvc_metadata_store = uwr!(
+                        apply_diff(
+                            &updated_xvc_metadata_store,
+                            &xvc_metadata_diffs,
+                            true,
+                            false
+                        ),
+                        output_snd
+                    );
+                    Ok(())
+                })
+                .unwrap();
+
+            diffs
+                .xvc_path_diff
+                .read()
+                .and_then(|xvc_path_diffs| {
+                    updated_xvc_path_store = uwr!(
+                        apply_diff(&updated_xvc_path_store, &xvc_path_diffs, true, false),
+                        output_snd
+                    );
+                    Ok(())
+                })
+                .unwrap();
+        });
+
         for (_, cp) in process_pool.iter() {
             let stdout = cp.stdout_receiver.borrow();
             let stderr = cp.stderr_receiver.borrow();
@@ -541,6 +600,11 @@ pub fn the_grand_pipeline_loop(
             .iter()
             .all(|(_, step_s)| matches!(step_s, XvcStepState::Done(_)))
         {
+            // We save the updated stores only if all the steps are done successfully
+            xvc_root.save_store(updated_xvc_path_store);
+            xvc_root.save_store(updated_xvc_metadata_store);
+            xvc_root.save_store(updated_xvc_digests_store);
+            xvc_root.save_store(updated_dependencies);
             continue_running = false;
         }
     }

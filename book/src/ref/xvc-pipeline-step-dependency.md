@@ -145,50 +145,19 @@ $ xvc  pipeline --name generic step dependency --step-name yearly --generic 'dat
 ```console
 $ xvc pipeline --name generic export
 {
-  "name": "default",
+  "name": "generic",
   "steps": [
     {
-      "command": "echo data.txt has changed",
+      "command": "echo 'Happy New Year! Welcome `(date +%Y)`!'",
       "dependencies": [
         {
-          "File": {
-            "path": "data.txt"
-          }
-        },
-        {
-          "File": {
-            "path": "data2.txt"
-          }
-        }
-      ],
-      "invalidate": "Always",
-      "name": "file-dependency",
-      "outputs": []
-    },
-    {
-      "command": "echo world",
-      "dependencies": [
-        {
-          "Step": {
-            "name": "hello"
+          "Generic": {
+            "generic_command": "date +%Y"
           }
         }
       ],
       "invalidate": "ByDependencies",
-      "name": "world",
-      "outputs": []
-    },
-    {
-      "command": "echo hello",
-      "dependencies": [
-        {
-          "Step": {
-            "name": "file-dependency"
-          }
-        }
-      ],
-      "invalidate": "ByDependencies",
-      "name": "hello",
+      "name": "yearly",
       "outputs": []
     }
   ],

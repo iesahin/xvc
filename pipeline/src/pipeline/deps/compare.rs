@@ -1,10 +1,8 @@
-
 use std::sync::{Arc, RwLock};
 
 use crate::error::{Error, Result};
 use crate::XvcEntity;
 use anyhow::anyhow;
-
 
 use subprocess::Exec;
 use url::Url;
@@ -12,10 +10,11 @@ use xvc_core::types::diff::Diffable;
 use xvc_core::util::file::{filter_paths_by_directory, glob_paths, XvcPathMetadataMap};
 
 use xvc_core::{
-    AttributeDigest, CollectionDigest, ContentDigest, Diff, HashAlgorithm, StdoutDigest,
+    AttributeDigest, CollectionDigest, ContentDigest, Diff, DiffStore, HashAlgorithm, StdoutDigest,
     TextOrBinary, UrlGetDigest, UrlHeadDigest, XvcDigests, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, R1NStore, XvcStore};
+use xvc_logging::watch;
 
 use super::digest::DependencyDigestParams;
 
@@ -38,15 +37,15 @@ pub struct DependencyComparisonParams<'a> {
 
 type DigestDiff = Diff<XvcDigests>;
 
-type Arhd<T> = Arc<RwLock<HStore<Diff<T>>>>;
+type Ards<T> = Arc<RwLock<DiffStore<T>>>;
 
 /// Result for diff operations
 #[derive(Clone, Debug)]
 pub struct Diffs {
-    pub xvc_dependency_diff: Arhd<XvcDependency>,
-    pub xvc_digests_diff: Arhd<XvcDigests>,
-    pub xvc_metadata_diff: Arhd<XvcMetadata>,
-    pub xvc_path_diff: Arhd<XvcPath>,
+    pub xvc_dependency_diff: Ards<XvcDependency>,
+    pub xvc_digests_diff: Ards<XvcDigests>,
+    pub xvc_metadata_diff: Ards<XvcMetadata>,
+    pub xvc_path_diff: Ards<XvcPath>,
 }
 
 impl Diffs {
@@ -233,7 +232,9 @@ fn compare_deps_generic(
 ) -> Result<()> {
     let command_output = Exec::shell(generic_command).capture()?;
     let stdout = String::from_utf8(command_output.stdout)?;
+    watch!(stdout);
     let stderr = String::from_utf8(command_output.stderr)?;
+    watch!(stderr);
     let algorithm = *cmp_params.algorithm;
     let return_code = command_output.exit_status;
     if stderr.len() > 0 || !return_code.success() {
@@ -424,7 +425,7 @@ fn compare_deps_url(
                 }
             }
         };
-        collected_diffs.insert_attribute_digest_diff(stored_dependency_e, get_diff);
+        collected_diffs.insert_attribute_digest_diff(stored_dependency_e, get_diff)?;
         Ok(())
     } else {
         Err(anyhow!("No such stored XvcDependency").into())
@@ -480,7 +481,7 @@ pub fn compare_deps_multiple_paths(
         CollectionDigest::diff(stored_collection_digest, Some(actual_collection_digest));
 
     collected_diffs
-        .insert_attribute_digest_diff(stored_dependency_e, collection_digest_diff.clone());
+        .insert_attribute_digest_diff(stored_dependency_e, collection_digest_diff.clone())?;
 
     // If collection digest is changed, we have changes in the paths
     match collection_digest_diff {
