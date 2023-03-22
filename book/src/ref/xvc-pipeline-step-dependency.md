@@ -170,7 +170,7 @@ $ xvc pipeline --name generic export
 When the year changes, the step is invalidated and run again.
 
 ```console
-$ xvc pipeline --name generic run
+$ xvc -vvvv pipeline --name generic run
 [OUT] Happy New Year! Welcome `(date +%Y)`!
 
 [OUT] [EXIT] Successfully
