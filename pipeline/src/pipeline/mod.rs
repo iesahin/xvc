@@ -601,10 +601,10 @@ pub fn the_grand_pipeline_loop(
             .all(|(_, step_s)| matches!(step_s, XvcStepState::Done(_)))
         {
             // We save the updated stores only if all the steps are done successfully
-            xvc_root.save_store(updated_xvc_path_store);
-            xvc_root.save_store(updated_xvc_metadata_store);
-            xvc_root.save_store(updated_xvc_digests_store);
-            xvc_root.save_store(updated_dependencies);
+            xvc_root.save_store(&updated_xvc_path_store)?;
+            xvc_root.save_store(&updated_xvc_metadata_store)?;
+            xvc_root.save_store(&updated_xvc_digests_store)?;
+            xvc_root.save_store(&updated_dependencies)?;
             continue_running = false;
         }
     }
