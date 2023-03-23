@@ -482,6 +482,7 @@ pub fn the_grand_pipeline_loop(
             }
         }
 
+        watch!(dependency_diffs);
         dependency_diffs.iter().for_each(|(step_e, diffs)| {
             diffs
                 .xvc_digests_diff
