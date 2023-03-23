@@ -487,6 +487,7 @@ pub fn the_grand_pipeline_loop(
                 .xvc_digests_diff
                 .read()
                 .and_then(|xvc_digests_diffs| {
+                    watch!(&xvc_digests_diffs);
                     updated_xvc_digests_store = uwr!(
                         apply_diff(&updated_xvc_digests_store, &xvc_digests_diffs, true, false),
                         output_snd
@@ -499,6 +500,7 @@ pub fn the_grand_pipeline_loop(
                 .xvc_dependency_diff
                 .read()
                 .and_then(|xvc_dependency_diffs| {
+                    watch!(&xvc_dependency_diffs);
                     updated_dependencies = uwr!(
                         apply_diff(&updated_dependencies, &xvc_dependency_diffs, true, false),
                         output_snd
@@ -511,6 +513,7 @@ pub fn the_grand_pipeline_loop(
                 .xvc_metadata_diff
                 .read()
                 .and_then(|xvc_metadata_diffs| {
+                    watch!(&xvc_metadata_diffs);
                     updated_xvc_metadata_store = uwr!(
                         apply_diff(
                             &updated_xvc_metadata_store,
@@ -528,6 +531,7 @@ pub fn the_grand_pipeline_loop(
                 .xvc_path_diff
                 .read()
                 .and_then(|xvc_path_diffs| {
+                    watch!(&xvc_path_diffs);
                     updated_xvc_path_store = uwr!(
                         apply_diff(&updated_xvc_path_store, &xvc_path_diffs, true, false),
                         output_snd
