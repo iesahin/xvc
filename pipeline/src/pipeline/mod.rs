@@ -623,9 +623,9 @@ fn s_checking_dependency_content_digest(
     s: &CheckingDependencyContentDigestState,
     params: StateParams,
     dependency_comparison_params: &DependencyComparisonParams,
-    dependency_changes: &mut HStore<Diffs>,
+    dependency_diffs: &mut HStore<Diffs>,
 ) -> Result<XvcStepState> {
-    watch!(params.run_conditions);
+    watch!(dependency_diffs);
     if params.run_conditions.ignore_content_digest_comparison {
         return Ok(s.content_digest_ignored());
     }
@@ -649,7 +649,7 @@ fn s_checking_dependency_content_digest(
         compare_deps(cmp_params.clone(), *dep_e, &mut collected_diffs)?;
     }
     watch!(&collected_diffs);
-    dependency_changes.insert(*step_e, collected_diffs.clone());
+    dependency_diffs.insert(*step_e, collected_diffs.clone());
     collected_diffs
         .xvc_digests_diff
         .read()
