@@ -184,7 +184,7 @@ pub fn compare_deps(
     collected_diffs: &mut Diffs,
 ) -> Result<()> {
     let stored = &cmp_params.all_dependencies[&stored_dependency_e];
-
+    watch!(collected_diffs);
     match stored {
         // Step dependencies are handled differently
         XvcDependency::Step { .. } => Ok(()),

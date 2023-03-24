@@ -647,6 +647,7 @@ fn s_checking_dependency_content_digest(
     for (dep_e, _) in deps.iter() {
         // We wait step and pipeline dependencies in an earlier state
         compare_deps(cmp_params.clone(), *dep_e, &mut collected_diffs)?;
+        watch!(collected_diffs);
     }
     watch!(&collected_diffs);
     dependency_diffs.insert(*step_e, collected_diffs.clone());
