@@ -172,6 +172,47 @@ $ xvc pipeline --name generic run
 
 ```
 
+### Directory Dependencies
+
+You can specify a directory in the Xvc repository as a dependency to a step. When the directory changes, the step is
+invalidated and run again.
+
+We'll run the following commands in the `examples` directory.
+
+```console
+$ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 20230323
+$ tree
+```
+
+```console
+$ xvc pipeline new --name directory-example
+$ xvc pipeline --name directory-example step new --step-name directory-step --command "echo 'Directory has changed'"
+$ xvc pipeline --name directory-example step dependency --step-name directory-step --directory dir-0001/
+```
+
+When you define the pipeline for the first time, it will run the step.
+
+```console
+$ xvc pipeline --name directory-example run
+[OUT] Directory has changed
+```
+
+If you run the pipeline again, it won't run the step because the directory hasn't changed.
+
+```console
+$ xvc pipeline --name directory-example run
+```
+
+If you add, delete or modify a file in the directory, the step will be invalidated and run again.
+
+```console
+$ touch dir-0001/another-file.txt
+$ xvc pipeline --name directory-example run
+[OUT] Directory has changed
+```
+
+
+
 
 ## Caveats
 
