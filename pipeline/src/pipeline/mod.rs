@@ -627,6 +627,7 @@ fn s_checking_dependency_content_digest(
     dependency_diffs: &mut HStore<Diffs>,
 ) -> Result<XvcStepState> {
     watch!(dependency_diffs);
+    watch!(params.run_conditions.ignore_content_digest_comparison);
     if params.run_conditions.ignore_content_digest_comparison {
         return Ok(s.content_digest_ignored());
     }
