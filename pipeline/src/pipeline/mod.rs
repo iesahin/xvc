@@ -351,26 +351,14 @@ pub fn the_grand_pipeline_loop(
     let run_conditions: HStore<RunConditions> = pipeline_steps
         .iter()
         .map(|(step_e, _)| {
-            watch!(dependency_graph
-                .edges_directed(*step_e, Direction::Incoming)
-                .map(|e| e.0)
-                .collect::<Vec<XvcEntity>>());
-
-            watch!(dependency_graph
-                .edges_directed(*step_e, Direction::Outgoing)
-                .map(|e| e.0)
-                .collect::<Vec<XvcEntity>>());
             match consider_changed[step_e] {
                 // If the step has no dependencies, we run it always
                 XvcStepInvalidate::ByDependencies => {
-                    if dependency_graph
-                        .edges_directed(*step_e, Direction::Incoming)
-                        .count()
-                        > 0
-                    {
-                        (*step_e, run_calculated)
-                    } else {
+                    let step_deps = uwr!(all_deps.children_of(step_e), output_snd);
+                    if step_deps.is_empty() {
                         (*step_e, run_always)
+                    } else {
+                        (*step_e, run_calculated)
                     }
                 }
                 XvcStepInvalidate::Always => (*step_e, run_always),
