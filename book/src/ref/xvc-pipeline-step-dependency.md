@@ -182,6 +182,18 @@ We'll run the following commands in the `examples` directory.
 ```console
 $ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 20230323
 $ tree
+.
+├── dir-0001
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+└── dir-0002
+    ├── file-0001.bin
+    ├── file-0002.bin
+    └── file-0003.bin
+
+3 directories, 6 files
+
 ```
 
 ```console
@@ -193,8 +205,8 @@ $ xvc pipeline --name directory-example step dependency --step-name directory-st
 When you define the pipeline for the first time, it will run the step.
 
 ```console
-$ xvc pipeline --name directory-example run
-[OUT] Directory has changed
+$ xvc -vvvv pipeline --name directory-example run
+
 ```
 
 If you run the pipeline again, it won't run the step because the directory hasn't changed.
@@ -208,7 +220,7 @@ If you add, delete or modify a file in the directory, the step will be invalidat
 ```console
 $ touch dir-0001/another-file.txt
 $ xvc pipeline --name directory-example run
-[OUT] Directory has changed
+
 ```
 
 
