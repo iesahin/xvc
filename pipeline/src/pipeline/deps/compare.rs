@@ -439,7 +439,7 @@ fn compare_deps_directory(
     collected_diffs: &mut Diffs,
 ) -> Result<()> {
     if let Some(stored) = cmp_params.all_dependencies.get(&stored_dependency_e) {
-        if !matches!(stored, XvcDependency::File { path: _ }) {
+        if !matches!(stored, XvcDependency::Directory { path: _ }) {
             return Err(anyhow!("Dependency directory is different from called path.").into());
         }
 
