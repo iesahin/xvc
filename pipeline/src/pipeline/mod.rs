@@ -459,6 +459,7 @@ pub fn the_grand_pipeline_loop(
                         xvc_metadata_store: &xvc_metadata_store,
                         text_files: &text_files,
                     };
+                    watch!(dependency_comparison_params);
                     s_checking_dependency_content_digest(
                         s,
                         params,
@@ -631,17 +632,22 @@ fn s_checking_dependency_content_digest(
     }
 
     let step_e = params.step_e;
+    watch!(step_e);
     // PANIC: If RStore.left doesn't have `step_e` as key.
     let deps = params.all_dependencies.children_of(step_e).unwrap();
+    watch!(deps);
 
+    watch!(deps.is_empty());
     if deps.is_empty() {
         return Ok(s.content_digest_ignored());
     }
 
     let _comparison_results = HStore::<XvcDependencyDiff>::with_capacity(deps.len());
+    watch!(_comparison_results);
 
     // We update the comparison parameters as we iterate through the dependencies
     let cmp_params = dependency_comparison_params.clone();
+    watch!(cmp_params);
     let mut collected_diffs = Diffs::new();
 
     for (dep_e, _) in deps.iter() {
