@@ -12,7 +12,8 @@ use crate::error::{Error, Result};
 use url::Url;
 use xvc_config::XvcConfig;
 use xvc_core::{
-    dir_includes, filter_paths_by_directory, glob_includes, glob_paths, XvcPath,
+    dir_includes, filter_paths_by_directory, glob_includes, glob_paths, CollectionDigest,
+    ContentDigest, StdoutDigest, UrlGetDigest, UrlHeadDigest, XvcMetadataDigest, XvcPath,
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::{persist, HStore, XvcStore};
@@ -26,33 +27,46 @@ pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
 /// compile time errors when we miss something about dependencies.
 #[derive(Debug, Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum XvcDependency {
-    /// A generic dependency that's invalidated when the given command's output has changed.
-    Generic { generic_command: String },
-
     /// Invalidates when the dependency step is invalidated.
     Step {
         /// The name of the step
         name: String,
     },
+    /// A generic dependency that's invalidated when the given command's output has changed.
+    Generic {
+        generic_command: String,
+        output_digest: Option<StdoutDigest>,
+    },
+
     /// Invalidates when the file content changes.
     File {
         /// The path in the workspace
         path: XvcPath,
+        metadata_digest: Option<XvcMetadataDigest>,
+        content_digest: Option<ContentDigest>,
     },
     /// Invalidates when contents in any of the files this glob describes
     Glob {
         /// The glob pattern that will be converted to a [Glob]
         glob: String,
+        collection_digest: Option<CollectionDigest>,
+        metadata_digest: Option<XvcMetadataDigest>,
+        content_digest: Option<ContentDigest>,
     },
     /// Invalidates when contents of any of the files in the directory changes.
     Directory {
         /// The path in the workspace
         path: XvcPath,
+        collection_digest: Option<CollectionDigest>,
+        metadata_digest: Option<XvcMetadataDigest>,
+        content_digest: Option<ContentDigest>,
     },
     /// Invalidates when header of the URL get request changes.
     Url {
         /// URL like https://example.com/my-file.html
         url: Url,
+        url_header_digest: Option<UrlHeadDigest>,
+        url_get_digest: Option<UrlGetDigest>,
     },
     /// Invalidates when key in params file in path changes.
     Param {
@@ -63,6 +77,8 @@ pub enum XvcDependency {
         path: XvcPath,
         /// Key like `mydict.mykey` to access the value
         key: String,
+        metadata_digest: Option<XvcMetadataDigest>,
+        content_digest: Option<ContentDigest>,
     },
     /// When a step depends to a regex searched in a text file
     Regex {
@@ -71,6 +87,8 @@ pub enum XvcDependency {
         /// The regex to search in the file
         // We use this because Regex is not Serializable
         regex: String,
+        metadata_digest: Option<XvcMetadataDigest>,
+        content_digest: Option<ContentDigest>,
     },
     /// When a step depends to a set of lines in a text file
     Lines {
@@ -80,6 +98,8 @@ pub enum XvcDependency {
         begin: usize,
         /// The end of range
         end: usize,
+        metadata_digest: Option<XvcMetadataDigest>,
+        content_digest: Option<ContentDigest>,
     },
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
@@ -132,8 +152,8 @@ pub fn dependencies_to_path(
     let mut deps_to_path = HStore::<XvcDependency>::with_capacity(all_deps.len());
     for (dep_e, dep) in all_deps.iter() {
         let has_path = match dep {
-            XvcDependency::File { path } => *path == *to_path,
-            XvcDependency::Glob { glob } => {
+            XvcDependency::File { path, .. } => *path == *to_path,
+            XvcDependency::Glob { glob, .. } => {
                 glob_includes(xvc_root, pmm, pipeline_rundir, glob.as_str(), to_path)
                     .unwrap_or_else(|e| {
                         e.warn();
@@ -187,11 +207,11 @@ pub fn dependency_paths(
     match dep {
         XvcDependency::Generic { .. } => empty,
         XvcDependency::Step { .. } => empty,
-        XvcDependency::File { path } => make_map(path),
-        XvcDependency::Glob { glob } => {
+        XvcDependency::File { path, .. } => make_map(path),
+        XvcDependency::Glob { glob, .. } => {
             glob_paths(xvc_root, pmm, pipeline_rundir, glob).unwrap_or(empty)
         }
-        XvcDependency::Directory { path } => filter_paths_by_directory(pmm, path),
+        XvcDependency::Directory { path, .. } => filter_paths_by_directory(pmm, path),
         XvcDependency::Url { .. } => empty,
         XvcDependency::Param { path, .. } => make_map(path),
         XvcDependency::Regex { path, .. } => make_map(path),

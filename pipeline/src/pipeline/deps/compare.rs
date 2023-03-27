@@ -182,19 +182,16 @@ pub fn compare_deps(
     cmp_params: DependencyComparisonParams,
     stored_dependency_e: XvcEntity,
     collected_diffs: &mut Diffs,
-) -> Result<()> {
+) -> Result<Diff<XvcDependency>> {
     let stored = &cmp_params.all_dependencies[&stored_dependency_e];
     watch!(collected_diffs);
     match stored {
         // Step dependencies are handled differently
-        XvcDependency::Step { .. } => Ok(()),
+        XvcDependency::Step { .. } => Ok(Diff::Skipped),
 
-        XvcDependency::Generic { generic_command } => compare_deps_generic(
-            cmp_params,
-            stored_dependency_e,
-            generic_command,
-            collected_diffs,
-        ),
+        dep @ XvcDependency::Generic { .. } => {
+            compare_deps_generic(cmp_params, stored_dependency_e, dep)
+        }
         XvcDependency::File { path } => {
             compare_deps_single_path(cmp_params, stored_dependency_e, path, collected_diffs)
         }
@@ -227,50 +224,89 @@ pub fn compare_deps(
 fn compare_deps_generic(
     cmp_params: DependencyComparisonParams,
     stored_dependency_e: XvcEntity,
-    generic_command: &str,
-    collected_diffs: &mut Diffs,
-) -> Result<()> {
-    let command_output = Exec::shell(generic_command).capture()?;
-    let stdout = String::from_utf8(command_output.stdout)?;
-    watch!(stdout);
-    let stderr = String::from_utf8(command_output.stderr)?;
-    watch!(stderr);
-    let algorithm = *cmp_params.algorithm;
-    let return_code = command_output.exit_status;
-    if stderr.len() > 0 || !return_code.success() {
-        return Err(Error::ProcessError { stdout, stderr });
-    }
+    dependency: &XvcDependency,
+) -> Result<Diff<XvcDependency>> {
+    if let XvcDependency::Generic {
+        generic_command,
+        output_digest,
+    } = dependency
+    {
+        let command_output = Exec::shell(generic_command).capture()?;
+        let stdout = String::from_utf8(command_output.stdout)?;
+        let stderr = String::from_utf8(command_output.stderr)?;
+        let algorithm = *cmp_params.algorithm;
+        let return_code = command_output.exit_status;
+        if stderr.len() > 0 || !return_code.success() {
+            return Err(Error::ProcessError { stdout, stderr });
+        }
 
-    let mut collected_diffs = collected_diffs.clone();
+        let actual = StdoutDigest::new(&stdout, algorithm).into();
+        let record = cmp_params.all_dependencies.get(&stored_dependency_e);
 
-    let actual = StdoutDigest::new(&stdout, algorithm).into();
-
-    if let Some(xvc_digests) = cmp_params.xvc_digests_store.get(&stored_dependency_e) {
-        if let Some(record) = xvc_digests.get::<StdoutDigest>() {
-            if record == actual {
-                collected_diffs.insert_xvc_digests_diff(stored_dependency_e, DigestDiff::Identical);
-                Ok(())
-            } else {
-                let record = record.into();
-                let actual = actual.into();
-                collected_diffs.insert_xvc_digests_diff(
-                    stored_dependency_e,
-                    DigestDiff::Different { record, actual },
-                );
-                Ok(())
+        match (record, actual) {
+            (
+                Some(
+                    record @ XvcDependency::Generic {
+                        output_digest: Some(recorded_digest),
+                        generic_command: recorded_generic_command,
+                    },
+                ),
+                Some(actual_digest),
+            ) => {
+                assert!(recorded_generic_command == generic_command);
+                if *recorded_digest == actual_digest {
+                    Ok(Diff::Identical)
+                } else {
+                    Ok(Diff::Different {
+                        record: record.clone(),
+                        actual: XvcDependency::Generic {
+                            output_digest: Some(actual_digest),
+                            generic_command: generic_command.clone(),
+                        },
+                    })
+                }
             }
-        } else {
-            let actual = actual.into();
-            collected_diffs
-                .insert_xvc_digests_diff(stored_dependency_e, DigestDiff::RecordMissing { actual });
-            Ok(())
+
+            (
+                Some(XvcDependency::Generic {
+                    output_digest: None,
+                    generic_command: recorded_generic_command,
+                }),
+                Some(actual_digest),
+            ) => {
+                assert!(recorded_generic_command == generic_command);
+                Ok(Diff::RecordMissing {
+                    actual: XvcDependency::Generic {
+                        output_digest: Some(actual_digest),
+                        generic_command: generic_command.clone(),
+                    },
+                })
+            }
+
+            (None, Some(actual_digest)) => Ok(Diff::RecordMissing {
+                actual: XvcDependency::Generic {
+                    output_digest: Some(actual_digest),
+                    generic_command: generic_command.clone(),
+                },
+            }),
+
+            (
+                Some(
+                    record @ XvcDependency::Generic {
+                        output_digest: Some(recorded_digest),
+                        ..
+                    },
+                ),
+                None,
+            ) => Ok(Diff::ActualMissing {
+                record: record.clone(),
+            }),
+
+            (None, None) => unreachable!(),
+            _ => unreachable!(),
         }
     } else {
-        let actual = actual.into();
-
-        collected_diffs
-            .insert_xvc_digests_diff(stored_dependency_e, DigestDiff::RecordMissing { actual });
-        Ok(())
+        unreachable!();
     }
 }
 
