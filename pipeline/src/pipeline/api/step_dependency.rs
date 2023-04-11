@@ -2,6 +2,15 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 
 use crate::error::{Error, Result};
+use crate::pipeline::deps::directory::DirectoryDep;
+use crate::pipeline::deps::file::FileDep;
+use crate::pipeline::deps::generic::GenericDep;
+use crate::pipeline::deps::glob::GlobDep;
+use crate::pipeline::deps::lines::LinesDep;
+use crate::pipeline::deps::regex::RegexDep;
+use crate::pipeline::deps::step::StepDep;
+use crate::pipeline::deps::url::UrlDep;
+use crate::pipeline::deps::ParamDep;
 
 use regex::Regex;
 use url::Url;
@@ -56,8 +65,12 @@ impl<'a> XvcDependencyList<'a> {
         if let Some(files) = files {
             let mut deps = self.deps.borrow_mut();
             for file in files {
-                let path = XvcPath::new(self.xvc_root, current_dir, &PathBuf::from(file))?;
-                deps.push(XvcDependency::File { path });
+                let file_dep = FileDep::new(XvcPath::new(
+                    self.xvc_root,
+                    current_dir,
+                    &PathBuf::from(file),
+                )?);
+                deps.push(XvcDependency::File(file_dep));
             }
         }
         Ok(self)
@@ -69,8 +82,12 @@ impl<'a> XvcDependencyList<'a> {
         if let Some(directories) = directories {
             let mut deps = self.deps.borrow_mut();
             for directory in directories {
-                let path = XvcPath::new(self.xvc_root, current_dir, &PathBuf::from(directory))?;
-                deps.push(XvcDependency::Directory { path });
+                let dir_dep = DirectoryDep::new(XvcPath::new(
+                    self.xvc_root,
+                    current_dir,
+                    &PathBuf::from(directory),
+                )?);
+                deps.push(XvcDependency::Directory(dir_dep));
             }
         }
         Ok(self)
@@ -81,7 +98,8 @@ impl<'a> XvcDependencyList<'a> {
         if let Some(globs) = globs {
             let mut deps = self.deps.borrow_mut();
             for glob in globs {
-                deps.push(XvcDependency::Glob { glob });
+                let glob_dep = GlobDep::new(glob);
+                deps.push(XvcDependency::Glob(glob_dep));
             }
         }
         Ok(self)
@@ -119,7 +137,8 @@ impl<'a> XvcDependencyList<'a> {
                 let pathbuf = PathBuf::from(param_file);
                 let format = XvcParamFormat::from_path(&pathbuf);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
-                deps.push(XvcDependency::Param { format, path, key });
+                let param_dep = ParamDep::new(&path, Some(format), key)?;
+                deps.push(XvcDependency::Param(param_dep));
             }
         }
         Ok(self)
@@ -132,7 +151,8 @@ impl<'a> XvcDependencyList<'a> {
         if let Some(generics) = generics {
             let mut deps = self.deps.borrow_mut();
             for generic_command in generics {
-                deps.push(XvcDependency::Generic { generic_command });
+                let generic_dep = GenericDep::new(generic_command);
+                deps.push(XvcDependency::Generic(generic_dep));
             }
         }
         Ok(self)
@@ -143,14 +163,8 @@ impl<'a> XvcDependencyList<'a> {
         if let Some(steps) = steps {
             let mut deps = self.deps.borrow_mut();
             for step_name in steps {
-                let (dep_step_e, dep_step) =
-                    XvcStep::from_name(self.xvc_root, &self.pipeline_e, &step_name)?;
-                if dep_step_e == self.step_e {
-                    return Err(Error::StepCannotDependToItself);
-                }
-                deps.push(XvcDependency::Step {
-                    name: dep_step.name,
-                });
+                let step_dep = StepDep::new(step_name);
+                deps.push(XvcDependency::Step(step_dep));
             }
         }
         Ok(self)
@@ -193,10 +207,8 @@ impl<'a> XvcDependencyList<'a> {
 
                 let pathbuf = PathBuf::from(regex_file);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
-                deps.push(XvcDependency::Regex {
-                    path,
-                    regex: regex_str,
-                });
+                let regex_dep = RegexDep::new(path, regex_str);
+                deps.push(XvcDependency::Regex(regex_dep));
             }
         }
 
@@ -208,7 +220,8 @@ impl<'a> XvcDependencyList<'a> {
             let mut deps = self.deps.borrow_mut();
             for url in urls {
                 let url = Url::parse(&url)?;
-                deps.push(XvcDependency::Url { url });
+                let url_dep = UrlDep::new(url);
+                deps.push(XvcDependency::Url(url_dep));
             }
         }
         Ok(self)
@@ -270,7 +283,8 @@ impl<'a> XvcDependencyList<'a> {
 
                 let pathbuf = PathBuf::from(lines_file);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
-                deps.push(XvcDependency::Lines { path, begin, end });
+                let lines_dep = LinesDep::new(path, begin, end);
+                deps.push(XvcDependency::Lines(lines_dep));
             }
         }
         Ok(self)

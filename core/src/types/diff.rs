@@ -326,23 +326,30 @@ where
 }
 
 /// Used to find out if record and actual are different for type T.
-pub trait Diffable<T>
-where
-    T: Storable,
-{
+pub trait Diffable {
+    type Item: Storable;
     /// Return possible differences between record and actual.
-    fn diff(record: Option<T>, actual: Option<T>) -> Diff<T> {
+    fn diff(record: Option<Self::Item>, actual: Option<Self::Item>) -> Diff<Self::Item> {
         match (record, actual) {
             (None, None) => Diff::Identical,
             (None, Some(actual)) => Diff::RecordMissing { actual },
             (Some(record), None) => Diff::ActualMissing { record },
-            (Some(record), Some(actual)) => {
-                if record == actual {
-                    Diff::Identical
-                } else {
-                    Diff::Different { record, actual }
-                }
-            }
+            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
+                Diff::Different { record, actual } => Self::diff_thorough(record, actual),
+                diff => diff,
+            },
         }
+    }
+
+    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+        if record == actual {
+            crate::Diff::Identical
+        } else {
+            crate::Diff::Different { record, actual }
+        }
+    }
+
+    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+        Self::diff_superficial(record, actual)
     }
 }

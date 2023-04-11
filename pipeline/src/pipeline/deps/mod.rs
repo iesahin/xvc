@@ -1,22 +1,39 @@
 pub mod compare;
 pub mod digest;
+pub mod directory;
+pub mod file;
+pub mod generic;
+pub mod glob;
+pub mod lines;
 pub mod param;
+pub mod regex;
+pub mod step;
+pub mod url;
+
+use std::fmt::Display;
 
 pub use param::*;
 
 use serde::{Deserialize, Serialize};
 
-use strum_macros::Display;
-
 use crate::error::{Error, Result};
 use url::Url;
 use xvc_config::XvcConfig;
 use xvc_core::{
-    dir_includes, filter_paths_by_directory, glob_includes, glob_paths, CollectionDigest,
-    ContentDigest, StdoutDigest, UrlGetDigest, UrlHeadDigest, XvcMetadataDigest, XvcPath,
+    dir_includes, filter_paths_by_directory, glob_includes, glob_paths, ContentDigest,
+    PathCollectionDigest, StdoutDigest, UrlGetDigest, UrlHeadDigest, XvcMetadataDigest, XvcPath,
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::{persist, HStore, XvcStore};
+
+use self::directory::DirectoryDep;
+use self::file::FileDep;
+use self::generic::GenericDep;
+use self::glob::GlobDep;
+use self::lines::LinesDep;
+use self::regex::RegexDep;
+use self::step::StepDep;
+use self::url::UrlDep;
 
 pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
     Ok(conf.get_str("pipeline.default_params_file")?.option)
@@ -25,82 +42,22 @@ pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
 /// Represents variety of dependencies Xvc supports.
 /// This is to unify all dependencies without dynamic dispatch and having
 /// compile time errors when we miss something about dependencies.
-#[derive(Debug, Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(
+    Debug, strum_macros::Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize,
+)]
 pub enum XvcDependency {
-    /// Invalidates when the dependency step is invalidated.
-    Step {
-        /// The name of the step
-        name: String,
-    },
-    /// A generic dependency that's invalidated when the given command's output has changed.
-    Generic {
-        generic_command: String,
-        output_digest: Option<StdoutDigest>,
-    },
-
+    Step(StepDep),
+    Generic(GenericDep),
     /// Invalidates when the file content changes.
-    File {
-        /// The path in the workspace
-        path: XvcPath,
-        metadata_digest: Option<XvcMetadataDigest>,
-        content_digest: Option<ContentDigest>,
-    },
+    File(FileDep),
+    Directory(DirectoryDep),
     /// Invalidates when contents in any of the files this glob describes
-    Glob {
-        /// The glob pattern that will be converted to a [Glob]
-        glob: String,
-        collection_digest: Option<CollectionDigest>,
-        metadata_digest: Option<XvcMetadataDigest>,
-        content_digest: Option<ContentDigest>,
-    },
-    /// Invalidates when contents of any of the files in the directory changes.
-    Directory {
-        /// The path in the workspace
-        path: XvcPath,
-        collection_digest: Option<CollectionDigest>,
-        metadata_digest: Option<XvcMetadataDigest>,
-        content_digest: Option<ContentDigest>,
-    },
-    /// Invalidates when header of the URL get request changes.
-    Url {
-        /// URL like https://example.com/my-file.html
-        url: Url,
-        url_header_digest: Option<UrlHeadDigest>,
-        url_get_digest: Option<UrlGetDigest>,
-    },
-    /// Invalidates when key in params file in path changes.
-    Param {
-        /// Format of the params file.
-        /// This is inferred from extension if not given.
-        format: XvcParamFormat,
-        /// Path of the file in the workspace
-        path: XvcPath,
-        /// Key like `mydict.mykey` to access the value
-        key: String,
-        metadata_digest: Option<XvcMetadataDigest>,
-        content_digest: Option<ContentDigest>,
-    },
-    /// When a step depends to a regex searched in a text file
-    Regex {
-        /// Path of the file in the workspace
-        path: XvcPath,
-        /// The regex to search in the file
-        // We use this because Regex is not Serializable
-        regex: String,
-        metadata_digest: Option<XvcMetadataDigest>,
-        content_digest: Option<ContentDigest>,
-    },
+    Glob(GlobDep),
+    Regex(RegexDep),
+    Param(ParamDep),
     /// When a step depends to a set of lines in a text file
-    Lines {
-        /// Path of the file in the workspace
-        path: XvcPath,
-        /// The beginning of range
-        begin: usize,
-        /// The end of range
-        end: usize,
-        metadata_digest: Option<XvcMetadataDigest>,
-        content_digest: Option<ContentDigest>,
-    },
+    Lines(LinesDep),
+    Url(UrlDep),
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
     // TODO: DatabaseQuery { database, query } to specify the result of queries
@@ -120,12 +77,12 @@ impl XvcDependency {
     /// Returns the path of the dependency if it has a single path.
     pub fn xvc_path(&self) -> Option<XvcPath> {
         match self {
-            XvcDependency::File { path } => Some(path.clone()),
+            XvcDependency::File { path, .. } => Some(path.clone()),
             XvcDependency::Directory { path, .. } => Some(path.clone()),
             XvcDependency::Param { path, .. } => Some(path.clone()),
             XvcDependency::Regex { path, .. } => Some(path.clone()),
             XvcDependency::Lines { path, .. } => Some(path.clone()),
-            XvcDependency::Generic { .. } => None,
+            XvcDependency::Generic(GenericDep { .. }) => None,
             XvcDependency::Step { .. } => None,
             XvcDependency::Glob { .. } => None,
             XvcDependency::Url { .. } => None,
@@ -168,7 +125,7 @@ pub fn dependencies_to_path(
             XvcDependency::Param { path, .. } => *path == *to_path,
             XvcDependency::Regex { path, .. } => *path == *to_path,
             XvcDependency::Lines { path, .. } => *path == *to_path,
-            XvcDependency::Generic { .. }
+            XvcDependency::Generic(GenericDep { .. })
             | XvcDependency::Step { .. }
             | XvcDependency::Url { .. } => false,
         };
@@ -205,7 +162,7 @@ pub fn dependency_paths(
 
     let empty = XvcPathMetadataMap::with_capacity(0);
     match dep {
-        XvcDependency::Generic { .. } => empty,
+        XvcDependency::Generic(GenericDep { .. }) => empty,
         XvcDependency::Step { .. } => empty,
         XvcDependency::File { path, .. } => make_map(path),
         XvcDependency::Glob { glob, .. } => {

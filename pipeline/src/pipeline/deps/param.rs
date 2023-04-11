@@ -3,9 +3,102 @@ use serde_json::value::Value as JsonValue;
 use serde_yaml::Value as YamlValue;
 use std::{ffi::OsStr, fmt::Display, fs, path::Path};
 use toml::Value as TomlValue;
+use xvc_core::types::diff::Diffable;
+use xvc_core::{Diff, Digest, XvcMetadata, XvcPath};
+use xvc_ecs::persist;
 
 use log::{error, warn};
 use serde::{Deserialize, Serialize};
+
+/// Invalidates when key in params file in path changes.
+#[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct ParamDep {
+    /// Format of the params file.
+    /// This is inferred from extension if not given.
+    pub format: XvcParamFormat,
+    /// Path of the file in the workspace
+    pub path: XvcPath,
+    /// Key like `mydict.mykey` to access the value
+    pub key: String,
+    /// The value of the key
+    pub value: Option<XvcParamValue>,
+    pub xvc_metadata: Option<XvcMetadata>,
+}
+
+persist!(ParamDep, "param-dependency");
+
+impl ParamDep {
+    pub fn new(path: &XvcPath, format: Option<XvcParamFormat>, key: String) -> Result<Self> {
+        Ok(Self {
+            format: format.unwrap_or_else(|| XvcParamFormat::from_path(&path)),
+            path,
+            key,
+            value: None,
+            xvc_metadata: None,
+        })
+    }
+
+    pub fn update_metadata(self, pmm: &XvcPathMetadataMap) -> Result<Self> {
+        let xvc_metadata = pmm.get(&self.path).cloned();
+        Ok(Self {
+            xvc_metadata,
+            ..self
+        })
+    }
+
+    pub fn update_value(self) -> Result<Self> {
+        let value = Some(XvcParamValue::new_with_format(
+            &self.path,
+            &self.format,
+            &self.key,
+        )?);
+        Ok(Self { value, ..self })
+    }
+}
+
+impl Diffable for ParamDep {
+    type Item = Self;
+
+    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+        assert!(record.path == actual.path);
+
+        match (record.xvc_metadata, actual.xvc_metadata) {
+            (Some(record_md), Some(actual_md)) => {
+                if record_md == actual_md {
+                    Diff::Identical
+                } else {
+                    Diff::Different { record, actual }
+                }
+            }
+            (None, Some(actual)) => Diff::RecordMissing { actual },
+            (Some(record), None) => Diff::ActualMissing { record },
+            (None, None) => unreachable!("One of the metadata should always be present"),
+        }
+    }
+
+    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+        assert!(record.path == actual.path);
+
+        match Self::diff_superficial(record.clone(), actual.clone()) {
+            Diff::Identical => Diff::Identical,
+            Diff::Different { .. } => {
+                let actual = actual.update_value()?;
+                if record.value == actual.value {
+                    Diff::Identical
+                } else {
+                    Diff::Different { record, actual }
+                }
+            }
+            Diff::RecordMissing { .. } => Diff::RecordMissing { actual },
+            Diff::ActualMissing { .. } => Diff::ActualMissing { record },
+            Diff::Skipped => Diff::Skipped,
+        }
+    }
+
+    fn diff(record: Option<Self::Item>, actual: Option<Self::Item>) -> Diff<Self::Item> {
+        Self::diff_thorough(record, actual)
+    }
+}
 
 /// Parsable formats of a parameter file
 #[derive(Debug, Clone, Copy, Eq, PartialOrd, Ord, PartialEq, Serialize, Deserialize)]
@@ -69,13 +162,7 @@ impl Display for XvcParamValue {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct XvcParamPair {
-    pub key: String,
-    pub value: XvcParamValue,
-}
-
-impl XvcParamPair {
+impl XvcParamValue {
     pub fn new_with_format(path: &Path, format: &XvcParamFormat, key: &str) -> Result<Self> {
         let all_content = fs::read_to_string(path)?;
 
@@ -99,7 +186,7 @@ impl XvcParamPair {
         }
     }
 
-    fn parse_json(all_content: &str, key: &str) -> Result<XvcParamPair> {
+    fn parse_json(all_content: &str, key: &str) -> Result<Self> {
         let json_map: JsonValue = serde_json::from_str(all_content)?;
         let nested_keys: Vec<&str> = key.split('.').collect();
         let mut current_scope = json_map;
@@ -110,12 +197,7 @@ impl XvcParamPair {
                     JsonValue::String(_)
                     | JsonValue::Number(_)
                     | JsonValue::Bool(_)
-                    | JsonValue::Array(_) => {
-                        return Ok(XvcParamPair {
-                            key: key.to_string(),
-                            value: XvcParamValue::Json(current_value.clone()),
-                        })
-                    }
+                    | JsonValue::Array(_) => return Ok(XvcParamValue::Json(current_value.clone())),
                     JsonValue::Null => {
                         return Err(Error::JsonNullValueForKey { key: key.into() });
                     }
@@ -125,14 +207,11 @@ impl XvcParamPair {
             }
         }
         // If we consumed all key elements and come to here, we consider the current scope as value
-        Ok(XvcParamPair {
-            key: key.into(),
-            value: XvcParamValue::Json(current_scope),
-        })
+        Ok(XvcParamValue::Json(current_scope))
     }
 
     /// Loads the key (in the form of a.b.c) from a YAML document
-    fn parse_yaml(all_content: &str, key: &str) -> Result<XvcParamPair> {
+    fn parse_yaml(all_content: &str, key: &str) -> Result<XvcParamValue> {
         let yaml_map: YamlValue = serde_yaml::from_str(all_content)?;
         let nested_keys: Vec<&str> = key.split('.').collect();
         let mut current_scope: YamlValue = yaml_map;
@@ -149,10 +228,7 @@ impl XvcParamPair {
                     | YamlValue::Number(_)
                     | YamlValue::Bool(_)
                     | YamlValue::Sequence(_) => {
-                        return Ok(XvcParamPair {
-                            key: key.into(),
-                            value: XvcParamValue::Yaml(current_value.clone()),
-                        })
+                        return Ok(XvcParamValue::Yaml(current_value.clone()));
                     }
                     YamlValue::Null => {
                         return Err(Error::YamlNullValueForKey { key: key.into() });
@@ -163,16 +239,13 @@ impl XvcParamPair {
             }
         }
         // If we consumed the key without errors, we consider the resulting scope as the value
-        Ok(XvcParamPair {
-            key: key.into(),
-            value: XvcParamValue::Yaml(current_scope),
-        })
+        Ok(XvcParamValue::Yaml(current_scope))
     }
 
     /// Loads a TOML file and returns the `XvcParamPair::TOML(TomlValue)`
     /// associated with the key
 
-    fn parse_toml(all_content: &str, key: &str) -> Result<XvcParamPair> {
+    fn parse_toml(all_content: &str, key: &str) -> Result<Self> {
         let toml_map = all_content.parse::<TomlValue>()?;
         let nested_keys: Vec<&str> = key.split('.').collect();
         let mut current_scope: TomlValue = toml_map;
@@ -188,10 +261,7 @@ impl XvcParamPair {
                     | TomlValue::Boolean(_)
                     | TomlValue::Datetime(_)
                     | TomlValue::Array(_) => {
-                        return Ok(XvcParamPair {
-                            key: key.into(),
-                            value: XvcParamValue::Toml(current_value.clone()),
-                        })
+                        return Ok(XvcParamValue::Toml(current_value.clone()));
                     }
                 }
             } else {
@@ -199,10 +269,7 @@ impl XvcParamPair {
             }
         }
         // If we consumed the key without errors, we consider the resulting scope as the value
-        Ok(XvcParamPair {
-            key: key.into(),
-            value: XvcParamValue::Toml(current_scope),
-        })
+        Ok(XvcParamValue::Toml(current_scope))
     }
 }
 
@@ -220,12 +287,11 @@ model:
 
     #[test]
     fn test_yaml_params() -> Result<()> {
-        let train_epochs = XvcParamPair::parse_yaml(YAML_PARAMS, "train.epochs")?;
-        assert!(train_epochs.key == "train.epochs");
-        if let XvcParamValue::Yaml(YamlValue::Number(n)) = train_epochs.value {
+        let train_epochs = XvcParamValue::parse_yaml(YAML_PARAMS, "train.epochs")?;
+        if let XvcParamValue::Yaml(YamlValue::Number(n)) = train_epochs {
             assert!(n.as_u64() == Some(10u64))
         } else {
-            panic!("Mismatched Yaml Type: {}", train_epochs.value);
+            panic!("Mismatched Yaml Type: {}", train_epochs);
         }
         Ok(())
     }

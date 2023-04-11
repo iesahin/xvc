@@ -36,7 +36,7 @@ use std::time::{Duration, Instant, SystemTime};
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, CollectionDigest, ContentDigest, Diff, HashAlgorithm,
+    all_paths_and_metadata, apply_diff, ContentDigest, Diff, HashAlgorithm, PathCollectionDigest,
     TextOrBinary, XvcDigests, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 

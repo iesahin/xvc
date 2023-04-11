@@ -10,15 +10,24 @@ use xvc_core::types::diff::Diffable;
 use xvc_core::util::file::{filter_paths_by_directory, glob_paths, XvcPathMetadataMap};
 
 use xvc_core::{
-    AttributeDigest, CollectionDigest, ContentDigest, Diff, DiffStore, HashAlgorithm, StdoutDigest,
-    TextOrBinary, UrlGetDigest, UrlHeadDigest, XvcDigests, XvcMetadata, XvcPath, XvcRoot,
+    AttributeDigest, ContentDigest, Diff, DiffStore, HashAlgorithm, PathCollectionDigest,
+    StdoutDigest, TextOrBinary, UrlGetDigest, XvcDigests, XvcMetadata, XvcMetadataDigest, XvcPath,
+    XvcRoot,
 };
 use xvc_ecs::{HStore, R1NStore, XvcStore};
 use xvc_logging::watch;
 
 use super::digest::DependencyDigestParams;
 
-use super::XvcDependency;
+use super::lines::LinesDep;
+use super::regex::RegexDep;
+use super::{ParamDep, XvcDependency};
+
+use super::directory::DirectoryDep;
+use super::file::FileDep;
+use super::generic::GenericDep;
+use super::glob::GlobDep;
+use super::url::UrlDep;
 
 #[derive(Clone, Debug)]
 /// Stored and gathered data to decide the validation of dependencies
@@ -28,11 +37,6 @@ pub struct DependencyComparisonParams<'a> {
     pub pmm: &'a XvcPathMetadataMap,
     pub algorithm: &'a HashAlgorithm,
     pub all_dependencies: &'a XvcStore<XvcDependency>,
-    pub dependency_paths: &'a R1NStore<XvcDependency, XvcPath>,
-    pub xvc_path_store: &'a XvcStore<XvcPath>,
-    pub xvc_metadata_store: &'a XvcStore<XvcMetadata>,
-    pub xvc_digests_store: &'a XvcStore<XvcDigests>,
-    pub text_files: &'a XvcStore<TextOrBinary>,
 }
 
 type DigestDiff = Diff<XvcDigests>;
@@ -176,314 +180,140 @@ impl Diffs {
 /// Decides the dependency type by loading the stored dependency.
 /// Calls the respective comparison function for the loaded dependency type.
 ///
-/// TODO: This can probably be avoided (or simplified) using a common trait for comparison across
-/// all dependency delta types.
 pub fn compare_deps(
     cmp_params: DependencyComparisonParams,
     stored_dependency_e: XvcEntity,
-    collected_diffs: &mut Diffs,
 ) -> Result<Diff<XvcDependency>> {
-    let stored = &cmp_params.all_dependencies[&stored_dependency_e];
-    watch!(collected_diffs);
-    match stored {
-        // Step dependencies are handled differently
-        XvcDependency::Step { .. } => Ok(Diff::Skipped),
+    let stored = cmp_params
+        .all_dependencies
+        .get(&stored_dependency_e)
+        .ok_or(err!(
+            "Stored dependency {:?} not found in all_dependencies",
+            stored_dependency_e
+        ))?;
 
-        dep @ XvcDependency::Generic { .. } => {
-            compare_deps_generic(cmp_params, stored_dependency_e, dep)
+    let diff = match stored {
+        // Step dependencies are handled differently
+        XvcDependency::Step(_) => Diff::Skipped,
+
+        XvcDependency::Generic(generic) => compare_deps_generic(cmp_params, generic),
+        XvcDependency::File(file_dep) => compare_deps_file(cmp_params, file_dep),
+        XvcDependency::Glob(glob_dep) => compare_deps_glob(cmp_params, glob_dep),
+        XvcDependency::Directory(dir_dep) => compare_deps_directory(cmp_params, dir_dep),
+        XvcDependency::Url(url_dep) => compare_deps_url(cmp_params, url_dep),
+        XvcDependency::Param(param_dep) => compare_deps_param(cmp_params, param_dep),
+        XvcDependency::Regex(regex_dep) => compare_deps_regex(cmp_params, regex_dep),
+        XvcDependency::Lines(lines_dep) => compare_deps_lines(cmp_params, lines_dep),
+    };
+
+    Ok(diff)
+}
+
+impl Diffable for XvcDependency {
+    type Item = XvcDependency;
+
+    fn diff(record: XvcDependency, actual: XvcDependency) -> Result<Diff<XvcDependency>> {
+        match (record, actual) {
+            (XvcDependency::Generic(record), XvcDependency::Generic(actual)) => {
+                GenericDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::File(record), XvcDependency::File(actual)) => {
+                FileDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::Glob(record), XvcDependency::Glob(actual)) => {
+                GlobDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::Directory(record), XvcDependency::Directory(actual)) => {
+                DirectoryDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::Url(record), XvcDependency::Url(actual)) => {
+                UrlDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::Param(record), XvcDependency::Param(actual)) => {
+                ParamDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::Regex(record), XvcDependency::Regex(actual)) => {
+                RegexDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::Lines(record), XvcDependency::Lines(actual)) => {
+                LinesDep::diff(Some(record), Some(actual))
+            }
+            (XvcDependency::Step(record), XvcDependency::Step(actual)) => {
+                unreachable!("Step dependencies are handled differently")
+            }
+            _ => Err(anyhow!("Cannot diff {:?} and {:?}", record, actual).into()),
         }
-        XvcDependency::File { path } => {
-            compare_deps_single_path(cmp_params, stored_dependency_e, path, collected_diffs)
-        }
-        XvcDependency::Glob { glob } => {
-            compare_deps_glob(cmp_params, stored_dependency_e, glob, collected_diffs)
-        }
-        XvcDependency::Directory { path } => {
-            compare_deps_directory(cmp_params, stored_dependency_e, path, collected_diffs)
-        }
-        XvcDependency::Url { url } => {
-            compare_deps_url(cmp_params, stored_dependency_e, url, collected_diffs)
-        }
-        XvcDependency::Param {
-            path,
-            format: _,
-            key: _,
-        } => compare_deps_single_path(cmp_params, stored_dependency_e, path, collected_diffs),
-        XvcDependency::Regex { path, regex: _ } => {
-            compare_deps_single_path(cmp_params, stored_dependency_e, path, collected_diffs)
-        }
-        XvcDependency::Lines {
-            path,
-            begin: _,
-            end: _,
-        } => compare_deps_single_path(cmp_params, stored_dependency_e, path, collected_diffs),
     }
 }
 
 /// Runs the command and compares the output with the stored dependency
 fn compare_deps_generic(
     cmp_params: DependencyComparisonParams,
-    stored_dependency_e: XvcEntity,
-    dependency: &XvcDependency,
-) -> Result<Diff<XvcDependency>> {
-    if let XvcDependency::Generic {
-        generic_command,
-        output_digest,
-    } = dependency
-    {
-        let command_output = Exec::shell(generic_command).capture()?;
-        let stdout = String::from_utf8(command_output.stdout)?;
-        let stderr = String::from_utf8(command_output.stderr)?;
-        let algorithm = *cmp_params.algorithm;
-        let return_code = command_output.exit_status;
-        if stderr.len() > 0 || !return_code.success() {
-            return Err(Error::ProcessError { stdout, stderr });
-        }
-
-        let actual = StdoutDigest::new(&stdout, algorithm).into();
-        let record = cmp_params.all_dependencies.get(&stored_dependency_e);
-
-        match (record, actual) {
-            (
-                Some(
-                    record @ XvcDependency::Generic {
-                        output_digest: Some(recorded_digest),
-                        generic_command: recorded_generic_command,
-                    },
-                ),
-                Some(actual_digest),
-            ) => {
-                assert!(recorded_generic_command == generic_command);
-                if *recorded_digest == actual_digest {
-                    Ok(Diff::Identical)
-                } else {
-                    Ok(Diff::Different {
-                        record: record.clone(),
-                        actual: XvcDependency::Generic {
-                            output_digest: Some(actual_digest),
-                            generic_command: generic_command.clone(),
-                        },
-                    })
-                }
-            }
-
-            (
-                Some(XvcDependency::Generic {
-                    output_digest: None,
-                    generic_command: recorded_generic_command,
-                }),
-                Some(actual_digest),
-            ) => {
-                assert!(recorded_generic_command == generic_command);
-                Ok(Diff::RecordMissing {
-                    actual: XvcDependency::Generic {
-                        output_digest: Some(actual_digest),
-                        generic_command: generic_command.clone(),
-                    },
-                })
-            }
-
-            (None, Some(actual_digest)) => Ok(Diff::RecordMissing {
-                actual: XvcDependency::Generic {
-                    output_digest: Some(actual_digest),
-                    generic_command: generic_command.clone(),
-                },
-            }),
-
-            (
-                Some(
-                    record @ XvcDependency::Generic {
-                        output_digest: Some(recorded_digest),
-                        ..
-                    },
-                ),
-                None,
-            ) => Ok(Diff::ActualMissing {
-                record: record.clone(),
-            }),
-
-            (None, None) => unreachable!(),
-            _ => unreachable!(),
-        }
-    } else {
-        unreachable!();
-    }
+    rec_generic_dep: &GenericDep,
+) -> Result<Diff<GenericDep>> {
+    let actual = GenericDep::new(rec_generic_dep.generic_command);
+    Ok(GenericDep::diff(
+        Some(rec_generic_dep.clone()),
+        Some(actual),
+    ))
 }
 
 /// Compares a dependency path with the actual metadata and content digest found on disk
-///
-/// It loads the dependency, extracts the path and calls [compare_path] with it.
-fn compare_deps_single_path(
+fn compare_deps_file(
     cmp_params: DependencyComparisonParams,
-    stored_dependency_e: XvcEntity,
-    xvc_path: &XvcPath,
-    collected_diffs: &mut Diffs,
-) -> Result<()> {
-    if let Some(stored) = cmp_params.all_dependencies.get(&stored_dependency_e) {
-        if matches!(
-            stored,
-            XvcDependency::File {
-                path: _recorded_path
-            }
-        ) {
-            let actual_xvc_metadata = cmp_params.pmm.get(xvc_path).cloned();
-            let oxe_path = cmp_params.xvc_path_store.entity_by_value(xvc_path);
+    rec_file_dep: &FileDep,
+) -> Result<Diff<FileDep>> {
+    let actual = FileDep::from_pmm(&rec_file_dep.path, cmp_params.pmm)?;
 
-            let stored_xvc_metadata =
-                oxe_path.and_then(|xe_path| cmp_params.xvc_metadata_store.get(&xe_path).cloned());
-            let diff_xvc_metadata = XvcMetadata::diff(stored_xvc_metadata, actual_xvc_metadata);
-
-            let xe_path = if let Some(xe_path) = oxe_path {
-                collected_diffs.insert_xvc_path_diff(xe_path, Diff::Identical);
-                xe_path
-            } else {
-                let xe_path = cmp_params.xvc_root.new_entity();
-                collected_diffs.insert_xvc_path_diff(
-                    xe_path,
-                    Diff::RecordMissing {
-                        actual: xvc_path.clone(),
-                    },
-                );
-                xe_path
-            };
-
-            collected_diffs.insert_xvc_metadata_diff(xe_path, diff_xvc_metadata.clone());
-
-            let diff = match diff_xvc_metadata.clone() {
-                // If there is no change in metadata, we don't check further
-                Diff::Identical | Diff::Skipped => Diff::Identical,
-                Diff::RecordMissing { .. } => {
-                    let text_or_binary = cmp_params
-                        .text_files
-                        .get(&xe_path)
-                        .copied()
-                        .unwrap_or_default();
-                    let absolute_path = xvc_path.to_absolute_path(&cmp_params.xvc_root);
-                    let actual =
-                        ContentDigest::new(&absolute_path, *cmp_params.algorithm, text_or_binary)?;
-                    Diff::RecordMissing { actual }
-                }
-                Diff::ActualMissing { .. } => {
-                    let record = cmp_params
-                        .xvc_digests_store
-                        .get(&xe_path)
-                        .and_then(|xd| xd.get::<ContentDigest>())
-                        .ok_or_else(|| {
-                            Error::from(xvc_ecs::Error::CannotFindEntityInStore { entity: xe_path })
-                        })?;
-                    Diff::ActualMissing { record }
-                }
-                Diff::Different { .. } => {
-                    let record = cmp_params
-                        .xvc_digests_store
-                        .get(&xe_path)
-                        .and_then(|xd| xd.get::<ContentDigest>())
-                        .ok_or_else(|| {
-                            Error::from(xvc_ecs::Error::CannotFindEntityInStore { entity: xe_path })
-                        })?;
-                    let text_or_binary = cmp_params
-                        .text_files
-                        .get(&xe_path)
-                        .copied()
-                        .unwrap_or_default();
-                    let absolute_path = xvc_path.to_absolute_path(&cmp_params.xvc_root);
-                    let actual =
-                        ContentDigest::new(&absolute_path, *cmp_params.algorithm, text_or_binary)?;
-                    if record == actual {
-                        Diff::Identical
-                    } else {
-                        Diff::Different { record, actual }
-                    }
-                }
-            };
-            // We collect both path and dependency digest diffs
-            collected_diffs.insert_attribute_digest_diff(xe_path, diff.clone());
-            collected_diffs.insert_attribute_digest_diff(stored_dependency_e, diff);
-            Ok(())
-        } else {
-            Err(anyhow!("Dependency record is different from called path.").into())
-        }
-    } else {
-        Err(anyhow!("No such stored XvcDependency").into())
-    }
+    Ok(FileDep::diff(Some(rec_file_dep), Some(actual)))
 }
 
 fn compare_deps_url(
     cmp_params: DependencyComparisonParams,
-    stored_dependency_e: XvcEntity,
-    url: &Url,
-    collected_diffs: &mut Diffs,
-) -> Result<()> {
-    if let Some(stored) = cmp_params.all_dependencies.get(&stored_dependency_e) {
-        if !matches!(stored, XvcDependency::Url { url: _ }) {
-            return Err(anyhow!("Dependency record is different from called url.").into());
-        }
-
-        let actual = UrlHeadDigest::new(url, *cmp_params.algorithm)?;
-        let record_xvc_digests = cmp_params.xvc_digests_store.get(&stored_dependency_e);
-        let record = record_xvc_digests.and_then(|s| s.get::<UrlHeadDigest>());
-
-        let head_diff = UrlHeadDigest::diff(record, Some(actual));
-        collected_diffs.insert_attribute_digest_diff(stored_dependency_e, head_diff.clone());
-
-        let get_diff = match head_diff {
-            Diff::Identical | Diff::Skipped => Diff::<UrlGetDigest>::Identical,
-            Diff::RecordMissing { .. } => {
-                let actual_get_diff = UrlGetDigest::new(url, *cmp_params.algorithm)?;
-                Diff::RecordMissing {
-                    actual: actual_get_diff,
-                }
-            }
-            Diff::ActualMissing { .. } => {
-                let record = record_xvc_digests
-                    .and_then(|rec| rec.get::<UrlGetDigest>())
-                    .ok_or_else(|| xvc_ecs::Error::CannotFindEntityInStore {
-                        entity: stored_dependency_e,
-                    })?;
-                Diff::ActualMissing { record }
-            }
-
-            Diff::Different { record, actual } => {
-                if record == actual {
-                    // TODO: We may want to force download here with a flag
-                    Diff::Identical
-                } else {
-                    let actual_get_diff = UrlGetDigest::new(url, *cmp_params.algorithm)?;
-                    let record = record_xvc_digests
-                        .and_then(|rec| rec.get::<UrlGetDigest>())
-                        .ok_or_else(|| xvc_ecs::Error::CannotFindEntityInStore {
-                            entity: stored_dependency_e,
-                        })?;
-                    Diff::Different {
-                        record,
-                        actual: actual_get_diff,
-                    }
-                }
-            }
-        };
-        collected_diffs.insert_attribute_digest_diff(stored_dependency_e, get_diff)?;
-        Ok(())
-    } else {
-        Err(anyhow!("No such stored XvcDependency").into())
-    }
+    url_dep: &UrlDep,
+) -> Result<Diff<UrlDep>> {
+    let actual = UrlDep::new(url_dep.url).update_headers()?;
+    Ok(UrlDep::diff(Some(url_dep), Some(actual)))
 }
 
 fn compare_deps_directory(
     cmp_params: DependencyComparisonParams,
-    stored_dependency_e: XvcEntity,
-    directory: &XvcPath,
-    collected_diffs: &mut Diffs,
-) -> Result<()> {
-    if let Some(stored) = cmp_params.all_dependencies.get(&stored_dependency_e) {
-        if !matches!(stored, XvcDependency::Directory { path: _ }) {
-            return Err(anyhow!("Dependency directory is different from called path.").into());
-        }
+    record: &DirectoryDep,
+) -> Result<Diff<DirectoryDep>> {
+    let actual = DirectoryDep::from_pmm(cmp_params.xvc_root, record.path, cmp_params.pmm);
 
-        let paths = filter_paths_by_directory(cmp_params.pmm, directory);
-        compare_deps_multiple_paths(cmp_params, stored_dependency_e, &paths, collected_diffs)
-    } else {
-        Err(anyhow!("No such stored XvcDependency").into())
+    actual.calculate_changed_paths_digests(cmp_params.xvc_root, &record)?;
+
+    match DirectoryDep::diff_superficial(record, actual)? {
+        Diff::Different { record, actual } => Ok(DirectoryDep::diff_thorough(record, actual)),
+        diff => Ok(diff),
     }
+}
+
+fn compare_deps_param(
+    cmp_params: DependencyComparisonParams,
+    param_dep: &ParamDep,
+) -> Result<Diff<ParamDep>> {
+    let actual = ParamDep::from_pmm(param_dep.param_name, cmp_params.pmm)?;
+
+    Ok(ParamDep::diff(Some(param_dep), Some(actual)))
+}
+
+fn compare_deps_regex(
+    cmp_params: DependencyComparisonParams,
+    regex_dep: &RegexDep,
+) -> Result<Diff<RegexDep>> {
+    let actual = RegexDep::from_pmm(regex_dep.param_name, cmp_params.pmm)?;
+
+    Ok(RegexDep::diff(Some(regex_dep), Some(actual)))
+}
+
+fn compare_deps_lines(
+    cmp_params: DependencyComparisonParams,
+    lines_dep: &LinesDep,
+) -> Result<Diff<LinesDep>> {
+    let actual = LinesDep::from_pmm(lines_dep.param_name, cmp_params.pmm)?;
+    Ok(LinesDep::diff(Some(lines_dep), Some(actual)))
 }
 
 /// Compare paths in `paths` with their stored values with respect to changes in
@@ -509,12 +339,12 @@ pub fn compare_deps_multiple_paths(
         pipeline_rundir,
         pmm,
     };
-    let actual_collection_digest = CollectionDigest::new(paths.keys().cloned(), *algorithm)?;
+    let actual_collection_digest = PathCollectionDigest::new(paths.keys().cloned(), *algorithm)?;
     let stored_xvc_digests = cmp_params.xvc_digests_store.get(&stored_dependency_e);
-    let stored_collection_digest = stored_xvc_digests.and_then(|s| s.get::<CollectionDigest>());
+    let stored_collection_digest = stored_xvc_digests.and_then(|s| s.get::<PathCollectionDigest>());
 
     let collection_digest_diff =
-        CollectionDigest::diff(stored_collection_digest, Some(actual_collection_digest));
+        PathCollectionDigest::diff(stored_collection_digest, Some(actual_collection_digest));
 
     collected_diffs
         .insert_attribute_digest_diff(stored_dependency_e, collection_digest_diff.clone())?;
@@ -668,20 +498,19 @@ pub fn compare_deps_multiple_paths(
 /// Uses [compare_deps_multiple_paths] after extracting the paths with [glob_paths]
 fn compare_deps_glob(
     cmp_params: DependencyComparisonParams,
-    stored_dependency_e: XvcEntity,
-    _glob: &str,
-    collected_diffs: &mut Diffs,
-) -> Result<()> {
-    let stored = &cmp_params.all_dependencies[&stored_dependency_e];
-    if let XvcDependency::Glob { glob } = stored {
-        let glob_pmm = glob_paths(
-            cmp_params.xvc_root,
-            cmp_params.pmm,
-            cmp_params.pipeline_rundir,
-            glob,
-        )?;
-        compare_deps_multiple_paths(cmp_params, stored_dependency_e, &glob_pmm, collected_diffs)
-    } else {
-        Err(Error::XvcDependencyComparisonError)
+    record: &GlobDep,
+) -> Result<Diff<GlobDep>> {
+    let actual = GlobDep::from_pmm(
+        cmp_params.xvc_root,
+        cmp_params.pipeline_rundir,
+        record.glob,
+        cmp_params.pmm,
+    );
+
+    actual.calculate_changed_paths_digests(cmp_params.xvc_root, &record)?;
+
+    match GlobDep::diff_superficial(record, actual)? {
+        Diff::Different { record, actual } => Ok(GlobDep::diff_thorough(record, actual)),
+        diff => Ok(diff),
     }
 }

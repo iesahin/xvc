@@ -22,7 +22,22 @@ use super::AttributeDigest;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct ContentDigest(XvcDigest);
 attribute_digest!(ContentDigest, "content-digest");
-impl Diffable<ContentDigest> for ContentDigest {}
+
+impl Diffable for ContentDigest {
+    type Item = ContentDigest;
+
+    fn diff_superficial(record: Self::Item, actual: Self::Item) -> crate::Diff<Self::Item> {
+        if record == actual {
+            crate::Diff::Identical
+        } else {
+            crate::Diff::Different { record, actual }
+        }
+    }
+
+    fn diff_thorough(record: Self::Item, actual: Self::Item) -> crate::Diff<Self::Item> {
+        Self::diff_superficial(record, actual)
+    }
+}
 
 impl ContentDigest {
     /// Returns the content hash of the file in `path` calculated by `algorithm`.

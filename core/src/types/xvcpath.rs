@@ -28,7 +28,9 @@ use super::xvcroot::XvcRoot;
 pub struct XvcPath(RelativePathBuf);
 
 persist!(XvcPath, "xvc-path");
-impl Diffable<XvcPath> for XvcPath {}
+impl Diffable for XvcPath {
+    type Item = XvcPath;
+}
 
 impl Deref for XvcPath {
     type Target = RelativePathBuf;

@@ -8,6 +8,8 @@ use xvc_logging::{output, watch, XvcOutputSender};
 use std::{fs::File, io::Write};
 
 use crate::error::{Error, Result};
+use crate::pipeline::deps::generic::GenericDep;
+use crate::pipeline::deps::step::StepDep;
 use std::path::PathBuf;
 
 use strum_macros::{Display, EnumString, IntoStaticStr};
@@ -77,22 +79,26 @@ fn dep_desc(
     dep: &XvcDependency,
 ) -> String {
     match dep {
-        XvcDependency::Step { name } => {
+        XvcDependency::Step(step_dep) => {
             let step_e = pipeline_steps
-                .entity_by_value(&XvcStep { name: name.clone() })
-                .expect(&format!("Cannot find step {} in pipeline.", name));
+                .entity_by_value(&XvcStep {
+                    name: step_dep.name.clone(),
+                })
+                .expect(&format!("Cannot find step {} in pipeline.", step_dep.name));
             step_descs.get(&step_e).unwrap().clone()
         }
-        XvcDependency::Generic { generic_command } => format!("generic: {}", generic_command),
-        XvcDependency::File { path } => format!("file: {}", path),
-        XvcDependency::Directory { path } => format!("dir: {}", path),
-        XvcDependency::Lines { path, begin, end } => {
-            format!("lines: {}::{}-{}", path, begin, end)
+        XvcDependency::Generic(generic_dep) => {
+            format!("generic: {}", generic_dep.generic_command)
         }
-        XvcDependency::Regex { path, regex } => format!("regex: {}:/{}", path, regex),
-        XvcDependency::Param { path, key, .. } => format!("param: {}::{}", path, key),
-        XvcDependency::Glob { glob } => format!("glob: {}", glob),
-        XvcDependency::Url { url } => format!("url: {}", url),
+        XvcDependency::File(dep) => format!("file: {}", dep.path),
+        XvcDependency::Directory(dep) => format!("dir: {}", dep.path),
+        XvcDependency::Lines(dep) => {
+            format!("lines: {}::{}-{}", dep.path, dep.begin, dep.end)
+        }
+        XvcDependency::Regex(dep) => format!("regex: {}:/{}", dep.path, dep.regex),
+        XvcDependency::Param(dep) => format!("param: {}::{}", dep.path, dep.key),
+        XvcDependency::Glob(dep) => format!("glob: {}", dep.glob),
+        XvcDependency::Url(dep) => format!("url: {}", dep.url),
     }
 }
 
@@ -144,17 +150,17 @@ pub fn cmd_dag(
         dependency_graph.add_edge(
             start_e,
             *step_e,
-            XvcDependency::Step {
+            XvcDependency::Step(StepDep {
                 name: step.name.clone(),
-            },
+            }),
         );
 
         dependency_graph.add_edge(
             *step_e,
             end_e,
-            XvcDependency::Step {
+            XvcDependency::Step(StepDep {
                 name: end_step.clone().name,
-            },
+            }),
         );
     }
 

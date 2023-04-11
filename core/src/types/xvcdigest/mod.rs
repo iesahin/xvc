@@ -1,9 +1,9 @@
 //! Xvc digest calculations
-pub mod collection_digest;
 pub mod content_digest;
+pub mod path_collection_digest;
 pub mod stdout_digest;
 pub mod url_get_digest;
-pub mod url_head_digest;
+pub mod xvc_metadata_digest;
 
 use crate::types::hashalgorithm::HashAlgorithm;
 
