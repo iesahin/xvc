@@ -1,37 +1,40 @@
+use std::io::{self, BufRead};
+
+use itertools::Itertools;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::{ContentDigest, Diff, XvcMetadata, XvcPath};
+use xvc_core::{ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::persist;
 
 use crate::XvcDependency;
 
 /// When a step depends to a regex searched in a text file
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RegexDep {
+pub struct RegexDigestDep {
     /// Path of the file in the workspace
     pub path: XvcPath,
     /// The regex to search in the file
     // We use this because Regex is not Serializable
     pub regex: String,
-    pub lines: Vec<String>,
+    pub lines_digest: Option<ContentDigest>,
     pub xvc_metadata: Option<XvcMetadata>,
 }
 
-persist!(RegexDep, "regex-dependency");
+persist!(RegexDigestDep, "regex-digest-dependency");
 
-impl Into<XvcDependency> for RegexDep {
+impl Into<XvcDependency> for RegexDigestDep {
     fn into(self) -> XvcDependency {
-        XvcDependency::Regex(self)
+        XvcDependency::RegexDigest(self)
     }
 }
 
-impl RegexDep {
+impl RegexDigestDep {
     pub fn new(path: XvcPath, regex: String) -> Self {
         Self {
             path,
             regex,
-            lines: Vec::new(),
+            lines_digest: None,
             xvc_metadata: None,
         }
     }
@@ -43,12 +46,12 @@ impl RegexDep {
         }
     }
 
-    pub fn update_lines(self, xvc_root: &XvcRoot) -> Self {
+    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: &HashAlgorithm) -> Self {
         let path = self.path.to_absolute_path(xvc_root);
         let regex = self.regex();
         let file = std::fs::File::open(path).unwrap();
-        let line_reader = io::BufReader::new(file).lines();
-        let lines = line_reader
+        let lines = io::BufReader::new(file).lines();
+        let matching_lines = lines
             .filter_map(|line| {
                 if let Ok(line) = line {
                     if regex.is_match(&line) {
@@ -60,9 +63,13 @@ impl RegexDep {
                     None
                 }
             })
-            .collect();
+            .join("");
 
-        Self { lines, ..self }
+        let lines_digest = XvcDigest::from_content(&matching_lines, algorithm).into();
+        Self {
+            lines_digest,
+            ..self
+        }
     }
 
     pub fn regex(&self) -> Regex {
@@ -70,43 +77,59 @@ impl RegexDep {
     }
 }
 
-impl Diffable for RegexDep {
+impl Diffable for RegexDigestDep {
     type Item = Self;
 
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// ⚠️  Update the metadata with actual.update_metadata before calling this function
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
 
         match (record.xvc_metadata, actual.xvc_metadata) {
-            (Some(record), Some(actual)) => {
-                if record == actual {
+            (Some(rec_md), Some(act_md)) => {
+                if rec_md == act_md {
                     Diff::Identical
                 } else {
-                    Diff::Different { record, actual }
+                    Diff::Different {
+                        record: record.clone(),
+                        actual: actual.clone(),
+                    }
                 }
             }
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
+            (None, Some(_)) => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            (Some(_), None) => Diff::ActualMissing {
+                record: record.clone(),
+            },
             (None, None) => unreachable!("Either record or actual should have metadata"),
         }
     }
 
-    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// ⚠️  Update the metadata and lines with actual.update_lines before calling this function
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
         let actual = actual.update_lines();
         if record.lines == actual.lines {
             Diff::Identical
         } else {
-            Diff::Different { record, actual }
+            Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
         }
     }
 
-    fn diff(record: Option<Self::Item>, actual: Option<Self::Item>) -> Diff<Self::Item> {
+    fn diff(record: Option<&Self::Item>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
         match (record, actual) {
             (None, None) => unreachable!("Either record or actual should be available"),
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
+            (None, Some(actual)) => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            (Some(record), None) => Diff::ActualMissing {
+                record: record.clone(),
+            },
             (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
-                Diff::Different { record, actual } => Self::diff_thorough(record, actual),
+                Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),
                 Diff::RecordMissing { actual } => Diff::RecordMissing {
                     actual: actual.update_lines(),
                 },

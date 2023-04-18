@@ -2,14 +2,14 @@ use std::cell::RefCell;
 use std::path::PathBuf;
 
 use crate::error::{Error, Result};
-use crate::pipeline::deps::directory::DirectoryDep;
 use crate::pipeline::deps::file::FileDep;
 use crate::pipeline::deps::generic::GenericDep;
 use crate::pipeline::deps::glob::GlobDep;
+use crate::pipeline::deps::glob_digest::GlobDigestDep;
 use crate::pipeline::deps::lines::LinesDep;
 use crate::pipeline::deps::regex::RegexDep;
 use crate::pipeline::deps::step::StepDep;
-use crate::pipeline::deps::url::UrlDep;
+use crate::pipeline::deps::url::UrlDigestDep;
 use crate::pipeline::deps::ParamDep;
 
 use regex::Regex;
@@ -76,23 +76,6 @@ impl<'a> XvcDependencyList<'a> {
         Ok(self)
     }
 
-    /// Add directory dependencies
-    pub fn directories(&mut self, directories: Option<Vec<String>>) -> Result<&mut Self> {
-        let current_dir = self.current_dir;
-        if let Some(directories) = directories {
-            let mut deps = self.deps.borrow_mut();
-            for directory in directories {
-                let dir_dep = DirectoryDep::new(XvcPath::new(
-                    self.xvc_root,
-                    current_dir,
-                    &PathBuf::from(directory),
-                )?);
-                deps.push(XvcDependency::Directory(dir_dep));
-            }
-        }
-        Ok(self)
-    }
-
     /// Add glob dependencies.
     pub fn globs(&mut self, globs: Option<Vec<String>>) -> Result<&mut Self> {
         if let Some(globs) = globs {
@@ -105,6 +88,17 @@ impl<'a> XvcDependencyList<'a> {
         Ok(self)
     }
 
+    /// Add glob digest dependencies.
+    pub fn glob_digests(&mut self, glob_digests: Option<Vec<String>>) -> Result<&mut Self> {
+        if let Some(globs) = glob_digests {
+            let mut deps = self.deps.borrow_mut();
+            for glob in globs {
+                let glob_dep = GlobDigestDep::new(glob);
+                deps.push(XvcDependency::GlobDigest(glob_dep));
+            }
+        }
+        Ok(self)
+    }
     /// Add param dependencies.
     ///
     /// Param dependencies must be in the form `param_name` or
@@ -220,8 +214,8 @@ impl<'a> XvcDependencyList<'a> {
             let mut deps = self.deps.borrow_mut();
             for url in urls {
                 let url = Url::parse(&url)?;
-                let url_dep = UrlDep::new(url);
-                deps.push(XvcDependency::Url(url_dep));
+                let url_dep = UrlDigestDep::new(url);
+                deps.push(XvcDependency::UrlDigest(url_dep));
             }
         }
         Ok(self)

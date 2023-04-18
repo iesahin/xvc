@@ -328,28 +328,48 @@ where
 /// Used to find out if record and actual are different for type T.
 pub trait Diffable {
     type Item: Storable;
-    /// Return possible differences between record and actual.
-    fn diff(record: Option<Self::Item>, actual: Option<Self::Item>) -> Diff<Self::Item> {
+
+    /// ⚠️ Usually you must update actual's metadata and timestamp before calling this.
+    /// Use diff_superficial and diff_thorough for shortcut comparisons. (e.g. when metadata is not changed, no need to
+    /// compare the content. )
+    ///
+    /// This is to convert optional entities to diffs.
+    /// e.g. a file may be missing from the disk, but it may exist in the records.
+    /// ((Some(record), None) -> Diff::ActualMissing)
+    fn diff(record: Option<&Self::Item>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
         match (record, actual) {
-            (None, None) => Diff::Identical,
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
-            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
-                Diff::Different { record, actual } => Self::diff_thorough(record, actual),
-                diff => diff,
+            (None, None) => unreachable!("Both record and actual are None"),
+            (None, Some(actual)) => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            (Some(record), None) => Diff::ActualMissing {
+                record: record.clone(),
+            },
+            (Some(record), Some(actual)) => Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
             },
         }
     }
 
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// This is to compare two entities with a quick comparison.
+    /// e.g. metadata of a file, timestamp of a URL etc.
+    /// You may need to update actual's metadata or timestamp before calling this.
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         if record == actual {
-            crate::Diff::Identical
+            Diff::Identical
         } else {
-            crate::Diff::Different { record, actual }
+            Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
         }
     }
 
-    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// This is to calculate two entities with a thorough comparison.
+    /// e.g. content of a file, content of a URL etc.
+    /// You may need to update actual's content before calling this.
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         Self::diff_superficial(record, actual)
     }
 }

@@ -1,5 +1,5 @@
 use crate::error::Error;
-use crate::Result;
+use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::types::diff::Diffable;
@@ -14,6 +14,12 @@ pub struct GenericDep {
 }
 
 persist!(GenericDep, "generic-dependency");
+
+impl Into<XvcDependency> for GenericDep {
+    fn into(self) -> XvcDependency {
+        XvcDependency::Generic(self)
+    }
+}
 
 impl GenericDep {
     pub fn new(generic_command: String) -> Self {
@@ -44,32 +50,4 @@ impl GenericDep {
 
 impl Diffable for GenericDep {
     type Item = GenericDep;
-
-    fn diff(record: Option<GenericDep>, actual: Option<GenericDep>) -> Diff<GenericDep> {
-        match (record, actual) {
-            (None, None) => unreachable!("Both record and actual are None"),
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
-            (Some(record), Some(actual)) => {
-                Self::diff_thorough(record, actual)
-            }
-        }
-    }
-
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
-        Self::diff_thorough(record, actual)
-    }
-
-    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
-        assert!(record.generic_command == actual.generic_command);
-        let actual = actual.update_output_digest().unwrap();
-        if actual.output_digest == record.output_digest {
-            Diff::Identical
-        } else {
-            Diff::Different {
-                record,
-                actual,
-            }
-        }
-    }
 }

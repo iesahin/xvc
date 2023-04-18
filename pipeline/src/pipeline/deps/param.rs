@@ -1,10 +1,11 @@
 use crate::error::{Error, Result};
+use crate::XvcDependency;
 use serde_json::value::Value as JsonValue;
 use serde_yaml::Value as YamlValue;
 use std::{ffi::OsStr, fmt::Display, fs, path::Path};
 use toml::Value as TomlValue;
 use xvc_core::types::diff::Diffable;
-use xvc_core::{Diff, Digest, XvcMetadata, XvcPath};
+use xvc_core::{Diff, XvcMetadata, XvcPath};
 use xvc_ecs::persist;
 
 use log::{error, warn};
@@ -22,16 +23,23 @@ pub struct ParamDep {
     pub key: String,
     /// The value of the key
     pub value: Option<XvcParamValue>,
+    /// The metadata of the parameter file to detect if it has changed
     pub xvc_metadata: Option<XvcMetadata>,
 }
 
 persist!(ParamDep, "param-dependency");
 
+impl Into<XvcDependency> for ParamDep {
+    fn into(self) -> XvcDependency {
+        XvcDependency::Param(self)
+    }
+}
+
 impl ParamDep {
     pub fn new(path: &XvcPath, format: Option<XvcParamFormat>, key: String) -> Result<Self> {
         Ok(Self {
             format: format.unwrap_or_else(|| XvcParamFormat::from_path(&path)),
-            path,
+            path: path.clone(),
             key,
             value: None,
             xvc_metadata: None,
@@ -144,6 +152,33 @@ pub enum XvcParamValue {
     Json(JsonValue),
     Yaml(YamlValue),
     Toml(TomlValue),
+}
+
+impl PartialOrd for XvcParamValue {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match (self, other) {
+            (XvcParamValue::Json(json1), XvcParamValue::Json(json2)) => {
+                let json1str = json1.to_string();
+                let json2str = json2.to_string();
+                json1str.partial_cmp(&json2str)
+            }
+            (XvcParamValue::Yaml(yaml1), XvcParamValue::Yaml(yaml2)) => yaml1.partial_cmp(yaml2),
+            (XvcParamValue::Toml(toml1), XvcParamValue::Toml(toml2)) => {
+                let toml1str = toml1.to_string();
+                let toml2str = toml2.to_string();
+                toml1str.partial_cmp(&toml2str)
+            }
+            _ => None,
+        }
+    }
+}
+
+impl Ord for XvcParamValue {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        let self_str = self.to_string();
+        let other_str = other.to_string();
+        self_str.cmp(&other_str)
+    }
 }
 
 impl Eq for XvcParamValue {}

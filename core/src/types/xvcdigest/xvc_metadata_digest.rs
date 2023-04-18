@@ -11,6 +11,18 @@ pub struct XvcMetadataDigest(XvcDigest);
 attribute_digest!(XvcMetadataDigest, "xvc-metadata-digest");
 impl Diffable for XvcMetadataDigest {
     type Item = XvcMetadataDigest;
+
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> crate::Diff<Self::Item> {
+        if record == actual {
+            crate::Diff::Identical
+        } else {
+            crate::Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
+        }
+    }
+    
 }
 
 impl XvcMetadataDigest {

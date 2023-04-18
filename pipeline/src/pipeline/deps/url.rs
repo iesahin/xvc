@@ -1,4 +1,4 @@
-use crate::Result;
+use crate::{Result, XvcDependency};
 use anyhow::anyhow;
 use reqwest::blocking::Client as HttpClient;
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ use xvc_ecs::persist;
 ///
 /// Invalidates when header of the URL get request changes.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct UrlDep {
+pub struct UrlDigestDep {
     /// URL like https://example.com/my-file.html
     pub url: Url,
     pub etag: Option<String>,
@@ -17,9 +17,15 @@ pub struct UrlDep {
     pub url_get_digest: Option<UrlGetDigest>,
 }
 
-persist!(UrlDep, "url-dependency");
+persist!(UrlDigestDep, "url-dependency");
 
-impl UrlDep {
+impl Into<XvcDependency> for UrlDigestDep {
+    fn into(self) -> XvcDependency {
+        XvcDependency::UrlDigest(self)
+    }
+}
+
+impl UrlDigestDep {
     pub fn new(url: Url) -> Self {
         Self {
             url,
@@ -55,8 +61,8 @@ impl UrlDep {
     }
 }
 
-impl Diffable for UrlDep {
-    type Item = UrlDep;
+impl Diffable for UrlDigestDep {
+    type Item = UrlDigestDep;
 
     fn diff_superficial(record: Self::Item, actual: Self::Item) -> xvc_core::Diff<Self::Item> {
         assert!(record.url == actual.url);

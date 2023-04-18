@@ -1,9 +1,9 @@
-use crate::Result;
+use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadataDigest, XvcPath,
-    XvcPathMetadataMap,
+    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcMetadataDigest, XvcPath,
+    XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::persist;
 
@@ -11,37 +11,45 @@ use xvc_ecs::persist;
 pub struct FileDep {
     /// The path in the workspace
     pub path: XvcPath,
-    pub xvc_metadata_digest: Option<XvcMetadataDigest>,
+    pub xvc_metadata: Option<XvcMetadata>,
     pub content_digest: Option<ContentDigest>,
 }
 persist!(FileDep, "file-dependency");
+
+impl Into<XvcDependency> for FileDep {
+    fn into(self) -> XvcDependency {
+        XvcDependency::File(self)
+    }
+}
 
 impl FileDep {
     pub fn new(path: XvcPath) -> Self {
         Self {
             path,
-            xvc_metadata_digest: None,
+            xvc_metadata: None,
             content_digest: None,
         }
     }
 
     pub fn from_pmm(path: &XvcPath, pmm: &XvcPathMetadataMap) -> Self {
         let path = path.clone();
-        let xvc_metadata_digest = pmm.get(&path).cloned();
+        let xvc_metadata = pmm.get(&path).cloned();
 
         FileDep {
             path,
-            xvc_metadata_digest,
+            xvc_metadata,
             content_digest: None,
         }
     }
 
     pub fn calculate_content_digest(
         self,
+        xvc_root: &XvcRoot,
         algorithm: HashAlgorithm,
         text_or_binary: TextOrBinary,
     ) -> Result<Self> {
-        let content_digest = ContentDigest::new(&self.path, algorithm, text_or_binary)?;
+        let path = self.path.to_absolute_path(xvc_root);
+        let content_digest = ContentDigest::new(&path, algorithm, text_or_binary)?;
         Ok(Self {
             content_digest: Some(content_digest),
             ..self
@@ -50,12 +58,13 @@ impl FileDep {
 
     pub fn calculate_content_digest_if_changed(
         self,
+        xvc_root: &XvcRoot,
         record: &Self,
         algorithm: HashAlgorithm,
         text_or_binary: TextOrBinary,
     ) -> Result<Self> {
         if Self::diff_superficial(record, &self).changed() {
-            self.calculate_content_digest(algorithm, text_or_binary)
+            self.calculate_content_digest(xvc_root, algorithm, text_or_binary)
         } else {
             Ok(Self {
                 content_digest: record.content_digest.clone(),
@@ -68,64 +77,47 @@ impl FileDep {
 impl Diffable for FileDep {
     type Item = Self;
 
-    /// Returns identical if xvc_metadata_digests and paths are identical.
-    /// This can be used for layered diff, e.g., compare first the metadata and if it returns changed, calculate the
-    /// content digest.
-    fn diff(record: Option<FileDep>, actual: Option<FileDep>) -> Diff<FileDep> {
-        match (record, actual) {
-            (None, None) => unreachable!("Both record and actual are None"),
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
-            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
-                Diff::Different => Self::diff_thorough(record, actual),
-                Diff::Identical => Diff::Identical,
-                Diff::RecordMissing { actual } => {
-                    let actual = actual.calculate_content_digest_if_changed(
-                        &record,
-                        HashAlgorithm::Blake3,
-                        TextOrBinary::Auto,
-                    )?;
-                    Diff::RecordMissing { actual }
-                }
-                Diff::ActualMissing { record } => Diff::ActualMissing { record },
-                Diff::Skipped => Diff::Skipped,
-            },
-        }
-    }
-
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-        match (record.xvc_metadata_digest, actual.xvc_metadata_digest) {
+        match (record.xvc_metadata, actual.xvc_metadata) {
             (None, None) => unreachable!("Both record and actual are None"),
-            (None, Some(_)) => Diff::RecordMissing { actual },
-            (Some(_), None) => Diff::ActualMissing { record },
+            (None, Some(_)) => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            (Some(_), None) => Diff::ActualMissing {
+                record: record.clone(),
+            },
             (Some(rec_metadata_digest), Some(act_metadata_digest)) => {
                 if rec_metadata_digest == act_metadata_digest {
                     Diff::Identical
                 } else {
-                    Diff::Different { record, actual }
+                    Diff::Different {
+                        record: record.clone(),
+                        actual: actual.clone(),
+                    }
                 }
             }
         }
     }
-    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// ⚠️ Call actual.update_metadata and actual.calculate_content_digest_if_changed before calling this ⚠️
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-
-        let actual = actual.calculate_content_digest_if_changed(
-            &record,
-            HashAlgorithm::Blake3,
-            TextOrBinary::Auto,
-        )?;
-
         match (record.content_digest, actual.content_digest) {
             (None, None) => unreachable!("Both record and actual content digests are None"),
-            (None, Some(_)) => Diff::RecordMissing { actual },
-            (Some(_), None) => Diff::ActualMissing { record },
+            (None, Some(_)) => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            (Some(_), None) => Diff::ActualMissing {
+                record: record.clone(),
+            },
             (Some(rec_content_digest), Some(act_content_digest)) => {
                 if rec_content_digest == act_content_digest {
                     Diff::Identical
                 } else {
-                    Diff::Different { record, actual }
+                    Diff::Different {
+                        record: record.clone(),
+                        actual: actual.clone(),
+                    }
                 }
             }
         }

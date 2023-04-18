@@ -17,6 +17,21 @@ pub struct PathCollectionDigest(XvcDigest);
 attribute_digest!(PathCollectionDigest, "path-collection-digest");
 impl Diffable for PathCollectionDigest {
     type Item = PathCollectionDigest;
+
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> crate::Diff<Self::Item> {
+        if record == actual {
+            crate::Diff::Identical
+        } else {
+            crate::Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
+        }
+    }
+
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> crate::Diff<Self::Item> {
+        Self::diff_superficial(record, actual)
+    }
 }
 
 impl PathCollectionDigest {

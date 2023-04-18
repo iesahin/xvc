@@ -1,12 +1,14 @@
 pub mod compare;
 pub mod digest;
-pub mod directory;
 pub mod file;
 pub mod generic;
 pub mod glob;
+pub mod glob_digest;
 pub mod lines;
+pub mod lines_digest;
 pub mod param;
 pub mod regex;
+pub mod regex_digest;
 pub mod step;
 pub mod url;
 
@@ -17,23 +19,24 @@ pub use param::*;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, Result};
-use url::Url;
 use xvc_config::XvcConfig;
 use xvc_core::{
     dir_includes, filter_paths_by_directory, glob_includes, glob_paths, ContentDigest,
-    PathCollectionDigest, StdoutDigest, UrlGetDigest, UrlHeadDigest, XvcMetadataDigest, XvcPath,
+    PathCollectionDigest, StdoutDigest, UrlGetDigest, XvcMetadataDigest, XvcPath,
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::{persist, HStore, XvcStore};
 
-use self::directory::DirectoryDep;
 use self::file::FileDep;
 use self::generic::GenericDep;
 use self::glob::GlobDep;
+use self::glob_digest::GlobDigestDep;
 use self::lines::LinesDep;
+use self::lines_digest::LinesDigestDep;
 use self::regex::RegexDep;
+use self::regex_digest::RegexDigestDep;
 use self::step::StepDep;
-use self::url::UrlDep;
+use self::url::UrlDigestDep;
 
 pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
     Ok(conf.get_str("pipeline.default_params_file")?.option)
@@ -50,14 +53,16 @@ pub enum XvcDependency {
     Generic(GenericDep),
     /// Invalidates when the file content changes.
     File(FileDep),
-    Directory(DirectoryDep),
     /// Invalidates when contents in any of the files this glob describes
     Glob(GlobDep),
+    GlobDigest(GlobDigestDep),
     Regex(RegexDep),
+    RegexDigest(RegexDigestDep),
     Param(ParamDep),
     /// When a step depends to a set of lines in a text file
     Lines(LinesDep),
-    Url(UrlDep),
+    LinesDigest(LinesDigestDep),
+    UrlDigest(UrlDigestDep),
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
     // TODO: DatabaseQuery { database, query } to specify the result of queries
@@ -85,7 +90,7 @@ impl XvcDependency {
             XvcDependency::Generic(GenericDep { .. }) => None,
             XvcDependency::Step { .. } => None,
             XvcDependency::Glob { .. } => None,
-            XvcDependency::Url { .. } => None,
+            XvcDependency::UrlDigest { .. } => None,
         }
     }
 }
@@ -127,7 +132,7 @@ pub fn dependencies_to_path(
             XvcDependency::Lines { path, .. } => *path == *to_path,
             XvcDependency::Generic(GenericDep { .. })
             | XvcDependency::Step { .. }
-            | XvcDependency::Url { .. } => false,
+            | XvcDependency::UrlDigest { .. } => false,
         };
 
         if has_path {
@@ -169,7 +174,7 @@ pub fn dependency_paths(
             glob_paths(xvc_root, pmm, pipeline_rundir, glob).unwrap_or(empty)
         }
         XvcDependency::Directory { path, .. } => filter_paths_by_directory(pmm, path),
-        XvcDependency::Url { .. } => empty,
+        XvcDependency::UrlDigest { .. } => empty,
         XvcDependency::Param { path, .. } => make_map(path),
         XvcDependency::Regex { path, .. } => make_map(path),
         XvcDependency::Lines { path, .. } => make_map(path),

@@ -150,6 +150,12 @@ pub enum Error {
     #[error("Missing value for key: {key} in {path}")]
     KeyNotFoundInDocument { key: String, path: PathBuf },
 
+    #[error("Pattern Error: {source}")]
+    PatternError {
+        #[from]
+        source: glob::PatternError,
+    },
+
     #[error("Invalid Parameter Format: {param} ")]
     InvalidParameterFormat { param: String },
 

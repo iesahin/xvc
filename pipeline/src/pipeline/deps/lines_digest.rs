@@ -1,14 +1,15 @@
 use std::io::{self, BufRead};
 
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::{Diff, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{ContentDigest, Diff, HashAlgorithm, XvcDigest, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::persist;
 
 use crate::XvcDependency;
 
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct LinesDep {
+pub struct LinesDigestDep {
     /// Path of the file in the workspace
     pub path: XvcPath,
     /// The beginning of range
@@ -16,29 +17,29 @@ pub struct LinesDep {
     /// The end of range
     pub end: usize,
     pub xvc_metadata: Option<XvcMetadata>,
-    pub lines: Vec<String>,
+    pub digest: Option<ContentDigest>,
 }
 
-persist!(LinesDep, "lines-dependency");
+persist!(LinesDigestDep, "lines-digest-dependency");
 
-impl Into<XvcDependency> for LinesDep {
+impl Into<XvcDependency> for LinesDigestDep {
     fn into(self) -> XvcDependency {
-        XvcDependency::Lines(self)
+        XvcDependency::LinesDigest(self)
     }
 }
 
-impl LinesDep {
+impl LinesDigestDep {
     pub fn new(path: XvcPath, begin: usize, end: usize) -> Self {
         Self {
             path,
             begin,
             end,
             xvc_metadata: None,
-            lines: Vec::new(),
+            digest: None,
         }
     }
 
-    pub fn update_lines(self, xvc_root: &XvcRoot) -> Self {
+    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Self {
         let path = self.path.to_absolute_path(xvc_root);
         let file = std::fs::File::open(path).unwrap();
         let line_reader = io::BufReader::new(file).lines();
@@ -46,8 +47,12 @@ impl LinesDep {
             .skip(self.begin)
             .take(self.end - self.begin)
             .map(|s| s.unwrap_or("".to_string()))
-            .collect();
-        Self { lines, ..self }
+            .join("\n");
+        let digest: ContentDigest = XvcDigest::from_content(&lines, algorithm).into();
+        Self {
+            digest: Some(digest),
+            ..self
+        }
     }
 
     pub fn update_metadata(self, xvc_metadata: Option<XvcMetadata>) -> Self {
@@ -58,7 +63,7 @@ impl LinesDep {
     }
 }
 
-impl Diffable for LinesDep {
+impl Diffable for LinesDigestDep {
     type Item = Self;
 
     /// ⚠️ Call actual.update_metadata before calling this. ⚠️
@@ -90,7 +95,7 @@ impl Diffable for LinesDep {
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
 
-        if record.lines == actual.lines {
+        if record.digest == actual.digest {
             Diff::Identical
         } else {
             Diff::Different {
@@ -101,7 +106,7 @@ impl Diffable for LinesDep {
     }
 
     /// ⚠️ Call actual.update_metadata and actual.update_lines before calling this. ⚠️
-    fn diff(record: Option<&LinesDep>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
+    fn diff(record: Option<&LinesDigestDep>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
         match (record, actual) {
             (Some(record), Some(actual)) => match Self::diff_superficial(&record, &actual) {
                 Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),

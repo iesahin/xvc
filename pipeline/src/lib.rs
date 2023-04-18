@@ -246,31 +246,72 @@ pub enum StepSubCommand {
         #[arg(long = "step")]
         steps: Option<Vec<String>>,
 
-        /// Add a directory dependency to the step. Can be used multiple times.
-        #[arg(long = "directory")]
-        directories: Option<Vec<String>>,
-
         /// Add a glob dependency to the step. Can be used multiple times.
+        ///
+        /// The difference between this and the glob-digest option is that the glob option keeps track of all matching files,
+        /// but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]}
+        /// or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest
+        /// option to save disk space.
         #[arg(long = "glob")]
         globs: Option<Vec<String>>,
 
+        /// Add a glob digest dependency to the step. Can be used multiple times.
+        ///
+        /// The difference between this and the glob option is that the glob option keeps track of all matching files,
+        /// but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]}
+        /// or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest
+        /// option to save disk space.
+        #[arg(long = "glob_digest")]
+        glob_digests: Option<Vec<String>>,
+
         /// Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times.
-        #[arg(long = "param")]
+        #[arg(long = "param", aliases = &["params"])]
         params: Option<Vec<String>>,
 
         /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
+        /// The difference between this and the regex-digest option is that the regex option keeps track of all matching
+        /// lines, but regex-digest only keeps track of the matched lines' digest. When you want to use ${[ALL_REGEX_LINES]}
+        /// or ${[CHANGED_REGEX_LINES]} options in the step command, use the regex option. Otherwise, you can use the regex-digest
+        /// option to save disk space.
         #[arg(
             long = "regex",
             aliases = &["regexp"],
         )]
         regexps: Option<Vec<String>>,
 
+        /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
+        ///
+        /// The difference between this and the regex option is that the regex option keeps track of all matching lines
+        /// that can be used in the step command. This option only keeps track of the matched lines' digest.
+        #[arg(
+            long = "regex_digest",
+            aliases = &["regex_d"],
+        )]
+        regexp_digests: Option<Vec<String>>,
+
         /// Add a line dependency in the form filename.txt::123-234
+        ///
+        /// The difference between this and the line-digest option is that the line option keeps track of all matching lines
+        /// that can be used in the step command. This option only keeps track of the matched lines' digest.
+        /// When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option.
+        /// Otherwise, you can use the line-digest option to save disk space.
         #[arg(
             long = "line",
             aliases = &["lines"],
         )]
         lines: Option<Vec<String>>,
+
+        /// Add a line digest dependency in the form filename.txt::123-234
+        ///
+        /// The difference between this and the line option is that the line option keeps track of all matching lines
+        /// that can be used in the step command. This option only keeps track of the matched lines' digest.
+        /// When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option.
+        /// Otherwise, you can use the line-digest option to save disk space.
+        #[arg(
+            long = "line-digest",
+            aliases = &["line-d"],
+        )]
+        line_digests: Option<Vec<String>>,
     },
 
     /// Add an output to a step
@@ -467,16 +508,18 @@ pub fn handle_step_cli(
             generics,
             urls,
             files,
-            directories,
             globs,
+            glob_digests,
             params,
             steps,
             regexps,
+            regexp_digests,
             lines,
+            line_digests,
         } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
             .files(files)?
-            .directories(directories)?
             .globs(globs)?
+            .glob_digests(glob_digests)?
             .params(params)?
             .steps(steps)?
             .generic_commands(generics)?

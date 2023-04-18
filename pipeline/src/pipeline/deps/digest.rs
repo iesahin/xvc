@@ -44,15 +44,6 @@ fn directory_metadata_digest(
     actual_paths_metadata_digest(params, &paths)
 }
 
-fn directory_collection_digest(
-    params: &DependencyDigestParams,
-    directory: &XvcPath,
-) -> Result<PathCollectionDigest> {
-    let paths = filter_paths_by_directory(params.pmm, directory);
-    PathCollectionDigest::new(paths.into_iter().map(|(p, _)| p), *params.algorithm)
-        .map_err(|e| e.into())
-}
-
 fn glob_content_digest(params: &DependencyDigestParams, glob: &str) -> Result<ContentDigest> {
     let paths = glob_paths(params.xvc_root, params.pmm, params.pipeline_rundir, glob)?;
     paths_content_digest(params, &paths)
@@ -69,8 +60,7 @@ fn glob_collection_digest(
     glob: &str,
 ) -> Result<PathCollectionDigest> {
     let paths = glob_paths(params.xvc_root, params.pmm, params.pipeline_rundir, glob)?;
-    PathCollectionDigest::new(paths.into_iter().map(|(p, _)| p), *params.algorithm)
-        .map_err(|e| e.into())
+    PathCollectionDigest::new(paths.iter(), *params.algorithm).map_err(|e| e.into())
 }
 
 /// Compare digest from actual `path` metadata with its stored version

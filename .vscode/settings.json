@@ -20,5 +20,8 @@
     "grammarly.config.suggestions.PassiveVoice": true,
     "grammarly.config.suggestions.PrepositionAtTheEndOfSentence": true,
     "grammarly.config.suggestions.StylisticFragments": true,
-    "grammarly.config.suggestions.UnnecessaryEllipses": true
+    "grammarly.config.suggestions.UnnecessaryEllipses": true,
+    "rust-analyzer.linkedProjects": [
+        "./pipeline/Cargo.toml"
+    ]
 }

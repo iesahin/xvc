@@ -26,15 +26,18 @@ attribute_digest!(ContentDigest, "content-digest");
 impl Diffable for ContentDigest {
     type Item = ContentDigest;
 
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> crate::Diff<Self::Item> {
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> crate::Diff<Self::Item> {
         if record == actual {
             crate::Diff::Identical
         } else {
-            crate::Diff::Different { record, actual }
+            crate::Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
         }
     }
 
-    fn diff_thorough(record: Self::Item, actual: Self::Item) -> crate::Diff<Self::Item> {
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> crate::Diff<Self::Item> {
         Self::diff_superficial(record, actual)
     }
 }
@@ -63,6 +66,10 @@ impl ContentDigest {
             }
         };
         Ok(Self(digest))
+    }
+    /// Return the inner digest
+    pub fn digest(&self) -> XvcDigest {
+        self.0
     }
 }
 

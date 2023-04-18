@@ -91,14 +91,18 @@ fn dep_desc(
             format!("generic: {}", generic_dep.generic_command)
         }
         XvcDependency::File(dep) => format!("file: {}", dep.path),
-        XvcDependency::Directory(dep) => format!("dir: {}", dep.path),
         XvcDependency::Lines(dep) => {
             format!("lines: {}::{}-{}", dep.path, dep.begin, dep.end)
         }
+        XvcDependency::LinesDigest(dep) => {
+            format!("lines (d): {}::{}-{}", dep.path, dep.begin, dep.end)
+        }
         XvcDependency::Regex(dep) => format!("regex: {}:/{}", dep.path, dep.regex),
+        XvcDependency::RegexDigest(dep) => format!("regex (d): {}:/{}", dep.path, dep.regex),
         XvcDependency::Param(dep) => format!("param: {}::{}", dep.path, dep.key),
         XvcDependency::Glob(dep) => format!("glob: {}", dep.glob),
-        XvcDependency::Url(dep) => format!("url: {}", dep.url),
+        XvcDependency::GlobDigest(dep) => format!("glob (d): {}", dep.glob),
+        XvcDependency::UrlDigest(dep) => format!("url: {}", dep.url),
     }
 }
 
