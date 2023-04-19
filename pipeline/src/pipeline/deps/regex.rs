@@ -1,7 +1,9 @@
+use std::io::{self, BufRead};
+
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::{ContentDigest, Diff, XvcMetadata, XvcPath};
+use xvc_core::{ContentDigest, Diff, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::persist;
 
 use crate::XvcDependency;
@@ -73,45 +75,41 @@ impl RegexDep {
 impl Diffable for RegexDep {
     type Item = Self;
 
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// ⚠️ Call actual.update_metadata before calling this function ⚠️
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
 
         match (record.xvc_metadata, actual.xvc_metadata) {
-            (Some(record), Some(actual)) => {
-                if record == actual {
+            (Some(rec_md), Some(act_md)) => {
+                if rec_md == act_md {
                     Diff::Identical
                 } else {
-                    Diff::Different { record, actual }
+                    Diff::Different {
+                        record: record.clone(),
+                        actual: actual.clone(),
+                    }
                 }
             }
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
+            (None, Some(_)) => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            (Some(_), None) => Diff::ActualMissing {
+                record: record.clone(),
+            },
             (None, None) => unreachable!("Either record or actual should have metadata"),
         }
     }
 
-    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// ⚠️ Call actual.update_lines before calling this function ⚠️
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-        let actual = actual.update_lines();
         if record.lines == actual.lines {
             Diff::Identical
         } else {
-            Diff::Different { record, actual }
-        }
-    }
-
-    fn diff(record: Option<Self::Item>, actual: Option<Self::Item>) -> Diff<Self::Item> {
-        match (record, actual) {
-            (None, None) => unreachable!("Either record or actual should be available"),
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
-            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
-                Diff::Different { record, actual } => Self::diff_thorough(record, actual),
-                Diff::RecordMissing { actual } => Diff::RecordMissing {
-                    actual: actual.update_lines(),
-                },
-                diff => diff,
-            },
+            Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
         }
     }
 }

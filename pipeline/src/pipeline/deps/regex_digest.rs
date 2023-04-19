@@ -4,7 +4,7 @@ use itertools::Itertools;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::{ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{ContentDigest, Diff, HashAlgorithm, XvcDigest, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::persist;
 
 use crate::XvcDependency;
@@ -65,7 +65,7 @@ impl RegexDigestDep {
             })
             .join("");
 
-        let lines_digest = XvcDigest::from_content(&matching_lines, algorithm).into();
+        let lines_digest = Some(XvcDigest::from_content(&matching_lines, *algorithm).into());
         Self {
             lines_digest,
             ..self
@@ -105,36 +105,16 @@ impl Diffable for RegexDigestDep {
         }
     }
 
-    /// ⚠️  Update the metadata and lines with actual.update_lines before calling this function
+    /// ⚠️  Update the metadata and lines with actual.update_digest before calling this function
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-        let actual = actual.update_lines();
-        if record.lines == actual.lines {
+        if record.lines_digest == actual.lines_digest {
             Diff::Identical
         } else {
             Diff::Different {
                 record: record.clone(),
                 actual: actual.clone(),
             }
-        }
-    }
-
-    fn diff(record: Option<&Self::Item>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
-        match (record, actual) {
-            (None, None) => unreachable!("Either record or actual should be available"),
-            (None, Some(actual)) => Diff::RecordMissing {
-                actual: actual.clone(),
-            },
-            (Some(record), None) => Diff::ActualMissing {
-                record: record.clone(),
-            },
-            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
-                Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),
-                Diff::RecordMissing { actual } => Diff::RecordMissing {
-                    actual: actual.update_lines(),
-                },
-                diff => diff,
-            },
         }
     }
 }

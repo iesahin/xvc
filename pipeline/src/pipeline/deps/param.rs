@@ -2,10 +2,11 @@ use crate::error::{Error, Result};
 use crate::XvcDependency;
 use serde_json::value::Value as JsonValue;
 use serde_yaml::Value as YamlValue;
+use std::ffi::OsString;
 use std::{ffi::OsStr, fmt::Display, fs, path::Path};
 use toml::Value as TomlValue;
 use xvc_core::types::diff::Diffable;
-use xvc_core::{Diff, XvcMetadata, XvcPath};
+use xvc_core::{Diff, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot};
 use xvc_ecs::persist;
 
 use log::{error, warn};
@@ -38,7 +39,7 @@ impl Into<XvcDependency> for ParamDep {
 impl ParamDep {
     pub fn new(path: &XvcPath, format: Option<XvcParamFormat>, key: String) -> Result<Self> {
         Ok(Self {
-            format: format.unwrap_or_else(|| XvcParamFormat::from_path(&path)),
+            format: format.unwrap_or_else(|| XvcParamFormat::from_xvc_path(path)),
             path: path.clone(),
             key,
             value: None,
@@ -54,9 +55,10 @@ impl ParamDep {
         })
     }
 
-    pub fn update_value(self) -> Result<Self> {
+    pub fn update_value(self, xvc_root: &XvcRoot) -> Result<Self> {
+        let path = self.path.to_absolute_path(xvc_root);
         let value = Some(XvcParamValue::new_with_format(
-            &self.path,
+            &path,
             &self.format,
             &self.key,
         )?);
@@ -67,7 +69,8 @@ impl ParamDep {
 impl Diffable for ParamDep {
     type Item = Self;
 
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// ⚠️ Call actual.update_metadata before calling this function ⚠️
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
 
         match (record.xvc_metadata, actual.xvc_metadata) {
@@ -75,36 +78,46 @@ impl Diffable for ParamDep {
                 if record_md == actual_md {
                     Diff::Identical
                 } else {
-                    Diff::Different { record, actual }
+                    Diff::Different {
+                        record: record.clone(),
+                        actual: actual.clone(),
+                    }
                 }
             }
-            (None, Some(actual)) => Diff::RecordMissing { actual },
-            (Some(record), None) => Diff::ActualMissing { record },
+            (None, Some(_)) => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            (Some(_), None) => Diff::ActualMissing {
+                record: record.clone(),
+            },
             (None, None) => unreachable!("One of the metadata should always be present"),
         }
     }
 
-    fn diff_thorough(record: Self::Item, actual: Self::Item) -> Diff<Self::Item> {
+    /// ⚠️ Call actual.update_metadata and actual.update_value before calling this function ⚠️
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
 
-        match Self::diff_superficial(record.clone(), actual.clone()) {
+        match Self::diff_superficial(record, actual) {
             Diff::Identical => Diff::Identical,
             Diff::Different { .. } => {
-                let actual = actual.update_value()?;
                 if record.value == actual.value {
                     Diff::Identical
                 } else {
-                    Diff::Different { record, actual }
+                    Diff::Different {
+                        record: record.clone(),
+                        actual: actual.clone(),
+                    }
                 }
             }
-            Diff::RecordMissing { .. } => Diff::RecordMissing { actual },
-            Diff::ActualMissing { .. } => Diff::ActualMissing { record },
+            Diff::RecordMissing { .. } => Diff::RecordMissing {
+                actual: actual.clone(),
+            },
+            Diff::ActualMissing { .. } => Diff::ActualMissing {
+                record: record.clone(),
+            },
             Diff::Skipped => Diff::Skipped,
         }
-    }
-
-    fn diff(record: Option<Self::Item>, actual: Option<Self::Item>) -> Diff<Self::Item> {
-        Self::diff_thorough(record, actual)
     }
 }
 
@@ -144,6 +157,15 @@ impl XvcParamFormat {
             }
             Some(ext) => Self::from_extension(ext),
         }
+    }
+
+    pub fn from_xvc_path(xvc_path: &XvcPath) -> Self {
+        let extension: OsString = xvc_path
+            .extension()
+            .map(|s| s.to_owned())
+            .unwrap_or_else(|| "".to_owned())
+            .into();
+        Self::from_extension(&extension)
     }
 }
 

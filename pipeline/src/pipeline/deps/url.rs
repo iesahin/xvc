@@ -41,10 +41,11 @@ impl UrlDigestDep {
         let headers = response.headers();
         let mut response = String::new();
 
-        let etag = headers.get("ETag").map(|s| s.to_str().to_string().unwrap());
+        let etag = headers.get("ETag").map(|s| s.to_str().unwrap().to_string());
+
         let last_modified = headers
             .get("Last-Modified")
-            .map(|s| s.to_str().to_string().unwrap());
+            .map(|s| s.to_str().unwrap().to_string());
         Ok(Self {
             etag,
             last_modified,
@@ -64,7 +65,7 @@ impl UrlDigestDep {
 impl Diffable for UrlDigestDep {
     type Item = UrlDigestDep;
 
-    fn diff_superficial(record: Self::Item, actual: Self::Item) -> xvc_core::Diff<Self::Item> {
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.url == actual.url);
 
         if actual.etag.is_none() && actual.last_modified.is_none() {

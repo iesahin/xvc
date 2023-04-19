@@ -156,6 +156,12 @@ pub enum Error {
         source: glob::PatternError,
     },
 
+    #[error("URL Request Error: {source}")]
+    UrlRequestError {
+        #[from]
+        source: reqwest::Error,
+    },
+
     #[error("Invalid Parameter Format: {param} ")]
     InvalidParameterFormat { param: String },
 

@@ -14,6 +14,7 @@ pub mod url;
 
 use std::fmt::Display;
 
+use itertools::Itertools;
 pub use param::*;
 
 use serde::{Deserialize, Serialize};
@@ -82,23 +83,24 @@ impl XvcDependency {
     /// Returns the path of the dependency if it has a single path.
     pub fn xvc_path(&self) -> Option<XvcPath> {
         match self {
-            XvcDependency::File { path, .. } => Some(path.clone()),
-            XvcDependency::Directory { path, .. } => Some(path.clone()),
-            XvcDependency::Param { path, .. } => Some(path.clone()),
-            XvcDependency::Regex { path, .. } => Some(path.clone()),
-            XvcDependency::Lines { path, .. } => Some(path.clone()),
-            XvcDependency::Generic(GenericDep { .. }) => None,
-            XvcDependency::Step { .. } => None,
-            XvcDependency::Glob { .. } => None,
-            XvcDependency::UrlDigest { .. } => None,
+            XvcDependency::File(file_dep) => Some(file_dep.path),
+            XvcDependency::Regex(dep) => Some(dep.path),
+            XvcDependency::RegexDigest(dep) => Some(dep.path),
+            XvcDependency::Param(dep) => Some(dep.path),
+            XvcDependency::Lines(dep) => Some(dep.path),
+            XvcDependency::LinesDigest(dep) => Some(dep.path),
+            XvcDependency::Step(_) => None,
+            XvcDependency::Generic(_) => None,
+            XvcDependency::Glob(_) => None,
+            XvcDependency::GlobDigest(_) => None,
+            XvcDependency::UrlDigest(_) => None,
         }
     }
 }
 
 /// Returns steps that depend to `to_path`
 /// For dependencies with a single file `path`, these makes equality checks.
-/// For `XvcDependency::Glob { glob }`, it checks whether `to_path` is matched with `glob`
-/// For `XvcDependency::Directory { dir }`, it checks whether `to_path` is under `dir`.
+/// For `XvcDependency::Glob ( glob )`, it checks whether `to_path` is in the paths of the dep.
 /// Note that for granular dependencies (`Param`, `Regex`, `Lines`), there may be required further
 /// checks whether the step actually depends to `to_path`, but as we don't have outputs that are
 /// described more granular than a file, it simply assumes if `step-A` writes to `file-A`, any
@@ -114,25 +116,23 @@ pub fn dependencies_to_path(
     let mut deps_to_path = HStore::<XvcDependency>::with_capacity(all_deps.len());
     for (dep_e, dep) in all_deps.iter() {
         let has_path = match dep {
-            XvcDependency::File { path, .. } => *path == *to_path,
-            XvcDependency::Glob { glob, .. } => {
-                glob_includes(xvc_root, pmm, pipeline_rundir, glob.as_str(), to_path)
+            XvcDependency::GlobDigest(dep) => {
+                glob_includes(xvc_root, pmm, pipeline_rundir, dep.glob.as_str(), to_path)
                     .unwrap_or_else(|e| {
                         e.warn();
                         false
                     })
             }
-            XvcDependency::Directory { path, .. } => dir_includes(pmm, path, to_path)
-                .unwrap_or_else(|e| {
-                    e.warn();
-                    false
-                }),
-            XvcDependency::Param { path, .. } => *path == *to_path,
-            XvcDependency::Regex { path, .. } => *path == *to_path,
-            XvcDependency::Lines { path, .. } => *path == *to_path,
-            XvcDependency::Generic(GenericDep { .. })
-            | XvcDependency::Step { .. }
-            | XvcDependency::UrlDigest { .. } => false,
+            XvcDependency::File(dep) => dep.path == *to_path,
+            XvcDependency::Glob(dep) => dep.xvc_path_metadata_map.keys().contains(to_path),
+            XvcDependency::Regex(dep) => dep.path == *to_path,
+            XvcDependency::RegexDigest(dep) => dep.path == *to_path,
+            XvcDependency::Param(dep) => dep.path == *to_path,
+            XvcDependency::Lines(dep) => dep.path == *to_path,
+            XvcDependency::LinesDigest(dep) => dep.path == *to_path,
+            XvcDependency::Generic(_) | XvcDependency::Step(_) | XvcDependency::UrlDigest(_) => {
+                false
+            }
         };
 
         if has_path {
@@ -167,16 +167,22 @@ pub fn dependency_paths(
 
     let empty = XvcPathMetadataMap::with_capacity(0);
     match dep {
-        XvcDependency::Generic(GenericDep { .. }) => empty,
-        XvcDependency::Step { .. } => empty,
-        XvcDependency::File { path, .. } => make_map(path),
-        XvcDependency::Glob { glob, .. } => {
-            glob_paths(xvc_root, pmm, pipeline_rundir, glob).unwrap_or(empty)
+        XvcDependency::Generic(_) => empty,
+        XvcDependency::Step(_) => empty,
+        XvcDependency::File(dep) => make_map(&dep.path),
+        XvcDependency::Glob(dep) => dep
+            .xvc_path_metadata_map
+            .iter()
+            .map(|(xp, xmd)| (xp.clone(), xmd.clone()))
+            .collect(),
+        XvcDependency::GlobDigest(dep) => {
+            glob_paths(xvc_root, pmm, pipeline_rundir, &dep.glob).unwrap()
         }
-        XvcDependency::Directory { path, .. } => filter_paths_by_directory(pmm, path),
-        XvcDependency::UrlDigest { .. } => empty,
-        XvcDependency::Param { path, .. } => make_map(path),
-        XvcDependency::Regex { path, .. } => make_map(path),
-        XvcDependency::Lines { path, .. } => make_map(path),
+        XvcDependency::UrlDigest(_) => empty,
+        XvcDependency::Param(dep) => make_map(&dep.path),
+        XvcDependency::Regex(dep) => make_map(&dep.path),
+        XvcDependency::Lines(dep) => make_map(&dep.path),
+        XvcDependency::RegexDigest(dep) => todo!(),
+        XvcDependency::LinesDigest(dep) => todo!(),
     }
 }
