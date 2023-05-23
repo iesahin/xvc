@@ -83,12 +83,12 @@ impl XvcDependency {
     /// Returns the path of the dependency if it has a single path.
     pub fn xvc_path(&self) -> Option<XvcPath> {
         match self {
-            XvcDependency::File(file_dep) => Some(file_dep.path),
-            XvcDependency::Regex(dep) => Some(dep.path),
-            XvcDependency::RegexDigest(dep) => Some(dep.path),
-            XvcDependency::Param(dep) => Some(dep.path),
-            XvcDependency::Lines(dep) => Some(dep.path),
-            XvcDependency::LinesDigest(dep) => Some(dep.path),
+            XvcDependency::File(file_dep) => Some(file_dep.path.clone()),
+            XvcDependency::Regex(dep) => Some(dep.path.clone()),
+            XvcDependency::RegexDigest(dep) => Some(dep.path.clone()),
+            XvcDependency::Param(dep) => Some(dep.path.clone()),
+            XvcDependency::Lines(dep) => Some(dep.path.clone()),
+            XvcDependency::LinesDigest(dep) => Some(dep.path.clone()),
             XvcDependency::Step(_) => None,
             XvcDependency::Generic(_) => None,
             XvcDependency::Glob(_) => None,

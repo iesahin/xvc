@@ -73,17 +73,17 @@ impl Diffable for UrlDigestDep {
             panic!("No ETag or Last-Modified header found in response")
         } else {
             match (
-                actual.etag,
-                actual.last_modified,
-                record.etag,
-                record.last_modified,
+                &actual.etag,
+                &actual.last_modified,
+                &record.etag,
+                &record.last_modified,
             ) {
                 (None, None, _, _) => unreachable!("We already checked for this"),
                 (None, Some(_), None, None) => Diff::RecordMissing {
                     actual: actual.clone(),
                 },
                 (None, Some(act), None, Some(rec)) => {
-                    if *act == rec {
+                    if *act == *rec {
                         Diff::Identical
                     } else {
                         Diff::Different {

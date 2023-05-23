@@ -432,41 +432,45 @@ pub fn the_grand_pipeline_loop(
         .iter()
         .map(|step_e| (*step_e, bounded(CHANNEL_CAPACITY)))
         .collect();
+    let step_timeout = Duration::from_secs(default_step_timeout);
 
-    let state_thread_params: HStore<StepThreadParams> = sorted_steps
-        .iter()
-        .map(|step_e| {
-            (
-                *step_e,
-                StepThreadParams {
-                    xvc_root,
-                    pipeline_rundir: &pipeline_rundir,
-                    step_e: *step_e,
-                    state_channels: &state_channels,
-                    dependency_graph: &dependency_graph,
-                    step_timeout: &Duration::from_secs(default_step_timeout),
-                    run_conditions: &run_conditions[step_e],
-                    terminate_on_timeout,
-                    current_pmm,
-                    recorded_dependencies: &xvc_root
-                        .load_r1nstore::<XvcStep, XvcDependency>()
-                        .expect("Cannot load store"),
-                    recorded_outputs: &xvc_root
-                        .load_r1nstore::<XvcStep, XvcOutput>()
-                        .expect("Cannot load store"),
-                    recorded_xvc_digests: &xvc_root
-                        .load_r1nstore::<XvcStep, XvcDigests>()
-                        .expect("Cannot load store"),
-                    output_snd,
-                    step_commands: &step_commands,
-                    steps: &pipeline_steps,
-                    process_pool,
-                    process_pool_size,
-                    algorithm,
-                },
-            )
-        })
-        .collect();
+    let recorded_dependencies = xvc_root
+        .load_r1nstore::<XvcStep, XvcDependency>()
+        .expect("Cannot load store");
+    let recorded_outputs = xvc_root
+        .load_r1nstore::<XvcStep, XvcOutput>()
+        .expect("Cannot load store");
+    let recorded_xvc_digests = xvc_root
+        .load_r1nstore::<XvcStep, XvcDigests>()
+        .expect("Cannot load store");
+
+    let mut state_thread_params: HStore<StepThreadParams> = HStore::new();
+
+    sorted_steps.iter().for_each(|step_e| {
+        state_thread_params.insert(
+            *step_e,
+            StepThreadParams {
+                xvc_root,
+                pipeline_rundir: &pipeline_rundir,
+                step_e: *step_e,
+                state_channels: &state_channels,
+                dependency_graph: &dependency_graph,
+                step_timeout: &step_timeout,
+                run_conditions: &run_conditions[step_e],
+                terminate_on_timeout,
+                current_pmm,
+                output_snd,
+                step_commands: &step_commands,
+                steps: &pipeline_steps,
+                process_pool,
+                process_pool_size,
+                algorithm,
+                recorded_dependencies: &recorded_dependencies,
+                recorded_outputs: &recorded_outputs,
+                recorded_xvc_digests: &recorded_xvc_digests,
+            },
+        );
+    });
 
     // Create a thread for each of the steps
     // We create these in topological order because the dependents need to subscribe to their dependencies' channels.
