@@ -14,7 +14,7 @@ pub use types::recheckmethod::RecheckMethod;
 pub use types::xvcdigest::content_digest::ContentDigest;
 pub use types::xvcdigest::path_collection_digest::PathCollectionDigest;
 pub use types::xvcdigest::stdout_digest::StdoutDigest;
-pub use types::xvcdigest::url_get_digest::UrlGetDigest;
+pub use types::xvcdigest::url_get_digest::UrlContentDigest;
 pub use types::xvcdigest::xvc_metadata_digest::XvcMetadataDigest;
 pub use types::xvcdigest::AttributeDigest;
 pub use types::xvcdigest::XvcDigest;

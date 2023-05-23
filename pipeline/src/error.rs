@@ -177,6 +177,14 @@ pub enum Error {
         #[from]
         source: url::ParseError,
     },
+
+    #[error("Try Receive Error: {source}")]
+    TryReceiveError {
+        #[from]
+        source: crossbeam_channel::TryRecvError,
+    },
+
+
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
@@ -199,6 +207,13 @@ impl<T: Debug> From<PoisonError<T>> for Error {
     }
 }
 
+impl<T: Debug> From<&PoisonError<T>> for Error {
+    fn from(e: &PoisonError<T>) -> Self {
+        Error::PoisonError {
+            cause: e.to_string(),
+        }
+    }
+}
 impl Error {
     /// Log the error and return it
     pub fn debug(self) -> Self {

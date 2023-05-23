@@ -14,10 +14,10 @@ use super::AttributeDigest;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 /// Returns a stable digest of the content of a URL.
 
-pub struct UrlGetDigest(XvcDigest);
-attribute_digest!(UrlGetDigest, "url-get-digest");
+pub struct UrlContentDigest(XvcDigest);
+attribute_digest!(UrlContentDigest, "url-get-digest");
 
-impl UrlGetDigest {
+impl UrlContentDigest {
     pub fn new(url: &Url, algorithm: HashAlgorithm) -> Result<Self> {
         let response = HttpClient::new()
             .get(url.as_str())

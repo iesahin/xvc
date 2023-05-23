@@ -67,7 +67,7 @@ impl GlobDigestDep {
             .filter(|(xp, _)| compiled_glob.matches(xp.as_str()))
             .sorted();
 
-        let xvc_paths_digest = Some(PathCollectionDigest::new(paths, HashAlgorithm::Blake3)?);
+        let xvc_paths_digest = Some(PathCollectionDigest::new(paths.clone(), HashAlgorithm::Blake3)?);
         let xvc_metadata_digest_bytes =
             paths
                 .map(|(_, xmd)| xmd.digest().unwrap())

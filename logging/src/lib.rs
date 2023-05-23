@@ -25,14 +25,14 @@ macro_rules! watch {
 /// Either send a [XvcOutputLine::Error] value to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! error {
-    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
-        {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*)))).unwrap();
-        }
-    };
     ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::error!($fmt $(,$x)*);
+        }
+    };
+    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*)))).unwrap();
         }
     };
 }
@@ -40,14 +40,14 @@ macro_rules! error {
 /// Either send [XvcOutputLine::Info] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! info {
-    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
-        {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Info(format!($fmt $(,$x)*)))).unwrap();
-        }
-    };
     ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::info!($fmt $(, $x)*);
+        }
+    };
+    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Info(format!($fmt $(,$x)*)))).unwrap();
         }
     };
 }
@@ -55,7 +55,12 @@ macro_rules! info {
 /// Either send [XvcOutputLine::Warn] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! warn {
-    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr )* ) => {
+        {
+            ::log::warn!($fmt $(, $x)*);
+        }
+    };
+    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
         {
             (&$channel).send(
                 Some(
@@ -63,24 +68,19 @@ macro_rules! warn {
                         format!($fmt $(, $x)*)))).unwrap();
         }
     };
-    ($fmt:literal $(, $x:expr )* ) => {
-        {
-            ::log::warn!($fmt $(, $x)*);
-        }
-    };
 }
 
 /// Either send [XvcOutputLine::Debug] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! debug {
-    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
-        {
-                    (&$channel).send(Some(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*)))).unwrap();
-        }
-    };
     ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::debug!($fmt $(, $x)*);
+        }
+    };
+    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+        {
+                    (&$channel).send(Some(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*)))).unwrap();
         }
     };
 }
@@ -88,14 +88,14 @@ macro_rules! debug {
 /// Either send [XvcOutputLine::Trace] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! trace {
-    ( $channel:ident, $fmt:literal $(, $x:expr ),* ) => {
-        {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!())))).unwrap();
-        }
-    };
     ($fmt:literal $(, $x:expr )* ) => {
         {
             ::log::trace!($fmt $(, $x)*);
+        }
+    };
+    ( $channel:expr, $fmt:literal $(, $x:expr ),* ) => {
+        {
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!())))).unwrap();
         }
     };
 }
@@ -103,14 +103,14 @@ macro_rules! trace {
 /// Either send [XvcOutputLine::Output] to the given channel, or print to stdout
 #[macro_export]
 macro_rules! output {
-    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
-        {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
-        }
-    };
     ($fmt:literal $(, $x:expr )* ) => {
         {
             ::std::println!($fmt $(, $x)*);
+        }
+    };
+    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
         }
     };
 }
@@ -118,16 +118,16 @@ macro_rules! output {
 /// Either send [XvcOutputLine::Panic] to the given channel, or print to stdout
 #[macro_export]
 macro_rules! panic {
-    ( $channel:ident, $fmt:literal $(, $x:expr )* ) => {
-        {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]",
-                                                                 format!($fmt $(, $x)*), file!(), line!())))).unwrap();
-            ::std::panic!($fmt $(, $x)*);
-        }
-    };
     ($fmt:literal $(, $x:expr )* ) => {
         {
             watch!($fmt $(, $x)*);
+            ::std::panic!($fmt $(, $x)*);
+        }
+    };
+    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+        {
+            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]",
+                                                                 format!($fmt $(, $x)*), file!(), line!())))).unwrap();
             ::std::panic!($fmt $(, $x)*);
         }
     };
@@ -153,7 +153,7 @@ macro_rules! tick {
 /// This is mostly to be used in `for_each` blocks, where the error is not propagated.
 #[macro_export]
 macro_rules! uwr {
-    ( $e:expr, $channel:ident ) => {{
+    ( $e:expr, $channel:expr ) => {{
         match $e {
             Ok(v) => v,
             Err(e) => {
@@ -176,7 +176,7 @@ macro_rules! uwr {
 /// This is mostly to be used in `for_each` blocks, where the error is not propagated.
 #[macro_export]
 macro_rules! uwo {
-    ( $e:expr, $channel:ident ) => {{
+    ( $e:expr, $channel:expr ) => {{
         match $e {
             Some(v) => v,
             None => {

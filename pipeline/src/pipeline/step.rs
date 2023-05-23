@@ -56,28 +56,24 @@ impl XvcStep {
 
 // TODO: Link to the Documentation after it's written: https://github.com/iesahin/xvc/issues/202
 // ```mermaid
-//
 // stateDiagram-v2
-//
 //     [*] --> Begin
 //     Begin --> NoNeedToRun: RunNever
 //     Begin --> WaitingDependencySteps: RunConditional
+//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedBrokenIgnored
 //     WaitingDependencySteps --> WaitingDependencySteps: DependencyStepsRunning
 //     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedSuccessfully
 //     WaitingDependencySteps --> Broken: DependencyStepsFinishedBroken
-//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedBrokenIgnored
-//     CheckingMissingDependencies --> CheckingMissingDependencies: MissingDependenciesIgnored
+//     CheckingMissingDependencies --> CheckingMissingOutputs: MissingDependenciesIgnored
 //     CheckingMissingDependencies --> Broken: HasMissingDependencies
 //     CheckingMissingDependencies --> CheckingMissingOutputs: NoMissingDependencies
-//     CheckingMissingOutputs --> CheckingMissingOutputs: MissingOutputsIgnored
-//     CheckingMissingOutputs --> CheckingTimestamps: NoMissingOutputs
-//     CheckingMissingOutputs --> WaitingToRun: HasMissingOutputs
-//     CheckingTimestamps --> CheckingTimestamps: TimestampsIgnored
-//     CheckingTimestamps --> CheckingDependencyContentDigest: HasNoNewerDependencies
-//     CheckingTimestamps --> WaitingToRun: HasNewerDependencies
-//     CheckingDependencyContentDigest --> WaitingToRun: ContentDigestIgnored
-//     CheckingDependencyContentDigest --> NoNeedToRun: ContentDigestNotChanged
-//     CheckingDependencyContentDigest --> WaitingToRun: ContentDigestChanged
+//     CheckingMissingOutputs --> CheckingShallowDiffs: MissingOutputsIgnored
+//     CheckingMissingOutputs --> CheckingShallowDiffs: HasMissingOutputs
+//     CheckingShallowDiffs --> WaitingToRun: DiffsIgnored
+//     CheckingShallowDiffs --> NoNeedToRun: HasNoNewerDependencies
+//     CheckingShallowDiffs --> CheckingThoroughDiffs: HasNewerDependencies
+//     CheckingThoroughDiffs --> NoNeedToRun: ThoroughDiffsNotChanged
+//     CheckingThoroughDiffs --> WaitingToRun: ThoroughDiffsChanged
 //     NoNeedToRun --> Done: CompletedWithoutRunningStep
 //     WaitingToRun --> WaitingToRun: ProcessPoolFull
 //     WaitingToRun --> Running: StartProcess
@@ -90,8 +86,8 @@ impl XvcStep {
 //     Done --> Done: HasDone
 //     Done --> [*]
 //     Broken --> [*]
-//
 // ```
+
 state_machine! {
     XvcStepState {
         InitialStates { Begin }
@@ -104,111 +100,134 @@ state_machine! {
             Begin => WaitingDependencySteps
         }
 
-        DependencyStepsRunningIgnored {
-            WaitingDependencySteps => CheckingMissingDependencies
-        }
-
-        DependencyStepsRunning {
-            WaitingDependencySteps => WaitingDependencySteps
-        }
-
-        DependencyStepsFinishedBroken {
-            WaitingDependencySteps => Broken
-        }
-
-        DependencyStepsFinishedSuccessfully {
-            WaitingDependencySteps => CheckingMissingDependencies
-        }
+//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedBrokenIgnored
 
         DependencyStepsFinishedBrokenIgnored {
             WaitingDependencySteps => CheckingMissingDependencies
         }
 
+//     WaitingDependencySteps --> WaitingDependencySteps: DependencyStepsRunning
+
+        DependencyStepsRunning {
+            WaitingDependencySteps => WaitingDependencySteps
+        }
+
+//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedSuccessfully
+
+        DependencyStepsFinishedSuccessfully {
+            WaitingDependencySteps => CheckingMissingDependencies
+        }
+
+//     WaitingDependencySteps --> Broken: DependencyStepsFinishedBroken
+
+        DependencyStepsFinishedBroken {
+            WaitingDependencySteps => Broken
+        }
+
+//     CheckingMissingDependencies --> CheckingMissingOutputs: MissingDependenciesIgnored
+
         MissingDependenciesIgnored {
             CheckingMissingDependencies => CheckingMissingOutputs
         }
+//     CheckingMissingDependencies --> Broken: HasMissingDependencies
 
         HasMissingDependencies {
             CheckingMissingDependencies => Broken
         }
 
+//     CheckingMissingDependencies --> CheckingMissingOutputs: NoMissingDependencies
+
         NoMissingDependencies {
             CheckingMissingDependencies => CheckingMissingOutputs
         }
 
+//     CheckingMissingOutputs --> CheckingShallowDiffs: MissingOutputsIgnored
+
         MissingOutputsIgnored {
-            CheckingMissingOutputs => CheckingTimestamps
+            CheckingMissingOutputs => CheckingShallowDiffs
         }
+
+//     CheckingMissingOutputs --> CheckingShallowDiffs: HasMissingOutputs
 
         HasMissingOutputs {
-            CheckingMissingOutputs => WaitingToRun
+            CheckingMissingOutputs => CheckingShallowDiffs
         }
 
+//     CheckingMissingOutputs --> CheckingShallowDiffs: HasNoMissingOutputs
         HasNoMissingOutputs {
-            CheckingMissingOutputs => CheckingTimestamps
+            CheckingMissingOutputs => CheckingShallowDiffs
         }
 
-        TimestampsIgnored {
-            CheckingTimestamps => CheckingDependencyContentDigest
+//     CheckingShallowDiffs --> WaitingToRun: DiffsIgnored
+            DiffsIgnored {
+                CheckingShallowDiffs => WaitingToRun
+            }
+//     CheckingShallowDiffs --> NoNeedToRun: HasNoNewerDependencies
+
+            HasNoNewerDependencies {
+                CheckingShallowDiffs => NoNeedToRun
+            }
+
+//     CheckingShallowDiffs --> CheckingThoroughDiffs: HasNewerDependencies
+
+            HasNewerDependencies {
+                 CheckingShallowDiffs => CheckingThoroughDiffs
+             }
+//     CheckingThoroughDiffs --> NoNeedToRun: ThoroughDiffsNotChanged
+        ThoroughDiffsNotChanged {
+            CheckingThoroughDiffs => NoNeedToRun
         }
 
-        HasNewerDependencies {
-            CheckingTimestamps => WaitingToRun
+//     CheckingThoroughDiffs --> WaitingToRun: ThoroughDiffsChanged
+        ThoroughDiffsChanged {
+            CheckingThoroughDiffs => WaitingToRun
         }
-
-        HasNoNewerDependencies {
-            CheckingTimestamps => CheckingDependencyContentDigest
-        }
-
-        ContentDigestIgnored {
-            CheckingDependencyContentDigest => WaitingToRun
-        }
-
-        ContentDigestChanged {
-            CheckingDependencyContentDigest => WaitingToRun
-        }
-
-        ContentDigestNotChanged {
-            CheckingDependencyContentDigest => NoNeedToRun
-        }
-
+//     NoNeedToRun --> Done: CompletedWithoutRunningStep
         CompletedWithoutRunningStep {
             NoNeedToRun => Done
         }
+
+//     WaitingToRun --> WaitingToRun: ProcessPoolFull
 
         ProcessPoolFull {
             WaitingToRun => WaitingToRun
         }
 
+//     WaitingToRun --> Running: StartProcess
         StartProcess {
             WaitingToRun => Running
         }
 
+//     WaitingToRun --> Broken: CannotStartProcess
         CannotStartProcess {
             WaitingToRun => Broken
         }
 
+//     Running --> Running: WaitProcess
         WaitProcess {
             Running => Running
         }
 
+//     Running --> Broken: ProcessTimeout
         ProcessTimeout {
             Running => Broken
         }
 
+//     Running --> Done: ProcessCompletedSuccessfully
         ProcessCompletedSuccessfully {
             Running => Done
         }
 
+//     Running --> Broken: ProcessReturnedNonZero
         ProcessReturnedNonZero {
             Running => Broken
         }
 
-        HasBroken {
+        KeepBroken {
             Broken => Broken
         }
 
-        HasDone {
+        KeepDone {
             Done => Done
         }
     }

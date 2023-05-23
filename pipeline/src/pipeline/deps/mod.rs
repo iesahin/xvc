@@ -23,7 +23,7 @@ use crate::error::{Error, Result};
 use xvc_config::XvcConfig;
 use xvc_core::{
     dir_includes, filter_paths_by_directory, glob_includes, glob_paths, ContentDigest,
-    PathCollectionDigest, StdoutDigest, UrlGetDigest, XvcMetadataDigest, XvcPath,
+    PathCollectionDigest, StdoutDigest, UrlContentDigest, XvcMetadataDigest, XvcPath,
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::{persist, HStore, XvcStore};

@@ -32,7 +32,7 @@ impl GenericDep {
     pub fn update_output_digest(self) -> Result<Self> {
         let generic_command = self.generic_command;
 
-        let command_output = Exec::shell(generic_command).capture()?;
+        let command_output = Exec::shell(generic_command.clone()).capture()?;
         let stdout = String::from_utf8(command_output.stdout)?;
         let stderr = String::from_utf8(command_output.stderr)?;
         let algorithm = HashAlgorithm::Blake3;

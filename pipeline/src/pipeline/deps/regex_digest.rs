@@ -46,7 +46,7 @@ impl RegexDigestDep {
         }
     }
 
-    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: &HashAlgorithm) -> Self {
+    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Self {
         let path = self.path.to_absolute_path(xvc_root);
         let regex = self.regex();
         let file = std::fs::File::open(path).unwrap();
@@ -65,7 +65,7 @@ impl RegexDigestDep {
             })
             .join("");
 
-        let lines_digest = Some(XvcDigest::from_content(&matching_lines, *algorithm).into());
+        let lines_digest = Some(XvcDigest::from_content(&matching_lines, algorithm).into());
         Self {
             lines_digest,
             ..self
