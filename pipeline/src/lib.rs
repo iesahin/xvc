@@ -17,7 +17,7 @@ pub use crate::pipeline::api::{
 use clap::Parser;
 
 use pipeline::api::step_dependency::XvcDependencyList;
-use pipeline::deps;
+pub use pipeline::deps;
 use pipeline::schema::XvcSchemaSerializationFormat;
 
 use serde::{Deserialize, Serialize};

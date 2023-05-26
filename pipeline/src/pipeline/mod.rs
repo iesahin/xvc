@@ -181,7 +181,7 @@ struct RunConditions {
     run_when_outputs_missing: bool,
 }
 #[derive(Debug, Clone)]
-struct StepStateParams<'a> {
+pub struct StepStateParams<'a> {
     xvc_root: &'a XvcRoot,
     output_snd: &'a XvcOutputSender,
     pmm: Arc<RwLock<XvcPathMetadataMap>>,
@@ -1116,7 +1116,8 @@ fn s_running_f_wait_process<'a>(
     mut params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     // Check whether the process is still running
-    let mut command_process = params.command_process.write()?;
+    let command_process = params.command_process.clone();
+    let mut command_process = command_process.write()?;
 
     command_process.update_output_channels()?;
 
@@ -1133,48 +1134,47 @@ fn s_running_f_wait_process<'a>(
         .try_iter()
         .for_each(|out| output!(output_snd, "{}", out));
 
-    let mut process = command_process
-        .process
-        .ok_or(anyhow!("Process not found?"))?;
     let birth = command_process
         .birth
         .ok_or(anyhow!("Process birth not found"))?;
     let timeout = params.step_timeout;
-
+    let step = params.step.clone();
+    let step_command = params.step_command.clone();
+    command_process.process.as_mut().and_then(|mut process| {
     match process.poll() {
         // Still running:
         None => {
             if birth.elapsed() < *timeout {
-                Ok((s.wait_process(), params))
+                Some((s.wait_process(), params))
             } else {
                 if params.terminate_timeout_processes {
                     error!(
                         output_snd,
                         "Process timeout for step {} with command {} ",
-                        command_process.step.name,
-                        command_process.step_command
+                        &step.name,
+                        &step_command
                     );
-                    process.terminate()?;
+                    process.terminate().ok();
                 }
-                Ok((s.process_timeout(), params))
+                Some((s.process_timeout(), params))
             }
         }
 
         Some(exit_code) => match exit_code {
             ExitStatus::Exited(0) => {
-                info!(output_snd, "Step {} finished successfully with command {}", command_process.step.name, command_process.step_command);
-                Ok((s.process_completed_successfully(), params))
+                info!(output_snd, "Step {} finished successfully with command {}", step.name, step_command);
+                Some((s.process_completed_successfully(), params))
             }
             ,
             // we don't handle other variants in the state machine. Either it exited
             // successfully or died for some reason.
             //
             _ => {
-                error!(output_snd, "Step {} finished UNSUCCESSFULLY with command {}", command_process.step.name, command_process.step_command);
-                Ok((s.process_returned_non_zero(), params))
+                error!(output_snd, "Step {} finished UNSUCCESSFULLY with command {}", step.name, step_command);
+                Some((s.process_returned_non_zero(), params))
             },
         },
-    }
+    }}).ok_or_else(|| anyhow!("Process not found").into())
 }
 
 fn s_waiting_to_run_f_process_pool_full<'a>(
@@ -1210,7 +1210,10 @@ fn s_broken_f_process_returned_non_zero<'a>(
     Ok((s.keep_broken(), params))
 }
 
-fn s_broken_f_process_timeout<'a>(s: &BrokenState, params: StepStateParams) -> StateTransition<'a> {
+fn s_broken_f_process_timeout<'a>(
+    s: &BrokenState,
+    params: StepStateParams<'a>,
+) -> StateTransition<'a> {
     Ok((s.keep_broken(), params))
 }
 
@@ -1247,7 +1250,7 @@ fn s_waiting_dependency_steps_f_run_conditional<'a>(
     s: &WaitingDependencyStepsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let dependency_states = params.dependency_states;
+    let dependency_states = params.dependency_states.clone();
 
     if dependency_states.read()?.len() == 0 {
         info!(

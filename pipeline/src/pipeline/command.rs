@@ -81,7 +81,7 @@ impl CommandProcess {
     }
 
     pub fn run(&mut self) -> Result<()> {
-        let process = sp::Exec::shell(self.step_command.command)
+        let process = sp::Exec::shell(self.step_command.command.clone())
             .stdout(sp::Redirection::Pipe)
             .stderr(sp::Redirection::Pipe)
             .stdin(sp::Redirection::None)

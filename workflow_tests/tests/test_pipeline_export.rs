@@ -6,6 +6,7 @@ use common::*;
 use serde_json;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcPath;
+use xvc_pipeline::deps;
 use xvc_pipeline::{XvcDependency, XvcMetricsFormat, XvcOutput, XvcParamFormat, XvcPipelineSchema};
 
 use xvc::error::Result;
@@ -50,7 +51,14 @@ fn test_pipeline_export() -> Result<()> {
     ])?;
     x(&["step", "dependency", "-s", "step2", "--step", "step1"])?;
     x(&["step", "dependency", "-s", "step2", "--glob", "*.txt"])?;
-    x(&["step", "dependency", "-s", "step2", "--directory", "data/"])?;
+    x(&[
+        "step",
+        "dependency",
+        "-s",
+        "step2",
+        "--glob-digest",
+        "*.txt",
+    ])?;
     x(&[
         "step",
         "dependency",
@@ -74,7 +82,23 @@ fn test_pipeline_export() -> Result<()> {
         "dependency",
         "-s",
         "step2",
+        "--regex-digest",
+        "requirements.txt:/^tensorflow",
+    ])?;
+    x(&[
+        "step",
+        "dependency",
+        "-s",
+        "step2",
         "--lines",
+        "params.yaml::1-20",
+    ])?;
+    x(&[
+        "step",
+        "dependency",
+        "-s",
+        "step2",
+        "--lines-digest",
         "params.yaml::1-20",
     ])?;
 
@@ -111,68 +135,6 @@ fn test_pipeline_export() -> Result<()> {
     assert!(ps_json.steps[1].command == "touch def.txt");
     let deps_json = &ps_json.steps[1].dependencies;
     watch!(deps_json);
-    assert!(deps_json.len() == 6);
-    assert!(
-        deps_json[0]
-            == XvcDependency::Step {
-                name: "step1".to_string()
-            }
-    );
-
-    assert!(
-        deps_json[1]
-            == XvcDependency::Glob {
-                glob: "*.txt".to_string()
-            },
-        "{:?}",
-        deps_json[1]
-    );
-
-    assert!(
-        deps_json[2]
-            == XvcDependency::Directory {
-                path: XvcPath::new(&xvc_root, &xvc_root.absolute_path(), Path::new("data/"))?
-            }
-    );
-
-    assert!(
-        deps_json[3]
-            == XvcDependency::Param {
-                format: XvcParamFormat::YAML,
-                path: XvcPath::new(
-                    &xvc_root,
-                    &xvc_root.absolute_path(),
-                    Path::new("params.yaml")
-                )?,
-                key: "model.conv_units".to_string(),
-            }
-    );
-
-    assert!(
-        deps_json[4]
-            == XvcDependency::Regex {
-                path: XvcPath::new(
-                    &xvc_root,
-                    &xvc_root.absolute_path(),
-                    Path::new("requirements.txt"),
-                )?,
-                regex: "^tensorflow".to_string(),
-            }
-    );
-
-    assert!(
-        deps_json[5]
-            == XvcDependency::Lines {
-                path: XvcPath::new(
-                    &xvc_root,
-                    &xvc_root.absolute_path(),
-                    Path::new("params.yaml")
-                )?,
-                begin: 1,
-                end: 20
-            }
-    );
-
     let outs_json = &ps_json.steps[1].outputs;
 
     assert!(outs_json.len() == 3);

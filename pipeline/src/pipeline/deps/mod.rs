@@ -28,16 +28,16 @@ use xvc_core::{
 };
 use xvc_ecs::{persist, HStore, XvcStore};
 
-use self::file::FileDep;
-use self::generic::GenericDep;
-use self::glob::GlobDep;
-use self::glob_digest::GlobDigestDep;
-use self::lines::LinesDep;
-use self::lines_digest::LinesDigestDep;
-use self::regex::RegexDep;
-use self::regex_digest::RegexDigestDep;
-use self::step::StepDep;
-use self::url::UrlDigestDep;
+pub use self::file::FileDep;
+pub use self::generic::GenericDep;
+pub use self::glob::GlobDep;
+pub use self::glob_digest::GlobDigestDep;
+pub use self::lines::LinesDep;
+pub use self::lines_digest::LinesDigestDep;
+pub use self::regex::RegexDep;
+pub use self::regex_digest::RegexDigestDep;
+pub use self::step::StepDep;
+pub use self::url::UrlDigestDep;
 
 pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
     Ok(conf.get_str("pipeline.default_params_file")?.option)

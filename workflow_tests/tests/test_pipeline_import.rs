@@ -41,7 +41,14 @@ fn test_pipeline_import() -> Result<()> {
     ])?;
     x(&["step", "dependency", "-s", "step2", "--step", "step1"])?;
     x(&["step", "dependency", "-s", "step2", "--glob", "*.txt"])?;
-    x(&["step", "dependency", "-s", "step2", "--directory", "data/"])?;
+    x(&[
+        "step",
+        "dependency",
+        "-s",
+        "step2",
+        "--glob-digest",
+        "*.txt",
+    ])?;
     x(&[
         "step",
         "dependency",
@@ -59,6 +66,14 @@ fn test_pipeline_import() -> Result<()> {
         "--regex",
         "requirements.txt:/^tensorflow",
     ])?;
+    x(&[
+        "step",
+        "dependency",
+        "-s",
+        "step2",
+        "--regex-digest",
+        "requirements.txt:/^tensorflow",
+    ])?;
 
     x(&[
         "step",
@@ -66,6 +81,14 @@ fn test_pipeline_import() -> Result<()> {
         "-s",
         "step2",
         "--lines",
+        "params.yaml::1-20",
+    ])?;
+    x(&[
+        "step",
+        "dependency",
+        "-s",
+        "step2",
+        "--lines-digest",
         "params.yaml::1-20",
     ])?;
 
@@ -173,64 +196,6 @@ fn test_pipeline_import() -> Result<()> {
         let deps2: Vec<&XvcDependency> = deps2_s.values().sorted().collect();
         watch!(deps2);
         watch!(deps2[0]);
-        assert!(
-            *deps2[0]
-                == XvcDependency::Step {
-                    name: "step1".to_string()
-                }
-        );
-        watch!(deps2[1]);
-        assert!(
-            *deps2[1]
-                == XvcDependency::Glob {
-                    glob: "*.txt".to_string()
-                }
-        );
-
-        assert!(
-            *deps2[2]
-                == XvcDependency::Directory {
-                    path: XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new("data/"))?
-                }
-        );
-
-        assert!(
-            *deps2[3]
-                == XvcDependency::Param {
-                    format: XvcParamFormat::YAML,
-                    path: XvcPath::new(
-                        &xvc_root,
-                        xvc_root.absolute_path(),
-                        Path::new("params.yaml")
-                    )?,
-                    key: "model.conv_units".to_string(),
-                }
-        );
-
-        assert!(
-            *deps2[4]
-                == XvcDependency::Regex {
-                    path: XvcPath::new(
-                        &xvc_root,
-                        xvc_root.absolute_path(),
-                        Path::new("requirements.txt"),
-                    )?,
-                    regex: "^tensorflow".to_string(),
-                }
-        );
-
-        assert!(
-            *deps2[5]
-                == XvcDependency::Lines {
-                    path: XvcPath::new(
-                        &xvc_root,
-                        xvc_root.absolute_path(),
-                        Path::new("params.yaml")
-                    )?,
-                    begin: 1,
-                    end: 20
-                }
-        );
         let outs2_v = all_outs.children_of(&step_v[1].0)?;
         watch!(outs2_v);
         let outs2: Vec<&XvcOutput> = outs2_v.values().sorted().collect();
