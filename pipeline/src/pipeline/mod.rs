@@ -36,7 +36,7 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use std::thread::{self, JoinHandle};
+use std::thread::{self, JoinHandle, ScopedJoinHandle};
 use std::time::{Duration, Instant, SystemTime};
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
@@ -196,7 +196,7 @@ struct StepStateParams<'a> {
     step_e: XvcEntity,
     step: &'a XvcStep,
     step_command: &'a XvcStepCommand,
-    dependency_states: &'a HStore<XvcStepState>,
+    dependency_states: Arc<RwLock<HStore<XvcStepState>>>,
     step_timeout: &'a Duration,
 
     step_dependencies: &'a HStore<XvcDependency>,
@@ -444,79 +444,74 @@ pub fn the_grand_pipeline_loop(
         .load_r1nstore::<XvcStep, XvcDigests>()
         .expect("Cannot load store");
 
-    let mut state_thread_params: HStore<StepThreadParams> = HStore::new();
-
-    sorted_steps.iter().for_each(|step_e| {
-        state_thread_params.insert(
-            *step_e,
-            StepThreadParams {
-                xvc_root,
-                pipeline_rundir: &pipeline_rundir,
-                step_e: *step_e,
-                state_channels: &state_channels,
-                dependency_graph: &dependency_graph,
-                step_timeout: &step_timeout,
-                run_conditions: &run_conditions[step_e],
-                terminate_on_timeout,
-                current_pmm,
-                output_snd,
-                step_commands: &step_commands,
-                steps: &pipeline_steps,
-                process_pool,
-                process_pool_size,
-                algorithm,
-                recorded_dependencies: &recorded_dependencies,
-                recorded_outputs: &recorded_outputs,
-                recorded_xvc_digests: &recorded_xvc_digests,
-            },
-        );
-    });
-
     // Create a thread for each of the steps
     // We create these in topological order because the dependents need to subscribe to their dependencies' channels.
-    let step_thread_store: HStore<JoinHandle<_>> = sorted_steps
-        .iter()
-        .map(|step_e| {
-            (
-                *step_e,
-                thread::spawn(move || {
-                    (step_state_handler(*step_e, &state_thread_params[step_e]).unwrap(),)
-                }),
-            )
-        })
-        .collect();
-    // if any of the states are Broken, we leave the loop
-    let broken_steps = step_states.iter().filter_map(|(step_e, step_s)| {
-        if matches!(step_s, XvcStepState::Broken(_)) {
-            Some(step_e)
+    let done_successfully: Result<bool> = thread::scope(|s| {
+        let step_thread_store: HStore<ScopedJoinHandle<_>> = sorted_steps
+            .iter()
+            .map(|step_e| {
+                (
+                    *step_e,
+                    s.spawn(|| {
+                        let output_snd = output_snd.clone();
+                        let step_thread_params = StepThreadParams {
+                            xvc_root,
+                            pipeline_rundir: &pipeline_rundir,
+                            step_e: *step_e,
+                            state_channels: &state_channels,
+                            dependency_graph: &dependency_graph,
+                            step_timeout: &step_timeout,
+                            run_conditions: &run_conditions[step_e],
+                            terminate_on_timeout,
+                            current_pmm: current_pmm.clone(),
+                            output_snd: &output_snd,
+                            step_commands: &step_commands,
+                            steps: &pipeline_steps,
+                            process_pool: process_pool.clone(),
+                            process_pool_size,
+                            algorithm,
+                            recorded_dependencies: &recorded_dependencies,
+                            recorded_outputs: &recorded_outputs,
+                            recorded_xvc_digests: &recorded_xvc_digests,
+                        };
+                        step_state_handler(*step_e, step_thread_params)
+                    }),
+                )
+            })
+            .collect();
+        // if any of the states are Broken, we leave the loop
+        let broken_steps = step_states.iter().filter_map(|(step_e, step_s)| {
+            if matches!(step_s, XvcStepState::Broken(_)) {
+                Some(step_e)
+            } else {
+                None
+            }
+        });
+
+        for step_e in broken_steps {
+            warn!(
+                "Broken Step: {:?} ({}) with Command {:?}",
+                pipeline_steps[step_e], step_e, step_commands[step_e]
+            );
+        }
+
+        // if all of the steps are done, we can end
+        if step_states
+            .iter()
+            .all(|(_, step_s)| matches!(step_s, XvcStepState::Done(_)))
+        {
+            return Ok(true);
         } else {
-            None
+            return Ok(false);
         }
     });
-
-    for step_e in broken_steps {
-        warn!(
-            "Broken Step: {:?} ({}) with Command {:?}",
-            pipeline_steps[step_e], step_e, step_commands[step_e]
-        );
-        continue_running = false;
-    }
-
-    // if all of the steps are done, we can end
-    if step_states
-        .iter()
-        .all(|(_, step_s)| matches!(step_s, XvcStepState::Done(_)))
-    {
-        watch!(&updated_xvc_digests_store);
-        // We save the updated stores only if all the steps are done successfully
+    // We only save the stores if the pipeline was run successfully
+    if let Ok(true) = done_successfully {
         xvc_root.save_store(&updated_xvc_path_store)?;
         xvc_root.save_store(&updated_xvc_metadata_store)?;
         xvc_root.save_store(&updated_xvc_digests_store)?;
         xvc_root.save_store(&updated_dependencies)?;
-        continue_running = false;
     }
-
-    // TODO: Check if there are running processes in the process pool and terminate them (per option)
     Ok(())
 }
 
@@ -532,27 +527,28 @@ fn dependencies(step_e: XvcEntity, dependency_graph: &DependencyGraph) -> Result
 type StateTransitionMap<'a> =
     HashMap<XvcStepState, dyn FnOnce(&XvcStepState, StepStateParams) -> StateTransition<'a>>;
 
-fn step_state_handler(step_e: XvcEntity, params: &StepThreadParams) -> Result<()> {
+fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()> {
     let dependencies = dependencies(step_e, &params.dependency_graph)?;
-    let dependency_channels = params.state_channels.subset(dependencies.into_iter())?;
+    let dependency_channels = params.state_channels.subset(dependencies.iter().cloned())?;
     let dependency_receivers: Vec<(XvcEntity, &Receiver<Option<XvcStepState>>)> =
         dependency_channels
             .iter()
             .map(|(e, (s, r))| (*e, r))
             .collect();
     // We'll update these states internally and check for actions
-    let mut dependency_states: HStore<XvcStepState> = dependencies
-        .iter()
-        .map(|e| (*e, XvcStepState::begin()))
-        .collect();
+    let mut dependency_states = Arc::new(RwLock::new(
+        dependencies
+            .iter()
+            .map(|e| (*e, XvcStepState::begin()))
+            .collect(),
+    ));
     let mut sel = Select::new();
-    dependency_receivers.into_iter().for_each(|(_, r)| {
+    dependency_receivers.iter().for_each(|(_, r)| {
         sel.recv(r);
     });
 
-    let step_state_sender = params.state_channels.get(&step_e).unwrap().0;
+    let step_state_sender = params.state_channels.get(&step_e).unwrap().0.clone();
     let mut step_state = XvcStepState::begin();
-    let step_command = params.step_commands.get(&step_e).unwrap();
     let step_dependencies = params.recorded_dependencies.children_of(&step_e)?;
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
     let step_xvc_digests = params.recorded_xvc_digests.children_of(&step_e)?;
@@ -560,10 +556,10 @@ fn step_state_handler(step_e: XvcEntity, params: &StepThreadParams) -> Result<()
     let step_command = &params.step_commands[&step_e];
     let command_process = Arc::new(RwLock::new(CommandProcess::new(step, step_command)));
 
-    let params = StepStateParams {
+    let mut params = StepStateParams {
         step_e,
         step,
-        dependency_states: &dependency_states,
+        dependency_states: dependency_states.clone(),
         output_snd: &params.output_snd,
         algorithm: params.algorithm,
         step_command,
@@ -587,7 +583,9 @@ fn step_state_handler(step_e: XvcEntity, params: &StepThreadParams) -> Result<()
             let index = sel.ready();
             let res = dependency_receivers[index].1.try_recv()?;
             if let Some(state) = res {
-                dependency_states.insert(dependency_receivers[index].0, state);
+                dependency_states
+                    .write()?
+                    .insert(dependency_receivers[index].0, state);
             } else {
                 // Dependency channels are closed due to an error. We're closing too.
                 step_state_sender.send(None)?;
@@ -595,7 +593,7 @@ fn step_state_handler(step_e: XvcEntity, params: &StepThreadParams) -> Result<()
             }
         }
 
-        let (r_next_state, params) = match step_state {
+        let (r_next_state, next_params) = match step_state {
             XvcStepState::Begin(s) => match s {
                 BeginState::FromInit => s_begin_f_init(&s, params)?,
             },
@@ -681,7 +679,7 @@ fn step_state_handler(step_e: XvcEntity, params: &StepThreadParams) -> Result<()
                 BrokenState::FromProcessReturnedNonZero => {
                     s_broken_f_process_returned_non_zero(&s, params)?
                 }
-                BrokenState::FromKeepBroken => (step_state, params),
+                BrokenState::FromKeepBroken => (XvcStepState::Broken(s), params),
             },
             XvcStepState::Done(s) => match s {
                 DoneState::FromCompletedWithoutRunningStep => {
@@ -690,13 +688,16 @@ fn step_state_handler(step_e: XvcEntity, params: &StepThreadParams) -> Result<()
                 DoneState::FromProcessCompletedSuccessfully => {
                     s_done_f_process_completed_successfully(&s, params)?
                 }
-                DoneState::FromKeepDone => (step_state, params),
+                DoneState::FromKeepDone => (XvcStepState::Done(s), params),
             },
         };
 
-        step_state_sender.send(Some(r_next_state))?;
+        step_state_sender.send(Some(r_next_state.clone()))?;
+        step_state = r_next_state;
 
-        match r_next_state {
+        params = next_params;
+
+        match &step_state {
             XvcStepState::Done(_) | XvcStepState::Broken(_) => {
                 // We're done. No need to keep the step state channel open.
                 step_state_sender.send(None)?;
@@ -743,52 +744,51 @@ fn update_pmp(
 
 fn s_checking_thorough_diffs_f_has_newer_dependencies<'a>(
     s: &CheckingThoroughDiffsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_thorough_diffs(s, params)
 }
 
 fn s_checking_shallow_diffs_f_no_missing_outputs<'a>(
     s: &CheckingShallowDiffsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_shallow_diffs(s, params)
 }
 
 fn s_checking_shallow_diffs_f_missing_outputs_ignored<'a>(
     s: &CheckingShallowDiffsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_shallow_diffs(s, params)
 }
 
 fn s_checking_shallow_diffs_f_has_missing_outputs<'a>(
     s: &CheckingShallowDiffsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_shallow_diffs(s, params)
 }
 
 fn s_checking_missing_outputs_f_no_missing_dependencies<'a>(
     s: &CheckingMissingOutputsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_missing_outputs(s, params)
 }
 
 fn s_checking_missing_outputs<'a>(
     s: &CheckingMissingOutputsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let step_e = params.step_e;
     let run_conditions = params.run_conditions;
     let step_outs = params.step_outputs;
-    let pmm = params.pmm.read()?;
+    let pmm = params.pmm.clone();
 
     if run_conditions.run_when_outputs_missing {
         for out in step_outs.values() {
             let out_path = XvcPath::from(out);
-            if !pmm.contains_key(&out_path) {
+            if !pmm.read()?.contains_key(&out_path) {
                 return Ok((s.has_missing_outputs(), params));
             }
         }
@@ -801,7 +801,7 @@ fn s_checking_missing_outputs<'a>(
 
 fn s_checking_missing_outputs_f_missing_dependencies_ignored<'a>(
     s: &CheckingMissingOutputsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_missing_outputs(s, params)
 }
@@ -810,7 +810,7 @@ fn s_checking_missing_outputs_f_missing_dependencies_ignored<'a>(
 /// Note that this doesn't check URL dependencies as of now. We should add it though.
 fn s_checking_missing_dependencies<'a>(
     s: &CheckingMissingDependenciesState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     if params.run_conditions.ignore_missing_dependencies {
         info!(
@@ -820,12 +820,11 @@ fn s_checking_missing_dependencies<'a>(
         return Ok((s.missing_dependencies_ignored(), params));
     }
 
-    let step_e = params.step_e;
-    let pmm = params.pmm.read()?;
+    let pmm = params.pmm.clone();
     let deps = params.step_dependencies;
     for (_, dep) in deps.iter() {
         if let Some(xvc_path) = dep.xvc_path() {
-            match pmm.get(&xvc_path) {
+            match pmm.read()?.get(&xvc_path) {
                 None => return Ok((s.has_missing_dependencies(), params)),
                 Some(xvc_md) => {
                     if xvc_md.file_type == XvcFileType::Missing {
@@ -840,26 +839,27 @@ fn s_checking_missing_dependencies<'a>(
 
 fn s_checking_missing_dependencies_f_dependency_steps_finished_successfully<'a>(
     s: &CheckingMissingDependenciesState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_missing_dependencies(s, params)
 }
 
 fn s_checking_missing_dependencies_f_dependency_steps_finished_broken_ignored<'a>(
     s: &CheckingMissingDependenciesState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_checking_missing_dependencies(s, params)
 }
 
 fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
     s: &WaitingDependencyStepsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let dep_states = params.dependency_states;
+    let dep_states = params.dependency_states.clone();
 
     // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
     if dep_states
+        .read()?
         .iter()
         .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Done(_)))
     {
@@ -868,7 +868,7 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
             "Dependency steps completed successfully for step {}", params.step.name
         );
         Ok((s.dependency_steps_finished_successfully(), params))
-    } else if dep_states.iter().all(|(_, dep_state)| {
+    } else if dep_states.read()?.iter().all(|(_, dep_state)| {
         matches!(dep_state, &XvcStepState::Done(_)) || matches!(dep_state, &XvcStepState::Broken(_))
     }) {
         if params.run_conditions.ignore_broken_dep_steps {
@@ -895,7 +895,7 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
 
 fn s_no_need_to_run_f_thorough_diffs_not_changed<'a>(
     s: &NoNeedToRunState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     info!(
         params.output_snd,
@@ -906,7 +906,7 @@ fn s_no_need_to_run_f_thorough_diffs_not_changed<'a>(
 
 fn s_no_need_to_run_f_has_no_newer_dependencies<'a>(
     s: &NoNeedToRunState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     info!(
         params.output_snd,
@@ -917,7 +917,7 @@ fn s_no_need_to_run_f_has_no_newer_dependencies<'a>(
 
 fn s_checking_thorough_diffs<'a>(
     s: &CheckingThoroughDiffsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     let step_e = params.step_e;
     watch!(step_e);
@@ -949,7 +949,7 @@ fn s_checking_thorough_diffs<'a>(
 
 fn s_checking_shallow_diffs<'a>(
     s: &CheckingShallowDiffsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     if params.run_conditions.ignore_diffs {
         return Ok((s.diffs_ignored(), params));
@@ -1068,24 +1068,25 @@ fn s_checking_shallow_diffs<'a>(
 
 fn s_waiting_dependency_steps<'a>(
     s: &WaitingDependencyStepsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     if !params.run_conditions.wait_running_dep_steps {
         return Ok((s.dependency_steps_finished_successfully(), params));
     }
     let dep_states = params.dependency_states;
     // if there are no dependencies, we can claim successfully finished
-    if dep_states.len() == 0 {
+    if dep_states.read()?.len() == 0 {
         return Ok((s.dependency_steps_finished_successfully(), params));
     }
 
     // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
     if dep_states
+        .read()?
         .iter()
         .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Done(_)))
     {
         Ok((s.dependency_steps_finished_successfully(), params))
-    } else if dep_states.iter().all(|(_, dep_state)| {
+    } else if dep_states.read()?.iter().all(|(_, dep_state)| {
         matches!(dep_state, &XvcStepState::Done(_)) || matches!(dep_state, &XvcStepState::Broken(_))
     }) {
         if params.run_conditions.ignore_broken_dep_steps {
@@ -1098,7 +1099,7 @@ fn s_waiting_dependency_steps<'a>(
     }
 }
 
-fn s_running_f_start_process<'a>(s: &RunningState, params: StepStateParams) -> StateTransition<'a> {
+fn s_running_f_start_process<'a>(s: &RunningState, params: StepStateParams<'a>) -> StateTransition<'a> {
     let step_e = params.step_e;
     let command_process = params.command_process.write()?;
     let command_process = command_process.run()?;
@@ -1107,7 +1108,7 @@ fn s_running_f_start_process<'a>(s: &RunningState, params: StepStateParams) -> S
 
 fn s_running_f_wait_process<'a>(
     s: &RunningState,
-    mut params: StepStateParams,
+    mut params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     // Check whether the process is still running
     let step_e = params.step_e;
@@ -1174,7 +1175,7 @@ fn s_running_f_wait_process<'a>(
 
 fn s_waiting_to_run_f_process_pool_full<'a>(
     s: &WaitingToRunState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     if params.runnable_process_count.read()?.gt(&0) {
         Ok((s.start_process(), params))
@@ -1185,14 +1186,14 @@ fn s_waiting_to_run_f_process_pool_full<'a>(
 
 fn s_waiting_to_run_f_diffs_ignored<'a>(
     s: &WaitingToRunState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     todo!()
 }
 
 fn s_waiting_to_run_f_thorough_diffs_changed<'a>(
     s: &WaitingToRunState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     todo!()
 }
@@ -1200,7 +1201,7 @@ fn s_waiting_to_run_f_thorough_diffs_changed<'a>(
 /// Broken stays always Broken
 fn s_broken_f_process_returned_non_zero<'a>(
     s: &BrokenState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     Ok((s.keep_broken(), params))
 }
@@ -1211,26 +1212,26 @@ fn s_broken_f_process_timeout<'a>(s: &BrokenState, params: StepStateParams) -> S
 
 fn s_broken_f_dependency_steps_finished_broken<'a>(
     s: &BrokenState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     Ok((s.keep_broken(), params))
 }
 
 fn s_broken_f_has_missing_dependencies<'a>(
     s: &BrokenState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     Ok((s.keep_broken(), params))
 }
 
 fn s_broken_f_cannot_start_process<'a>(
     s: &BrokenState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     Ok((s.keep_broken(), params))
 }
 
-fn s_begin_f_init<'a>(s: &BeginState, params: StepStateParams) -> StateTransition<'a> {
+fn s_begin_f_init<'a>(s: &BeginState, params: StepStateParams<'a>) -> StateTransition<'a> {
     if params.run_conditions.never {
         Ok((s.run_never(), params)) // s_no_need_to_run_f_run_never
     } else {
@@ -1240,11 +1241,11 @@ fn s_begin_f_init<'a>(s: &BeginState, params: StepStateParams) -> StateTransitio
 
 fn s_waiting_dependency_steps_f_run_conditional<'a>(
     s: &WaitingDependencyStepsState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     let dependency_states = params.dependency_states;
 
-    if dependency_states.len() == 0 {
+    if dependency_states.read()?.len() == 0 {
         info!(
             params.output_snd,
             "No dependency steps for step {}", params.step.name
@@ -1261,7 +1262,7 @@ fn s_waiting_dependency_steps_f_run_conditional<'a>(
 
 fn s_no_need_to_run_f_run_never<'a>(
     s: &NoNeedToRunState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     info!(
         params.output_snd,
@@ -1271,7 +1272,7 @@ fn s_no_need_to_run_f_run_never<'a>(
 }
 
 /// Terminal state: Waits till the end of times
-fn s_done<'a>(s: &DoneState, params: StepStateParams) -> StateTransition<'a> {
+fn s_done<'a>(s: &DoneState, params: StepStateParams<'a>) -> StateTransition<'a> {
     debug!(
         params.output_snd,
         "Step {} is done. You shouldn't see this more than once.", params.step.name
@@ -1281,7 +1282,7 @@ fn s_done<'a>(s: &DoneState, params: StepStateParams) -> StateTransition<'a> {
 
 fn s_done_f_completed_without_running_step<'a>(
     s: &DoneState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     info!(
         params.output_snd,
@@ -1292,11 +1293,11 @@ fn s_done_f_completed_without_running_step<'a>(
 
 fn s_done_f_process_completed_successfully<'a>(
     s: &DoneState,
-    params: StepStateParams,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_done(s, params)
 }
 
-fn s_done_f_has_done<'a>(s: &DoneState, params: StepStateParams) -> StateTransition<'a> {
+fn s_done_f_has_done<'a>(s: &DoneState, params: StepStateParams<'a>) -> StateTransition<'a> {
     s_done(s, params)
 }
