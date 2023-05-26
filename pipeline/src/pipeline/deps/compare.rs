@@ -48,7 +48,7 @@ pub struct DependencyComparisonParams<'a> {
 /// Calls the respective comparison function for the loaded dependency type.
 ///
 pub fn compare_dependency(
-    cmp_params: StepStateParams,
+    cmp_params: &StepStateParams,
     stored_dependency_e: XvcEntity,
 ) -> Result<Diff<XvcDependency>> {
     let stored = cmp_params
@@ -242,7 +242,7 @@ impl Diffable for XvcDependency {
 
 /// Runs the command and compares the output with the stored dependency
 fn compare_deps_generic(
-    cmp_params: StepStateParams,
+    cmp_params: &StepStateParams,
     rec_generic_dep: &GenericDep,
 ) -> Result<Diff<GenericDep>> {
     let actual = GenericDep::new(rec_generic_dep.generic_command.clone());
@@ -250,7 +250,7 @@ fn compare_deps_generic(
 }
 
 /// Compares a dependency path with the actual metadata and content digest found on disk
-fn compare_deps_file(cmp_params: StepStateParams, record: &FileDep) -> Result<Diff<FileDep>> {
+fn compare_deps_file(cmp_params: &StepStateParams, record: &FileDep) -> Result<Diff<FileDep>> {
     let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?);
 
     Ok(FileDep::diff(Some(record), Some(&actual)))
@@ -279,7 +279,7 @@ fn compare_deps_lines(record: &LinesDep) -> Result<Diff<LinesDep>> {
 }
 
 /// Compares two globs, one stored and one current.
-fn compare_deps_glob(cmp_params: StepStateParams, record: &GlobDep) -> Result<Diff<GlobDep>> {
+fn compare_deps_glob(cmp_params: &StepStateParams, record: &GlobDep) -> Result<Diff<GlobDep>> {
     let mut actual = GlobDep::from_pmm(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
@@ -292,7 +292,7 @@ fn compare_deps_glob(cmp_params: StepStateParams, record: &GlobDep) -> Result<Di
 }
 
 fn compare_deps_glob_digest(
-    cmp_params: StepStateParams,
+    cmp_params: &StepStateParams,
     record: &GlobDigestDep,
 ) -> Result<Diff<GlobDigestDep>> {
     let actual = GlobDigestDep::new(record.glob.clone())
@@ -313,7 +313,7 @@ fn compare_deps_glob_digest(
 }
 
 fn compare_deps_regex_digest(
-    cmp_params: StepStateParams,
+    cmp_params: &StepStateParams,
     record: &RegexDigestDep,
 ) -> Result<Diff<RegexDigestDep>> {
     let actual = RegexDigestDep::new(record.path.clone(), record.regex.clone())
@@ -333,7 +333,7 @@ fn compare_deps_regex_digest(
 }
 
 fn compare_deps_lines_digest(
-    cmp_params: StepStateParams,
+    cmp_params: &StepStateParams,
     record: &LinesDigestDep,
 ) -> Result<Diff<LinesDigestDep>> {
     let actual = LinesDigestDep::new(record.path.clone(), record.begin, record.end)

@@ -935,7 +935,7 @@ fn s_checking_thorough_diffs<'a>(
         .step_dependencies
         .iter()
         .map(|(dep_e, dep)| {
-            let cmp_diff = uwr!(compare_dependency(params, *dep_e), params.output_snd);
+            let cmp_diff = uwr!(compare_dependency(&params, *dep_e), params.output_snd);
             (*dep_e, cmp_diff)
         })
         .collect();
@@ -960,13 +960,13 @@ fn s_checking_shallow_diffs<'a>(
     let pipeline_rundir = params.pipeline_rundir;
     let deps = params.step_dependencies;
     let outs = params.step_outputs;
-    let pmm = params.pmm;
+    let pmm = params.pmm.clone();
 
     let step_dependency_diffs: HStore<Diff<XvcDependency>> = params
         .step_dependencies
         .iter()
         .map(|(dep_e, dep)| {
-            let cmp_diff = uwr!(compare_dependency(params, *dep_e), params.output_snd);
+            let cmp_diff = uwr!(compare_dependency(&params, *dep_e), params.output_snd);
             (*dep_e, cmp_diff)
         })
         .collect();
@@ -1014,10 +1014,12 @@ fn s_checking_shallow_diffs<'a>(
         );
 
     if let Some(max_dep_ts) = max_dep_ts {
+        let pmm = pmm.clone();
+        let pmm = uwr!(pmm.read(), params.output_snd);
         let out_paths = outs.iter().map(|(_, out)| {
             let path = XvcPath::from(out);
-            let md = uwr!(pmm.read(), params.output_snd).get(&path);
-            (path, md)
+            let md = pmm.get(&path);
+            (path, md.cloned())
         });
 
         let min_out_ts = out_paths.fold(
@@ -1073,7 +1075,7 @@ fn s_waiting_dependency_steps<'a>(
     if !params.run_conditions.wait_running_dep_steps {
         return Ok((s.dependency_steps_finished_successfully(), params));
     }
-    let dep_states = params.dependency_states;
+    let dep_states = params.dependency_states.clone();
     // if there are no dependencies, we can claim successfully finished
     if dep_states.read()?.len() == 0 {
         return Ok((s.dependency_steps_finished_successfully(), params));
@@ -1099,10 +1101,13 @@ fn s_waiting_dependency_steps<'a>(
     }
 }
 
-fn s_running_f_start_process<'a>(s: &RunningState, params: StepStateParams<'a>) -> StateTransition<'a> {
-    let step_e = params.step_e;
-    let command_process = params.command_process.write()?;
-    let command_process = command_process.run()?;
+fn s_running_f_start_process<'a>(
+    s: &RunningState,
+    params: StepStateParams<'a>,
+) -> StateTransition<'a> {
+    let command_process = params.command_process.clone();
+    let mut command_process = command_process.write()?;
+    command_process.run()?;
     Ok((s.wait_process(), params))
 }
 
@@ -1111,8 +1116,7 @@ fn s_running_f_wait_process<'a>(
     mut params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     // Check whether the process is still running
-    let step_e = params.step_e;
-    let command_process = params.command_process.get_mut()?;
+    let mut command_process = params.command_process.write()?;
 
     command_process.update_output_channels()?;
 

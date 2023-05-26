@@ -80,8 +80,8 @@ impl CommandProcess {
         }
     }
 
-    pub fn run(self) -> Result<Self> {
-        let process = sp::Exec::shell(&self.step_command.command)
+    pub fn run(&mut self) -> Result<()> {
+        let process = sp::Exec::shell(self.step_command.command)
             .stdout(sp::Redirection::Pipe)
             .stderr(sp::Redirection::Pipe)
             .stdin(sp::Redirection::None)
@@ -93,11 +93,9 @@ impl CommandProcess {
             )
             .detached()
             .popen()?;
-        Ok(Self {
-            process: Some(process),
-            birth: Some(Instant::now()),
-            ..self
-        })
+        self.process = Some(process);
+        self.birth = Some(Instant::now());
+        Ok(())
     }
 
     pub fn update_output_channels(&mut self) -> Result<()> {
