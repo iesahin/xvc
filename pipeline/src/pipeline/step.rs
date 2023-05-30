@@ -67,11 +67,11 @@ impl XvcStep {
 //     CheckingMissingDependencies --> CheckingMissingOutputs: MissingDependenciesIgnored
 //     CheckingMissingDependencies --> Broken: HasMissingDependencies
 //     CheckingMissingDependencies --> CheckingMissingOutputs: NoMissingDependencies
-//     CheckingMissingOutputs --> CheckingShallowDiffs: MissingOutputsIgnored
-//     CheckingMissingOutputs --> CheckingShallowDiffs: HasMissingOutputs
-//     CheckingShallowDiffs --> WaitingToRun: DiffsIgnored
-//     CheckingShallowDiffs --> NoNeedToRun: HasNoNewerDependencies
-//     CheckingShallowDiffs --> CheckingThoroughDiffs: HasNewerDependencies
+//     CheckingMissingOutputs --> CheckingSuperficialDiffs: MissingOutputsIgnored
+//     CheckingMissingOutputs --> CheckingSuperficialDiffs: HasMissingOutputs
+//     CheckingSuperficialDiffs --> WaitingToRun: DiffsIgnored
+//     CheckingSuperficialDiffs --> NoNeedToRun: HasNoNewerDependencies
+//     CheckingSuperficialDiffs --> CheckingThoroughDiffs: HasNewerDependencies
 //     CheckingThoroughDiffs --> NoNeedToRun: ThoroughDiffsNotChanged
 //     CheckingThoroughDiffs --> WaitingToRun: ThoroughDiffsChanged
 //     NoNeedToRun --> Done: CompletedWithoutRunningStep
@@ -100,78 +100,62 @@ state_machine! {
             Begin => WaitingDependencySteps
         }
 
-//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedBrokenIgnored
 
         DependencyStepsFinishedBrokenIgnored {
             WaitingDependencySteps => CheckingMissingDependencies
         }
 
-//     WaitingDependencySteps --> WaitingDependencySteps: DependencyStepsRunning
 
         DependencyStepsRunning {
             WaitingDependencySteps => WaitingDependencySteps
         }
 
-//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedSuccessfully
 
         DependencyStepsFinishedSuccessfully {
             WaitingDependencySteps => CheckingMissingDependencies
         }
 
-//     WaitingDependencySteps --> Broken: DependencyStepsFinishedBroken
 
         DependencyStepsFinishedBroken {
             WaitingDependencySteps => Broken
         }
 
-//     CheckingMissingDependencies --> CheckingMissingOutputs: MissingDependenciesIgnored
 
         MissingDependenciesIgnored {
             CheckingMissingDependencies => CheckingMissingOutputs
         }
-//     CheckingMissingDependencies --> Broken: HasMissingDependencies
 
         HasMissingDependencies {
             CheckingMissingDependencies => Broken
         }
 
-//     CheckingMissingDependencies --> CheckingMissingOutputs: NoMissingDependencies
-
         NoMissingDependencies {
             CheckingMissingDependencies => CheckingMissingOutputs
         }
 
-//     CheckingMissingOutputs --> CheckingShallowDiffs: MissingOutputsIgnored
-
         MissingOutputsIgnored {
-            CheckingMissingOutputs => CheckingShallowDiffs
+            CheckingMissingOutputs => CheckingSuperficialDiffs
         }
-
-//     CheckingMissingOutputs --> CheckingShallowDiffs: HasMissingOutputs
 
         HasMissingOutputs {
-            CheckingMissingOutputs => CheckingShallowDiffs
+            CheckingMissingOutputs => CheckingSuperficialDiffs
         }
 
-//     CheckingMissingOutputs --> CheckingShallowDiffs: HasNoMissingOutputs
         HasNoMissingOutputs {
-            CheckingMissingOutputs => CheckingShallowDiffs
+            CheckingMissingOutputs => CheckingSuperficialDiffs
         }
 
-//     CheckingShallowDiffs --> WaitingToRun: DiffsIgnored
-            DiffsIgnored {
-                CheckingShallowDiffs => WaitingToRun
-            }
-//     CheckingShallowDiffs --> NoNeedToRun: HasNoNewerDependencies
-
-            HasNoNewerDependencies {
-                CheckingShallowDiffs => NoNeedToRun
+            SuperficialDiffsIgnored {
+                CheckingSuperficialDiffs => CheckingThoroughDiffs
             }
 
-//     CheckingShallowDiffs --> CheckingThoroughDiffs: HasNewerDependencies
+            SuperficialDiffsNotChanged {
+                CheckingSuperficialDiffs => NoNeedToRun
+            }
 
-            HasNewerDependencies {
-                 CheckingShallowDiffs => CheckingThoroughDiffs
+
+            SuperficialDiffsChanged {
+                 CheckingSuperficialDiffs => CheckingThoroughDiffs
              }
 //     CheckingThoroughDiffs --> NoNeedToRun: ThoroughDiffsNotChanged
         ThoroughDiffsNotChanged {

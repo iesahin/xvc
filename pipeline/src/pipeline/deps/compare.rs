@@ -41,43 +41,6 @@ pub struct DependencyComparisonParams<'a> {
     pub step_dependencies: &'a HStore<XvcDependency>,
 }
 
-///
-/// compares two dependencies of the same type
-///
-/// Decides the dependency type by loading the stored dependency.
-/// Calls the respective comparison function for the loaded dependency type.
-///
-pub fn compare_dependency(
-    cmp_params: &StepStateParams,
-    stored_dependency_e: XvcEntity,
-) -> Result<Diff<XvcDependency>> {
-    let stored = cmp_params
-        .step_dependencies
-        .get(&stored_dependency_e)
-        .ok_or(anyhow!(
-            "Stored dependency {:?} not found in step dependencies",
-            stored_dependency_e
-        ))?;
-
-    let diff = match stored {
-        // Step dependencies are handled differently
-        XvcDependency::Step(_) => Diff::Skipped,
-
-        XvcDependency::Generic(generic) => diff_of_dep(compare_deps_generic(cmp_params, generic)?),
-        XvcDependency::File(file_dep) => diff_of_dep(compare_deps_file(cmp_params, file_dep)?),
-        XvcDependency::Glob(glob_dep) => diff_of_dep(compare_deps_glob(cmp_params, glob_dep)?),
-        XvcDependency::UrlDigest(url_dep) => diff_of_dep(compare_deps_url(url_dep)?),
-        XvcDependency::Param(param_dep) => diff_of_dep(compare_deps_param(param_dep)?),
-        XvcDependency::Regex(regex_dep) => diff_of_dep(compare_deps_regex(regex_dep)?),
-        XvcDependency::Lines(lines_dep) => diff_of_dep(compare_deps_lines(lines_dep)?),
-        XvcDependency::GlobDigest(dep) => diff_of_dep(compare_deps_glob_digest(cmp_params, dep)?),
-        XvcDependency::RegexDigest(dep) => diff_of_dep(compare_deps_regex_digest(cmp_params, dep)?),
-        XvcDependency::LinesDigest(dep) => diff_of_dep(compare_deps_lines_digest(cmp_params, dep)?),
-    };
-
-    Ok(diff)
-}
-
 impl Diffable for XvcDependency {
     type Item = XvcDependency;
 
@@ -240,46 +203,90 @@ impl Diffable for XvcDependency {
     }
 }
 
-/// Runs the command and compares the output with the stored dependency
-fn compare_deps_generic(
+///
+/// compares two dependencies of the same type
+///
+/// Decides the dependency type by loading the stored dependency.
+/// Calls the respective comparison function for the loaded dependency type.
+///
+pub fn thorough_compare_dependency(
     cmp_params: &StepStateParams,
-    rec_generic_dep: &GenericDep,
+    stored_dependency_e: XvcEntity,
+) -> Result<Diff<XvcDependency>> {
+    let stored = cmp_params
+        .step_dependencies
+        .get(&stored_dependency_e)
+        .ok_or(anyhow!(
+            "Stored dependency {:?} not found in step dependencies",
+            stored_dependency_e
+        ))?;
+
+    let diff = match stored {
+        // Step dependencies are handled differently
+        XvcDependency::Step(_) => Diff::Skipped,
+        XvcDependency::Generic(generic) => {
+            diff_of_dep(thorough_compare_generic(cmp_params, &generic)?)
+        }
+        XvcDependency::File(file_dep) => diff_of_dep(thorough_compare_file(cmp_params, &file_dep)?),
+        XvcDependency::Glob(glob_dep) => diff_of_dep(thorough_compare_glob(cmp_params, &glob_dep)?),
+        XvcDependency::UrlDigest(url_dep) => diff_of_dep(thorough_compare_url(&url_dep)?),
+        XvcDependency::Param(param_dep) => diff_of_dep(thorough_compare_param(&param_dep)?),
+        XvcDependency::Regex(regex_dep) => diff_of_dep(thorough_compare_regex(&regex_dep)?),
+        XvcDependency::Lines(lines_dep) => diff_of_dep(thorough_compare_lines(&lines_dep)?),
+        XvcDependency::GlobDigest(dep) => {
+            diff_of_dep(thorough_compare_glob_digest(cmp_params, &dep)?)
+        }
+        XvcDependency::RegexDigest(dep) => {
+            diff_of_dep(thorough_compare_regex_digest(cmp_params, &dep)?)
+        }
+        XvcDependency::LinesDigest(dep) => {
+            diff_of_dep(thorough_compare_lines_digest(cmp_params, &dep)?)
+        }
+    };
+
+    Ok(diff)
+}
+
+/// Runs the command and compares the output with the stored dependency
+fn thorough_compare_generic(
+    cmp_params: &StepStateParams,
+    record: &GenericDep,
 ) -> Result<Diff<GenericDep>> {
-    let actual = GenericDep::new(rec_generic_dep.generic_command.clone());
-    Ok(GenericDep::diff(Some(rec_generic_dep), Some(&actual)))
+    let actual = GenericDep::new(record.generic_command.clone());
+    Ok(GenericDep::diff(Some(record), Some(&actual)))
 }
 
 /// Compares a dependency path with the actual metadata and content digest found on disk
-fn compare_deps_file(cmp_params: &StepStateParams, record: &FileDep) -> Result<Diff<FileDep>> {
+fn thorough_compare_file(cmp_params: &StepStateParams, record: &FileDep) -> Result<Diff<FileDep>> {
     let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?);
 
     Ok(FileDep::diff(Some(record), Some(&actual)))
 }
 
-fn compare_deps_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> {
+fn thorough_compare_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> {
     let actual = UrlDigestDep::new(record.url.clone()).update_headers()?;
     Ok(UrlDigestDep::diff(Some(record), Some(&actual)))
 }
 
-fn compare_deps_param(record: &ParamDep) -> Result<Diff<ParamDep>> {
+fn thorough_compare_param(record: &ParamDep) -> Result<Diff<ParamDep>> {
     let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?;
 
     Ok(ParamDep::diff(Some(record), Some(&actual)))
 }
 
-fn compare_deps_regex(record: &RegexDep) -> Result<Diff<RegexDep>> {
+fn thorough_compare_regex(record: &RegexDep) -> Result<Diff<RegexDep>> {
     let actual = RegexDep::new(record.path.clone(), record.regex.clone());
 
     Ok(RegexDep::diff(Some(record), Some(&actual)))
 }
 
-fn compare_deps_lines(record: &LinesDep) -> Result<Diff<LinesDep>> {
+fn thorough_compare_lines(record: &LinesDep) -> Result<Diff<LinesDep>> {
     let actual = LinesDep::new(record.path.clone(), record.begin, record.end);
     Ok(LinesDep::diff(Some(record), Some(&actual)))
 }
 
 /// Compares two globs, one stored and one current.
-fn compare_deps_glob(cmp_params: &StepStateParams, record: &GlobDep) -> Result<Diff<GlobDep>> {
+fn thorough_compare_glob(cmp_params: &StepStateParams, record: &GlobDep) -> Result<Diff<GlobDep>> {
     let mut actual = GlobDep::from_pmm(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
@@ -291,7 +298,7 @@ fn compare_deps_glob(cmp_params: &StepStateParams, record: &GlobDep) -> Result<D
     Ok(GlobDep::diff(Some(record), Some(&actual)))
 }
 
-fn compare_deps_glob_digest(
+fn thorough_compare_glob_digest(
     cmp_params: &StepStateParams,
     record: &GlobDigestDep,
 ) -> Result<Diff<GlobDigestDep>> {
@@ -312,7 +319,7 @@ fn compare_deps_glob_digest(
     }
 }
 
-fn compare_deps_regex_digest(
+fn thorough_compare_regex_digest(
     cmp_params: &StepStateParams,
     record: &RegexDigestDep,
 ) -> Result<Diff<RegexDigestDep>> {
@@ -332,7 +339,7 @@ fn compare_deps_regex_digest(
     }
 }
 
-fn compare_deps_lines_digest(
+fn thorough_compare_lines_digest(
     cmp_params: &StepStateParams,
     record: &LinesDigestDep,
 ) -> Result<Diff<LinesDigestDep>> {
@@ -353,6 +360,129 @@ fn compare_deps_lines_digest(
     }
 }
 
+pub fn superficial_compare_dependency(
+    cmp_params: &StepStateParams,
+    stored_dependency_e: XvcEntity,
+) -> Result<Diff<XvcDependency>> {
+    let stored = cmp_params
+        .step_dependencies
+        .get(&stored_dependency_e)
+        .ok_or(anyhow!(
+            "Stored dependency {:?} not found in step dependencies",
+            stored_dependency_e
+        ))?;
+
+    let diff = match stored {
+        // Step dependencies are handled differently
+        XvcDependency::Step(_) => Diff::Skipped,
+        XvcDependency::Generic(generic) => {
+            diff_of_dep(superficial_compare_generic(cmp_params, generic)?)
+        }
+        XvcDependency::File(file_dep) => {
+            diff_of_dep(superficial_compare_file(cmp_params, file_dep)?)
+        }
+        XvcDependency::Glob(glob_dep) => {
+            diff_of_dep(superficial_compare_glob(cmp_params, glob_dep)?)
+        }
+        XvcDependency::UrlDigest(url_dep) => diff_of_dep(superficial_compare_url(url_dep)?),
+        XvcDependency::Param(param_dep) => diff_of_dep(superficial_compare_param(param_dep)?),
+        XvcDependency::Regex(regex_dep) => diff_of_dep(superficial_compare_regex(regex_dep)?),
+        XvcDependency::Lines(lines_dep) => diff_of_dep(superficial_compare_lines(lines_dep)?),
+        XvcDependency::GlobDigest(dep) => {
+            diff_of_dep(superficial_compare_glob_digest(cmp_params, dep)?)
+        }
+        XvcDependency::RegexDigest(dep) => {
+            diff_of_dep(superficial_compare_regex_digest(cmp_params, dep)?)
+        }
+        XvcDependency::LinesDigest(dep) => {
+            diff_of_dep(superficial_compare_lines_digest(cmp_params, dep)?)
+        }
+    };
+
+    Ok(diff)
+}
+
+/// Runs the command and compares the output with the stored dependency
+fn superficial_compare_generic(
+    cmp_params: &StepStateParams,
+    record: &GenericDep,
+) -> Result<Diff<GenericDep>> {
+    let actual = GenericDep::new(record.generic_command.clone());
+    Ok(GenericDep::diff_superficial(record, &actual))
+}
+
+/// Compares a dependency path with the actual metadata and content digest found on disk
+fn superficial_compare_file(
+    cmp_params: &StepStateParams,
+    record: &FileDep,
+) -> Result<Diff<FileDep>> {
+    let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?);
+    Ok(FileDep::diff_superficial(record, &actual))
+}
+
+fn superficial_compare_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> {
+    let actual = UrlDigestDep::new(record.url.clone()).update_headers()?;
+    Ok(UrlDigestDep::diff_superficial(record, &actual))
+}
+
+fn superficial_compare_param(record: &ParamDep) -> Result<Diff<ParamDep>> {
+    let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?;
+    Ok(ParamDep::diff_superficial(record, &actual))
+}
+
+fn superficial_compare_regex(record: &RegexDep) -> Result<Diff<RegexDep>> {
+    let actual = RegexDep::new(record.path.clone(), record.regex.clone());
+    Ok(RegexDep::diff_superficial(record, &actual))
+}
+
+fn superficial_compare_lines(record: &LinesDep) -> Result<Diff<LinesDep>> {
+    let actual = LinesDep::new(record.path.clone(), record.begin, record.end);
+    Ok(LinesDep::diff_superficial(record, &actual))
+}
+
+/// Compares two globs, one stored and one current.
+fn superficial_compare_glob(
+    cmp_params: &StepStateParams,
+    record: &GlobDep,
+) -> Result<Diff<GlobDep>> {
+    let mut actual = GlobDep::from_pmm(
+        cmp_params.xvc_root,
+        cmp_params.pipeline_rundir,
+        record.glob.clone(),
+        cmp_params.pmm.read().as_ref()?,
+    )?
+    .update_changed_paths_digests(record, cmp_params.xvc_root, cmp_params.algorithm)?;
+
+    Ok(GlobDep::diff_superficial(record, &actual))
+}
+
+fn superficial_compare_glob_digest(
+    cmp_params: &StepStateParams,
+    record: &GlobDigestDep,
+) -> Result<Diff<GlobDigestDep>> {
+    let actual = GlobDigestDep::new(record.glob.clone())
+        .update_collection_digests(cmp_params.pmm.read().as_ref()?)?;
+    Ok(GlobDigestDep::diff_superficial(record, &actual))
+}
+
+fn superficial_compare_regex_digest(
+    cmp_params: &StepStateParams,
+    record: &RegexDigestDep,
+) -> Result<Diff<RegexDigestDep>> {
+    let actual = RegexDigestDep::new(record.path.clone(), record.regex.clone())
+        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+    Ok(RegexDigestDep::diff_superficial(record, &actual))
+}
+
+fn superficial_compare_lines_digest(
+    cmp_params: &StepStateParams,
+    record: &LinesDigestDep,
+) -> Result<Diff<LinesDigestDep>> {
+    let actual = LinesDigestDep::new(record.path.clone(), record.begin, record.end)
+        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+
+    Ok(LinesDigestDep::diff_superficial(record, &actual))
+}
 fn diff_of_dep<T>(dep: Diff<T>) -> Diff<XvcDependency>
 where
     T: Storable + Into<XvcDependency>,

@@ -88,17 +88,6 @@ fn test_pipeline() -> Result<()> {
         "dependency",
         "-s",
         "step1",
-        "--directory",
-        "data/images/test/",
-    ])?;
-
-    x(&[
-        "-n",
-        "pipeline-2",
-        "step",
-        "dependency",
-        "-s",
-        "step1",
         "--param",
         "params.yaml::model.conv_units",
     ])?;
