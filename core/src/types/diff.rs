@@ -327,6 +327,7 @@ where
 
 /// Used to find out if record and actual are different for type T.
 pub trait Diffable {
+    /// The type of the entity to compare.
     type Item: Storable;
 
     /// ⚠️ Usually you must update actual's metadata and timestamp before calling this.

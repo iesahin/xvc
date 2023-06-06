@@ -102,7 +102,7 @@ state_machine! {
 
 
         DependencyStepsFinishedBrokenIgnored {
-            WaitingDependencySteps => CheckingMissingDependencies
+            WaitingDependencySteps => CheckingOutputs
         }
 
 
@@ -110,99 +110,82 @@ state_machine! {
             WaitingDependencySteps => WaitingDependencySteps
         }
 
-
         DependencyStepsFinishedSuccessfully {
-            WaitingDependencySteps => CheckingMissingDependencies
+            WaitingDependencySteps => CheckingOutputs
         }
-
 
         DependencyStepsFinishedBroken {
             WaitingDependencySteps => Broken
         }
 
+        OutputsIgnored {
+            CheckingOutputs => CheckingSuperficialDiffs
+        }
 
-        MissingDependenciesIgnored {
-            CheckingMissingDependencies => CheckingMissingOutputs
+        CheckedOutputs {
+            CheckingOutputs => CheckingSuperficialDiffs
+        }
+
+        SuperficialDiffsIgnored {
+           CheckingSuperficialDiffs => CheckingThoroughDiffs
+        }
+
+        SuperficialDiffsNotChanged {
+           CheckingSuperficialDiffs => ComparingDiffsAndOutputs
+        }
+
+        SuperficialDiffsChanged {
+           CheckingSuperficialDiffs => CheckingThoroughDiffs
         }
 
         HasMissingDependencies {
-            CheckingMissingDependencies => Broken
+            CheckingSuperficialDiffs => Broken
         }
 
-        NoMissingDependencies {
-            CheckingMissingDependencies => CheckingMissingOutputs
-        }
-
-        MissingOutputsIgnored {
-            CheckingMissingOutputs => CheckingSuperficialDiffs
-        }
-
-        HasMissingOutputs {
-            CheckingMissingOutputs => CheckingSuperficialDiffs
-        }
-
-        HasNoMissingOutputs {
-            CheckingMissingOutputs => CheckingSuperficialDiffs
-        }
-
-            SuperficialDiffsIgnored {
-                CheckingSuperficialDiffs => CheckingThoroughDiffs
-            }
-
-            SuperficialDiffsNotChanged {
-                CheckingSuperficialDiffs => NoNeedToRun
-            }
-
-
-            SuperficialDiffsChanged {
-                 CheckingSuperficialDiffs => CheckingThoroughDiffs
-             }
-//     CheckingThoroughDiffs --> NoNeedToRun: ThoroughDiffsNotChanged
         ThoroughDiffsNotChanged {
-            CheckingThoroughDiffs => NoNeedToRun
+            CheckingThoroughDiffs => ComparingDiffsAndOutputs
         }
 
-//     CheckingThoroughDiffs --> WaitingToRun: ThoroughDiffsChanged
         ThoroughDiffsChanged {
-            CheckingThoroughDiffs => WaitingToRun
+            CheckingThoroughDiffs => ComparingDiffsAndOutputs
         }
-//     NoNeedToRun --> Done: CompletedWithoutRunningStep
+
+        DiffsHasChanged {
+            ComparingDiffsAndOutputs => WaitingToRun
+        }
+
+        DiffsHasNotChanged {
+            ComparingDiffsAndOutputs => NoNeedToRun
+        }
+
         CompletedWithoutRunningStep {
             NoNeedToRun => Done
         }
-
-//     WaitingToRun --> WaitingToRun: ProcessPoolFull
 
         ProcessPoolFull {
             WaitingToRun => WaitingToRun
         }
 
-//     WaitingToRun --> Running: StartProcess
         StartProcess {
             WaitingToRun => Running
         }
 
-//     WaitingToRun --> Broken: CannotStartProcess
         CannotStartProcess {
             WaitingToRun => Broken
         }
 
-//     Running --> Running: WaitProcess
         WaitProcess {
             Running => Running
         }
 
-//     Running --> Broken: ProcessTimeout
         ProcessTimeout {
             Running => Broken
         }
 
-//     Running --> Done: ProcessCompletedSuccessfully
         ProcessCompletedSuccessfully {
             Running => Done
         }
 
-//     Running --> Broken: ProcessReturnedNonZero
         ProcessReturnedNonZero {
             Running => Broken
         }
