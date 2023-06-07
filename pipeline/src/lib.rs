@@ -309,7 +309,7 @@ pub enum StepSubCommand {
         /// Otherwise, you can use the line-digest option to save disk space.
         #[arg(
             long = "line_digest",
-            aliases = &["line-d", "line-digest", "line_d"],
+            aliases = &["line-d", "line-digest", "lines-digest", "lines_digest", "line_d"],
         )]
         line_digests: Option<Vec<String>>,
     },
