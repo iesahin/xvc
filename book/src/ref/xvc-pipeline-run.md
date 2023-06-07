@@ -60,9 +60,8 @@ You can run the default pipeline without specifying its name.
 
 ```console
 $ xvc pipeline run
-[OUT] hello
-
-[OUT] [EXIT] Successfully
+[OUT] [hello] hello
+ 
 
 ```
 
@@ -86,8 +85,7 @@ $ xvc pipeline --name my-pipeline step new --step-name my-hello --command "echo 
 
 ```console
 $ xvc pipeline run --name my-pipeline
-[OUT] hello from my-pipeline
-
-[OUT] [EXIT] Successfully
+[OUT] [my-hello] hello from my-pipeline
+ 
 
 ```
