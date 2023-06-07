@@ -261,7 +261,7 @@ pub enum StepSubCommand {
         /// but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]}
         /// or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest
         /// option to save disk space.
-        #[arg(long = "glob_digest")]
+        #[arg(long = "glob_digest", aliases=&["glob-digest", "glob-d", "glob_d"])]
         glob_digests: Option<Vec<String>>,
 
         /// Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times.
@@ -285,7 +285,7 @@ pub enum StepSubCommand {
         /// that can be used in the step command. This option only keeps track of the matched lines' digest.
         #[arg(
             long = "regex_digest",
-            aliases = &["regex_d"],
+            aliases = &["regex_d", "regex-digest", "regexp_digest", "regexp_d"],
         )]
         regexp_digests: Option<Vec<String>>,
 
@@ -308,8 +308,8 @@ pub enum StepSubCommand {
         /// When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option.
         /// Otherwise, you can use the line-digest option to save disk space.
         #[arg(
-            long = "line-digest",
-            aliases = &["line-d"],
+            long = "line_digest",
+            aliases = &["line-d", "line-digest", "line_d"],
         )]
         line_digests: Option<Vec<String>>,
     },
