@@ -46,8 +46,9 @@ Options:
 Before calling any commands that use this storage, you must set the following environment variables.
 
 - `WASABI_ACCESS_KEY_ID` or `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>`: The access key of the Wasabi
-  account. The second form is used when you have multiple storages with different access keys.
-- `WASABI_SECRET_ACCESS_KEY` or `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>`: The secret key of the Wasabi account. The second form is used when you have multiple storages with different access keys.
+  account. The second form is used when you have multiple storage accounts with different access keys.
+- `WASABI_SECRET_ACCESS_KEY` or `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>`: The secret key of the Wasabi account.
+  The second form is used when you have multiple storage accounts with different access keys.
 
 The command works only in Xvc repositories.
 
