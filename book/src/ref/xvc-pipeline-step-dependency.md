@@ -79,13 +79,13 @@ Begin by adding a new step.
 ```console
 $ xvc pipeline step new --step-name file-dependency --command "echo data.txt has changed"
 ```
-#
-# Add a file dependency to the step.
-#
-# ```console
-# $ xvc pipeline step dependency --step-name file-dependency --file data.txt
-# ```
-#
+
+Add a file dependency to the step.
+
+```console
+$ xvc pipeline step dependency --step-name file-dependency --file data.txt
+```
+
 # When you run the command, it will print `data.txt has changed` if the file `data.txt` has changed.
 #
 # ```console
