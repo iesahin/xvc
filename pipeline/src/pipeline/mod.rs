@@ -455,10 +455,12 @@ pub fn the_grand_pipeline_loop(
         .expect("Cannot load store");
 
     // Create a thread for each of the steps
-    // We create these in topological order because the dependents need to subscribe to their dependencies' channels.
+    // We create these in reverse topological order.
+    // Dependent steps block on dependency events, so we need to create them first.
     let done_successfully: Result<bool> = thread::scope(|s| {
         let step_thread_store: HStore<ScopedJoinHandle<_>> = sorted_steps
             .iter()
+            .rev()
             .map(|step_e| {
                 (
                     *step_e,
@@ -601,10 +603,20 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         output_diffs: Arc::new(RwLock::new(HStore::new())),
     };
 
+    // If there are dependencies we would block on
+    let wait_dependency_state_change = || {
+        !dependency_states
+            .read()
+            .unwrap()
+            .iter()
+            .all(|(_, s)| matches!(s, XvcStepState::Done(_) | XvcStepState::Broken(_)))
+    };
+
     loop {
         // If we don't have dependencies, we don't block. We begin processing right away.
-        if dependencies.len() > 0 {
+        if dependencies.len() > 0 && wait_dependency_state_change() {
             // Block until a receive operation becomes ready and try executing it.
+            watch!(other_steps_select);
             let index = other_steps_select.ready();
             let res = other_steps_receivers[index].1.try_recv()?;
             let entity = other_steps_receivers[index].0;
@@ -620,6 +632,8 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
                 }
             }
         }
+        watch!(params);
+        watch!(&step_state);
 
         let (r_next_state, next_params) = match &step_state {
             XvcStepState::Begin(s) => match s {
@@ -942,7 +956,6 @@ fn s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed<'a>(
     } else {
         Ok((s.diffs_has_not_changed(), params))
     }
-   
 }
 
 fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
@@ -955,22 +968,21 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
     );
     let mut changed = false;
     {
-
-    let output_diffs = params.output_diffs.read()?;
-    if output_diffs
-        .iter()
-        .any(|(_, diff)| matches!(diff, Diff::ActualMissing { .. }))
-    {
-        // TODO: Update MISSING_OUTPUTS environment variable
-        info!(params.output_snd, "[{}] Missing Outputs", params.step.name);
-        changed = true;
-    } else {
-        info!(
-            params.output_snd,
-            "[{}] No missing Outputs and no changed dependencies", params.step.name
-        );
-        changed = false;
-    }
+        let output_diffs = params.output_diffs.read()?;
+        if output_diffs
+            .iter()
+            .any(|(_, diff)| matches!(diff, Diff::ActualMissing { .. }))
+        {
+            // TODO: Update MISSING_OUTPUTS environment variable
+            info!(params.output_snd, "[{}] Missing Outputs", params.step.name);
+            changed = true;
+        } else {
+            info!(
+                params.output_snd,
+                "[{}] No missing Outputs and no changed dependencies", params.step.name
+            );
+            changed = false;
+        }
     }
     if changed {
         Ok((s.diffs_has_changed(), params))
