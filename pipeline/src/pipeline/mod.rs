@@ -530,7 +530,7 @@ pub fn the_grand_pipeline_loop(
     if let Ok(true) = done_successfully {
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcDependency>| {
             dependency_diffs.read().as_deref().and_then(|diffs| {
-                update_with_actual(store, diffs, true, true)?;
+                update_with_actual(store, diffs, true, true);
                 Ok(())
             });
 
@@ -539,7 +539,7 @@ pub fn the_grand_pipeline_loop(
 
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcOutput>| {
             output_diffs.read().as_deref().and_then(|output_diffs| {
-                update_with_actual(store, output_diffs, true, true)?;
+                update_with_actual(store, output_diffs, true, true);
                 Ok(())
             })?;
             Ok(())
