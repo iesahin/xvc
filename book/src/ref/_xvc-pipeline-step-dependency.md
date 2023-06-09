@@ -30,12 +30,12 @@ Options:
 
       --glob <GLOBS>
           Add a glob dependency to the step. Can be used multiple times.
-          
+
           The difference between this and the glob-digest option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --glob_digest <GLOB_DIGESTS>
           Add a glob digest dependency to the step. Can be used multiple times.
-          
+
           The difference between this and the glob option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --param <PARAMS>
@@ -46,17 +46,17 @@ Options:
 
       --regex_digest <REGEXP_DIGESTS>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
-          
+
           The difference between this and the regex option is that the regex option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest.
 
       --line <LINES>
           Add a line dependency in the form filename.txt::123-234
-          
+
           The difference between this and the line-digest option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
       --line_digest <LINE_DIGESTS>
           Add a line digest dependency in the form filename.txt::123-234
-          
+
           The difference between this and the line option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
   -h, --help
@@ -86,13 +86,13 @@ Add a file dependency to the step.
 $ xvc pipeline step dependency --step-name file-dependency --file data.txt
 ```
 
-# When you run the command, it will print `data.txt has changed` if the file `data.txt` has changed.
-#
-# ```console
-# $ xvc pipeline run
-#
-# ```
-#
+When you run the command, it will print `data.txt has changed` if the file `data.txt` has changed.
+
+```console
+$ xvc pipeline run
+
+```
+
 # You can add multiple dependencies to a step with multiple invocations.
 #
 # ```console
