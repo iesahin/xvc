@@ -89,7 +89,11 @@ $ xvc pipeline step dependency --step-name file-dependency --file data.txt
 When you run the command, it will print `data.txt has changed` if the file `data.txt` has changed.
 
 ```console
-$ xvc pipeline run
+$ xvc --debug pipeline run
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: Both record and actual are None', pipeline/src/pipeline/deps/file.rs:83:29
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread '<unnamed>' panicked at 'a scoped thread panicked', pipeline/src/pipeline/mod.rs:460:43
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
 
 ```
 
