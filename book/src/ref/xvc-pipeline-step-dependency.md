@@ -113,16 +113,18 @@ $ xvc pipeline run
 By default, they are not run if none of the dependencies have changed.
 
 ```console
-$ xvc pipeline run
+$ xvc --debug pipeline run
+[OUT] [file-dependency] data.txt has changed
+
 
 ```
 
 However, if you want to run the step even if none of the dependencies have changed, you can set the `--when` option to `always`.
-#
-# ```console
-# $ xvc pipeline step update --step-name file-dependency --when always
-# ```
-#
+
+```console
+$ xvc pipeline step update --step-name file-dependency --when always
+```
+
 # Now the step will run even if none of the dependencies have changed.
 #
 # ```console
