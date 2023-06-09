@@ -492,8 +492,8 @@ pub fn the_grand_pipeline_loop(
                             recorded_dependencies: &recorded_dependencies,
                             recorded_outputs: &recorded_outputs,
                             recorded_xvc_digests: &recorded_xvc_digests,
-                            dependency_diffs,
-                            output_diffs,
+                            dependency_diffs: dependency_diffs.clone(),
+                            output_diffs: output_diffs.clone(),
                         };
                         step_state_handler(*step_e, step_thread_params)
                     }),
