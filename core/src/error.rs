@@ -9,6 +9,7 @@ use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
 use std::path::PathBuf;
+use std::sync::PoisonError;
 use thiserror::Error as ThisError;
 
 #[allow(missing_docs)]
@@ -143,6 +144,9 @@ pub enum Error {
 
     #[error("Cannot find parent path")]
     CannotFindParentPath { path: PathBuf },
+
+    #[error("Poison Error: {cause:?}")]
+    PoisonError { cause: String },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
@@ -161,6 +165,22 @@ impl From<Box<dyn std::any::Any + Send>> for Error {
     fn from(e: Box<dyn std::any::Any + Send>) -> Self {
         Error::GeneralError {
             msg: format!("{:?}", e),
+        }
+    }
+}
+
+impl<T: Debug> From<PoisonError<T>> for Error {
+    fn from(e: PoisonError<T>) -> Self {
+        Error::PoisonError {
+            cause: e.to_string(),
+        }
+    }
+}
+
+impl<T: Debug> From<&PoisonError<T>> for Error {
+    fn from(e: &PoisonError<T>) -> Self {
+        Error::PoisonError {
+            cause: e.to_string(),
         }
     }
 }

@@ -138,7 +138,7 @@ pub fn diff_store<T: Storable>(
 /// See [apply_diff] for a version that doesn't modify the original store.
 pub fn update_with_actual<T: Storable>(
     records: &mut XvcStore<T>,
-    diffs: DiffStore<T>,
+    diffs: &DiffStore<T>,
     add_new: bool,
     remove_missing: bool,
 ) -> Result<()> {
