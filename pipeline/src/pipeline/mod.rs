@@ -43,9 +43,9 @@ use std::time::{Duration, Instant, SystemTime};
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, AttributeDigest, ContentDigest, Diff, HashAlgorithm,
-    PathCollectionDigest, TextOrBinary, XvcDigests, XvcFileType, XvcMetadata, XvcPath,
-    XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, apply_diff, update_with_actual, AttributeDigest, ContentDigest, Diff,
+    HashAlgorithm, PathCollectionDigest, TextOrBinary, XvcDigests, XvcFileType, XvcMetadata,
+    XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
@@ -233,6 +233,10 @@ struct StepThreadParams<'a> {
     recorded_dependencies: &'a R1NStore<XvcStep, XvcDependency>,
     recorded_outputs: &'a R1NStore<XvcStep, XvcOutput>,
     recorded_xvc_digests: &'a R1NStore<XvcStep, XvcDigests>,
+
+    // TODO: We can convert these to HStore<Arc<RwLock<...>>>
+    dependency_diffs: Arc<RwLock<HStore<Diff<XvcDependency>>>>,
+    output_diffs: Arc<RwLock<HStore<Diff<XvcOutput>>>>,
 }
 
 type XvcDependencyDiff = Diff<XvcDigests>;
@@ -454,6 +458,9 @@ pub fn the_grand_pipeline_loop(
         .load_r1nstore::<XvcStep, XvcDigests>()
         .expect("Cannot load store");
 
+    let dependency_diffs = Arc::new(RwLock::new(HStore::new()));
+    let output_diffs = Arc::new(RwLock::new(HStore::new()));
+
     // Create a thread for each of the steps
     // We create these in reverse topological order.
     // Dependent steps block on dependency events, so we need to create them first.
@@ -485,6 +492,8 @@ pub fn the_grand_pipeline_loop(
                             recorded_dependencies: &recorded_dependencies,
                             recorded_outputs: &recorded_outputs,
                             recorded_xvc_digests: &recorded_xvc_digests,
+                            dependency_diffs,
+                            output_diffs,
                         };
                         step_state_handler(*step_e, step_thread_params)
                     }),
@@ -519,10 +528,15 @@ pub fn the_grand_pipeline_loop(
     });
     // We only save the stores if the pipeline was run successfully
     if let Ok(true) = done_successfully {
-        xvc_root.save_store(&updated_xvc_path_store)?;
-        xvc_root.save_store(&updated_xvc_metadata_store)?;
-        xvc_root.save_store(&updated_xvc_digests_store)?;
-        xvc_root.save_store(&updated_dependencies)?;
+        xvc_root.with_store_mut(|store: &mut XvcStore<XvcDependency>| {
+            update_with_actual(store, dependency_diffs, true, true)?;
+            Ok(())
+        })?;
+
+        xvc_root.with_store_mut(|store: &mut XvcStore<XvcOutput>| {
+            update_with_actual(store, output_diffs, true, true)?;
+            Ok(())
+        })?;
     }
     Ok(())
 }
@@ -599,8 +613,8 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         step_dependencies: &step_dependencies,
         step_outputs: &step_outputs,
         step_xvc_digests: &step_xvc_digests,
-        dependency_diffs: Arc::new(RwLock::new(HStore::new())),
-        output_diffs: Arc::new(RwLock::new(HStore::new())),
+        dependency_diffs: params.dependency_diffs,
+        output_diffs: params.output_diffs,
     };
 
     // If there are dependencies we would block on
