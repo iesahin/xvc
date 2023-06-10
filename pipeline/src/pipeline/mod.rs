@@ -543,7 +543,7 @@ pub fn the_grand_pipeline_loop(
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcOutput>| {
             output_diffs.read().as_deref().and_then(|output_diffs| {
                 update_with_actual(store, output_diffs, true, true);
-                watch!(diffs);
+                watch!(output_diffs);
                 watch!(store);
                 Ok(())
             })?;
