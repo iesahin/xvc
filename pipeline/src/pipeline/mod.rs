@@ -526,11 +526,14 @@ pub fn the_grand_pipeline_loop(
             return Ok(false);
         }
     });
+    watch!(done_successfully)
     // We only save the stores if the pipeline was run successfully
     if let Ok(true) = done_successfully {
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcDependency>| {
             dependency_diffs.read().as_deref().and_then(|diffs| {
                 update_with_actual(store, diffs, true, true);
+                watch!(diffs);
+                watch!(store);
                 Ok(())
             });
 
@@ -540,6 +543,8 @@ pub fn the_grand_pipeline_loop(
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcOutput>| {
             output_diffs.read().as_deref().and_then(|output_diffs| {
                 update_with_actual(store, output_diffs, true, true);
+                watch!(diffs);
+                watch!(store);
                 Ok(())
             })?;
             Ok(())
