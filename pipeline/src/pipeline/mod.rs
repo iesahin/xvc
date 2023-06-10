@@ -501,7 +501,8 @@ pub fn the_grand_pipeline_loop(
             .collect();
 
         // Join threads in the order we created
-        step_thread_store.into_iter().for_each(|(_, jh)| {
+        step_thread_store.into_iter().for_each(|(step_e, jh)| {
+            watch!((step_e, &jh));
             if let Err(e) = jh.join() {
                 error!(output_snd, "Error in step thread: {:?}", e);
             }
