@@ -467,7 +467,6 @@ pub fn the_grand_pipeline_loop(
     let done_successfully: Result<bool> = thread::scope(|s| {
         let step_thread_store: HStore<ScopedJoinHandle<_>> = sorted_steps
             .iter()
-            .rev()
             .map(|step_e| {
                 (
                     *step_e,
@@ -500,21 +499,13 @@ pub fn the_grand_pipeline_loop(
                 )
             })
             .collect();
-        // if any of the states are Broken, we leave the loop
-        let broken_steps = step_states.iter().filter_map(|(step_e, step_s)| {
-            if matches!(step_s, XvcStepState::Broken(_)) {
-                Some(step_e)
-            } else {
-                None
+
+        // Join threads in the order we created
+        step_thread_store.into_iter().for_each(|(_, jh)| {
+            if let Err(e) = jh.join() {
+                error!(output_snd, "Error in step thread: {:?}", e);
             }
         });
-
-        for step_e in broken_steps {
-            warn!(
-                "Broken Step: {:?} ({}) with Command {:?}",
-                pipeline_steps[step_e], step_e, step_commands[step_e]
-            );
-        }
 
         // if all of the steps are done, we can end
         if step_states
