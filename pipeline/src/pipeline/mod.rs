@@ -500,6 +500,8 @@ pub fn the_grand_pipeline_loop(
             })
             .collect();
 
+        watch!(&step_thread_store);
+
         // Join threads in the order we created
         step_thread_store.into_iter().for_each(|(step_e, jh)| {
             watch!((step_e, &jh));
@@ -508,6 +510,7 @@ pub fn the_grand_pipeline_loop(
             }
         });
 
+        watch!(step_states);
         // if all of the steps are done, we can end
         if step_states
             .iter()
