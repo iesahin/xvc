@@ -83,7 +83,6 @@ Send files to this storage.
 
 ```console
 $ xvc file send dir-0001 --to backup
-[ERROR] Got HTTP 499 with content '<?xml version="1.0" encoding="UTF-8"?><Error><Code>Unexpected</Code><Message>Client Disconnect</Message></Error>'
 
 ```
 
@@ -112,7 +111,6 @@ Then get back them from the storage.
 
 ```console
 $ xvc file bring --from backup dir-0001
-[ERROR] Got HTTP 404 with content '<?xml version="1.0" encoding="UTF-8"?><Error><Code>NoSuchKey</Code><Message>The specified key does not exist.</Message></Error>'
 
 $ tree dir-0001
 dir-0001
