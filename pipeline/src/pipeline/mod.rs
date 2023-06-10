@@ -526,7 +526,7 @@ pub fn the_grand_pipeline_loop(
             return Ok(false);
         }
     });
-    watch!(done_successfully)
+    watch!(done_successfully);
     // We only save the stores if the pipeline was run successfully
     if let Ok(true) = done_successfully {
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcDependency>| {
