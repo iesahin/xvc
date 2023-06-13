@@ -167,8 +167,15 @@ pub enum Error {
 
     #[error("Unsupported param file format: {path:?} ")]
     UnsupportedParamFileFormat { path: OsString },
+
     #[error("Crossbeam Send Error for Type: {t:?} {cause:?}")]
     CrossbeamSendError { t: String, cause: String },
+    #[error("Crossbeam Recv Error: {source}")]
+    CrossbeamRecvError {
+        #[from]
+        source: crossbeam_channel::RecvError,
+    },
+
     #[error("Cannot find Pipeline: {name}")]
     CannotFindPipeline { name: String },
 
@@ -183,8 +190,6 @@ pub enum Error {
         #[from]
         source: crossbeam_channel::TryRecvError,
     },
-
-
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
