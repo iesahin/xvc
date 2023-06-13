@@ -38,7 +38,7 @@ fn link_to_docs() -> Result<()> {
 
     let doc_dir = Path::new(DOC_TEST_DIR);
 
-    let name_filter = Regex::new(r".*pipeline.*\.md$").unwrap();
+    let name_filter = Regex::new(r".*pipeline-step-dependency.*\.md$").unwrap();
 
     for dir in book_dirs {
         let test_collection_dir = test_collections_dir.join(dir);
