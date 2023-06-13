@@ -446,17 +446,17 @@ pub fn the_grand_pipeline_loop(
     let text_files = xvc_root.load_store::<TextOrBinary>()?;
     let algorithm = HashAlgorithm::from_conf(config);
 
-    let state_channels = sorted_steps
+    let state_channels: HStore<(Sender<_>, Receiver<_>)> = sorted_steps
         .iter()
-        .map(|step_e| (*step_e, bounded(CHANNEL_CAPACITY)))
+        .map(|step_e| (*step_e, bounded::<Option<XvcStepState>>(CHANNEL_CAPACITY)))
         .collect();
 
-    let state_senders = state_channels
+    let state_senders: Vec<_> = state_channels
         .iter()
         .map(|(step_e, (s, _))| (*step_e, s.clone()))
         .collect();
 
-    let state_receivers = state_channels
+    let state_receivers: Vec<_> = state_channels
         .iter()
         .map(|(step_e, (_, r))| (*step_e, r.clone()))
         .collect();
@@ -486,9 +486,9 @@ pub fn the_grand_pipeline_loop(
 
         s.spawn(|| {
             step_state_bulletin(
-                state_senders.into_iter().collect(),
+                state_receivers.clone(),
                 step_states.clone(),
-                state_bulletin_sender,
+                state_bulletin_sender.clone(),
             )
         });
 
@@ -503,8 +503,8 @@ pub fn the_grand_pipeline_loop(
                             xvc_root,
                             pipeline_rundir: &pipeline_rundir,
                             step_e: *step_e,
-                            state_sender: state_senders[step_e].clone(),
-                            current_states: step_states,
+                            state_sender: state_channels[step_e].0.clone(),
+                            current_states: step_states.clone(),
                             state_notifier: state_bulletin_receiver,
                             dependency_graph: &dependency_graph,
                             step_timeout: &step_timeout,
@@ -542,6 +542,7 @@ pub fn the_grand_pipeline_loop(
         watch!(step_states);
         // if all of the steps are done, we can end
         if step_states
+            .read()?
             .iter()
             .all(|(_, step_s)| matches!(step_s, XvcStepState::Done(_)))
         {
@@ -631,12 +632,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
             .map(|e| (*e, XvcStepState::begin()))
             .collect(),
     ));
-    let mut other_steps_select = Select::new();
-    other_steps_receivers.iter().for_each(|(_, r)| {
-        other_steps_select.recv(r);
-    });
-
-    let state_notifier = params.state_notifier;
+    let state_notifier = params.state_notifier.clone();
     let step_state_sender = params.state_sender;
     let current_states = params.current_states;
     let mut step_state = XvcStepState::begin();
@@ -675,7 +671,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         step_state_sender.send(Some(step_state.clone()))?;
         // Block on other states changes
         if other_steps.len() > 0 {
-            let some_state = params.state_notifier.recv()?;
+            let some_state = state_notifier.recv()?;
             if let Some((xe, state)) = some_state {
                 if xe == step_e {
                     continue;
