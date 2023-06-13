@@ -7,6 +7,7 @@ use std::{
 
 use anyhow::anyhow;
 use jwalk;
+use regex::Regex;
 use trycmd;
 
 use which;
@@ -37,6 +38,8 @@ fn link_to_docs() -> Result<()> {
 
     let doc_dir = Path::new(DOC_TEST_DIR);
 
+    let name_filter = Regex::new(r".*pipeline.*\.md$").unwrap();
+
     for dir in book_dirs {
         let test_collection_dir = test_collections_dir.join(dir);
 
@@ -47,7 +50,7 @@ fn link_to_docs() -> Result<()> {
             .filter_map(|f| {
                 if let Ok(f) = f {
                     if f.metadata().unwrap().is_file()
-                        && f.path().extension() == Some(OsStr::new("md"))
+                        && name_filter.is_match(f.file_name().to_string_lossy().as_ref())
                     {
                         Some(f.path())
                     } else {
