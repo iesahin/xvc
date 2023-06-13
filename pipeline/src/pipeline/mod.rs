@@ -505,7 +505,7 @@ pub fn the_grand_pipeline_loop(
                             step_e: *step_e,
                             state_sender: state_channels[step_e].0.clone(),
                             current_states: step_states.clone(),
-                            state_notifier: state_bulletin_receiver,
+                            state_notifier: state_bulletin_receiver.clone(),
                             dependency_graph: &dependency_graph,
                             step_timeout: &step_timeout,
                             run_conditions: &run_conditions[step_e],
@@ -605,7 +605,7 @@ fn step_state_bulletin(
         let res = state_senders[index].1.recv()?;
         if let Some(state) = res {
             let step_e = state_senders[index].0;
-            current_states.write()?.insert(step_e, state);
+            current_states.write()?.insert(step_e, state.clone());
             notifier.send(Some((step_e, state)))?;
         } else {
             // Dependency channels are closed due to an error. We're closing too.
@@ -679,7 +679,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
             }
         }
 
-        watch!(params);
+        watch!(&step_params);
 
         let (r_next_state, next_params) = match &step_state {
             XvcStepState::Begin(s) => match s {
