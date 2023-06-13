@@ -219,7 +219,9 @@ struct StepThreadParams<'a> {
     output_snd: &'a XvcOutputSender,
     pipeline_rundir: &'a XvcPath,
     step_e: XvcEntity,
-    state_channels: &'a HStore<(Sender<Option<XvcStepState>>, Receiver<Option<XvcStepState>>)>,
+    state_sender: Sender<Option<XvcStepState>>,
+    state_notifier: Receiver<Option<(XvcEntity, XvcStepState)>>,
+    current_states: Arc<RwLock<HStore<XvcStepState>>>,
     step_commands: &'a XvcStore<XvcStepCommand>,
     steps: &'a HStore<XvcStep>,
     dependency_graph: &'a DependencyGraph,
@@ -403,10 +405,12 @@ pub fn the_grand_pipeline_loop(
         })
         .collect();
 
-    let mut step_states: HStore<XvcStepState> = pipeline_steps
-        .iter()
-        .map(|(step_e, _)| (*step_e, step::XvcStepState::begin()))
-        .collect();
+    let step_states = Arc::new(RwLock::new(
+        pipeline_steps
+            .iter()
+            .map(|(step_e, _)| (*step_e, step::XvcStepState::begin()))
+            .collect(),
+    ));
 
     watch!(step_states);
 
@@ -446,6 +450,17 @@ pub fn the_grand_pipeline_loop(
         .iter()
         .map(|step_e| (*step_e, bounded(CHANNEL_CAPACITY)))
         .collect();
+
+    let state_senders = state_channels
+        .iter()
+        .map(|(step_e, (s, _))| (*step_e, s.clone()))
+        .collect();
+
+    let state_receivers = state_channels
+        .iter()
+        .map(|(step_e, (_, r))| (*step_e, r.clone()))
+        .collect();
+
     let step_timeout = Duration::from_secs(default_step_timeout);
 
     let recorded_dependencies = xvc_root
@@ -461,10 +476,22 @@ pub fn the_grand_pipeline_loop(
     let dependency_diffs = Arc::new(RwLock::new(HStore::new()));
     let output_diffs = Arc::new(RwLock::new(HStore::new()));
 
+    let (state_bulletin_sender, state_bulletin_receiver) =
+        crossbeam_channel::bounded::<Option<(XvcEntity, XvcStepState)>>(CHANNEL_CAPACITY);
     // Create a thread for each of the steps
     // We create these in reverse topological order.
     // Dependent steps block on dependency events, so we need to create them first.
     let done_successfully: Result<bool> = thread::scope(|s| {
+        s.spawn(|| update_pmp(xvc_root, fs_receiver, &mut pmm));
+
+        s.spawn(|| {
+            step_state_bulletin(
+                state_senders.into_iter().collect(),
+                step_states.clone(),
+                state_bulletin_sender,
+            )
+        });
+
         let step_thread_store: HStore<ScopedJoinHandle<_>> = sorted_steps
             .iter()
             .map(|step_e| {
@@ -476,7 +503,9 @@ pub fn the_grand_pipeline_loop(
                             xvc_root,
                             pipeline_rundir: &pipeline_rundir,
                             step_e: *step_e,
-                            state_channels: &state_channels,
+                            state_sender: state_senders[step_e].clone(),
+                            current_states: step_states,
+                            state_notifier: state_bulletin_receiver,
                             dependency_graph: &dependency_graph,
                             step_timeout: &step_timeout,
                             run_conditions: &run_conditions[step_e],
@@ -560,8 +589,30 @@ fn dependencies(
     Ok(dependencies)
 }
 
-type StateTransitionMap<'a> =
-    HashMap<XvcStepState, dyn FnOnce(&XvcStepState, StepStateParams) -> StateTransition<'a>>;
+fn step_state_bulletin(
+    state_senders: Vec<(XvcEntity, Receiver<Option<XvcStepState>>)>,
+    current_states: Arc<RwLock<HStore<XvcStepState>>>,
+    notifier: Sender<Option<(XvcEntity, XvcStepState)>>,
+) -> Result<()> {
+    let mut select = Select::new();
+    for (_, r) in state_senders.iter() {
+        select.recv(r);
+    }
+    loop {
+        watch!(select);
+        let index = select.ready();
+        let res = state_senders[index].1.recv()?;
+        if let Some(state) = res {
+            let step_e = state_senders[index].0;
+            current_states.write()?.insert(step_e, state);
+            notifier.send(Some((step_e, state)))?;
+        } else {
+            // Dependency channels are closed due to an error. We're closing too.
+            notifier.send(None)?;
+            return Err(anyhow!("Dependency channels closed due to an error.").into());
+        }
+    }
+}
 
 fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()> {
     // We check all other steps states in Select.
@@ -571,13 +622,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         .iter()
         .filter_map(|(e, _)| if *e != step_e { Some(*e) } else { None })
         .collect();
-
-    let other_steps_channels = params.state_channels.subset(other_steps.iter().cloned())?;
-    let other_steps_receivers: Vec<(XvcEntity, &Receiver<Option<XvcStepState>>)> =
-        other_steps_channels
-            .iter()
-            .map(|(e, (s, r))| (*e, r))
-            .collect();
 
     let dependencies = dependencies(step_e, &params.dependency_graph)?;
     // We'll update these states internally and check for actions
@@ -592,7 +636,9 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         other_steps_select.recv(r);
     });
 
-    let step_state_sender = params.state_channels.get(&step_e).unwrap().0.clone();
+    let state_notifier = params.state_notifier;
+    let step_state_sender = params.state_sender;
+    let current_states = params.current_states;
     let mut step_state = XvcStepState::begin();
     let step_dependencies = params.recorded_dependencies.children_of(&step_e)?;
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
@@ -601,7 +647,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let step_command = &params.step_commands[&step_e];
     let command_process = Arc::new(RwLock::new(CommandProcess::new(step, step_command)));
 
-    let mut params = StepStateParams {
+    let mut step_params = StepStateParams {
         step_e,
         step,
         dependency_states: dependency_states.clone(),
@@ -624,147 +670,126 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         output_diffs: params.output_diffs,
     };
 
-    // If there are dependencies we would block on
-    let wait_dependency_state_change = || {
-        !dependency_states
-            .read()
-            .unwrap()
-            .iter()
-            .all(|(_, s)| matches!(s, XvcStepState::Done(_) | XvcStepState::Broken(_)))
-    };
-
     loop {
-        // If we don't have dependencies, we don't block. We begin processing right away.
-        if dependencies.len() > 0 && wait_dependency_state_change() {
-            // Block until a receive operation becomes ready and try executing it.
-            watch!(other_steps_select);
-            let index = other_steps_select.ready();
-            let res = other_steps_receivers[index].1.try_recv()?;
-            let entity = other_steps_receivers[index].0;
-            if dependencies.contains(&entity) {
-                if let Some(state) = res {
-                    dependency_states
-                        .write()?
-                        .insert(other_steps_receivers[index].0, state);
-                } else {
-                    // Dependency channels are closed due to an error. We're closing too.
-                    step_state_sender.send(None)?;
-                    return Err(anyhow!("Dependency channels closed due to an error.").into());
+        // Send the state first
+        step_state_sender.send(Some(step_state.clone()))?;
+        // Block on other states changes
+        if other_steps.len() > 0 {
+            let some_state = params.state_notifier.recv()?;
+            if let Some((xe, state)) = some_state {
+                if xe == step_e {
+                    continue;
                 }
             }
         }
+
         watch!(params);
-        watch!(&step_state);
 
         let (r_next_state, next_params) = match &step_state {
             XvcStepState::Begin(s) => match s {
-                BeginState::FromInit => s_begin_f_init(s, params)?,
+                BeginState::FromInit => s_begin_f_init(s, step_params)?,
             },
 
             XvcStepState::NoNeedToRun(s) => match s {
-                NoNeedToRunState::FromRunNever => s_no_need_to_run_f_run_never(s, params)?,
+                NoNeedToRunState::FromRunNever => s_no_need_to_run_f_run_never(s, step_params)?,
                 // s_no_need_to_run_f_superficial_diffs_not_changed(s, params)?
                 NoNeedToRunState::FromDiffsHasNotChanged => {
-                    s_no_need_to_run_f_diffs_not_changed(s, params)?
+                    s_no_need_to_run_f_diffs_not_changed(s, step_params)?
                 }
             },
             XvcStepState::WaitingDependencySteps(s) => match s {
                 WaitingDependencyStepsState::FromDependencyStepsRunning => {
-                    s_waiting_dependency_steps_f_dependency_steps_running(s, params)?
+                    s_waiting_dependency_steps_f_dependency_steps_running(s, step_params)?
                 }
                 WaitingDependencyStepsState::FromRunConditional => {
-                    s_waiting_dependency_steps_f_run_conditional(s, params)?
+                    s_waiting_dependency_steps_f_run_conditional(s, step_params)?
                 }
             },
 
             XvcStepState::CheckingOutputs(s) => match s {
                 CheckingOutputsState::FromDependencyStepsFinishedBrokenIgnored => {
-                    s_checking_outputs_f_dependency_steps_finished_ignored(s, params)?
+                    s_checking_outputs_f_dependency_steps_finished_ignored(s, step_params)?
                 }
                 CheckingOutputsState::FromDependencyStepsFinishedSuccessfully => {
-                    s_checking_outputs_f_dependency_steps_finished_successfully(s, params)?
+                    s_checking_outputs_f_dependency_steps_finished_successfully(s, step_params)?
                 }
             },
             XvcStepState::CheckingSuperficialDiffs(s) => match s {
                 CheckingSuperficialDiffsState::FromOutputsIgnored => {
-                    s_checking_superficial_diffs_f_missing_outputs_ignored(s, params)?
+                    s_checking_superficial_diffs_f_missing_outputs_ignored(s, step_params)?
                 }
                 CheckingSuperficialDiffsState::FromCheckedOutputs => {
-                    s_checking_superficial_diffs(s, params)?
+                    s_checking_superficial_diffs(s, step_params)?
                 }
             },
             XvcStepState::CheckingThoroughDiffs(s) => match s {
                 CheckingThoroughDiffsState::FromSuperficialDiffsChanged => {
-                    s_checking_thorough_diffs_f_superficial_diffs_changed(s, params)?
+                    s_checking_thorough_diffs_f_superficial_diffs_changed(s, step_params)?
                 }
                 CheckingThoroughDiffsState::FromSuperficialDiffsIgnored => {
-                    s_checking_thorough_diffs_f_superficial_diffs_ignored(s, params)?
+                    s_checking_thorough_diffs_f_superficial_diffs_ignored(s, step_params)?
                 }
             },
             XvcStepState::ComparingDiffsAndOutputs(s) => match s {
                 ComparingDiffsAndOutputsState::FromSuperficialDiffsNotChanged => {
-                    s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed(s, params)?
+                    s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed(s, step_params)?
                 }
                 ComparingDiffsAndOutputsState::FromThoroughDiffsNotChanged => {
-                    s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed(s, params)?
+                    s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed(s, step_params)?
                 }
                 ComparingDiffsAndOutputsState::FromThoroughDiffsChanged => {
-                    s_comparing_diffs_and_outputs_f_thorough_diffs_changed(s, params)?
+                    s_comparing_diffs_and_outputs_f_thorough_diffs_changed(s, step_params)?
                 }
             },
             XvcStepState::WaitingToRun(s) => match s {
                 WaitingToRunState::FromDiffsHasChanged => {
-                    s_waiting_to_run_f_diffs_has_changed(s, params)?
+                    s_waiting_to_run_f_diffs_has_changed(s, step_params)?
                 }
                 WaitingToRunState::FromProcessPoolFull => {
-                    s_waiting_to_run_f_process_pool_full(s, params)?
+                    s_waiting_to_run_f_process_pool_full(s, step_params)?
                 }
             },
             XvcStepState::Running(s) => match s {
-                RunningState::FromStartProcess => s_running_f_start_process(s, params)?,
-                RunningState::FromWaitProcess => s_running_f_wait_process(s, params)?,
+                RunningState::FromStartProcess => s_running_f_start_process(s, step_params)?,
+                RunningState::FromWaitProcess => s_running_f_wait_process(s, step_params)?,
             },
             XvcStepState::Broken(s) => match s {
-                BrokenState::FromCannotStartProcess => s_broken_f_cannot_start_process(s, params)?,
+                BrokenState::FromCannotStartProcess => {
+                    s_broken_f_cannot_start_process(s, step_params)?
+                }
                 BrokenState::FromHasMissingDependencies => {
-                    s_broken_f_has_missing_dependencies(s, params)?
+                    s_broken_f_has_missing_dependencies(s, step_params)?
                 }
                 BrokenState::FromDependencyStepsFinishedBroken => {
-                    s_broken_f_dependency_steps_finished_broken(s, params)?
+                    s_broken_f_dependency_steps_finished_broken(s, step_params)?
                 }
-                BrokenState::FromProcessTimeout => s_broken_f_process_timeout(s, params)?,
+                BrokenState::FromProcessTimeout => s_broken_f_process_timeout(s, step_params)?,
                 BrokenState::FromProcessReturnedNonZero => {
-                    s_broken_f_process_returned_non_zero(s, params)?
+                    s_broken_f_process_returned_non_zero(s, step_params)?
                 }
-                BrokenState::FromKeepBroken => (XvcStepState::Broken(s.clone()), params),
+                BrokenState::FromKeepBroken => (XvcStepState::Broken(s.clone()), step_params),
             },
             XvcStepState::Done(s) => match s {
                 DoneState::FromCompletedWithoutRunningStep => {
-                    s_done_f_completed_without_running_step(s, params)?
+                    s_done_f_completed_without_running_step(s, step_params)?
                 }
                 DoneState::FromProcessCompletedSuccessfully => {
-                    s_done_f_process_completed_successfully(s, params)?
+                    s_done_f_process_completed_successfully(s, step_params)?
                 }
-                DoneState::FromKeepDone => (XvcStepState::Done(s.clone()), params),
+                DoneState::FromKeepDone => (XvcStepState::Done(s.clone()), step_params),
             },
             XvcStepState::CheckingSuperficialDiffs(s) => match s {
                 CheckingSuperficialDiffsState::FromCheckedOutputs => {
-                    s_checking_superficial_diffs(s, params)?
+                    s_checking_superficial_diffs(s, step_params)?
                 }
                 CheckingSuperficialDiffsState::FromOutputsIgnored => {
-                    s_checking_superficial_diffs_f_missing_outputs_ignored(s, params)?
+                    s_checking_superficial_diffs_f_missing_outputs_ignored(s, step_params)?
                 }
             },
         };
 
-        step_state_sender.send(Some(r_next_state.clone()))?;
-        // If next state is different, we publish it in the channel
-        if r_next_state != step_state {
-            step_state = r_next_state;
-            step_state_sender.send(Some(step_state.clone()))?;
-        }
-
-        params = next_params;
+        step_state = r_next_state;
+        step_params = next_params;
 
         match &step_state {
             XvcStepState::Done(_) | XvcStepState::Broken(_) => {
