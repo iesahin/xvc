@@ -38,7 +38,7 @@ use std::fmt::Debug;
 use std::ops::Sub;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
-use std::thread::{self, JoinHandle, ScopedJoinHandle};
+use std::thread::{self, sleep, JoinHandle, ScopedJoinHandle};
 use std::time::{Duration, Instant, SystemTime};
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
@@ -196,6 +196,7 @@ pub struct StepStateParams<'a> {
 
     command_process: Arc<RwLock<CommandProcess>>,
     available_process_slots: Arc<RwLock<usize>>,
+    process_poll_milliseconds: u64,
 
     dependency_diffs: Arc<RwLock<HStore<Diff<XvcDependency>>>>,
     output_diffs: Arc<RwLock<HStore<Diff<XvcOutput>>>>,
@@ -642,6 +643,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let step = &params.steps[&step_e];
     let step_command = &params.step_commands[&step_e];
     let command_process = Arc::new(RwLock::new(CommandProcess::new(step, step_command)));
+    let process_poll_milliseconds = 10;
 
     let mut step_params = StepStateParams {
         step_e,
@@ -664,6 +666,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         step_xvc_digests: &step_xvc_digests,
         dependency_diffs: params.dependency_diffs,
         output_diffs: params.output_diffs,
+        process_poll_milliseconds,
     };
 
     loop {
@@ -1265,63 +1268,75 @@ fn s_running_f_start_process<'a>(
 
 fn s_running_f_wait_process<'a>(
     s: &RunningState,
-    mut params: StepStateParams<'a>,
+    params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    // Check whether the process is still running
+    watch!(params);
+    let mut return_state: Option<XvcStepState> = None;
     let command_process = params.command_process.clone();
-    let mut command_process = command_process.write()?;
-
-    command_process.update_output_channels()?;
-
-    // We currently pass all the output to the main thread
-    // In the future, these can be passed to different channels.
-    let output_snd = params.output_snd;
-    command_process
-        .stderr_receiver
-        .try_iter()
-        .for_each(|out| warn!(output_snd, "{}", out));
-
-    command_process
-        .stdout_receiver
-        .try_iter()
-        .for_each(|out| output!(output_snd, "{}", out));
-
-    let birth = command_process
-        .birth
-        .ok_or(anyhow!("Process birth not found"))?;
     let timeout = params.step_timeout;
     let step = params.step.clone();
     let step_command = params.step_command.clone();
-    command_process.process.as_mut().and_then(|mut process| {
-    match process.poll() {
-        // Still running:
-        None => {
-            if birth.elapsed() < *timeout {
-                Some((s.wait_process(), params))
-            } else {
-                if params.terminate_timeout_processes {
-                    error!(
-                        output_snd,
-                        "Process timeout for step {} with command {} ",
-                        &step.name,
-                        &step_command
-                    );
-                    process.terminate().ok();
-    let available_slots = params.available_process_slots.clone();
-    let mut available_slots = available_slots.write().unwrap();
-    *available_slots += 1;
-                }
-                Some((s.process_timeout(), params))
-            }
-        }
+    let birth = command_process
+        .read()?
+        .birth
+        .ok_or(anyhow!("Process birth not found"))?;
+    let sleep_duration = Duration::from_millis(params.process_poll_milliseconds);
+    loop {
+        // We put process operations in an inner scope not to interfere with the process while sleeping
+        {
+            // Check whether the process is still running
+            let mut command_process = command_process.write()?;
 
-        Some(exit_code) => match exit_code {
+            command_process.update_output_channels()?;
+
+            // We currently pass all the output to the main thread
+            // In the future, these can be passed to different channels.
+            let output_snd = params.output_snd;
+            command_process
+                .stderr_receiver
+                .try_iter()
+                .for_each(|out| warn!(output_snd, "{}", out));
+
+            command_process
+                .stdout_receiver
+                .try_iter()
+                .for_each(|out| output!(output_snd, "{}", out));
+
+            watch!(command_process);
+
+            let process = command_process
+                .process
+                .as_mut()
+                .ok_or_else(|| anyhow!("Cannot find process"))?;
+            match process.poll() {
+                // Still running:
+                None => {
+                    watch!(process);
+                    if birth.elapsed() < *timeout {
+                        debug!(
+                            output_snd,
+                            "Step {} with command {} is still running", &step.name, &step_command
+                        );
+                    } else {
+                        if params.terminate_timeout_processes {
+                            error!(
+                                output_snd,
+                                "Process timeout for step {} with command {} ",
+                                &step.name,
+                                &step_command
+                            );
+                            process.terminate().ok();
+                        }
+                        return_state = Some(s.process_timeout());
+                        break;
+                    }
+                }
+
+                Some(exit_code) => match exit_code {
             ExitStatus::Exited(0) => {
                 info!(output_snd, "Step {} finished successfully with command {}", step.name, step_command);
-    let available_slots = params.available_process_slots.clone();
-    let mut available_slots = available_slots.write().unwrap();
-    *available_slots += 1;
-                Some((s.process_completed_successfully(), params))
+                return_state = Some(s.process_completed_successfully());
+                break;
             }
             ,
             // we don't handle other variants in the state machine. Either it exited
@@ -1329,41 +1344,38 @@ fn s_running_f_wait_process<'a>(
             //
             _ => {
                 error!(output_snd, "Step {} finished UNSUCCESSFULLY with command {}", step.name, step_command);
+                return_state = Some(s.process_returned_non_zero());
+                break;
+            },
+        },
+            }
+        }
+        sleep(sleep_duration);
+    }
+
     let available_slots = params.available_process_slots.clone();
     let mut available_slots = available_slots.write().unwrap();
     *available_slots += 1;
-                Some((s.process_returned_non_zero(), params))
-            },
-        },
-    }}).ok_or_else(|| anyhow!("Process not found").into())
+
+    Ok((return_state.unwrap(), params))
 }
 
 fn s_waiting_to_run_f_process_pool_full<'a>(
     s: &WaitingToRunState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
+    watch!(params);
     if params.available_process_slots.read()?.gt(&0) {
         Ok((s.start_process(), params))
     } else {
         Ok((s.process_pool_full(), params))
     }
 }
-
-fn s_waiting_to_run_f_diffs_ignored<'a>(
-    s: &WaitingToRunState,
-    params: StepStateParams<'a>,
-) -> StateTransition<'a> {
-    if params.available_process_slots.read()?.gt(&0) {
-        Ok((s.start_process(), params))
-    } else {
-        Ok((s.process_pool_full(), params))
-    }
-}
-
 fn s_waiting_to_run_f_diffs_has_changed<'a>(
     s: &WaitingToRunState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
+    watch!(params);
     if params.available_process_slots.read()?.gt(&0) {
         Ok((s.start_process(), params))
     } else {
