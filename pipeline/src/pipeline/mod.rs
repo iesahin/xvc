@@ -21,7 +21,7 @@ use crate::pipeline::command::CommandProcess;
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use chrono::Utc;
-use crossbeam_channel::{bounded, Receiver, Select, Sender};
+use crossbeam_channel::{bounded, select, Receiver, Select, Sender};
 use petgraph::Direction;
 use xvc_logging::{debug, error, info, output, uwr, warn, watch, XvcOutputSender};
 use xvc_walker::notify::{make_watcher, PathEvent};
@@ -479,17 +479,26 @@ pub fn the_grand_pipeline_loop(
 
     let (state_bulletin_sender, state_bulletin_receiver) =
         crossbeam_channel::bounded::<Option<(XvcEntity, XvcStepState)>>(CHANNEL_CAPACITY);
+    let (kill_signal_sender, kill_signal_receiver) = crossbeam_channel::bounded::<bool>(1);
     // Create a thread for each of the steps
     // We create these in reverse topological order.
     // Dependent steps block on dependency events, so we need to create them first.
     let done_successfully: Result<bool> = thread::scope(|s| {
-        s.spawn(|| update_pmp(xvc_root, fs_receiver, &mut pmm));
+        let pmp_updater = s.spawn(|| {
+            update_pmp(
+                xvc_root,
+                fs_receiver,
+                &mut pmm,
+                kill_signal_receiver.clone(),
+            )
+        });
 
-        s.spawn(|| {
+        let state_updater = s.spawn(|| {
             step_state_bulletin(
                 state_receivers.clone(),
                 step_states.clone(),
                 state_bulletin_sender.clone(),
+                kill_signal_receiver.clone(),
             )
         });
 
@@ -540,16 +549,22 @@ pub fn the_grand_pipeline_loop(
             }
         });
 
-        watch!(step_states);
+        kill_signal_sender.send(true)?;
+        watch!("Before state updater");
+        state_updater.join();
+        pmp_updater.join();
+
         // if all of the steps are done, we can end
         if step_states
             .read()?
             .iter()
             .all(|(_, step_s)| matches!(step_s, XvcStepState::Done(_)))
         {
-            return Ok(true);
+            watch!(step_states);
+            Ok(true)
         } else {
-            return Ok(false);
+            watch!(step_states);
+            Ok(false)
         }
     });
     watch!(done_successfully);
@@ -595,23 +610,31 @@ fn step_state_bulletin(
     state_senders: Vec<(XvcEntity, Receiver<Option<XvcStepState>>)>,
     current_states: Arc<RwLock<HStore<XvcStepState>>>,
     notifier: Sender<Option<(XvcEntity, XvcStepState)>>,
+    kill_signal_receiver: Receiver<bool>,
 ) -> Result<()> {
     let mut select = Select::new();
+    // We set index 0 as the kill switch
+    select.recv(&kill_signal_receiver);
     for (_, r) in state_senders.iter() {
         select.recv(r);
     }
     loop {
         watch!(select);
         let index = select.ready();
-        let res = state_senders[index].1.recv()?;
-        if let Some(state) = res {
-            let step_e = state_senders[index].0;
-            current_states.write()?.insert(step_e, state.clone());
-            notifier.send(Some((step_e, state)))?;
+        if index != 0 {
+            let state_receiver_index = index - 1;
+            let res = state_senders[state_receiver_index].1.recv()?;
+            if let Some(state) = res {
+                let step_e = state_senders[state_receiver_index].0;
+                current_states.write()?.insert(step_e, state.clone());
+                notifier.send(Some((step_e, state)))?;
+            } else {
+                // Dependency channels are closed due to an error. We're closing too.
+                notifier.send(None)?;
+                return Err(anyhow!("Dependency channels closed due to an error.").into());
+            }
         } else {
-            // Dependency channels are closed due to an error. We're closing too.
-            notifier.send(None)?;
-            return Err(anyhow!("Dependency channels closed due to an error.").into());
+            return Ok(());
         }
     }
 }
@@ -806,32 +829,52 @@ fn update_pmp(
     xvc_root: &XvcRoot,
     fs_receiver: Receiver<Option<PathEvent>>,
     pmm: &mut XvcPathMetadataMap,
+    kill_signal_receiver: Receiver<bool>,
 ) -> Result<()> {
-    while let Ok(Some(fs_event)) = fs_receiver.try_recv() {
-        match fs_event {
-            PathEvent::Create { path, metadata } => {
-                let xvc_path = XvcPath::new(xvc_root, xvc_root, &path)?;
-                let xvc_md = XvcMetadata::from(metadata);
-                pmm.insert(xvc_path, xvc_md);
-            }
-            PathEvent::Update { path, metadata } => {
-                let xvc_path = XvcPath::new(xvc_root, xvc_root, &path)?;
-                let xvc_md = XvcMetadata::from(metadata);
-                pmm.insert(xvc_path, xvc_md);
-            }
-            PathEvent::Delete { path } => {
-                let xvc_path = XvcPath::new(xvc_root, xvc_root, &path)?;
-                let xvc_md = XvcMetadata {
-                    file_type: XvcFileType::Missing,
-                    size: None,
-                    modified: None,
-                };
-                pmm.insert(xvc_path, xvc_md);
-            }
+    let mut handle_fs_event = |fs_event| match fs_event {
+        PathEvent::Create { path, metadata } => {
+            let xvc_path = XvcPath::new(xvc_root, xvc_root, &path).unwrap();
+            let xvc_md = XvcMetadata::from(metadata);
+            pmm.insert(xvc_path, xvc_md);
+        }
+        PathEvent::Update { path, metadata } => {
+            let xvc_path = XvcPath::new(xvc_root, xvc_root, &path).unwrap();
+            let xvc_md = XvcMetadata::from(metadata);
+            pmm.insert(xvc_path, xvc_md);
+        }
+        PathEvent::Delete { path } => {
+            let xvc_path = XvcPath::new(xvc_root, xvc_root, &path).unwrap();
+            let xvc_md = XvcMetadata {
+                file_type: XvcFileType::Missing,
+                size: None,
+                modified: None,
+            };
+            pmm.insert(xvc_path, xvc_md);
+        }
+    };
+
+    loop {
+        select! {
+            recv(fs_receiver) -> fs_event => match fs_event {
+                Ok(Some(fs_event)) => {
+                    handle_fs_event(fs_event);
+                }
+                Ok(None) => {
+                    return Ok(())
+                }
+                Err(e) => {
+                    error!("Error in fs_receiver: {:?}", e);
+                    return Err(anyhow!("Error in fs_receiver: {:?}", e).into())
+                }
+            },
+
+            recv(kill_signal_receiver) -> kill_signal => {
+                if let Ok(true) = kill_signal {
+                    return Ok(())
+                }
+            },
         }
     }
-
-    Ok(())
 }
 
 fn s_begin_f_init<'a>(s: &BeginState, params: StepStateParams<'a>) -> StateTransition<'a> {
@@ -1308,6 +1351,7 @@ fn s_running_f_wait_process<'a>(
                 .process
                 .as_mut()
                 .ok_or_else(|| anyhow!("Cannot find process"))?;
+            watch!(&process);
             match process.poll() {
                 // Still running:
                 None => {
@@ -1353,9 +1397,13 @@ fn s_running_f_wait_process<'a>(
         sleep(sleep_duration);
     }
 
+    watch!(return_state);
+
     let available_slots = params.available_process_slots.clone();
     let mut available_slots = available_slots.write().unwrap();
     *available_slots += 1;
+
+    watch!(params);
 
     Ok((return_state.unwrap(), params))
 }

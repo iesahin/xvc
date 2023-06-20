@@ -60,20 +60,20 @@ impl XvcStep {
 //     [*] --> Begin
 //     Begin --> NoNeedToRun: RunNever
 //     Begin --> WaitingDependencySteps: RunConditional
-//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedBrokenIgnored
 //     WaitingDependencySteps --> WaitingDependencySteps: DependencyStepsRunning
-//     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedSuccessfully
 //     WaitingDependencySteps --> Broken: DependencyStepsFinishedBroken
-//     CheckingMissingDependencies --> CheckingMissingOutputs: MissingDependenciesIgnored
-//     CheckingMissingDependencies --> Broken: HasMissingDependencies
-//     CheckingMissingDependencies --> CheckingMissingOutputs: NoMissingDependencies
-//     CheckingMissingOutputs --> CheckingSuperficialDiffs: MissingOutputsIgnored
-//     CheckingMissingOutputs --> CheckingSuperficialDiffs: HasMissingOutputs
-//     CheckingSuperficialDiffs --> WaitingToRun: DiffsIgnored
-//     CheckingSuperficialDiffs --> NoNeedToRun: HasNoNewerDependencies
-//     CheckingSuperficialDiffs --> CheckingThoroughDiffs: HasNewerDependencies
-//     CheckingThoroughDiffs --> NoNeedToRun: ThoroughDiffsNotChanged
-//     CheckingThoroughDiffs --> WaitingToRun: ThoroughDiffsChanged
+//     WaitingDependencySteps --> CheckingOutputs: DependencyStepsFinishedBrokenIgnored
+//     WaitingDependencySteps --> CheckingOutputs: DependencyStepsFinishedSuccessfully
+//     CheckingOutputs --> CheckingSuperficialDiffs: OutputsIgnored
+//     CheckingOutputs --> CheckingSuperficialDiffs: CheckedOutputs
+//     CheckingSuperficialDiffs --> CheckingThoroughDiffs: SuperficialDiffsIgnored
+//     CheckingSuperficialDiffs --> ComparingDiffsAndOutputs: SuperficialDiffsNotChanged
+//     CheckingSuperficialDiffs --> CheckingThoroughDiffs: SuperficialDiffsChanged
+//     CheckingSuperficialDiffs --> Broken: HasMissingDependencies
+//     CheckingThoroughDiffs --> ComparingDiffsAndOutputs: ThoroughDiffsNotChanged
+//     CheckingThoroughDiffs --> ComparingDiffsAndOutputs: ThoroughDiffsChanged
+//     ComparingDiffsAndOutputs --> WaitingToRun: DiffsHasChanged
+//     ComparingDiffsAndOutputs --> NoNeedToRun: DiffsHasNotChanged
 //     NoNeedToRun --> Done: CompletedWithoutRunningStep
 //     WaitingToRun --> WaitingToRun: ProcessPoolFull
 //     WaitingToRun --> Running: StartProcess
@@ -82,10 +82,10 @@ impl XvcStep {
 //     Running --> Broken: ProcessTimeout
 //     Running --> Done: ProcessCompletedSuccessfully
 //     Running --> Broken: ProcessReturnedNonZero
-//     Broken --> Broken: HasBroken
-//     Done --> Done: HasDone
-//     Done --> [*]
+//     Broken --> Broken: KeepBroken
+//     Done --> Done: KeepDone
 //     Broken --> [*]
+//     Done --> [*]
 // ```
 
 state_machine! {
