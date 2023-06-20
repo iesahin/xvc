@@ -12,6 +12,7 @@ use trycmd;
 
 use which;
 use xvc::error::Result;
+use xvc_logging::watch;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
@@ -109,6 +110,7 @@ fn link_to_docs() -> Result<()> {
                     fs::remove_file(&out_dir_symlink)?;
                 }
                 make_symlink(&out_dir, &out_dir_symlink)?;
+                watch!(&out_dir);
             }
         }
     }

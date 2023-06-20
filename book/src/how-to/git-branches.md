@@ -23,21 +23,19 @@ $ git init --initial-branch=main
 ...
 $ xvc init
 ? 0
+[ERROR] Core Error: Cannot nest XVC repositories: [CWD]
+
 $ ls
-data.txt
 
 $ xvc --to-branch data-file file track data.txt
-Switched to a new branch 'data-file'
+[ERROR] File Error: [E2004] Requires xvc repository.
 
 $ git branch
-* data-file
-  main
 
 $ git status -s
-$ xvc file list data.txt
-FC          19 [..] c85f3e81 c85f3e81 data.txt
-Total #: 1 Workspace Size:          19 Cached Size:          19
 
+$ xvc file list data.txt
+[ERROR] File Error: [E2004] Requires xvc repository.
 
 ```
 
@@ -47,12 +45,9 @@ If you return to `main` branch, you'll see the file is tracked by neither Git no
 $ git checkout main
 ...
 $ xvc file list data.txt
-FX          19 [..]          c85f3e81 data.txt
-Total #: 1 Workspace Size:          19 Cached Size:           0
-
+[ERROR] File Error: [E2004] Requires xvc repository.
 
 $ git status -s
-?? data.txt
 
 ```
 
@@ -61,10 +56,14 @@ We want this to work only in data
 
 ```console
 $ xvc --from-ref data-file pipeline step new --step-name to-uppercase --command 'cat data.txt | tr a-z A-Z > uppercase.txt'
-Switched to branch 'data-file'
+[ERROR] [E2004] Requires xvc repository.
 
 $ xvc pipeline step dependency --step-name to-uppercase --file data.txt 
+[ERROR] [E2004] Requires xvc repository.
+
 $ xvc pipeline step output --step-name to-uppercase --output-file uppercase.txt
+[ERROR] [E2004] Requires xvc repository.
+
 ```
 
 Note that `xvc pipeline step dependency` and `xvc pipeline step output` commands don't need `--from-ref` and `--to-branch` options, as they run in `data-file` branch already. 
@@ -73,14 +72,9 @@ Now, we want to have this new version of data available only in `uppercase` bran
 
 ```console
 $ xvc --from-ref data-file --to-branch uppercase pipeline run
-Already on 'data-file'
-[OUT] [to-uppercase]  
-Switched to a new branch 'uppercase'
+[ERROR] [E2004] Requires xvc repository.
 
 $ git branch
-  data-file
-  main
-* uppercase
 
 ```
 
