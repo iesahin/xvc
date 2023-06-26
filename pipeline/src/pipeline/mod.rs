@@ -691,6 +691,9 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     };
 
     loop {
+        // Send the state first
+        step_state_sender.send(Some(step_state.clone()))?;
+
         match &step_state {
             XvcStepState::Done(_) | XvcStepState::Broken(_) => {
                 // We're done. We can return.
@@ -698,8 +701,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
             }
             _ => {
                 // We're not done yet. Keep looping.
-                // Send the state first
-                step_state_sender.send(Some(step_state.clone()))?;
                 // Block on other states changes
                 if other_steps.len() > 0 {
                     let some_state = state_notifier.recv()?;
