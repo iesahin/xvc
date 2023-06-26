@@ -705,8 +705,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
             }
         }
 
-        watch!(&step_params);
-
         let (r_next_state, next_params) = match &step_state {
             XvcStepState::Begin(s) => match s {
                 BeginState::FromInit => s_begin_f_init(s, step_params)?,

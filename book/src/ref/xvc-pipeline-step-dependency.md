@@ -30,12 +30,12 @@ Options:
 
       --glob <GLOBS>
           Add a glob dependency to the step. Can be used multiple times.
-
+          
           The difference between this and the glob-digest option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --glob_digest <GLOB_DIGESTS>
           Add a glob digest dependency to the step. Can be used multiple times.
-
+          
           The difference between this and the glob option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --param <PARAMS>
@@ -46,17 +46,17 @@ Options:
 
       --regex_digest <REGEXP_DIGESTS>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
-
+          
           The difference between this and the regex option is that the regex option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest.
 
       --line <LINES>
           Add a line dependency in the form filename.txt::123-234
-
+          
           The difference between this and the line-digest option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
       --line_digest <LINE_DIGESTS>
           Add a line digest dependency in the form filename.txt::123-234
-
+          
           The difference between this and the line option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
   -h, --help
@@ -90,30 +90,6 @@ When you run the command, it will print `data.txt has changed` if the file `data
 
 ```console
 $ xvc --debug pipeline run
-[OUT] [file-dependency] data.txt has changed
-
-
-```
-
-You can add multiple dependencies to a step with multiple invocations.
-
-```console
-$ xvc pipeline step dependency --step-name file-dependency --file data2.txt
-```
-
-A step will run if any of its dependencies have changed.
-
-```console
-$ xvc pipeline run
-[OUT] [file-dependency] data.txt has changed
-
-
-```
-
-By default, they are not run if none of the dependencies have changed.
-
-```console
-$ xvc pipeline run
 [DEBUG][logging/src/lib.rs::236] Terminal logger enabled with level: Error
 [DEBUG][logging/src/lib.rs::239] File logger enabled with level: Trace to "/var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T//xvc.log"
 [TRACE][core/src/types/xvcroot.rs::247] "."
@@ -125,11 +101,11 @@ $ xvc pipeline run
     "core.quiet = false",
 ]
 [TRACE][config/src/lib.rs::540] map: {
-    "core.verbosity": String(
-        "quiet",
-    ),
     "core.quiet": Boolean(
         false,
+    ),
+    "core.verbosity": String(
+        "quiet",
     ),
 }
 [TRACE][config/src/lib.rs::543] conf: XvcConfig {
@@ -143,29 +119,38 @@ $ xvc pipeline run
         XvcConfigMap {
             source: Default,
             map: {
-                "file.list.no_summary": Boolean(
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "git.auto_stage": Boolean(
                     false,
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
-                "git.auto_stage": Boolean(
-                    false,
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.track.no_parallel": Boolean(
-                    false,
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "pipeline.default": String(
-                    "default",
+                "core.guid": String(
+                    "b0e1e1e4a99e3e62",
                 ),
                 "file.recheck.method": String(
                     "copy",
@@ -173,106 +158,97 @@ $ xvc pipeline run
                 "file.list.sort": String(
                     "name-desc",
                 ),
-                "git.command": String(
-                    "git",
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
                 "file.list.recursive": Boolean(
                     false,
                 ),
-                "pipeline.current_pipeline": String(
+                "pipeline.default": String(
                     "default",
                 ),
-                "git.use_git": Boolean(
-                    true,
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "core.guid": String(
-                    "2b897277af478900",
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "file.carry-in.no_parallel": Boolean(
                     false,
                 ),
-                "file.track.no_commit": Boolean(
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.list.no_summary": Boolean(
                     false,
                 ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "cache.algorithm": String(
-                    "blake3",
+                "file.carry-in.force": Boolean(
+                    false,
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "file.list.recursive": Boolean(
-                    false,
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
                 "pipeline.default": String(
                     "default",
                 ),
-                "core.guid": String(
-                    "09bf77d8601acdb7",
-                ),
-                "git.auto_stage": Boolean(
+                "file.track.force": Boolean(
                     false,
                 ),
-                "file.carry-in.force": Boolean(
-                    false,
+                "file.list.sort": String(
+                    "name-desc",
                 ),
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "cache.algorithm": String(
-                    "blake3",
+                "git.command": String(
+                    "git",
                 ),
                 "git.use_git": Boolean(
+                    true,
+                ),
+                "git.auto_commit": Boolean(
                     true,
                 ),
                 "file.list.no_summary": Boolean(
                     false,
                 ),
-                "git.command": String(
-                    "git",
+                "file.carry-in.no_parallel": Boolean(
+                    false,
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
-                "file.track.force": Boolean(
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "file.recheck.method": String(
+                    "copy",
+                ),
+                "file.carry-in.force": Boolean(
                     false,
                 ),
-                "file.track.no_commit": Boolean(
+                "file.track.text_or_binary": String(
+                    "auto",
+                ),
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                ),
+                "core.guid": String(
+                    "dacf0c3f35821a09",
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.list.recursive": Boolean(
                     false,
                 ),
                 "pipeline.current_pipeline": String(
                     "default",
                 ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "git.auto_stage": Boolean(
+                    false,
                 ),
                 "file.track.no_parallel": Boolean(
                     false,
-                ),
-                "file.list.sort": String(
-                    "name-desc",
                 ),
             },
         },
@@ -287,53 +263,83 @@ $ xvc pipeline run
         XvcConfigMap {
             source: CommandLine,
             map: {
-                "core.verbosity": String(
-                    "quiet",
-                ),
                 "core.quiet": Boolean(
                     false,
+                ),
+                "core.verbosity": String(
+                    "quiet",
                 ),
             },
         },
     ],
     the_config: {
+        "git.command": XvcConfigValue {
+            source: Project,
+            value: String(
+                "git",
+            ),
+        },
+        "file.track.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
         "pipeline.default_params_file": XvcConfigValue {
             source: Project,
             value: String(
                 "params.yaml",
             ),
         },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "09bf77d8601acdb7",
+        "core.quiet": XvcConfigValue {
+            source: CommandLine,
+            value: Boolean(
+                false,
             ),
         },
-        "file.list.sort": XvcConfigValue {
-            source: Project,
+        "core.verbosity": XvcConfigValue {
+            source: CommandLine,
             value: String(
-                "name-desc",
+                "quiet",
             ),
         },
-        "file.list.no_summary": XvcConfigValue {
+        "file.carry-in.no_parallel": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "file.list.format": XvcConfigValue {
+        "git.use_git": XvcConfigValue {
             source: Project,
-            value: String(
-                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+            value: Boolean(
+                true,
             ),
         },
-        "file.recheck.method": XvcConfigValue {
+        "cache.algorithm": XvcConfigValue {
             source: Project,
             value: String(
-                "copy",
+                "blake3",
+            ),
+        },
+        "file.track.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
             ),
         },
         "file.track.no_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.list.no_summary": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -351,49 +357,25 @@ $ xvc pipeline run
                 false,
             ),
         },
-        "git.use_git": XvcConfigValue {
+        "file.recheck.method": XvcConfigValue {
             source: Project,
-            value: Boolean(
-                true,
+            value: String(
+                "copy",
+            ),
+        },
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.list.sort": XvcConfigValue {
+            source: Project,
+            value: String(
+                "name-desc",
             ),
         },
         "file.list.recursive": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "core.verbosity": XvcConfigValue {
-            source: CommandLine,
-            value: String(
-                "quiet",
-            ),
-        },
-        "file.track.text_or_binary": XvcConfigValue {
-            source: Project,
-            value: String(
-                "auto",
-            ),
-        },
-        "cache.algorithm": XvcConfigValue {
-            source: Project,
-            value: String(
-                "blake3",
-            ),
-        },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.carry-in.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.carry-in.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -405,28 +387,22 @@ $ xvc pipeline run
                 true,
             ),
         },
-        "git.command": XvcConfigValue {
+        "file.track.text_or_binary": XvcConfigValue {
             source: Project,
             value: String(
-                "git",
+                "auto",
             ),
         },
-        "file.track.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.track.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
+        "file.list.format": XvcConfigValue {
             source: Project,
             value: String(
-                "default",
+                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "dacf0c3f35821a09",
             ),
         },
     },
@@ -436,7 +412,7 @@ $ xvc pipeline run
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -575,11 +551,10 @@ default_params_file = /"params.yaml/"
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1687255206389690",
-    "[CWD]/.xvc/ec/1687255206393426",
-    "[CWD]/.xvc/ec/1687255206457600",
-    "[CWD]/.xvc/ec/1687255206522847",
-    "[CWD]/.xvc/ec/1687255206907538",
+    "[CWD]/.xvc/ec/1687770328331361",
+    "[CWD]/.xvc/ec/1687770328334988",
+    "[CWD]/.xvc/ec/1687770328399293",
+    "[CWD]/.xvc/ec/1687770328465470",
 ]
 [TRACE][pipeline/src/lib.rs::350] name: Some(
     "default",
@@ -614,14 +589,14 @@ default_params_file = /"params.yaml/"
     "[CWD]",
 )
 [TRACE][walker/src/notify.rs::160] watcher: FsEventWatcher {
-    paths: 0x00006000036980c0,
+    paths: 0x00006000039a8000,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x00006000009983d0,
+    event_handler: 0x00006000006a41f0,
     runloop: Some(
         (
-            0x0000600000498800,
+            0x0000600000ba4100,
             JoinHandle { .. },
         ),
     ),
@@ -633,12 +608,12 @@ default_params_file = /"params.yaml/"
 [TRACE][pipeline/src/pipeline/mod.rs::328] &dependency_graph: {
     XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ): [],
 }
 [INFO][pipeline/src/pipeline/mod.rs::342] Pipeline Graph:
 digraph {
-    0 [ label = "(2, 8083115080617033)" ]
+    0 [ label = "(2, 6261729451852799196)" ]
 }
 
 
@@ -647,7 +622,7 @@ digraph {
         map: {
             XvcEntity(
                 2,
-                8083115080617033,
+                6261729451852799196,
             ): Begin(
                 FromInit,
             ),
@@ -660,19 +635,166 @@ digraph {
     map: {
         XvcEntity(
             2,
-            8083115080617033,
+            6261729451852799196,
         ): ScopedJoinHandle { .. },
     },
 }
 [TRACE][pipeline/src/pipeline/mod.rs::546] (step_e, &jh): (
     XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     ScopedJoinHandle { .. },
 )
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/xvc-pipeline-run-dir-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/xvc-path-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/xvc-path-xvc-dependency-r1n-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-pipeline-run-dir-store"
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/xvc-metadata-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/xvc-digests-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/text-or-binary-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-path-store"
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/xvc-digests-xvc-step-r1n-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-path-xvc-dependency-r1n-store"
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-metadata-store"
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-digests-store"
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/text-or-binary-store"
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-digests-xvc-step-r1n-store"
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
 [TRACE][pipeline/src/pipeline/mod.rs::708] &step_params: StepStateParams {
     xvc_root: XvcRootInner {
         absolute_path: AbsolutePath(
@@ -695,29 +817,38 @@ digraph {
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -725,106 +856,97 @@ digraph {
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -839,53 +961,83 @@ digraph {
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -903,49 +1055,25 @@ digraph {
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -957,28 +1085,22 @@ digraph {
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -988,7 +1110,7 @@ digraph {
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -1132,42 +1254,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -1183,6 +1277,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -1191,8 +1299,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -1255,7 +1377,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -1275,23 +1397,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -1329,29 +1439,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -1359,106 +1478,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -1473,53 +1583,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -1537,49 +1677,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -1591,28 +1707,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -1622,7 +1732,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -1766,42 +1876,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -1817,6 +1899,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -1825,8 +1921,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -1889,7 +1999,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -1909,23 +2019,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -1963,29 +2061,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -1993,106 +2100,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -2107,53 +2205,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -2171,49 +2299,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -2225,28 +2329,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -2256,7 +2354,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -2400,42 +2498,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -2451,6 +2521,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -2459,8 +2543,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -2523,7 +2621,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -2543,23 +2641,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -2597,29 +2683,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -2627,106 +2722,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -2741,53 +2827,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -2805,49 +2921,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -2859,28 +2951,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -2890,7 +2976,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -3034,42 +3120,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -3085,6 +3143,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -3093,8 +3165,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -3157,7 +3243,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -3177,23 +3263,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -3231,29 +3305,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -3261,106 +3344,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -3375,53 +3449,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -3439,49 +3543,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -3493,28 +3573,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -3524,7 +3598,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -3668,42 +3742,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -3719,6 +3765,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -3727,8 +3787,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -3779,35 +3853,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): RecordMissing {
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): RecordMissing {
                     actual: File(
                         FileDep {
@@ -3846,7 +3893,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -3866,23 +3913,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -3921,29 +3956,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -3951,106 +3995,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -4065,53 +4100,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -4129,49 +4194,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -4183,28 +4224,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -4214,7 +4249,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -4358,42 +4393,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -4409,6 +4416,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -4417,8 +4438,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -4469,44 +4504,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): Different {
-                    record: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: None,
-                            content_digest: None,
-                        },
-                    ),
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): Different {
                     record: File(
                         FileDep {
@@ -4554,7 +4553,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -4574,23 +4573,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -4628,29 +4615,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -4658,106 +4654,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -4772,53 +4759,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -4836,49 +4853,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -4890,28 +4883,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -4921,7 +4908,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -5065,42 +5052,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -5116,6 +5075,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -5124,8 +5097,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -5176,44 +5163,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): Different {
-                    record: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: None,
-                            content_digest: None,
-                        },
-                    ),
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): Different {
                     record: File(
                         FileDep {
@@ -5261,7 +5212,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -5281,23 +5232,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -5334,29 +5273,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -5364,106 +5312,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -5478,53 +5417,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -5542,49 +5511,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -5596,28 +5541,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -5627,7 +5566,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -5771,42 +5710,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -5822,6 +5733,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -5830,8 +5755,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -5882,44 +5821,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): Different {
-                    record: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: None,
-                            content_digest: None,
-                        },
-                    ),
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): Different {
                     record: File(
                         FileDep {
@@ -5967,7 +5870,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -5987,23 +5890,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -6041,29 +5932,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -6071,106 +5971,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -6185,53 +6076,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -6249,49 +6170,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -6303,28 +6200,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -6334,7 +6225,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -6478,42 +6369,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -6529,6 +6392,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -6537,8 +6414,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -6589,44 +6480,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): Different {
-                    record: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: None,
-                            content_digest: None,
-                        },
-                    ),
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): Different {
                     record: File(
                         FileDep {
@@ -6674,7 +6529,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -6694,23 +6549,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -6748,29 +6591,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -6778,106 +6630,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -6892,53 +6735,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -6956,49 +6829,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -7010,28 +6859,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -7041,7 +6884,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -7185,42 +7028,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -7236,6 +7051,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -7244,8 +7073,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -7278,8 +7121,8 @@ default_params_file = /"params.yaml/"
             },
             birth: Some(
                 Instant {
-                    tv_sec: 944401,
-                    tv_nsec: 426255916,
+                    tv_sec: 1144226,
+                    tv_nsec: 225857750,
                 },
             ),
             process: Some(
@@ -7300,7 +7143,7 @@ default_params_file = /"params.yaml/"
                         },
                     ),
                     child_state: Running {
-                        pid: 1898,
+                        pid: 91770,
                         ext: (),
                     },
                     detached: true,
@@ -7324,44 +7167,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): Different {
-                    record: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: None,
-                            content_digest: None,
-                        },
-                    ),
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): Different {
                     record: File(
                         FileDep {
@@ -7409,7 +7216,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -7429,23 +7236,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -7482,29 +7277,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -7512,106 +7316,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -7626,53 +7421,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -7690,49 +7515,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -7744,28 +7545,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -7775,7 +7570,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -7919,42 +7714,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -7970,6 +7737,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -7978,8 +7759,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -8012,8 +7807,8 @@ default_params_file = /"params.yaml/"
             },
             birth: Some(
                 Instant {
-                    tv_sec: 944401,
-                    tv_nsec: 426255916,
+                    tv_sec: 1144226,
+                    tv_nsec: 225857750,
                 },
             ),
             process: Some(
@@ -8034,7 +7829,7 @@ default_params_file = /"params.yaml/"
                         },
                     ),
                     child_state: Running {
-                        pid: 1898,
+                        pid: 91770,
                         ext: (),
                     },
                     detached: true,
@@ -8058,44 +7853,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): Different {
-                    record: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: None,
-                            content_digest: None,
-                        },
-                    ),
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): Different {
                     record: File(
                         FileDep {
@@ -8143,7 +7902,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -8163,23 +7922,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -8194,6 +7941,8 @@ default_params_file = /"params.yaml/"
         map: {},
     },
 }
+[OUT] [file-dependency] data.txt has changed
+ 
 [TRACE][pipeline/src/pipeline/mod.rs::1348] command_process: CommandProcess {
     environment: {},
     step: XvcStep {
@@ -8204,8 +7953,8 @@ default_params_file = /"params.yaml/"
     },
     birth: Some(
         Instant {
-            tv_sec: 944401,
-            tv_nsec: 426255916,
+            tv_sec: 1144226,
+            tv_nsec: 225857750,
         },
     ),
     process: Some(
@@ -8226,7 +7975,7 @@ default_params_file = /"params.yaml/"
                 },
             ),
             child_state: Running {
-                pid: 1898,
+                pid: 91770,
                 ext: (),
             },
             detached: true,
@@ -8237,8 +7986,6 @@ default_params_file = /"params.yaml/"
     stdout_receiver: Receiver { .. },
     stderr_receiver: Receiver { .. },
 }
-[OUT] [file-dependency] data.txt has changed
-
 [TRACE][pipeline/src/pipeline/mod.rs::1354] &process: Popen {
     stdin: None,
     stdout: Some(
@@ -8256,7 +8003,7 @@ default_params_file = /"params.yaml/"
         },
     ),
     child_state: Running {
-        pid: 1898,
+        pid: 91770,
         ext: (),
     },
     detached: true,
@@ -8288,29 +8035,38 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.list.no_summary": Boolean(
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "core.guid": String(
+                            "b0e1e1e4a99e3e62",
                         ),
                         "file.recheck.method": String(
                             "copy",
@@ -8318,106 +8074,97 @@ default_params_file = /"params.yaml/"
                         "file.list.sort": String(
                             "name-desc",
                         ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
                         ),
-                        "git.use_git": Boolean(
-                            true,
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "2b897277af478900",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.carry-in.force": Boolean(
+                            false,
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "core.guid": String(
-                            "09bf77d8601acdb7",
-                        ),
-                        "git.auto_stage": Boolean(
+                        "file.track.force": Boolean(
                             false,
                         ),
-                        "file.carry-in.force": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "git.command": String(
+                            "git",
                         ),
                         "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_commit": Boolean(
                             true,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.track.force": Boolean(
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.guid": String(
+                            "dacf0c3f35821a09",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.list.recursive": Boolean(
                             false,
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                     },
                 },
@@ -8432,53 +8179,83 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
                         "params.yaml",
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "09bf77d8601acdb7",
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
                     ),
                 },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "name-desc",
+                        "quiet",
                     ),
                 },
-                "file.list.no_summary": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.format": XvcConfigValue {
+                "git.use_git": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    value: Boolean(
+                        true,
                     ),
                 },
-                "file.recheck.method": XvcConfigValue {
+                "cache.algorithm": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "copy",
+                        "blake3",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -8496,49 +8273,25 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "git.use_git": XvcConfigValue {
+                "file.recheck.method": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        true,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -8550,28 +8303,22 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "git",
+                        "auto",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "dacf0c3f35821a09",
                     ),
                 },
             },
@@ -8581,7 +8328,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2b897277af478900/"
+guid = /"b0e1e1e4a99e3e62/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -8725,42 +8472,14 @@ default_params_file = /"params.yaml/"
             "[CWD]/.xvc/config.toml",
         ),
         entity_generator: XvcEntityGenerator {
-            counter: 5,
-            random: 14447771076703443834,
+            counter: 4,
+            random: 17902296808808772104,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "data.txt",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    19,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1686297661,
-                        tv_nsec: 509304211,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389941775,
-                    },
-                ),
-            },
             XvcPath(
                 "data2.txt",
             ): XvcMetadata {
@@ -8776,6 +8495,20 @@ default_params_file = /"params.yaml/"
                 ),
             },
             XvcPath(
+                "data.txt",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    19,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1686297661,
+                        tv_nsec: 509304211,
+                    },
+                ),
+            },
+            XvcPath(
                 ".xvcignore",
             ): XvcMetadata {
                 file_type: File,
@@ -8784,8 +8517,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1687255206,
-                        tv_nsec: 389867650,
+                        tv_sec: 1687770328,
+                        tv_nsec: 331540989,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1687770328,
+                        tv_nsec: 331623530,
                     },
                 ),
             },
@@ -8818,8 +8565,8 @@ default_params_file = /"params.yaml/"
             },
             birth: Some(
                 Instant {
-                    tv_sec: 944401,
-                    tv_nsec: 426255916,
+                    tv_sec: 1144226,
+                    tv_nsec: 225857750,
                 },
             ),
             process: Some(
@@ -8865,44 +8612,8 @@ default_params_file = /"params.yaml/"
         data: HStore {
             map: {
                 XvcEntity(
-                    4,
-                    5730163350291362975,
-                ): Different {
-                    record: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: None,
-                            content_digest: None,
-                        },
-                    ),
-                    actual: File(
-                        FileDep {
-                            path: XvcPath(
-                                "data2.txt",
-                            ),
-                            xvc_metadata: Some(
-                                XvcMetadata {
-                                    file_type: File,
-                                    size: Some(
-                                        19,
-                                    ),
-                                    modified: Some(
-                                        SystemTime {
-                                            tv_sec: 1686298446,
-                                            tv_nsec: 762404426,
-                                        },
-                                    ),
-                                },
-                            ),
-                            content_digest: None,
-                        },
-                    ),
-                },
-                XvcEntity(
                     3,
-                    12968638473026154098,
+                    11779428881070178664,
                 ): Different {
                     record: File(
                         FileDep {
@@ -8950,7 +8661,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        8083115080617033,
+        6261729451852799196,
     ),
     step: XvcStep {
         name: "file-dependency",
@@ -8970,23 +8681,11 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 3,
-                12968638473026154098,
+                11779428881070178664,
             ): File(
                 FileDep {
                     path: XvcPath(
                         "data.txt",
-                    ),
-                    xvc_metadata: None,
-                    content_digest: None,
-                },
-            ),
-            XvcEntity(
-                4,
-                5730163350291362975,
-            ): File(
-                FileDep {
-                    path: XvcPath(
-                        "data2.txt",
                     ),
                     xvc_metadata: None,
                     content_digest: None,
@@ -9007,7 +8706,7 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 2,
-                8083115080617033,
+                6261729451852799196,
             ): Running(
                 FromWaitProcess,
             ),
@@ -9039,6 +8738,30 @@ default_params_file = /"params.yaml/"
     "*.xvcignore",
 ]
 [TRACE][lib/src/cli/mod.rs::582] git_add_output: ""
+
+```
+
+You can add multiple dependencies to a step with multiple invocations.
+
+```console
+$ xvc pipeline step dependency --step-name file-dependency --file data2.txt
+```
+
+A step will run if any of its dependencies have changed.
+
+```console
+$ xvc pipeline run
+[OUT] [file-dependency] data.txt has changed
+ 
+
+```
+
+By default, they are not run if none of the dependencies have changed.
+
+```console
+$ xvc pipeline run
+[OUT] [file-dependency] data.txt has changed
+ 
 
 ```
 
