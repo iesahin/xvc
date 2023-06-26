@@ -551,8 +551,8 @@ pub fn the_grand_pipeline_loop(
 
         kill_signal_sender.send(true)?;
         watch!("Before state updater");
-        state_updater.join();
-        pmp_updater.join();
+        state_updater.join().unwrap().unwrap();
+        pmp_updater.join().unwrap().unwrap();
 
         // if all of the steps are done, we can end
         if step_states
@@ -573,8 +573,6 @@ pub fn the_grand_pipeline_loop(
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcDependency>| {
             dependency_diffs.read().as_deref().and_then(|diffs| {
                 update_with_actual(store, diffs, true, true);
-                watch!(diffs);
-                watch!(store);
                 Ok(())
             });
 
@@ -1350,7 +1348,8 @@ fn s_running_f_wait_process<'a>(
                 .as_mut()
                 .ok_or_else(|| anyhow!("Cannot find process"))?;
             watch!(&process);
-            match process.poll() {
+            let poll_result = process.poll();
+            match poll_result {
                 // Still running:
                 None => {
                     watch!(process);
