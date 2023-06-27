@@ -611,28 +611,30 @@ fn step_state_bulletin(
     kill_signal_receiver: Receiver<bool>,
 ) -> Result<()> {
     let mut select = Select::new();
-    // We set index 0 as the kill switch
-    select.recv(&kill_signal_receiver);
     for (_, r) in state_senders.iter() {
         select.recv(r);
     }
     loop {
         watch!(select);
-        let index = select.ready();
-        if index != 0 {
-            let state_receiver_index = index - 1;
-            let res = state_senders[state_receiver_index].1.recv()?;
+        if let Ok(index) = select.ready_timeout(Duration::from_millis(1000)) {
+            let res = state_senders[index].1.recv()?;
             if let Some(state) = res {
-                let step_e = state_senders[state_receiver_index].0;
+                let step_e = state_senders[index].0;
                 current_states.write()?.insert(step_e, state.clone());
                 notifier.send(Some((step_e, state)))?;
-            } else {
-                // Dependency channels are closed due to an error. We're closing too.
-                notifier.send(None)?;
-                return Err(anyhow!("Dependency channels closed due to an error.").into());
             }
         } else {
-            return Ok(());
+            if current_states
+                .read()?
+                .iter()
+                .all(|(_, s)| matches!(s, XvcStepState::Done(_) | XvcStepState::Broken(_)))
+            {
+                return Ok(());
+            }
+
+            if kill_signal_receiver.try_recv().is_ok() {
+                return Ok(());
+            }
         }
     }
 }
