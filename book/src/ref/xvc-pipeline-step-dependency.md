@@ -126,10 +126,7 @@ $ xvc pipeline step update --step-name file-dependency --when always
 Now the step will run even if none of the dependencies have changed.
 
 ```console
-$ xvc pipeline run
-[OUT] data.txt has changed
-
-[OUT] [EXIT] Successfully
+$ xvc --debug pipeline run
 
 ```
 
