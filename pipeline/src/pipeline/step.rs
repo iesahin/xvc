@@ -100,7 +100,6 @@ state_machine! {
             Begin => WaitingDependencySteps
         }
 
-
         DependencyStepsFinishedBrokenIgnored {
             WaitingDependencySteps => CheckingOutputs
         }
@@ -148,6 +147,10 @@ state_machine! {
 
         ThoroughDiffsChanged {
             CheckingThoroughDiffs => ComparingDiffsAndOutputs
+        }
+
+        DiffsIgnored {
+            ComparingDiffsAndOutputs => WaitingToRun
         }
 
         DiffsHasChanged {

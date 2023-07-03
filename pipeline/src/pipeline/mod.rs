@@ -778,6 +778,9 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
                 WaitingToRunState::FromProcessPoolFull => {
                     s_waiting_to_run_f_process_pool_full(s, step_params)?
                 }
+                WaitingToRunState::FromDiffsIgnored => {
+                    s_waiting_to_run_f_diffs_ignored(s, step_params)?
+                }
             },
             XvcStepState::Running(s) => match s {
                 RunningState::FromStartProcess => s_running_f_start_process(s, step_params)?,
@@ -1019,7 +1022,7 @@ fn s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed<'a>(
     s: &ComparingDiffsAndOutputsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    // Run if we have missing outputs, otherwise skip
+    // Run if we have missing outputs, or dependencies have changed, or run conditions require to run always.
     let mut changed = false;
     {
         let output_diffs = params.output_diffs.read()?;
@@ -1042,7 +1045,15 @@ fn s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed<'a>(
     if changed {
         Ok((s.diffs_has_changed(), params))
     } else {
-        Ok((s.diffs_has_not_changed(), params))
+        let run_conditions = params.run_conditions;
+        if run_conditions.ignore_missing_outputs
+            && run_conditions.ignore_superficial_diffs
+            && run_conditions.ignore_thorough_diffs
+        {
+            Ok((s.diffs_ignored(), params))
+        } else {
+            Ok((s.diffs_has_not_changed(), params))
+        }
     }
 }
 
@@ -1421,6 +1432,18 @@ fn s_waiting_to_run_f_process_pool_full<'a>(
     }
 }
 fn s_waiting_to_run_f_diffs_has_changed<'a>(
+    s: &WaitingToRunState,
+    params: StepStateParams<'a>,
+) -> StateTransition<'a> {
+    watch!(params);
+    if params.available_process_slots.read()?.gt(&0) {
+        Ok((s.start_process(), params))
+    } else {
+        Ok((s.process_pool_full(), params))
+    }
+}
+
+fn s_waiting_to_run_f_diffs_ignored<'a>(
     s: &WaitingToRunState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
