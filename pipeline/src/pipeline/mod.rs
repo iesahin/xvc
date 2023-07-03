@@ -973,39 +973,6 @@ fn s_waiting_dependency_steps_f_run_conditional<'a>(
     }
 }
 
-fn s_waiting_dependency_steps<'a>(
-    s: &WaitingDependencyStepsState,
-    params: StepStateParams<'a>,
-) -> StateTransition<'a> {
-    if !params.run_conditions.wait_running_dep_steps {
-        return Ok((s.dependency_steps_finished_successfully(), params));
-    }
-    let dep_states = params.dependency_states.clone();
-    // if there are no dependencies, we can claim successfully finished
-    if dep_states.read()?.len() == 0 {
-        return Ok((s.dependency_steps_finished_successfully(), params));
-    }
-
-    // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
-    if dep_states
-        .read()?
-        .iter()
-        .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Done(_)))
-    {
-        Ok((s.dependency_steps_finished_successfully(), params))
-    } else if dep_states.read()?.iter().all(|(_, dep_state)| {
-        matches!(dep_state, &XvcStepState::Done(_)) || matches!(dep_state, &XvcStepState::Broken(_))
-    }) {
-        if params.run_conditions.ignore_broken_dep_steps {
-            Ok((s.dependency_steps_finished_broken_ignored(), params))
-        } else {
-            Ok((s.dependency_steps_finished_broken(), params))
-        }
-    } else {
-        Ok((s.dependency_steps_running(), params))
-    }
-}
-
 fn s_comparing_diffs_and_outputs_f_thorough_diffs_changed<'a>(
     s: &ComparingDiffsAndOutputsState,
     params: StepStateParams<'a>,
@@ -1046,6 +1013,7 @@ fn s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed<'a>(
         Ok((s.diffs_has_changed(), params))
     } else {
         let run_conditions = params.run_conditions;
+        watch!(run_conditions);
         if run_conditions.ignore_missing_outputs
             && run_conditions.ignore_superficial_diffs
             && run_conditions.ignore_thorough_diffs
