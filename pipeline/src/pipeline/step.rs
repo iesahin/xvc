@@ -149,7 +149,7 @@ state_machine! {
             CheckingThoroughDiffs => ComparingDiffsAndOutputs
         }
 
-        DiffsIgnored {
+        RunAlways {
             ComparingDiffsAndOutputs => WaitingToRun
         }
 

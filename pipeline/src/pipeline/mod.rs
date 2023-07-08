@@ -176,6 +176,7 @@ use step::*;
 #[derive(Clone, Debug, Copy)]
 struct RunConditions {
     never: bool,
+    always: bool,
     wait_running_dep_steps: bool,
     ignore_broken_dep_steps: bool,
     ignore_missing_dependencies: bool,
@@ -357,6 +358,7 @@ pub fn the_grand_pipeline_loop(
 
     let run_never = RunConditions {
         never: true,
+        always: false,
         ignore_missing_outputs: false,
         ignore_missing_dependencies: false,
         wait_running_dep_steps: false,
@@ -369,6 +371,7 @@ pub fn the_grand_pipeline_loop(
     //  Makefile behavior `dependencies_new` can be set to `true`.
     let run_calculated = RunConditions {
         never: false,
+        always: false,
         wait_running_dep_steps: true,
         ignore_broken_dep_steps: false,
         ignore_missing_outputs: true,
@@ -379,6 +382,7 @@ pub fn the_grand_pipeline_loop(
 
     let run_always = RunConditions {
         never: false,
+        always: true,
         ignore_missing_outputs: true,
         ignore_missing_dependencies: true,
         wait_running_dep_steps: true,
@@ -722,7 +726,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
 
             XvcStepState::NoNeedToRun(s) => match s {
                 NoNeedToRunState::FromRunNever => s_no_need_to_run_f_run_never(s, step_params)?,
-                // s_no_need_to_run_f_superficial_diffs_not_changed(s, params)?
                 NoNeedToRunState::FromDiffsHasNotChanged => {
                     s_no_need_to_run_f_diffs_not_changed(s, step_params)?
                 }
@@ -778,9 +781,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
                 WaitingToRunState::FromProcessPoolFull => {
                     s_waiting_to_run_f_process_pool_full(s, step_params)?
                 }
-                WaitingToRunState::FromDiffsIgnored => {
-                    s_waiting_to_run_f_diffs_ignored(s, step_params)?
-                }
+                WaitingToRunState::FromRunAlways => s_waiting_to_run_f_run_always(s, step_params)?,
             },
             XvcStepState::Running(s) => match s {
                 RunningState::FromStartProcess => s_running_f_start_process(s, step_params)?,
@@ -989,6 +990,10 @@ fn s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed<'a>(
     s: &ComparingDiffsAndOutputsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
+    if params.run_conditions.always {
+        return Ok((s.run_always(), params));
+    }
+
     // Run if we have missing outputs, or dependencies have changed, or run conditions require to run always.
     let mut changed = false;
     {
@@ -1012,16 +1017,7 @@ fn s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed<'a>(
     if changed {
         Ok((s.diffs_has_changed(), params))
     } else {
-        let run_conditions = params.run_conditions;
-        watch!(run_conditions);
-        if run_conditions.ignore_missing_outputs
-            && run_conditions.ignore_superficial_diffs
-            && run_conditions.ignore_thorough_diffs
-        {
-            Ok((s.diffs_ignored(), params))
-        } else {
-            Ok((s.diffs_has_not_changed(), params))
-        }
+        Ok((s.diffs_has_not_changed(), params))
     }
 }
 
@@ -1029,10 +1025,15 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
     s: &ComparingDiffsAndOutputsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
+    if params.run_conditions.always {
+        return Ok((s.run_always(), params));
+    }
+
     info!(
         params.output_snd,
         "[{}] No changed dependencies. Skipping thorough comparison.", params.step.name
     );
+
     let mut changed = false;
     {
         let output_diffs = params.output_diffs.read()?;
@@ -1051,6 +1052,7 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
             changed = false;
         }
     }
+
     if changed {
         Ok((s.diffs_has_changed(), params))
     } else {
@@ -1411,7 +1413,7 @@ fn s_waiting_to_run_f_diffs_has_changed<'a>(
     }
 }
 
-fn s_waiting_to_run_f_diffs_ignored<'a>(
+fn s_waiting_to_run_f_run_always<'a>(
     s: &WaitingToRunState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
