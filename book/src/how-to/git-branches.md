@@ -23,19 +23,23 @@ $ git init --initial-branch=main
 ...
 $ xvc init
 ? 0
-[ERROR] Core Error: Cannot nest XVC repositories: [CWD]
 
 $ ls
+data.txt
 
 $ xvc --to-branch data-file file track data.txt
-[ERROR] File Error: [E2004] Requires xvc repository.
+Switched to a new branch 'data-file'
 
 $ git branch
+* data-file
+  main
 
 $ git status -s
 
 $ xvc file list data.txt
-[ERROR] File Error: [E2004] Requires xvc repository.
+FC          19 2023-06-08 11:47:18 c85f3e81 c85f3e81 data.txt
+Total #: 1 Workspace Size:          19 Cached Size:          19
+
 
 ```
 
@@ -45,9 +49,12 @@ If you return to `main` branch, you'll see the file is tracked by neither Git no
 $ git checkout main
 ...
 $ xvc file list data.txt
-[ERROR] File Error: [E2004] Requires xvc repository.
+FX          19 2023-06-08 11:47:18          c85f3e81 data.txt
+Total #: 1 Workspace Size:          19 Cached Size:           0
+
 
 $ git status -s
+?? data.txt
 
 ```
 
@@ -56,13 +63,11 @@ We want this to work only in data
 
 ```console
 $ xvc --from-ref data-file pipeline step new --step-name to-uppercase --command 'cat data.txt | tr a-z A-Z > uppercase.txt'
-[ERROR] [E2004] Requires xvc repository.
+Switched to branch 'data-file'
 
 $ xvc pipeline step dependency --step-name to-uppercase --file data.txt 
-[ERROR] [E2004] Requires xvc repository.
 
 $ xvc pipeline step output --step-name to-uppercase --output-file uppercase.txt
-[ERROR] [E2004] Requires xvc repository.
 
 ```
 
@@ -72,9 +77,14 @@ Now, we want to have this new version of data available only in `uppercase` bran
 
 ```console
 $ xvc --from-ref data-file --to-branch uppercase pipeline run
-[ERROR] [E2004] Requires xvc repository.
+Already on 'data-file'
+[OUT] [to-uppercase]  
+Switched to a new branch 'uppercase'
 
 $ git branch
+  data-file
+  main
+* uppercase
 
 ```
 

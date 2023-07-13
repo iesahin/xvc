@@ -21,7 +21,8 @@ $ xvc pipeline step dependency --step-name world --step hello
 When run, the dependency will be run first and the step will be run after.
 
 ```console
-$ xvc pipeline run
-[ERROR] Pipeline Error: Step file-dependency not found in pipeline
+$ xvc --debug pipeline run
+[OUT] [hello] hello
+
 
 ```
