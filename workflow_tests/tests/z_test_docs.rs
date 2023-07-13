@@ -124,6 +124,8 @@ fn link_to_docs() -> Result<()> {
 #[test]
 #[cfg(target_os = "macos")]
 fn z_doc_tests() -> Result<()> {
+    use std::time::Duration;
+
     link_to_docs()?;
 
     let xvc_th = escargot::CargoBuild::new()
@@ -147,6 +149,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("perl", which::which("perl"))
         .register_bin("tree", which::which("tree"))
         .case("docs/*/*.md")
+        .timeout(Duration::from_secs(10))
         // We skip this for the time being.
         .skip("docs/start/ml.md");
 
