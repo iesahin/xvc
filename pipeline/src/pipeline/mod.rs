@@ -822,6 +822,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
             },
         };
 
+        watch!(step.name);
         watch!(&r_next_state);
         step_state = r_next_state;
         watch!(&step_state);
@@ -952,6 +953,7 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
                 params.output_snd,
                 "Dependency steps are running for step {}", params.step.name
             );
+            watch!(params.step.name);
             sleep(Duration::from_millis(params.process_poll_milliseconds));
         }
     }
