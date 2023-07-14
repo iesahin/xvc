@@ -915,41 +915,45 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
     s: &WaitingDependencyStepsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let dep_states = params.dependency_states.clone();
+    loop {
+        let dep_states = params.dependency_states.clone();
 
-    // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
-    if dep_states
-        .read()?
-        .iter()
-        .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Done(_)))
-    {
-        info!(
-            params.output_snd,
-            "Dependency steps completed successfully for step {}", params.step.name
-        );
-        Ok((s.dependency_steps_finished_successfully(), params))
-    } else if dep_states.read()?.iter().all(|(_, dep_state)| {
-        matches!(dep_state, &XvcStepState::Done(_)) || matches!(dep_state, &XvcStepState::Broken(_))
-    }) {
-        if params.run_conditions.ignore_broken_dep_steps {
+        // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
+        if dep_states
+            .read()?
+            .iter()
+            .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Done(_)))
+        {
             info!(
                 params.output_snd,
-                "Dependency steps completed for step {} (ignoring broken steps)", params.step.name
+                "Dependency steps completed successfully for step {}", params.step.name
             );
-            Ok((s.dependency_steps_finished_broken_ignored(), params))
+            return Ok((s.dependency_steps_finished_successfully(), params));
+        } else if dep_states.read()?.iter().all(|(_, dep_state)| {
+            matches!(dep_state, &XvcStepState::Done(_))
+                || matches!(dep_state, &XvcStepState::Broken(_))
+        }) {
+            if params.run_conditions.ignore_broken_dep_steps {
+                info!(
+                    params.output_snd,
+                    "Dependency steps completed for step {} (ignoring broken steps)",
+                    params.step.name
+                );
+                return Ok((s.dependency_steps_finished_broken_ignored(), params));
+            } else {
+                info!(
+                    params.output_snd,
+                    "Dependency steps are broken for step {}", params.step.name
+                );
+                return Ok((s.dependency_steps_finished_broken(), params));
+            }
         } else {
-            info!(
+            debug!(
                 params.output_snd,
-                "Dependency steps are broken for step {}", params.step.name
+                "Dependency steps are running for step {}", params.step.name
             );
-            Ok((s.dependency_steps_finished_broken(), params))
+            sleep(Duration::from_millis(params.process_poll_milliseconds));
         }
-    } else {
-        debug!(
-            params.output_snd,
-            "Dependency steps are running for step {}", params.step.name
-        );
-        Ok((s.dependency_steps_running(), params))
     }
 }
 
