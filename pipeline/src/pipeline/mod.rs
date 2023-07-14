@@ -699,7 +699,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     loop {
         // Send the state first
         step_state_sender.send(Some(step_state.clone()))?;
-
+        watch!(&step_state);
         match &step_state {
             XvcStepState::Done(_) | XvcStepState::Broken(_) => {
                 // We're done. We can return.
