@@ -1072,6 +1072,7 @@ fn s_checking_superficial_diffs<'a>(
 ) -> StateTransition<'a> {
     // if no dependencies, we assume the step needs to run always.
     if params.step_dependencies.is_empty() {
+        watch!(params.step.name);
         return Ok((s.superficial_diffs_changed(), params));
     }
 
@@ -1095,7 +1096,7 @@ fn s_checking_superficial_diffs<'a>(
             dependency_diffs.insert(dep_e, diff);
         }
     }
-
+    watch!(changed);
     if changed {
         Ok((s.superficial_diffs_changed(), params))
     } else {
@@ -1118,7 +1119,6 @@ fn s_checking_thorough_diffs_f_superficial_diffs_changed<'a>(
     s: &CheckingThoroughDiffsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let step_e = params.step_e;
     let deps = params.step_dependencies;
     watch!(deps.is_empty());
     // Normally this should be checked in the previous state, but we check it here just in case
