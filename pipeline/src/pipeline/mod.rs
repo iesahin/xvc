@@ -1070,6 +1070,7 @@ fn s_checking_superficial_diffs<'a>(
     s: &CheckingSuperficialDiffsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
+    watch!(params.step_dependencies.len());
     // if no dependencies, we assume the step needs to run always.
     if params.step_dependencies.is_empty() {
         watch!(params.step.name);
