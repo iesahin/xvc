@@ -700,23 +700,9 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         // Send the state first
         step_state_sender.send(Some(step_state.clone()))?;
         watch!(&step_state);
-        match &step_state {
-            XvcStepState::Done(_) | XvcStepState::Broken(_) => {
-                // We're done. We can return.
-                return Ok(());
-            }
-            _ => {
-                // We're not done yet. Keep looping.
-                // Block on other states changes
-                if other_steps.len() > 0 {
-                    let some_state = state_notifier.recv()?;
-                    if let Some((xe, state)) = some_state {
-                        if xe == step_e {
-                            continue;
-                        }
-                    }
-                }
-            }
+        if matches!(step_state, XvcStepState::Done(_) | XvcStepState::Broken(_)) {
+            // We're done. We can return.
+            return Ok(());
         }
 
         let (r_next_state, next_params) = match &step_state {
