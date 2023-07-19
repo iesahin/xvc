@@ -903,11 +903,13 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     loop {
-        let dep_states = params.dependency_states.clone();
+        let dep_states_clone = params.dependency_states.clone();
+        let dep_states = dep_states_clone.read()?;
+
+        watch!(dep_states);
 
         // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
         if dep_states
-            .read()?
             .iter()
             .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Done(_)))
         {
@@ -916,10 +918,10 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
                 "Dependency steps completed successfully for step {}", params.step.name
             );
             return Ok((s.dependency_steps_finished_successfully(), params));
-        } else if dep_states.read()?.iter().all(|(_, dep_state)| {
-            matches!(dep_state, &XvcStepState::Done(_))
-                || matches!(dep_state, &XvcStepState::Broken(_))
-        }) {
+        } else if dep_states
+            .iter()
+            .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Broken(_)))
+        {
             if params.run_conditions.ignore_broken_dep_steps {
                 info!(
                     params.output_snd,
