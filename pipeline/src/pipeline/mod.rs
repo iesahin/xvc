@@ -205,7 +205,7 @@ pub struct StepStateParams<'a> {
     step_e: XvcEntity,
     step: &'a XvcStep,
     step_command: &'a XvcStepCommand,
-    dependency_states: Arc<RwLock<HStore<XvcStepState>>>,
+    current_states: Arc<RwLock<HStore<XvcStepState>>>,
     step_timeout: &'a Duration,
 
     step_dependencies: &'a HStore<XvcDependency>,
@@ -652,17 +652,9 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         .filter_map(|(e, _)| if *e != step_e { Some(*e) } else { None })
         .collect();
 
-    let dependencies = dependencies(step_e, &params.dependency_graph)?;
-    // We'll update these states internally and check for actions
-    let mut dependency_states = Arc::new(RwLock::new(
-        dependencies
-            .iter()
-            .map(|e| (*e, XvcStepState::begin()))
-            .collect(),
-    ));
     let state_notifier = params.state_notifier.clone();
     let step_state_sender = params.state_sender;
-    let current_states = params.current_states;
+    let current_states = params.current_states.clone();
     let mut step_state = XvcStepState::begin();
     let step_dependencies = params.recorded_dependencies.children_of(&step_e)?;
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
@@ -675,7 +667,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let mut step_params = StepStateParams {
         step_e,
         step,
-        dependency_states: dependency_states.clone(),
         output_snd: &params.output_snd,
         algorithm: params.algorithm,
         step_command,
@@ -683,6 +674,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         // TODO: Convert this to AtomicUsize
         available_process_slots: Arc::new(RwLock::new(1)),
         terminate_timeout_processes: params.terminate_on_timeout,
+        current_states,
         step_timeout: params.step_timeout,
         run_conditions: &params.run_conditions,
         xvc_root: params.xvc_root,
@@ -903,8 +895,20 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     loop {
-        let dep_states_clone = params.dependency_states.clone();
-        let dep_states = dep_states_clone.read()?;
+        let dependencies = params.step_dependencies;
+        // We'll update these states internally and check for actions
+        let current_states = params.current_states.clone();
+        let dep_states = current_states
+            .read()?
+            .iter()
+            .filter_map(|(step_e, state)| {
+                if dependencies.contains_key(step_e) {
+                    Some((*step_e, state.clone()))
+                } else {
+                    None
+                }
+            })
+            .collect::<HStore<_>>();
 
         watch!(dep_states);
 
@@ -951,9 +955,8 @@ fn s_waiting_dependency_steps_f_run_conditional<'a>(
     s: &WaitingDependencyStepsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let dependency_states = params.dependency_states.clone();
-
-    if dependency_states.read()?.len() == 0 {
+    let dependencies = params.step_dependencies;
+    if dependencies.len() == 0 {
         info!(
             params.output_snd,
             "No dependency steps for step {}", params.step.name

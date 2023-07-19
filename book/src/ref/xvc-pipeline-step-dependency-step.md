@@ -51,135 +51,135 @@ $ xvc --debug pipeline run
         XvcConfigMap {
             source: Default,
             map: {
-                "file.track.force": Boolean(
+                "file.recheck.method": String(
+                    "copy",
+                ),
+                "file.carry-in.force": Boolean(
                     false,
                 ),
-                "file.track.no_commit": Boolean(
-                    false,
+                "pipeline.current_pipeline": String(
+                    "default",
                 ),
-                "cache.algorithm": String(
-                    "blake3",
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
-                "git.auto_stage": Boolean(
-                    false,
+                "core.verbosity": String(
+                    "error",
                 ),
-                "file.list.sort": String(
-                    "name-desc",
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "core.guid": String(
+                    "dc2cce7e8228a107",
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
                 ),
                 "pipeline.default": String(
                     "default",
                 ),
-                "git.auto_commit": Boolean(
-                    true,
+                "git.command": String(
+                    "git",
                 ),
-                "file.track.no_parallel": Boolean(
+                "file.track.no_commit": Boolean(
                     false,
                 ),
                 "file.list.recursive": Boolean(
                     false,
                 ),
-                "core.guid": String(
-                    "feceb1471d9fefc4",
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
                 "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "file.track.no_parallel": Boolean(
                     false,
                 ),
                 "file.list.format": String(
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "file.carry-in.no_parallel": Boolean(
+                "git.auto_stage": Boolean(
                     false,
-                ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "git.command": String(
-                    "git",
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.recheck.method": String(
-                    "copy",
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "file.list.recursive": Boolean(
-                    false,
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "core.guid": String(
-                    "b52d898f049c2e71",
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "git.auto_stage": Boolean(
-                    false,
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "pipeline.default": String(
-                    "default",
-                ),
-                "file.list.no_summary": Boolean(
-                    false,
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
                 "git.command": String(
                     "git",
                 ),
                 "pipeline.default_params_file": String(
                     "params.yaml",
                 ),
+                "core.guid": String(
+                    "66e7d5b26275a147",
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "pipeline.default": String(
+                    "default",
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "file.recheck.method": String(
+                    "copy",
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "git.auto_stage": Boolean(
+                    false,
+                ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "core.verbosity": String(
+                    "error",
+                ),
                 "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "file.list.recursive": Boolean(
+                    false,
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.carry-in.force": Boolean(
                     false,
                 ),
             },
@@ -205,66 +205,6 @@ $ xvc --debug pipeline run
         },
     ],
     the_config: {
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
-        "file.list.sort": XvcConfigValue {
-            source: Project,
-            value: String(
-                "name-desc",
-            ),
-        },
-        "git.use_git": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "file.track.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.carry-in.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "cache.algorithm": XvcConfigValue {
-            source: Project,
-            value: String(
-                "blake3",
-            ),
-        },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "b52d898f049c2e71",
-            ),
-        },
-        "file.track.no_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "git.auto_stage": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.track.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
         "file.track.text_or_binary": XvcConfigValue {
             source: Project,
             value: String(
@@ -277,50 +217,8 @@ $ xvc --debug pipeline run
                 false,
             ),
         },
-        "file.carry-in.no_parallel": XvcConfigValue {
+        "file.track.force": XvcConfigValue {
             source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
-            ),
-        },
-        "git.auto_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "core.verbosity": XvcConfigValue {
-            source: CommandLine,
-            value: String(
-                "quiet",
-            ),
-        },
-        "file.recheck.method": XvcConfigValue {
-            source: Project,
-            value: String(
-                "copy",
-            ),
-        },
-        "pipeline.current_pipeline": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
             value: Boolean(
                 false,
             ),
@@ -331,10 +229,112 @@ $ xvc --debug pipeline run
                 false,
             ),
         },
+        "file.recheck.method": XvcConfigValue {
+            source: Project,
+            value: String(
+                "copy",
+            ),
+        },
+        "file.track.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.auto_stage": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.auto_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "core.quiet": XvcConfigValue {
+            source: CommandLine,
+            value: Boolean(
+                false,
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
+            ),
+        },
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.list.sort": XvcConfigValue {
+            source: Project,
+            value: String(
+                "name-desc",
+            ),
+        },
+        "pipeline.current_pipeline": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "cache.algorithm": XvcConfigValue {
+            source: Project,
+            value: String(
+                "blake3",
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "66e7d5b26275a147",
+            ),
+        },
         "file.list.format": XvcConfigValue {
             source: Project,
             value: String(
                 "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+            ),
+        },
+        "core.verbosity": XvcConfigValue {
+            source: CommandLine,
+            value: String(
+                "quiet",
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.carry-in.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.use_git": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "git.command": XvcConfigValue {
+            source: Project,
+            value: String(
+                "git",
             ),
         },
     },
@@ -344,7 +344,7 @@ $ xvc --debug pipeline run
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"feceb1471d9fefc4/"
+guid = /"dc2cce7e8228a107/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -483,11 +483,11 @@ default_params_file = /"params.yaml/"
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1689788365469672",
-    "[CWD]/.xvc/ec/1689788365472810",
-    "[CWD]/.xvc/ec/1689788365545136",
-    "[CWD]/.xvc/ec/1689788365614562",
-    "[CWD]/.xvc/ec/1689788365687416",
+    "[CWD]/.xvc/ec/1689789075618228",
+    "[CWD]/.xvc/ec/1689789075621709",
+    "[CWD]/.xvc/ec/1689789075693403",
+    "[CWD]/.xvc/ec/1689789075765633",
+    "[CWD]/.xvc/ec/1689789075836888",
 ]
 [TRACE][pipeline/src/lib.rs::350] name: Some(
     "default",
@@ -508,14 +508,14 @@ default_params_file = /"params.yaml/"
     "[CWD]",
 )
 [TRACE][walker/src/notify.rs::160] watcher: FsEventWatcher {
-    paths: 0x0000600002f7c030,
+    paths: 0x0000600000000000,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000600001064150,
+    event_handler: 0x0000600003f1c1f0,
     runloop: Some(
         (
-            0x0000600001d78000,
+            0x000060000321c800,
             JoinHandle { .. },
         ),
     ),
@@ -527,24 +527,24 @@ default_params_file = /"params.yaml/"
 [TRACE][pipeline/src/pipeline/mod.rs::329] &dependency_graph: {
     XvcEntity(
         3,
-        10546156170059954894,
+        5012156582048127371,
     ): [
         (
             XvcEntity(
                 2,
-                16325283975799720960,
+                12869007782330632556,
             ),
             Incoming,
         ),
     ],
     XvcEntity(
         2,
-        16325283975799720960,
+        12869007782330632556,
     ): [
         (
             XvcEntity(
                 3,
-                10546156170059954894,
+                5012156582048127371,
             ),
             Outgoing,
         ),
@@ -552,8 +552,8 @@ default_params_file = /"params.yaml/"
 }
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(3, 10546156170059954894)" ]
-    1 [ label = "(2, 16325283975799720960)" ]
+    0 [ label = "(3, 5012156582048127371)" ]
+    1 [ label = "(2, 12869007782330632556)" ]
     1 -> 0 [ label = "Step" ]
 }
 
@@ -562,14 +562,14 @@ digraph {
     data: HStore {
         map: {
             XvcEntity(
-                2,
-                16325283975799720960,
+                3,
+                5012156582048127371,
             ): Begin(
                 FromInit,
             ),
             XvcEntity(
-                3,
-                10546156170059954894,
+                2,
+                12869007782330632556,
             ): Begin(
                 FromInit,
             ),
@@ -583,31 +583,30 @@ digraph {
     map: {
         XvcEntity(
             3,
-            10546156170059954894,
+            5012156582048127371,
         ): ScopedJoinHandle { .. },
         XvcEntity(
             2,
-            16325283975799720960,
+            12869007782330632556,
         ): ScopedJoinHandle { .. },
     },
 }
 [TRACE][pipeline/src/pipeline/mod.rs::550] (step_e, &jh): (
     XvcEntity(
         3,
-        10546156170059954894,
+        5012156582048127371,
     ),
     ScopedJoinHandle { .. },
 )
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: Begin(
     FromInit,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: Begin(
     FromInit,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "hello"
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: WaitingDependencySteps(
     FromRunConditional,
 )
@@ -617,53 +616,43 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: WaitingDependencySteps(
     FromRunConditional,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: WaitingDependencySteps(
-    FromRunConditional,
-)
-[TRACE][pipeline/src/pipeline/mod.rs::814] &step_state: WaitingDependencySteps(
-    FromRunConditional,
-)
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "hello"
-[TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: WaitingDependencySteps(
-    FromRunConditional,
-)
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: CheckingOutputs(
     FromDependencyStepsFinishedSuccessfully,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: WaitingDependencySteps(
-    FromDependencyStepsRunning,
-)
 [TRACE][pipeline/src/pipeline/mod.rs::814] &step_state: CheckingOutputs(
     FromDependencyStepsFinishedSuccessfully,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::814] &step_state: WaitingDependencySteps(
-    FromDependencyStepsRunning,
+[TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: WaitingDependencySteps(
+    FromRunConditional,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: CheckingOutputs(
     FromDependencyStepsFinishedSuccessfully,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::814] &step_state: WaitingDependencySteps(
+    FromRunConditional,
+)
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: WaitingDependencySteps(
-    FromDependencyStepsRunning,
+    FromRunConditional,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "hello"
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
+[TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::814] &step_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: WaitingDependencySteps(
+    FromDependencyStepsRunning,
+)
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::1059] params.step_dependencies.len(): 0
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::1062] params.step.name: "hello"
+[TRACE][pipeline/src/pipeline/mod.rs::1061] params.step_dependencies.len(): 0
+[TRACE][pipeline/src/pipeline/mod.rs::1064] params.step.name: "hello"
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "hello"
 [TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: CheckingThoroughDiffs(
     FromSuperficialDiffsChanged,
@@ -674,8 +663,10 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: CheckingThoroughDiffs(
     FromSuperficialDiffsChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::1110] deps.is_empty(): true
+[TRACE][pipeline/src/pipeline/mod.rs::1112] deps.is_empty(): true
+[TRACE][pipeline/src/pipeline/mod.rs::814] &step_state: WaitingDependencySteps(
+    FromDependencyStepsRunning,
+)
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "hello"
 [TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: ComparingDiffsAndOutputs(
     FromThoroughDiffsChanged,
@@ -686,7 +677,6 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: ComparingDiffsAndOutputs(
     FromThoroughDiffsChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "hello"
 [TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: WaitingToRun(
     FromDiffsHasChanged,
@@ -697,8 +687,21 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: WaitingToRun(
     FromDiffsHasChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::1401] params: StepStateParams {
+[TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: WaitingDependencySteps(
+    FromDependencyStepsRunning,
+)
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::1403] params: StepStateParams {
     xvc_root: XvcRootInner {
         absolute_path: AbsolutePath(
             "[CWD]",
@@ -720,135 +723,135 @@ digraph {
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.track.force": Boolean(
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
-                            false,
+                        "pipeline.current_pipeline": String(
+                            "default",
                         ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
+                        "core.verbosity": String(
+                            "error",
                         ),
-                        "file.list.sort": String(
-                            "name-desc",
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "core.guid": String(
+                            "dc2cce7e8228a107",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
                         ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "git.auto_commit": Boolean(
-                            true,
+                        "git.command": String(
+                            "git",
                         ),
-                        "file.track.no_parallel": Boolean(
+                        "file.track.no_commit": Boolean(
                             false,
                         ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "core.guid": String(
-                            "feceb1471d9fefc4",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
                         "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "file.track.no_parallel": Boolean(
                             false,
                         ),
                         "file.list.format": String(
                             "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
+                        "git.auto_stage": Boolean(
                             false,
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "b52d898f049c2e71",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
-                        ),
-                        "file.list.no_summary": Boolean(
-                            false,
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
                         "git.command": String(
                             "git",
                         ),
                         "pipeline.default_params_file": String(
                             "params.yaml",
                         ),
+                        "core.guid": String(
+                            "66e7d5b26275a147",
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "pipeline.default": String(
+                            "default",
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
                         "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
                     },
@@ -874,66 +877,6 @@ digraph {
                 },
             ],
             the_config: {
-                "git.command": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "git",
-                    ),
-                },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "name-desc",
-                    ),
-                },
-                "git.use_git": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "b52d898f049c2e71",
-                    ),
-                },
-                "file.track.no_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "git.auto_stage": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
                 "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
@@ -946,50 +889,8 @@ digraph {
                         false,
                     ),
                 },
-                "file.carry-in.no_parallel": XvcConfigValue {
+                "file.track.force": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default_params_file": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "params.yaml",
-                    ),
-                },
-                "git.auto_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.recheck.method": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "copy",
-                    ),
-                },
-                "pipeline.current_pipeline": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
                     value: Boolean(
                         false,
                     ),
@@ -1000,10 +901,112 @@ digraph {
                         false,
                     ),
                 },
+                "file.recheck.method": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.auto_stage": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.auto_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "pipeline.default_params_file": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "params.yaml",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
+                    ),
+                },
+                "pipeline.current_pipeline": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "66e7d5b26275a147",
+                    ),
+                },
                 "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
+                    value: String(
+                        "quiet",
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.use_git": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
                     ),
                 },
             },
@@ -1013,7 +1016,7 @@ digraph {
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"feceb1471d9fefc4/"
+guid = /"dc2cce7e8228a107/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -1158,27 +1161,13 @@ default_params_file = /"params.yaml/"
         ),
         entity_generator: XvcEntityGenerator {
             counter: 5,
-            random: 15788971521110003034,
+            random: 4914651369345530668,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                ".xvcignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    130,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1689788365,
-                        tv_nsec: 469921356,
-                    },
-                ),
-            },
             XvcPath(
                 ".gitignore",
             ): XvcMetadata {
@@ -1188,8 +1177,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1689788365,
-                        tv_nsec: 470009898,
+                        tv_sec: 1689789075,
+                        tv_nsec: 618569215,
+                    },
+                ),
+            },
+            XvcPath(
+                ".xvcignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    130,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1689789075,
+                        tv_nsec: 618480798,
                     },
                 ),
             },
@@ -1253,7 +1256,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         3,
-        10546156170059954894,
+        5012156582048127371,
     ),
     step: XvcStep {
         name: "hello",
@@ -1289,7 +1292,6 @@ default_params_file = /"params.yaml/"
 [TRACE][pipeline/src/pipeline/mod.rs::702] &step_state: Running(
     FromStartProcess,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
 [TRACE][walker/src/notify.rs::56] event: Ok(
     Event {
         kind: Create(
@@ -1318,13 +1320,6 @@ default_params_file = /"params.yaml/"
         attr:source: None,
     },
 )
-[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-pipeline-run-dir-store"
-[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
-    "[CWD]",
-)
 [TRACE][walker/src/notify.rs::56] event: Ok(
     Event {
         kind: Create(
@@ -1338,13 +1333,6 @@ default_params_file = /"params.yaml/"
         attr:info: None,
         attr:source: None,
     },
-)
-[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-path-store"
-[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
-    "[CWD]",
 )
 [TRACE][walker/src/notify.rs::56] event: Ok(
     Event {
@@ -1360,7 +1348,6 @@ default_params_file = /"params.yaml/"
         attr:source: None,
     },
 )
-[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-path-xvc-dependency-r1n-store"
 [TRACE][walker/src/notify.rs::56] event: Ok(
     Event {
         kind: Create(
@@ -1368,6 +1355,21 @@ default_params_file = /"params.yaml/"
         ),
         paths: [
             "[CWD]/.xvc/store/xvc-digests-store",
+        ],
+        attr:tracker: None,
+        attr:flag: None,
+        attr:info: None,
+        attr:source: None,
+    },
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-pipeline-run-dir-store"
+[TRACE][walker/src/notify.rs::56] event: Ok(
+    Event {
+        kind: Create(
+            Folder,
+        ),
+        paths: [
+            "[CWD]/.xvc/store/text-or-binary-store",
         ],
         attr:tracker: None,
         attr:flag: None,
@@ -1384,20 +1386,6 @@ default_params_file = /"params.yaml/"
             Folder,
         ),
         paths: [
-            "[CWD]/.xvc/store/text-or-binary-store",
-        ],
-        attr:tracker: None,
-        attr:flag: None,
-        attr:info: None,
-        attr:source: None,
-    },
-)
-[TRACE][walker/src/notify.rs::56] event: Ok(
-    Event {
-        kind: Create(
-            Folder,
-        ),
-        paths: [
             "[CWD]/.xvc/store/xvc-digests-xvc-step-r1n-store",
         ],
         attr:tracker: None,
@@ -1405,6 +1393,20 @@ default_params_file = /"params.yaml/"
         attr:info: None,
         attr:source: None,
     },
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-path-store"
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::87] abs_path: "[CWD]/.xvc/store/xvc-path-xvc-dependency-r1n-store"
+[TRACE][core/src/types/xvcpath.rs::88] current_dir: AbsolutePath(
+    "[CWD]",
 )
 [TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
     "[CWD]",
@@ -1437,6 +1439,25 @@ default_params_file = /"params.yaml/"
 [TRACE][core/src/types/xvcpath.rs::89] xvc_root.absolute_path(): AbsolutePath(
     "[CWD]",
 )
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::811] step.name: "hello"
 [TRACE][pipeline/src/pipeline/mod.rs::812] &r_next_state: Running(
     FromWaitProcess,
@@ -1448,7 +1469,7 @@ default_params_file = /"params.yaml/"
     FromWaitProcess,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::1290] params: StepStateParams {
+[TRACE][pipeline/src/pipeline/mod.rs::1292] params: StepStateParams {
     xvc_root: XvcRootInner {
         absolute_path: AbsolutePath(
             "[CWD]",
@@ -1470,135 +1491,135 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.track.force": Boolean(
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
-                            false,
+                        "pipeline.current_pipeline": String(
+                            "default",
                         ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
+                        "core.verbosity": String(
+                            "error",
                         ),
-                        "file.list.sort": String(
-                            "name-desc",
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "core.guid": String(
+                            "dc2cce7e8228a107",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
                         ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "git.auto_commit": Boolean(
-                            true,
+                        "git.command": String(
+                            "git",
                         ),
-                        "file.track.no_parallel": Boolean(
+                        "file.track.no_commit": Boolean(
                             false,
                         ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "core.guid": String(
-                            "feceb1471d9fefc4",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
                         "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "file.track.no_parallel": Boolean(
                             false,
                         ),
                         "file.list.format": String(
                             "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
+                        "git.auto_stage": Boolean(
                             false,
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "b52d898f049c2e71",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
-                        ),
-                        "file.list.no_summary": Boolean(
-                            false,
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
                         "git.command": String(
                             "git",
                         ),
                         "pipeline.default_params_file": String(
                             "params.yaml",
                         ),
+                        "core.guid": String(
+                            "66e7d5b26275a147",
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "pipeline.default": String(
+                            "default",
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
                         "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
                     },
@@ -1624,66 +1645,6 @@ default_params_file = /"params.yaml/"
                 },
             ],
             the_config: {
-                "git.command": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "git",
-                    ),
-                },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "name-desc",
-                    ),
-                },
-                "git.use_git": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "b52d898f049c2e71",
-                    ),
-                },
-                "file.track.no_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "git.auto_stage": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
                 "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
@@ -1696,50 +1657,8 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "file.carry-in.no_parallel": XvcConfigValue {
+                "file.track.force": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default_params_file": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "params.yaml",
-                    ),
-                },
-                "git.auto_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.recheck.method": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "copy",
-                    ),
-                },
-                "pipeline.current_pipeline": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
                     value: Boolean(
                         false,
                     ),
@@ -1750,10 +1669,112 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
+                "file.recheck.method": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.auto_stage": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.auto_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "pipeline.default_params_file": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "params.yaml",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
+                    ),
+                },
+                "pipeline.current_pipeline": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "66e7d5b26275a147",
+                    ),
+                },
                 "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
+                    value: String(
+                        "quiet",
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.use_git": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
                     ),
                 },
             },
@@ -1763,7 +1784,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"feceb1471d9fefc4/"
+guid = /"dc2cce7e8228a107/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -1908,27 +1929,13 @@ default_params_file = /"params.yaml/"
         ),
         entity_generator: XvcEntityGenerator {
             counter: 5,
-            random: 15788971521110003034,
+            random: 4914651369345530668,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                ".xvcignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    130,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1689788365,
-                        tv_nsec: 469921356,
-                    },
-                ),
-            },
             XvcPath(
                 ".gitignore",
             ): XvcMetadata {
@@ -1938,8 +1945,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1689788365,
-                        tv_nsec: 470009898,
+                        tv_sec: 1689789075,
+                        tv_nsec: 618569215,
+                    },
+                ),
+            },
+            XvcPath(
+                ".xvcignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    130,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1689789075,
+                        tv_nsec: 618480798,
                     },
                 ),
             },
@@ -1973,8 +1994,8 @@ default_params_file = /"params.yaml/"
             },
             birth: Some(
                 Instant {
-                    tv_sec: 398868,
-                    tv_nsec: 381798791,
+                    tv_sec: 399578,
+                    tv_nsec: 534956916,
                 },
             ),
             process: Some(
@@ -1995,7 +2016,7 @@ default_params_file = /"params.yaml/"
                         },
                     ),
                     child_state: Running {
-                        pid: 71489,
+                        pid: 27317,
                         ext: (),
                     },
                     detached: true,
@@ -2031,7 +2052,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         3,
-        10546156170059954894,
+        5012156582048127371,
     ),
     step: XvcStep {
         name: "hello",
@@ -2057,10 +2078,9 @@ default_params_file = /"params.yaml/"
         map: {},
     },
 }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
 [OUT] [hello] hello
  
-[TRACE][pipeline/src/pipeline/mod.rs::1322] command_process: CommandProcess {
+[TRACE][pipeline/src/pipeline/mod.rs::1324] command_process: CommandProcess {
     environment: {},
     step: XvcStep {
         name: "hello",
@@ -2070,8 +2090,8 @@ default_params_file = /"params.yaml/"
     },
     birth: Some(
         Instant {
-            tv_sec: 398868,
-            tv_nsec: 381798791,
+            tv_sec: 399578,
+            tv_nsec: 534956916,
         },
     ),
     process: Some(
@@ -2092,7 +2112,7 @@ default_params_file = /"params.yaml/"
                 },
             ),
             child_state: Running {
-                pid: 71489,
+                pid: 27317,
                 ext: (),
             },
             detached: true,
@@ -2103,7 +2123,7 @@ default_params_file = /"params.yaml/"
     stdout_receiver: Receiver { .. },
     stderr_receiver: Receiver { .. },
 }
-[TRACE][pipeline/src/pipeline/mod.rs::1328] &process: Popen {
+[TRACE][pipeline/src/pipeline/mod.rs::1330] &process: Popen {
     stdin: None,
     stdout: Some(
         File {
@@ -2120,17 +2140,17 @@ default_params_file = /"params.yaml/"
         },
     ),
     child_state: Running {
-        pid: 71489,
+        pid: 27317,
         ext: (),
     },
     detached: true,
 }
-[TRACE][pipeline/src/pipeline/mod.rs::1375] return_state: Some(
+[TRACE][pipeline/src/pipeline/mod.rs::1377] return_state: Some(
     Done(
         FromProcessCompletedSuccessfully,
     ),
 )
-[TRACE][pipeline/src/pipeline/mod.rs::1381] params: StepStateParams {
+[TRACE][pipeline/src/pipeline/mod.rs::1383] params: StepStateParams {
     xvc_root: XvcRootInner {
         absolute_path: AbsolutePath(
             "[CWD]",
@@ -2152,135 +2172,135 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "file.track.force": Boolean(
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
-                        "file.track.no_commit": Boolean(
-                            false,
+                        "pipeline.current_pipeline": String(
+                            "default",
                         ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
-                        "git.auto_stage": Boolean(
-                            false,
+                        "core.verbosity": String(
+                            "error",
                         ),
-                        "file.list.sort": String(
-                            "name-desc",
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "core.guid": String(
+                            "dc2cce7e8228a107",
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
                         ),
                         "pipeline.default": String(
                             "default",
                         ),
-                        "git.auto_commit": Boolean(
-                            true,
+                        "git.command": String(
+                            "git",
                         ),
-                        "file.track.no_parallel": Boolean(
+                        "file.track.no_commit": Boolean(
                             false,
                         ),
                         "file.list.recursive": Boolean(
                             false,
                         ),
-                        "core.guid": String(
-                            "feceb1471d9fefc4",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
                         "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "file.track.no_parallel": Boolean(
                             false,
                         ),
                         "file.list.format": String(
                             "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
+                        "git.auto_stage": Boolean(
                             false,
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "b52d898f049c2e71",
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
-                        ),
-                        "file.list.no_summary": Boolean(
-                            false,
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
                         "git.command": String(
                             "git",
                         ),
                         "pipeline.default_params_file": String(
                             "params.yaml",
                         ),
+                        "core.guid": String(
+                            "66e7d5b26275a147",
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "pipeline.default": String(
+                            "default",
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
                         "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.carry-in.force": Boolean(
                             false,
                         ),
                     },
@@ -2306,66 +2326,6 @@ default_params_file = /"params.yaml/"
                 },
             ],
             the_config: {
-                "git.command": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "git",
-                    ),
-                },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "name-desc",
-                    ),
-                },
-                "git.use_git": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "b52d898f049c2e71",
-                    ),
-                },
-                "file.track.no_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "git.auto_stage": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
                 "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
                     value: String(
@@ -2378,50 +2338,8 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
-                "file.carry-in.no_parallel": XvcConfigValue {
+                "file.track.force": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default_params_file": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "params.yaml",
-                    ),
-                },
-                "git.auto_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
-                    ),
-                },
-                "file.recheck.method": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "copy",
-                    ),
-                },
-                "pipeline.current_pipeline": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
                     value: Boolean(
                         false,
                     ),
@@ -2432,10 +2350,112 @@ default_params_file = /"params.yaml/"
                         false,
                     ),
                 },
+                "file.recheck.method": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.auto_stage": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.auto_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "pipeline.default_params_file": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "params.yaml",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
+                    ),
+                },
+                "pipeline.current_pipeline": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "66e7d5b26275a147",
+                    ),
+                },
                 "file.list.format": XvcConfigValue {
                     source: Project,
                     value: String(
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                    ),
+                },
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
+                    value: String(
+                        "quiet",
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.use_git": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
                     ),
                 },
             },
@@ -2445,7 +2465,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"feceb1471d9fefc4/"
+guid = /"dc2cce7e8228a107/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -2590,27 +2610,13 @@ default_params_file = /"params.yaml/"
         ),
         entity_generator: XvcEntityGenerator {
             counter: 5,
-            random: 15788971521110003034,
+            random: 4914651369345530668,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                ".xvcignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    130,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1689788365,
-                        tv_nsec: 469921356,
-                    },
-                ),
-            },
             XvcPath(
                 ".gitignore",
             ): XvcMetadata {
@@ -2620,8 +2626,22 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1689788365,
-                        tv_nsec: 470009898,
+                        tv_sec: 1689789075,
+                        tv_nsec: 618569215,
+                    },
+                ),
+            },
+            XvcPath(
+                ".xvcignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    130,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1689789075,
+                        tv_nsec: 618480798,
                     },
                 ),
             },
@@ -2655,8 +2675,8 @@ default_params_file = /"params.yaml/"
             },
             birth: Some(
                 Instant {
-                    tv_sec: 398868,
-                    tv_nsec: 381798791,
+                    tv_sec: 399578,
+                    tv_nsec: 534956916,
                 },
             ),
             process: Some(
@@ -2714,7 +2734,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         3,
-        10546156170059954894,
+        5012156582048127371,
     ),
     step: XvcStep {
         name: "hello",
@@ -2754,800 +2774,8774 @@ default_params_file = /"params.yaml/"
 [TRACE][pipeline/src/pipeline/mod.rs::550] (step_e, &jh): (
     XvcEntity(
         2,
-        16325283975799720960,
+        12869007782330632556,
     ),
     ScopedJoinHandle { .. },
 )
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 [TRACE][pipeline/src/pipeline/mod.rs::622] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
-[TRACE][pipeline/src/pipeline/mod.rs::942] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
+[TRACE][pipeline/src/pipeline/mod.rs::909] dep_states: HStore {
+    map: {
+        XvcEntity(
+            3,
+            5012156582048127371,
+        ): Begin(
+            FromInit,
+        ),
+    },
+}
+[TRACE][pipeline/src/pipeline/mod.rs::944] params.step.name: "world"
 
 ```
