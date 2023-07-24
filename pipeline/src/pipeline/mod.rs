@@ -559,11 +559,12 @@ pub fn the_grand_pipeline_loop(
         pmp_updater.join().unwrap().unwrap();
 
         // if all of the steps are done, we can end
-        if step_states
-            .read()?
-            .iter()
-            .all(|(_, step_s)| matches!(step_s, XvcStepState::Done(_)))
-        {
+        if step_states.read()?.iter().all(|(_, step_s)| {
+            matches!(
+                step_s,
+                XvcStepState::DoneByRunning(_) | XvcStepState::DoneWithoutRunning(_)
+            )
+        }) {
             watch!(step_states);
             Ok(true)
         } else {
@@ -628,11 +629,14 @@ fn step_state_bulletin(
                 notifier.send(Some((step_e, state)))?;
             }
         } else {
-            if current_states
-                .read()?
-                .iter()
-                .all(|(_, s)| matches!(s, XvcStepState::Done(_) | XvcStepState::Broken(_)))
-            {
+            if current_states.read()?.iter().all(|(_, s)| {
+                matches!(
+                    s,
+                    XvcStepState::DoneByRunning(_)
+                        | XvcStepState::DoneWithoutRunning(_)
+                        | XvcStepState::Broken(_)
+                )
+            }) {
                 return Ok(());
             }
 
@@ -692,7 +696,12 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         // Send the state first
         step_state_sender.send(Some(step_state.clone()))?;
         watch!(&step_state);
-        if matches!(step_state, XvcStepState::Done(_) | XvcStepState::Broken(_)) {
+        if matches!(
+            step_state,
+            XvcStepState::DoneByRunning(_)
+                | XvcStepState::DoneWithoutRunning(_)
+                | XvcStepState::Broken(_)
+        ) {
             // We're done. We can return.
             return Ok(());
         }
@@ -702,10 +711,15 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
                 BeginState::FromInit => s_begin_f_init(s, step_params)?,
             },
 
-            XvcStepState::NoNeedToRun(s) => match s {
-                NoNeedToRunState::FromRunNever => s_no_need_to_run_f_run_never(s, step_params)?,
-                NoNeedToRunState::FromDiffsHasNotChanged => {
+            XvcStepState::DoneWithoutRunning(s) => match s {
+                DoneWithoutRunningState::FromRunNever => {
+                    s_no_need_to_run_f_run_never(s, step_params)?
+                }
+                DoneWithoutRunningState::FromDiffsHasNotChanged => {
                     s_no_need_to_run_f_diffs_not_changed(s, step_params)?
+                }
+                DoneWithoutRunningState::FromKeepDone => {
+                    (XvcStepState::DoneWithoutRunning(s.clone()), step_params)
                 }
             },
             XvcStepState::WaitingDependencySteps(s) => match s {
@@ -781,14 +795,13 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
                 }
                 BrokenState::FromKeepBroken => (XvcStepState::Broken(s.clone()), step_params),
             },
-            XvcStepState::Done(s) => match s {
-                DoneState::FromCompletedWithoutRunningStep => {
-                    s_done_f_completed_without_running_step(s, step_params)?
-                }
-                DoneState::FromProcessCompletedSuccessfully => {
+            XvcStepState::DoneByRunning(s) => match s {
+                DoneByRunningState::FromProcessCompletedSuccessfully => {
                     s_done_f_process_completed_successfully(s, step_params)?
                 }
-                DoneState::FromKeepDone => (XvcStepState::Done(s.clone()), step_params),
+                DoneByRunningState::FromKeepDone => {
+                    (XvcStepState::DoneByRunning(s.clone()), step_params)
+                }
             },
             XvcStepState::CheckingSuperficialDiffs(s) => match s {
                 CheckingSuperficialDiffsState::FromCheckedOutputs => {
@@ -869,25 +882,25 @@ fn s_begin_f_init<'a>(s: &BeginState, params: StepStateParams<'a>) -> StateTrans
 }
 
 fn s_no_need_to_run_f_run_never<'a>(
-    s: &NoNeedToRunState,
+    s: &DoneWithoutRunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     info!(
         params.output_snd,
         "Step {} has run_never set to true. Skipping.", params.step.name
     );
-    Ok((s.completed_without_running_step(), params)) // s_done_f_completed_without_running_step
+    Ok((s.keep_done(), params))
 }
 
 fn s_no_need_to_run_f_diffs_not_changed<'a>(
-    s: &NoNeedToRunState,
+    s: &DoneWithoutRunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     info!(
         params.output_snd,
         "Dependencies for step {} hasn't changed. Skipping.", params.step.name
     );
-    Ok((s.completed_without_running_step(), params))
+    Ok((s.keep_done(), params))
 }
 
 fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
@@ -913,10 +926,12 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
         watch!(dep_states);
 
         // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
-        if dep_states
-            .iter()
-            .all(|(_, dep_state)| matches!(dep_state, &XvcStepState::Done(_)))
-        {
+        if dep_states.iter().all(|(_, dep_state)| {
+            matches!(
+                dep_state,
+                &XvcStepState::DoneByRunning(_) | &XvcStepState::DoneWithoutRunning(_)
+            )
+        }) {
             info!(
                 params.output_snd,
                 "Dependency steps completed successfully for step {}", params.step.name
@@ -1460,7 +1475,7 @@ fn s_broken_f_cannot_start_process<'a>(
 }
 
 /// Terminal state: Waits till the end of times
-fn s_done<'a>(s: &DoneState, params: StepStateParams<'a>) -> StateTransition<'a> {
+fn s_done<'a>(s: &DoneByRunningState, params: StepStateParams<'a>) -> StateTransition<'a> {
     debug!(
         params.output_snd,
         "Step {} is done. You shouldn't see this more than once.", params.step.name
@@ -1468,19 +1483,8 @@ fn s_done<'a>(s: &DoneState, params: StepStateParams<'a>) -> StateTransition<'a>
     Ok((s.keep_done(), params))
 }
 
-fn s_done_f_completed_without_running_step<'a>(
-    s: &DoneState,
-    params: StepStateParams<'a>,
-) -> StateTransition<'a> {
-    info!(
-        params.output_snd,
-        "Step {} is completed without running.", params.step.name
-    );
-    s_done(s, params)
-}
-
 fn s_done_f_process_completed_successfully<'a>(
-    s: &DoneState,
+    s: &DoneByRunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     s_done(s, params)

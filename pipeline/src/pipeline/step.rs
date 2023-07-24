@@ -58,7 +58,7 @@ impl XvcStep {
 // ```mermaid
 // stateDiagram-v2
 //     [*] --> Begin
-//     Begin --> NoNeedToRun: RunNever
+//     Begin --> DoneWithoutRunning: RunNever
 //     Begin --> WaitingDependencySteps: RunConditional
 //     WaitingDependencySteps --> WaitingDependencySteps: DependencyStepsRunning
 //     WaitingDependencySteps --> Broken: DependencyStepsFinishedBroken
@@ -73,8 +73,8 @@ impl XvcStep {
 //     CheckingThoroughDiffs --> ComparingDiffsAndOutputs: ThoroughDiffsNotChanged
 //     CheckingThoroughDiffs --> ComparingDiffsAndOutputs: ThoroughDiffsChanged
 //     ComparingDiffsAndOutputs --> WaitingToRun: DiffsHasChanged
-//     ComparingDiffsAndOutputs --> NoNeedToRun: DiffsHasNotChanged
-//     NoNeedToRun --> Done: CompletedWithoutRunningStep
+//     ComparingDiffsAndOutputs --> DoneWithoutRunning: DiffsHasNotChanged
+//     DoneWithoutRunning --> Done: CompletedWithoutRunningStep
 //     WaitingToRun --> WaitingToRun: ProcessPoolFull
 //     WaitingToRun --> Running: StartProcess
 //     WaitingToRun --> Broken: CannotStartProcess
@@ -93,7 +93,7 @@ state_machine! {
         InitialStates { Begin }
 
         RunNever {
-            Begin => NoNeedToRun
+            Begin => DoneWithoutRunning
         }
 
         RunConditional {
@@ -158,11 +158,7 @@ state_machine! {
         }
 
         DiffsHasNotChanged {
-            ComparingDiffsAndOutputs => NoNeedToRun
-        }
-
-        CompletedWithoutRunningStep {
-            NoNeedToRun => Done
+            ComparingDiffsAndOutputs => DoneWithoutRunning
         }
 
         ProcessPoolFull {
@@ -186,7 +182,7 @@ state_machine! {
         }
 
         ProcessCompletedSuccessfully {
-            Running => Done
+            Running => DoneByRunning
         }
 
         ProcessReturnedNonZero {
@@ -198,7 +194,11 @@ state_machine! {
         }
 
         KeepDone {
-            Done => Done
+            DoneByRunning => DoneByRunning
+        }
+
+        KeepDone {
+            DoneWithoutRunning => DoneWithoutRunning
         }
     }
 

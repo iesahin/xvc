@@ -7,7 +7,7 @@ Each step has a state that is updated as the pipeline is executed.
 
 stateDiagram-v2
     [*] --> Begin
-    Begin --> NoNeedToRun: RunNever
+    Begin --> DoneWithoutRunning: RunNever
     Begin --> WaitingDependencySteps: RunConditional
     WaitingDependencySteps --> WaitingDependencySteps: DependencyStepsRunning
     WaitingDependencySteps --> CheckingMissingDependencies: DependencyStepsFinishedSuccessfully
@@ -23,9 +23,9 @@ stateDiagram-v2
     CheckingTimestamps --> CheckingDependencyContentDigest: HasNoNewerDependencies
     CheckingTimestamps --> WaitingToRun: HasNewerDependencies
     CheckingDependencyContentDigest --> WaitingToRun: ContentDigestIgnored
-    CheckingDependencyContentDigest --> NoNeedToRun: ContentDigestNotChanged
+    CheckingDependencyContentDigest --> DoneWithoutRunning: ContentDigestNotChanged
     CheckingDependencyContentDigest --> WaitingToRun: ContentDigestChanged
-    NoNeedToRun --> Done: CompletedWithoutRunningStep
+    DoneWithoutRunning --> Done: CompletedWithoutRunningStep
     WaitingToRun --> WaitingToRun: ProcessPoolFull
     WaitingToRun --> Running: StartProcess
     WaitingToRun --> Broken: CannotStartProcess
@@ -43,7 +43,7 @@ stateDiagram-v2
 A step starts in the `Begin` state.
 It must wait for all its dependency steps if `--when` is set to `by_dependencies` (the default) in `xvc pipeline step
 new` or `xvc pipeline step update`.
-If this option is set to `never`, the step will never run and will move to the `NoNeedToRun` state just after begin.
+If this option is set to `never`, the step will never run and will move to the `DoneWithoutRunning` state just after begin.
 If this option is set to `always`, the step will run regardless of the changes in the dependencies and will move to the
 `WaitingDependencySteps` even if dependencies are missing, broken, or have not changed.
 
