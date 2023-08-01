@@ -1050,6 +1050,7 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
 
     // Check if the step dependencies have run
     {
+        watch!(params.step_dependencies);
         let done_by_running_dependencies = params
             .step_dependencies
             .iter()
