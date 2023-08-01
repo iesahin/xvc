@@ -660,6 +660,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let current_states = params.current_states.clone();
     let mut step_state = XvcStepState::begin();
     watch!(params.recorded_dependencies);
+    watch!(dependencies(step_e, params.dependency_graph)?);
     let step_dependencies = dependencies(step_e, params.dependency_graph)?
         .into_iter()
         .map(|xe| (xe, params.recorded_dependencies[&xe].clone()))
