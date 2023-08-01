@@ -234,7 +234,7 @@ struct StepThreadParams<'a> {
     current_pmm: Arc<RwLock<XvcPathMetadataMap>>,
     process_pool: Arc<RwLock<HStore<CommandProcess>>>,
     process_pool_size: usize,
-    recorded_dependencies: &'a R1NStore<XvcStep, XvcDependency>,
+    recorded_dependencies: &'a XvcStore<XvcDependency>,
     recorded_outputs: &'a R1NStore<XvcStep, XvcOutput>,
     recorded_xvc_digests: &'a R1NStore<XvcStep, XvcDigests>,
 
@@ -469,7 +469,7 @@ pub fn the_grand_pipeline_loop(
     let step_timeout = Duration::from_secs(default_step_timeout);
 
     let recorded_dependencies = xvc_root
-        .load_r1nstore::<XvcStep, XvcDependency>()
+        .load_store::<XvcDependency>()
         .expect("Cannot load store");
     let recorded_outputs = xvc_root
         .load_r1nstore::<XvcStep, XvcOutput>()
@@ -656,11 +656,13 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         .filter_map(|(e, _)| if *e != step_e { Some(*e) } else { None })
         .collect();
 
-    let state_notifier = params.state_notifier.clone();
     let step_state_sender = params.state_sender;
     let current_states = params.current_states.clone();
     let mut step_state = XvcStepState::begin();
-    let step_dependencies = params.recorded_dependencies.children_of(&step_e)?;
+    let step_dependencies = dependencies(step_e, params.dependency_graph)?
+        .into_iter()
+        .map(|xe| (xe, params.recorded_dependencies[&xe].clone()))
+        .collect::<HStore<_>>();
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
     let step_xvc_digests = params.recorded_xvc_digests.children_of(&step_e)?;
     let step = &params.steps[&step_e];
