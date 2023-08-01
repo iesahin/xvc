@@ -579,7 +579,7 @@ pub fn the_grand_pipeline_loop(
             dependency_diffs.read().as_deref().and_then(|diffs| {
                 update_with_actual(store, diffs, true, true);
                 Ok(())
-            });
+            })?;
 
             Ok(())
         })?;
@@ -659,6 +659,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let step_state_sender = params.state_sender;
     let current_states = params.current_states.clone();
     let mut step_state = XvcStepState::begin();
+    watch!(params.recorded_dependencies);
     let step_dependencies = dependencies(step_e, params.dependency_graph)?
         .into_iter()
         .map(|xe| (xe, params.recorded_dependencies[&xe].clone()))
