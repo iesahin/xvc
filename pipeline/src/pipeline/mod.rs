@@ -1056,12 +1056,18 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
         let done_by_running_dependencies = params
             .step_dependencies
             .iter()
-            .filter_map(
-                |(xe, xd)| match params.current_states.read().ok()?.get(xe) {
-                    Some(XvcStepState::DoneByRunning(_)) => Some((*xe, xd.clone())),
-                    _ => None,
-                },
-            )
+            .filter_map(|(xe, xd)| {
+                if matches!(xd, XvcDependency::Step(_))
+                    && matches!(
+                        params.current_states.read().ok()?.get(xe),
+                        Some(XvcStepState::DoneByRunning(_))
+                    )
+                {
+                    Some((*xe, xd.clone()))
+                } else {
+                    None
+                }
+            })
             .collect::<HStore<_>>();
 
         watch!(done_by_running_dependencies);
