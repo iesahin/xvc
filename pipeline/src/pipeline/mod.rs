@@ -1047,6 +1047,25 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
     );
 
     let mut changed = false;
+
+    // Check if the step dependencies have run
+    {
+        let done_by_running_dependencies = params
+            .step_dependencies
+            .iter()
+            .filter_map(
+                |(xe, xd)| match params.current_states.read().ok()?.get(xe) {
+                    Some(XvcStepState::DoneByRunning(_)) => Some((*xe, xd.clone())),
+                    _ => None,
+                },
+            )
+            .collect::<HStore<_>>();
+
+        if done_by_running_dependencies.len() > 0 {
+            changed = true;
+        }
+    }
+
     {
         let output_diffs = params.output_diffs.read()?;
         if output_diffs
