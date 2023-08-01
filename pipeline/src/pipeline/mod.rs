@@ -1061,6 +1061,8 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
             )
             .collect::<HStore<_>>();
 
+        watch!(done_by_running_dependencies);
+
         if done_by_running_dependencies.len() > 0 {
             changed = true;
         }
