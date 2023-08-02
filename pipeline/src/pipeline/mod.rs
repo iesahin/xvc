@@ -1090,10 +1090,12 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
                 params.output_snd,
                 "[{}] No missing Outputs and no changed dependencies", params.step.name
             );
-            changed = false;
+            // We don't update the state
+            changed = changed;
         }
     }
 
+    watch!(changed);
     if changed {
         Ok((s.diffs_has_changed(), params))
     } else {
