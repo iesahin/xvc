@@ -208,7 +208,8 @@ pub struct StepStateParams<'a> {
     current_states: Arc<RwLock<HStore<XvcStepState>>>,
     step_timeout: &'a Duration,
 
-    step_dependencies: &'a HStore<XvcDependency>,
+    recorded_dependencies: &'a XvcStore<XvcDependency>,
+    step_dependencies: &'a HashSet<XvcEntity>,
     step_outputs: &'a HStore<XvcOutput>,
     step_xvc_digests: &'a HStore<XvcDigests>,
 }
@@ -662,10 +663,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     watch!(params.recorded_dependencies);
     watch!(step_e);
     watch!(dependencies(step_e, params.dependency_graph)?);
-    let step_dependencies = dependencies(step_e, params.dependency_graph)?
-        .into_iter()
-        .map(|xe| (xe, params.recorded_dependencies[&xe].clone()))
-        .collect::<HStore<_>>();
+    let step_dependencies = dependencies(step_e, params.dependency_graph)?;
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
     let step_xvc_digests = params.recorded_xvc_digests.children_of(&step_e)?;
     let step = &params.steps[&step_e];
@@ -689,6 +687,8 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         xvc_root: params.xvc_root,
         pipeline_rundir: params.pipeline_rundir,
         pmm: params.current_pmm,
+
+        recorded_dependencies: params.recorded_dependencies,
         step_dependencies: &step_dependencies,
         step_outputs: &step_outputs,
         step_xvc_digests: &step_xvc_digests,

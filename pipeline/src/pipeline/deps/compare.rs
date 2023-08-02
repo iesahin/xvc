@@ -214,7 +214,7 @@ pub fn thorough_compare_dependency(
     stored_dependency_e: XvcEntity,
 ) -> Result<Diff<XvcDependency>> {
     let stored = cmp_params
-        .step_dependencies
+        .recorded_dependencies
         .get(&stored_dependency_e)
         .ok_or(anyhow!(
             "Stored dependency {:?} not found in step dependencies",
