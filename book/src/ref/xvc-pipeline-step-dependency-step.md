@@ -41,4 +41,6 @@ If you want to run the dependent always, you can set it to run always explicitly
 ```console
 $ xvc pipeline step update --step-name world --when always
 $ xvc pipeline run
+[OUT] [world] world
+
 ```
