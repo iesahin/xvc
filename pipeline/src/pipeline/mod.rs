@@ -920,7 +920,7 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
             .read()?
             .iter()
             .filter_map(|(step_e, state)| {
-                if dependencies.contains_key(step_e) {
+                if dependencies.contains(step_e) {
                     Some((*step_e, state.clone()))
                 } else {
                     None
@@ -1056,28 +1056,22 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
     // Check if the step dependencies have run
     {
         watch!(params.step_dependencies);
-        let done_by_running_dependencies = params
-            .step_dependencies
-            .iter()
-            .filter_map(|(xe, xd)| {
-                if matches!(xd, XvcDependency::Step(_))
-                    && matches!(
-                        params.current_states.read().ok()?.get(xe),
-                        Some(XvcStepState::DoneByRunning(_))
-                    )
-                {
-                    Some((*xe, xd.clone()))
+        // Check if there are any step dependencies that we depend and done by running
+        changed = params.step_dependencies.into_iter().any(|xe| {
+            if let Ok(hstore) = params.current_states.read() {
+                if let Some(s) = hstore.get(xe) {
+                    if matches!(s, XvcStepState::DoneByRunning(_)) {
+                        true
+                    } else {
+                        changed
+                    }
                 } else {
-                    None
+                    changed
                 }
-            })
-            .collect::<HStore<_>>();
-
-        watch!(done_by_running_dependencies);
-
-        if done_by_running_dependencies.len() > 0 {
-            changed = true;
-        }
+            } else {
+                changed
+            }
+        });
     }
 
     {
@@ -1119,7 +1113,7 @@ fn s_checking_superficial_diffs<'a>(
     let step_dependency_diffs: HStore<Diff<XvcDependency>> = params
         .step_dependencies
         .iter()
-        .map(|(dep_e, dep)| {
+        .map(|dep_e| {
             let cmp_diff = uwr!(
                 superficial_compare_dependency(&params, *dep_e),
                 params.output_snd
@@ -1216,7 +1210,7 @@ fn s_checking_thorough_diffs_f_superficial_diffs_ignored<'a>(
     let step_dependency_diffs: HStore<Diff<XvcDependency>> = params
         .step_dependencies
         .iter()
-        .map(|(dep_e, dep)| {
+        .map(|dep_e| {
             let cmp_diff = uwr!(
                 thorough_compare_dependency(&params, *dep_e),
                 params.output_snd
