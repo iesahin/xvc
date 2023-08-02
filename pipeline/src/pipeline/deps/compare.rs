@@ -213,13 +213,21 @@ pub fn thorough_compare_dependency(
     cmp_params: &StepStateParams,
     stored_dependency_e: XvcEntity,
 ) -> Result<Diff<XvcDependency>> {
-    let stored = cmp_params
-        .recorded_dependencies
-        .get(&stored_dependency_e)
-        .ok_or(anyhow!(
-            "Stored dependency {:?} not found in step dependencies",
-            stored_dependency_e
-        ))?;
+    let stored = if cmp_params.all_steps.contains_key(&stored_dependency_e) {
+        let step = cmp_params.all_steps[&stored_dependency_e].clone();
+        Ok(XvcDependency::Step(StepDep {
+            name: step.name.clone(),
+        }))
+    } else {
+        cmp_params
+            .recorded_dependencies
+            .get(&stored_dependency_e)
+            .cloned()
+            .ok_or(anyhow!(
+                "Stored dependency {:?} not found in step dependencies",
+                stored_dependency_e
+            ))
+    }?;
 
     let diff = match stored {
         // Step dependencies are handled differently
@@ -364,15 +372,23 @@ pub fn superficial_compare_dependency(
     cmp_params: &StepStateParams,
     stored_dependency_e: XvcEntity,
 ) -> Result<Diff<XvcDependency>> {
-    let stored = cmp_params
-        .recorded_dependencies
-        .get(&stored_dependency_e)
-        .ok_or(anyhow!(
-            "Stored dependency {:?} not found in step dependencies",
-            stored_dependency_e
-        ))?;
+    // If the dependency is a step, we reify it here
+    // Otherwise we search the dependencies for its key
+    let stored = if cmp_params.all_steps.contains_key(&stored_dependency_e) {
+        let step = cmp_params.all_steps[&stored_dependency_e].clone();
+        Ok(XvcDependency::Step(StepDep { name: step.name }))
+    } else {
+        cmp_params
+            .recorded_dependencies
+            .get(&stored_dependency_e)
+            .cloned()
+            .ok_or(anyhow!(
+                "Stored dependency {:?} not found in step dependencies",
+                stored_dependency_e
+            ))
+    }?;
 
-    let diff = match stored {
+    let diff = match &stored {
         // Step dependencies are handled differently
         XvcDependency::Step(_) => Diff::Skipped,
         XvcDependency::Generic(generic) => {

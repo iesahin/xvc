@@ -208,6 +208,7 @@ pub struct StepStateParams<'a> {
     current_states: Arc<RwLock<HStore<XvcStepState>>>,
     step_timeout: &'a Duration,
 
+    all_steps: &'a HStore<XvcStep>,
     recorded_dependencies: &'a XvcStore<XvcDependency>,
     step_dependencies: &'a HashSet<XvcEntity>,
     step_outputs: &'a HStore<XvcOutput>,
@@ -688,6 +689,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         pipeline_rundir: params.pipeline_rundir,
         pmm: params.current_pmm,
 
+        all_steps: params.steps,
         recorded_dependencies: params.recorded_dependencies,
         step_dependencies: &step_dependencies,
         step_outputs: &step_outputs,
