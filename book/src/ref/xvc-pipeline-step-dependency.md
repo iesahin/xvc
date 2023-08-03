@@ -30,12 +30,12 @@ Options:
 
       --glob <GLOBS>
           Add a glob dependency to the step. Can be used multiple times.
-          
+
           The difference between this and the glob-digest option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --glob_digest <GLOB_DIGESTS>
           Add a glob digest dependency to the step. Can be used multiple times.
-          
+
           The difference between this and the glob option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --param <PARAMS>
@@ -46,17 +46,17 @@ Options:
 
       --regex_digest <REGEXP_DIGESTS>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
-          
+
           The difference between this and the regex option is that the regex option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest.
 
       --line <LINES>
           Add a line dependency in the form filename.txt::123-234
-          
+
           The difference between this and the line-digest option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
       --line_digest <LINE_DIGESTS>
           Add a line digest dependency in the form filename.txt::123-234
-          
+
           The difference between this and the line option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
   -h, --help
@@ -91,7 +91,7 @@ When you run the command, it will print `data.txt has changed` if the file `data
 ```console
 $ xvc pipeline run
 [OUT] [file-dependency] data.txt has changed
- 
+
 
 ```
 
@@ -106,7 +106,7 @@ A step will run if any of its dependencies have changed.
 ```console
 $ xvc pipeline run
 [OUT] [file-dependency] data.txt has changed
- 
+
 
 ```
 
@@ -115,7 +115,7 @@ By default, they are not run if none of the dependencies have changed.
 ```console
 $ xvc pipeline run
 [OUT] [file-dependency] data.txt has changed
- 
+
 
 ```
 
@@ -130,70 +130,13 @@ Now the step will run even if none of the dependencies have changed.
 ```console
 $ xvc pipeline run
 [OUT] [file-dependency] data.txt has changed
- 
+
 
 ```
 
 {{#include xvc-pipeline-step-dependency-step.md}}
+{{#include xvc-pipeline-step-dependency-generic.md}}
 
-#
-# ### Generic Command Dependencies
-#
-# You can use the output of a command as a dependency to a step. When the command is run, the output hash is saved to
-# compare and to invalidate the step when the output has changed.
-#
-# You can use this for any command that outputs a string.
-#
-# ```console
-# $ xvc pipeline new --name generic
-#
-# $ xvc pipeline --name generic step new --step-name yearly --command "echo 'Happy New Year! Welcome `(date +%Y)`!'"
-#
-# $ xvc  pipeline --name generic step dependency --step-name yearly --generic 'date +%Y'
-#
-# ```
-#
-# ```console
-# $ xvc pipeline --name generic export
-# {
-#   "name": "generic",
-#   "steps": [
-#     {
-#       "command": "echo 'Happy New Year! Welcome `(date +%Y)`!'",
-#       "dependencies": [
-#         {
-#           "Generic": {
-#             "generic_command": "date +%Y"
-#           }
-#         }
-#       ],
-#       "invalidate": "ByDependencies",
-#       "name": "yearly",
-#       "outputs": []
-#     }
-#   ],
-#   "version": 1,
-#   "workdir": ""
-# }
-#
-# ```
-#
-# When the year changes, the step is invalidated and run again.
-#
-# ```console
-# $ xvc pipeline --name generic run
-# [OUT] Happy New Year! Welcome `(date +%Y)`!
-#
-# [OUT] [EXIT] Successfully
-#
-# ```
-#
-# The step won't run until the next year.
-#
-# ```console
-# $ xvc pipeline --name generic run
-#
-# ```
 #
 # ### Directory Dependencies
 #
