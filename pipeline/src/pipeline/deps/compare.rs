@@ -159,7 +159,10 @@ impl Diffable for XvcDependency {
             }
 
             (XvcDependency::Generic(record), XvcDependency::Generic(actual)) => {
-                diff_of_dep(GenericDep::diff_thorough(record, actual))
+                let actual = actual.clone().update_output_digest().unwrap();
+                watch!(record);
+                watch!(actual);
+                diff_of_dep(GenericDep::diff_thorough(record, &actual))
             }
 
             (XvcDependency::File(record), XvcDependency::File(actual)) => {
