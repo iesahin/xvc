@@ -50,4 +50,31 @@ impl GenericDep {
 
 impl Diffable for GenericDep {
     type Item = GenericDep;
+
+    /// Compare the command itself, not the output.
+    fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
+        if record.generic_command == actual.generic_command {
+            Diff::Identical
+        } else {
+            Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
+        }
+    }
+
+    /// This is to calculate two entities with a thorough comparison.
+    /// e.g. content of a file, content of a URL etc.
+    /// You may need to update actual's content before calling this.
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
+        let actual = actual.clone().update_output_digest().unwrap();
+        if actual == *record {
+            Diff::Identical
+        } else {
+            Diff::Different {
+                record: record.clone(),
+                actual,
+            }
+        }
+    }
 }
