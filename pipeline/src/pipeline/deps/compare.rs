@@ -399,6 +399,7 @@ pub fn superficial_compare_dependency(
         // Step dependencies are handled differently
         XvcDependency::Step(_) => Diff::Skipped,
         XvcDependency::Generic(generic) => {
+            watch!(generic);
             diff_of_dep(superficial_compare_generic(cmp_params, generic)?)
         }
         XvcDependency::File(file_dep) => {
