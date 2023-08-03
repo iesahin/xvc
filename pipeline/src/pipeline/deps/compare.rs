@@ -262,6 +262,8 @@ fn thorough_compare_generic(
 ) -> Result<Diff<GenericDep>> {
     let mut actual = GenericDep::new(record.generic_command.clone());
     actual = actual.update_output_digest()?;
+    watch!(record);
+    watch!(actual);
     Ok(GenericDep::diff_thorough(record, &actual))
 }
 
