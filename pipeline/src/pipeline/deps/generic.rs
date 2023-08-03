@@ -62,4 +62,17 @@ impl Diffable for GenericDep {
             }
         }
     }
+
+    /// Compare the command and the output.
+    /// WARN: Self::update_output_digest() must be called before this method.
+    fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
+        if record == actual {
+            Diff::Identical
+        } else {
+            Diff::Different {
+                record: record.clone(),
+                actual: actual.clone(),
+            }
+        }
+    }
 }
