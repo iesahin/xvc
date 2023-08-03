@@ -17,6 +17,7 @@ You can use this for any command that outputs a string.
 $ xvc pipeline step new --step-name morning-message --command "echo 'Good Morning!'"
 
 $ xvc  pipeline --name generic step dependency --step-name morning-message --generic 'date +%F'
+[ERROR] Pipeline Error: Pipeline generic is not found
 
 ```
 
@@ -24,16 +25,16 @@ The step is invalidated when the date changes and the step is run again.
 
 ```console
 $ xvc pipeline run
-[OUT] Good Morning!
+[OUT] [morning-message] Good Morning!
 
-[OUT] [EXIT] Successfully
 
 ```
 
 The step won't run until tomorrow, when `date +%F` changes.
 
 ```console
-$ xvc pipeline --name generic run
+$ xvc pipeline run
+[ERROR] Pipeline Error: Pipeline generic is not found
 
 ```
 
