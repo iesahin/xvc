@@ -5,6 +5,7 @@ use subprocess::Exec;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{Diff, HashAlgorithm, StdoutDigest};
 use xvc_ecs::persist;
+use xvc_logging::watch;
 
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 /// A generic dependency that's invalidated when the given command's output has changed.
@@ -66,6 +67,8 @@ impl Diffable for GenericDep {
     /// Compare the command and the output.
     /// WARN: Self::update_output_digest() must be called before this method.
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
+        watch!(record);
+        watch!(actual);
         if record == actual {
             Diff::Identical
         } else {
