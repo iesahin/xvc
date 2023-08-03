@@ -1158,6 +1158,7 @@ fn s_checking_thorough_diffs_f_superficial_diffs_changed<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     let deps = params.step_dependencies;
+    watch!(deps);
     watch!(deps.is_empty());
     // Normally this should be checked in the previous state, but we check it here just in case
     if deps.is_empty() {
