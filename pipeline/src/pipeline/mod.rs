@@ -340,6 +340,8 @@ pub fn the_grand_pipeline_loop(
         &mut dependency_graph,
     )?;
 
+    watch!(&dependency_graph);
+
     let debug_output = Dot::new(&dependency_graph);
 
     info!("Pipeline Graph:\n{}\n", debug_output);
