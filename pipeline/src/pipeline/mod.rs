@@ -209,7 +209,7 @@ pub struct StepStateParams<'a> {
     step_timeout: &'a Duration,
 
     all_steps: &'a HStore<XvcStep>,
-    recorded_dependencies: &'a XvcStore<XvcDependency>,
+    recorded_dependencies: &'a R1NStore<XvcStep, XvcDependency>,
     step_dependencies: &'a HashSet<XvcEntity>,
     step_outputs: &'a HStore<XvcOutput>,
     step_xvc_digests: &'a HStore<XvcDigests>,
@@ -236,7 +236,7 @@ struct StepThreadParams<'a> {
     current_pmm: Arc<RwLock<XvcPathMetadataMap>>,
     process_pool: Arc<RwLock<HStore<CommandProcess>>>,
     process_pool_size: usize,
-    recorded_dependencies: &'a XvcStore<XvcDependency>,
+    recorded_dependencies: &'a R1NStore<XvcStep, XvcDependency>,
     recorded_outputs: &'a R1NStore<XvcStep, XvcOutput>,
     recorded_xvc_digests: &'a R1NStore<XvcStep, XvcDigests>,
 
@@ -471,7 +471,7 @@ pub fn the_grand_pipeline_loop(
     let step_timeout = Duration::from_secs(default_step_timeout);
 
     let recorded_dependencies = xvc_root
-        .load_store::<XvcDependency>()
+        .load_r1nstore::<XvcStep, XvcDependency>()
         .expect("Cannot load store");
     let recorded_outputs = xvc_root
         .load_r1nstore::<XvcStep, XvcOutput>()

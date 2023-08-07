@@ -224,6 +224,7 @@ pub fn thorough_compare_dependency(
     } else {
         cmp_params
             .recorded_dependencies
+            .children
             .get(&stored_dependency_e)
             .cloned()
             .ok_or(anyhow!(
@@ -387,6 +388,7 @@ pub fn superficial_compare_dependency(
     } else {
         cmp_params
             .recorded_dependencies
+            .children
             .get(&stored_dependency_e)
             .cloned()
             .ok_or(anyhow!(
