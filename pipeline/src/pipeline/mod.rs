@@ -604,6 +604,7 @@ fn dependencies(
     dependency_graph: &DependencyGraph,
 ) -> Result<HashSet<XvcEntity>> {
     let dep_neighbors = dependency_graph.neighbors(step_e);
+    watch!(dep_neighbors);
     let mut dependencies = HashSet::new();
     for dep_neighbor in dep_neighbors {
         dependencies.insert(dep_neighbor);
