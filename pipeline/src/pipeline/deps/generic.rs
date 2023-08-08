@@ -52,16 +52,9 @@ impl GenericDep {
 impl Diffable for GenericDep {
     type Item = GenericDep;
 
-    /// Compare the command itself, not the output.
+    /// Always use the command output for the diff.
     fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
-        if record.generic_command == actual.generic_command {
-            Diff::Identical
-        } else {
-            Diff::Different {
-                record: record.clone(),
-                actual: actual.clone(),
-            }
-        }
+        Self::diff_thorough(record, actual)
     }
 
     /// Compare the command and the output.
