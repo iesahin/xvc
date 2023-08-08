@@ -114,8 +114,6 @@ By default, they are not run if none of the dependencies have changed.
 
 ```console
 $ xvc pipeline run
-[OUT] [file-dependency] data.txt has changed
- 
 
 ```
 
