@@ -1133,6 +1133,7 @@ fn s_checking_superficial_diffs<'a>(
             (*dep_e, cmp_diff)
         })
         .collect();
+    watch!(step_dependency_diffs);
     let mut changed = false;
 
     {
