@@ -601,7 +601,10 @@ pub fn the_grand_pipeline_loop(
     Ok(())
 }
 
-fn dependencies(
+/// Return steps that `step_e` depends on the dependency_graph.
+/// Note that, _non step_ dependencies are retrieved by R1NStore::<XvcStep, XvcDependency>::children
+/// as a standard 1-N relationship.
+fn dependency_steps(
     step_e: XvcEntity,
     dependency_graph: &DependencyGraph,
 ) -> Result<HashSet<XvcEntity>> {
@@ -666,8 +669,8 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let mut step_state = XvcStepState::begin();
     watch!(params.recorded_dependencies);
     watch!(step_e);
-    watch!(dependencies(step_e, params.dependency_graph)?);
-    let step_dependencies = dependencies(step_e, params.dependency_graph)?;
+    watch!(dependency_steps(step_e, params.dependency_graph)?);
+    let step_dependencies = dependency_steps(step_e, params.dependency_graph)?;
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
     let step_xvc_digests = params.recorded_xvc_digests.children_of(&step_e)?;
     let step = &params.steps[&step_e];
@@ -1110,17 +1113,19 @@ fn s_checking_superficial_diffs<'a>(
     s: &CheckingSuperficialDiffsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    watch!(params.step_dependencies.len());
+    let parent_entity = params.step_e;
+    let deps = params.recorded_dependencies.children_of(&parent_entity)?;
+
+    watch!(deps);
     // if no dependencies, we assume the step needs to run always.
-    if params.step_dependencies.is_empty() {
+    if deps.is_empty() {
         watch!(params.step.name);
         return Ok((s.superficial_diffs_changed(), params));
     }
 
-    let step_dependency_diffs: HStore<Diff<XvcDependency>> = params
-        .step_dependencies
+    let step_dependency_diffs: HStore<Diff<XvcDependency>> = deps
         .iter()
-        .map(|dep_e| {
+        .map(|(dep_e, _dep)| {
             let cmp_diff = uwr!(
                 superficial_compare_dependency(&params, *dep_e),
                 params.output_snd
@@ -1160,15 +1165,16 @@ fn s_checking_thorough_diffs_f_superficial_diffs_changed<'a>(
     s: &CheckingThoroughDiffsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let deps = params.step_dependencies;
+    let parent_entity = params.step_e;
+    let deps = params.recorded_dependencies.children_of(&parent_entity)?;
     watch!(deps);
-    watch!(deps.is_empty());
     // Normally this should be checked in the previous state, but we check it here just in case
     if deps.is_empty() {
         return Ok((s.thorough_diffs_changed(), params));
     }
 
-    // Calculate diffs for changed dependencies
+    // Calculate diffs for superficially changed dependencies.
+    // This allows to skip thorough comparison for dependencies that haven't changed.
     let step_dependency_diffs: HStore<Diff<XvcDependency>> = params
         .dependency_diffs
         .read()?
@@ -1206,19 +1212,18 @@ fn s_checking_thorough_diffs_f_superficial_diffs_ignored<'a>(
     s: &CheckingThoroughDiffsState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    let step_e = params.step_e;
-    let deps = params.step_dependencies;
-    watch!(deps.is_empty());
+    let parent_entity = params.step_e;
+    let deps = params.recorded_dependencies.children_of(&parent_entity)?;
+    watch!(deps);
     // Normally this should be checked in the previous state, but we check it here just in case
     if deps.is_empty() {
         return Ok((s.thorough_diffs_changed(), params));
     }
 
-    // Calculate diffs for all dependencies
-    let step_dependency_diffs: HStore<Diff<XvcDependency>> = params
-        .step_dependencies
+    // Calculate diffs for all dependencies as we skipped superficial comparison
+    let step_dependency_diffs: HStore<Diff<XvcDependency>> = deps
         .iter()
-        .map(|dep_e| {
+        .map(|(dep_e, _dep)| {
             let cmp_diff = uwr!(
                 thorough_compare_dependency(&params, *dep_e),
                 params.output_snd
