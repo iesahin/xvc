@@ -24,6 +24,9 @@ The step is invalidated when the page is updated.
 
 ```console
 $ xvc pipeline run
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: Both record and actual url content digests are None.', pipeline/src/pipeline/deps/url.rs:154:29
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[ERROR] Error in step thread: Any { .. }
 
 ```
 
@@ -31,6 +34,9 @@ The step won't run again until a new version of the page is published.
 
 ```console
 $ xvc pipeline run
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: Both record and actual url content digests are None.', pipeline/src/pipeline/deps/url.rs:154:29
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[ERROR] Error in step thread: Any { .. }
 
 ```
 

@@ -280,8 +280,8 @@ fn thorough_compare_file(cmp_params: &StepStateParams, record: &FileDep) -> Resu
 }
 
 fn thorough_compare_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> {
-    let actual = UrlDigestDep::new(record.url.clone()).update_headers()?;
-    Ok(UrlDigestDep::diff(Some(record), Some(&actual)))
+    let actual = UrlDigestDep::new(record.url.clone()).update_content_digest()?;
+    Ok(UrlDigestDep::diff_thorough(record, &actual))
 }
 
 fn thorough_compare_param(record: &ParamDep) -> Result<Diff<ParamDep>> {
@@ -449,6 +449,7 @@ fn superficial_compare_file(
 
 fn superficial_compare_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> {
     let actual = UrlDigestDep::new(record.url.clone()).update_headers()?;
+    watch!(actual);
     Ok(UrlDigestDep::diff_superficial(record, &actual))
 }
 
