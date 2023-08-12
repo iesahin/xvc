@@ -45,6 +45,8 @@ $ xvc pipeline step new --step-name directory-contents --command "echo 'Files ch
 $ xvc pipeline step dependency --step-name directory-contents --generic 'ls -lR'
 $ xvc pipeline run
 [OUT] [directory-contents] Files changed
+
+
 ```
 
 When you add a file to the directory, the step is invalidated and run again:
@@ -52,6 +54,6 @@ When you add a file to the directory, the step is invalidated and run again:
 ```console
 $ xvc pipeline run
 $ touch new-file
-$ xvc pipeline run
-[OUT] [directory-contents] Files changed
+$ xvc --debug pipeline run
+
 ```
