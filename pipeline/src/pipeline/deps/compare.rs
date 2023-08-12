@@ -433,7 +433,8 @@ fn superficial_compare_generic(
     cmp_params: &StepStateParams,
     record: &GenericDep,
 ) -> Result<Diff<GenericDep>> {
-    let mut actual = GenericDep::new(record.generic_command.clone());
+    let actual = GenericDep::new(record.generic_command.clone());
+    let actual = actual.update_output_digest()?;
     Ok(GenericDep::diff_superficial(record, &actual))
 }
 
