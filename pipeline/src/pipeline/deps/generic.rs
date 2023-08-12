@@ -32,20 +32,24 @@ impl GenericDep {
 
     pub fn update_output_digest(self) -> Result<Self> {
         let generic_command = self.generic_command;
+        watch!(generic_command);
 
         let command_output = Exec::shell(generic_command.clone()).capture()?;
+        watch!(command_output);
         let stdout = String::from_utf8(command_output.stdout)?;
         let stderr = String::from_utf8(command_output.stderr)?;
+        watch!(stdout);
+        watch!(stderr);
         let algorithm = HashAlgorithm::Blake3;
         let return_code = command_output.exit_status;
         if stderr.len() > 0 || !return_code.success() {
-            return Err(Error::ProcessError { stdout, stderr });
+            Err(Error::ProcessError { stdout, stderr })
+        } else {
+            Ok(Self {
+                output_digest: Some(StdoutDigest::new(&stdout, algorithm).into()),
+                generic_command,
+            })
         }
-
-        Ok(Self {
-            output_digest: Some(StdoutDigest::new(&stdout, algorithm).into()),
-            generic_command,
-        })
     }
 }
 
