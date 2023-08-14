@@ -6,6 +6,7 @@ use xvc_core::{
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::persist;
+use xvc_logging::watch;
 
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct FileDep {
@@ -34,6 +35,7 @@ impl FileDep {
     pub fn from_pmm(path: &XvcPath, pmm: &XvcPathMetadataMap) -> Self {
         let path = path.clone();
         let xvc_metadata = pmm.get(&path).cloned();
+        watch!(xvc_metadata);
 
         FileDep {
             path,
