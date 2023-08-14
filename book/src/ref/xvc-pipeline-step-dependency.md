@@ -30,12 +30,12 @@ Options:
 
       --glob <GLOBS>
           Add a glob dependency to the step. Can be used multiple times.
-          
+
           The difference between this and the glob-digest option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --glob_digest <GLOB_DIGESTS>
           Add a glob digest dependency to the step. Can be used multiple times.
-          
+
           The difference between this and the glob option is that the glob option keeps track of all matching files, but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]} or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest option to save disk space.
 
       --param <PARAMS>
@@ -46,17 +46,17 @@ Options:
 
       --regex_digest <REGEXP_DIGESTS>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
-          
+
           The difference between this and the regex option is that the regex option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest.
 
       --line <LINES>
           Add a line dependency in the form filename.txt::123-234
-          
+
           The difference between this and the line-digest option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
       --line_digest <LINE_DIGESTS>
           Add a line digest dependency in the form filename.txt::123-234
-          
+
           The difference between this and the line option is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option. Otherwise, you can use the line-digest option to save disk space.
 
   -h, --help
@@ -64,77 +64,17 @@ Options:
 
 ```
 
-## Examples
-
-This command works only in Xvc repositories.
-
-```console
-$ git init
-...
-$ xvc init
-```
-
-Begin by adding a new step.
-
-```console
-$ xvc pipeline step new --step-name file-dependency --command "echo data.txt has changed"
-```
-
-Add a file dependency to the step.
-
-```console
-$ xvc pipeline step dependency --step-name file-dependency --file data.txt
-```
-
-When you run the command, it will print `data.txt has changed` if the file `data.txt` has changed.
-
-```console
-$ xvc pipeline run
-[OUT] [file-dependency] data.txt has changed
- 
-
-```
-
-You can add multiple dependencies to a step with multiple invocations.
-
-```console
-$ xvc pipeline step dependency --step-name file-dependency --file data2.txt
-```
-
-A step will run if any of its dependencies have changed.
-
-```console
-$ xvc pipeline run
-[OUT] [file-dependency] data.txt has changed
- 
-
-```
-
-By default, they are not run if none of the dependencies have changed.
-
-```console
-$ xvc pipeline run
-
-```
-
-However, if you want to run the step even if none of the dependencies have changed, you can set the `--when` option to `always`.
-
-```console
-$ xvc pipeline step update --step-name file-dependency --when always
-```
-
-Now the step will run even if none of the dependencies have changed.
-
-```console
-$ xvc pipeline run
-[OUT] [file-dependency] data.txt has changed
- 
-
-```
-
+{{#include xvc-pipeline-step-dependency-file.md}}
+{{#include xvc-pipeline-step-dependency-glob-digest.md}}
+{{#include xvc-pipeline-step-dependency-regex-digest.md}}
+{{#include xvc-pipeline-step-dependency-line-digest.md}}
+{{#include xvc-pipeline-step-dependency-glob.md}}
+{{#include xvc-pipeline-step-dependency-regex.md}}
+{{#include xvc-pipeline-step-dependency-line.md}}
+{{#include xvc-pipeline-step-dependency-param.md}}
 {{#include xvc-pipeline-step-dependency-step.md}}
-{{#include xvc-pipeline-step-dependency-generic.md}}
 {{#include xvc-pipeline-step-dependency-url.md}}
+{{#include xvc-pipeline-step-dependency-generic.md}}
 
 ## Caveats
 

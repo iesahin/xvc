@@ -8,8 +8,8 @@ $ git init
 $ xvc init
 ```
 
-You can use the a web URL as a dependency to a step.
-When the URL is fetched, the output hash is saved to compare and the step is invalidated when the output of the URL changed.
+You can use a web URL as a dependency to a step.
+When the URL is fetched, the output hash is saved to compare and the step is invalidated when the output of the URL is changed.
 
 You can use this with any URL.
 
@@ -25,7 +25,7 @@ The step is invalidated when the page is updated.
 ```console
 $ xvc pipeline run
 [OUT] [xvc-docs-update] Xvc docs updated!
- 
+
 
 ```
 
