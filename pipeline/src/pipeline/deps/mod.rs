@@ -156,7 +156,7 @@ pub fn dependency_paths(
                 result_map.insert(xp.clone(), *md);
             }
             None => {
-                Error::PathNotFoundInPathMetadataMap {
+                Error::PathNotFound {
                     path: xp.to_absolute_path(xvc_root).as_os_str().to_owned(),
                 }
                 .warn();

@@ -274,7 +274,7 @@ fn thorough_compare_generic(
 
 /// Compares a dependency path with the actual metadata and content digest found on disk
 fn thorough_compare_file(cmp_params: &StepStateParams, record: &FileDep) -> Result<Diff<FileDep>> {
-    let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?);
+    let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?)?;
     watch!(actual);
     Ok(FileDep::diff_thorough(record, &actual))
 }
@@ -443,7 +443,7 @@ fn superficial_compare_file(
     cmp_params: &StepStateParams,
     record: &FileDep,
 ) -> Result<Diff<FileDep>> {
-    let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?);
+    let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?)?;
     watch!(actual);
     Ok(FileDep::diff_superficial(record, &actual))
 }

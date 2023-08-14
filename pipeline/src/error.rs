@@ -138,8 +138,8 @@ pub enum Error {
     },
     #[error("Poison Error: {cause:?}")]
     PoisonError { cause: String },
-    #[error("Path not found in Path Metadata Map: {path:?}")]
-    PathNotFoundInPathMetadataMap { path: OsString },
+    #[error("Path not found: {path:?}")]
+    PathNotFound { path: OsString },
     #[error("Path has no modification time: {path:?}")]
     PathHasNoModificationTime { path: OsString },
     #[error("Internal Error: XvcDependencyComparisonError in Pipelines")]

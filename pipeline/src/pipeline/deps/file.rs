@@ -1,3 +1,6 @@
+use std::ffi::OsString;
+
+use crate::error::Error;
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
@@ -32,16 +35,20 @@ impl FileDep {
         }
     }
 
-    pub fn from_pmm(path: &XvcPath, pmm: &XvcPathMetadataMap) -> Self {
+    pub fn from_pmm(path: &XvcPath, pmm: &XvcPathMetadataMap) -> Result<Self> {
         let path = path.clone();
         let xvc_metadata = pmm.get(&path).cloned();
-        watch!(xvc_metadata);
+        if xvc_metadata.is_none() {
+            return Err(Error::PathNotFound {
+                path: OsString::from(path.as_str()),
+            });
+        }
 
-        FileDep {
+        Ok(FileDep {
             path,
             xvc_metadata,
             content_digest: None,
-        }
+        })
     }
 
     pub fn calculate_content_digest(

@@ -69,7 +69,7 @@ fn xvc_path_metadata_digest(
     path: &XvcPath,
 ) -> Result<XvcMetadataDigest> {
     match params.pmm.get(path) {
-        None => Err(Error::PathNotFoundInPathMetadataMap {
+        None => Err(Error::PathNotFound {
             path: path.to_absolute_path(params.xvc_root).into_os_string(),
         }
         .warn()),
