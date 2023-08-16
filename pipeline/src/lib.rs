@@ -246,21 +246,25 @@ pub enum StepSubCommand {
         #[arg(long = "step")]
         steps: Option<Vec<String>>,
 
+        /// Add a glob items dependency to the step.
+        ///
+        /// You can depend on multiple files and directories with this dependency.
+        ///
+        /// The difference between this and the glob option is that this option keeps track of all
+        /// matching files, but glob only keeps track of the matched files' digest. When you want
+        /// to use ${XVC_GLOB_ITEMS}, ${XVC_ADDED_GLOB_ITEMS}, or ${XVC_REMOVED_GLOB_ITEMS}
+        /// environment variables in the step command, use the glob-items dependency. Otherwise,
+        /// you can use the glob option to save disk space.
+        #[arg(long = "glob_items", aliases=&["glob-items", "glob-i"])]
+        glob_items: Option<Vec<String>>,
+
         /// Add a glob dependency to the step. Can be used multiple times.
         ///
-        /// The difference between this and the glob-digest option is that the glob option keeps track of all matching files,
-        /// but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]}
-        /// or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest
-        /// option to save disk space.
-        #[arg(long = "glob")]
-        globs: Option<Vec<String>>,
-
-        /// Add a glob digest dependency to the step. Can be used multiple times.
+        /// You can depend on multiple files and directories with this dependency.
         ///
-        /// The difference between this and the glob option is that the glob option keeps track of all matching files,
-        /// but glob-digest only keeps track of the matched files' digest. When you want to use ${[ALL_GLOB_FILES]}
-        /// or ${[CHANGED_GLOB_FILES]} options in the step command, use the glob option. Otherwise, you can use the glob-digest
-        /// option to save disk space.
+        /// The difference between this and the glob-items option is that the glob-items option
+        /// keeps track of all matching files individually, but this option only keeps track of the
+        /// matched files' digest. This dependency uses considerably less disk space.
         #[arg(long = "glob_digest", aliases=&["glob-digest", "glob-d", "glob_d"])]
         glob_digests: Option<Vec<String>>,
 
@@ -269,10 +273,12 @@ pub enum StepSubCommand {
         params: Option<Vec<String>>,
 
         /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
-        /// The difference between this and the regex-digest option is that the regex option keeps track of all matching
-        /// lines, but regex-digest only keeps track of the matched lines' digest. When you want to use ${[ALL_REGEX_LINES]}
-        /// or ${[CHANGED_REGEX_LINES]} options in the step command, use the regex option. Otherwise, you can use the regex-digest
-        /// option to save disk space.
+        ///
+        /// The difference between this and the regex option is that the regex-items option keeps
+        /// track of all matching lines, but regex only keeps track of the matched lines' digest.
+        /// When you want to use ${XVC_REGEX_ITEMS}, ${XVC_ADDED_REGEX_ITEMS},
+        /// ${XVC_REMOVED_REGEX_ITEMS} environment variables in the step command, use the regex
+        /// option. Otherwise, you can use the regex-digest option to save disk space.
         #[arg(
             long = "regex",
             aliases = &["regexp"],
@@ -281,8 +287,9 @@ pub enum StepSubCommand {
 
         /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
         ///
-        /// The difference between this and the regex option is that the regex option keeps track of all matching lines
-        /// that can be used in the step command. This option only keeps track of the matched lines' digest.
+        /// The difference between this and the regex option is that the regex option keeps track
+        /// of all matching lines that can be used in the step command. This option only keeps
+        /// track of the matched lines' digest.
         #[arg(
             long = "regex_digest",
             aliases = &["regex_d", "regex-digest", "regexp_digest", "regexp_d"],
@@ -291,25 +298,26 @@ pub enum StepSubCommand {
 
         /// Add a line dependency in the form filename.txt::123-234
         ///
-        /// The difference between this and the line-digest option is that the line option keeps track of all matching lines
-        /// that can be used in the step command. This option only keeps track of the matched lines' digest.
-        /// When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option.
-        /// Otherwise, you can use the line-digest option to save disk space.
+        /// The difference between this and the lines option is that the line-items option keeps
+        /// track of all matching lines that can be used in the step command. This option only
+        /// keeps track of the matched lines' digest. When you want to use ${XVC_ALL_LINE_ITEMS},
+        /// ${XVC_ADDED_LINE_ITEMS}, ${XVC_CHANGED_LINE_ITEMS} options in the step command, use the
+        /// line option. Otherwise, you can use the lines option to save disk space.
         #[arg(
-            long = "line",
-            aliases = &["lines"],
+            long = "line_items",
+            aliases = &["line-items", "line-i"],
         )]
         lines: Option<Vec<String>>,
 
         /// Add a line digest dependency in the form filename.txt::123-234
         ///
-        /// The difference between this and the line option is that the line option keeps track of all matching lines
-        /// that can be used in the step command. This option only keeps track of the matched lines' digest.
-        /// When you want to use ${[ALL_LINES]} or ${[CHANGED_LINES]} options in the step command, use the line option.
-        /// Otherwise, you can use the line-digest option to save disk space.
+        /// The difference between this and the line-items dependency is that the line option keeps
+        /// track of all matching lines that can be used in the step command. This option only
+        /// keeps track of the matched lines' digest. If you don't need individual lines to be
+        /// kept, use this option to save space.
         #[arg(
-            long = "line_digest",
-            aliases = &["line-d", "line-digest", "lines-digest", "lines_digest", "line_d"],
+            long = "lines",
+            aliases = &["line"],
         )]
         line_digests: Option<Vec<String>>,
     },
@@ -508,7 +516,7 @@ pub fn handle_step_cli(
             generics,
             urls,
             files,
-            globs,
+            glob_items: globs,
             glob_digests,
             params,
             steps,
