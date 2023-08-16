@@ -280,8 +280,8 @@ pub enum StepSubCommand {
         /// ${XVC_REMOVED_REGEX_ITEMS} environment variables in the step command, use the regex
         /// option. Otherwise, you can use the regex-digest option to save disk space.
         #[arg(
-            long = "regex",
-            aliases = &["regexp"],
+            long = "regex_items",
+            aliases = &["regex-items", "regexp_items", "regexp-items"],
         )]
         regex_items: Option<Vec<String>>,
 
