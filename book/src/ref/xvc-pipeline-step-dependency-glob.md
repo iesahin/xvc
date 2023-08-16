@@ -39,6 +39,13 @@ Add a step to say files has changed when the files have changed.
 $ xvc pipeline step new --step-name files-changed --command "echo 'Files have changed.'"
 
 $ xvc pipeline step dependency --step-name files-changed --glob 'dir-*/*'
+error: unexpected argument '--glob' found
+
+  note: argument '--glob_d' exists
+
+Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob_digest <GLOB_DIGESTS>|--param <PARAMS>|--regex <REGEXPS>|--regex_digest <REGEXP_DIGESTS>|--line_items <LINES>|--lines <LINE_DIGESTS>>
+
+For more information, try '--help'.
 
 ```
 
@@ -50,6 +57,8 @@ $ xvc pipeline run
  
 
 $ xvc pipeline run
+[OUT] [files-changed] Files have changed.
+ 
 
 ```
 

@@ -265,8 +265,8 @@ pub enum StepSubCommand {
         /// The difference between this and the glob-items option is that the glob-items option
         /// keeps track of all matching files individually, but this option only keeps track of the
         /// matched files' digest. This dependency uses considerably less disk space.
-        #[arg(long = "glob_digest", aliases=&["glob-digest", "glob-d", "glob_d"])]
-        glob_digests: Option<Vec<String>>,
+        #[arg(long = "glob", aliases=&["globs"])]
+        globs: Option<Vec<String>>,
 
         /// Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times.
         #[arg(long = "param", aliases = &["params"])]
@@ -283,7 +283,7 @@ pub enum StepSubCommand {
             long = "regex",
             aliases = &["regexp"],
         )]
-        regexps: Option<Vec<String>>,
+        regex_items: Option<Vec<String>>,
 
         /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
         ///
@@ -291,10 +291,10 @@ pub enum StepSubCommand {
         /// of all matching lines that can be used in the step command. This option only keeps
         /// track of the matched lines' digest.
         #[arg(
-            long = "regex_digest",
-            aliases = &["regex_d", "regex-digest", "regexp_digest", "regexp_d"],
+            long = "regex",
+            aliases = &["regexp"],
         )]
-        regexp_digests: Option<Vec<String>>,
+        regexes: Option<Vec<String>>,
 
         /// Add a line dependency in the form filename.txt::123-234
         ///
@@ -307,7 +307,7 @@ pub enum StepSubCommand {
             long = "line_items",
             aliases = &["line-items", "line-i"],
         )]
-        lines: Option<Vec<String>>,
+        line_items: Option<Vec<String>>,
 
         /// Add a line digest dependency in the form filename.txt::123-234
         ///
@@ -319,7 +319,7 @@ pub enum StepSubCommand {
             long = "lines",
             aliases = &["line"],
         )]
-        line_digests: Option<Vec<String>>,
+        lines: Option<Vec<String>>,
     },
 
     /// Add an output to a step
@@ -517,13 +517,13 @@ pub fn handle_step_cli(
             urls,
             files,
             glob_items: globs,
-            glob_digests,
+            globs: glob_digests,
             params,
             steps,
-            regexps,
-            regexp_digests,
-            lines,
-            line_digests,
+            regex_items: regexps,
+            regexes: regexp_digests,
+            line_items: lines,
+            lines: line_digests,
         } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
             .files(files)?
             .globs(globs)?
