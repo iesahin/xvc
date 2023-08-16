@@ -19,6 +19,18 @@ Let's create a set of files:
 $ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 2023
 
 $ tree
+.
+├── dir-0001
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+└── dir-0002
+    ├── file-0001.bin
+    ├── file-0002.bin
+    └── file-0003.bin
+
+3 directories, 6 files
+
 ```
 
 Add a step to say files has changed when the files have changed.
@@ -34,13 +46,18 @@ The step is invalidated when a file described by the glob is added, removed or c
 
 ```console
 $ xvc pipeline run
+[OUT] [files-changed] Files have changed.
+ 
 
 $ xvc pipeline run
 
 ```
 
 ```console
-$ rm dir-0001/file-0001
+$ rm dir-0001/file-0001.bin
 
 $ xvc pipeline run
+[OUT] [files-changed] Files have changed.
+ 
+
 ```
