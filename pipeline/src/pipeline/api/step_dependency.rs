@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use crate::error::{Error, Result};
 use crate::pipeline::deps::file::FileDep;
 use crate::pipeline::deps::generic::GenericDep;
-use crate::pipeline::deps::glob::GlobDep;
+use crate::pipeline::deps::glob::GlobItemsDep;
 use crate::pipeline::deps::glob_digest::GlobDigestDep;
 use crate::pipeline::deps::lines::LinesDep;
 use crate::pipeline::deps::regex::RegexDep;
@@ -81,8 +81,8 @@ impl<'a> XvcDependencyList<'a> {
         if let Some(globs) = globs {
             let mut deps = self.deps.borrow_mut();
             for glob in globs {
-                let glob_dep = GlobDep::new(glob);
-                deps.push(XvcDependency::Glob(glob_dep));
+                let glob_dep = GlobItemsDep::new(glob);
+                deps.push(XvcDependency::GlobItems(glob_dep));
             }
         }
         Ok(self)

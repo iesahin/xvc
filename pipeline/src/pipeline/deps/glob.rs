@@ -11,20 +11,20 @@ use xvc_core::{
 use xvc_ecs::persist;
 
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GlobDep {
+pub struct GlobItemsDep {
     /// The glob pattern that will be converted to a [Glob]
     pub glob: String,
     pub xvc_path_metadata_map: BTreeMap<XvcPath, XvcMetadata>,
     pub xvc_path_content_digest_map: BTreeMap<XvcPath, ContentDigest>,
 }
 
-impl Into<XvcDependency> for GlobDep {
+impl Into<XvcDependency> for GlobItemsDep {
     fn into(self) -> XvcDependency {
-        XvcDependency::Glob(self)
+        XvcDependency::GlobItems(self)
     }
 }
 
-impl GlobDep {
+impl GlobItemsDep {
     pub fn new(glob: String) -> Self {
         Self {
             glob,
@@ -38,11 +38,11 @@ impl GlobDep {
         glob_root: &XvcPath,
         glob: String,
         pmm: &std::collections::HashMap<XvcPath, xvc_core::XvcMetadata>,
-    ) -> Result<GlobDep> {
+    ) -> Result<GlobItemsDep> {
         let xvc_path_metadata_map = glob_paths(xvc_root, pmm, glob_root, &glob)
             .and_then(|paths| Ok(paths.into_iter().collect()))?;
         // We don't calculate the content digest map immediately, we only do that in through comparison
-        Ok(GlobDep {
+        Ok(GlobItemsDep {
             glob,
             xvc_path_metadata_map,
             xvc_path_content_digest_map: BTreeMap::new(),
@@ -96,8 +96,8 @@ impl GlobDep {
     }
 }
 
-persist!(GlobDep, "glob-dependency");
+persist!(GlobItemsDep, "glob-dependency");
 
-impl Diffable for GlobDep {
+impl Diffable for GlobItemsDep {
     type Item = Self;
 }

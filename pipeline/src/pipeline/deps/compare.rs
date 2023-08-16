@@ -28,7 +28,7 @@ use super::{ParamDep, XvcDependency};
 
 use super::file::FileDep;
 use super::generic::GenericDep;
-use super::glob::GlobDep;
+use super::glob::GlobItemsDep;
 use super::url::UrlDigestDep;
 
 #[derive(Clone, Debug)]
@@ -66,8 +66,8 @@ impl Diffable for XvcDependency {
                     diff_of_dep(FileDep::diff(Some(record), Some(actual)))
                 }
 
-                (XvcDependency::Glob(record), XvcDependency::Glob(actual)) => {
-                    diff_of_dep(GlobDep::diff(Some(record), Some(actual)))
+                (XvcDependency::GlobItems(record), XvcDependency::GlobItems(actual)) => {
+                    diff_of_dep(GlobItemsDep::diff(Some(record), Some(actual)))
                 }
 
                 (XvcDependency::GlobDigest(record), XvcDependency::GlobDigest(actual)) => {
@@ -116,8 +116,8 @@ impl Diffable for XvcDependency {
                 diff_of_dep(FileDep::diff_superficial(record, actual))
             }
 
-            (XvcDependency::Glob(record), XvcDependency::Glob(actual)) => {
-                diff_of_dep(GlobDep::diff_superficial(record, actual))
+            (XvcDependency::GlobItems(record), XvcDependency::GlobItems(actual)) => {
+                diff_of_dep(GlobItemsDep::diff_superficial(record, actual))
             }
 
             (XvcDependency::GlobDigest(record), XvcDependency::GlobDigest(actual)) => {
@@ -167,8 +167,8 @@ impl Diffable for XvcDependency {
                 diff_of_dep(FileDep::diff_thorough(record, actual))
             }
 
-            (XvcDependency::Glob(record), XvcDependency::Glob(actual)) => {
-                diff_of_dep(GlobDep::diff_thorough(record, actual))
+            (XvcDependency::GlobItems(record), XvcDependency::GlobItems(actual)) => {
+                diff_of_dep(GlobItemsDep::diff_thorough(record, actual))
             }
 
             (XvcDependency::GlobDigest(record), XvcDependency::GlobDigest(actual)) => {
@@ -239,7 +239,9 @@ pub fn thorough_compare_dependency(
             diff_of_dep(thorough_compare_generic(cmp_params, &generic)?)
         }
         XvcDependency::File(file_dep) => diff_of_dep(thorough_compare_file(cmp_params, &file_dep)?),
-        XvcDependency::Glob(glob_dep) => diff_of_dep(thorough_compare_glob(cmp_params, &glob_dep)?),
+        XvcDependency::GlobItems(glob_dep) => {
+            diff_of_dep(thorough_compare_glob(cmp_params, &glob_dep)?)
+        }
         XvcDependency::UrlDigest(url_dep) => diff_of_dep(thorough_compare_url(&url_dep)?),
         XvcDependency::Param(param_dep) => diff_of_dep(thorough_compare_param(&param_dep)?),
         XvcDependency::Regex(regex_dep) => diff_of_dep(thorough_compare_regex(&regex_dep)?),
@@ -305,8 +307,11 @@ fn thorough_compare_lines(record: &LinesDep) -> Result<Diff<LinesDep>> {
 }
 
 /// Compares two globs, one stored and one current.
-fn thorough_compare_glob(cmp_params: &StepStateParams, record: &GlobDep) -> Result<Diff<GlobDep>> {
-    let mut actual = GlobDep::from_pmm(
+fn thorough_compare_glob(
+    cmp_params: &StepStateParams,
+    record: &GlobItemsDep,
+) -> Result<Diff<GlobItemsDep>> {
+    let mut actual = GlobItemsDep::from_pmm(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
         record.glob.clone(),
@@ -314,7 +319,7 @@ fn thorough_compare_glob(cmp_params: &StepStateParams, record: &GlobDep) -> Resu
     )?
     .update_changed_paths_digests(record, cmp_params.xvc_root, cmp_params.algorithm)?;
 
-    Ok(GlobDep::diff(Some(record), Some(&actual)))
+    Ok(GlobItemsDep::diff(Some(record), Some(&actual)))
 }
 
 fn thorough_compare_glob_digest(
@@ -410,7 +415,7 @@ pub fn superficial_compare_dependency(
         XvcDependency::File(file_dep) => {
             diff_of_dep(superficial_compare_file(cmp_params, file_dep)?)
         }
-        XvcDependency::Glob(glob_dep) => {
+        XvcDependency::GlobItems(glob_dep) => {
             diff_of_dep(superficial_compare_glob(cmp_params, glob_dep)?)
         }
         XvcDependency::UrlDigest(url_dep) => diff_of_dep(superficial_compare_url(url_dep)?),
@@ -475,9 +480,9 @@ fn superficial_compare_lines(record: &LinesDep) -> Result<Diff<LinesDep>> {
 /// Compares two globs, one stored and one current.
 fn superficial_compare_glob(
     cmp_params: &StepStateParams,
-    record: &GlobDep,
-) -> Result<Diff<GlobDep>> {
-    let mut actual = GlobDep::from_pmm(
+    record: &GlobItemsDep,
+) -> Result<Diff<GlobItemsDep>> {
+    let mut actual = GlobItemsDep::from_pmm(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
         record.glob.clone(),
@@ -485,7 +490,7 @@ fn superficial_compare_glob(
     )?
     .update_changed_paths_digests(record, cmp_params.xvc_root, cmp_params.algorithm)?;
 
-    Ok(GlobDep::diff_superficial(record, &actual))
+    Ok(GlobItemsDep::diff_superficial(record, &actual))
 }
 
 fn superficial_compare_glob_digest(

@@ -100,7 +100,7 @@ fn dep_desc(
         XvcDependency::Regex(dep) => format!("regex: {}:/{}", dep.path, dep.regex),
         XvcDependency::RegexDigest(dep) => format!("regex (d): {}:/{}", dep.path, dep.regex),
         XvcDependency::Param(dep) => format!("param: {}::{}", dep.path, dep.key),
-        XvcDependency::Glob(dep) => format!("glob: {}", dep.glob),
+        XvcDependency::GlobItems(dep) => format!("glob: {}", dep.glob),
         XvcDependency::GlobDigest(dep) => format!("glob (d): {}", dep.glob),
         XvcDependency::UrlDigest(dep) => format!("url: {}", dep.url),
     }

@@ -30,7 +30,7 @@ use xvc_ecs::{persist, HStore, XvcStore};
 
 pub use self::file::FileDep;
 pub use self::generic::GenericDep;
-pub use self::glob::GlobDep;
+pub use self::glob::GlobItemsDep;
 pub use self::glob_digest::GlobDigestDep;
 pub use self::lines::LinesDep;
 pub use self::lines_digest::LinesDigestDep;
@@ -55,7 +55,7 @@ pub enum XvcDependency {
     /// Invalidates when the file content changes.
     File(FileDep),
     /// Invalidates when contents in any of the files this glob describes
-    Glob(GlobDep),
+    GlobItems(GlobItemsDep),
     GlobDigest(GlobDigestDep),
     Regex(RegexDep),
     RegexDigest(RegexDigestDep),
@@ -91,7 +91,7 @@ impl XvcDependency {
             XvcDependency::LinesDigest(dep) => Some(dep.path.clone()),
             XvcDependency::Step(_) => None,
             XvcDependency::Generic(_) => None,
-            XvcDependency::Glob(_) => None,
+            XvcDependency::GlobItems(_) => None,
             XvcDependency::GlobDigest(_) => None,
             XvcDependency::UrlDigest(_) => None,
         }
@@ -124,7 +124,7 @@ pub fn dependencies_to_path(
                     })
             }
             XvcDependency::File(dep) => dep.path == *to_path,
-            XvcDependency::Glob(dep) => dep.xvc_path_metadata_map.keys().contains(to_path),
+            XvcDependency::GlobItems(dep) => dep.xvc_path_metadata_map.keys().contains(to_path),
             XvcDependency::Regex(dep) => dep.path == *to_path,
             XvcDependency::RegexDigest(dep) => dep.path == *to_path,
             XvcDependency::Param(dep) => dep.path == *to_path,
@@ -170,7 +170,7 @@ pub fn dependency_paths(
         XvcDependency::Generic(_) => empty,
         XvcDependency::Step(_) => empty,
         XvcDependency::File(dep) => make_map(&dep.path),
-        XvcDependency::Glob(dep) => dep
+        XvcDependency::GlobItems(dep) => dep
             .xvc_path_metadata_map
             .iter()
             .map(|(xp, xmd)| (xp.clone(), xmd.clone()))
