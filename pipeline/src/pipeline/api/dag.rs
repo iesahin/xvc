@@ -91,7 +91,7 @@ fn dep_desc(
             format!("generic: {}", generic_dep.generic_command)
         }
         XvcDependency::File(dep) => format!("file: {}", dep.path),
-        XvcDependency::Lines(dep) => {
+        XvcDependency::LineItems(dep) => {
             format!("lines: {}::{}-{}", dep.path, dep.begin, dep.end)
         }
         XvcDependency::LinesDigest(dep) => {

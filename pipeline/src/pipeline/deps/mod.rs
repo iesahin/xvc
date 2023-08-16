@@ -32,7 +32,7 @@ pub use self::file::FileDep;
 pub use self::generic::GenericDep;
 pub use self::glob::GlobItemsDep;
 pub use self::glob_digest::GlobDigestDep;
-pub use self::lines::LinesDep;
+pub use self::lines::LineItemsDep;
 pub use self::lines_digest::LinesDigestDep;
 pub use self::regex::RegexItemsDep;
 pub use self::regex_digest::RegexDigestDep;
@@ -61,7 +61,7 @@ pub enum XvcDependency {
     RegexDigest(RegexDigestDep),
     Param(ParamDep),
     /// When a step depends to a set of lines in a text file
-    Lines(LinesDep),
+    LineItems(LineItemsDep),
     LinesDigest(LinesDigestDep),
     UrlDigest(UrlDigestDep),
     // TODO: Slice {path, begin, length} to specify portions of binary files
@@ -87,7 +87,7 @@ impl XvcDependency {
             XvcDependency::RegexItems(dep) => Some(dep.path.clone()),
             XvcDependency::RegexDigest(dep) => Some(dep.path.clone()),
             XvcDependency::Param(dep) => Some(dep.path.clone()),
-            XvcDependency::Lines(dep) => Some(dep.path.clone()),
+            XvcDependency::LineItems(dep) => Some(dep.path.clone()),
             XvcDependency::LinesDigest(dep) => Some(dep.path.clone()),
             XvcDependency::Step(_) => None,
             XvcDependency::Generic(_) => None,
@@ -128,7 +128,7 @@ pub fn dependencies_to_path(
             XvcDependency::RegexItems(dep) => dep.path == *to_path,
             XvcDependency::RegexDigest(dep) => dep.path == *to_path,
             XvcDependency::Param(dep) => dep.path == *to_path,
-            XvcDependency::Lines(dep) => dep.path == *to_path,
+            XvcDependency::LineItems(dep) => dep.path == *to_path,
             XvcDependency::LinesDigest(dep) => dep.path == *to_path,
             XvcDependency::Generic(_) | XvcDependency::Step(_) | XvcDependency::UrlDigest(_) => {
                 false
@@ -181,7 +181,7 @@ pub fn dependency_paths(
         XvcDependency::UrlDigest(_) => empty,
         XvcDependency::Param(dep) => make_map(&dep.path),
         XvcDependency::RegexItems(dep) => make_map(&dep.path),
-        XvcDependency::Lines(dep) => make_map(&dep.path),
+        XvcDependency::LineItems(dep) => make_map(&dep.path),
         XvcDependency::RegexDigest(dep) => todo!(),
         XvcDependency::LinesDigest(dep) => todo!(),
     }

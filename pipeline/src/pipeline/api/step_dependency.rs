@@ -6,7 +6,7 @@ use crate::pipeline::deps::file::FileDep;
 use crate::pipeline::deps::generic::GenericDep;
 use crate::pipeline::deps::glob::GlobItemsDep;
 use crate::pipeline::deps::glob_digest::GlobDigestDep;
-use crate::pipeline::deps::lines::LinesDep;
+use crate::pipeline::deps::lines::LineItemsDep;
 use crate::pipeline::deps::regex::RegexItemsDep;
 use crate::pipeline::deps::step::StepDep;
 use crate::pipeline::deps::url::UrlDigestDep;
@@ -277,8 +277,8 @@ impl<'a> XvcDependencyList<'a> {
 
                 let pathbuf = PathBuf::from(lines_file);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
-                let lines_dep = LinesDep::new(path, begin, end);
-                deps.push(XvcDependency::Lines(lines_dep));
+                let lines_dep = LineItemsDep::new(path, begin, end);
+                deps.push(XvcDependency::LineItems(lines_dep));
             }
         }
         Ok(self)
