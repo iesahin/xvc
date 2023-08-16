@@ -97,7 +97,7 @@ fn dep_desc(
         XvcDependency::LinesDigest(dep) => {
             format!("lines (d): {}::{}-{}", dep.path, dep.begin, dep.end)
         }
-        XvcDependency::Regex(dep) => format!("regex: {}:/{}", dep.path, dep.regex),
+        XvcDependency::RegexItems(dep) => format!("regex: {}:/{}", dep.path, dep.regex),
         XvcDependency::RegexDigest(dep) => format!("regex (d): {}:/{}", dep.path, dep.regex),
         XvcDependency::Param(dep) => format!("param: {}::{}", dep.path, dep.key),
         XvcDependency::GlobItems(dep) => format!("glob: {}", dep.glob),

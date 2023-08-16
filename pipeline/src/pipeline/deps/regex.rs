@@ -10,7 +10,7 @@ use crate::XvcDependency;
 
 /// When a step depends to a regex searched in a text file
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RegexDep {
+pub struct RegexItemsDep {
     /// Path of the file in the workspace
     pub path: XvcPath,
     /// The regex to search in the file
@@ -20,15 +20,15 @@ pub struct RegexDep {
     pub xvc_metadata: Option<XvcMetadata>,
 }
 
-persist!(RegexDep, "regex-dependency");
+persist!(RegexItemsDep, "regex-dependency");
 
-impl Into<XvcDependency> for RegexDep {
+impl Into<XvcDependency> for RegexItemsDep {
     fn into(self) -> XvcDependency {
-        XvcDependency::Regex(self)
+        XvcDependency::RegexItems(self)
     }
 }
 
-impl RegexDep {
+impl RegexItemsDep {
     pub fn new(path: XvcPath, regex: String) -> Self {
         Self {
             path,
@@ -72,7 +72,7 @@ impl RegexDep {
     }
 }
 
-impl Diffable for RegexDep {
+impl Diffable for RegexItemsDep {
     type Item = Self;
 
     /// ⚠️ Call actual.update_metadata before calling this function ⚠️

@@ -7,7 +7,7 @@ use crate::pipeline::deps::generic::GenericDep;
 use crate::pipeline::deps::glob::GlobItemsDep;
 use crate::pipeline::deps::glob_digest::GlobDigestDep;
 use crate::pipeline::deps::lines::LinesDep;
-use crate::pipeline::deps::regex::RegexDep;
+use crate::pipeline::deps::regex::RegexItemsDep;
 use crate::pipeline::deps::step::StepDep;
 use crate::pipeline::deps::url::UrlDigestDep;
 use crate::pipeline::deps::ParamDep;
@@ -201,8 +201,8 @@ impl<'a> XvcDependencyList<'a> {
 
                 let pathbuf = PathBuf::from(regex_file);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
-                let regex_dep = RegexDep::new(path, regex_str);
-                deps.push(XvcDependency::Regex(regex_dep));
+                let regex_dep = RegexItemsDep::new(path, regex_str);
+                deps.push(XvcDependency::RegexItems(regex_dep));
             }
         }
 
