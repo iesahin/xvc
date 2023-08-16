@@ -21,7 +21,7 @@ use xvc_logging::watch;
 use super::glob_digest::GlobDep;
 use super::line_items::LineItemsDep;
 use super::lines_digest::LinesDep;
-use super::regex::RegexItemsDep;
+use super::regex_items::RegexItemsDep;
 use super::regex_digest::RegexDep;
 use super::step::StepDep;
 use super::{ParamDep, XvcDependency};

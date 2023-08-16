@@ -7,7 +7,7 @@ use crate::pipeline::deps::generic::GenericDep;
 use crate::pipeline::deps::glob_items::GlobItemsDep;
 use crate::pipeline::deps::glob_digest::GlobDep;
 use crate::pipeline::deps::line_items::LineItemsDep;
-use crate::pipeline::deps::regex::RegexItemsDep;
+use crate::pipeline::deps::regex_items::RegexItemsDep;
 use crate::pipeline::deps::step::StepDep;
 use crate::pipeline::deps::url::UrlDigestDep;
 use crate::pipeline::deps::ParamDep;
