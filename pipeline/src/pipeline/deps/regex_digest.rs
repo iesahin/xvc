@@ -11,7 +11,7 @@ use crate::XvcDependency;
 
 /// When a step depends to a regex searched in a text file
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct RegexDigestDep {
+pub struct RegexDep {
     /// Path of the file in the workspace
     pub path: XvcPath,
     /// The regex to search in the file
@@ -21,15 +21,15 @@ pub struct RegexDigestDep {
     pub xvc_metadata: Option<XvcMetadata>,
 }
 
-persist!(RegexDigestDep, "regex-digest-dependency");
+persist!(RegexDep, "regex-digest-dependency");
 
-impl Into<XvcDependency> for RegexDigestDep {
+impl Into<XvcDependency> for RegexDep {
     fn into(self) -> XvcDependency {
-        XvcDependency::RegexDigest(self)
+        XvcDependency::Regex(self)
     }
 }
 
-impl RegexDigestDep {
+impl RegexDep {
     pub fn new(path: XvcPath, regex: String) -> Self {
         Self {
             path,
@@ -77,7 +77,7 @@ impl RegexDigestDep {
     }
 }
 
-impl Diffable for RegexDigestDep {
+impl Diffable for RegexDep {
     type Item = Self;
 
     /// ⚠️  Update the metadata with actual.update_metadata before calling this function

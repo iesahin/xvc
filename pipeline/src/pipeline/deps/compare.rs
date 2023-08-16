@@ -22,7 +22,7 @@ use super::glob_digest::GlobDep;
 use super::lines::LineItemsDep;
 use super::lines_digest::LinesDigestDep;
 use super::regex::RegexItemsDep;
-use super::regex_digest::RegexDigestDep;
+use super::regex_digest::RegexDep;
 use super::step::StepDep;
 use super::{ParamDep, XvcDependency};
 
@@ -78,8 +78,8 @@ impl Diffable for XvcDependency {
                     diff_of_dep(RegexItemsDep::diff(Some(record), Some(actual)))
                 }
 
-                (XvcDependency::RegexDigest(record), XvcDependency::RegexDigest(actual)) => {
-                    diff_of_dep(RegexDigestDep::diff(Some(record), Some(actual)))
+                (XvcDependency::Regex(record), XvcDependency::Regex(actual)) => {
+                    diff_of_dep(RegexDep::diff(Some(record), Some(actual)))
                 }
 
                 (XvcDependency::Param(record), XvcDependency::Param(actual)) => {
@@ -128,8 +128,8 @@ impl Diffable for XvcDependency {
                 diff_of_dep(RegexItemsDep::diff_superficial(record, actual))
             }
 
-            (XvcDependency::RegexDigest(record), XvcDependency::RegexDigest(actual)) => {
-                diff_of_dep(RegexDigestDep::diff_superficial(record, actual))
+            (XvcDependency::Regex(record), XvcDependency::Regex(actual)) => {
+                diff_of_dep(RegexDep::diff_superficial(record, actual))
             }
 
             (XvcDependency::Param(record), XvcDependency::Param(actual)) => {
@@ -179,8 +179,8 @@ impl Diffable for XvcDependency {
                 diff_of_dep(RegexItemsDep::diff_thorough(record, actual))
             }
 
-            (XvcDependency::RegexDigest(record), XvcDependency::RegexDigest(actual)) => {
-                diff_of_dep(RegexDigestDep::diff_thorough(record, actual))
+            (XvcDependency::Regex(record), XvcDependency::Regex(actual)) => {
+                diff_of_dep(RegexDep::diff_thorough(record, actual))
             }
 
             (XvcDependency::Param(record), XvcDependency::Param(actual)) => {
@@ -247,9 +247,7 @@ pub fn thorough_compare_dependency(
         XvcDependency::RegexItems(regex_dep) => diff_of_dep(thorough_compare_regex(&regex_dep)?),
         XvcDependency::LineItems(lines_dep) => diff_of_dep(thorough_compare_lines(&lines_dep)?),
         XvcDependency::Glob(dep) => diff_of_dep(thorough_compare_glob_digest(cmp_params, &dep)?),
-        XvcDependency::RegexDigest(dep) => {
-            diff_of_dep(thorough_compare_regex_digest(cmp_params, &dep)?)
-        }
+        XvcDependency::Regex(dep) => diff_of_dep(thorough_compare_regex_digest(cmp_params, &dep)?),
         XvcDependency::LinesDigest(dep) => {
             diff_of_dep(thorough_compare_lines_digest(cmp_params, &dep)?)
         }
@@ -343,15 +341,15 @@ fn thorough_compare_glob_digest(
 
 fn thorough_compare_regex_digest(
     cmp_params: &StepStateParams,
-    record: &RegexDigestDep,
-) -> Result<Diff<RegexDigestDep>> {
-    let actual = RegexDigestDep::new(record.path.clone(), record.regex.clone())
+    record: &RegexDep,
+) -> Result<Diff<RegexDep>> {
+    let actual = RegexDep::new(record.path.clone(), record.regex.clone())
         .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
     // Shortcircuit if the metadata is identical
-    match RegexDigestDep::diff_superficial(record, &actual) {
+    match RegexDep::diff_superficial(record, &actual) {
         Diff::Different { record, actual } => {
             let actual = actual.update_digest(cmp_params.xvc_root, cmp_params.algorithm);
-            Ok(RegexDigestDep::diff_thorough(&record, &actual))
+            Ok(RegexDep::diff_thorough(&record, &actual))
         }
         Diff::RecordMissing { actual } => {
             let actual = actual.update_digest(cmp_params.xvc_root, cmp_params.algorithm);
@@ -421,7 +419,7 @@ pub fn superficial_compare_dependency(
         XvcDependency::RegexItems(regex_dep) => diff_of_dep(superficial_compare_regex(regex_dep)?),
         XvcDependency::LineItems(lines_dep) => diff_of_dep(superficial_compare_lines(lines_dep)?),
         XvcDependency::Glob(dep) => diff_of_dep(superficial_compare_glob_digest(cmp_params, dep)?),
-        XvcDependency::RegexDigest(dep) => {
+        XvcDependency::Regex(dep) => {
             diff_of_dep(superficial_compare_regex_digest(cmp_params, dep)?)
         }
         XvcDependency::LinesDigest(dep) => {
@@ -500,11 +498,11 @@ fn superficial_compare_glob_digest(
 
 fn superficial_compare_regex_digest(
     cmp_params: &StepStateParams,
-    record: &RegexDigestDep,
-) -> Result<Diff<RegexDigestDep>> {
-    let actual = RegexDigestDep::new(record.path.clone(), record.regex.clone())
+    record: &RegexDep,
+) -> Result<Diff<RegexDep>> {
+    let actual = RegexDep::new(record.path.clone(), record.regex.clone())
         .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
-    Ok(RegexDigestDep::diff_superficial(record, &actual))
+    Ok(RegexDep::diff_superficial(record, &actual))
 }
 
 fn superficial_compare_lines_digest(

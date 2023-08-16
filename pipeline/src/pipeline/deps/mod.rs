@@ -35,7 +35,7 @@ pub use self::glob_digest::GlobDep;
 pub use self::lines::LineItemsDep;
 pub use self::lines_digest::LinesDigestDep;
 pub use self::regex::RegexItemsDep;
-pub use self::regex_digest::RegexDigestDep;
+pub use self::regex_digest::RegexDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
 
@@ -58,7 +58,7 @@ pub enum XvcDependency {
     GlobItems(GlobItemsDep),
     Glob(GlobDep),
     RegexItems(RegexItemsDep),
-    RegexDigest(RegexDigestDep),
+    Regex(RegexDep),
     Param(ParamDep),
     /// When a step depends to a set of lines in a text file
     LineItems(LineItemsDep),
@@ -85,7 +85,7 @@ impl XvcDependency {
         match self {
             XvcDependency::File(file_dep) => Some(file_dep.path.clone()),
             XvcDependency::RegexItems(dep) => Some(dep.path.clone()),
-            XvcDependency::RegexDigest(dep) => Some(dep.path.clone()),
+            XvcDependency::Regex(dep) => Some(dep.path.clone()),
             XvcDependency::Param(dep) => Some(dep.path.clone()),
             XvcDependency::LineItems(dep) => Some(dep.path.clone()),
             XvcDependency::LinesDigest(dep) => Some(dep.path.clone()),
@@ -126,7 +126,7 @@ pub fn dependencies_to_path(
             XvcDependency::File(dep) => dep.path == *to_path,
             XvcDependency::GlobItems(dep) => dep.xvc_path_metadata_map.keys().contains(to_path),
             XvcDependency::RegexItems(dep) => dep.path == *to_path,
-            XvcDependency::RegexDigest(dep) => dep.path == *to_path,
+            XvcDependency::Regex(dep) => dep.path == *to_path,
             XvcDependency::Param(dep) => dep.path == *to_path,
             XvcDependency::LineItems(dep) => dep.path == *to_path,
             XvcDependency::LinesDigest(dep) => dep.path == *to_path,
@@ -180,7 +180,7 @@ pub fn dependency_paths(
         XvcDependency::Param(dep) => make_map(&dep.path),
         XvcDependency::RegexItems(dep) => make_map(&dep.path),
         XvcDependency::LineItems(dep) => make_map(&dep.path),
-        XvcDependency::RegexDigest(dep) => todo!(),
+        XvcDependency::Regex(dep) => todo!(),
         XvcDependency::LinesDigest(dep) => todo!(),
     }
 }
