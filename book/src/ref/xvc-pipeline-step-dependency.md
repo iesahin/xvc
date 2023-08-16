@@ -35,7 +35,7 @@ Options:
           
           The difference between this and the glob option is that this option keeps track of all matching files, but glob only keeps track of the matched files' digest. When you want to use ${XVC_GLOB_ITEMS}, ${XVC_ADDED_GLOB_ITEMS}, or ${XVC_REMOVED_GLOB_ITEMS} environment variables in the step command, use the glob-items dependency. Otherwise, you can use the glob option to save disk space.
 
-      --glob_digest <GLOB_DIGESTS>
+      --glob <GLOBS>
           Add a glob dependency to the step. Can be used multiple times.
           
           You can depend on multiple files and directories with this dependency.
@@ -45,22 +45,22 @@ Options:
       --param <PARAMS>
           Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times
 
-      --regex <REGEXPS>
+      --regex_items <REGEX_ITEMS>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
           
           The difference between this and the regex option is that the regex-items option keeps track of all matching lines, but regex only keeps track of the matched lines' digest. When you want to use ${XVC_REGEX_ITEMS}, ${XVC_ADDED_REGEX_ITEMS}, ${XVC_REMOVED_REGEX_ITEMS} environment variables in the step command, use the regex option. Otherwise, you can use the regex-digest option to save disk space.
 
-      --regex_digest <REGEXP_DIGESTS>
+      --regex <REGEXES>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
           
           The difference between this and the regex option is that the regex option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest.
 
-      --line_items <LINES>
+      --line_items <LINE_ITEMS>
           Add a line dependency in the form filename.txt::123-234
           
           The difference between this and the lines option is that the line-items option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. When you want to use ${XVC_ALL_LINE_ITEMS}, ${XVC_ADDED_LINE_ITEMS}, ${XVC_CHANGED_LINE_ITEMS} options in the step command, use the line option. Otherwise, you can use the lines option to save disk space.
 
-      --lines <LINE_DIGESTS>
+      --lines <LINES>
           Add a line digest dependency in the form filename.txt::123-234
           
           The difference between this and the line-items dependency is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. If you don't need individual lines to be kept, use this option to save space.

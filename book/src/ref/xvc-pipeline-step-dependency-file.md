@@ -18,6 +18,7 @@ Add a file dependency to the step.
 
 ```console
 $ xvc pipeline step dependency --step-name file-dependency --file data.txt
+
 ```
 
 When you run the command, it will print `data.txt has changed` if the file `data.txt` has changed.
@@ -33,6 +34,7 @@ You can add multiple dependencies to a step with multiple invocations.
 
 ```console
 $ xvc pipeline step dependency --step-name file-dependency --file data2.txt
+
 ```
 
 A step will run if any of its dependencies have changed.

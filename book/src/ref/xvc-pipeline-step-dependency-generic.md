@@ -43,6 +43,7 @@ For example, if you want to run a command when directory contents change, you ca
 ```console
 $ xvc pipeline step new --step-name directory-contents --command "echo 'Files changed'"
 $ xvc pipeline step dependency --step-name directory-contents --generic 'ls -lR'
+
 $ xvc pipeline run
 [OUT] [directory-contents] Files changed
  
@@ -53,6 +54,7 @@ When you add a file to the directory, the step is invalidated and run again:
 
 ```console
 $ xvc pipeline run
+
 $ xvc-test-helper generate-random-file new-file.txt
 $ xvc pipeline run
 [OUT] [directory-contents] Files changed

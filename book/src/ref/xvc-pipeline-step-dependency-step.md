@@ -16,6 +16,7 @@ You can add a step dependency to a step. These steps specify dependency relation
 $ xvc pipeline step new --step-name world --command "echo world"
 $ xvc pipeline step new --step-name hello --command "echo hello"
 $ xvc pipeline step dependency --step-name world --step hello
+
 ```
 
 When run, the dependency will be run first and the step will be run after.
@@ -34,6 +35,7 @@ If the dependency is not run, the dependent step won't run either.
 ```console
 $ xvc pipeline step update --step-name hello --when never
 $ xvc pipeline run
+
 ```
 
 If you want to run the dependent always, you can set it to run always explicitly.
