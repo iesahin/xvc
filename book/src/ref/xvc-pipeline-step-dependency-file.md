@@ -24,9 +24,8 @@ When you run the command, it will print `data.txt has changed` if the file `data
 
 ```console
 $ xvc pipeline run
-thread 'thread '<unnamed>' panicked at '[PANIC] PathNotFound { path: "data.txt" }, [pipeline/src/pipeline/mod.rs::1129]', lib/src/cli/mod.rs:263:52
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-<unnamed>' panicked at 'PathNotFound { path: "data.txt" }', pipeline/src/pipeline/mod.rs:1129:28
+[OUT] [file-dependency] data.txt has changed
+ 
 
 ```
 
@@ -40,9 +39,8 @@ A step will run if any of its dependencies have changed.
 
 ```console
 $ xvc pipeline run
-thread 'thread '<unnamed>' panicked at '<unnamed>PathNotFound { path: "data2.txt" }' panicked at '', [PANIC] PathNotFound { path: "data2.txt" }, [pipeline/src/pipeline/mod.rs::1129]', lib/src/cli/mod.rspipeline/src/pipeline/mod.rs::263:52
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-1129:28
+[OUT] [file-dependency] data.txt has changed
+ 
 
 ```
 
@@ -50,9 +48,6 @@ By default, they are not run if none of the dependencies have changed.
 
 ```console
 $ xvc pipeline run
-thread '<unnamed>' panicked at 'PathNotFound { path: "data2.txt" }', thread 'pipeline/src/pipeline/mod.rs<unnamed>:' panicked at '1129[PANIC] PathNotFound { path: "data2.txt" }, [pipeline/src/pipeline/mod.rs::1129]:', 28lib/src/cli/mod.rs:263:52
-
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 ```
 
@@ -66,8 +61,7 @@ Now the step will run even if none of the dependencies have changed.
 
 ```console
 $ xvc pipeline run
-thread 'thread '<unnamed><unnamed>' panicked at '' panicked at 'PathNotFound { path: "data.txt" }[PANIC] PathNotFound { path: "data.txt" }, [pipeline/src/pipeline/mod.rs::1129]', ', pipeline/src/pipeline/mod.rslib/src/cli/mod.rs:1129:28
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-:263:52
+[OUT] [file-dependency] data.txt has changed
+ 
 
 ```
