@@ -28,7 +28,7 @@ use super::{ParamDep, XvcDependency};
 
 use super::file::FileDep;
 use super::generic::GenericDep;
-use super::glob::GlobItemsDep;
+use super::glob_items::GlobItemsDep;
 use super::url::UrlDigestDep;
 
 #[derive(Clone, Debug)]

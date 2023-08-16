@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use crate::error::{Error, Result};
 use crate::pipeline::deps::file::FileDep;
 use crate::pipeline::deps::generic::GenericDep;
-use crate::pipeline::deps::glob::GlobItemsDep;
+use crate::pipeline::deps::glob_items::GlobItemsDep;
 use crate::pipeline::deps::glob_digest::GlobDep;
 use crate::pipeline::deps::lines::LineItemsDep;
 use crate::pipeline::deps::regex::RegexItemsDep;

@@ -2,7 +2,7 @@ pub mod compare;
 pub mod digest;
 pub mod file;
 pub mod generic;
-pub mod glob;
+pub mod glob_items;
 pub mod glob_digest;
 pub mod lines;
 pub mod lines_digest;
@@ -30,7 +30,7 @@ use xvc_ecs::{persist, HStore, XvcStore};
 
 pub use self::file::FileDep;
 pub use self::generic::GenericDep;
-pub use self::glob::GlobItemsDep;
+pub use self::glob_items::GlobItemsDep;
 pub use self::glob_digest::GlobDep;
 pub use self::lines::LineItemsDep;
 pub use self::lines_digest::LinesDep;
