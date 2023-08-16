@@ -8,7 +8,7 @@ pub mod line_items;
 pub mod lines;
 pub mod param;
 pub mod regex_items;
-pub mod regex_digest;
+pub mod regex;
 pub mod step;
 pub mod url;
 
@@ -35,7 +35,7 @@ pub use self::glob::GlobDep;
 pub use self::line_items::LineItemsDep;
 pub use self::lines::LinesDep;
 pub use self::regex_items::RegexItemsDep;
-pub use self::regex_digest::RegexDep;
+pub use self::regex::RegexDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
 

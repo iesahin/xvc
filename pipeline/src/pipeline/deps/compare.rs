@@ -22,7 +22,7 @@ use super::glob::GlobDep;
 use super::line_items::LineItemsDep;
 use super::lines::LinesDep;
 use super::regex_items::RegexItemsDep;
-use super::regex_digest::RegexDep;
+use super::regex::RegexDep;
 use super::step::StepDep;
 use super::{ParamDep, XvcDependency};
 
