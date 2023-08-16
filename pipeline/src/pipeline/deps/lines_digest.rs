@@ -9,7 +9,7 @@ use xvc_ecs::persist;
 use crate::XvcDependency;
 
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct LinesDigestDep {
+pub struct LinesDep {
     /// Path of the file in the workspace
     pub path: XvcPath,
     /// The beginning of range
@@ -20,15 +20,15 @@ pub struct LinesDigestDep {
     pub digest: Option<ContentDigest>,
 }
 
-persist!(LinesDigestDep, "lines-digest-dependency");
+persist!(LinesDep, "lines-digest-dependency");
 
-impl Into<XvcDependency> for LinesDigestDep {
+impl Into<XvcDependency> for LinesDep {
     fn into(self) -> XvcDependency {
-        XvcDependency::LinesDigest(self)
+        XvcDependency::Lines(self)
     }
 }
 
-impl LinesDigestDep {
+impl LinesDep {
     pub fn new(path: XvcPath, begin: usize, end: usize) -> Self {
         Self {
             path,
@@ -63,7 +63,7 @@ impl LinesDigestDep {
     }
 }
 
-impl Diffable for LinesDigestDep {
+impl Diffable for LinesDep {
     type Item = Self;
 
     /// ⚠️ Call actual.update_metadata before calling this. ⚠️
@@ -106,7 +106,7 @@ impl Diffable for LinesDigestDep {
     }
 
     /// ⚠️ Call actual.update_metadata and actual.update_lines before calling this. ⚠️
-    fn diff(record: Option<&LinesDigestDep>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
+    fn diff(record: Option<&LinesDep>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
         match (record, actual) {
             (Some(record), Some(actual)) => match Self::diff_superficial(&record, &actual) {
                 Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),

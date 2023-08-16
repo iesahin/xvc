@@ -94,7 +94,7 @@ fn dep_desc(
         XvcDependency::LineItems(dep) => {
             format!("lines: {}::{}-{}", dep.path, dep.begin, dep.end)
         }
-        XvcDependency::LinesDigest(dep) => {
+        XvcDependency::Lines(dep) => {
             format!("lines (d): {}::{}-{}", dep.path, dep.begin, dep.end)
         }
         XvcDependency::RegexItems(dep) => format!("regex: {}:/{}", dep.path, dep.regex),
