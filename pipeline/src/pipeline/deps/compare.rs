@@ -18,7 +18,7 @@ use xvc_core::{
 use xvc_ecs::{HStore, R1NStore, Storable, XvcStore};
 use xvc_logging::watch;
 
-use super::glob_digest::GlobDep;
+use super::glob::GlobDep;
 use super::line_items::LineItemsDep;
 use super::lines_digest::LinesDep;
 use super::regex_items::RegexItemsDep;
