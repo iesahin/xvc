@@ -160,8 +160,6 @@ impl Diffable for XvcDependency {
 
             (XvcDependency::Generic(record), XvcDependency::Generic(actual)) => {
                 let actual = actual.clone().update_output_digest().unwrap();
-                watch!(record);
-                watch!(actual);
                 diff_of_dep(GenericDep::diff_thorough(record, &actual))
             }
 
@@ -275,6 +273,11 @@ fn thorough_compare_generic(
 /// Compares a dependency path with the actual metadata and content digest found on disk
 fn thorough_compare_file(cmp_params: &StepStateParams, record: &FileDep) -> Result<Diff<FileDep>> {
     let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?)?;
+    let actual = actual.calculate_content_digest(
+        cmp_params.xvc_root,
+        cmp_params.algorithm,
+        TextOrBinary::Auto,
+    )?;
     watch!(actual);
     Ok(FileDep::diff_thorough(record, &actual))
 }
