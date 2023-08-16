@@ -31,7 +31,7 @@ use xvc_ecs::{persist, HStore, XvcStore};
 pub use self::file::FileDep;
 pub use self::generic::GenericDep;
 pub use self::glob::GlobItemsDep;
-pub use self::glob_digest::GlobDigestDep;
+pub use self::glob_digest::GlobDep;
 pub use self::lines::LineItemsDep;
 pub use self::lines_digest::LinesDigestDep;
 pub use self::regex::RegexItemsDep;
@@ -56,7 +56,7 @@ pub enum XvcDependency {
     File(FileDep),
     /// Invalidates when contents in any of the files this glob describes
     GlobItems(GlobItemsDep),
-    GlobDigest(GlobDigestDep),
+    Glob(GlobDep),
     RegexItems(RegexItemsDep),
     RegexDigest(RegexDigestDep),
     Param(ParamDep),
@@ -92,7 +92,7 @@ impl XvcDependency {
             XvcDependency::Step(_) => None,
             XvcDependency::Generic(_) => None,
             XvcDependency::GlobItems(_) => None,
-            XvcDependency::GlobDigest(_) => None,
+            XvcDependency::Glob(_) => None,
             XvcDependency::UrlDigest(_) => None,
         }
     }
@@ -116,7 +116,7 @@ pub fn dependencies_to_path(
     let mut deps_to_path = HStore::<XvcDependency>::with_capacity(all_deps.len());
     for (dep_e, dep) in all_deps.iter() {
         let has_path = match dep {
-            XvcDependency::GlobDigest(dep) => {
+            XvcDependency::Glob(dep) => {
                 glob_includes(xvc_root, pmm, pipeline_rundir, dep.glob.as_str(), to_path)
                     .unwrap_or_else(|e| {
                         e.warn();
@@ -175,9 +175,7 @@ pub fn dependency_paths(
             .iter()
             .map(|(xp, xmd)| (xp.clone(), xmd.clone()))
             .collect(),
-        XvcDependency::GlobDigest(dep) => {
-            glob_paths(xvc_root, pmm, pipeline_rundir, &dep.glob).unwrap()
-        }
+        XvcDependency::Glob(dep) => glob_paths(xvc_root, pmm, pipeline_rundir, &dep.glob).unwrap(),
         XvcDependency::UrlDigest(_) => empty,
         XvcDependency::Param(dep) => make_map(&dep.path),
         XvcDependency::RegexItems(dep) => make_map(&dep.path),

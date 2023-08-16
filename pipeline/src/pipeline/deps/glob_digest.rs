@@ -12,7 +12,7 @@ use crate::XvcDependency;
 
 /// Invalidates when contents of any of the files in the directory changes.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub struct GlobDigestDep {
+pub struct GlobDep {
     /// The path in the workspace
     pub glob: String,
     pub xvc_paths_digest: Option<PathCollectionDigest>,
@@ -42,15 +42,15 @@ impl Diffable for PathCollectionContentDigest {
     type Item = Self;
 }
 
-persist!(GlobDigestDep, "glob-digest-dependency");
+persist!(GlobDep, "glob-digest-dependency");
 
-impl Into<XvcDependency> for GlobDigestDep {
+impl Into<XvcDependency> for GlobDep {
     fn into(self) -> XvcDependency {
-        XvcDependency::GlobDigest(self)
+        XvcDependency::Glob(self)
     }
 }
 
-impl GlobDigestDep {
+impl GlobDep {
     pub fn new(glob: String) -> Self {
         Self {
             glob,
@@ -67,7 +67,10 @@ impl GlobDigestDep {
             .filter(|(xp, _)| compiled_glob.matches(xp.as_str()))
             .sorted();
 
-        let xvc_paths_digest = Some(PathCollectionDigest::new(paths.clone(), HashAlgorithm::Blake3)?);
+        let xvc_paths_digest = Some(PathCollectionDigest::new(
+            paths.clone(),
+            HashAlgorithm::Blake3,
+        )?);
         let xvc_metadata_digest_bytes =
             paths
                 .map(|(_, xmd)| xmd.digest().unwrap())
@@ -122,7 +125,7 @@ impl GlobDigestDep {
     }
 }
 
-impl Diffable for GlobDigestDep {
+impl Diffable for GlobDep {
     type Item = Self;
 
     fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> xvc_core::Diff<Self::Item> {
