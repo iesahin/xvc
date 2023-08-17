@@ -133,17 +133,17 @@ impl Diffable for GlobDep {
         assert!(record.glob == actual.glob);
         watch!(record);
         watch!(actual);
-        if PathCollectionDigest::diff(
+        let path_collection_diff = PathCollectionDigest::diff(
             record.xvc_paths_digest.as_ref(),
             actual.xvc_paths_digest.as_ref(),
-        )
-        .changed()
-            || PathCollectionMetadataDigest::diff(
-                record.xvc_metadata_digest.as_ref(),
-                actual.xvc_metadata_digest.as_ref(),
-            )
-            .changed()
-        {
+        );
+        watch!(path_collection_diff);
+        let path_collectio_metadata_diff = PathCollectionMetadataDigest::diff(
+            record.xvc_metadata_digest.as_ref(),
+            actual.xvc_metadata_digest.as_ref(),
+        );
+        watch!(path_collectio_metadata_diff);
+        if path_collection_diff.changed() || path_collectio_metadata_diff.changed() {
             watch!("Different");
             Diff::Different {
                 record: record.clone(),
