@@ -348,10 +348,16 @@ pub trait Diffable {
             (Some(record), None) => Diff::ActualMissing {
                 record: record.clone(),
             },
-            (Some(record), Some(actual)) => Diff::Different {
-                record: record.clone(),
-                actual: actual.clone(),
-            },
+            (Some(record), Some(actual)) => {
+                if record == actual {
+                    Diff::Identical
+                } else {
+                    Diff::Different {
+                        record: record.clone(),
+                        actual: actual.clone(),
+                    }
+                }
+            }
         }
     }
 
