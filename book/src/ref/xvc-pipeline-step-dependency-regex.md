@@ -41,26 +41,16 @@ $ cat people.csv
 Now, let's add steps to the pipeline to count males and females in the file:
 
 ```console
-$ xvc pipeline step new --step-name count-males --command "grep -c '"M",' people.csv"
-$ xvc pipeline step new --step-name count-females --command "grep -c '"F",' people.csv"
+$ xvc pipeline step new --step-name count-males --command "grep -c '\"M\",' people.csv"
+$ xvc pipeline step new --step-name count-females --command "grep -c '\"F\",' people.csv"
 ```
 
 These commands must be run when the respective regexes changed.
 
 ```console
 $ xvc pipeline step dependency --step-name count-males --regex '"M",'
-error: unexpected argument '--to' found
-
-Usage: xvc pipeline step dependency [OPTIONS] --step-name <STEP_NAME>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name count-females --regex '"F",'
-error: unexpected argument '--to' found
-
-Usage: xvc pipeline step dependency [OPTIONS] --step-name <STEP_NAME>
-
-For more information, try '--help'.
 
 ```
 
@@ -70,9 +60,9 @@ When you run the pipeline initially, the steps are run.
 $ xvc pipeline run
 [OUT] [count-females] 0
 
-[ERROR] Step count-females finished UNSUCCESSFULLY with command grep -c 'F,' people.csv
 [OUT] [count-males] 0
 
+[ERROR] Step count-females finished UNSUCCESSFULLY with command grep -c 'F,' people.csv
 [ERROR] Step count-males finished UNSUCCESSFULLY with command grep -c 'M,' people.csv
 
 ``````
@@ -81,19 +71,19 @@ When you run the pipeline again, the steps are not run because the regexes didn'
 
 ```console
 $ xvc pipeline run
-[OUT] [count-males] 0
-
-[ERROR] Step count-males finished UNSUCCESSFULLY with command grep -c 'M,' people.csv
 [OUT] [count-females] 0
 
 [ERROR] Step count-females finished UNSUCCESSFULLY with command grep -c 'F,' people.csv
+[OUT] [count-males] 0
+
+[ERROR] Step count-males finished UNSUCCESSFULLY with command grep -c 'M,' people.csv
 
 ``````
 
 When you add a new female record to the file, only the female count step is run.
 
 ```console
-$ echo '"Asude",       "F",   12,       55,      110' >> people.csv
+$ zsh -c "echo '\"Asude\",       "F",   12,       55,      110' >> people.csv"
 "Asude",       "F",   12,       55,      110 >> people.csv
 
 $ xvc pipeline run
