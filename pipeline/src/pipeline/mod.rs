@@ -816,14 +816,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
                     (XvcStepState::DoneByRunning(s.clone()), step_params)
                 }
             },
-            XvcStepState::CheckingSuperficialDiffs(s) => match s {
-                CheckingSuperficialDiffsState::FromCheckedOutputs => {
-                    s_checking_superficial_diffs(s, step_params)?
-                }
-                CheckingSuperficialDiffsState::FromOutputsIgnored => {
-                    s_checking_superficial_diffs_f_missing_outputs_ignored(s, step_params)?
-                }
-            },
         };
 
         watch!(step.name);
