@@ -58,9 +58,9 @@ When you run the pipeline initially, the steps are run.
 
 ```console
 $ xvc pipeline run
-[OUT] [count-females] 7
-
 [OUT] [count-males] 11
+
+[OUT] [count-females] 7
 
 
 ``````
@@ -68,7 +68,7 @@ $ xvc pipeline run
 When you run the pipeline again, the steps are not run because the regexes didn't change.
 
 ```console
-$ xvc pipeline run
+$ xvc --debug pipeline run
 [OUT] [count-females] 7
 
 [OUT] [count-males] 11
@@ -79,7 +79,7 @@ $ xvc pipeline run
 When you add a new female record to the file, only the female count step is run.
 
 ```console
-$ zsh -c "echo '\"Asude\",       \"F\",   12,       55,      110' >> people.csv"
+$ zsh -c "echo '\"Asude\",      \"F\",   12,       55,      110' >> people.csv"
 
 $ cat people.csv
 "Name",     "Sex", "Age", "Height (in)", "Weight (lbs)"
@@ -102,12 +102,12 @@ $ cat people.csv
 "Quin",       "M",   29,       71,      176
 "Ruth",       "F",   28,       65,      131
 
-"Asude",       F,   12,       55,      110
+"Asude",       "F",   12,       55,      110
 
 $ xvc pipeline run
-[OUT] [count-females] 7
-
 [OUT] [count-males] 11
+
+[OUT] [count-females] 8
 
 
 ```
