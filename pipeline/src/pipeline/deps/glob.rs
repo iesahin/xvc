@@ -7,6 +7,7 @@ use xvc_core::{
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::persist;
+use xvc_logging::watch;
 
 use crate::XvcDependency;
 
@@ -130,7 +131,8 @@ impl Diffable for GlobDep {
 
     fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> xvc_core::Diff<Self::Item> {
         assert!(record.glob == actual.glob);
-
+        watch!(record);
+        watch!(actual);
         if PathCollectionDigest::diff(
             record.xvc_paths_digest.as_ref(),
             actual.xvc_paths_digest.as_ref(),

@@ -491,6 +491,7 @@ fn superficial_compare_glob_digest(
 ) -> Result<Diff<GlobDep>> {
     let actual = GlobDep::new(record.glob.clone())
         .update_collection_digests(cmp_params.pmm.read().as_ref()?)?;
+    watch!(actual);
     Ok(GlobDep::diff_superficial(record, &actual))
 }
 

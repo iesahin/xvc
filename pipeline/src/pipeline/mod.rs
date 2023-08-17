@@ -1139,6 +1139,8 @@ fn s_checking_superficial_diffs<'a>(
     {
         let mut dependency_diffs = params.dependency_diffs.write()?;
         for (dep_e, diff) in step_dependency_diffs.into_iter() {
+            watch!(diff);
+            watch!(diff.changed());
             changed = changed | &diff.changed();
             dependency_diffs.insert(dep_e, diff);
         }
