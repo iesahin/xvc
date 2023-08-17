@@ -21,8 +21,8 @@ use xvc_logging::watch;
 use super::glob::GlobDep;
 use super::line_items::LineItemsDep;
 use super::lines::LinesDep;
-use super::regex_items::RegexItemsDep;
 use super::regex::RegexDep;
+use super::regex_items::RegexItemsDep;
 use super::step::StepDep;
 use super::{ParamDep, XvcDependency};
 
@@ -501,7 +501,10 @@ fn superficial_compare_regex_digest(
 ) -> Result<Diff<RegexDep>> {
     let actual = RegexDep::new(record.path.clone(), record.regex.clone())
         .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
-    Ok(RegexDep::diff_superficial(record, &actual))
+    watch!(actual);
+    let diff = RegexDep::diff_superficial(record, &actual);
+    watch!(diff);
+    Ok(diff)
 }
 
 fn superficial_compare_lines_digest(
