@@ -12,7 +12,7 @@ use std::collections::HashSet;
 use crate::Result;
 use serde::{Deserialize, Serialize};
 use xvc_ecs::{HStore, Storable, XvcEntity, XvcStore};
-use xvc_logging::warn;
+use xvc_logging::{warn, watch};
 
 /// Shows which information is identical, missing or different in diff calculations.
 ///
@@ -338,6 +338,8 @@ pub trait Diffable {
     /// e.g. a file may be missing from the disk, but it may exist in the records.
     /// ((Some(record), None) -> Diff::ActualMissing)
     fn diff(record: Option<&Self::Item>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
+        watch!(record);
+        watch!(actual);
         match (record, actual) {
             (None, None) => unreachable!("Both record and actual are None"),
             (None, Some(actual)) => Diff::RecordMissing {

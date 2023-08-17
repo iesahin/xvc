@@ -79,68 +79,68 @@ $ xvc --debug pipeline run
         XvcConfigMap {
             source: Default,
             map: {
-                "git.auto_stage": Boolean(
-                    false,
-                ),
-                "file.list.recursive": Boolean(
-                    false,
-                ),
-                "pipeline.default": String(
-                    "default",
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "core.guid": String(
-                    "74d3e661e04456c1",
-                ),
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "pipeline.current_pipeline": String(
+                "pipeline.default": String(
                     "default",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "file.track.text_or_binary": String(
-                    "auto",
                 ),
                 "file.list.format": String(
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "file.carry-in.force": Boolean(
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "git.auto_stage": Boolean(
                     false,
+                ),
+                "file.recheck.method": String(
+                    "copy",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "core.guid": String(
+                    "f731f831ef59a672",
                 ),
                 "file.track.no_parallel": Boolean(
                     false,
                 ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
                 "cache.algorithm": String(
                     "blake3",
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "file.list.recursive": Boolean(
+                    false,
                 ),
                 "file.list.no_summary": Boolean(
                     false,
                 ),
-                "git.command": String(
-                    "git",
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "git.use_git": Boolean(
+                    true,
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
                 ),
             },
         },
@@ -150,44 +150,14 @@ $ xvc --debug pipeline run
                 "pipeline.current_pipeline": String(
                     "default",
                 ),
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "file.list.recursive": Boolean(
-                    false,
-                ),
                 "core.guid": String(
-                    "785800e685236139",
+                    "b2a5301852228384",
                 ),
-                "git.auto_stage": Boolean(
+                "file.track.no_commit": Boolean(
                     false,
                 ),
                 "git.auto_commit": Boolean(
                     true,
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "git.command": String(
-                    "git",
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
-                ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
                 ),
                 "git.use_git": Boolean(
                     true,
@@ -195,16 +165,46 @@ $ xvc --debug pipeline run
                 "file.track.text_or_binary": String(
                     "auto",
                 ),
-                "file.track.no_parallel": Boolean(
-                    false,
+                "file.list.sort": String(
+                    "name-desc",
                 ),
                 "file.recheck.method": String(
                     "copy",
                 ),
+                "core.verbosity": String(
+                    "error",
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "git.command": String(
+                    "git",
+                ),
                 "pipeline.default": String(
                     "default",
                 ),
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
                 "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "file.list.recursive": Boolean(
+                    false,
+                ),
+                "git.auto_stage": Boolean(
+                    false,
+                ),
+                "file.track.force": Boolean(
                     false,
                 ),
                 "file.list.no_summary": Boolean(
@@ -233,58 +233,10 @@ $ xvc --debug pipeline run
         },
     ],
     the_config: {
-        "file.carry-in.force": XvcConfigValue {
-            source: Project,
+        "core.quiet": XvcConfigValue {
+            source: CommandLine,
             value: Boolean(
                 false,
-            ),
-        },
-        "git.auto_stage": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.recheck.method": XvcConfigValue {
-            source: Project,
-            value: String(
-                "copy",
-            ),
-        },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
-            ),
-        },
-        "pipeline.current_pipeline": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "git.auto_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "file.list.sort": XvcConfigValue {
-            source: Project,
-            value: String(
-                "name-desc",
-            ),
-        },
-        "file.track.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "785800e685236139",
             ),
         },
         "git.use_git": XvcConfigValue {
@@ -293,8 +245,14 @@ $ xvc --debug pipeline run
                 true,
             ),
         },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
+            source: Project,
             value: Boolean(
                 false,
             ),
@@ -305,43 +263,7 @@ $ xvc --debug pipeline run
                 "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
             ),
         },
-        "file.track.no_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "cache.algorithm": XvcConfigValue {
-            source: Project,
-            value: String(
-                "blake3",
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
-            source: Project,
-            value: String(
-                "default",
-            ),
-        },
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
         "file.track.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.track.text_or_binary": XvcConfigValue {
-            source: Project,
-            value: String(
-                "auto",
-            ),
-        },
-        "file.list.no_summary": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -353,16 +275,94 @@ $ xvc --debug pipeline run
                 "quiet",
             ),
         },
-        "file.carry-in.no_parallel": XvcConfigValue {
+        "file.list.no_summary": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
+            ),
+        },
+        "file.recheck.method": XvcConfigValue {
+            source: Project,
+            value: String(
+                "copy",
+            ),
+        },
+        "file.track.text_or_binary": XvcConfigValue {
+            source: Project,
+            value: String(
+                "auto",
+            ),
+        },
+        "git.auto_stage": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.track.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "b2a5301852228384",
+            ),
+        },
+        "git.auto_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                true,
+            ),
+        },
+        "cache.algorithm": XvcConfigValue {
+            source: Project,
+            value: String(
+                "blake3",
+            ),
+        },
+        "pipeline.current_pipeline": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
             ),
         },
         "file.list.recursive": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
+            ),
+        },
+        "file.list.sort": XvcConfigValue {
+            source: Project,
+            value: String(
+                "name-desc",
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.carry-in.no_parallel": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.command": XvcConfigValue {
+            source: Project,
+            value: String(
+                "git",
             ),
         },
     },
@@ -372,7 +372,7 @@ $ xvc --debug pipeline run
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"74d3e661e04456c1/"
+guid = /"f731f831ef59a672/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -511,10 +511,10 @@ default_params_file = /"params.yaml/"
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1692297366974837",
-    "[CWD]/.xvc/ec/1692297366979669",
-    "[CWD]/.xvc/ec/1692297367286757",
-    "[CWD]/.xvc/ec/1692297367462485",
+    "[CWD]/.xvc/ec/1692297836774820",
+    "[CWD]/.xvc/ec/1692297836777490",
+    "[CWD]/.xvc/ec/1692297837060846",
+    "[CWD]/.xvc/ec/1692297837238123",
 ]
 [TRACE][pipeline/src/lib.rs::358] name: Some(
     "default",
@@ -591,14 +591,14 @@ default_params_file = /"params.yaml/"
     "[CWD]",
 )
 [TRACE][walker/src/notify.rs::160] watcher: FsEventWatcher {
-    paths: 0x00006000005890b0,
+    paths: 0x0000600001b00000,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000600003a892d0,
+    event_handler: 0x0000600002404010,
     runloop: Some(
         (
-            0x0000600003784100,
+            0x000060000291c100,
             JoinHandle { .. },
         ),
     ),
@@ -610,18 +610,18 @@ default_params_file = /"params.yaml/"
 [TRACE][pipeline/src/pipeline/mod.rs::331] &dependency_graph: {
     XvcEntity(
         2,
-        3927250486819086431,
+        10285267349602734714,
     ): [],
 }
 [TRACE][pipeline/src/pipeline/mod.rs::343] &dependency_graph: {
     XvcEntity(
         2,
-        3927250486819086431,
+        10285267349602734714,
     ): [],
 }
 [INFO][pipeline/src/pipeline/mod.rs::347] Pipeline Graph:
 digraph {
-    0 [ label = "(2, 3927250486819086431)" ]
+    0 [ label = "(2, 10285267349602734714)" ]
 }
 
 
@@ -630,7 +630,7 @@ digraph {
         map: {
             XvcEntity(
                 2,
-                3927250486819086431,
+                10285267349602734714,
             ): Begin(
                 FromInit,
             ),
@@ -643,7 +643,7 @@ digraph {
     map: {
         XvcEntity(
             2,
-            3927250486819086431,
+            10285267349602734714,
         ): ScopedJoinHandle { .. },
     },
 }
@@ -651,7 +651,7 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::554] (step_e, &jh): (
     XvcEntity(
         2,
-        3927250486819086431,
+        10285267349602734714,
     ),
     ScopedJoinHandle { .. },
 )
@@ -660,7 +660,7 @@ digraph {
         map: {
             XvcEntity(
                 2,
-                3927250486819086431,
+                10285267349602734714,
             ): XvcStep {
                 name: "files-changed",
             },
@@ -671,7 +671,7 @@ digraph {
             }: [
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ),
             ],
         },
@@ -680,7 +680,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     value: XvcStep {
                         name: "files-changed",
@@ -689,7 +689,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     value: XvcStep {
                         name: "files-changed",
@@ -705,7 +705,7 @@ digraph {
         map: {
             XvcEntity(
                 3,
-                14933861189160914979,
+                8219990603513033082,
             ): Glob(
                 GlobDep {
                     glob: "dir-*/*",
@@ -714,38 +714,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    205,
-                                    192,
-                                    34,
-                                    53,
-                                    207,
-                                    141,
-                                    134,
-                                    48,
-                                    9,
-                                    25,
-                                    145,
-                                    41,
-                                    59,
-                                    196,
-                                    232,
-                                    181,
-                                    32,
+                                    212,
+                                    110,
+                                    96,
+                                    222,
+                                    235,
+                                    220,
+                                    130,
+                                    80,
+                                    128,
+                                    155,
+                                    6,
+                                    55,
                                     67,
-                                    154,
-                                    69,
-                                    251,
-                                    82,
-                                    100,
+                                    42,
+                                    9,
+                                    185,
+                                    250,
+                                    155,
+                                    141,
+                                    203,
                                     57,
-                                    129,
-                                    49,
-                                    107,
-                                    221,
-                                    119,
-                                    228,
-                                    114,
-                                    79,
+                                    233,
+                                    75,
+                                    195,
+                                    83,
+                                    26,
+                                    137,
+                                    122,
+                                    198,
+                                    68,
+                                    112,
+                                    199,
                                 ],
                             },
                         ),
@@ -755,38 +755,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    174,
-                                    157,
-                                    156,
+                                    53,
+                                    194,
+                                    125,
+                                    236,
+                                    20,
+                                    143,
+                                    68,
                                     252,
-                                    100,
-                                    192,
-                                    49,
-                                    110,
-                                    244,
-                                    105,
-                                    123,
-                                    221,
-                                    228,
-                                    130,
-                                    220,
-                                    215,
-                                    188,
-                                    24,
-                                    179,
-                                    221,
-                                    52,
-                                    109,
-                                    255,
-                                    221,
-                                    179,
-                                    81,
-                                    238,
-                                    244,
-                                    30,
-                                    105,
-                                    24,
-                                    198,
+                                    58,
+                                    190,
+                                    243,
+                                    203,
+                                    241,
+                                    248,
+                                    180,
+                                    175,
+                                    163,
+                                    145,
+                                    71,
+                                    214,
+                                    204,
+                                    42,
+                                    17,
+                                    122,
+                                    111,
+                                    65,
+                                    177,
+                                    51,
+                                    125,
+                                    142,
+                                    139,
+                                    103,
                                 ],
                             },
                         ),
@@ -844,38 +844,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    205,
-                                    192,
-                                    34,
-                                    53,
-                                    207,
-                                    141,
-                                    134,
-                                    48,
-                                    9,
-                                    25,
-                                    145,
-                                    41,
-                                    59,
-                                    196,
-                                    232,
-                                    181,
-                                    32,
+                                    212,
+                                    110,
+                                    96,
+                                    222,
+                                    235,
+                                    220,
+                                    130,
+                                    80,
+                                    128,
+                                    155,
+                                    6,
+                                    55,
                                     67,
-                                    154,
-                                    69,
-                                    251,
-                                    82,
-                                    100,
+                                    42,
+                                    9,
+                                    185,
+                                    250,
+                                    155,
+                                    141,
+                                    203,
                                     57,
-                                    129,
-                                    49,
-                                    107,
-                                    221,
-                                    119,
-                                    228,
-                                    114,
-                                    79,
+                                    233,
+                                    75,
+                                    195,
+                                    83,
+                                    26,
+                                    137,
+                                    122,
+                                    198,
+                                    68,
+                                    112,
+                                    199,
                                 ],
                             },
                         ),
@@ -885,38 +885,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    174,
-                                    157,
-                                    156,
+                                    53,
+                                    194,
+                                    125,
+                                    236,
+                                    20,
+                                    143,
+                                    68,
                                     252,
-                                    100,
-                                    192,
-                                    49,
-                                    110,
-                                    244,
-                                    105,
-                                    123,
-                                    221,
-                                    228,
-                                    130,
-                                    220,
-                                    215,
-                                    188,
-                                    24,
-                                    179,
-                                    221,
-                                    52,
-                                    109,
-                                    255,
-                                    221,
-                                    179,
-                                    81,
-                                    238,
-                                    244,
-                                    30,
-                                    105,
-                                    24,
-                                    198,
+                                    58,
+                                    190,
+                                    243,
+                                    203,
+                                    241,
+                                    248,
+                                    180,
+                                    175,
+                                    163,
+                                    145,
+                                    71,
+                                    214,
+                                    204,
+                                    42,
+                                    17,
+                                    122,
+                                    111,
+                                    65,
+                                    177,
+                                    51,
+                                    125,
+                                    142,
+                                    139,
+                                    103,
                                 ],
                             },
                         ),
@@ -966,7 +966,7 @@ digraph {
             ): [
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ),
             ],
         },
@@ -975,7 +975,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                     value: Glob(
                         GlobDep {
@@ -989,7 +989,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                     value: Glob(
                         GlobDep {
@@ -999,38 +999,38 @@ digraph {
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            205,
-                                            192,
-                                            34,
-                                            53,
-                                            207,
-                                            141,
-                                            134,
-                                            48,
-                                            9,
-                                            25,
-                                            145,
-                                            41,
-                                            59,
-                                            196,
-                                            232,
-                                            181,
-                                            32,
+                                            212,
+                                            110,
+                                            96,
+                                            222,
+                                            235,
+                                            220,
+                                            130,
+                                            80,
+                                            128,
+                                            155,
+                                            6,
+                                            55,
                                             67,
-                                            154,
-                                            69,
-                                            251,
-                                            82,
-                                            100,
+                                            42,
+                                            9,
+                                            185,
+                                            250,
+                                            155,
+                                            141,
+                                            203,
                                             57,
-                                            129,
-                                            49,
-                                            107,
-                                            221,
-                                            119,
-                                            228,
-                                            114,
-                                            79,
+                                            233,
+                                            75,
+                                            195,
+                                            83,
+                                            26,
+                                            137,
+                                            122,
+                                            198,
+                                            68,
+                                            112,
+                                            199,
                                         ],
                                     },
                                 ),
@@ -1040,38 +1040,38 @@ digraph {
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            174,
-                                            157,
-                                            156,
+                                            53,
+                                            194,
+                                            125,
+                                            236,
+                                            20,
+                                            143,
+                                            68,
                                             252,
-                                            100,
-                                            192,
-                                            49,
-                                            110,
-                                            244,
-                                            105,
-                                            123,
-                                            221,
-                                            228,
-                                            130,
-                                            220,
-                                            215,
-                                            188,
-                                            24,
-                                            179,
-                                            221,
-                                            52,
-                                            109,
-                                            255,
-                                            221,
-                                            179,
-                                            81,
-                                            238,
-                                            244,
-                                            30,
-                                            105,
-                                            24,
-                                            198,
+                                            58,
+                                            190,
+                                            243,
+                                            203,
+                                            241,
+                                            248,
+                                            180,
+                                            175,
+                                            163,
+                                            145,
+                                            71,
+                                            214,
+                                            204,
+                                            42,
+                                            17,
+                                            122,
+                                            111,
+                                            65,
+                                            177,
+                                            51,
+                                            125,
+                                            142,
+                                            139,
+                                            103,
                                         ],
                                     },
                                 ),
@@ -1130,11 +1130,11 @@ digraph {
         map: {
             XvcEntity(
                 3,
-                14933861189160914979,
+                8219990603513033082,
             ): ChildEntity(
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ),
                 PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                 PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -1144,14 +1144,14 @@ digraph {
             ChildEntity(
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ),
                 PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                 PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
             ): [
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ),
             ],
         },
@@ -1160,12 +1160,12 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                     value: ChildEntity(
                         XvcEntity(
                             2,
-                            3927250486819086431,
+                            10285267349602734714,
                         ),
                         PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                         PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -1180,7 +1180,7 @@ digraph {
 }
 [TRACE][pipeline/src/pipeline/mod.rs::671] step_e: XvcEntity(
     2,
-    3927250486819086431,
+    10285267349602734714,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::612] dep_neighbors: Neighbors {
     iter: Iter(
@@ -1198,7 +1198,6 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::711] &step_state: Begin(
     FromInit,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::829] step.name: "files-changed"
 [TRACE][pipeline/src/pipeline/mod.rs::830] &r_next_state: WaitingDependencySteps(
     FromRunConditional,
@@ -1211,6 +1210,7 @@ digraph {
 )
 [TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::829] step.name: "files-changed"
+[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::830] &r_next_state: CheckingOutputs(
     FromDependencyStepsFinishedSuccessfully,
 )
@@ -1221,14 +1221,13 @@ digraph {
     FromDependencyStepsFinishedSuccessfully,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::829] step.name: "files-changed"
+[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::830] &r_next_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::832] &step_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::711] &step_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
@@ -1236,7 +1235,7 @@ digraph {
     map: {
         XvcEntity(
             3,
-            14933861189160914979,
+            8219990603513033082,
         ): Glob(
             GlobDep {
                 glob: "dir-*/*",
@@ -1245,38 +1244,38 @@ digraph {
                         XvcDigest {
                             algorithm: Blake3,
                             digest: [
-                                205,
-                                192,
-                                34,
-                                53,
-                                207,
-                                141,
-                                134,
-                                48,
-                                9,
-                                25,
-                                145,
-                                41,
-                                59,
-                                196,
-                                232,
-                                181,
-                                32,
+                                212,
+                                110,
+                                96,
+                                222,
+                                235,
+                                220,
+                                130,
+                                80,
+                                128,
+                                155,
+                                6,
+                                55,
                                 67,
-                                154,
-                                69,
-                                251,
-                                82,
-                                100,
+                                42,
+                                9,
+                                185,
+                                250,
+                                155,
+                                141,
+                                203,
                                 57,
-                                129,
-                                49,
-                                107,
-                                221,
-                                119,
-                                228,
-                                114,
-                                79,
+                                233,
+                                75,
+                                195,
+                                83,
+                                26,
+                                137,
+                                122,
+                                198,
+                                68,
+                                112,
+                                199,
                             ],
                         },
                     ),
@@ -1286,38 +1285,38 @@ digraph {
                         XvcDigest {
                             algorithm: Blake3,
                             digest: [
-                                174,
-                                157,
-                                156,
+                                53,
+                                194,
+                                125,
+                                236,
+                                20,
+                                143,
+                                68,
                                 252,
-                                100,
-                                192,
-                                49,
-                                110,
-                                244,
-                                105,
-                                123,
-                                221,
-                                228,
-                                130,
-                                220,
-                                215,
-                                188,
-                                24,
-                                179,
-                                221,
-                                52,
-                                109,
-                                255,
-                                221,
-                                179,
-                                81,
-                                238,
-                                244,
-                                30,
-                                105,
-                                24,
-                                198,
+                                58,
+                                190,
+                                243,
+                                203,
+                                241,
+                                248,
+                                180,
+                                175,
+                                163,
+                                145,
+                                71,
+                                214,
+                                204,
+                                42,
+                                17,
+                                122,
+                                111,
+                                65,
+                                177,
+                                51,
+                                125,
+                                142,
+                                139,
+                                103,
                             ],
                         },
                     ),
@@ -1367,11 +1366,310 @@ digraph {
         ),
     },
 }
+[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
+[TRACE][pipeline/src/pipeline/deps/compare.rs::494] actual: GlobDep {
+    glob: "dir-*/*",
+    xvc_paths_digest: Some(
+        PathCollectionDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    212,
+                    110,
+                    96,
+                    222,
+                    235,
+                    220,
+                    130,
+                    80,
+                    128,
+                    155,
+                    6,
+                    55,
+                    67,
+                    42,
+                    9,
+                    185,
+                    250,
+                    155,
+                    141,
+                    203,
+                    57,
+                    233,
+                    75,
+                    195,
+                    83,
+                    26,
+                    137,
+                    122,
+                    198,
+                    68,
+                    112,
+                    199,
+                ],
+            },
+        ),
+    ),
+    xvc_metadata_digest: Some(
+        PathCollectionMetadataDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    53,
+                    194,
+                    125,
+                    236,
+                    20,
+                    143,
+                    68,
+                    252,
+                    58,
+                    190,
+                    243,
+                    203,
+                    241,
+                    248,
+                    180,
+                    175,
+                    163,
+                    145,
+                    71,
+                    214,
+                    204,
+                    42,
+                    17,
+                    122,
+                    111,
+                    65,
+                    177,
+                    51,
+                    125,
+                    142,
+                    139,
+                    103,
+                ],
+            },
+        ),
+    ),
+    content_digest: None,
+}
+[TRACE][pipeline/src/pipeline/deps/glob.rs::134] record: GlobDep {
+    glob: "dir-*/*",
+    xvc_paths_digest: Some(
+        PathCollectionDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    212,
+                    110,
+                    96,
+                    222,
+                    235,
+                    220,
+                    130,
+                    80,
+                    128,
+                    155,
+                    6,
+                    55,
+                    67,
+                    42,
+                    9,
+                    185,
+                    250,
+                    155,
+                    141,
+                    203,
+                    57,
+                    233,
+                    75,
+                    195,
+                    83,
+                    26,
+                    137,
+                    122,
+                    198,
+                    68,
+                    112,
+                    199,
+                ],
+            },
+        ),
+    ),
+    xvc_metadata_digest: Some(
+        PathCollectionMetadataDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    53,
+                    194,
+                    125,
+                    236,
+                    20,
+                    143,
+                    68,
+                    252,
+                    58,
+                    190,
+                    243,
+                    203,
+                    241,
+                    248,
+                    180,
+                    175,
+                    163,
+                    145,
+                    71,
+                    214,
+                    204,
+                    42,
+                    17,
+                    122,
+                    111,
+                    65,
+                    177,
+                    51,
+                    125,
+                    142,
+                    139,
+                    103,
+                ],
+            },
+        ),
+    ),
+    content_digest: Some(
+        PathCollectionContentDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    208,
+                    35,
+                    176,
+                    147,
+                    123,
+                    0,
+                    64,
+                    20,
+                    104,
+                    165,
+                    2,
+                    119,
+                    250,
+                    130,
+                    50,
+                    184,
+                    153,
+                    211,
+                    211,
+                    55,
+                    156,
+                    122,
+                    217,
+                    212,
+                    129,
+                    70,
+                    109,
+                    68,
+                    234,
+                    212,
+                    146,
+                    236,
+                ],
+            },
+        ),
+    ),
+}
+[TRACE][pipeline/src/pipeline/deps/glob.rs::135] actual: GlobDep {
+    glob: "dir-*/*",
+    xvc_paths_digest: Some(
+        PathCollectionDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    212,
+                    110,
+                    96,
+                    222,
+                    235,
+                    220,
+                    130,
+                    80,
+                    128,
+                    155,
+                    6,
+                    55,
+                    67,
+                    42,
+                    9,
+                    185,
+                    250,
+                    155,
+                    141,
+                    203,
+                    57,
+                    233,
+                    75,
+                    195,
+                    83,
+                    26,
+                    137,
+                    122,
+                    198,
+                    68,
+                    112,
+                    199,
+                ],
+            },
+        ),
+    ),
+    xvc_metadata_digest: Some(
+        PathCollectionMetadataDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    53,
+                    194,
+                    125,
+                    236,
+                    20,
+                    143,
+                    68,
+                    252,
+                    58,
+                    190,
+                    243,
+                    203,
+                    241,
+                    248,
+                    180,
+                    175,
+                    163,
+                    145,
+                    71,
+                    214,
+                    204,
+                    42,
+                    17,
+                    122,
+                    111,
+                    65,
+                    177,
+                    51,
+                    125,
+                    142,
+                    139,
+                    103,
+                ],
+            },
+        ),
+    ),
+    content_digest: None,
+}
 [TRACE][pipeline/src/pipeline/mod.rs::1136] step_dependency_diffs: HStore {
     map: {
         XvcEntity(
             3,
-            14933861189160914979,
+            8219990603513033082,
         ): Different {
             record: Glob(
                 GlobDep {
@@ -1381,38 +1679,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    205,
-                                    192,
-                                    34,
-                                    53,
-                                    207,
-                                    141,
-                                    134,
-                                    48,
-                                    9,
-                                    25,
-                                    145,
-                                    41,
-                                    59,
-                                    196,
-                                    232,
-                                    181,
-                                    32,
+                                    212,
+                                    110,
+                                    96,
+                                    222,
+                                    235,
+                                    220,
+                                    130,
+                                    80,
+                                    128,
+                                    155,
+                                    6,
+                                    55,
                                     67,
-                                    154,
-                                    69,
-                                    251,
-                                    82,
-                                    100,
+                                    42,
+                                    9,
+                                    185,
+                                    250,
+                                    155,
+                                    141,
+                                    203,
                                     57,
-                                    129,
-                                    49,
-                                    107,
-                                    221,
-                                    119,
-                                    228,
-                                    114,
-                                    79,
+                                    233,
+                                    75,
+                                    195,
+                                    83,
+                                    26,
+                                    137,
+                                    122,
+                                    198,
+                                    68,
+                                    112,
+                                    199,
                                 ],
                             },
                         ),
@@ -1422,38 +1720,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    174,
-                                    157,
-                                    156,
+                                    53,
+                                    194,
+                                    125,
+                                    236,
+                                    20,
+                                    143,
+                                    68,
                                     252,
-                                    100,
-                                    192,
-                                    49,
-                                    110,
-                                    244,
-                                    105,
-                                    123,
-                                    221,
-                                    228,
-                                    130,
-                                    220,
-                                    215,
-                                    188,
-                                    24,
-                                    179,
-                                    221,
-                                    52,
-                                    109,
-                                    255,
-                                    221,
-                                    179,
-                                    81,
-                                    238,
-                                    244,
-                                    30,
-                                    105,
-                                    24,
-                                    198,
+                                    58,
+                                    190,
+                                    243,
+                                    203,
+                                    241,
+                                    248,
+                                    180,
+                                    175,
+                                    163,
+                                    145,
+                                    71,
+                                    214,
+                                    204,
+                                    42,
+                                    17,
+                                    122,
+                                    111,
+                                    65,
+                                    177,
+                                    51,
+                                    125,
+                                    142,
+                                    139,
+                                    103,
                                 ],
                             },
                         ),
@@ -1509,38 +1807,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    205,
-                                    192,
-                                    34,
-                                    53,
-                                    207,
-                                    141,
-                                    134,
-                                    48,
-                                    9,
-                                    25,
-                                    145,
-                                    41,
-                                    59,
-                                    196,
-                                    232,
-                                    181,
-                                    32,
+                                    212,
+                                    110,
+                                    96,
+                                    222,
+                                    235,
+                                    220,
+                                    130,
+                                    80,
+                                    128,
+                                    155,
+                                    6,
+                                    55,
                                     67,
-                                    154,
-                                    69,
-                                    251,
-                                    82,
-                                    100,
+                                    42,
+                                    9,
+                                    185,
+                                    250,
+                                    155,
+                                    141,
+                                    203,
                                     57,
-                                    129,
-                                    49,
-                                    107,
-                                    221,
-                                    119,
-                                    228,
-                                    114,
-                                    79,
+                                    233,
+                                    75,
+                                    195,
+                                    83,
+                                    26,
+                                    137,
+                                    122,
+                                    198,
+                                    68,
+                                    112,
+                                    199,
                                 ],
                             },
                         ),
@@ -1550,38 +1848,38 @@ digraph {
                             XvcDigest {
                                 algorithm: Blake3,
                                 digest: [
-                                    174,
-                                    157,
-                                    156,
+                                    53,
+                                    194,
+                                    125,
+                                    236,
+                                    20,
+                                    143,
+                                    68,
                                     252,
-                                    100,
-                                    192,
-                                    49,
-                                    110,
-                                    244,
-                                    105,
-                                    123,
-                                    221,
-                                    228,
-                                    130,
-                                    220,
-                                    215,
-                                    188,
-                                    24,
-                                    179,
-                                    221,
-                                    52,
-                                    109,
-                                    255,
-                                    221,
-                                    179,
-                                    81,
-                                    238,
-                                    244,
-                                    30,
-                                    105,
-                                    24,
-                                    198,
+                                    58,
+                                    190,
+                                    243,
+                                    203,
+                                    241,
+                                    248,
+                                    180,
+                                    175,
+                                    163,
+                                    145,
+                                    71,
+                                    214,
+                                    204,
+                                    42,
+                                    17,
+                                    122,
+                                    111,
+                                    65,
+                                    177,
+                                    51,
+                                    125,
+                                    142,
+                                    139,
+                                    103,
                                 ],
                             },
                         ),
@@ -1592,7 +1890,226 @@ digraph {
         },
     },
 }
-[TRACE][pipeline/src/pipeline/mod.rs::1146] changed: true
+[TRACE][pipeline/src/pipeline/mod.rs::1142] diff: Different {
+    record: Glob(
+        GlobDep {
+            glob: "dir-*/*",
+            xvc_paths_digest: Some(
+                PathCollectionDigest(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            212,
+                            110,
+                            96,
+                            222,
+                            235,
+                            220,
+                            130,
+                            80,
+                            128,
+                            155,
+                            6,
+                            55,
+                            67,
+                            42,
+                            9,
+                            185,
+                            250,
+                            155,
+                            141,
+                            203,
+                            57,
+                            233,
+                            75,
+                            195,
+                            83,
+                            26,
+                            137,
+                            122,
+                            198,
+                            68,
+                            112,
+                            199,
+                        ],
+                    },
+                ),
+            ),
+            xvc_metadata_digest: Some(
+                PathCollectionMetadataDigest(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            53,
+                            194,
+                            125,
+                            236,
+                            20,
+                            143,
+                            68,
+                            252,
+                            58,
+                            190,
+                            243,
+                            203,
+                            241,
+                            248,
+                            180,
+                            175,
+                            163,
+                            145,
+                            71,
+                            214,
+                            204,
+                            42,
+                            17,
+                            122,
+                            111,
+                            65,
+                            177,
+                            51,
+                            125,
+                            142,
+                            139,
+                            103,
+                        ],
+                    },
+                ),
+            ),
+            content_digest: Some(
+                PathCollectionContentDigest(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            208,
+                            35,
+                            176,
+                            147,
+                            123,
+                            0,
+                            64,
+                            20,
+                            104,
+                            165,
+                            2,
+                            119,
+                            250,
+                            130,
+                            50,
+                            184,
+                            153,
+                            211,
+                            211,
+                            55,
+                            156,
+                            122,
+                            217,
+                            212,
+                            129,
+                            70,
+                            109,
+                            68,
+                            234,
+                            212,
+                            146,
+                            236,
+                        ],
+                    },
+                ),
+            ),
+        },
+    ),
+    actual: Glob(
+        GlobDep {
+            glob: "dir-*/*",
+            xvc_paths_digest: Some(
+                PathCollectionDigest(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            212,
+                            110,
+                            96,
+                            222,
+                            235,
+                            220,
+                            130,
+                            80,
+                            128,
+                            155,
+                            6,
+                            55,
+                            67,
+                            42,
+                            9,
+                            185,
+                            250,
+                            155,
+                            141,
+                            203,
+                            57,
+                            233,
+                            75,
+                            195,
+                            83,
+                            26,
+                            137,
+                            122,
+                            198,
+                            68,
+                            112,
+                            199,
+                        ],
+                    },
+                ),
+            ),
+            xvc_metadata_digest: Some(
+                PathCollectionMetadataDigest(
+                    XvcDigest {
+                        algorithm: Blake3,
+                        digest: [
+                            53,
+                            194,
+                            125,
+                            236,
+                            20,
+                            143,
+                            68,
+                            252,
+                            58,
+                            190,
+                            243,
+                            203,
+                            241,
+                            248,
+                            180,
+                            175,
+                            163,
+                            145,
+                            71,
+                            214,
+                            204,
+                            42,
+                            17,
+                            122,
+                            111,
+                            65,
+                            177,
+                            51,
+                            125,
+                            142,
+                            139,
+                            103,
+                        ],
+                    },
+                ),
+            ),
+            content_digest: None,
+        },
+    ),
+}
+[TRACE][pipeline/src/pipeline/mod.rs::1143] diff.changed(): true
+[TRACE][pipeline/src/pipeline/mod.rs::1148] changed: true
 [TRACE][pipeline/src/pipeline/mod.rs::829] step.name: "files-changed"
 [TRACE][pipeline/src/pipeline/mod.rs::830] &r_next_state: CheckingThoroughDiffs(
     FromSuperficialDiffsChanged,
@@ -1603,11 +2120,12 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::711] &step_state: CheckingThoroughDiffs(
     FromSuperficialDiffsChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::1171] deps: HStore {
+[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
+[TRACE][pipeline/src/pipeline/mod.rs::1173] deps: HStore {
     map: {
         XvcEntity(
             3,
-            14933861189160914979,
+            8219990603513033082,
         ): Glob(
             GlobDep {
                 glob: "dir-*/*",
@@ -1616,38 +2134,38 @@ digraph {
                         XvcDigest {
                             algorithm: Blake3,
                             digest: [
-                                205,
-                                192,
-                                34,
-                                53,
-                                207,
-                                141,
-                                134,
-                                48,
-                                9,
-                                25,
-                                145,
-                                41,
-                                59,
-                                196,
-                                232,
-                                181,
-                                32,
+                                212,
+                                110,
+                                96,
+                                222,
+                                235,
+                                220,
+                                130,
+                                80,
+                                128,
+                                155,
+                                6,
+                                55,
                                 67,
-                                154,
-                                69,
-                                251,
-                                82,
-                                100,
+                                42,
+                                9,
+                                185,
+                                250,
+                                155,
+                                141,
+                                203,
                                 57,
-                                129,
-                                49,
-                                107,
-                                221,
-                                119,
-                                228,
-                                114,
-                                79,
+                                233,
+                                75,
+                                195,
+                                83,
+                                26,
+                                137,
+                                122,
+                                198,
+                                68,
+                                112,
+                                199,
                             ],
                         },
                     ),
@@ -1657,38 +2175,38 @@ digraph {
                         XvcDigest {
                             algorithm: Blake3,
                             digest: [
-                                174,
-                                157,
-                                156,
+                                53,
+                                194,
+                                125,
+                                236,
+                                20,
+                                143,
+                                68,
                                 252,
-                                100,
-                                192,
-                                49,
-                                110,
-                                244,
-                                105,
-                                123,
-                                221,
-                                228,
-                                130,
-                                220,
-                                215,
-                                188,
-                                24,
-                                179,
-                                221,
-                                52,
-                                109,
-                                255,
-                                221,
-                                179,
-                                81,
-                                238,
-                                244,
-                                30,
-                                105,
-                                24,
-                                198,
+                                58,
+                                190,
+                                243,
+                                203,
+                                241,
+                                248,
+                                180,
+                                175,
+                                163,
+                                145,
+                                71,
+                                214,
+                                204,
+                                42,
+                                17,
+                                122,
+                                111,
+                                65,
+                                177,
+                                51,
+                                125,
+                                142,
+                                139,
+                                103,
                             ],
                         },
                     ),
@@ -1738,6 +2256,218 @@ digraph {
         ),
     },
 }
+[TRACE][pipeline/src/pipeline/deps/glob.rs::134] record: GlobDep {
+    glob: "dir-*/*",
+    xvc_paths_digest: Some(
+        PathCollectionDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    212,
+                    110,
+                    96,
+                    222,
+                    235,
+                    220,
+                    130,
+                    80,
+                    128,
+                    155,
+                    6,
+                    55,
+                    67,
+                    42,
+                    9,
+                    185,
+                    250,
+                    155,
+                    141,
+                    203,
+                    57,
+                    233,
+                    75,
+                    195,
+                    83,
+                    26,
+                    137,
+                    122,
+                    198,
+                    68,
+                    112,
+                    199,
+                ],
+            },
+        ),
+    ),
+    xvc_metadata_digest: Some(
+        PathCollectionMetadataDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    53,
+                    194,
+                    125,
+                    236,
+                    20,
+                    143,
+                    68,
+                    252,
+                    58,
+                    190,
+                    243,
+                    203,
+                    241,
+                    248,
+                    180,
+                    175,
+                    163,
+                    145,
+                    71,
+                    214,
+                    204,
+                    42,
+                    17,
+                    122,
+                    111,
+                    65,
+                    177,
+                    51,
+                    125,
+                    142,
+                    139,
+                    103,
+                ],
+            },
+        ),
+    ),
+    content_digest: Some(
+        PathCollectionContentDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    208,
+                    35,
+                    176,
+                    147,
+                    123,
+                    0,
+                    64,
+                    20,
+                    104,
+                    165,
+                    2,
+                    119,
+                    250,
+                    130,
+                    50,
+                    184,
+                    153,
+                    211,
+                    211,
+                    55,
+                    156,
+                    122,
+                    217,
+                    212,
+                    129,
+                    70,
+                    109,
+                    68,
+                    234,
+                    212,
+                    146,
+                    236,
+                ],
+            },
+        ),
+    ),
+}
+[TRACE][pipeline/src/pipeline/deps/glob.rs::135] actual: GlobDep {
+    glob: "dir-*/*",
+    xvc_paths_digest: Some(
+        PathCollectionDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    212,
+                    110,
+                    96,
+                    222,
+                    235,
+                    220,
+                    130,
+                    80,
+                    128,
+                    155,
+                    6,
+                    55,
+                    67,
+                    42,
+                    9,
+                    185,
+                    250,
+                    155,
+                    141,
+                    203,
+                    57,
+                    233,
+                    75,
+                    195,
+                    83,
+                    26,
+                    137,
+                    122,
+                    198,
+                    68,
+                    112,
+                    199,
+                ],
+            },
+        ),
+    ),
+    xvc_metadata_digest: Some(
+        PathCollectionMetadataDigest(
+            XvcDigest {
+                algorithm: Blake3,
+                digest: [
+                    53,
+                    194,
+                    125,
+                    236,
+                    20,
+                    143,
+                    68,
+                    252,
+                    58,
+                    190,
+                    243,
+                    203,
+                    241,
+                    248,
+                    180,
+                    175,
+                    163,
+                    145,
+                    71,
+                    214,
+                    204,
+                    42,
+                    17,
+                    122,
+                    111,
+                    65,
+                    177,
+                    51,
+                    125,
+                    142,
+                    139,
+                    103,
+                ],
+            },
+        ),
+    ),
+    content_digest: None,
+}
 [TRACE][pipeline/src/pipeline/mod.rs::829] step.name: "files-changed"
 [TRACE][pipeline/src/pipeline/mod.rs::830] &r_next_state: ComparingDiffsAndOutputs(
     FromThoroughDiffsChanged,
@@ -1755,13 +2485,12 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::832] &step_state: WaitingToRun(
     FromDiffsHasChanged,
 )
+[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::711] &step_state: WaitingToRun(
     FromDiffsHasChanged,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::1462] params: StepStateParams {
+[TRACE][pipeline/src/pipeline/mod.rs::1464] params: StepStateParams {
     xvc_root: XvcRootInner {
         absolute_path: AbsolutePath(
             "[CWD]",
@@ -1783,68 +2512,68 @@ digraph {
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "74d3e661e04456c1",
-                        ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
                         ),
                         "file.list.format": String(
                             "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.carry-in.force": Boolean(
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "core.guid": String(
+                            "f731f831ef59a672",
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
                         ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
                         "cache.algorithm": String(
                             "blake3",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                     },
                 },
@@ -1854,44 +2583,14 @@ digraph {
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
                         "core.guid": String(
-                            "785800e685236139",
+                            "b2a5301852228384",
                         ),
-                        "git.auto_stage": Boolean(
+                        "file.track.no_commit": Boolean(
                             false,
                         ),
                         "git.auto_commit": Boolean(
                             true,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                         "git.use_git": Boolean(
                             true,
@@ -1899,16 +2598,46 @@ digraph {
                         "file.track.text_or_binary": String(
                             "auto",
                         ),
-                        "file.track.no_parallel": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
                         "file.recheck.method": String(
                             "copy",
                         ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
                         "pipeline.default": String(
                             "default",
                         ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
                         "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
                             false,
                         ),
                         "file.list.no_summary": Boolean(
@@ -1937,58 +2666,10 @@ digraph {
                 },
             ],
             the_config: {
-                "file.carry-in.force": XvcConfigValue {
-                    source: Project,
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
                     value: Boolean(
                         false,
-                    ),
-                },
-                "git.auto_stage": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.recheck.method": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "copy",
-                    ),
-                },
-                "pipeline.default_params_file": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "params.yaml",
-                    ),
-                },
-                "pipeline.current_pipeline": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "git.auto_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "name-desc",
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "785800e685236139",
                     ),
                 },
                 "git.use_git": XvcConfigValue {
@@ -1997,8 +2678,14 @@ digraph {
                         true,
                     ),
                 },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.track.no_commit": XvcConfigValue {
+                    source: Project,
                     value: Boolean(
                         false,
                     ),
@@ -2009,43 +2696,7 @@ digraph {
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                     ),
                 },
-                "file.track.no_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "git.command": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "git",
-                    ),
-                },
                 "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -2057,16 +2708,94 @@ digraph {
                         "quiet",
                     ),
                 },
-                "file.carry-in.no_parallel": XvcConfigValue {
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
+                    ),
+                },
+                "file.recheck.method": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "file.track.text_or_binary": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "auto",
+                    ),
+                },
+                "git.auto_stage": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "b2a5301852228384",
+                    ),
+                },
+                "git.auto_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "pipeline.current_pipeline": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
+                    ),
+                },
+                "pipeline.default_params_file": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "params.yaml",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
                     ),
                 },
             },
@@ -2076,7 +2805,7 @@ digraph {
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"74d3e661e04456c1/"
+guid = /"f731f831ef59a672/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -2221,55 +2950,13 @@ default_params_file = /"params.yaml/"
         ),
         entity_generator: XvcEntityGenerator {
             counter: 4,
-            random: 15798581423178892193,
+            random: 7611386576961510275,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "dir-0001/file-0002.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1002,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227113261,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001",
-            ): XvcMetadata {
-                file_type: Directory,
-                size: Some(
-                    160,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227147428,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001/file-0001.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1001,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 226960301,
-                    },
-                ),
-            },
             XvcPath(
                 "dir-0002/file-0001.bin",
             ): XvcMetadata {
@@ -2279,64 +2966,8 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227408430,
-                    },
-                ),
-            },
-            XvcPath(
-                ".xvcignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    130,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297366,
-                        tv_nsec: 975430273,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0002",
-            ): XvcMetadata {
-                file_type: Directory,
-                size: Some(
-                    160,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227594515,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001/file-0003.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1003,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227248762,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297366,
-                        tv_nsec: 975724359,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14041242,
                     },
                 ),
             },
@@ -2349,8 +2980,106 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227554556,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14171118,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297836,
+                        tv_nsec: 775157677,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0003.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1003,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13885200,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0001.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1001,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13592364,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001",
+            ): XvcMetadata {
+                file_type: Directory,
+                size: Some(
+                    160,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13794324,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0002",
+            ): XvcMetadata {
+                file_type: Directory,
+                size: Some(
+                    160,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 14208576,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0002.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1002,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13761366,
+                    },
+                ),
+            },
+            XvcPath(
+                ".xvcignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    130,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297836,
+                        tv_nsec: 775019801,
                     },
                 ),
             },
@@ -2363,8 +3092,8 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227699182,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14308119,
                     },
                 ),
             },
@@ -2417,7 +3146,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): Different {
                     record: Glob(
                         GlobDep {
@@ -2427,38 +3156,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            205,
-                                            192,
-                                            34,
-                                            53,
-                                            207,
-                                            141,
-                                            134,
-                                            48,
-                                            9,
-                                            25,
-                                            145,
-                                            41,
-                                            59,
-                                            196,
-                                            232,
-                                            181,
-                                            32,
+                                            212,
+                                            110,
+                                            96,
+                                            222,
+                                            235,
+                                            220,
+                                            130,
+                                            80,
+                                            128,
+                                            155,
+                                            6,
+                                            55,
                                             67,
-                                            154,
-                                            69,
-                                            251,
-                                            82,
-                                            100,
+                                            42,
+                                            9,
+                                            185,
+                                            250,
+                                            155,
+                                            141,
+                                            203,
                                             57,
-                                            129,
-                                            49,
-                                            107,
-                                            221,
-                                            119,
-                                            228,
-                                            114,
-                                            79,
+                                            233,
+                                            75,
+                                            195,
+                                            83,
+                                            26,
+                                            137,
+                                            122,
+                                            198,
+                                            68,
+                                            112,
+                                            199,
                                         ],
                                     },
                                 ),
@@ -2468,38 +3197,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            174,
-                                            157,
-                                            156,
+                                            53,
+                                            194,
+                                            125,
+                                            236,
+                                            20,
+                                            143,
+                                            68,
                                             252,
-                                            100,
-                                            192,
-                                            49,
-                                            110,
-                                            244,
-                                            105,
-                                            123,
-                                            221,
-                                            228,
-                                            130,
-                                            220,
-                                            215,
-                                            188,
-                                            24,
-                                            179,
-                                            221,
-                                            52,
-                                            109,
-                                            255,
-                                            221,
-                                            179,
-                                            81,
-                                            238,
-                                            244,
-                                            30,
-                                            105,
-                                            24,
-                                            198,
+                                            58,
+                                            190,
+                                            243,
+                                            203,
+                                            241,
+                                            248,
+                                            180,
+                                            175,
+                                            163,
+                                            145,
+                                            71,
+                                            214,
+                                            204,
+                                            42,
+                                            17,
+                                            122,
+                                            111,
+                                            65,
+                                            177,
+                                            51,
+                                            125,
+                                            142,
+                                            139,
+                                            103,
                                         ],
                                     },
                                 ),
@@ -2555,38 +3284,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            205,
-                                            192,
-                                            34,
-                                            53,
-                                            207,
-                                            141,
-                                            134,
-                                            48,
-                                            9,
-                                            25,
-                                            145,
-                                            41,
-                                            59,
-                                            196,
-                                            232,
-                                            181,
-                                            32,
+                                            212,
+                                            110,
+                                            96,
+                                            222,
+                                            235,
+                                            220,
+                                            130,
+                                            80,
+                                            128,
+                                            155,
+                                            6,
+                                            55,
                                             67,
-                                            154,
-                                            69,
-                                            251,
-                                            82,
-                                            100,
+                                            42,
+                                            9,
+                                            185,
+                                            250,
+                                            155,
+                                            141,
+                                            203,
                                             57,
-                                            129,
-                                            49,
-                                            107,
-                                            221,
-                                            119,
-                                            228,
-                                            114,
-                                            79,
+                                            233,
+                                            75,
+                                            195,
+                                            83,
+                                            26,
+                                            137,
+                                            122,
+                                            198,
+                                            68,
+                                            112,
+                                            199,
                                         ],
                                     },
                                 ),
@@ -2596,38 +3325,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            174,
-                                            157,
-                                            156,
+                                            53,
+                                            194,
+                                            125,
+                                            236,
+                                            20,
+                                            143,
+                                            68,
                                             252,
-                                            100,
-                                            192,
-                                            49,
-                                            110,
-                                            244,
-                                            105,
-                                            123,
-                                            221,
-                                            228,
-                                            130,
-                                            220,
-                                            215,
-                                            188,
-                                            24,
-                                            179,
-                                            221,
-                                            52,
-                                            109,
-                                            255,
-                                            221,
-                                            179,
-                                            81,
-                                            238,
-                                            244,
-                                            30,
-                                            105,
-                                            24,
-                                            198,
+                                            58,
+                                            190,
+                                            243,
+                                            203,
+                                            241,
+                                            248,
+                                            180,
+                                            175,
+                                            163,
+                                            145,
+                                            71,
+                                            214,
+                                            204,
+                                            42,
+                                            17,
+                                            122,
+                                            111,
+                                            65,
+                                            177,
+                                            51,
+                                            125,
+                                            142,
+                                            139,
+                                            103,
                                         ],
                                     },
                                 ),
@@ -2690,7 +3419,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        3927250486819086431,
+        10285267349602734714,
     ),
     step: XvcStep {
         name: "files-changed",
@@ -2703,7 +3432,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ): WaitingToRun(
                     FromDiffsHasChanged,
                 ),
@@ -2717,7 +3446,7 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 2,
-                3927250486819086431,
+                10285267349602734714,
             ): XvcStep {
                 name: "files-changed",
             },
@@ -2728,7 +3457,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ): XvcStep {
                     name: "files-changed",
                 },
@@ -2739,7 +3468,7 @@ default_params_file = /"params.yaml/"
                 }: [
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                 ],
             },
@@ -2748,7 +3477,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             2,
-                            3927250486819086431,
+                            10285267349602734714,
                         ),
                         value: XvcStep {
                             name: "files-changed",
@@ -2757,7 +3486,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             2,
-                            3927250486819086431,
+                            10285267349602734714,
                         ),
                         value: XvcStep {
                             name: "files-changed",
@@ -2773,7 +3502,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): Glob(
                     GlobDep {
                         glob: "dir-*/*",
@@ -2782,38 +3511,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        205,
-                                        192,
-                                        34,
-                                        53,
-                                        207,
-                                        141,
-                                        134,
-                                        48,
-                                        9,
-                                        25,
-                                        145,
-                                        41,
-                                        59,
-                                        196,
-                                        232,
-                                        181,
-                                        32,
+                                        212,
+                                        110,
+                                        96,
+                                        222,
+                                        235,
+                                        220,
+                                        130,
+                                        80,
+                                        128,
+                                        155,
+                                        6,
+                                        55,
                                         67,
-                                        154,
-                                        69,
-                                        251,
-                                        82,
-                                        100,
+                                        42,
+                                        9,
+                                        185,
+                                        250,
+                                        155,
+                                        141,
+                                        203,
                                         57,
-                                        129,
-                                        49,
-                                        107,
-                                        221,
-                                        119,
-                                        228,
-                                        114,
-                                        79,
+                                        233,
+                                        75,
+                                        195,
+                                        83,
+                                        26,
+                                        137,
+                                        122,
+                                        198,
+                                        68,
+                                        112,
+                                        199,
                                     ],
                                 },
                             ),
@@ -2823,38 +3552,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        174,
-                                        157,
-                                        156,
+                                        53,
+                                        194,
+                                        125,
+                                        236,
+                                        20,
+                                        143,
+                                        68,
                                         252,
-                                        100,
-                                        192,
-                                        49,
-                                        110,
-                                        244,
-                                        105,
-                                        123,
-                                        221,
-                                        228,
-                                        130,
-                                        220,
-                                        215,
-                                        188,
-                                        24,
-                                        179,
-                                        221,
-                                        52,
-                                        109,
-                                        255,
-                                        221,
-                                        179,
-                                        81,
-                                        238,
-                                        244,
-                                        30,
-                                        105,
-                                        24,
-                                        198,
+                                        58,
+                                        190,
+                                        243,
+                                        203,
+                                        241,
+                                        248,
+                                        180,
+                                        175,
+                                        163,
+                                        145,
+                                        71,
+                                        214,
+                                        204,
+                                        42,
+                                        17,
+                                        122,
+                                        111,
+                                        65,
+                                        177,
+                                        51,
+                                        125,
+                                        142,
+                                        139,
+                                        103,
                                     ],
                                 },
                             ),
@@ -2912,38 +3641,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        205,
-                                        192,
-                                        34,
-                                        53,
-                                        207,
-                                        141,
-                                        134,
-                                        48,
-                                        9,
-                                        25,
-                                        145,
-                                        41,
-                                        59,
-                                        196,
-                                        232,
-                                        181,
-                                        32,
+                                        212,
+                                        110,
+                                        96,
+                                        222,
+                                        235,
+                                        220,
+                                        130,
+                                        80,
+                                        128,
+                                        155,
+                                        6,
+                                        55,
                                         67,
-                                        154,
-                                        69,
-                                        251,
-                                        82,
-                                        100,
+                                        42,
+                                        9,
+                                        185,
+                                        250,
+                                        155,
+                                        141,
+                                        203,
                                         57,
-                                        129,
-                                        49,
-                                        107,
-                                        221,
-                                        119,
-                                        228,
-                                        114,
-                                        79,
+                                        233,
+                                        75,
+                                        195,
+                                        83,
+                                        26,
+                                        137,
+                                        122,
+                                        198,
+                                        68,
+                                        112,
+                                        199,
                                     ],
                                 },
                             ),
@@ -2953,38 +3682,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        174,
-                                        157,
-                                        156,
+                                        53,
+                                        194,
+                                        125,
+                                        236,
+                                        20,
+                                        143,
+                                        68,
                                         252,
-                                        100,
-                                        192,
-                                        49,
-                                        110,
-                                        244,
-                                        105,
-                                        123,
-                                        221,
-                                        228,
-                                        130,
-                                        220,
-                                        215,
-                                        188,
-                                        24,
-                                        179,
-                                        221,
-                                        52,
-                                        109,
-                                        255,
-                                        221,
-                                        179,
-                                        81,
-                                        238,
-                                        244,
-                                        30,
-                                        105,
-                                        24,
-                                        198,
+                                        58,
+                                        190,
+                                        243,
+                                        203,
+                                        241,
+                                        248,
+                                        180,
+                                        175,
+                                        163,
+                                        145,
+                                        71,
+                                        214,
+                                        204,
+                                        42,
+                                        17,
+                                        122,
+                                        111,
+                                        65,
+                                        177,
+                                        51,
+                                        125,
+                                        142,
+                                        139,
+                                        103,
                                     ],
                                 },
                             ),
@@ -3034,7 +3763,7 @@ default_params_file = /"params.yaml/"
                 ): [
                     XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                 ],
             },
@@ -3043,7 +3772,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: Glob(
                             GlobDep {
@@ -3057,7 +3786,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: Glob(
                             GlobDep {
@@ -3067,38 +3796,38 @@ default_params_file = /"params.yaml/"
                                         XvcDigest {
                                             algorithm: Blake3,
                                             digest: [
-                                                205,
-                                                192,
-                                                34,
-                                                53,
-                                                207,
-                                                141,
-                                                134,
-                                                48,
-                                                9,
-                                                25,
-                                                145,
-                                                41,
-                                                59,
-                                                196,
-                                                232,
-                                                181,
-                                                32,
+                                                212,
+                                                110,
+                                                96,
+                                                222,
+                                                235,
+                                                220,
+                                                130,
+                                                80,
+                                                128,
+                                                155,
+                                                6,
+                                                55,
                                                 67,
-                                                154,
-                                                69,
-                                                251,
-                                                82,
-                                                100,
+                                                42,
+                                                9,
+                                                185,
+                                                250,
+                                                155,
+                                                141,
+                                                203,
                                                 57,
-                                                129,
-                                                49,
-                                                107,
-                                                221,
-                                                119,
-                                                228,
-                                                114,
-                                                79,
+                                                233,
+                                                75,
+                                                195,
+                                                83,
+                                                26,
+                                                137,
+                                                122,
+                                                198,
+                                                68,
+                                                112,
+                                                199,
                                             ],
                                         },
                                     ),
@@ -3108,38 +3837,38 @@ default_params_file = /"params.yaml/"
                                         XvcDigest {
                                             algorithm: Blake3,
                                             digest: [
-                                                174,
-                                                157,
-                                                156,
+                                                53,
+                                                194,
+                                                125,
+                                                236,
+                                                20,
+                                                143,
+                                                68,
                                                 252,
-                                                100,
-                                                192,
-                                                49,
-                                                110,
-                                                244,
-                                                105,
-                                                123,
-                                                221,
-                                                228,
-                                                130,
-                                                220,
-                                                215,
-                                                188,
-                                                24,
-                                                179,
-                                                221,
-                                                52,
-                                                109,
-                                                255,
-                                                221,
-                                                179,
-                                                81,
-                                                238,
-                                                244,
-                                                30,
-                                                105,
-                                                24,
-                                                198,
+                                                58,
+                                                190,
+                                                243,
+                                                203,
+                                                241,
+                                                248,
+                                                180,
+                                                175,
+                                                163,
+                                                145,
+                                                71,
+                                                214,
+                                                204,
+                                                42,
+                                                17,
+                                                122,
+                                                111,
+                                                65,
+                                                177,
+                                                51,
+                                                125,
+                                                142,
+                                                139,
+                                                103,
                                             ],
                                         },
                                     ),
@@ -3198,11 +3927,11 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): ChildEntity(
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                     PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -3212,14 +3941,14 @@ default_params_file = /"params.yaml/"
                 ChildEntity(
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                     PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
                 ): [
                     XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                 ],
             },
@@ -3228,12 +3957,12 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: ChildEntity(
                             XvcEntity(
                                 2,
-                                3927250486819086431,
+                                10285267349602734714,
                             ),
                             PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                             PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -3276,7 +4005,7 @@ default_params_file = /"params.yaml/"
     FromWaitProcess,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::631] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::1351] params: StepStateParams {
+[TRACE][pipeline/src/pipeline/mod.rs::1353] params: StepStateParams {
     xvc_root: XvcRootInner {
         absolute_path: AbsolutePath(
             "[CWD]",
@@ -3298,68 +4027,68 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "74d3e661e04456c1",
-                        ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
                         ),
                         "file.list.format": String(
                             "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.carry-in.force": Boolean(
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "core.guid": String(
+                            "f731f831ef59a672",
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
                         ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
                         "cache.algorithm": String(
                             "blake3",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                     },
                 },
@@ -3369,44 +4098,14 @@ default_params_file = /"params.yaml/"
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
                         "core.guid": String(
-                            "785800e685236139",
+                            "b2a5301852228384",
                         ),
-                        "git.auto_stage": Boolean(
+                        "file.track.no_commit": Boolean(
                             false,
                         ),
                         "git.auto_commit": Boolean(
                             true,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                         "git.use_git": Boolean(
                             true,
@@ -3414,16 +4113,46 @@ default_params_file = /"params.yaml/"
                         "file.track.text_or_binary": String(
                             "auto",
                         ),
-                        "file.track.no_parallel": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
                         "file.recheck.method": String(
                             "copy",
                         ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
                         "pipeline.default": String(
                             "default",
                         ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
                         "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
                             false,
                         ),
                         "file.list.no_summary": Boolean(
@@ -3452,58 +4181,10 @@ default_params_file = /"params.yaml/"
                 },
             ],
             the_config: {
-                "file.carry-in.force": XvcConfigValue {
-                    source: Project,
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
                     value: Boolean(
                         false,
-                    ),
-                },
-                "git.auto_stage": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.recheck.method": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "copy",
-                    ),
-                },
-                "pipeline.default_params_file": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "params.yaml",
-                    ),
-                },
-                "pipeline.current_pipeline": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "git.auto_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "name-desc",
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "785800e685236139",
                     ),
                 },
                 "git.use_git": XvcConfigValue {
@@ -3512,8 +4193,14 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.track.no_commit": XvcConfigValue {
+                    source: Project,
                     value: Boolean(
                         false,
                     ),
@@ -3524,43 +4211,7 @@ default_params_file = /"params.yaml/"
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                     ),
                 },
-                "file.track.no_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "git.command": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "git",
-                    ),
-                },
                 "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -3572,16 +4223,94 @@ default_params_file = /"params.yaml/"
                         "quiet",
                     ),
                 },
-                "file.carry-in.no_parallel": XvcConfigValue {
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
+                    ),
+                },
+                "file.recheck.method": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "file.track.text_or_binary": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "auto",
+                    ),
+                },
+                "git.auto_stage": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "b2a5301852228384",
+                    ),
+                },
+                "git.auto_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "pipeline.current_pipeline": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
+                    ),
+                },
+                "pipeline.default_params_file": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "params.yaml",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
                     ),
                 },
             },
@@ -3591,7 +4320,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"74d3e661e04456c1/"
+guid = /"f731f831ef59a672/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -3736,55 +4465,13 @@ default_params_file = /"params.yaml/"
         ),
         entity_generator: XvcEntityGenerator {
             counter: 4,
-            random: 15798581423178892193,
+            random: 7611386576961510275,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "dir-0001/file-0002.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1002,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227113261,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001",
-            ): XvcMetadata {
-                file_type: Directory,
-                size: Some(
-                    160,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227147428,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001/file-0001.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1001,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 226960301,
-                    },
-                ),
-            },
             XvcPath(
                 "dir-0002/file-0001.bin",
             ): XvcMetadata {
@@ -3794,64 +4481,8 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227408430,
-                    },
-                ),
-            },
-            XvcPath(
-                ".xvcignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    130,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297366,
-                        tv_nsec: 975430273,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0002",
-            ): XvcMetadata {
-                file_type: Directory,
-                size: Some(
-                    160,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227594515,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001/file-0003.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1003,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227248762,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297366,
-                        tv_nsec: 975724359,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14041242,
                     },
                 ),
             },
@@ -3864,8 +4495,106 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227554556,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14171118,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297836,
+                        tv_nsec: 775157677,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0003.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1003,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13885200,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0001.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1001,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13592364,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001",
+            ): XvcMetadata {
+                file_type: Directory,
+                size: Some(
+                    160,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13794324,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0002",
+            ): XvcMetadata {
+                file_type: Directory,
+                size: Some(
+                    160,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 14208576,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0002.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1002,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13761366,
+                    },
+                ),
+            },
+            XvcPath(
+                ".xvcignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    130,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297836,
+                        tv_nsec: 775019801,
                     },
                 ),
             },
@@ -3878,8 +4607,8 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227699182,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14308119,
                     },
                 ),
             },
@@ -3913,8 +4642,8 @@ default_params_file = /"params.yaml/"
             },
             birth: Some(
                 Instant {
-                    tv_sec: 1122077,
-                    tv_nsec: 276457833,
+                    tv_sec: 1122547,
+                    tv_nsec: 93254833,
                 },
             ),
             process: Some(
@@ -3935,7 +4664,7 @@ default_params_file = /"params.yaml/"
                         },
                     ),
                     child_state: Running {
-                        pid: 70606,
+                        pid: 75532,
                         ext: (),
                     },
                     detached: true,
@@ -3960,7 +4689,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): Different {
                     record: Glob(
                         GlobDep {
@@ -3970,38 +4699,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            205,
-                                            192,
-                                            34,
-                                            53,
-                                            207,
-                                            141,
-                                            134,
-                                            48,
-                                            9,
-                                            25,
-                                            145,
-                                            41,
-                                            59,
-                                            196,
-                                            232,
-                                            181,
-                                            32,
+                                            212,
+                                            110,
+                                            96,
+                                            222,
+                                            235,
+                                            220,
+                                            130,
+                                            80,
+                                            128,
+                                            155,
+                                            6,
+                                            55,
                                             67,
-                                            154,
-                                            69,
-                                            251,
-                                            82,
-                                            100,
+                                            42,
+                                            9,
+                                            185,
+                                            250,
+                                            155,
+                                            141,
+                                            203,
                                             57,
-                                            129,
-                                            49,
-                                            107,
-                                            221,
-                                            119,
-                                            228,
-                                            114,
-                                            79,
+                                            233,
+                                            75,
+                                            195,
+                                            83,
+                                            26,
+                                            137,
+                                            122,
+                                            198,
+                                            68,
+                                            112,
+                                            199,
                                         ],
                                     },
                                 ),
@@ -4011,38 +4740,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            174,
-                                            157,
-                                            156,
+                                            53,
+                                            194,
+                                            125,
+                                            236,
+                                            20,
+                                            143,
+                                            68,
                                             252,
-                                            100,
-                                            192,
-                                            49,
-                                            110,
-                                            244,
-                                            105,
-                                            123,
-                                            221,
-                                            228,
-                                            130,
-                                            220,
-                                            215,
-                                            188,
-                                            24,
-                                            179,
-                                            221,
-                                            52,
-                                            109,
-                                            255,
-                                            221,
-                                            179,
-                                            81,
-                                            238,
-                                            244,
-                                            30,
-                                            105,
-                                            24,
-                                            198,
+                                            58,
+                                            190,
+                                            243,
+                                            203,
+                                            241,
+                                            248,
+                                            180,
+                                            175,
+                                            163,
+                                            145,
+                                            71,
+                                            214,
+                                            204,
+                                            42,
+                                            17,
+                                            122,
+                                            111,
+                                            65,
+                                            177,
+                                            51,
+                                            125,
+                                            142,
+                                            139,
+                                            103,
                                         ],
                                     },
                                 ),
@@ -4098,38 +4827,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            205,
-                                            192,
-                                            34,
-                                            53,
-                                            207,
-                                            141,
-                                            134,
-                                            48,
-                                            9,
-                                            25,
-                                            145,
-                                            41,
-                                            59,
-                                            196,
-                                            232,
-                                            181,
-                                            32,
+                                            212,
+                                            110,
+                                            96,
+                                            222,
+                                            235,
+                                            220,
+                                            130,
+                                            80,
+                                            128,
+                                            155,
+                                            6,
+                                            55,
                                             67,
-                                            154,
-                                            69,
-                                            251,
-                                            82,
-                                            100,
+                                            42,
+                                            9,
+                                            185,
+                                            250,
+                                            155,
+                                            141,
+                                            203,
                                             57,
-                                            129,
-                                            49,
-                                            107,
-                                            221,
-                                            119,
-                                            228,
-                                            114,
-                                            79,
+                                            233,
+                                            75,
+                                            195,
+                                            83,
+                                            26,
+                                            137,
+                                            122,
+                                            198,
+                                            68,
+                                            112,
+                                            199,
                                         ],
                                     },
                                 ),
@@ -4139,38 +4868,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            174,
-                                            157,
-                                            156,
+                                            53,
+                                            194,
+                                            125,
+                                            236,
+                                            20,
+                                            143,
+                                            68,
                                             252,
-                                            100,
-                                            192,
-                                            49,
-                                            110,
-                                            244,
-                                            105,
-                                            123,
-                                            221,
-                                            228,
-                                            130,
-                                            220,
-                                            215,
-                                            188,
-                                            24,
-                                            179,
-                                            221,
-                                            52,
-                                            109,
-                                            255,
-                                            221,
-                                            179,
-                                            81,
-                                            238,
-                                            244,
-                                            30,
-                                            105,
-                                            24,
-                                            198,
+                                            58,
+                                            190,
+                                            243,
+                                            203,
+                                            241,
+                                            248,
+                                            180,
+                                            175,
+                                            163,
+                                            145,
+                                            71,
+                                            214,
+                                            204,
+                                            42,
+                                            17,
+                                            122,
+                                            111,
+                                            65,
+                                            177,
+                                            51,
+                                            125,
+                                            142,
+                                            139,
+                                            103,
                                         ],
                                     },
                                 ),
@@ -4233,7 +4962,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        3927250486819086431,
+        10285267349602734714,
     ),
     step: XvcStep {
         name: "files-changed",
@@ -4246,7 +4975,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ): Running(
                     FromWaitProcess,
                 ),
@@ -4260,7 +4989,7 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 2,
-                3927250486819086431,
+                10285267349602734714,
             ): XvcStep {
                 name: "files-changed",
             },
@@ -4271,7 +5000,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ): XvcStep {
                     name: "files-changed",
                 },
@@ -4282,7 +5011,7 @@ default_params_file = /"params.yaml/"
                 }: [
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                 ],
             },
@@ -4291,7 +5020,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             2,
-                            3927250486819086431,
+                            10285267349602734714,
                         ),
                         value: XvcStep {
                             name: "files-changed",
@@ -4300,7 +5029,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             2,
-                            3927250486819086431,
+                            10285267349602734714,
                         ),
                         value: XvcStep {
                             name: "files-changed",
@@ -4316,7 +5045,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): Glob(
                     GlobDep {
                         glob: "dir-*/*",
@@ -4325,38 +5054,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        205,
-                                        192,
-                                        34,
-                                        53,
-                                        207,
-                                        141,
-                                        134,
-                                        48,
-                                        9,
-                                        25,
-                                        145,
-                                        41,
-                                        59,
-                                        196,
-                                        232,
-                                        181,
-                                        32,
+                                        212,
+                                        110,
+                                        96,
+                                        222,
+                                        235,
+                                        220,
+                                        130,
+                                        80,
+                                        128,
+                                        155,
+                                        6,
+                                        55,
                                         67,
-                                        154,
-                                        69,
-                                        251,
-                                        82,
-                                        100,
+                                        42,
+                                        9,
+                                        185,
+                                        250,
+                                        155,
+                                        141,
+                                        203,
                                         57,
-                                        129,
-                                        49,
-                                        107,
-                                        221,
-                                        119,
-                                        228,
-                                        114,
-                                        79,
+                                        233,
+                                        75,
+                                        195,
+                                        83,
+                                        26,
+                                        137,
+                                        122,
+                                        198,
+                                        68,
+                                        112,
+                                        199,
                                     ],
                                 },
                             ),
@@ -4366,38 +5095,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        174,
-                                        157,
-                                        156,
+                                        53,
+                                        194,
+                                        125,
+                                        236,
+                                        20,
+                                        143,
+                                        68,
                                         252,
-                                        100,
-                                        192,
-                                        49,
-                                        110,
-                                        244,
-                                        105,
-                                        123,
-                                        221,
-                                        228,
-                                        130,
-                                        220,
-                                        215,
-                                        188,
-                                        24,
-                                        179,
-                                        221,
-                                        52,
-                                        109,
-                                        255,
-                                        221,
-                                        179,
-                                        81,
-                                        238,
-                                        244,
-                                        30,
-                                        105,
-                                        24,
-                                        198,
+                                        58,
+                                        190,
+                                        243,
+                                        203,
+                                        241,
+                                        248,
+                                        180,
+                                        175,
+                                        163,
+                                        145,
+                                        71,
+                                        214,
+                                        204,
+                                        42,
+                                        17,
+                                        122,
+                                        111,
+                                        65,
+                                        177,
+                                        51,
+                                        125,
+                                        142,
+                                        139,
+                                        103,
                                     ],
                                 },
                             ),
@@ -4455,38 +5184,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        205,
-                                        192,
-                                        34,
-                                        53,
-                                        207,
-                                        141,
-                                        134,
-                                        48,
-                                        9,
-                                        25,
-                                        145,
-                                        41,
-                                        59,
-                                        196,
-                                        232,
-                                        181,
-                                        32,
+                                        212,
+                                        110,
+                                        96,
+                                        222,
+                                        235,
+                                        220,
+                                        130,
+                                        80,
+                                        128,
+                                        155,
+                                        6,
+                                        55,
                                         67,
-                                        154,
-                                        69,
-                                        251,
-                                        82,
-                                        100,
+                                        42,
+                                        9,
+                                        185,
+                                        250,
+                                        155,
+                                        141,
+                                        203,
                                         57,
-                                        129,
-                                        49,
-                                        107,
-                                        221,
-                                        119,
-                                        228,
-                                        114,
-                                        79,
+                                        233,
+                                        75,
+                                        195,
+                                        83,
+                                        26,
+                                        137,
+                                        122,
+                                        198,
+                                        68,
+                                        112,
+                                        199,
                                     ],
                                 },
                             ),
@@ -4496,38 +5225,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        174,
-                                        157,
-                                        156,
+                                        53,
+                                        194,
+                                        125,
+                                        236,
+                                        20,
+                                        143,
+                                        68,
                                         252,
-                                        100,
-                                        192,
-                                        49,
-                                        110,
-                                        244,
-                                        105,
-                                        123,
-                                        221,
-                                        228,
-                                        130,
-                                        220,
-                                        215,
-                                        188,
-                                        24,
-                                        179,
-                                        221,
-                                        52,
-                                        109,
-                                        255,
-                                        221,
-                                        179,
-                                        81,
-                                        238,
-                                        244,
-                                        30,
-                                        105,
-                                        24,
-                                        198,
+                                        58,
+                                        190,
+                                        243,
+                                        203,
+                                        241,
+                                        248,
+                                        180,
+                                        175,
+                                        163,
+                                        145,
+                                        71,
+                                        214,
+                                        204,
+                                        42,
+                                        17,
+                                        122,
+                                        111,
+                                        65,
+                                        177,
+                                        51,
+                                        125,
+                                        142,
+                                        139,
+                                        103,
                                     ],
                                 },
                             ),
@@ -4577,7 +5306,7 @@ default_params_file = /"params.yaml/"
                 ): [
                     XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                 ],
             },
@@ -4586,7 +5315,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: Glob(
                             GlobDep {
@@ -4600,7 +5329,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: Glob(
                             GlobDep {
@@ -4610,38 +5339,38 @@ default_params_file = /"params.yaml/"
                                         XvcDigest {
                                             algorithm: Blake3,
                                             digest: [
-                                                205,
-                                                192,
-                                                34,
-                                                53,
-                                                207,
-                                                141,
-                                                134,
-                                                48,
-                                                9,
-                                                25,
-                                                145,
-                                                41,
-                                                59,
-                                                196,
-                                                232,
-                                                181,
-                                                32,
+                                                212,
+                                                110,
+                                                96,
+                                                222,
+                                                235,
+                                                220,
+                                                130,
+                                                80,
+                                                128,
+                                                155,
+                                                6,
+                                                55,
                                                 67,
-                                                154,
-                                                69,
-                                                251,
-                                                82,
-                                                100,
+                                                42,
+                                                9,
+                                                185,
+                                                250,
+                                                155,
+                                                141,
+                                                203,
                                                 57,
-                                                129,
-                                                49,
-                                                107,
-                                                221,
-                                                119,
-                                                228,
-                                                114,
-                                                79,
+                                                233,
+                                                75,
+                                                195,
+                                                83,
+                                                26,
+                                                137,
+                                                122,
+                                                198,
+                                                68,
+                                                112,
+                                                199,
                                             ],
                                         },
                                     ),
@@ -4651,38 +5380,38 @@ default_params_file = /"params.yaml/"
                                         XvcDigest {
                                             algorithm: Blake3,
                                             digest: [
-                                                174,
-                                                157,
-                                                156,
+                                                53,
+                                                194,
+                                                125,
+                                                236,
+                                                20,
+                                                143,
+                                                68,
                                                 252,
-                                                100,
-                                                192,
-                                                49,
-                                                110,
-                                                244,
-                                                105,
-                                                123,
-                                                221,
-                                                228,
-                                                130,
-                                                220,
-                                                215,
-                                                188,
-                                                24,
-                                                179,
-                                                221,
-                                                52,
-                                                109,
-                                                255,
-                                                221,
-                                                179,
-                                                81,
-                                                238,
-                                                244,
-                                                30,
-                                                105,
-                                                24,
-                                                198,
+                                                58,
+                                                190,
+                                                243,
+                                                203,
+                                                241,
+                                                248,
+                                                180,
+                                                175,
+                                                163,
+                                                145,
+                                                71,
+                                                214,
+                                                204,
+                                                42,
+                                                17,
+                                                122,
+                                                111,
+                                                65,
+                                                177,
+                                                51,
+                                                125,
+                                                142,
+                                                139,
+                                                103,
                                             ],
                                         },
                                     ),
@@ -4741,11 +5470,11 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): ChildEntity(
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                     PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -4755,14 +5484,14 @@ default_params_file = /"params.yaml/"
                 ChildEntity(
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                     PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
                 ): [
                     XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                 ],
             },
@@ -4771,12 +5500,12 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: ChildEntity(
                             XvcEntity(
                                 2,
-                                3927250486819086431,
+                                10285267349602734714,
                             ),
                             PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                             PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -4797,9 +5526,7 @@ default_params_file = /"params.yaml/"
         map: {},
     },
 }
-[OUT] [files-changed] Files have changed.
- 
-[TRACE][pipeline/src/pipeline/mod.rs::1383] command_process: CommandProcess {
+[TRACE][pipeline/src/pipeline/mod.rs::1385] command_process: CommandProcess {
     environment: {},
     step: XvcStep {
         name: "files-changed",
@@ -4809,8 +5536,8 @@ default_params_file = /"params.yaml/"
     },
     birth: Some(
         Instant {
-            tv_sec: 1122077,
-            tv_nsec: 276457833,
+            tv_sec: 1122547,
+            tv_nsec: 93254833,
         },
     ),
     process: Some(
@@ -4831,7 +5558,7 @@ default_params_file = /"params.yaml/"
                 },
             ),
             child_state: Running {
-                pid: 70606,
+                pid: 75532,
                 ext: (),
             },
             detached: true,
@@ -4842,7 +5569,7 @@ default_params_file = /"params.yaml/"
     stdout_receiver: Receiver { .. },
     stderr_receiver: Receiver { .. },
 }
-[TRACE][pipeline/src/pipeline/mod.rs::1389] &process: Popen {
+[TRACE][pipeline/src/pipeline/mod.rs::1391] &process: Popen {
     stdin: None,
     stdout: Some(
         File {
@@ -4859,17 +5586,19 @@ default_params_file = /"params.yaml/"
         },
     ),
     child_state: Running {
-        pid: 70606,
+        pid: 75532,
         ext: (),
     },
     detached: true,
 }
-[TRACE][pipeline/src/pipeline/mod.rs::1436] return_state: Some(
+[OUT] [files-changed] Files have changed.
+ 
+[TRACE][pipeline/src/pipeline/mod.rs::1438] return_state: Some(
     DoneByRunning(
         FromProcessCompletedSuccessfully,
     ),
 )
-[TRACE][pipeline/src/pipeline/mod.rs::1442] params: StepStateParams {
+[TRACE][pipeline/src/pipeline/mod.rs::1444] params: StepStateParams {
     xvc_root: XvcRootInner {
         absolute_path: AbsolutePath(
             "[CWD]",
@@ -4891,68 +5620,68 @@ default_params_file = /"params.yaml/"
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "core.guid": String(
-                            "74d3e661e04456c1",
-                        ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "pipeline.current_pipeline": String(
+                        "pipeline.default": String(
                             "default",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
                         ),
                         "file.list.format": String(
                             "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.carry-in.force": Boolean(
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "git.auto_stage": Boolean(
                             false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "core.guid": String(
+                            "f731f831ef59a672",
                         ),
                         "file.track.no_parallel": Boolean(
                             false,
                         ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
                         "cache.algorithm": String(
                             "blake3",
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
                         ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
-                        "git.command": String(
-                            "git",
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
                         ),
                     },
                 },
@@ -4962,44 +5691,14 @@ default_params_file = /"params.yaml/"
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
                         "core.guid": String(
-                            "785800e685236139",
+                            "b2a5301852228384",
                         ),
-                        "git.auto_stage": Boolean(
+                        "file.track.no_commit": Boolean(
                             false,
                         ),
                         "git.auto_commit": Boolean(
                             true,
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
                         ),
                         "git.use_git": Boolean(
                             true,
@@ -5007,16 +5706,46 @@ default_params_file = /"params.yaml/"
                         "file.track.text_or_binary": String(
                             "auto",
                         ),
-                        "file.track.no_parallel": Boolean(
-                            false,
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
                         "file.recheck.method": String(
                             "copy",
                         ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
                         "pipeline.default": String(
                             "default",
                         ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
                         "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "file.track.force": Boolean(
                             false,
                         ),
                         "file.list.no_summary": Boolean(
@@ -5045,58 +5774,10 @@ default_params_file = /"params.yaml/"
                 },
             ],
             the_config: {
-                "file.carry-in.force": XvcConfigValue {
-                    source: Project,
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
                     value: Boolean(
                         false,
-                    ),
-                },
-                "git.auto_stage": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.recheck.method": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "copy",
-                    ),
-                },
-                "pipeline.default_params_file": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "params.yaml",
-                    ),
-                },
-                "pipeline.current_pipeline": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "git.auto_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "name-desc",
-                    ),
-                },
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "785800e685236139",
                     ),
                 },
                 "git.use_git": XvcConfigValue {
@@ -5105,8 +5786,14 @@ default_params_file = /"params.yaml/"
                         true,
                     ),
                 },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "file.track.no_commit": XvcConfigValue {
+                    source: Project,
                     value: Boolean(
                         false,
                     ),
@@ -5117,43 +5804,7 @@ default_params_file = /"params.yaml/"
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                     ),
                 },
-                "file.track.no_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "git.command": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "git",
-                    ),
-                },
                 "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -5165,16 +5816,94 @@ default_params_file = /"params.yaml/"
                         "quiet",
                     ),
                 },
-                "file.carry-in.no_parallel": XvcConfigValue {
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
+                    ),
+                },
+                "file.recheck.method": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "file.track.text_or_binary": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "auto",
+                    ),
+                },
+                "git.auto_stage": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "b2a5301852228384",
+                    ),
+                },
+                "git.auto_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "pipeline.current_pipeline": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
                     ),
                 },
                 "file.list.recursive": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
+                    ),
+                },
+                "pipeline.default_params_file": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "params.yaml",
+                    ),
+                },
+                "file.list.sort": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "name-desc",
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
                     ),
                 },
             },
@@ -5184,7 +5913,7 @@ default_params_file = /"params.yaml/"
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"74d3e661e04456c1/"
+guid = /"f731f831ef59a672/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -5329,55 +6058,13 @@ default_params_file = /"params.yaml/"
         ),
         entity_generator: XvcEntityGenerator {
             counter: 4,
-            random: 15798581423178892193,
+            random: 7611386576961510275,
             dirty: false,
         },
     },
     output_snd: Sender { .. },
     pmm: RwLock {
         data: {
-            XvcPath(
-                "dir-0001/file-0002.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1002,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227113261,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001",
-            ): XvcMetadata {
-                file_type: Directory,
-                size: Some(
-                    160,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227147428,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001/file-0001.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1001,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 226960301,
-                    },
-                ),
-            },
             XvcPath(
                 "dir-0002/file-0001.bin",
             ): XvcMetadata {
@@ -5387,64 +6074,8 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227408430,
-                    },
-                ),
-            },
-            XvcPath(
-                ".xvcignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    130,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297366,
-                        tv_nsec: 975430273,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0002",
-            ): XvcMetadata {
-                file_type: Directory,
-                size: Some(
-                    160,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227594515,
-                    },
-                ),
-            },
-            XvcPath(
-                "dir-0001/file-0003.bin",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    1003,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227248762,
-                    },
-                ),
-            },
-            XvcPath(
-                ".gitignore",
-            ): XvcMetadata {
-                file_type: File,
-                size: Some(
-                    107,
-                ),
-                modified: Some(
-                    SystemTime {
-                        tv_sec: 1692297366,
-                        tv_nsec: 975724359,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14041242,
                     },
                 ),
             },
@@ -5457,8 +6088,106 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227554556,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14171118,
+                    },
+                ),
+            },
+            XvcPath(
+                ".gitignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    107,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297836,
+                        tv_nsec: 775157677,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0003.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1003,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13885200,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0001.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1001,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13592364,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001",
+            ): XvcMetadata {
+                file_type: Directory,
+                size: Some(
+                    160,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13794324,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0002",
+            ): XvcMetadata {
+                file_type: Directory,
+                size: Some(
+                    160,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 14208576,
+                    },
+                ),
+            },
+            XvcPath(
+                "dir-0001/file-0002.bin",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    1002,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297837,
+                        tv_nsec: 13761366,
+                    },
+                ),
+            },
+            XvcPath(
+                ".xvcignore",
+            ): XvcMetadata {
+                file_type: File,
+                size: Some(
+                    130,
+                ),
+                modified: Some(
+                    SystemTime {
+                        tv_sec: 1692297836,
+                        tv_nsec: 775019801,
                     },
                 ),
             },
@@ -5471,8 +6200,8 @@ default_params_file = /"params.yaml/"
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1692297367,
-                        tv_nsec: 227699182,
+                        tv_sec: 1692297837,
+                        tv_nsec: 14308119,
                     },
                 ),
             },
@@ -5506,8 +6235,8 @@ default_params_file = /"params.yaml/"
             },
             birth: Some(
                 Instant {
-                    tv_sec: 1122077,
-                    tv_nsec: 276457833,
+                    tv_sec: 1122547,
+                    tv_nsec: 93254833,
                 },
             ),
             process: Some(
@@ -5554,7 +6283,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): Different {
                     record: Glob(
                         GlobDep {
@@ -5564,38 +6293,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            205,
-                                            192,
-                                            34,
-                                            53,
-                                            207,
-                                            141,
-                                            134,
-                                            48,
-                                            9,
-                                            25,
-                                            145,
-                                            41,
-                                            59,
-                                            196,
-                                            232,
-                                            181,
-                                            32,
+                                            212,
+                                            110,
+                                            96,
+                                            222,
+                                            235,
+                                            220,
+                                            130,
+                                            80,
+                                            128,
+                                            155,
+                                            6,
+                                            55,
                                             67,
-                                            154,
-                                            69,
-                                            251,
-                                            82,
-                                            100,
+                                            42,
+                                            9,
+                                            185,
+                                            250,
+                                            155,
+                                            141,
+                                            203,
                                             57,
-                                            129,
-                                            49,
-                                            107,
-                                            221,
-                                            119,
-                                            228,
-                                            114,
-                                            79,
+                                            233,
+                                            75,
+                                            195,
+                                            83,
+                                            26,
+                                            137,
+                                            122,
+                                            198,
+                                            68,
+                                            112,
+                                            199,
                                         ],
                                     },
                                 ),
@@ -5605,38 +6334,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            174,
-                                            157,
-                                            156,
+                                            53,
+                                            194,
+                                            125,
+                                            236,
+                                            20,
+                                            143,
+                                            68,
                                             252,
-                                            100,
-                                            192,
-                                            49,
-                                            110,
-                                            244,
-                                            105,
-                                            123,
-                                            221,
-                                            228,
-                                            130,
-                                            220,
-                                            215,
-                                            188,
-                                            24,
-                                            179,
-                                            221,
-                                            52,
-                                            109,
-                                            255,
-                                            221,
-                                            179,
-                                            81,
-                                            238,
-                                            244,
-                                            30,
-                                            105,
-                                            24,
-                                            198,
+                                            58,
+                                            190,
+                                            243,
+                                            203,
+                                            241,
+                                            248,
+                                            180,
+                                            175,
+                                            163,
+                                            145,
+                                            71,
+                                            214,
+                                            204,
+                                            42,
+                                            17,
+                                            122,
+                                            111,
+                                            65,
+                                            177,
+                                            51,
+                                            125,
+                                            142,
+                                            139,
+                                            103,
                                         ],
                                     },
                                 ),
@@ -5692,38 +6421,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            205,
-                                            192,
-                                            34,
-                                            53,
-                                            207,
-                                            141,
-                                            134,
-                                            48,
-                                            9,
-                                            25,
-                                            145,
-                                            41,
-                                            59,
-                                            196,
-                                            232,
-                                            181,
-                                            32,
+                                            212,
+                                            110,
+                                            96,
+                                            222,
+                                            235,
+                                            220,
+                                            130,
+                                            80,
+                                            128,
+                                            155,
+                                            6,
+                                            55,
                                             67,
-                                            154,
-                                            69,
-                                            251,
-                                            82,
-                                            100,
+                                            42,
+                                            9,
+                                            185,
+                                            250,
+                                            155,
+                                            141,
+                                            203,
                                             57,
-                                            129,
-                                            49,
-                                            107,
-                                            221,
-                                            119,
-                                            228,
-                                            114,
-                                            79,
+                                            233,
+                                            75,
+                                            195,
+                                            83,
+                                            26,
+                                            137,
+                                            122,
+                                            198,
+                                            68,
+                                            112,
+                                            199,
                                         ],
                                     },
                                 ),
@@ -5733,38 +6462,38 @@ default_params_file = /"params.yaml/"
                                     XvcDigest {
                                         algorithm: Blake3,
                                         digest: [
-                                            174,
-                                            157,
-                                            156,
+                                            53,
+                                            194,
+                                            125,
+                                            236,
+                                            20,
+                                            143,
+                                            68,
                                             252,
-                                            100,
-                                            192,
-                                            49,
-                                            110,
-                                            244,
-                                            105,
-                                            123,
-                                            221,
-                                            228,
-                                            130,
-                                            220,
-                                            215,
-                                            188,
-                                            24,
-                                            179,
-                                            221,
-                                            52,
-                                            109,
-                                            255,
-                                            221,
-                                            179,
-                                            81,
-                                            238,
-                                            244,
-                                            30,
-                                            105,
-                                            24,
-                                            198,
+                                            58,
+                                            190,
+                                            243,
+                                            203,
+                                            241,
+                                            248,
+                                            180,
+                                            175,
+                                            163,
+                                            145,
+                                            71,
+                                            214,
+                                            204,
+                                            42,
+                                            17,
+                                            122,
+                                            111,
+                                            65,
+                                            177,
+                                            51,
+                                            125,
+                                            142,
+                                            139,
+                                            103,
                                         ],
                                     },
                                 ),
@@ -5827,7 +6556,7 @@ default_params_file = /"params.yaml/"
     },
     step_e: XvcEntity(
         2,
-        3927250486819086431,
+        10285267349602734714,
     ),
     step: XvcStep {
         name: "files-changed",
@@ -5840,7 +6569,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ): Running(
                     FromWaitProcess,
                 ),
@@ -5854,7 +6583,7 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 2,
-                3927250486819086431,
+                10285267349602734714,
             ): XvcStep {
                 name: "files-changed",
             },
@@ -5865,7 +6594,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     2,
-                    3927250486819086431,
+                    10285267349602734714,
                 ): XvcStep {
                     name: "files-changed",
                 },
@@ -5876,7 +6605,7 @@ default_params_file = /"params.yaml/"
                 }: [
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                 ],
             },
@@ -5885,7 +6614,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             2,
-                            3927250486819086431,
+                            10285267349602734714,
                         ),
                         value: XvcStep {
                             name: "files-changed",
@@ -5894,7 +6623,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             2,
-                            3927250486819086431,
+                            10285267349602734714,
                         ),
                         value: XvcStep {
                             name: "files-changed",
@@ -5910,7 +6639,7 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): Glob(
                     GlobDep {
                         glob: "dir-*/*",
@@ -5919,38 +6648,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        205,
-                                        192,
-                                        34,
-                                        53,
-                                        207,
-                                        141,
-                                        134,
-                                        48,
-                                        9,
-                                        25,
-                                        145,
-                                        41,
-                                        59,
-                                        196,
-                                        232,
-                                        181,
-                                        32,
+                                        212,
+                                        110,
+                                        96,
+                                        222,
+                                        235,
+                                        220,
+                                        130,
+                                        80,
+                                        128,
+                                        155,
+                                        6,
+                                        55,
                                         67,
-                                        154,
-                                        69,
-                                        251,
-                                        82,
-                                        100,
+                                        42,
+                                        9,
+                                        185,
+                                        250,
+                                        155,
+                                        141,
+                                        203,
                                         57,
-                                        129,
-                                        49,
-                                        107,
-                                        221,
-                                        119,
-                                        228,
-                                        114,
-                                        79,
+                                        233,
+                                        75,
+                                        195,
+                                        83,
+                                        26,
+                                        137,
+                                        122,
+                                        198,
+                                        68,
+                                        112,
+                                        199,
                                     ],
                                 },
                             ),
@@ -5960,38 +6689,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        174,
-                                        157,
-                                        156,
+                                        53,
+                                        194,
+                                        125,
+                                        236,
+                                        20,
+                                        143,
+                                        68,
                                         252,
-                                        100,
-                                        192,
-                                        49,
-                                        110,
-                                        244,
-                                        105,
-                                        123,
-                                        221,
-                                        228,
-                                        130,
-                                        220,
-                                        215,
-                                        188,
-                                        24,
-                                        179,
-                                        221,
-                                        52,
-                                        109,
-                                        255,
-                                        221,
-                                        179,
-                                        81,
-                                        238,
-                                        244,
-                                        30,
-                                        105,
-                                        24,
-                                        198,
+                                        58,
+                                        190,
+                                        243,
+                                        203,
+                                        241,
+                                        248,
+                                        180,
+                                        175,
+                                        163,
+                                        145,
+                                        71,
+                                        214,
+                                        204,
+                                        42,
+                                        17,
+                                        122,
+                                        111,
+                                        65,
+                                        177,
+                                        51,
+                                        125,
+                                        142,
+                                        139,
+                                        103,
                                     ],
                                 },
                             ),
@@ -6049,38 +6778,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        205,
-                                        192,
-                                        34,
-                                        53,
-                                        207,
-                                        141,
-                                        134,
-                                        48,
-                                        9,
-                                        25,
-                                        145,
-                                        41,
-                                        59,
-                                        196,
-                                        232,
-                                        181,
-                                        32,
+                                        212,
+                                        110,
+                                        96,
+                                        222,
+                                        235,
+                                        220,
+                                        130,
+                                        80,
+                                        128,
+                                        155,
+                                        6,
+                                        55,
                                         67,
-                                        154,
-                                        69,
-                                        251,
-                                        82,
-                                        100,
+                                        42,
+                                        9,
+                                        185,
+                                        250,
+                                        155,
+                                        141,
+                                        203,
                                         57,
-                                        129,
-                                        49,
-                                        107,
-                                        221,
-                                        119,
-                                        228,
-                                        114,
-                                        79,
+                                        233,
+                                        75,
+                                        195,
+                                        83,
+                                        26,
+                                        137,
+                                        122,
+                                        198,
+                                        68,
+                                        112,
+                                        199,
                                     ],
                                 },
                             ),
@@ -6090,38 +6819,38 @@ default_params_file = /"params.yaml/"
                                 XvcDigest {
                                     algorithm: Blake3,
                                     digest: [
-                                        174,
-                                        157,
-                                        156,
+                                        53,
+                                        194,
+                                        125,
+                                        236,
+                                        20,
+                                        143,
+                                        68,
                                         252,
-                                        100,
-                                        192,
-                                        49,
-                                        110,
-                                        244,
-                                        105,
-                                        123,
-                                        221,
-                                        228,
-                                        130,
-                                        220,
-                                        215,
-                                        188,
-                                        24,
-                                        179,
-                                        221,
-                                        52,
-                                        109,
-                                        255,
-                                        221,
-                                        179,
-                                        81,
-                                        238,
-                                        244,
-                                        30,
-                                        105,
-                                        24,
-                                        198,
+                                        58,
+                                        190,
+                                        243,
+                                        203,
+                                        241,
+                                        248,
+                                        180,
+                                        175,
+                                        163,
+                                        145,
+                                        71,
+                                        214,
+                                        204,
+                                        42,
+                                        17,
+                                        122,
+                                        111,
+                                        65,
+                                        177,
+                                        51,
+                                        125,
+                                        142,
+                                        139,
+                                        103,
                                     ],
                                 },
                             ),
@@ -6171,7 +6900,7 @@ default_params_file = /"params.yaml/"
                 ): [
                     XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                 ],
             },
@@ -6180,7 +6909,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: Glob(
                             GlobDep {
@@ -6194,7 +6923,7 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: Glob(
                             GlobDep {
@@ -6204,38 +6933,38 @@ default_params_file = /"params.yaml/"
                                         XvcDigest {
                                             algorithm: Blake3,
                                             digest: [
-                                                205,
-                                                192,
-                                                34,
-                                                53,
-                                                207,
-                                                141,
-                                                134,
-                                                48,
-                                                9,
-                                                25,
-                                                145,
-                                                41,
-                                                59,
-                                                196,
-                                                232,
-                                                181,
-                                                32,
+                                                212,
+                                                110,
+                                                96,
+                                                222,
+                                                235,
+                                                220,
+                                                130,
+                                                80,
+                                                128,
+                                                155,
+                                                6,
+                                                55,
                                                 67,
-                                                154,
-                                                69,
-                                                251,
-                                                82,
-                                                100,
+                                                42,
+                                                9,
+                                                185,
+                                                250,
+                                                155,
+                                                141,
+                                                203,
                                                 57,
-                                                129,
-                                                49,
-                                                107,
-                                                221,
-                                                119,
-                                                228,
-                                                114,
-                                                79,
+                                                233,
+                                                75,
+                                                195,
+                                                83,
+                                                26,
+                                                137,
+                                                122,
+                                                198,
+                                                68,
+                                                112,
+                                                199,
                                             ],
                                         },
                                     ),
@@ -6245,38 +6974,38 @@ default_params_file = /"params.yaml/"
                                         XvcDigest {
                                             algorithm: Blake3,
                                             digest: [
-                                                174,
-                                                157,
-                                                156,
+                                                53,
+                                                194,
+                                                125,
+                                                236,
+                                                20,
+                                                143,
+                                                68,
                                                 252,
-                                                100,
-                                                192,
-                                                49,
-                                                110,
-                                                244,
-                                                105,
-                                                123,
-                                                221,
-                                                228,
-                                                130,
-                                                220,
-                                                215,
-                                                188,
-                                                24,
-                                                179,
-                                                221,
-                                                52,
-                                                109,
-                                                255,
-                                                221,
-                                                179,
-                                                81,
-                                                238,
-                                                244,
-                                                30,
-                                                105,
-                                                24,
-                                                198,
+                                                58,
+                                                190,
+                                                243,
+                                                203,
+                                                241,
+                                                248,
+                                                180,
+                                                175,
+                                                163,
+                                                145,
+                                                71,
+                                                214,
+                                                204,
+                                                42,
+                                                17,
+                                                122,
+                                                111,
+                                                65,
+                                                177,
+                                                51,
+                                                125,
+                                                142,
+                                                139,
+                                                103,
                                             ],
                                         },
                                     ),
@@ -6335,11 +7064,11 @@ default_params_file = /"params.yaml/"
             map: {
                 XvcEntity(
                     3,
-                    14933861189160914979,
+                    8219990603513033082,
                 ): ChildEntity(
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                     PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -6349,14 +7078,14 @@ default_params_file = /"params.yaml/"
                 ChildEntity(
                     XvcEntity(
                         2,
-                        3927250486819086431,
+                        10285267349602734714,
                     ),
                     PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                     PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
                 ): [
                     XvcEntity(
                         3,
-                        14933861189160914979,
+                        8219990603513033082,
                     ),
                 ],
             },
@@ -6365,12 +7094,12 @@ default_params_file = /"params.yaml/"
                     Add {
                         entity: XvcEntity(
                             3,
-                            14933861189160914979,
+                            8219990603513033082,
                         ),
                         value: ChildEntity(
                             XvcEntity(
                                 2,
-                                3927250486819086431,
+                                10285267349602734714,
                             ),
                             PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                             PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -6408,7 +7137,7 @@ default_params_file = /"params.yaml/"
         map: {
             XvcEntity(
                 2,
-                3927250486819086431,
+                10285267349602734714,
             ): DoneByRunning(
                 FromProcessCompletedSuccessfully,
             ),
@@ -6452,7 +7181,7 @@ default_params_file = /"params.yaml/"
     "*.gitignore",
     "*.xvcignore",
 ]
-[TRACE][lib/src/cli/mod.rs::582] git_add_output: "add '.xvc/store/xvc-dependency-store/1692297370182900.json'
+[TRACE][lib/src/cli/mod.rs::582] git_add_output: "add '.xvc/store/xvc-dependency-store/1692297839997288.json'
 "
 [TRACE][lib/src/cli/mod.rs::433] args: [
     "-C",

@@ -144,6 +144,7 @@ impl Diffable for GlobDep {
             )
             .changed()
         {
+            watch!("Different");
             Diff::Different {
                 record: record.clone(),
                 actual: actual.clone(),
