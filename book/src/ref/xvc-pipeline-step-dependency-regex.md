@@ -58,12 +58,10 @@ When you run the pipeline initially, the steps are run.
 
 ```console
 $ xvc pipeline run
-[OUT] [count-females] 0
-
-[OUT] [count-males] 0
-
-[ERROR] Step count-females finished UNSUCCESSFULLY with command grep -c 'F,' people.csv
-[ERROR] Step count-males finished UNSUCCESSFULLY with command grep -c 'M,' people.csv
+[OUT] [count-females] 7
+ 
+[OUT] [count-males] 11
+ 
 
 ``````
 
@@ -71,12 +69,10 @@ When you run the pipeline again, the steps are not run because the regexes didn'
 
 ```console
 $ xvc pipeline run
-[OUT] [count-females] 0
-
-[ERROR] Step count-females finished UNSUCCESSFULLY with command grep -c 'F,' people.csv
-[OUT] [count-males] 0
-
-[ERROR] Step count-males finished UNSUCCESSFULLY with command grep -c 'M,' people.csv
+[OUT] [count-females] 7
+ 
+[OUT] [count-males] 11
+ 
 
 ``````
 
@@ -87,11 +83,9 @@ $ zsh -c "echo '\"Asude\",       "F",   12,       55,      110' >> people.csv"
 "Asude",       "F",   12,       55,      110 >> people.csv
 
 $ xvc pipeline run
-[OUT] [count-females] 0
-
-[OUT] [count-males] 0
-
-[ERROR] Step count-females finished UNSUCCESSFULLY with command grep -c 'F,' people.csv
-[ERROR] Step count-males finished UNSUCCESSFULLY with command grep -c 'M,' people.csv
+[OUT] [count-females] 7
+ 
+[OUT] [count-males] 11
+ 
 
 ```
