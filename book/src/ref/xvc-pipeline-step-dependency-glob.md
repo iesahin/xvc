@@ -1,9 +1,9 @@
-### Glob Digest Dependencies
+### Glob Dependencies
 
 A step can depend on multiple files specified with globs. The difference with
-this and [glob dependency](./xvc-pipeline-step-dependency-glob.md) is that this
-one doesn't track the files, and doesn't pass the list of files in an
-environment variable to the command.
+this and [glob-items dependency](./xvc-pipeline-step-dependency-glob-items.md)
+is that this one doesn't track the files, and doesn't pass the list of files in
+environment variables to the command.
 
 This command works only in Xvc repositories.
 
@@ -39,13 +39,6 @@ Add a step to say files has changed when the files have changed.
 $ xvc pipeline step new --step-name files-changed --command "echo 'Files have changed.'"
 
 $ xvc pipeline step dependency --step-name files-changed --glob 'dir-*/*'
-error: unexpected argument '--glob' found
-
-  note: argument '--glob_d' exists
-
-Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob_digest <GLOB_DIGESTS>|--param <PARAMS>|--regex <REGEXPS>|--regex_digest <REGEXP_DIGESTS>|--line_items <LINES>|--lines <LINE_DIGESTS>>
-
-For more information, try '--help'.
 
 ```
 
@@ -54,11 +47,11 @@ The step is invalidated when a file described by the glob is added, removed or c
 ```console
 $ xvc pipeline run
 [OUT] [files-changed] Files have changed.
- 
 
-$ xvc pipeline run
+
+$ xvc --debug pipeline run
 [OUT] [files-changed] Files have changed.
- 
+
 
 ```
 
@@ -67,6 +60,6 @@ $ rm dir-0001/file-0001.bin
 
 $ xvc pipeline run
 [OUT] [files-changed] Files have changed.
- 
+
 
 ```
