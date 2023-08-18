@@ -41,17 +41,17 @@ $ cat people.csv
 Now, let's add steps to the pipeline to count males and females in the file:
 
 ```console
-$ xvc pipeline step new --step-name count-males --command "grep -c '.*\"M\",.*' people.csv"
-$ xvc pipeline step new --step-name count-females --command "grep -c '.*\"F\",.*' people.csv"
+$ xvc pipeline step new --step-name count-males --command "grep -c '\"M\",' people.csv"
+$ xvc pipeline step new --step-name count-females --command "grep -c '\"F\",' people.csv"
 ```
 
 These commands must be run when the respective regexes changed.
 
 ```console
-$ xvc pipeline step dependency --step-name count-males --regex '"M",'
+$ xvc pipeline step dependency --step-name count-males --regex '.*"M",.*'
 [ERROR] Pipeline Error: Invalid regular expression: "M",
 
-$ xvc pipeline step dependency --step-name count-females --regex '"F",'
+$ xvc pipeline step dependency --step-name count-females --regex '.*"F",.*'
 [ERROR] Pipeline Error: Invalid regular expression: "F",
 
 ```
