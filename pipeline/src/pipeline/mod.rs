@@ -1106,6 +1106,7 @@ fn s_checking_superficial_diffs<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     let parent_entity = params.step_e;
+    watch!(parent_entity);
     let deps = params.recorded_dependencies.children_of(&parent_entity)?;
 
     watch!(deps);
