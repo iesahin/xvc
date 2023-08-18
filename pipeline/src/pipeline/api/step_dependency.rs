@@ -1,11 +1,12 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 
+use crate::deps::{LinesDep, RegexDep};
 use crate::error::{Error, Result};
 use crate::pipeline::deps::file::FileDep;
 use crate::pipeline::deps::generic::GenericDep;
-use crate::pipeline::deps::glob_items::GlobItemsDep;
 use crate::pipeline::deps::glob::GlobDep;
+use crate::pipeline::deps::glob_items::GlobItemsDep;
 use crate::pipeline::deps::line_items::LineItemsDep;
 use crate::pipeline::deps::regex_items::RegexItemsDep;
 use crate::pipeline::deps::step::StepDep;
@@ -77,8 +78,8 @@ impl<'a> XvcDependencyList<'a> {
     }
 
     /// Add glob dependencies.
-    pub fn globs(&mut self, globs: Option<Vec<String>>) -> Result<&mut Self> {
-        if let Some(globs) = globs {
+    pub fn glob_items(&mut self, glob_items: Option<Vec<String>>) -> Result<&mut Self> {
+        if let Some(globs) = glob_items {
             let mut deps = self.deps.borrow_mut();
             for glob in globs {
                 let glob_dep = GlobItemsDep::new(glob);
@@ -89,8 +90,8 @@ impl<'a> XvcDependencyList<'a> {
     }
 
     /// Add glob digest dependencies.
-    pub fn glob_digests(&mut self, glob_digests: Option<Vec<String>>) -> Result<&mut Self> {
-        if let Some(globs) = glob_digests {
+    pub fn globs(&mut self, globs: Option<Vec<String>>) -> Result<&mut Self> {
+        if let Some(globs) = globs {
             let mut deps = self.deps.borrow_mut();
             for glob in globs {
                 let glob_dep = GlobDep::new(glob);
@@ -164,14 +165,14 @@ impl<'a> XvcDependencyList<'a> {
         Ok(self)
     }
 
-    /// Add regex dependencies.
-    ///
-    /// Regex dependencies must be in the form `regex_file:/(?P<regex>.+)`.
-    pub fn regexes(&mut self, regexes: Option<Vec<String>>) -> Result<&mut Self> {
+    fn split_regex_expressions(
+        &self,
+        regexes: Option<Vec<String>>,
+    ) -> Result<Vec<(XvcPath, String)>> {
+        let mut vec = Vec::new();
         let current_dir = self.xvc_root.config().current_dir()?;
         if let Some(regexes) = regexes {
             let regex_splitter = Regex::new(r"(?P<regex_file>[^:/]+):/(?P<regex>.+)").unwrap();
-            let mut deps = self.deps.borrow_mut();
             for regex in regexes {
                 let captures = match regex_splitter.captures(&regex) {
                     Some(captures) => captures,
@@ -201,11 +202,40 @@ impl<'a> XvcDependencyList<'a> {
 
                 let pathbuf = PathBuf::from(regex_file);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
-                let regex_dep = RegexItemsDep::new(path, regex_str);
-                deps.push(XvcDependency::RegexItems(regex_dep));
+                vec.push((path, regex_str));
             }
         }
 
+        Ok(vec)
+    }
+
+    /// Add regex dependencies.
+    ///
+    /// Regex dependencies must be in the form `regex_file:/(?P<regex>.+)`.
+    pub fn regex_items(&mut self, regex_items: Option<Vec<String>>) -> Result<&mut Self> {
+        let regex_splits = self.split_regex_expressions(regex_items)?;
+        {
+            let mut deps = self.deps.borrow_mut();
+            regex_splits.into_iter().for_each(|(path, regex_str)| {
+                let regex_dep = RegexItemsDep::new(path, regex_str);
+                deps.push(XvcDependency::RegexItems(regex_dep));
+            });
+        }
+        Ok(self)
+    }
+
+    /// Add regex dependencies.
+    ///
+    /// Regex dependencies must be in the form `regex_file:/(?P<regex>.+)`.
+    pub fn regexes(&mut self, regexes: Option<Vec<String>>) -> Result<&mut Self> {
+        let regex_splits = self.split_regex_expressions(regexes)?;
+        {
+            let mut deps = self.deps.borrow_mut();
+            regex_splits.into_iter().for_each(|(path, regex_str)| {
+                let regex_dep = RegexDep::new(path, regex_str);
+                deps.push(XvcDependency::Regex(regex_dep));
+            });
+        }
         Ok(self)
     }
 
@@ -225,10 +255,13 @@ impl<'a> XvcDependencyList<'a> {
     /// Lines dependencies must be in the form `file::begin-end`, where begin
     /// and end are digit strings. If begin is omitted, it defaults to 0. If end
     /// is omitted, it defaults to [usize::MAX]
-    pub fn lines(&mut self, lines: Option<Vec<String>>) -> Result<&mut Self> {
+    fn split_line_options(
+        &mut self,
+        lines: Option<Vec<String>>,
+    ) -> Result<Vec<(XvcPath, usize, usize)>> {
+        let mut vec = Vec::new();
         let current_dir = self.current_dir;
         if let Some(lines) = lines {
-            let mut deps = self.deps.borrow_mut();
             let lines_splitter =
                 Regex::new(r"(?P<file>[^:]+)::(?P<begin>[0-9]*)-(?P<end>[0-9]*)").unwrap();
             for line in lines {
@@ -277,13 +310,34 @@ impl<'a> XvcDependencyList<'a> {
 
                 let pathbuf = PathBuf::from(lines_file);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
-                let lines_dep = LineItemsDep::new(path, begin, end);
-                deps.push(XvcDependency::LineItems(lines_dep));
+                vec.push((path, begin, end));
             }
+        }
+        Ok(vec)
+    }
+
+    pub fn lines(&mut self, lines: Option<Vec<String>>) -> Result<&mut Self> {
+        let lines_options = self.split_line_options(lines)?;
+        {
+            let mut deps = self.deps.borrow_mut();
+            lines_options.into_iter().for_each(|(path, begin, end)| {
+                let lines_dep = LinesDep::new(path, begin, end);
+                deps.push(XvcDependency::Lines(lines_dep));
+            });
         }
         Ok(self)
     }
-
+    pub fn line_items(&mut self, line_items: Option<Vec<String>>) -> Result<&mut Self> {
+        let lines_options = self.split_line_options(line_items)?;
+        {
+            let mut deps = self.deps.borrow_mut();
+            lines_options.into_iter().for_each(|(path, begin, end)| {
+                let lines_dep = LineItemsDep::new(path, begin, end);
+                deps.push(XvcDependency::LineItems(lines_dep));
+            });
+        }
+        Ok(self)
+    }
     /// Records dependencies the store, as childs of `self.step`.
     pub fn record(&self) -> Result<()> {
         self.xvc_root

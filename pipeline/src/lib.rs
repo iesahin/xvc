@@ -516,23 +516,25 @@ pub fn handle_step_cli(
             generics,
             urls,
             files,
-            glob_items: globs,
-            globs: glob_digests,
+            glob_items,
+            globs,
             params,
             steps,
-            regex_items: regexps,
-            regexes: regexp_digests,
-            line_items: lines,
-            lines: line_digests,
+            regex_items,
+            regexes,
+            line_items,
+            lines,
         } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
             .files(files)?
+            .glob_items(glob_items)?
             .globs(globs)?
-            .glob_digests(glob_digests)?
             .params(params)?
             .steps(steps)?
             .generic_commands(generics)?
-            .regexes(regexps)?
+            .regexes(regexes)?
+            .regex_items(regex_items)?
             .lines(lines)?
+            .line_items(line_items)?
             .urls(urls)?
             .record(),
         StepSubCommand::Output {
