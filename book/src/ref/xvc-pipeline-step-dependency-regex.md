@@ -48,11 +48,11 @@ $ xvc pipeline step new --step-name count-females --command "grep -c '\"F\",' pe
 These commands must be run when the respective regexes changed.
 
 ```console
-$ xvc pipeline step dependency --step-name count-males --regex '^.*"M",.*$'
-[ERROR] Pipeline Error: Invalid regular expression: .*"M",.*
+$ xvc pipeline step dependency --step-name count-males --regex 'people.csv:/^.*"M",.*$'
+[ERROR] Pipeline Error: Invalid regular expression: ^.*"M",.*$
 
-$ xvc pipeline step dependency --step-name count-females --regex '^.*"F",.*$'
-[ERROR] Pipeline Error: Invalid regular expression: .*"F",.*
+$ xvc pipeline step dependency --step-name count-females --regex 'people.csv:/^.*"F",.*$'
+[ERROR] Pipeline Error: Invalid regular expression: ^.*"F",.*$
 
 ```
 
@@ -60,9 +60,9 @@ When you run the pipeline initially, the steps are run.
 
 ```console
 $ xvc pipeline run
-[OUT] [count-males] 11
-
 [OUT] [count-females] 7
+
+[OUT] [count-males] 11
 
 
 ``````
