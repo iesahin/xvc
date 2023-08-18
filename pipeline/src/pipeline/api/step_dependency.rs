@@ -17,7 +17,7 @@ use regex::Regex;
 use url::Url;
 use xvc_core::{XvcPath, XvcRoot};
 use xvc_ecs::{R1NStore, XvcEntity};
-use xvc_logging::{debug, XvcOutputSender};
+use xvc_logging::{debug, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
@@ -180,13 +180,14 @@ impl<'a> XvcDependencyList<'a> {
                         return Err(Error::InvalidRegexFormat { regex });
                     }
                 };
-
+                watch!(captures);
                 let regex_file = match captures.name("regex_file") {
                     Some(regex_file) => regex_file.as_str(),
                     None => {
                         return Err(Error::InvalidRegexFormat { regex });
                     }
                 };
+                watch!(regex_file);
 
                 let regex_str = match captures.name("regex") {
                     Some(regex_str) => regex_str.as_str().to_string(),
@@ -194,6 +195,7 @@ impl<'a> XvcDependencyList<'a> {
                         return Err(Error::InvalidRegexFormat { regex });
                     }
                 };
+                watch!(regex_str);
 
                 // Check if the supplied regexp is well formed
                 if Regex::new(&regex_str).is_err() {
