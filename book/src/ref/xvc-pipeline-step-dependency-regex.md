@@ -48,9 +48,9 @@ $ xvc pipeline step new --step-name count-females --command "grep -c '\"F\",' pe
 These commands must be run when the respective regexes changed.
 
 ```console
-$ xvc pipeline step dependency --step-name count-males --regex 'people.csv:/"M"'
+$ xvc pipeline step dependency --step-name count-males --regex 'people.csv:/"M",'
 
-$ xvc pipeline step dependency --step-name count-females --regex 'people.csv:/^.*"F",.*$'
+$ xvc pipeline step dependency --step-name count-females --regex 'people.csv:/"F",'
 
 ```
 
