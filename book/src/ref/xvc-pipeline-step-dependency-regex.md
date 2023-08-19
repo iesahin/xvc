@@ -1,4 +1,4 @@
-### Regex Digest Dependencies
+### Regex Dependencies
 
 You can specify a regular expression matched against the lines from a file as a dependency. The step is invalidated when
 the matched results changed.
@@ -58,9 +58,9 @@ When you run the pipeline initially, the steps are run.
 
 ```console
 $ xvc pipeline run
-[OUT] [count-males] 11
- 
 [OUT] [count-females] 7
+ 
+[OUT] [count-males] 11
  
 
 ``````

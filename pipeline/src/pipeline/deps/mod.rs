@@ -2,13 +2,13 @@ pub mod compare;
 pub mod digest;
 pub mod file;
 pub mod generic;
-pub mod glob_items;
 pub mod glob;
+pub mod glob_items;
 pub mod line_items;
 pub mod lines;
 pub mod param;
-pub mod regex_items;
 pub mod regex;
+pub mod regex_items;
 pub mod step;
 pub mod url;
 
@@ -30,12 +30,12 @@ use xvc_ecs::{persist, HStore, XvcStore};
 
 pub use self::file::FileDep;
 pub use self::generic::GenericDep;
-pub use self::glob_items::GlobItemsDep;
 pub use self::glob::GlobDep;
+pub use self::glob_items::GlobItemsDep;
 pub use self::line_items::LineItemsDep;
 pub use self::lines::LinesDep;
-pub use self::regex_items::RegexItemsDep;
 pub use self::regex::RegexDep;
+pub use self::regex_items::RegexItemsDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
 
@@ -94,6 +94,25 @@ impl XvcDependency {
             XvcDependency::GlobItems(_) => None,
             XvcDependency::Glob(_) => None,
             XvcDependency::UrlDigest(_) => None,
+        }
+    }
+
+    pub fn items(&self) -> Option<Vec<String>> {
+        match self {
+            XvcDependency::GlobItems(dep) => {
+                unimplemented!("GlobItems not implemented yet")
+            }
+            XvcDependency::RegexItems(dep) => Some(dep.lines.clone()),
+            XvcDependency::LineItems(dep) => Some(dep.lines.clone()),
+
+            XvcDependency::Step(_)
+            | XvcDependency::Generic(_)
+            | XvcDependency::File(_)
+            | XvcDependency::Glob(_)
+            | XvcDependency::Regex(_)
+            | XvcDependency::Param(_)
+            | XvcDependency::Lines(_)
+            | XvcDependency::UrlDigest(_) => None,
         }
     }
 }

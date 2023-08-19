@@ -1330,6 +1330,7 @@ fn s_running_f_start_process<'a>(
     s: &RunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
+    update_command_environment(params.command_process.clone(), &params)?;
     let command_process = params.command_process.clone();
     let mut command_process = command_process.write()?;
     command_process.run()?;
@@ -1337,6 +1338,152 @@ fn s_running_f_start_process<'a>(
     let mut available_slots = available_slots.write()?;
     *available_slots -= 1;
     Ok((s.wait_process(), params))
+}
+
+fn update_command_environment(
+    command_process: Arc<RwLock<CommandProcess>>,
+    params: &StepStateParams<'_>,
+) -> Result<()> {
+    let parent_entity = params.step_e;
+    let deps = params.recorded_dependencies.children_of(&parent_entity)?;
+    let update_env = |key, values: &[String]| {
+        let value = values.join("\n");
+        let mut command_process = command_process.write()?;
+        command_process.add_environment_variable(key, &value)?;
+        Ok(())
+    };
+
+    let update_from_record_missing = |actual: &XvcDependency| -> Result<()> {
+        if let Some(items) = actual.items() {
+            match actual {
+                XvcDependency::GlobItems(dep) => {
+                    unimplemented!("GlobItems not implemented yet")
+                }
+                XvcDependency::RegexItems(dep) => {
+                    update_env("XVC_REGEX_ADDED_ITEMS", &items)?;
+                    update_env("XVC_REGEX_REMOVED_ITEMS", &[])?;
+                    update_env("XVC_REGEX_ALL_ITEMS", &items)
+                }
+                XvcDependency::LineItems(dep) => {
+                    update_env("XVC_LINE_ADDED_ITEMS", &items)?;
+                    update_env("XVC_LINE_REMOVED_ITEMS", &[])?;
+                    update_env("XVC_LINE_ALL_ITEMS", &items)
+                }
+                _ => Ok(()),
+            }
+        } else {
+            Ok(())
+        }
+    };
+
+    let update_from_actual_missing = |record: &XvcDependency| -> Result<()> {
+        if let Some(items) = record.items() {
+            match record {
+                XvcDependency::GlobItems(dep) => {
+                    unimplemented!("GlobItems not implemented yet")
+                }
+                XvcDependency::RegexItems(dep) => {
+                    update_env("XVC_REGEX_ADDED_ITEMS", &[])?;
+                    update_env("XVC_REGEX_REMOVED_ITEMS", &items)?;
+                    update_env("XVC_REGEX_ALL_ITEMS", &items)
+                }
+                XvcDependency::LineItems(dep) => {
+                    update_env("XVC_LINE_ADDED_ITEMS", &[])?;
+                    update_env("XVC_LINE_REMOVED_ITEMS", &items)?;
+                    update_env("XVC_LINE_ALL_ITEMS", &items)
+                }
+                _ => Ok(()),
+            }
+        } else {
+            Ok(())
+        }
+    };
+
+    let update_from_different =
+        |record: &XvcDependency, actual: &XvcDependency| -> Result<()> {
+            if let Some(record_items) = record.items() {
+                if let Some(actual_items) = actual.items() {
+                    let record_items = record_items.into_iter().collect::<HashSet<_>>();
+                    let actual_items = actual_items.into_iter().collect::<HashSet<_>>();
+                    let added_items = actual_items
+                        .difference(&record_items)
+                        .cloned()
+                        .collect::<Vec<String>>();
+                    let removed_items = record_items
+                        .difference(&actual_items)
+                        .cloned()
+                        .collect::<Vec<String>>();
+                    let all_items = actual_items
+                        .union(&record_items)
+                        .cloned()
+                        .collect::<Vec<String>>();
+
+                    match record {
+                        XvcDependency::GlobItems(dep) => {
+                            unimplemented!("GlobItems not implemented yet")
+                        }
+                        XvcDependency::RegexItems(dep) => {
+                            update_env("XVC_REGEX_ADDED_ITEMS", &added_items)?;
+                            update_env("XVC_REGEX_REMOVED_ITEMS", &removed_items)?;
+                            update_env("XVC_REGEX_ALL_ITEMS", &all_items)
+                        }
+                        XvcDependency::LineItems(dep) => {
+                            update_env("XVC_LINE_ADDED_ITEMS", &added_items)?;
+                            update_env("XVC_LINE_REMOVED_ITEMS", &removed_items)?;
+                            update_env("XVC_LINE_ALL_ITEMS", &all_items)
+                        }
+                        _ => Ok(()),
+                    }
+                } else {
+                    Ok(())
+                }
+            } else {
+                Ok(())
+            }
+        };
+
+    let update_from_identical = |dep: XvcDependency| -> Result<()> {
+        if let Some(items) = dep.items() {
+            match dep {
+                XvcDependency::GlobItems(dep) => {
+                    unimplemented!("GlobItems not implemented yet")
+                }
+                XvcDependency::RegexItems(dep) => {
+                    update_env("XVC_REGEX_ADDED_ITEMS", &[])?;
+                    update_env("XVC_REGEX_REMOVED_ITEMS", &[])?;
+                    update_env("XVC_REGEX_ALL_ITEMS", &items)
+                }
+                XvcDependency::LineItems(dep) => {
+                    update_env("XVC_LINE_ADDED_ITEMS", &[])?;
+                    update_env("XVC_LINE_REMOVED_ITEMS", &[])?;
+                    update_env("XVC_LINE_ALL_ITEMS", &items)
+                }
+                _ => Ok(()),
+            }
+        } else {
+            Ok(())
+        }
+    };
+
+    for (dep_e, dep) in deps.into_iter() {
+        if let Some(diff) = params.dependency_diffs.read()?.get(&dep_e) {
+            match diff {
+                Diff::Identical => uwr!(update_from_identical(dep), params.output_snd),
+                Diff::RecordMissing { actual } => {
+                    uwr!(update_from_record_missing(actual), params.output_snd)
+                }
+                Diff::ActualMissing { record } => {
+                    uwr!(update_from_actual_missing(record), params.output_snd)
+                }
+                Diff::Different { record, actual } => {
+                    uwr!(update_from_different(record, actual), params.output_snd)
+                }
+                Diff::Skipped => update_from_identical(dep)?,
+            }
+        }
+    }
+
+    Ok(())
 }
 
 fn s_running_f_wait_process<'a>(

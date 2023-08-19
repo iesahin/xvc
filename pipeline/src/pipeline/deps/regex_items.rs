@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::{ContentDigest, Diff, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{ContentDigest, Diff, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot};
 use xvc_ecs::persist;
 
 use crate::XvcDependency;
@@ -43,6 +43,11 @@ impl RegexItemsDep {
             xvc_metadata,
             ..self
         }
+    }
+
+    pub fn update_metadata_from_pmm(self, pmm: &XvcPathMetadataMap) -> Self {
+        let xvc_metadata = pmm.get(&self.path).cloned();
+        self.update_metadata(xvc_metadata)
     }
 
     pub fn update_lines(self, xvc_root: &XvcRoot) -> Self {
