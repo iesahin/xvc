@@ -49,12 +49,7 @@ $ cat people.csv
 Let's a step to show the first 10 lines of the file:
 
 ```console
-$ xvc pipeline step new --step-name print-top-10 --command 'echo "Added Lines:\n ${XVC_LINES_ADDED_ITEMS}\nRemoved Lines:\n${XVC_LINES_REMOVED_ITEMS}"'
-error: unexpected argument 'Lines:n' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
+$ xvc pipeline step new --step-name print-top-10 --command 'echo "Added Lines:\n ${XVC_LINE_ADDED_ITEMS}\nRemoved Lines:\n${XVC_LINE_REMOVED_ITEMS}"'
 
 ```
 
@@ -62,7 +57,6 @@ The command is run only when those lines change.
 
 ```console
 $ xvc pipeline step dependency --step-name print-top-10 --line-items 'people.csv::1-10'
-[ERROR] Pipeline Error: Step print-top-10 not found in pipeline
 
 ```
 
