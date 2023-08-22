@@ -248,7 +248,7 @@ pub fn thorough_compare_dependency(
             diff_of_dep(thorough_compare_regex_items(cmp_params, &dep)?)
         }
         XvcDependency::LineItems(lines_dep) => {
-            diff_of_dep(thorough_compare_line_items(&lines_dep)?)
+            diff_of_dep(thorough_compare_line_items(cmp_params, &lines_dep)?)
         }
         XvcDependency::Glob(dep) => diff_of_dep(thorough_compare_glob(cmp_params, &dep)?),
         XvcDependency::Regex(dep) => diff_of_dep(thorough_compare_regex(cmp_params, &dep)?),
@@ -293,8 +293,13 @@ fn thorough_compare_param(record: &ParamDep) -> Result<Diff<ParamDep>> {
     Ok(ParamDep::diff(Some(record), Some(&actual)))
 }
 
-fn thorough_compare_line_items(record: &LineItemsDep) -> Result<Diff<LineItemsDep>> {
-    let actual = LineItemsDep::new(record.path.clone(), record.begin, record.end);
+fn thorough_compare_line_items(
+    cmp_params: &StepStateParams,
+    record: &LineItemsDep,
+) -> Result<Diff<LineItemsDep>> {
+    let actual = LineItemsDep::new(record.path.clone(), record.begin, record.end)
+        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned())
+        .update_lines(cmp_params.xvc_root);
     Ok(LineItemsDep::diff(Some(record), Some(&actual)))
 }
 
@@ -432,7 +437,9 @@ pub fn superficial_compare_dependency(
         XvcDependency::RegexItems(dep) => {
             diff_of_dep(superficial_compare_regex_items(cmp_params, dep)?)
         }
-        XvcDependency::LineItems(dep) => diff_of_dep(superficial_compare_line_items(dep)?),
+        XvcDependency::LineItems(dep) => {
+            diff_of_dep(superficial_compare_line_items(cmp_params, dep)?)
+        }
         XvcDependency::Glob(dep) => diff_of_dep(superficial_compare_glob(cmp_params, dep)?),
         XvcDependency::Regex(dep) => diff_of_dep(superficial_compare_regex(cmp_params, dep)?),
         XvcDependency::Lines(dep) => diff_of_dep(superficial_compare_lines(cmp_params, dep)?),
@@ -481,8 +488,12 @@ fn superficial_compare_regex_items(
     Ok(RegexItemsDep::diff_superficial(record, &actual))
 }
 
-fn superficial_compare_line_items(record: &LineItemsDep) -> Result<Diff<LineItemsDep>> {
-    let actual = LineItemsDep::new(record.path.clone(), record.begin, record.end);
+fn superficial_compare_line_items(
+    cmp_params: &StepStateParams,
+    record: &LineItemsDep,
+) -> Result<Diff<LineItemsDep>> {
+    let actual = LineItemsDep::new(record.path.clone(), record.begin, record.end)
+        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
     Ok(LineItemsDep::diff_superficial(record, &actual))
 }
 
