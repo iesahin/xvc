@@ -38,18 +38,15 @@ $ cat people.csv
 
 ```
 
-Now, let's add steps to the pipeline to count males and females in the file:
+Now, let's add a step to the pipeline to count females in the file:
 
 ```console
-$ xvc pipeline step new --step-name count-males --command "grep -c '\"M\",' people.csv"
 $ xvc pipeline step new --step-name count-females --command "grep -c '\"F\",' people.csv"
 ```
 
-These commands must be run when the respective regexes changed.
+These commands are run when the regex dependencies change.
 
 ```console
-$ xvc pipeline step dependency --step-name count-males --regex 'people.csv:/^.*"M",.*$'
-
 $ xvc pipeline step dependency --step-name count-females --regex 'people.csv:/^.*"F",.*$'
 
 ```
@@ -59,20 +56,17 @@ When you run the pipeline initially, the steps are run.
 ```console
 $ xvc pipeline run
 [OUT] [count-females] 7
- 
-[OUT] [count-males] 11
- 
 
 ``````
 
-When you run the pipeline again, the steps are not run because the regexes didn't change.
+When you run the pipeline again, the step is not run because the regex result didn't change.
 
 ```console
 $ xvc pipeline run
 
 ``````
 
-When you add a new female record to the file, only the female count step is run.
+When you add a new female record to the file, the step is run and the command prints the new count.
 
 ```console
 $ zsh -c "echo '\"Asude\",      \"F\",   12,       55,      110' >> people.csv"
@@ -102,6 +96,6 @@ $ cat people.csv
 
 $ xvc pipeline run
 [OUT] [count-females] 8
- 
+
 
 ```
