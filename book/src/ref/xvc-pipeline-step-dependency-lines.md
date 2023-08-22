@@ -1,11 +1,11 @@
-# Line Digest Dependencies
+# Line Dependencies
 
 You can make your steps to depend on lines of text files. The lines are defined by starting and ending indices.
 
 When the text in those lines change, the step is invalidated.
+
 This command works only in Xvc repositories.
 
-kk
 ```console
 $ git init
 ...
@@ -49,6 +49,7 @@ The command is run only when those lines change.
 
 ```console
 $ xvc pipeline step dependency --step-name print-top-10 --regex 'people.csv::1-10'
+[ERROR] Pipeline Error: Invalid regular expression: people.csv::1-10
 
 ```
 
@@ -56,7 +57,16 @@ When you run the pipeline initially, the step is run.
 
 ```console
 $ xvc pipeline run
-[OUT] [count-females] 7
+[OUT] [print-top-10] "Name",     "Sex", "Age", "Height (in)", "Weight (lbs)"
+"Alex",       "M",   41,       74,      170
+"Bert",       "M",   42,       68,      166
+"Carl",       "M",   32,       70,      155
+"Dave",       "M",   39,       72,      167
+"Elly",       "F",   30,       66,      124
+"Fran",       "F",   33,       66,      115
+"Gwen",       "F",   26,       64,      121
+"Hank",       "M",   30,       71,      158
+"Ivan",       "M",   53,       72,      175
 
 
 ``````
@@ -64,7 +74,18 @@ $ xvc pipeline run
 When you run the pipeline again, the step is not run because the specified lines didn't change.
 
 ```console
-$ xvc pipeline run
+$ xvc --debug pipeline run
+[OUT] [print-top-10] "Name",     "Sex", "Age", "Height (in)", "Weight (lbs)"
+"Alex",       "M",   41,       74,      170
+"Bert",       "M",   42,       68,      166
+"Carl",       "M",   32,       70,      155
+"Dave",       "M",   39,       72,      167
+"Elly",       "F",   30,       66,      124
+"Fran",       "F",   33,       66,      115
+"Gwen",       "F",   26,       64,      121
+"Hank",       "M",   30,       71,      158
+"Ivan",       "M",   53,       72,      175
+
 
 ``````
 
@@ -79,7 +100,16 @@ Now, when you run the pipeline, it will print the first 10 lines again.
 
 ```
 $ xvc pipeline run
-[OUT] [count-females] 8
+[OUT] [print-top-10] "Name",     "Sex", "Age", "Height (in)", "Weight (lbs)"
+"Alex",       "M",   41,       74,      170
+"Bert",       "M",   42,       68,      166
+"Carl",       "M",   32,       70,      155
+"Dave",       "M",   39,       72,      167
+"Elly",       "F",   30,       66,      124
+"Ferzan",       "F",   33,       66,      115
+"Gwen",       "F",   26,       64,      121
+"Hank",       "M",   30,       71,      158
+"Ivan",       "M",   53,       72,      175
 
 
 ```
