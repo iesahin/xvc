@@ -66,20 +66,7 @@ $ xvc pipeline run
 "Myra",       "F",   23,       62,       98
 "Page",       "F",   31,       67,      135
 "Ruth",       "F",   28,       65,      131
-
-[OUT] [new-males] New Males:
- "Alex",       "M",   41,       74,      170
-"Bert",       "M",   42,       68,      166
-"Carl",       "M",   32,       70,      155
-"Dave",       "M",   39,       72,      167
-"Hank",       "M",   30,       71,      158
-"Ivan",       "M",   53,       72,      175
-"Jake",       "M",   32,       69,      143
-"Luke",       "M",   34,       72,      163
-"Neil",       "M",   36,       75,      160
-"Omar",       "M",   38,       70,      145
-"Quin",       "M",   29,       71,      176
-
+ 
 
 ``````
 
@@ -121,5 +108,6 @@ $ cat people.csv
 $ xvc pipeline run
 [OUT] [new-females] New Females:
  "Asude",      "F",   12,       55,      110
+ 
 
 ```
