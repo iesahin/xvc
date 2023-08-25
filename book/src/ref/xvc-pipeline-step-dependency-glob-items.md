@@ -52,12 +52,12 @@ The step is invalidated when a file described by the glob is added, removed or c
 ```console
 $ xvc pipeline run
 [OUT] [files-changed] ### Added Files:
+dir-0002/file-0001.bin
 dir-0001/file-0001.bin
+dir-0002/file-0003.bin
+dir-0002/file-0002.bin
 dir-0001/file-0002.bin
 dir-0001/file-0003.bin
-dir-0002/file-0001.bin
-dir-0002/file-0002.bin
-dir-0002/file-0003.bin
 ### Removed Files:
 
 
@@ -75,7 +75,16 @@ $ xvc pipeline run
 [OUT] [files-changed] ### Added Files:
 
 ### Removed Files:
+dir-0001/file-0001.bin
 
 
+```
+
+When you change a file, it's printed in both added and removed files:
+
+```console
+$ xvc-test-helper generate-filled-file dir-0001/file-0002.bin
+
+$ xvc pipeline run
 
 ```
