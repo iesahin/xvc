@@ -1411,14 +1411,17 @@ fn update_command_environment(
                 let added_items = actual_items
                     .difference(&record_items)
                     .cloned()
+                    .sorted()
                     .collect::<Vec<String>>();
                 let removed_items = record_items
                     .difference(&actual_items)
                     .cloned()
+                    .sorted()
                     .collect::<Vec<String>>();
                 let all_items = actual_items
                     .union(&record_items)
                     .cloned()
+                    .sorted()
                     .collect::<Vec<String>>();
 
                 match record {
