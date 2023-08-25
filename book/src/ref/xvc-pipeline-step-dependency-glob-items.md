@@ -41,7 +41,7 @@ $ tree
 Add a step to list the added files.
 
 ```console
-$ xvc pipeline step new --step-name files-changed --command 'echo "### Added Files:\n${XVC_GLOB_ADDED_ITEMS}\n### Removed Files:\n${XVC_GLOB_REMOVED_ITESM}"'
+$ xvc pipeline step new --step-name files-changed --command 'echo "### Added Files:\n${XVC_GLOB_ADDED_ITEMS}\n### Removed Files:\n${XVC_GLOB_REMOVED_ITEMS}"'
 
 $ xvc pipeline step dependency --step-name files-changed --glob-items 'dir-*/*'
 
@@ -51,7 +51,15 @@ The step is invalidated when a file described by the glob is added, removed or c
 
 ```console
 $ xvc pipeline run
-[OUT] [files-changed] Files have changed.
+[OUT] [files-changed] ### Added Files:
+dir-0001/file-0001.bin
+dir-0001/file-0002.bin
+dir-0001/file-0003.bin
+dir-0002/file-0001.bin
+dir-0002/file-0002.bin
+dir-0002/file-0003.bin
+### Removed Files:
+
 
 
 $ xvc pipeline run
@@ -64,7 +72,10 @@ If you add or remove a file from the files specified by the glob, they are print
 $ rm dir-0001/file-0001.bin
 
 $ xvc pipeline run
-[OUT] [files-changed] Files have changed.
+[OUT] [files-changed] ### Added Files:
+
+### Removed Files:
+
 
 
 ```
