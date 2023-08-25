@@ -12,6 +12,7 @@ use self::outs::XvcOutput;
 use self::step::XvcStep;
 use anyhow::anyhow;
 use clap::Command;
+use itertools::Itertools;
 use xvc_file::CHANNEL_CAPACITY;
 
 use crate::deps::compare::{thorough_compare_dependency, DependencyComparisonParams};
@@ -1413,6 +1414,7 @@ fn update_command_environment(
                     .cloned()
                     .sorted()
                     .collect::<Vec<String>>();
+
                 let removed_items = record_items
                     .difference(&actual_items)
                     .cloned()
