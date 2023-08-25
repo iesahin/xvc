@@ -1422,7 +1422,23 @@ fn update_command_environment(
                     .collect::<Vec<String>>();
 
                 match record {
-                    XvcDependency::GlobItems(dep) => {
+                    XvcDependency::GlobItems(record_dep) => {
+                        if let XvcDependency::GlobItems(actual_dep) = actual {
+                            let mut changed_items = vec![];
+                            for (record_xp, record_digest) in
+                                record_dep.xvc_path_content_digest_map.iter()
+                            {
+                                if let Some(actual_digest) =
+                                    actual_dep.xvc_path_content_digest_map.get(record_xp)
+                                {
+                                    if actual_digest != record_digest {
+                                        changed_items.push(record_xp.to_string());
+                                    }
+                                }
+                            }
+                            update_env("XVC_GLOB_CHANGED_ITEMS", &changed_items)?;
+                        }
+
                         update_env("XVC_GLOB_ADDED_ITEMS", &added_items)?;
                         update_env("XVC_GLOB_REMOVED_ITEMS", &removed_items)?;
                         update_env("XVC_GLOB_ALL_ITEMS", &all_items)
