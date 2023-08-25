@@ -53,14 +53,16 @@ The step is invalidated when a file described by the glob is added, removed or c
 $ xvc pipeline run
 [OUT] [files-changed] ### Added Files:
 dir-0001/file-0003.bin
-dir-0001/file-0001.bin
-dir-0001/file-0002.bin
 dir-0002/file-0002.bin
 dir-0002/file-0001.bin
 dir-0002/file-0003.bin
+dir-0001/file-0001.bin
+dir-0001/file-0002.bin
 ### Removed Files:
 
+### Changed Files:
 
+ 
 
 $ xvc pipeline run
 
@@ -76,7 +78,9 @@ $ xvc pipeline run
 
 ### Removed Files:
 dir-0001/file-0001.bin
+### Changed Files:
 
+ 
 
 ```
 
@@ -90,6 +94,8 @@ $ xvc pipeline run
 
 ### Removed Files:
 
-
+### Changed Files:
+dir-0001/file-0002.bin
+ 
 
 ```
