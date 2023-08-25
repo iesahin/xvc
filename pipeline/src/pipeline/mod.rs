@@ -1356,15 +1356,17 @@ fn update_command_environment(
     let update_from_record_missing = |actual: &XvcDependency| -> Result<()> {
         if let Some(items) = actual.items() {
             match actual {
-                XvcDependency::GlobItems(dep) => {
-                    unimplemented!("GlobItems not implemented yet")
+                XvcDependency::GlobItems(_) => {
+                    update_env("XVC_GLOB_ADDED_ITEMS", &items)?;
+                    update_env("XVC_GLOB_REMOVED_ITEMS", &[])?;
+                    update_env("XVC_GLOB_ALL_ITEMS", &items)
                 }
-                XvcDependency::RegexItems(dep) => {
+                XvcDependency::RegexItems(_) => {
                     update_env("XVC_REGEX_ADDED_ITEMS", &items)?;
                     update_env("XVC_REGEX_REMOVED_ITEMS", &[])?;
                     update_env("XVC_REGEX_ALL_ITEMS", &items)
                 }
-                XvcDependency::LineItems(dep) => {
+                XvcDependency::LineItems(_) => {
                     update_env("XVC_LINE_ADDED_ITEMS", &items)?;
                     update_env("XVC_LINE_REMOVED_ITEMS", &[])?;
                     update_env("XVC_LINE_ALL_ITEMS", &items)
@@ -1380,7 +1382,9 @@ fn update_command_environment(
         if let Some(items) = record.items() {
             match record {
                 XvcDependency::GlobItems(dep) => {
-                    unimplemented!("GlobItems not implemented yet")
+                    update_env("XVC_GLOB_ADDED_ITEMS", &[])?;
+                    update_env("XVC_GLOB_REMOVED_ITEMS", &items)?;
+                    update_env("XVC_GLOB_ALL_ITEMS", &items)
                 }
                 XvcDependency::RegexItems(dep) => {
                     update_env("XVC_REGEX_ADDED_ITEMS", &[])?;
@@ -1399,61 +1403,64 @@ fn update_command_environment(
         }
     };
 
-    let update_from_different =
-        |record: &XvcDependency, actual: &XvcDependency| -> Result<()> {
-            if let Some(record_items) = record.items() {
-                if let Some(actual_items) = actual.items() {
-                    let record_items = record_items.into_iter().collect::<HashSet<_>>();
-                    let actual_items = actual_items.into_iter().collect::<HashSet<_>>();
-                    let added_items = actual_items
-                        .difference(&record_items)
-                        .cloned()
-                        .collect::<Vec<String>>();
-                    let removed_items = record_items
-                        .difference(&actual_items)
-                        .cloned()
-                        .collect::<Vec<String>>();
-                    let all_items = actual_items
-                        .union(&record_items)
-                        .cloned()
-                        .collect::<Vec<String>>();
+    let update_from_different = |record: &XvcDependency, actual: &XvcDependency| -> Result<()> {
+        if let Some(record_items) = record.items() {
+            if let Some(actual_items) = actual.items() {
+                let record_items = record_items.into_iter().collect::<HashSet<_>>();
+                let actual_items = actual_items.into_iter().collect::<HashSet<_>>();
+                let added_items = actual_items
+                    .difference(&record_items)
+                    .cloned()
+                    .collect::<Vec<String>>();
+                let removed_items = record_items
+                    .difference(&actual_items)
+                    .cloned()
+                    .collect::<Vec<String>>();
+                let all_items = actual_items
+                    .union(&record_items)
+                    .cloned()
+                    .collect::<Vec<String>>();
 
-                    match record {
-                        XvcDependency::GlobItems(dep) => {
-                            unimplemented!("GlobItems not implemented yet")
-                        }
-                        XvcDependency::RegexItems(dep) => {
-                            update_env("XVC_REGEX_ADDED_ITEMS", &added_items)?;
-                            update_env("XVC_REGEX_REMOVED_ITEMS", &removed_items)?;
-                            update_env("XVC_REGEX_ALL_ITEMS", &all_items)
-                        }
-                        XvcDependency::LineItems(dep) => {
-                            update_env("XVC_LINE_ADDED_ITEMS", &added_items)?;
-                            update_env("XVC_LINE_REMOVED_ITEMS", &removed_items)?;
-                            update_env("XVC_LINE_ALL_ITEMS", &all_items)
-                        }
-                        _ => Ok(()),
+                match record {
+                    XvcDependency::GlobItems(dep) => {
+                        update_env("XVC_GLOB_ADDED_ITEMS", &added_items)?;
+                        update_env("XVC_GLOB_REMOVED_ITEMS", &removed_items)?;
+                        update_env("XVC_GLOB_ALL_ITEMS", &all_items)
                     }
-                } else {
-                    Ok(())
+                    XvcDependency::RegexItems(dep) => {
+                        update_env("XVC_REGEX_ADDED_ITEMS", &added_items)?;
+                        update_env("XVC_REGEX_REMOVED_ITEMS", &removed_items)?;
+                        update_env("XVC_REGEX_ALL_ITEMS", &all_items)
+                    }
+                    XvcDependency::LineItems(dep) => {
+                        update_env("XVC_LINE_ADDED_ITEMS", &added_items)?;
+                        update_env("XVC_LINE_REMOVED_ITEMS", &removed_items)?;
+                        update_env("XVC_LINE_ALL_ITEMS", &all_items)
+                    }
+                    _ => Ok(()),
                 }
             } else {
                 Ok(())
             }
-        };
+        } else {
+            Ok(())
+        }
+    };
 
     let update_from_identical = |dep: XvcDependency| -> Result<()> {
         if let Some(items) = dep.items() {
             match dep {
-                XvcDependency::GlobItems(dep) => {
-                    unimplemented!("GlobItems not implemented yet")
+                XvcDependency::GlobItems(_) => {
+                    update_env("XVC_GLOB_ADDED_ITEMS", &[])?;
+                    update_env("XVC_GLOB_REMOVED_ITEMS", &[])?;
+                    update_env("XVC_GLOB_ALL_ITEMS", &items)
                 }
-                XvcDependency::RegexItems(dep) => {
+                XvcDependency::RegexItems(_) => {
                     update_env("XVC_REGEX_ADDED_ITEMS", &[])?;
                     update_env("XVC_REGEX_REMOVED_ITEMS", &[])?;
                     update_env("XVC_REGEX_ALL_ITEMS", &items)
                 }
-                XvcDependency::LineItems(dep) => {
+                XvcDependency::LineItems(_) => {
                     update_env("XVC_LINE_ADDED_ITEMS", &[])?;
                     update_env("XVC_LINE_REMOVED_ITEMS", &[])?;
                     update_env("XVC_LINE_ALL_ITEMS", &items)

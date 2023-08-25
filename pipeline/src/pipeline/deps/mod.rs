@@ -99,9 +99,13 @@ impl XvcDependency {
 
     pub fn items(&self) -> Option<Vec<String>> {
         match self {
-            XvcDependency::GlobItems(dep) => {
-                unimplemented!("GlobItems not implemented yet")
-            }
+            XvcDependency::GlobItems(dep) => Some(
+                dep.xvc_path_metadata_map
+                    .keys()
+                    .into_iter()
+                    .map(|xp| xp.to_string())
+                    .collect::<Vec<String>>(),
+            ),
             XvcDependency::RegexItems(dep) => Some(dep.lines.clone()),
             XvcDependency::LineItems(dep) => Some(dep.lines.clone()),
 
