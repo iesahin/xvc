@@ -104,10 +104,13 @@ impl XvcDependency {
                     .keys()
                     .into_iter()
                     .map(|xp| xp.to_string())
+                    .sorted()
                     .collect::<Vec<String>>(),
             ),
-            XvcDependency::RegexItems(dep) => Some(dep.lines.clone()),
-            XvcDependency::LineItems(dep) => Some(dep.lines.clone()),
+            XvcDependency::RegexItems(dep) => {
+                Some(dep.lines.clone().into_iter().sorted().collect())
+            }
+            XvcDependency::LineItems(dep) => Some(dep.lines.clone().into_iter().sorted().collect()),
 
             XvcDependency::Step(_)
             | XvcDependency::Generic(_)
