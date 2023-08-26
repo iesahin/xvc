@@ -26,8 +26,18 @@ numeric_param: 13
 
 ```
 $ xvc pipeline step --step-name read-database-config --command 'echo "Updated Database Configuration"'
+error: unexpected argument '--step-name' found
+
+Usage: xvc pipeline step <COMMAND>
+
+For more information, try '--help'.
 
 $ xvc pipeline step --step-name read-hyperparams --command 'echo "Update Hyperparameters"'
+error: unexpected argument '--step-name' found
+
+Usage: xvc pipeline step <COMMAND>
+
+For more information, try '--help'.
 
 ```
 
@@ -35,8 +45,19 @@ Let's create different steps for various pieces of this parameters file:
 
 ```console
 $ xvc pipeline dependency --step-name read-database-config --param 'myparams.yaml::database.port' --param 'myparams.yaml::database.server' --param 'myparams.yaml::database.connection'
+error: unrecognized subcommand 'dependency'
 
-$ xvc pipeline dependency --step-name read-hyperparams --param 'myparams.yaml::param' --param 'myparams.yaml::numeric_param'
+Usage: xvc pipeline [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
+$ xvc pipeline step dependency --step-name read-hyperparams --param 'myparams.yaml::param' --param 'myparams.yaml::numeric_param'
+error: unrecognized subcommand 'dependency'
+
+Usage: xvc pipeline [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
 ```
 
 Run for the first time, as initially all dependencies are invalid:
