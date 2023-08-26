@@ -1,0 +1,15 @@
+# This is a top-level key-value pair
+param = "value"
+
+# This is a table section
+[database]
+  server = "example.com"
+  port = 5432
+
+# This is a nested table section
+[database.connection]
+  timeout = 5000
+
+# Another top-level key-value pair
+numeric_param = 13
+
