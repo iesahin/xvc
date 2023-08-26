@@ -44,7 +44,7 @@ For more information, try '--help'.
 Let's create different steps for various pieces of this parameters file:
 
 ```console
-$ xvc pipeline dependency --step-name read-database-config --param 'myparams.yaml::database.port' --param 'myparams.yaml::database.server' --param 'myparams.yaml::database.connection'
+$ xvc pipeline step dependency --step-name read-database-config --param 'myparams.yaml::database.port' --param 'myparams.yaml::database.server' --param 'myparams.yaml::database.connection'
 error: unrecognized subcommand 'dependency'
 
 Usage: xvc pipeline [OPTIONS] <COMMAND>
