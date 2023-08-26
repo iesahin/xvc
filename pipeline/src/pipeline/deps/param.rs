@@ -8,6 +8,7 @@ use toml::Value as TomlValue;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{Diff, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot};
 use xvc_ecs::persist;
+use xvc_logging::watch;
 
 use log::{error, warn};
 use serde::{Deserialize, Serialize};
@@ -72,7 +73,8 @@ impl Diffable for ParamDep {
     /// ⚠️ Call actual.update_metadata before calling this function ⚠️
     fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-
+        watch!(record);
+        watch!(actual);
         match (record.xvc_metadata, actual.xvc_metadata) {
             (Some(record_md), Some(actual_md)) => {
                 if record_md == actual_md {
@@ -97,7 +99,8 @@ impl Diffable for ParamDep {
     /// ⚠️ Call actual.update_metadata and actual.update_value before calling this function ⚠️
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-
+        watch!(record);
+        watch!(actual);
         match Self::diff_superficial(record, actual) {
             Diff::Identical => Diff::Identical,
             Diff::Different { .. } => {
