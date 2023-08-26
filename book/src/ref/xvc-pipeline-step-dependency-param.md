@@ -44,11 +44,10 @@ Run for the first time, as initially all dependencies are invalid:
 
 ```console
 $ xvc pipeline run
-thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
-[ERROR] Error in step thread: Any { .. }
-[ERROR] Error in step thread: Any { .. }
+[OUT] [read-hyperparams] Update Hyperparameters
+
+[OUT] [read-database-config] Updated Database Configuration
+
 
 ```
 
@@ -56,11 +55,6 @@ For the second time, it won't read the configuration as nothing is changed:
 
 ```console
 $ xvc pipeline run
-thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs93:29
-:note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-93:29
-[ERROR] Error in step thread: Any { .. }
-[ERROR] Error in step thread: Any { .. }
 
 ```
 
@@ -72,11 +66,10 @@ Let's update the database port:
 ```console
 $ perl -pi -e 's/5432/9876/g' myparams.yaml
 
-$ xvc pipeline run
-thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
-[ERROR] Error in step thread: Any { .. }
-[ERROR] Error in step thread: Any { .. }
+$ xvc --debug pipeline run
+[OUT] [read-database-config] Updated Database Configuration
+
+[OUT] [read-hyperparams] Update Hyperparameters
+
 
 ```
