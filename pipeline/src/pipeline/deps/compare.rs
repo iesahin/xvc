@@ -1,3 +1,4 @@
+use std::cmp;
 use std::sync::{Arc, RwLock};
 
 use crate::error::{Error, Result};
@@ -243,7 +244,9 @@ pub fn thorough_compare_dependency(
             diff_of_dep(thorough_compare_glob_items(cmp_params, &glob_dep)?)
         }
         XvcDependency::UrlDigest(url_dep) => diff_of_dep(thorough_compare_url(&url_dep)?),
-        XvcDependency::Param(param_dep) => diff_of_dep(thorough_compare_param(&param_dep)?),
+        XvcDependency::Param(param_dep) => {
+            diff_of_dep(thorough_compare_param(cmp_params, &param_dep)?)
+        }
         XvcDependency::RegexItems(dep) => {
             diff_of_dep(thorough_compare_regex_items(cmp_params, &dep)?)
         }
@@ -287,9 +290,13 @@ fn thorough_compare_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> {
     Ok(UrlDigestDep::diff_thorough(record, &actual))
 }
 
-fn thorough_compare_param(record: &ParamDep) -> Result<Diff<ParamDep>> {
-    let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?;
-
+fn thorough_compare_param(
+    cmp_params: &StepStateParams,
+    record: &ParamDep,
+) -> Result<Diff<ParamDep>> {
+    let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?
+        .update_metadata(cmp_params.pmm.read().as_ref()?)?
+        .update_value(cmp_params.xvc_root)?;
     Ok(ParamDep::diff(Some(record), Some(&actual)))
 }
 
@@ -433,7 +440,7 @@ pub fn superficial_compare_dependency(
             diff_of_dep(superficial_compare_glob_items(cmp_params, glob_dep)?)
         }
         XvcDependency::UrlDigest(dep) => diff_of_dep(superficial_compare_url(dep)?),
-        XvcDependency::Param(dep) => diff_of_dep(superficial_compare_param(dep)?),
+        XvcDependency::Param(dep) => diff_of_dep(superficial_compare_param(cmp_params, dep)?),
         XvcDependency::RegexItems(dep) => {
             diff_of_dep(superficial_compare_regex_items(cmp_params, dep)?)
         }
@@ -474,8 +481,12 @@ fn superficial_compare_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> 
     Ok(UrlDigestDep::diff_superficial(record, &actual))
 }
 
-fn superficial_compare_param(record: &ParamDep) -> Result<Diff<ParamDep>> {
-    let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?;
+fn superficial_compare_param(
+    cmp_params: &StepStateParams,
+    record: &ParamDep,
+) -> Result<Diff<ParamDep>> {
+    let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?
+        .update_metadata(cmp_params.pmm.read().as_ref()?)?;
     Ok(ParamDep::diff_superficial(record, &actual))
 }
 

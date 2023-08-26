@@ -26,18 +26,8 @@ numeric_param: 13
 
 ```
 $ xvc pipeline step new --step-name read-database-config --command 'echo "Updated Database Configuration"'
-error: unexpected argument '--step-name' found
-
-Usage: xvc pipeline step <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc pipeline step new --step-name read-hyperparams --command 'echo "Update Hyperparameters"'
-error: unexpected argument '--step-name' found
-
-Usage: xvc pipeline step <COMMAND>
-
-For more information, try '--help'.
 
 ```
 
@@ -45,14 +35,8 @@ Let's create different steps for various pieces of this parameters file:
 
 ```console
 $ xvc pipeline step dependency --step-name read-database-config --param 'myparams.yaml::database.port' --param 'myparams.yaml::database.server' --param 'myparams.yaml::database.connection'
-error: unrecognized subcommand 'dependency'
-
-Usage: xvc pipeline [OPTIONS] <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name read-hyperparams --param 'myparams.yaml::param' --param 'myparams.yaml::numeric_param'
-[ERROR] Pipeline Error: Step read-hyperparams not found in pipeline
 
 ```
 
@@ -60,12 +44,24 @@ Run for the first time, as initially all dependencies are invalid:
 
 ```console
 $ xvc pipeline run
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
+[ERROR] Error in step thread: Any { .. }
+[ERROR] Error in step thread: Any { .. }
+
 ```
 
 For the second time, it won't read the configuration as nothing is changed:
 
 ```console
 $ xvc pipeline run
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs93:29
+:note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+93:29
+[ERROR] Error in step thread: Any { .. }
+[ERROR] Error in step thread: Any { .. }
+
 ```
 
 When you update a value in this file, it will only invalidate the steps that depend on the value, not other dependencies
@@ -77,4 +73,10 @@ Let's update the database port:
 $ perl -pi -e 's/5432/9876/g' myparams.yaml
 
 $ xvc pipeline run
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread '<unnamed>' panicked at 'internal error: entered unreachable code: One of the metadata should always be present', pipeline/src/pipeline/deps/param.rs:93:29
+[ERROR] Error in step thread: Any { .. }
+[ERROR] Error in step thread: Any { .. }
+
 ```
