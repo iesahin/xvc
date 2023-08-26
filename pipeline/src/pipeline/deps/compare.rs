@@ -297,7 +297,7 @@ fn thorough_compare_param(
     let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?
         .update_metadata(cmp_params.pmm.read().as_ref()?)?
         .update_value(cmp_params.xvc_root)?;
-    Ok(ParamDep::diff(Some(record), Some(&actual)))
+    Ok(ParamDep::diff_thorough(record, &actual))
 }
 
 fn thorough_compare_line_items(
