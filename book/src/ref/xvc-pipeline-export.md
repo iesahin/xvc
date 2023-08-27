@@ -16,6 +16,8 @@ Options:
 
 ```
 
+# Examples
+
 You can export the pipeline you created to a JSON or YAML file to edit and restore using [`xvc pipeline
 import`](/ref/xvc-pipeline-import/). This allows to fix typos and update commands in place.
 
@@ -34,8 +36,8 @@ $ xvc init
 Let's start by defining a steps in the pipeline.
 
 ```console
-$ xvc pipeline step new --step-name step1 --command touch abc.txt
-$ xvc pipeline step new --step-name step2 --command touch def.txt
+$ xvc pipeline step new --step-name step1 --command 'touch abc.txt'
+$ xvc pipeline step new --step-name step2 --command 'touch def.txt'
 ```
 
 Adding a few dependencies.
