@@ -111,17 +111,128 @@ steps:
 ```
 
 You can import this file to construct the pipeline at once.
+Note that the `export` command outputs JSON by default.
 
 ```console
 $ xvc pipeline import --file pipeline.yaml --overwrite
-[ERROR] Pipeline Error: Pipeline default already found
 
 $ xvc pipeline export
-error: unrecognized subcommand 'list'
-
-Usage: xvc pipeline step <COMMAND>
-
-For more information, try '--help'.
+{
+  "name": "default",
+  "steps": [
+    {
+      "command": "touch abc.txt",
+      "dependencies": [],
+      "invalidate": "ByDependencies",
+      "name": "step1",
+      "outputs": []
+    },
+    {
+      "command": "touch def.txt",
+      "dependencies": [
+        {
+          "Step": {
+            "name": "step1"
+          }
+        },
+        {
+          "Generic": {
+            "generic_command": "ping -c 2 example.com",
+            "output_digest": null
+          }
+        },
+        {
+          "GlobItems": {
+            "glob": "*.txt",
+            "xvc_path_content_digest_map": {},
+            "xvc_path_metadata_map": {}
+          }
+        },
+        {
+          "Glob": {
+            "content_digest": null,
+            "glob": "*.txt",
+            "xvc_metadata_digest": null,
+            "xvc_paths_digest": null
+          }
+        },
+        {
+          "RegexItems": {
+            "lines": [],
+            "path": "requirements.txt",
+            "regex": "^tensorflow",
+            "xvc_metadata": null
+          }
+        },
+        {
+          "Regex": {
+            "lines_digest": null,
+            "path": "requirements.txt",
+            "regex": "^tensorflow",
+            "xvc_metadata": null
+          }
+        },
+        {
+          "Param": {
+            "format": "YAML",
+            "key": "model.conv_units",
+            "path": "params.yaml",
+            "value": null,
+            "xvc_metadata": null
+          }
+        },
+        {
+          "LineItems": {
+            "begin": 1,
+            "end": 20,
+            "lines": [],
+            "path": "params.yaml",
+            "xvc_metadata": null
+          }
+        },
+        {
+          "Lines": {
+            "begin": 1,
+            "digest": null,
+            "end": 20,
+            "path": "params.yaml",
+            "xvc_metadata": null
+          }
+        },
+        {
+          "UrlDigest": {
+            "etag": null,
+            "last_modified": null,
+            "url": "https://example.com/",
+            "url_content_digest": null
+          }
+        }
+      ],
+      "invalidate": "ByDependencies",
+      "name": "step2",
+      "outputs": [
+        {
+          "File": {
+            "path": "def.txt"
+          }
+        },
+        {
+          "Metric": {
+            "format": "JSON",
+            "path": "metrics.json"
+          }
+        },
+        {
+          "Image": {
+            "path": "plots/confusion.png"
+          }
+        }
+      ]
+    }
+  ],
+  "version": 1,
+  "workdir": ""
+}
 
 ```
 
@@ -129,13 +240,23 @@ If you don't supply the `--overwrite` option, Xvc will report an error and quit.
 
 ```console
 $ xvc pipeline import --file pipeline.yaml
+[ERROR] Pipeline Error: Pipeline default already found
+
 ```
 
 You can specify a new name for the pipeline and it will override the name set in the file.
 This way you can edit and import similar pipelines with minor differences.
 
 ```console
-$ xvc pipeline import --name another-pipeline
+$ xvc pipeline import --name another-pipeline --file pipeline.yaml
+[ERROR] Pipeline Error: Format specification for input (stdin) required.
+
+```
+
+You can also use stdin to import a pipeline but you must specify the input format.
+
+```console
+$ zsh -c 'cat pipeline.yaml | perl -e 's/example/domain/' | xvc pipeline import --name another-example --format yaml'
 
 ```
 
