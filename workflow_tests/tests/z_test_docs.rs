@@ -22,11 +22,7 @@ const DOC_TEST_DIR: &str = "docs/";
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
-    let book_dirs_and_filters = vec![
-        ("ref", r".*pipeline-step-dependency.*\.md$"),
-        ("start", r".*"),
-        ("how-to", r".*"),
-    ];
+    let book_dirs_and_filters = vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")];
     let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
