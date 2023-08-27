@@ -249,7 +249,6 @@ This way you can edit and import similar pipelines with minor differences.
 
 ```console
 $ xvc pipeline import --name another-pipeline --file pipeline.yaml
-[ERROR] Pipeline Error: Format specification for input (stdin) required.
 
 ```
 
@@ -257,6 +256,8 @@ You can also use stdin to import a pipeline but you must specify the input forma
 
 ```console
 $ zsh -c 'cat pipeline.yaml | perl -e 's/example/domain/' | xvc pipeline import --name another-example --format yaml'
+
+$ xvc pipeline export --name another-example
 
 ```
 
