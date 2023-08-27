@@ -255,7 +255,7 @@ $ xvc pipeline import --name another-pipeline --file pipeline.yaml
 You can also use stdin to import a pipeline but you must specify the input format.
 
 ```console
-$ zsh -c 'cat pipeline.yaml'
+$ zsh -c 'cat pipeline.yaml | xvc pipeline import --format yaml --name another-example'
 version: 1
 name: default
 workdir: ''
@@ -324,14 +324,6 @@ steps:
     format: JSON
   - !Image
     path: plots/confusion.png
-cat: |: No such file or directory
-cat: xvc: No such file or directory
-cat: pipeline: No such file or directory
-cat: import: No such file or directory
-cat: --name: No such file or directory
-cat: another-example: No such file or directory
-cat: --format: No such file or directory
-cat: yaml: No such file or directory
 
 $ xvc pipeline list
 +------------------+---------+
