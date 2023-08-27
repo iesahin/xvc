@@ -266,7 +266,7 @@ $ xvc pipeline list
 | another-pipeline |         |
 +------------------+---------+
 
-$ xvc pipeline export --name another-example
+$ xvc pipeline export --name yetanother
 [ERROR] Pipeline Error: Cannot find Pipeline: another-example
 
 ```
