@@ -46,7 +46,7 @@ Now, let's add steps to the pipeline to count males and females in the file:
 ```console
 $ xvc pipeline step new --step-name new-males --command 'echo "New Males:\n ${XVC_REGEX_ADDED_ITEMS}"'
 $ xvc pipeline step new --step-name new-females --command 'echo "New Females:\n ${XVC_REGEX_ADDED_ITEMS}"'
-$ xvc pipeline step dependency --step-name new-males --step new-females
+$ xvc pipeline step dependency --step-name new-females --step new-males
 ```
 
 We also added a step dependency to let the steps run always in the same order.
@@ -58,13 +58,21 @@ $ xvc pipeline step dependency --step-name new-males --regex-items 'people.csv:/
 
 $ xvc pipeline step dependency --step-name new-females --regex-items 'people.csv:/^.*"F",.*$'
 
-
 ```
 
 When you run the pipeline initially, the steps are run.
 
 ```console
 $ xvc pipeline run
+[OUT] [new-females] New Females:
+ "Elly",       "F",   30,       66,      124
+"Fran",       "F",   33,       66,      115
+"Gwen",       "F",   26,       64,      121
+"Kate",       "F",   47,       69,      139
+"Myra",       "F",   23,       62,       98
+"Page",       "F",   31,       67,      135
+"Ruth",       "F",   28,       65,      131
+
 [OUT] [new-males] New Males:
  "Alex",       "M",   41,       74,      170
 "Bert",       "M",   42,       68,      166
@@ -77,15 +85,6 @@ $ xvc pipeline run
 "Neil",       "M",   36,       75,      160
 "Omar",       "M",   38,       70,      145
 "Quin",       "M",   29,       71,      176
-
-[OUT] [new-females] New Females:
- "Elly",       "F",   30,       66,      124
-"Fran",       "F",   33,       66,      115
-"Gwen",       "F",   26,       64,      121
-"Kate",       "F",   47,       69,      139
-"Myra",       "F",   23,       62,       98
-"Page",       "F",   31,       67,      135
-"Ruth",       "F",   28,       65,      131
 
 
 ``````
@@ -128,6 +127,9 @@ $ cat people.csv
 $ xvc pipeline run
 [OUT] [new-females] New Females:
  "Asude",      "F",   12,       55,      110
+
+[OUT] [new-males] New Males:
+
 
 
 ```
