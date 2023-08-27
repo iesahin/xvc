@@ -24,11 +24,16 @@ database:
 numeric_param: 13
 ```
 
+Now, we create two steps to read different variables from the file and a dependency between them to force them to run in
+the same order always.
+
 ```
 $ xvc pipeline step new --step-name read-database-config --command 'echo "Updated Database Configuration"'
 
+
 $ xvc pipeline step new --step-name read-hyperparams --command 'echo "Update Hyperparameters"'
 
+$ xvc pipeline step dependency --step-name read-database-config --step read-hyperparams
 ```
 
 Let's create different steps for various pieces of this parameters file:
@@ -44,9 +49,9 @@ Run for the first time, as initially all dependencies are invalid:
 
 ```console
 $ xvc pipeline run
-[OUT] [read-hyperparams] Update Hyperparameters
-
 [OUT] [read-database-config] Updated Database Configuration
+
+[OUT] [read-hyperparams] Update Hyperparameters
 
 
 ```
