@@ -2,24 +2,24 @@ use log::warn;
 
 use rayon::prelude::*;
 
-use serde::{Deserialize, Serialize};
+
 use std::collections::HashMap;
-use std::fs::{self, File};
-use std::io::{self, BufRead};
-use std::path::Path;
-use xvc_core::types::diff::Diffable;
+
+
+
+
 
 use crate::error::{Error, Result};
 
 use xvc_core::util::file::{
-    compiled_regex, filter_paths_by_directory, glob_paths, XvcPathMetadataMap,
+    filter_paths_by_directory, glob_paths, XvcPathMetadataMap,
 };
 use xvc_core::{
-    attribute_digest, AttributeDigest, ContentDigest, HashAlgorithm, PathCollectionDigest,
+    AttributeDigest, ContentDigest, HashAlgorithm, PathCollectionDigest,
     XvcDigest, XvcMetadataDigest, XvcPath, XvcRoot,
 };
 
-use super::XvcParamFormat;
+
 
 pub struct DependencyDigestParams<'a> {
     pub xvc_root: &'a XvcRoot,

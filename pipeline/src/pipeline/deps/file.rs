@@ -5,11 +5,11 @@ use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcMetadataDigest, XvcPath,
+    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcPath,
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::persist;
-use xvc_logging::watch;
+
 
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct FileDep {

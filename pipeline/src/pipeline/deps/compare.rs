@@ -1,22 +1,21 @@
-use std::cmp;
-use std::sync::{Arc, RwLock};
 
-use crate::error::{Error, Result};
+
+
+use crate::error::{Result};
 use crate::pipeline::StepStateParams;
 use crate::XvcEntity;
 use anyhow::anyhow;
 
-use subprocess::Exec;
-use url::Url;
-use xvc_core::types::diff::{self, Diffable};
-use xvc_core::util::file::{filter_paths_by_directory, glob_paths, XvcPathMetadataMap};
+
+
+use xvc_core::types::diff::{Diffable};
+use xvc_core::util::file::{XvcPathMetadataMap};
 
 use xvc_core::{
-    AttributeDigest, ContentDigest, Diff, DiffStore, HashAlgorithm, PathCollectionDigest,
-    StdoutDigest, TextOrBinary, UrlContentDigest, XvcDigests, XvcMetadata, XvcMetadataDigest,
+    Diff, HashAlgorithm, TextOrBinary,
     XvcPath, XvcRoot,
 };
-use xvc_ecs::{HStore, R1NStore, Storable, XvcStore};
+use xvc_ecs::{HStore, Storable};
 use xvc_logging::watch;
 
 use super::glob::GlobDep;
@@ -263,7 +262,6 @@ pub fn thorough_compare_dependency(
 
 /// Runs the command and compares the output with the stored dependency
 fn thorough_compare_generic(
-    cmp_params: &StepStateParams,
     record: &GenericDep,
 ) -> Result<Diff<GenericDep>> {
     let mut actual = GenericDep::new(record.generic_command.clone());
@@ -315,7 +313,7 @@ fn thorough_compare_glob_items(
     cmp_params: &StepStateParams,
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
-    let mut actual = GlobItemsDep::from_pmm(
+    let actual = GlobItemsDep::from_pmm(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
         record.glob.clone(),
@@ -457,7 +455,7 @@ pub fn superficial_compare_dependency(
 
 /// Runs the command and compares the output with the stored dependency
 fn superficial_compare_generic(
-    cmp_params: &StepStateParams,
+    _cmp_params: &StepStateParams,
     record: &GenericDep,
 ) -> Result<Diff<GenericDep>> {
     let actual = GenericDep::new(record.generic_command.clone());
@@ -513,7 +511,7 @@ fn superficial_compare_glob_items(
     cmp_params: &StepStateParams,
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
-    let mut actual = GlobItemsDep::from_pmm(
+    let actual = GlobItemsDep::from_pmm(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
         record.glob.clone(),

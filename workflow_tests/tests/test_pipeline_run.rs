@@ -1,13 +1,13 @@
 mod common;
 
-use std::{fs, path::Path};
+use std::{path::Path};
 
 use common::*;
 use xvc_config::XvcVerbosity;
 
 use xvc::error::Result;
 
-use subprocess::Exec;
+
 use xvc_tests::watch;
 
 #[test]

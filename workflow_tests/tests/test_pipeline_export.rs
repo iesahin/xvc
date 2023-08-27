@@ -6,8 +6,8 @@ use common::*;
 use serde_json;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcPath;
-use xvc_pipeline::deps;
-use xvc_pipeline::{XvcDependency, XvcMetricsFormat, XvcOutput, XvcParamFormat, XvcPipelineSchema};
+
+use xvc_pipeline::{XvcMetricsFormat, XvcOutput, XvcPipelineSchema};
 
 use xvc::error::Result;
 use xvc_tests::watch;

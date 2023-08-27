@@ -8,7 +8,7 @@ use xvc_logging::{output, watch, XvcOutputSender};
 use std::{fs::File, io::Write};
 
 use crate::error::{Error, Result};
-use crate::pipeline::deps::generic::GenericDep;
+
 use crate::pipeline::deps::step::StepDep;
 use std::path::PathBuf;
 
@@ -18,7 +18,7 @@ use crate::{
     pipeline::{add_explicit_dependencies, add_implicit_dependencies, XvcStepInvalidate},
     XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcStep, XvcStepCommand,
 };
-use xvc_config::FromConfigKey;
+
 
 #[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr)]
 #[strum(serialize_all = "lowercase")]
@@ -115,7 +115,7 @@ pub fn cmd_dag(
     file: Option<PathBuf>,
     format: XvcPipelineDagFormat,
 ) -> Result<()> {
-    let conf = xvc_root.config();
+    let _conf = xvc_root.config();
 
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
 

@@ -1,5 +1,5 @@
 use crate::{Result, XvcDependency};
-use anyhow::anyhow;
+
 use reqwest::blocking::Client as HttpClient;
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -39,7 +39,6 @@ impl UrlDigestDep {
         let client = HttpClient::new();
         let response = client.head(self.url.as_str()).send()?.error_for_status()?;
         let headers = response.headers();
-        let mut response = String::new();
 
         let etag = headers.get("ETag").map(|s| s.to_str().unwrap().to_string());
 

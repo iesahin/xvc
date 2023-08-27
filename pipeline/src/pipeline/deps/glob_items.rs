@@ -1,12 +1,11 @@
-use std::cell::RefCell;
-use std::collections::{BTreeMap, HashSet};
+
+use std::collections::{BTreeMap};
 
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    glob_paths, ContentDigest, Diff, HashAlgorithm, PathCollectionDigest, XvcMetadata,
-    XvcMetadataDigest, XvcPath, XvcPathMetadataMap, XvcRoot,
+    glob_paths, ContentDigest, HashAlgorithm, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::persist;
 
@@ -51,7 +50,7 @@ impl GlobItemsDep {
 
     pub fn update_digests(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Result<Self> {
         let mut xvc_path_content_digest_map = BTreeMap::new();
-        for (xvc_path, xvc_metadata) in self.xvc_path_metadata_map.iter() {
+        for (xvc_path, _xvc_metadata) in self.xvc_path_metadata_map.iter() {
             let path = xvc_path.to_absolute_path(xvc_root);
             let content_digest =
                 ContentDigest::new(&path, algorithm, xvc_core::TextOrBinary::Auto)?;

@@ -8,7 +8,7 @@ use std::{fs, io};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    attribute_digest, AttributeDigest, HashAlgorithm, XvcDigest, XvcFileType, XvcMetadataDigest,
+    XvcFileType, XvcMetadataDigest,
 };
 use xvc_ecs::persist;
 

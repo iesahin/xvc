@@ -2,7 +2,7 @@ use crate::error::{Error, Result};
 
 use itertools::Itertools;
 use std::{fs, path::PathBuf};
-use xvc_config::FromConfigKey;
+
 use xvc_core::{
     util::serde::{to_json, to_yaml},
     XvcPath, XvcRoot,
@@ -29,7 +29,6 @@ pub fn cmd_export(
     file: Option<PathBuf>,
     format: Option<XvcSchemaSerializationFormat>,
 ) -> Result<()> {
-    let conf = xvc_root.config();
     let mut p_res: Result<(XvcEntity, XvcPipeline)> =
         Err(Error::CannotFindPipeline { name: name.clone() });
 

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::Diff;
+
 use xvc_ecs::persist;
 
 use crate::XvcDependency;

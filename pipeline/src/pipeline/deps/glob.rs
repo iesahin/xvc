@@ -1,9 +1,9 @@
-use crate::{Result, XvcMetricsFormat};
+use crate::{Result};
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    ContentDigest, Diff, HashAlgorithm, PathCollectionDigest, TextOrBinary, XvcDigest, XvcPath,
+    ContentDigest, Diff, HashAlgorithm, PathCollectionDigest, TextOrBinary, XvcDigest,
     XvcPathMetadataMap, XvcRoot,
 };
 use xvc_ecs::persist;

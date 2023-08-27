@@ -3,7 +3,7 @@ use std::io::{self, BufRead};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::{ContentDigest, Diff, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot};
+use xvc_core::{Diff, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot};
 use xvc_ecs::persist;
 
 use crate::XvcDependency;

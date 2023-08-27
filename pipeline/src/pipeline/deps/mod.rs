@@ -12,8 +12,6 @@ pub mod regex_items;
 pub mod step;
 pub mod url;
 
-use std::fmt::Display;
-
 use itertools::Itertools;
 pub use param::*;
 
@@ -21,11 +19,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, Result};
 use xvc_config::XvcConfig;
-use xvc_core::{
-    dir_includes, filter_paths_by_directory, glob_includes, glob_paths, ContentDigest,
-    PathCollectionDigest, StdoutDigest, UrlContentDigest, XvcMetadataDigest, XvcPath,
-    XvcPathMetadataMap, XvcRoot,
-};
+use xvc_core::{glob_includes, glob_paths, XvcPath, XvcPathMetadataMap, XvcRoot};
 use xvc_ecs::{persist, HStore, XvcStore};
 
 pub use self::file::FileDep;
@@ -206,7 +200,7 @@ pub fn dependency_paths(
         XvcDependency::Param(dep) => make_map(&dep.path),
         XvcDependency::RegexItems(dep) => make_map(&dep.path),
         XvcDependency::LineItems(dep) => make_map(&dep.path),
-        XvcDependency::Regex(dep) => todo!(),
-        XvcDependency::Lines(dep) => todo!(),
+        XvcDependency::Regex(dep) => make_map(&dep.path),
+        XvcDependency::Lines(dep) => make_map(&dep.path),
     }
 }

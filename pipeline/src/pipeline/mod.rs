@@ -11,19 +11,19 @@ use self::deps::XvcDependency;
 use self::outs::XvcOutput;
 use self::step::XvcStep;
 use anyhow::anyhow;
-use clap::Command;
+
 use itertools::Itertools;
 use xvc_file::CHANNEL_CAPACITY;
 
-use crate::deps::compare::{thorough_compare_dependency, DependencyComparisonParams};
-use crate::deps::{dependencies_to_path, dependency_paths};
+use crate::deps::compare::{thorough_compare_dependency};
+use crate::deps::{dependencies_to_path};
 use crate::error::{Error, Result};
 use crate::pipeline::command::CommandProcess;
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
-use chrono::Utc;
+
 use crossbeam_channel::{bounded, select, Receiver, Select, Sender};
-use petgraph::Direction;
+
 use xvc_logging::{debug, error, info, output, uwr, warn, watch, XvcOutputSender};
 use xvc_walker::notify::{make_watcher, PathEvent};
 
@@ -33,19 +33,19 @@ use petgraph::dot::Dot;
 use petgraph::prelude::DiGraphMap;
 
 use serde::{Deserialize, Serialize};
-use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
+
+use std::collections::{HashSet};
 use std::fmt::Debug;
-use std::ops::Sub;
-use std::rc::Rc;
+
+
 use std::sync::{Arc, RwLock};
-use std::thread::{self, sleep, JoinHandle, ScopedJoinHandle};
-use std::time::{Duration, Instant, SystemTime};
+use std::thread::{self, sleep, ScopedJoinHandle};
+use std::time::{Duration};
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, update_with_actual, AttributeDigest, ContentDigest, Diff,
-    HashAlgorithm, PathCollectionDigest, TextOrBinary, XvcDigests, XvcFileType, XvcMetadata,
+    all_paths_and_metadata, update_with_actual, Diff,
+    HashAlgorithm, TextOrBinary, XvcDigests, XvcFileType, XvcMetadata,
     XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
@@ -424,16 +424,16 @@ pub fn the_grand_pipeline_loop(
 
     watch!(step_states);
 
-    let mut continue_running = true;
+    let _continue_running = true;
     let process_pool_size: usize = xvc_root
         .config()
         .get_int("pipeline.process_pool_size")?
         .option
         .try_into()?;
-    let log_channel_size = 1000;
+    let _log_channel_size = 1000;
     let default_step_timeout: u64 = 10000;
     let terminate_on_timeout = true;
-    let step_timeouts: HStore<Duration> = pipeline_steps
+    let _step_timeouts: HStore<Duration> = pipeline_steps
         .keys()
         .map(|step_e| (*step_e, Duration::from_secs(default_step_timeout)))
         .collect();
@@ -446,15 +446,15 @@ pub fn the_grand_pipeline_loop(
 
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
-    let stored_dependency_paths = xvc_root.load_r1nstore::<XvcDependency, XvcPath>()?;
-    let mut updated_dependencies = all_deps.children.clone();
+    let _stored_dependency_paths = xvc_root.load_r1nstore::<XvcDependency, XvcPath>()?;
+    let _updated_dependencies = all_deps.children.clone();
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
-    let mut updated_xvc_path_store = xvc_path_store.clone();
+    let _updated_xvc_path_store = xvc_path_store.clone();
     let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
-    let mut updated_xvc_metadata_store = xvc_metadata_store.clone();
+    let _updated_xvc_metadata_store = xvc_metadata_store.clone();
     let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
-    let mut updated_xvc_digests_store = xvc_digests_store.clone();
-    let text_files = xvc_root.load_store::<TextOrBinary>()?;
+    let _updated_xvc_digests_store = xvc_digests_store.clone();
+    let _text_files = xvc_root.load_store::<TextOrBinary>()?;
     let algorithm = HashAlgorithm::from_conf(config);
 
     let state_channels: HStore<(Sender<_>, Receiver<_>)> = sorted_steps
@@ -462,7 +462,7 @@ pub fn the_grand_pipeline_loop(
         .map(|step_e| (*step_e, bounded::<Option<XvcStepState>>(CHANNEL_CAPACITY)))
         .collect();
 
-    let state_senders: Vec<_> = state_channels
+    let _state_senders: Vec<_> = state_channels
         .iter()
         .map(|(step_e, (s, _))| (*step_e, s.clone()))
         .collect();
@@ -660,7 +660,7 @@ fn step_state_bulletin(
 fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()> {
     // We check all other steps states in Select.
     // If we only block on this step's dependencies, two parallel steps will block each other forever.
-    let other_steps: Vec<XvcEntity> = params
+    let _other_steps: Vec<XvcEntity> = params
         .steps
         .iter()
         .filter_map(|(e, _)| if *e != step_e { Some(*e) } else { None })
@@ -1304,7 +1304,7 @@ fn s_checking_missing_outputs<'a>(
 ) -> StateTransition<'a> {
     let run_conditions = params.run_conditions;
     let step_outs = params.step_outputs;
-    let pmm = params.pmm.clone();
+    let _pmm = params.pmm.clone();
 
     if run_conditions.ignore_missing_outputs {
         return Ok((s.checked_outputs(), params));
@@ -1315,7 +1315,7 @@ fn s_checking_missing_outputs<'a>(
     params.output_diffs.write()?.extend(
         step_outs
             .iter()
-            .map(|(out_e, out)| {
+            .map(|(out_e, _out)| {
                 let out_diff = uwr!(compare_output(&params, *out_e), params.output_snd);
                 if matches!(out_diff, Diff::ActualMissing { .. }) {
                     missing = true;
@@ -1383,17 +1383,17 @@ fn update_command_environment(
     let update_from_actual_missing = |record: &XvcDependency| -> Result<()> {
         if let Some(items) = record.items() {
             match record {
-                XvcDependency::GlobItems(dep) => {
+                XvcDependency::GlobItems(_dep) => {
                     update_env("XVC_GLOB_ADDED_ITEMS", &[])?;
                     update_env("XVC_GLOB_REMOVED_ITEMS", &items)?;
                     update_env("XVC_GLOB_ALL_ITEMS", &items)
                 }
-                XvcDependency::RegexItems(dep) => {
+                XvcDependency::RegexItems(_dep) => {
                     update_env("XVC_REGEX_ADDED_ITEMS", &[])?;
                     update_env("XVC_REGEX_REMOVED_ITEMS", &items)?;
                     update_env("XVC_REGEX_ALL_ITEMS", &items)
                 }
-                XvcDependency::LineItems(dep) => {
+                XvcDependency::LineItems(_dep) => {
                     update_env("XVC_LINE_ADDED_ITEMS", &[])?;
                     update_env("XVC_LINE_REMOVED_ITEMS", &items)?;
                     update_env("XVC_LINE_ALL_ITEMS", &items)
@@ -1449,12 +1449,12 @@ fn update_command_environment(
                         update_env("XVC_GLOB_REMOVED_ITEMS", &removed_items)?;
                         update_env("XVC_GLOB_ALL_ITEMS", &all_items)
                     }
-                    XvcDependency::RegexItems(dep) => {
+                    XvcDependency::RegexItems(_dep) => {
                         update_env("XVC_REGEX_ADDED_ITEMS", &added_items)?;
                         update_env("XVC_REGEX_REMOVED_ITEMS", &removed_items)?;
                         update_env("XVC_REGEX_ALL_ITEMS", &all_items)
                     }
-                    XvcDependency::LineItems(dep) => {
+                    XvcDependency::LineItems(_dep) => {
                         update_env("XVC_LINE_ADDED_ITEMS", &added_items)?;
                         update_env("XVC_LINE_REMOVED_ITEMS", &removed_items)?;
                         update_env("XVC_LINE_ALL_ITEMS", &all_items)

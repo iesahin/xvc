@@ -10,7 +10,7 @@ use xvc_core::XvcPath;
 use xvc_ecs::{R11Store, R1NStore, XvcEntity, XvcStore};
 use xvc_logging::watch;
 use xvc_pipeline::{
-    XvcDependency, XvcMetricsFormat, XvcOutput, XvcParamFormat, XvcPipeline, XvcStep,
+    XvcDependency, XvcMetricsFormat, XvcOutput, XvcPipeline, XvcStep,
     XvcStepCommand,
 };
 

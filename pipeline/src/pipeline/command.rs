@@ -1,14 +1,14 @@
 use crate::Result;
-use clap::builder::OsStr;
+
 use crossbeam_channel::{Receiver, Sender};
-use std::cell::RefCell;
+
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::io::Read;
-use std::rc::Rc;
+
 use std::time::Instant;
 use subprocess as sp;
-use xvc_core::CHANNEL_BOUND;
+
 use xvc_file::CHANNEL_CAPACITY;
 use xvc_logging::watch;
 

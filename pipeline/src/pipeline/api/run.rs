@@ -1,10 +1,10 @@
 use crate::error::Result;
-use xvc_config::FromConfigKey;
+
 use xvc_core::XvcRoot;
-use xvc_logging::{watch, XvcOutputSender};
+use xvc_logging::{XvcOutputSender};
 
 use crate::pipeline::the_grand_pipeline_loop;
-use crate::XvcPipeline;
+
 
 /// Entry point for `xvc pipeline run` command.
 ///
