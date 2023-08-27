@@ -15,12 +15,11 @@ use anyhow::anyhow;
 use itertools::Itertools;
 use xvc_file::CHANNEL_CAPACITY;
 
-use crate::deps::compare::{thorough_compare_dependency};
-use crate::deps::{dependencies_to_path};
+use crate::deps::compare::thorough_compare_dependency;
+use crate::deps::dependencies_to_path;
 use crate::error::{Error, Result};
 use crate::pipeline::command::CommandProcess;
 use crate::{XvcPipeline, XvcPipelineRunDir};
-
 
 use crossbeam_channel::{bounded, select, Receiver, Select, Sender};
 
@@ -34,19 +33,17 @@ use petgraph::prelude::DiGraphMap;
 
 use serde::{Deserialize, Serialize};
 
-use std::collections::{HashSet};
+use std::collections::HashSet;
 use std::fmt::Debug;
-
 
 use std::sync::{Arc, RwLock};
 use std::thread::{self, sleep, ScopedJoinHandle};
-use std::time::{Duration};
+use std::time::Duration;
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, update_with_actual, Diff,
-    HashAlgorithm, TextOrBinary, XvcDigests, XvcFileType, XvcMetadata,
-    XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, update_with_actual, Diff, HashAlgorithm, TextOrBinary, XvcDigests,
+    XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
@@ -446,15 +443,6 @@ pub fn the_grand_pipeline_loop(
 
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
-    let _stored_dependency_paths = xvc_root.load_r1nstore::<XvcDependency, XvcPath>()?;
-    let _updated_dependencies = all_deps.children.clone();
-    let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
-    let _updated_xvc_path_store = xvc_path_store.clone();
-    let xvc_metadata_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
-    let _updated_xvc_metadata_store = xvc_metadata_store.clone();
-    let xvc_digests_store: XvcStore<XvcDigests> = xvc_root.load_store()?;
-    let _updated_xvc_digests_store = xvc_digests_store.clone();
-    let _text_files = xvc_root.load_store::<TextOrBinary>()?;
     let algorithm = HashAlgorithm::from_conf(config);
 
     let state_channels: HStore<(Sender<_>, Receiver<_>)> = sorted_steps
