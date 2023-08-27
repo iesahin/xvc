@@ -19,7 +19,8 @@ Options:
 # Examples
 
 You can export the pipeline you created to a JSON or YAML file to edit and restore using [`xvc pipeline
-import`](/ref/xvc-pipeline-import/). This allows to fix typos and update commands in place.
+import`](/ref/xvc-pipeline-import/). This allows to fix typos and update commands in place, and see pipeline internals
+for debugging.
 
 ```admonition warning
 Xvc doesn't guarantee that the format of these files will be compatible across versions. You can use these files to share pipeline definitions but it may not be a good way to store pipeline definitions for longer periods.
@@ -46,13 +47,6 @@ Adding a few dependencies.
 $ xvc pipeline step dependency -s step2 --step step1
 $ xvc pipeline step dependency -s step2 --glob '*.txt'
 $ xvc pipeline step dependency -s step2 --glob-items '*.txt'
-error: unexpected argument '--glob-items*.txt' found
-
-  note: argument '--glob-items' exists
-
-Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency -s step2 --param model.conv_units
 $ xvc pipeline step dependency -s step2 --regex requirements.txt:/^tensorflow
@@ -92,6 +86,13 @@ $ xvc pipeline export
           "Generic": {
             "generic_command": "ping -c 2 example.com",
             "output_digest": null
+          }
+        },
+        {
+          "GlobItems": {
+            "glob": "*.txt",
+            "xvc_path_content_digest_map": {},
+            "xvc_path_metadata_map": {}
           }
         },
         {
@@ -204,6 +205,10 @@ steps:
   - !Generic
     generic_command: ping -c 2 example.com
     output_digest: null
+  - !GlobItems
+    glob: '*.txt'
+    xvc_path_metadata_map: {}
+    xvc_path_content_digest_map: {}
   - !Glob
     glob: '*.txt'
     xvc_paths_digest: null
@@ -278,6 +283,10 @@ steps:
   - !Generic
     generic_command: ping -c 2 example.com
     output_digest: null
+  - !GlobItems
+    glob: '*.txt'
+    xvc_path_metadata_map: {}
+    xvc_path_content_digest_map: {}
   - !Glob
     glob: '*.txt'
     xvc_paths_digest: null
