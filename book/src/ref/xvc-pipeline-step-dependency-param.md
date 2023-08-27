@@ -30,7 +30,6 @@ the same order always.
 ```
 $ xvc pipeline step new --step-name read-database-config --command 'echo "Updated Database Configuration"'
 
-
 $ xvc pipeline step new --step-name read-hyperparams --command 'echo "Update Hyperparameters"'
 
 $ xvc pipeline step dependency --step-name read-database-config --step read-hyperparams
@@ -49,10 +48,10 @@ Run for the first time, as initially all dependencies are invalid:
 
 ```console
 $ xvc pipeline run
-[OUT] [read-database-config] Updated Database Configuration
-
 [OUT] [read-hyperparams] Update Hyperparameters
-
+ 
+[OUT] [read-database-config] Updated Database Configuration
+ 
 
 ```
 
@@ -73,7 +72,7 @@ $ perl -pi -e 's/5432/9876/g' myparams.yaml
 
 $ xvc pipeline run
 [OUT] [read-database-config] Updated Database Configuration
-
+ 
 
 ```
 
