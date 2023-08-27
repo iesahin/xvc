@@ -1,20 +1,12 @@
-
-
-
-use crate::error::{Result};
+use crate::error::Result;
 use crate::pipeline::StepStateParams;
 use crate::XvcEntity;
 use anyhow::anyhow;
 
+use xvc_core::types::diff::Diffable;
+use xvc_core::util::file::XvcPathMetadataMap;
 
-
-use xvc_core::types::diff::{Diffable};
-use xvc_core::util::file::{XvcPathMetadataMap};
-
-use xvc_core::{
-    Diff, HashAlgorithm, TextOrBinary,
-    XvcPath, XvcRoot,
-};
+use xvc_core::{Diff, HashAlgorithm, TextOrBinary, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, Storable};
 use xvc_logging::watch;
 
@@ -236,7 +228,7 @@ pub fn thorough_compare_dependency(
         XvcDependency::Step(_) => Diff::Skipped,
         XvcDependency::Generic(generic) => {
             watch!(generic);
-            diff_of_dep(thorough_compare_generic(cmp_params, &generic)?)
+            diff_of_dep(thorough_compare_generic(&generic)?)
         }
         XvcDependency::File(file_dep) => diff_of_dep(thorough_compare_file(cmp_params, &file_dep)?),
         XvcDependency::GlobItems(glob_dep) => {
@@ -261,9 +253,7 @@ pub fn thorough_compare_dependency(
 }
 
 /// Runs the command and compares the output with the stored dependency
-fn thorough_compare_generic(
-    record: &GenericDep,
-) -> Result<Diff<GenericDep>> {
+fn thorough_compare_generic(record: &GenericDep) -> Result<Diff<GenericDep>> {
     let mut actual = GenericDep::new(record.generic_command.clone());
     actual = actual.update_output_digest()?;
     watch!(record);
