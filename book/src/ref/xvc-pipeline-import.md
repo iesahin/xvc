@@ -253,21 +253,3 @@ $ xvc pipeline import --name another-pipeline --file pipeline.yaml
 ```
 
 You can also use stdin to import a pipeline but you must specify the input format.
-
-```console
-$ zsh -c 'cat pipeline.yaml | xvc pipeline import --format yaml --name yetanother'
-
-$ xvc pipeline list
-+------------------+---------+
-| Name             | Run Dir |
-+============================+
-| default          |         |
-|------------------+---------|
-| another-pipeline |         |
-+------------------+---------+
-
-$ xvc pipeline export --name yetanother
-[ERROR] Pipeline Error: Cannot find Pipeline: another-example
-
-```
-
