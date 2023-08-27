@@ -4,6 +4,7 @@ use log::{debug, error, info, trace, warn};
 use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
+use std::num::TryFromIntError;
 use std::path::PathBuf;
 use std::sync::PoisonError;
 use thiserror::Error as ThisError;
@@ -189,6 +190,12 @@ pub enum Error {
     TryReceiveError {
         #[from]
         source: crossbeam_channel::TryRecvError,
+    },
+
+    #[error("Cannot cast from: {source}")]
+    TryFromIntError {
+        #[from]
+        source: TryFromIntError,
     },
 }
 

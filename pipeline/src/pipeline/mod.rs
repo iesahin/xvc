@@ -425,10 +425,11 @@ pub fn the_grand_pipeline_loop(
     watch!(step_states);
 
     let mut continue_running = true;
-    // the following definitions should be moved to config
-    // let break_for_nonzero_exit = true;
-    let process_pool_size = 1;
-    let sleep_duration = 10;
+    let process_pool_size: usize = xvc_root
+        .config()
+        .get_int("pipeline.process_pool_size")?
+        .option
+        .try_into()?;
     let log_channel_size = 1000;
     let default_step_timeout: u64 = 10000;
     let terminate_on_timeout = true;

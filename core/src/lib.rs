@@ -213,6 +213,9 @@ current_pipeline = "default"
 default = "default"
 # Name of the default params file name
 default_params_file = "params.yaml"
+# Number of command processes to run concurrently
+process_pool_size = 4
+# 
 
 "##,
         guid = guid,
