@@ -64,15 +64,6 @@ When you run the pipeline initially, the steps are run.
 
 ```console
 $ xvc pipeline run
-[OUT] [new-females] New Females:
- "Elly",       "F",   30,       66,      124
-"Fran",       "F",   33,       66,      115
-"Gwen",       "F",   26,       64,      121
-"Kate",       "F",   47,       69,      139
-"Myra",       "F",   23,       62,       98
-"Page",       "F",   31,       67,      135
-"Ruth",       "F",   28,       65,      131
-
 [OUT] [new-males] New Males:
  "Alex",       "M",   41,       74,      170
 "Bert",       "M",   42,       68,      166
@@ -85,7 +76,16 @@ $ xvc pipeline run
 "Neil",       "M",   36,       75,      160
 "Omar",       "M",   38,       70,      145
 "Quin",       "M",   29,       71,      176
-
+ 
+[OUT] [new-females] New Females:
+ "Elly",       "F",   30,       66,      124
+"Fran",       "F",   33,       66,      115
+"Gwen",       "F",   26,       64,      121
+"Kate",       "F",   47,       69,      139
+"Myra",       "F",   23,       62,       98
+"Page",       "F",   31,       67,      135
+"Ruth",       "F",   28,       65,      131
+ 
 
 ``````
 
@@ -127,9 +127,6 @@ $ cat people.csv
 $ xvc pipeline run
 [OUT] [new-females] New Females:
  "Asude",      "F",   12,       55,      110
-
-[OUT] [new-males] New Males:
-
-
+ 
 
 ```
