@@ -1,6 +1,6 @@
 [package]
 name = "xvc"
-version = "0.5.2"
+version = "0.6.0"
 edition = "2021"
 description = "An MLOps tool to manage data files and pipelines on top of Git"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -25,8 +25,8 @@ xvc-config = { version = "0.5.0", path = "../config" }
 xvc-core = { version = "0.5.0",  path = "../core" }
 xvc-logging = { version = "0.5.0",  path = "../logging" }
 xvc-ecs = {  version = "0.5.0", path = "../ecs" }
-xvc-file = {  version = "0.5.0", path = "../file" }
-xvc-pipeline = { version = "0.5.0",  path = "../pipeline" }
+xvc-file = {  version = "0.6.0", path = "../file" }
+xvc-pipeline = { version = "0.6.0",  path = "../pipeline" }
 xvc-walker = {  version = "0.5.0", path = "../walker" }
 xvc-storage = {  version = "0.5.0", path = "../storage" }
 

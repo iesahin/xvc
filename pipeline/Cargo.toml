@@ -1,6 +1,6 @@
 [package]
 name = "xvc-pipeline"
-version = "0.5.2"
+version = "0.6.0"
 edition = "2021"
 description = "Xvc data pipeline management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -21,7 +21,7 @@ xvc-core = { version = "0.5.0", path = "../core" }
 xvc-ecs = { version = "0.5.0", path = "../ecs" }
 xvc-logging = { version = "0.5.0", path = "../logging" }
 xvc-walker = {version = "0.5.0", path = "../walker"}
-xvc-file = {version = "0.5.2", path = "../file"}
+xvc-file = {version = "0.6.0", path = "../file"}
 
 ## Cli and config
 clap = {version = "^4.1", features=["derive"]}
