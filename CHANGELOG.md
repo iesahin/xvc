@@ -5,6 +5,16 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+- Major overhaul in pipelines
+  - PR: <https://github.com/iesahin/xvc/pull/224/>
+  - Added `--generic`, `--url`, `--regex-items`, `--line-items`, `--glob-items`
+  - as dependency types to `xvc pipeline step dependency` command
+  - Updated `xvc pipelines` to run the pipeline by creating a thread for each step.
+  - Updated pipelines state machine
+  - Added environment variable injection to `--regex-items`, `--line-items` and `--glob-items` dependencies.
+  - Reference examples for `xvc pipeline export` and `xvc pipeline import`
+  - Refactored `xvc-core` crate for digest structures
+  - Refactored `xvc-pipelines` create to move dependencies to files
 - Added reference examples for `xvc storage new ...` commands.
   - PR: <https://github.com/iesahin/xvc/pull/222>
   - Issue: <https://github.com/iesahin/xvc/issue/221>
