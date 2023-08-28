@@ -6,7 +6,7 @@ use crossbeam_channel::{Receiver, Sender};
 use itertools::Itertools;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
-use std::collections::{HashSet};
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 

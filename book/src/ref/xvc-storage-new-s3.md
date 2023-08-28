@@ -35,9 +35,8 @@ Options:
           Print help (see a summary with '-h')
 
 ```
+
 ## Examples
-
-
 
 Before calling any commands that use this storage, you must set the following environment variables.
 

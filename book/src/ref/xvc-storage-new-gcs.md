@@ -38,7 +38,6 @@ Options:
 
 ## Examples
 
-
 Please [configure S3 compatible interface to your Google Cloud Storage account](https://bitmovin.com/docs/encoding/faqs/how-can-i-create-access-secret-keys-for-google-cloud-storage) before using this command.
 
 Before calling any commands that use this storage, you must set the following environment variables.

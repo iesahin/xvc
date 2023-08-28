@@ -16,7 +16,7 @@ Options:
 
 ```
 
-# Examples
+## Examples
 
 You can export the pipeline you created to a JSON or YAML file to edit and restore using [`xvc pipeline
 import`](/ref/xvc-pipeline-import/). This allows to fix typos and update commands in place, and see pipeline internals
