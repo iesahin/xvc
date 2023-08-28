@@ -21,7 +21,7 @@ Options:
 
   -n, --name <NAME>
           Name of the storage.
-
+          
           Recommended to keep this name unique to refer easily.
 
   -h, --help

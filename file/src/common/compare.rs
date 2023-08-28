@@ -6,36 +6,25 @@ use crossbeam_channel::{Receiver, Sender};
 use itertools::Itertools;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
-use std::collections::{BTreeMap, HashSet};
+use std::collections::{HashSet};
 use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 
 use xvc_config::FromConfigKey;
-use xvc_core::types::xvcdigest::{CollectionDigest, ContentDigest, MetadataDigest, DIGEST_LENGTH};
+use xvc_core::types::xvcdigest::{
+    content_digest::ContentDigest, DIGEST_LENGTH,
+};
 use xvc_ecs::{Error as EcsError, SharedXStore};
 
 use xvc_core::{
-    diff_store, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod, XvcDigest, XvcFileType,
-    XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    diff_store, AttributeDigest, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod,
+    XvcDigest, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::{debug, error, panic, watch, XvcOutputSender};
 
 use super::FileTextOrBinary;
-
-#[derive(Debug)]
-pub struct PathComparisonParams {
-    pub xvc_path_store: XvcStore<XvcPath>,
-    pub xvc_path_imap: BTreeMap<XvcPath, XvcEntity>,
-    pub xvc_metadata_store: XvcStore<XvcMetadata>,
-    pub content_digest_store: XvcStore<ContentDigest>,
-    pub metadata_digest_store: XvcStore<MetadataDigest>,
-    pub collection_digest_store: XvcStore<CollectionDigest>,
-    pub recheck_method_store: XvcStore<RecheckMethod>,
-    pub text_or_binary_store: XvcStore<FileTextOrBinary>,
-    pub algorithm: HashAlgorithm,
-}
 
 /// Compare the records and the actual info from `pmm` to find the differences
 /// in paths.
@@ -163,7 +152,7 @@ pub fn diff_file_content_digest(
                     // text_or_binary should have changed.
                     Diff::Skipped | Diff::Identical => {
                         let path = path_from_store()?;
-                        let actual = ContentDigest::from_path(&path, algorithm, text_or_binary.0)?;
+                        let actual = ContentDigest::new(&path, algorithm, text_or_binary.0)?;
                         compare_with_stored_digest(actual)
                     }
                     Diff::RecordMissing { .. } => {
@@ -182,8 +171,7 @@ pub fn diff_file_content_digest(
                         },
                         xvc_core::XvcFileType::File => {
                             let path = path_from_store()?;
-                            let actual =
-                                ContentDigest::from_path(&path, algorithm, text_or_binary.0)?;
+                            let actual = ContentDigest::new(&path, algorithm, text_or_binary.0)?;
                             compare_with_stored_digest(actual)
                         }
                         xvc_core::XvcFileType::Reflink
@@ -201,7 +189,7 @@ pub fn diff_file_content_digest(
                 watch!(actual);
                 let path = actual.to_absolute_path(xvc_root);
                 watch!(path);
-                let actual_digest = ContentDigest::from_path(&path, algorithm, text_or_binary.0)?;
+                let actual_digest = ContentDigest::new(&path, algorithm, text_or_binary.0)?;
                 watch!(actual_digest);
                 let res = compare_with_stored_digest(actual_digest);
                 watch!(res);
@@ -211,7 +199,7 @@ pub fn diff_file_content_digest(
             // operation, for example.
             Diff::Different { actual, .. } => {
                 let path = actual.to_absolute_path(xvc_root);
-                let actual = ContentDigest::from_path(&path, algorithm, text_or_binary.0)?;
+                let actual = ContentDigest::new(&path, algorithm, text_or_binary.0)?;
                 compare_with_stored_digest(actual)
             }
             // We have a record, but the path on disk is missing.
@@ -294,7 +282,7 @@ pub fn make_file_content_digest_diff_handler(
 
                 if path.is_file() {
                     let actual_content_digest_res =
-                        ContentDigest::from_path(&path, algorithm, text_or_binary.as_inner());
+                        ContentDigest::new(&path, algorithm, text_or_binary.as_inner());
                     match (actual_content_digest_res, stored_content_digest) {
                         (Ok(actual), Some(stored)) => {
                             if actual == *stored {
@@ -575,13 +563,13 @@ pub fn diff_dir_content_digest(
                         key: xe.to_string(),
                     },
                 )?;
-                content_digest_bytes.extend(content.0.expect("digest").digest);
+                content_digest_bytes.extend(content.digest().digest);
             }
             Diff::RecordMissing { actual } => {
-                content_digest_bytes.extend(actual.0.expect("digest").digest);
+                content_digest_bytes.extend(actual.digest().digest);
             }
             Diff::Different { actual, .. } => {
-                content_digest_bytes.extend(actual.0.expect("digest").digest);
+                content_digest_bytes.extend(actual.digest().digest);
             }
             Diff::ActualMissing { .. } => {
                 // This is to make sure the content digest is different when

@@ -2,9 +2,9 @@
 
 ## Purpose
 
-List all configured storages with their names and guids. 
+List all configured storages with their names and guids.
 
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc storage list --help
@@ -19,15 +19,15 @@ Options:
 
 ## Examples
 
-List all storages in the repository:
+List all storage configurations in the repository:
 
 ```shell
-$ xvc storage list 
+$ xvc storage list
 ```
 
 ## Caveats
 
 This one uses the local configuration and doesn't try to connect storages.
-If it's listed with the command, it doesn't mean it's guaranteed to be able to pull or push. 
+If it's listed with the command, it doesn't mean it's guaranteed to be able to pull or push.
 
 

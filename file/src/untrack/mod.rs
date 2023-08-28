@@ -106,7 +106,7 @@ pub fn cmd_untrack(
         }
 
         if !abs_restore_dir.exists() {
-            fs::create_dir_all(&abs_restore_dir);
+            fs::create_dir_all(&abs_restore_dir)?;
         }
 
         untrack_cache_paths.par_iter().for_each(|(xe, vec_cp)| {

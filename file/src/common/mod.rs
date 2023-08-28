@@ -65,16 +65,6 @@ impl Default for FileTextOrBinary {
     }
 }
 
-/// Calculate the digest of a file in `path` with the given `algorithm` after removing line
-/// endings if `text_or_binary` is `TextOrBinary::Text`.
-pub fn calc_digest(
-    path: &Path,
-    algorithm: HashAlgorithm,
-    text_or_binary: TextOrBinary,
-) -> Result<ContentDigest> {
-    Ok(ContentDigest::from_path(path, algorithm, text_or_binary)?)
-}
-
 pub fn pipe_path_digest(
     receiver: Receiver<(PathBuf, Metadata)>,
     sender: Sender<(PathBuf, ContentDigest)>,
@@ -82,7 +72,7 @@ pub fn pipe_path_digest(
     text_or_binary: TextOrBinary,
 ) -> Result<()> {
     while let Ok((p, _)) = receiver.try_recv() {
-        let digest = calc_digest(&p, algorithm, text_or_binary);
+        let digest = ContentDigest::new(&p, algorithm, text_or_binary);
         match digest {
             Ok(digest) => {
                 let _ = sender.send((p, digest));
@@ -363,9 +353,12 @@ pub fn recheck_from_cache(
             };
         }
     }
-    uwr!(ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
-        file: xvc_path.clone(),
-    })), output_snd);
+    uwr!(
+        ignore_writer.send(Some(IgnoreOperation::IgnoreFile {
+            file: xvc_path.clone(),
+        })),
+        output_snd
+    );
     watch!("Before return");
     Ok(())
 }

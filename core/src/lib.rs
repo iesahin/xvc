@@ -10,10 +10,15 @@ pub mod util;
 
 pub use types::hashalgorithm::HashAlgorithm;
 pub use types::recheckmethod::RecheckMethod;
-pub use types::xvcdigest::CollectionDigest;
-pub use types::xvcdigest::ContentDigest;
-pub use types::xvcdigest::MetadataDigest;
+
+pub use types::xvcdigest::content_digest::ContentDigest;
+pub use types::xvcdigest::path_collection_digest::PathCollectionDigest;
+pub use types::xvcdigest::stdout_digest::StdoutDigest;
+pub use types::xvcdigest::url_get_digest::UrlContentDigest;
+pub use types::xvcdigest::xvc_metadata_digest::XvcMetadataDigest;
+pub use types::xvcdigest::AttributeDigest;
 pub use types::xvcdigest::XvcDigest;
+pub use types::xvcdigest::XvcDigests;
 
 pub use types::diff::Diff;
 pub use types::diff::DiffStore;
@@ -37,7 +42,7 @@ pub use error::Error;
 pub use error::Result;
 
 pub use util::file::{
-    all_paths_and_metadata, dir_includes, directory_paths, glob_includes, glob_paths,
+    all_paths_and_metadata, dir_includes, filter_paths_by_directory, glob_includes, glob_paths,
     XvcPathMetadataMap,
 };
 
@@ -208,6 +213,9 @@ current_pipeline = "default"
 default = "default"
 # Name of the default params file name
 default_params_file = "params.yaml"
+# Number of command processes to run concurrently
+process_pool_size = 4
+# 
 
 "##,
         guid = guid,

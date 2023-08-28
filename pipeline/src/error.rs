@@ -4,7 +4,9 @@ use log::{debug, error, info, trace, warn};
 use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
+use std::num::TryFromIntError;
 use std::path::PathBuf;
+use std::sync::PoisonError;
 use thiserror::Error as ThisError;
 
 #[derive(ThisError, Debug)]
@@ -43,62 +45,18 @@ pub enum Error {
         #[from]
         source: xvc_walker::error::Error,
     },
-    //
-    // #[error("Cannot find {xvc_path} in cache: {cache_path}")]
-    // CannotFindFileInCache {
-    //     xvc_path: String,
-    //     cache_path: String,
-    // },
-    // #[error("File not found: {path}")]
-    // FileNotFound { path: PathBuf },
-    // #[error("Internal Error: {message}")]
-    // InternalError { message: String },
-    // #[error("FS Extra error: {source}")]
-    // FileSystemExtraError {
-    //     #[from]
-    //     source: fs_extra::error::Error,
-    // },
-    // #[error("Jwalk Error: {source}")]
-    // JwalkError {
-    //     #[from]
-    //     source: jwalk::Error,
-    // },
-    // #[error("Conflicting Command Line Flags: {flags:?}")]
-    // ConflictingFlags { flags: &'static [String] },
-    // #[error("File System Walk Error: {error}")]
-    // FSWalkerError { error: String },
+
     #[error("Cannot infer format from file extension: {extension:?}")]
     CannotInferFormatFromExtension { extension: OsString },
     #[error("Format specification for input (stdin) required.")]
     FormatSpecificationRequired,
     #[error("Process Error - stdout: {stdout}\nstderr: {stderr}")]
     ProcessError { stdout: String, stderr: String },
-    // #[error("Process Exec Error: {source}")]
-    // ProcessExecError {
-    //     #[from]
-    //     source: subprocess::PopenError,
-    // },
-    // #[error("Cannot find XVC Root: {path}")]
-    // CannotFindXvcRoot { path: PathBuf },
-    //
-    // #[error("Thread Error")]
-    // ThreadError,
-    //
-    // #[error("Cannot nest XVC repositories: {path}")]
-    // CannotNestXvcRepositories { path: PathBuf },
-    //
-    // #[error("Cannot set step to both frozen and run_always")]
-    // CannotSetToBothFrozenAndRunAlways,
-    // #[error("Regex Error: {source}")]
-    // RegexError {
-    //     #[from]
-    //     source: regex::Error,
-    // },
-    // #[error("Command Line Parsing Error: {source}")]
-    // ClapError {
-    //     #[from]
-    //     source: ClapError,
-    // },
+    #[error("Process Exec Error: {source}")]
+    ProcessExecError {
+        #[from]
+        source: subprocess::PopenError,
+    },
     #[error("Invalid regular expression: {regex}")]
     InvalidRegexFormat { regex: String },
     //
@@ -107,21 +65,6 @@ pub enum Error {
     //
     #[error("Step {step} not found in pipeline")]
     StepNotFoundInPipeline { step: String },
-    // #[error("System Time Error: {source}")]
-    // SystemTimeError {
-    //     #[from]
-    //     source: std::time::SystemTimeError,
-    // },
-    // #[error("[E1002] MsgPack Serialization Error: {source}")]
-    // MsgPackDecodeError {
-    //     #[from]
-    //     source: rmp_serde::decode::Error,
-    // },
-    // #[error("[E1003] MsgPack Serialization Error: {source}")]
-    // MsgPackEncodeError {
-    //     #[from]
-    //     source: rmp_serde::encode::Error,
-    // },
     #[error("[E1004] Json Serialization Error: {source}")]
     JsonError {
         #[from]
@@ -149,13 +92,6 @@ pub enum Error {
     },
     #[error("Encountered NULL value in YAML map")]
     YamlNullValueForKey { key: String },
-    // //// ****** Data Errors ******
-    // #[error("Unsupported Target Type: {path}")]
-    // UnsupportedTargetType { path: String },
-    // #[error("Target is ignored, please unignore in .xvcignore: {path}")]
-    // TargetIgnored { path: String },
-    //
-    // //// ****** Pipeline Errors ******
     #[error("[E2001] Step with name '{step_name}' already found in {pipeline_name}")]
     StepAlreadyFoundInPipeline {
         step_name: String,
@@ -195,166 +131,72 @@ pub enum Error {
         #[from]
         source: io::Error,
     },
-    // #[error("Cannot convert enum type from string: {cause_key}")]
-    // EnumTypeConversionError { cause_key: String },
-    // #[error("Unicode/UTF-8 Error: {cause:?}")]
-    // UnicodeError { cause: OsString },
-    //
-    // #[error("Path must be file, not symlink or directory")]
-    // RequiresAFile { path: PathBuf },
-    //
-    // #[error("Path is not in XVC Repository: {path:?}")]
-    // PathNotInXvcRepository { path: OsString },
-    //
-    #[error("Path not found in Path Metadata Map: {path:?}")]
-    PathNotFoundInPathMetadataMap { path: OsString },
-    //
-    // #[error("Path has no parent: {path:?}")]
-    // PathHasNoParent { path: OsString },
-    //
-    // #[error("Path has no filename: {path:?}")]
-    // PathHasNoFilename { path: OsString },
-    //
+
+    #[error("Unicode/UTF-8 Error: {source:?}")]
+    UnicodeError {
+        #[from]
+        source: std::string::FromUtf8Error,
+    },
+    #[error("Poison Error: {cause:?}")]
+    PoisonError { cause: String },
+    #[error("Path not found: {path:?}")]
+    PathNotFound { path: OsString },
     #[error("Path has no modification time: {path:?}")]
     PathHasNoModificationTime { path: OsString },
-    //
-    // #[error("Cannot Parse Integer: {source:?}")]
-    // CannotParseInteger {
-    //     #[from]
-    //     source: ParseIntError,
-    // },
-    //
-    // #[error("Config source for level {config_source:?} not found at {path:?}")]
-    // ConfigurationForSourceNotFound {
-    //     config_source: String,
-    //     path: OsString,
-    // },
-    //
-    // #[error("Config value type mismatch: {key} ")]
-    // MismatchedValueType { key: String },
-    //
-    // #[error("Config key not found: {key}")]
-    // ConfigKeyNotFound { key: String },
-    //
-    // #[error("Cannot Determine System Configuration Path")]
-    // CannotDetermineSystemConfigurationPath,
-    //
-    // #[error("Cannot Determine User Configuration Path")]
-    // CannotDetermineUserConfigurationPath,
-    //
-    // #[error("No .xvcignore patterns found. There may be a problem in your setup")]
-    // RequiresXvcIgnore,
-    //
-    // // #[error("XvcIgnore Error: {source}")]
-    // // XvcIgnoreError {
-    // //     #[from]
-    // //     source: ignore::Error,
-    // // },
     #[error("Internal Error: XvcDependencyComparisonError in Pipelines")]
     XvcDependencyComparisonError,
-    //
-    // #[error("Glob Error: {source}")]
-    // GlobError {
-    //     #[from]
-    //     source: glob::GlobError,
-    // },
-    //
-    // #[error("Glob Pattern Error: {source}")]
-    // GlobPatternError {
-    //     #[from]
-    //     source: glob::PatternError,
-    // },
-    //
-    // #[error("Enum Parsing Error")]
-    // StrumError {
-    //     #[from]
-    //     source: strum::ParseError,
-    // },
-    //
-    // #[error("Missing key: {key}")]
-    // RequiresKey { key: String },
-    //
     #[error("Missing value for key: {key}")]
     KeyNotFound { key: String },
     //
     #[error("Missing value for key: {key} in {path}")]
     KeyNotFoundInDocument { key: String, path: PathBuf },
-    //
-    // #[error("Parameter file not found: {path}")]
-    // ParamFileNotFound { path: PathBuf },
-    //
+
+    #[error("Pattern Error: {source}")]
+    PatternError {
+        #[from]
+        source: glob::PatternError,
+    },
+
+    #[error("URL Request Error: {source}")]
+    UrlRequestError {
+        #[from]
+        source: reqwest::Error,
+    },
+
     #[error("Invalid Parameter Format: {param} ")]
     InvalidParameterFormat { param: String },
 
     #[error("Unsupported param file format: {path:?} ")]
     UnsupportedParamFileFormat { path: OsString },
-    //
-    // #[error("Path strip prefix error: {source}")]
-    // StringPrefixError {
-    //     #[from]
-    //     source: std::path::StripPrefixError,
-    // },
-    //
+
     #[error("Crossbeam Send Error for Type: {t:?} {cause:?}")]
     CrossbeamSendError { t: String, cause: String },
-    //
-    // #[error("Only files or directories can be added: {path:?} ")]
-    // OnlyFilesAndDirectoriesCanBeAdded { path: OsString },
-    //
-    // #[error("This directory already belongs to an XVC repository {path:?}")]
-    // DirectoryContainsXVCAlready { path: OsString },
-    //
-    // #[error("This directory is not in a Git Repository {path:?}")]
-    // PathNotInGitRepository { path: OsString },
-    //
-    // #[error("Cannot find a related entity: {entity}")]
-    // NoParentEntityFound { entity: usize },
-    //
-    // #[error("More than one root entity found in an 1-N relation")]
-    // MoreThanOneParentFound { entity: usize },
-    //
-    // #[error("Cannot find key in store: {key}")]
-    // CannotFindKeyInStore { key: usize },
-    //
-    // #[error("Cannot find xvc meta file in {path:?}")]
-    // CannotFindXvcMetaFile { path: OsString },
-    //
+    #[error("Crossbeam Recv Error: {source}")]
+    CrossbeamRecvError {
+        #[from]
+        source: crossbeam_channel::RecvError,
+    },
+
     #[error("Cannot find Pipeline: {name}")]
     CannotFindPipeline { name: String },
-    //
-    // #[error("Cannot find Step: {name}")]
-    // CannotFindStep { name: String },
-    //
-    // #[error("Internal Store Conversion Error")]
-    // StoreConversionError,
-    //
-    // #[error("Can initialize {object} only once")]
-    // CanInitializeOnlyOnce { object: String },
-    //
-    // #[error("Relative Path Conversion Error: {source}")]
-    // RelativePathError {
-    //     #[from]
-    //     source: relative_path::FromPathError,
-    // },
-    //
-    // #[error("Error in Key/Value Store: {source}")]
-    // SledError {
-    //     #[from]
-    //     source: SledError,
-    // },
-    // // #[error("the data for key `{0}` is not available")]
-    // // Redaction(String),
-    // // #[error("invalid header (expected {expected:?}, found {found:?})")]
-    // // InvalidHeader { expected: String, found: String },
-    // // #[error("unknown data store error")]
-    // // Unknown
-    // #[error("ScanDir Error: {source}")]
-    // ScanDirError {
-    //     #[from]
-    //     source: ScanDirError,
-    // },
-    // #[error("ScanDir Error: {sources:?}")]
-    // ScanDirErrors { sources: Vec<ScanDirError> },
+
+    #[error("Cannot parse url: {source}")]
+    CannotParseUrl {
+        #[from]
+        source: url::ParseError,
+    },
+
+    #[error("Try Receive Error: {source}")]
+    TryReceiveError {
+        #[from]
+        source: crossbeam_channel::TryRecvError,
+    },
+
+    #[error("Cannot cast from: {source}")]
+    TryFromIntError {
+        #[from]
+        source: TryFromIntError,
+    },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
@@ -368,7 +210,22 @@ where
         }
     }
 }
-//
+
+impl<T: Debug> From<PoisonError<T>> for Error {
+    fn from(e: PoisonError<T>) -> Self {
+        Error::PoisonError {
+            cause: e.to_string(),
+        }
+    }
+}
+
+impl<T: Debug> From<&PoisonError<T>> for Error {
+    fn from(e: &PoisonError<T>) -> Self {
+        Error::PoisonError {
+            cause: e.to_string(),
+        }
+    }
+}
 impl Error {
     /// Log the error and return it
     pub fn debug(self) -> Self {

@@ -662,8 +662,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
                             FileTextOrBinary::default()
                         };
 
-                        match ContentDigest::from_path(&path, algorithm, text_or_binary.as_inner())
-                        {
+                        match ContentDigest::new(&path, algorithm, text_or_binary.as_inner()) {
                             Ok(digest) => Some(PathMatch {
                                 actual_digest: Some(digest),
                                 ..pm

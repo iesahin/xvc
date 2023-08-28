@@ -42,6 +42,9 @@ rmp = "^0.8"
 rmp-serde = "1.1.1"
 toml = "^0.5"
 
+## Network
+reqwest = { version = "^0.11", features = ["blocking", "json", "gzip"] }
+
 ## Caching
 sled = "^0.34"
 
@@ -77,6 +80,7 @@ uuid = { version = "^1.2", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 cached = "0.40.0"
 derive_more = "^0.99"
+itertools = "^0.10"
 
 [dev-dependencies]
 proptest = "^1.0"

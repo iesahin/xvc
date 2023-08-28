@@ -16,9 +16,8 @@ pub use crate::pipeline::api::{
 
 use clap::Parser;
 
-
 use pipeline::api::step_dependency::XvcDependencyList;
-use pipeline::deps;
+pub use pipeline::deps;
 use pipeline::schema::XvcSchemaSerializationFormat;
 
 use serde::{Deserialize, Serialize};
@@ -27,7 +26,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_ecs::XvcStore;
-use xvc_logging::{XvcOutputSender};
+use xvc_logging::{watch, XvcOutputSender};
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;
@@ -71,10 +70,6 @@ pub enum PipelineSubCommand {
         /// Default working directory
         #[arg(short, long)]
         workdir: Option<PathBuf>,
-
-        /// Set this pipeline as default
-        #[arg(long)]
-        set_default: bool,
     },
 
     /// Rename, change dir or set a pipeline as default
@@ -201,7 +196,7 @@ pub enum StepSubCommand {
 
         /// Step command to run
         #[arg(long, short)]
-        command: Option<String>,
+        command: String,
 
         /// When to run the command. One of always, never, by_dependencies (default).
         /// This is used to freeze or invalidate a step manually.
@@ -233,6 +228,15 @@ pub enum StepSubCommand {
         #[arg(long, short)]
         step_name: String,
 
+        /// Add a generic command output as a dependency. Can be used multiple times.
+        /// Please delimit the command with ' ' to avoid shell expansion.
+        #[arg(long = "generic")]
+        generics: Option<Vec<String>>,
+
+        /// Add a URL dependency to the step. Can be used multiple times.
+        #[arg(long = "url")]
+        urls: Option<Vec<String>>,
+
         /// Add a file dependency to the step. Can be used multiple times.
         #[arg(long = "file")]
         files: Option<Vec<String>>,
@@ -242,34 +246,78 @@ pub enum StepSubCommand {
         #[arg(long = "step")]
         steps: Option<Vec<String>>,
 
-        /// Add a pipeline dependency to a step. Can be used multiple times.
-        /// Pipelines are referred with their names.
-        #[arg(long = "pipeline")]
-        pipelines: Option<Vec<String>>,
-
-        /// Add a directory dependency to the step. Can be used multiple times.
-        #[arg(long = "directory")]
-        directories: Option<Vec<String>>,
+        /// Add a glob items dependency to the step.
+        ///
+        /// You can depend on multiple files and directories with this dependency.
+        ///
+        /// The difference between this and the glob option is that this option keeps track of all
+        /// matching files, but glob only keeps track of the matched files' digest. When you want
+        /// to use ${XVC_GLOB_ITEMS}, ${XVC_ADDED_GLOB_ITEMS}, or ${XVC_REMOVED_GLOB_ITEMS}
+        /// environment variables in the step command, use the glob-items dependency. Otherwise,
+        /// you can use the glob option to save disk space.
+        #[arg(long = "glob_items", aliases=&["glob-items", "glob-i"])]
+        glob_items: Option<Vec<String>>,
 
         /// Add a glob dependency to the step. Can be used multiple times.
-        #[arg(long = "glob")]
+        ///
+        /// You can depend on multiple files and directories with this dependency.
+        ///
+        /// The difference between this and the glob-items option is that the glob-items option
+        /// keeps track of all matching files individually, but this option only keeps track of the
+        /// matched files' digest. This dependency uses considerably less disk space.
+        #[arg(long = "glob", aliases=&["globs"])]
         globs: Option<Vec<String>>,
 
         /// Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times.
-        #[arg(long = "param")]
+        #[arg(long = "param", aliases = &["params"])]
         params: Option<Vec<String>>,
 
         /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
+        ///
+        /// The difference between this and the regex option is that the regex-items option keeps
+        /// track of all matching lines, but regex only keeps track of the matched lines' digest.
+        /// When you want to use ${XVC_REGEX_ITEMS}, ${XVC_ADDED_REGEX_ITEMS},
+        /// ${XVC_REMOVED_REGEX_ITEMS} environment variables in the step command, use the regex
+        /// option. Otherwise, you can use the regex-digest option to save disk space.
+        #[arg(
+            long = "regex_items",
+            aliases = &["regex-items", "regexp_items", "regexp-items"],
+        )]
+        regex_items: Option<Vec<String>>,
+
+        /// Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.
+        ///
+        /// The difference between this and the regex option is that the regex option keeps track
+        /// of all matching lines that can be used in the step command. This option only keeps
+        /// track of the matched lines' digest.
         #[arg(
             long = "regex",
             aliases = &["regexp"],
         )]
-        regexps: Option<Vec<String>>,
+        regexes: Option<Vec<String>>,
 
         /// Add a line dependency in the form filename.txt::123-234
+        ///
+        /// The difference between this and the lines option is that the line-items option keeps
+        /// track of all matching lines that can be used in the step command. This option only
+        /// keeps track of the matched lines' digest. When you want to use ${XVC_ALL_LINE_ITEMS},
+        /// ${XVC_ADDED_LINE_ITEMS}, ${XVC_CHANGED_LINE_ITEMS} options in the step command, use the
+        /// line option. Otherwise, you can use the lines option to save disk space.
         #[arg(
-            long = "line",
-            aliases = &["lines"],
+            long = "line_items",
+            aliases = &["line-items", "line-i"],
+        )]
+        line_items: Option<Vec<String>>,
+
+        /// Add a line digest dependency in the form filename.txt::123-234
+        ///
+        /// The difference between this and the line-items dependency is that the line option keeps
+        /// track of all matching lines that can be used in the step command. This option only
+        /// keeps track of the matched lines' digest. If you don't need individual lines to be
+        /// kept, use this option to save space.
+        #[arg(
+            long = "lines",
+            aliases = &["line"],
         )]
         lines: Option<Vec<String>>,
     },
@@ -307,6 +355,7 @@ impl UpdateFromXvcConfig for PipelineCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let default_pipeline = XvcPipeline::from_conf(conf);
         let name = Some(self.name.clone().unwrap_or(default_pipeline.name));
+        watch!(name);
         Ok(Box::new(Self {
             name,
             subcommand: self.subcommand.clone(),
@@ -400,13 +449,12 @@ pub fn cmd_pipeline<R: BufRead>(
     // This should already be filled from the conf if not given
     let pipeline_name = command.name.unwrap();
     match command.subcommand {
-        PipelineSubCommand::Run { name } => cmd_run(xvc_root, name),
+        PipelineSubCommand::Run { name } => {
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_run(output_snd, xvc_root, pipeline_name)
+        }
 
-        PipelineSubCommand::New {
-            name,
-            workdir,
-            set_default,
-        } => cmd_new(xvc_root, &name, workdir, set_default),
+        PipelineSubCommand::New { name, workdir } => cmd_new(xvc_root, &name, workdir),
         PipelineSubCommand::Update {
             name,
             rename,
@@ -422,17 +470,22 @@ pub fn cmd_pipeline<R: BufRead>(
         PipelineSubCommand::List => cmd_list(output_snd, xvc_root),
         PipelineSubCommand::Delete { name } => cmd_delete(xvc_root, name),
         PipelineSubCommand::Export { name, file, format } => {
-            cmd_export(output_snd, xvc_root, name, file, format)
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_export(output_snd, xvc_root, pipeline_name, file, format)
         }
         PipelineSubCommand::Dag { name, file, format } => {
-            cmd_dag(output_snd, xvc_root, name, file, format)
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_dag(output_snd, xvc_root, pipeline_name, file, format)
         }
         PipelineSubCommand::Import {
             name,
             file,
             format,
             overwrite,
-        } => cmd_import(input, xvc_root, name, file, format, overwrite),
+        } => {
+            let pipeline_name = name.unwrap_or(pipeline_name);
+            cmd_import(input, xvc_root, pipeline_name, file, format, overwrite)
+        }
         PipelineSubCommand::Step(step_cli) => {
             handle_step_cli(output_snd, xvc_root, &pipeline_name, step_cli)
         }
@@ -460,23 +513,29 @@ pub fn handle_step_cli(
 
         StepSubCommand::Dependency {
             step_name,
+            generics,
+            urls,
             files,
-            directories,
+            glob_items,
             globs,
             params,
             steps,
-            pipelines,
-            regexps,
+            regex_items,
+            regexes,
+            line_items,
             lines,
         } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
             .files(files)?
-            .directories(directories)?
+            .glob_items(glob_items)?
             .globs(globs)?
             .params(params)?
             .steps(steps)?
-            .pipelines(pipelines)?
-            .regexes(regexps)?
+            .generic_commands(generics)?
+            .regexes(regexes)?
+            .regex_items(regex_items)?
             .lines(lines)?
+            .line_items(line_items)?
+            .urls(urls)?
             .record(),
         StepSubCommand::Output {
             step_name,

@@ -78,6 +78,7 @@
     - [Goals](./arch/goals.md)
     - [Cache](./arch/cache.md)
     - [Xvc ECS](./arch/ecs.md)
+    - [Pipeline State Machine](./arch/pipeline-state-machine.md)
     - [Comparisons](./arch/delta.md)
     - [Storages](./arch/storages.md)
     - [Git and Xvc](./arch/git-and-xvc.md)

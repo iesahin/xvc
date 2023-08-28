@@ -9,7 +9,7 @@ pub fn cmd_step_new(
     xvc_root: &XvcRoot,
     pipeline_name: &str,
     step_name: String,
-    command: Option<String>,
+    command: String,
     changed: Option<XvcStepInvalidate>,
 ) -> Result<()> {
     let (pipeline_e, pipeline) = XvcPipeline::from_name(xvc_root, pipeline_name)?;
@@ -31,15 +31,13 @@ pub fn cmd_step_new(
         Ok(())
     })?;
 
-    if let Some(command) = command {
-        xvc_root.with_store_mut(|bs: &mut XvcStore<XvcStepCommand>| {
-            let step_command = XvcStepCommand {
-                command: command.clone(),
-            };
-            bs.insert(step_e, step_command);
-            Ok(())
-        })?;
-    };
+    xvc_root.with_store_mut(|bs: &mut XvcStore<XvcStepCommand>| {
+        let step_command = XvcStepCommand {
+            command: command.clone(),
+        };
+        bs.insert(step_e, step_command);
+        Ok(())
+    })?;
 
     xvc_root.with_r1nstore_mut(|rs: &mut R1NStore<XvcPipeline, XvcStep>| {
         rs.insert(pipeline_e, pipeline.clone(), step_e, step.clone());

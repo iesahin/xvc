@@ -1,7 +1,7 @@
 # xvc pipeline list
 
 
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc pipeline list --help
@@ -13,3 +13,7 @@ Options:
   -h, --help  Print help
 
 ```
+
+## Examples
+
+Please see [`xvc pipeline new`](/ref/xvc-pipeline-new.md) for examples.

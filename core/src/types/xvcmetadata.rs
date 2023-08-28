@@ -7,8 +7,12 @@ use std::{fs, io};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{HashAlgorithm, MetadataDigest, XvcDigest, XvcFileType};
+use crate::{
+    XvcFileType, XvcMetadataDigest,
+};
 use xvc_ecs::persist;
+
+use super::diff::Diffable;
 
 /// Metadata associated with a `XvcPath`
 #[derive(
@@ -24,35 +28,15 @@ pub struct XvcMetadata {
 }
 
 persist!(XvcMetadata, "xvc-metadata");
+impl Diffable for XvcMetadata {
+    type Item = XvcMetadata;
+}
 
 impl XvcMetadata {
     /// Return metadata information aligned to 32-bytes to compare quickly
     /// It uses HashAlgorithm::AsIs without making any calculations.
-    pub fn digest(&self) -> Result<MetadataDigest> {
-        let ft = self.file_type as u64;
-
-        let modified = if let Some(modified) = self.modified {
-            modified.duration_since(SystemTime::UNIX_EPOCH)?.as_secs()
-        } else {
-            0u64
-        };
-
-        let size = if let Some(size) = self.size {
-            size
-        } else {
-            0u64
-        };
-
-        let mut bytes: [u8; 32] = [0; 32];
-        bytes[..8].clone_from_slice(&ft.to_le_bytes());
-        bytes[8..16].clone_from_slice(&modified.to_le_bytes());
-        bytes[16..24].clone_from_slice(&size.to_le_bytes());
-
-        Ok(XvcDigest {
-            digest: bytes,
-            algorithm: HashAlgorithm::AsIs,
-        }
-        .into())
+    pub fn digest(&self) -> Result<XvcMetadataDigest> {
+        XvcMetadataDigest::new(self)
     }
 
     /// Returns true if the file type is a XvcFileType::File

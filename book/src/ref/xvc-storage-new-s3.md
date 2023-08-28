@@ -6,7 +6,7 @@ Configure an S3 (or a compatible) service as an Xvc storage.
 
 ## Synopsis
 
-```console
+```console,ignore
 $ xvc storage new s3 --help
 Add a new S3 storage
 
@@ -17,12 +17,12 @@ Usage: xvc storage new s3 [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME> --
 Options:
   -n, --name <NAME>
           Name of the storage
-          
+
           This must be unique among all storages of the project
 
       --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
-          
+
           [default: ]
 
       --bucket-name <BUCKET_NAME>
@@ -48,7 +48,7 @@ Before calling any commands that use this storage, you must set the following en
 
 The command works only in Xvc repositories.
 
-```console
+```console,ignore
 $ git init
 ...
 $ xvc init
@@ -67,27 +67,27 @@ dir-0001
 
 Xvc only sends and receives tracked files.
 
-```console
+```console,ignore
 $ xvc file track dir-0001
 ```
 
 You can define a storage bucket as storage and begin to use it.
 
-```console
+```console,ignore
 $ xvc storage new s3 --name backup --bucket-name xvc-test --region eu-central-1 --storage-prefix xvc-storage
 
 ```
 
 Send files to this storage.
 
-```console
+```console,ignore
 $ xvc file send dir-0001 --to backup
 
 ```
 
 You can remove the files you sent from your cache and workspace.
 
-```console
+```console,ignore
 $ xvc file remove --from-cache dir-0001/
 [DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin
 [DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88
@@ -108,7 +108,7 @@ $ rm -rf dir-0001/
 
 Then get back them from the storage.
 
-```console
+```console,ignore
 $ xvc file bring --from backup dir-0001
 
 $ tree dir-0001
@@ -123,7 +123,7 @@ dir-0001
 
 If you want to remove a file and all of its versions from a storage, you can use `xvc file remove` command.
 
-```console
+```console,ignore
 $ xvc file remove --from-storage backup dir-0001/
 
 ```

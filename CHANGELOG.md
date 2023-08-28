@@ -8,6 +8,18 @@ tree, and subtasks are marked with indentation.
 - Added reference examples for `xvc storage new ...` commands.
   - PR: <https://github.com/iesahin/xvc/pull/222>
   - Issue: <https://github.com/iesahin/xvc/issue/221>
+- Add `xvc pipeline new` reference examples.
+  - Remove `--set-default` option from the command.
+
+- Added reference examples for `xvc storage new ...` commands.
+  - PR: <https://github.com/iesahin/xvc/pull/222>
+  - Issue: <https://github.com/iesahin/xvc/issue/221>
+
+- Add `--format mermaid` to `xvc pipeline dag`
+
+- Standardize digests with AttributeDigest trait
+- Add Diffable trait to compare records and actuals
+- Refactor `xvc pipeline` comparisons to use Diff
 
 ## 0.5.2 (2023-02-13)
 

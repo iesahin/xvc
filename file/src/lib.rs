@@ -6,7 +6,8 @@
 //!
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
-mod common;
+pub mod common;
+pub use common::compare;
 
 pub mod bring;
 pub mod carry_in;

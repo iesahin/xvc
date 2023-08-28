@@ -1,0 +1,11 @@
+{
+  "param": "value",
+  "database": {
+    "server": "example.com",
+    "port": 5432,
+    "connection": {
+      "timeout": 5000
+    }
+  },
+  "numeric_param": 13
+}

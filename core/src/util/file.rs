@@ -102,7 +102,10 @@ pub fn compiled_regex(pat: String) -> XvcResult<Regex> {
 }
 
 /// Returns a subset of `pmm` ([XvcPathMetadataMap]) that are child paths of `directory`.
-pub fn directory_paths(pmm: &XvcPathMetadataMap, directory: &XvcPath) -> XvcPathMetadataMap {
+pub fn filter_paths_by_directory(
+    pmm: &XvcPathMetadataMap,
+    directory: &XvcPath,
+) -> XvcPathMetadataMap {
     let paths = pmm
         .iter()
         .filter_map(|(p, md)| {

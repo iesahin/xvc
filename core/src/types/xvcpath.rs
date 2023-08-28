@@ -6,7 +6,7 @@
 use std::fs;
 use std::{fmt::Display, path::Path};
 
-use crate::{error::Result, ContentDigest};
+use crate::error::Result;
 use derive_more::Display as DeriveDisplay;
 use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
@@ -17,9 +17,10 @@ use xvc_walker::AbsolutePath;
 
 use std::ops::Deref;
 
-use crate::{util::file::is_text_file, HashAlgorithm, XvcDigest};
+use crate::{AttributeDigest, ContentDigest, HashAlgorithm};
 use xvc_ecs::persist;
 
+use super::diff::Diffable;
 use super::xvcroot::XvcRoot;
 
 /// A file, symlink or a directory _relative to_ XvcRoot
@@ -27,6 +28,9 @@ use super::xvcroot::XvcRoot;
 pub struct XvcPath(RelativePathBuf);
 
 persist!(XvcPath, "xvc-path");
+impl Diffable for XvcPath {
+    type Item = XvcPath;
+}
 
 impl Deref for XvcPath {
     type Target = RelativePathBuf;
@@ -116,19 +120,7 @@ impl XvcPath {
     ) -> Result<ContentDigest> {
         let abs_path = self.to_absolute_path(xvc_root);
 
-        let xvc_digest = match text_or_binary {
-            TextOrBinary::Auto => {
-                if is_text_file(&abs_path)? {
-                    XvcDigest::from_text_file(&abs_path, algorithm)
-                } else {
-                    XvcDigest::from_binary_file(&abs_path, algorithm)
-                }
-            }
-            TextOrBinary::Text => XvcDigest::from_text_file(&abs_path, algorithm),
-            TextOrBinary::Binary => XvcDigest::from_binary_file(&abs_path, algorithm),
-        }?;
-
-        Ok(ContentDigest(Some(xvc_digest)))
+        ContentDigest::new(&abs_path, algorithm, text_or_binary)
     }
 
     /// Return all parent directories of an xvcpath
@@ -213,10 +205,7 @@ impl XvcCachePath {
     ///
     /// [ContentDigest] must contain an [XvcDigest], otherwise it returns an error.
     pub fn new(xvc_path: &XvcPath, content_digest: &ContentDigest) -> Result<Self> {
-        let content_digest_dir = content_digest
-            .0
-            .map(|cd| cd.cache_dir())
-            .ok_or_else(|| anyhow::anyhow!("Requires a calculated content digest"))?;
+        let content_digest_dir = content_digest.digest().cache_dir();
         let content_digest_filename = format!("0.{}", xvc_path.extension().unwrap_or(""));
         Ok(Self(RelativePathBuf::from(format!(
             "{}/{}",

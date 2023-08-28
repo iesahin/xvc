@@ -4,10 +4,11 @@
 //! - [cmd_hash] is the entry point for the command.
 use crate::error::{Error, Result};
 use clap::Parser;
-use crossbeam_channel::{unbounded};
+use crossbeam_channel::unbounded;
 use log::warn;
 use std::{env, path::PathBuf};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigInitParams};
+use xvc_core::ContentDigest;
 use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
@@ -15,7 +16,7 @@ use xvc_core::{
 use xvc_logging::{output, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
-use crate::common::{calc_digest, pipe_path_digest};
+use crate::common::pipe_path_digest;
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
 #[command(version, author)]
@@ -100,7 +101,7 @@ pub fn cmd_hash(
                 output!(output_snd, "{digest}\t{}", path.to_string_lossy());
             }
         } else if t.is_file() {
-            let digest = calc_digest(&t, algorithm, text_or_binary)?;
+            let digest = ContentDigest::new(&t, algorithm, text_or_binary)?;
             output!(output_snd, "{digest}\t{}", t.to_string_lossy());
         } else {
             warn!("Unsupported FS Type: {:?}", t);

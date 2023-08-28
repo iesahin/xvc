@@ -6,7 +6,7 @@ Configure a [Wasabi](https://wasabi.com/) service as an Xvc storage.
 
 ## Synopsis
 
-```console
+```console,ignore
 $ xvc storage new wasabi --help
 Add a new Wasabi storage
 
@@ -17,7 +17,7 @@ Usage: xvc storage new wasabi [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME
 Options:
   -n, --name <NAME>
           Name of the storage
-          
+
           This must be unique among all storages of the project
 
       --bucket-name <BUCKET_NAME>
@@ -25,14 +25,14 @@ Options:
 
       --endpoint <ENDPOINT>
           Endpoint for the server, complete with the region if there is
-          
+
           e.g. for eu-central-1 region, use s3.eu-central-1.wasabisys.com as the endpoint.
-          
+
           [default: s3.wasabisys.com]
 
       --storage-prefix <STORAGE_PREFIX>
           You can set a directory in the bucket with this prefix
-          
+
           [default: ]
 
   -h, --help
@@ -46,12 +46,13 @@ Options:
 Before calling any commands that use this storage, you must set the following environment variables.
 
 - `WASABI_ACCESS_KEY_ID` or `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>`: The access key of the Wasabi
-  account. The second form is used when you have multiple storages with different access keys.
-- `WASABI_SECRET_ACCESS_KEY` or `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>`: The secret key of the Wasabi account. The second form is used when you have multiple storages with different access keys.
+  account. The second form is used when you have multiple storage accounts with different access keys.
+- `WASABI_SECRET_ACCESS_KEY` or `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>`: The secret key of the Wasabi account.
+  The second form is used when you have multiple storage accounts with different access keys.
 
 The command works only in Xvc repositories.
 
-```console
+```console,ignore
 $ git init
 ...
 $ xvc init
@@ -70,27 +71,27 @@ dir-0001
 
 Xvc only sends and receives tracked files.
 
-```console
+```console,ignore
 $ xvc file track dir-0001
 ```
 
 You can define a storage bucket as storage and begin to use it.
 
-```console
+```console,ignore
 $ xvc storage new wasabi --name backup --bucket-name xvc-test --endpoint s3.wasabisys.com --storage-prefix xvc-storage
 
 ```
 
 Send files to this storage.
 
-```console
+```console,ignore
 $ xvc file send dir-0001 --to backup
 
 ```
 
 You can remove the files you sent from your cache and workspace.
 
-```console
+```console,ignore
 $ xvc file remove --from-cache dir-0001/
 [DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88/0.bin
 [DELETE] [CWD]/.xvc/b3/1bc/b82/80fcea6acf2362a4ec4ef8512fe2f791f412fed1635009293abedcad88
@@ -109,9 +110,9 @@ $ xvc file remove --from-cache dir-0001/
 $ rm -rf dir-0001/
 ```
 
-Then get back them from the storage.
+Then get back them from storage.
 
-```console
+```console,ignore
 $ xvc file bring --from backup dir-0001
 
 $ tree dir-0001
@@ -124,9 +125,9 @@ dir-0001
 
 ```
 
-If you want to remove a file and all of its versions from a storage, you can use `xvc file remove` command.
+If you want to remove a file and all of its versions from storage, you can use `xvc file remove` command.
 
-```console
+```console,ignore
 $ xvc file remove --from-storage backup dir-0001/
 
 ```

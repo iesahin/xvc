@@ -10,7 +10,7 @@ use xvc::init::InitCLI;
 use xvc_config::XvcVerbosity;
 
 use xvc_core::XvcRoot;
-use xvc_logging::watch;
+use xvc_logging::{output, watch};
 
 use xvc::error::{Error, Result};
 
@@ -45,8 +45,8 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     watch!(prepared);
     let output = prepared.output()?;
 
-    watch!(output);
-
+    output!("{:?}", &output);
+    output!("{:?}", &output.status);
     assert!(output.status.success(), "Command failed: {:?}", prepared);
 
     let output_str = String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n");

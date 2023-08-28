@@ -1,16 +1,17 @@
 use std::{
     env,
-    ffi::OsStr,
     fs,
     path::{Path, PathBuf},
 };
 
 use anyhow::anyhow;
 use jwalk;
+use regex::Regex;
 use trycmd;
 
 use which;
 use xvc::error::Result;
+use xvc_logging::watch;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
@@ -20,7 +21,7 @@ const DOC_TEST_DIR: &str = "docs/";
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
-    let book_dirs = vec!["ref", "start", "how-to"];
+    let book_dirs_and_filters = vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")];
     let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
@@ -37,8 +38,9 @@ fn link_to_docs() -> Result<()> {
 
     let doc_dir = Path::new(DOC_TEST_DIR);
 
-    for dir in book_dirs {
+    for (dir, filter_regex) in book_dirs_and_filters {
         let test_collection_dir = test_collections_dir.join(dir);
+        let name_filter = Regex::new(filter_regex).unwrap();
 
         let book_dir = book_base.join(dir);
         assert!(book_dir.exists(), "{:?} doesn't exist", &book_dir);
@@ -47,7 +49,7 @@ fn link_to_docs() -> Result<()> {
             .filter_map(|f| {
                 if let Ok(f) = f {
                     if f.metadata().unwrap().is_file()
-                        && f.path().extension() == Some(OsStr::new("md"))
+                        && name_filter.is_match(f.file_name().to_string_lossy().as_ref())
                     {
                         Some(f.path())
                     } else {
@@ -106,6 +108,7 @@ fn link_to_docs() -> Result<()> {
                     fs::remove_file(&out_dir_symlink)?;
                 }
                 make_symlink(&out_dir, &out_dir_symlink)?;
+                watch!(&out_dir);
             }
         }
     }
@@ -116,6 +119,8 @@ fn link_to_docs() -> Result<()> {
 #[test]
 #[cfg(target_os = "macos")]
 fn z_doc_tests() -> Result<()> {
+    use std::time::Duration;
+
     link_to_docs()?;
 
     let xvc_th = escargot::CargoBuild::new()
@@ -138,7 +143,9 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("rm", which::which("rm"))
         .register_bin("perl", which::which("perl"))
         .register_bin("tree", which::which("tree"))
+        .register_bin("zsh", which::which("zsh"))
         .case("docs/*/*.md")
+        .timeout(Duration::from_secs(10))
         // We skip this for the time being.
         .skip("docs/start/ml.md");
 
