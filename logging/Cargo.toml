@@ -1,10 +1,10 @@
 [package]
 name = "xvc-logging"
-version = "0.5.2"
+version = "0.6.0"
 edition = "2021"
 description = "Logging crate for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
-license = "Apache-2.0"
+license = "GPL-3.0"
 homepage = "https://xvc.dev"
 repository = "https://github.com/iesahin/xvc"
 categories = ["command-line-utilities", "development-tools"]
