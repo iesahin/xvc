@@ -1,6 +1,6 @@
 mod common;
 
-use std::{path::Path};
+use std::path::Path;
 
 use common::*;
 use xvc_config::XvcVerbosity;

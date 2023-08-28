@@ -17,7 +17,7 @@ Options:
 
 ```
 
-# Examples
+## Examples
 
 This command is used to import pipelines exported with [`xvc pipeline export`](/ref/xvc-pipeline-export.md).
 
