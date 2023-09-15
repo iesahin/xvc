@@ -32,6 +32,8 @@ enum XvcTestHelperSubcommandCLI {
         /// The number of files to create
         #[arg(short, long, default_value = "1")]
         files: usize,
+        #[arg(short = 's', long, default_value = "1000")]
+        min_size: usize,
         /// Fill value
         #[arg(long)]
         seed: Option<u64>,
@@ -97,9 +99,10 @@ fn main() -> Result<()> {
             directories,
             files,
             seed,
+            min_size,
         } => {
             let root = root.unwrap_or_else(|| std::env::current_dir().unwrap());
-            create_directory_tree(&root, directories, files, seed)?;
+            create_directory_tree(&root, directories, files, min_size, seed)?;
         }
         XvcTestHelperSubcommandCLI::RandomDirName { seed, prefix } => {
             let name = random_dir_name(
