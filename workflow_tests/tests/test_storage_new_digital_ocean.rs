@@ -119,10 +119,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 10, 10, Some(23))?;
+    create_directory_tree(&temp_dir, 10, 10, 1000, Some(23))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10, Some(23))?;
+    create_directory_tree(&level_1, 10, 10, 1000, Some(23))?;
 
     Ok(temp_dir)
 }

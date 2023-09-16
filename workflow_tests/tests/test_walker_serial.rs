@@ -29,13 +29,13 @@ fn create_directory_hierarchy(force: bool) -> Result<AbsolutePath> {
             Ok(_) => {}
             Err(_) => {}
         }
-        create_directory_tree(&temp_dir, 10, 10, Some(47))?;
+        create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
         // root/dir1 may have another tree
         let level_1 = &temp_dir.join("dir-0001");
-        create_directory_tree(&level_1, 10, 10, Some(47))?;
+        create_directory_tree(&level_1, 10, 10, 1000, Some(47))?;
         // and another level
         let level_2 = &level_1.join("dir-0001");
-        create_directory_tree(&level_2, 10, 10, Some(47))?;
+        create_directory_tree(&level_2, 10, 10, 1000, Some(47))?;
     }
 
     Ok(AbsolutePath::from(temp_dir))
