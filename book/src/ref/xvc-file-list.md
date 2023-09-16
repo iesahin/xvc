@@ -214,12 +214,12 @@ symbolic links.
 $ xvc file track dir-0003 --recheck-method symlink
 
 $ xvc file list dir-0003
-SS         180 [..] 447933dc          dir-0003/file-0005.bin
-SS         180 [..] 63535612          dir-0003/file-0004.bin
-SS         180 [..] d2432259          dir-0003/file-0003.bin
-SS         180 [..] 7e807161          dir-0003/file-0002.bin
-SS         180 [..] 1953f05d          dir-0003/file-0001.bin
-Total #: 5 Workspace Size:         900 Cached Size:       10015
+SS         [..] 447933dc          dir-0003/file-0005.bin
+SS         [..] 63535612          dir-0003/file-0004.bin
+SS         [..] d2432259          dir-0003/file-0003.bin
+SS         [..] 7e807161          dir-0003/file-0002.bin
+SS         [..] 1953f05d          dir-0003/file-0001.bin
+Total #: 5 Workspace Size:         [..] Cached Size:       10015
 
 
 ```
@@ -234,10 +234,10 @@ You may use globs to list files.
 $ xvc file list 'dir-*/*-0001.bin'
 FX        2001 [..]          1953f05d dir-0005/file-0001.bin
 FX        2001 [..]          1953f05d dir-0004/file-0001.bin
-SS         180 [..] 1953f05d          dir-0003/file-0001.bin
-FH        2001 [..] 1953f05d 1953f05d dir-0002/file-0001.bin
-FC        2001 [..] 1953f05d 1953f05d dir-0001/file-0001.bin
-Total #: 5 Workspace Size:        8184 Cached Size:        2001
+SS         [..] 1953f05d          dir-0003/file-0001.bin
+FH        2[..] 1953f05d 1953f05d dir-0002/file-0001.bin
+FC        2[..] 1953f05d 1953f05d dir-0001/file-0001.bin
+Total #: 5 Workspace Size:        [..] Cached Size:        2001
 
 
 ```
@@ -253,13 +253,13 @@ FX        2002 [..]          7e807161 dir-0005/file-0002.bin
 FX        2001 [..]          1953f05d dir-0005/file-0001.bin
 FX        2002 [..]          7e807161 dir-0004/file-0002.bin
 FX        2001 [..]          1953f05d dir-0004/file-0001.bin
-SS         180 [..] 7e807161          dir-0003/file-0002.bin
-SS         180 [..] 1953f05d          dir-0003/file-0001.bin
-FH        2002 [..] 7e807161 7e807161 dir-0002/file-0002.bin
-FH        2001 [..] 1953f05d 1953f05d dir-0002/file-0001.bin
-FC        2002 [..] 7e807161 7e807161 dir-0001/file-0002.bin
-FC        2001 [..] 1953f05d 1953f05d dir-0001/file-0001.bin
-Total #: 10 Workspace Size:       16372 Cached Size:        4003
+SS        [..] 7e807161          dir-0003/file-0002.bin
+SS        [..] 1953f05d          dir-0003/file-0001.bin
+FH        [..] 7e807161 7e807161 dir-0002/file-0002.bin
+FH        [..] 1953f05d 1953f05d dir-0002/file-0001.bin
+FC        [..] 7e807161 7e807161 dir-0001/file-0002.bin
+FC        [..] 1953f05d 1953f05d dir-0001/file-0001.bin
+Total #: 10 Workspace Size:       [..] Cached Size:        4003
 
 
 ```
