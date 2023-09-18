@@ -177,12 +177,13 @@ pub fn create_directory_tree(
     root: &Path,
     n_dirs: usize,
     n_files_per_dir: usize,
+    min_size: usize,
     seed: Option<u64>,
 ) -> Result<Vec<PathBuf>> {
     let mut paths = Vec::<PathBuf>::with_capacity(n_dirs * n_files_per_dir);
     let dirs: Vec<String> = (1..=n_dirs).map(|i| format!("dir-{:04}", i)).collect();
     let files: Vec<(String, usize)> = (1..=n_files_per_dir)
-        .map(|i| (format!("file-{:04}.bin", i), i + 1000))
+        .map(|i| (format!("file-{:04}.bin", i), min_size + i + 1000))
         .collect();
     for dir in dirs {
         std::fs::create_dir_all(root.join(Path::new(&dir)))?;

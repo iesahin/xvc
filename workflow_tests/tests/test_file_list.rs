@@ -30,7 +30,7 @@ use xvc_walker::AbsolutePath;
 //
 // Each directory contains 10 files. So there are 10 * 3 * 10 = 300 files.
 fn create_directory_hierarchy(temp_dir: &Path) -> Result<AbsolutePath> {
-    create_directory_tree(&temp_dir, 5, 5, Some(23))?;
+    create_directory_tree(&temp_dir, 5, 5, 1000, Some(23))?;
     Ok(AbsolutePath::from(temp_dir))
 }
 
