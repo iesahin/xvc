@@ -1,19 +1,8 @@
 //! Digest of a command output.
+use crate::types::hashalgorithm::HashAlgorithm;
 use crate::{attribute_digest, XvcDigest};
-use crate::{types::hashalgorithm::HashAlgorithm};
-
-
-
-
-
-
-
-use blake2::{Digest};
-
 
 use serde::{Deserialize, Serialize};
-
-
 
 use super::AttributeDigest;
 

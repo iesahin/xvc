@@ -4,7 +4,6 @@ use crate::{attribute_digest, XvcDigest};
 use reqwest::Url;
 
 use crate::error::Result;
-use blake2::Digest;
 
 use reqwest::blocking::Client as HttpClient;
 use serde::{Deserialize, Serialize};
