@@ -1,10 +1,12 @@
 use std::str::FromStr;
 use std::{env, fs};
 
+use futures::StreamExt;
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
+use tokio::io::AsyncWriteExt;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{error, info, watch, XvcOutputSender};
@@ -284,15 +286,15 @@ impl XvcR2Storage {
             let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
             watch!(abs_cache_path);
 
-            let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
+            let response_data_stream = bucket.get_object_stream(remote_path.as_str()).await;
 
-            let response = bucket
-                .get_object_stream(remote_path.as_str(), &mut async_cache_path)
-                .await;
-
-            match response {
-                Ok(_) => {
+            match response_data_stream {
+                Ok(mut response) => {
                     info!(output, "{} -> {}", remote_path.as_str(), abs_cache_path);
+                    let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
+                    while let Some(chunk) = response.bytes().next().await {
+                        async_cache_path.write_all(&chunk).await?;
+                    }
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }

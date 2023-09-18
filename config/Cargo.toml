@@ -28,14 +28,14 @@ directories-next = "2.0"
 ## Serialization
 serde = { version = "^1.0", features=["derive"] }
 serde_yaml = "^0.9"
-toml = "^0.5"
+toml = "^0.8"
 
 ## Parallelization
 crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
 ## File system
-walkdir = "^2.3"
+walkdir = "^2.4"
 
 ## Logging and errors
 thiserror = "^1.0"
@@ -44,7 +44,7 @@ log = "^0.4"
 fern = { version = "^0.6", features = ["colored"] }
 
 ## Misc
-regex = "^1.7"
-strum = "0.24.1"
-strum_macros = "0.24.3"
+regex = "^1.9"
+strum = "0.25.0"
+strum_macros = "0.25.2"
 lazy_static = "^1.4"

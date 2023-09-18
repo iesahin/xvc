@@ -30,18 +30,18 @@ xvc-walker = { version = "0.6.0", path = "../walker" }
 xvc-storage = { version = "0.6.0", path = "../storage" }
 
 ## packages for testing
-clap = {version = "^4.1", features=["derive"]}
+clap = {version = "^4.4", features=["derive"]}
 
-itertools = "^0.10"
+itertools = "^0.11"
 serde = { version = "^1.0", features = ["derive"] }
 serde_yaml = "^0.9"
 serde_json = "^1.0"
 crossbeam-channel = "^0.5"
 subprocess = "^0.2"
 log = "^0.4"
-regex = "^1.7"
+regex = "^1.9"
 rand = "^0.8"
-which = "^4.3"
+which = "^4.4"
 
 [features]
 default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
@@ -63,17 +63,17 @@ test-generic-rsync = []
 
 
 [dev-dependencies]
-proptest = "^1.0"
-test-case = "^2.2"
+proptest = "^1.2"
+test-case = "^3.2"
 globset = "^0.4"
 escargot = "^0.5"
 xvc-test-helper = { version = "0.6.0", path = "../test_helper" }
 shellfn = "^0.1"
-jwalk = "^0.6"
+jwalk = "^0.8"
 anyhow =  "^1.0"
 assert_cmd = "^2.0"
 assert_fs = "^1.0"
-predicates = "^2.1"
+predicates = "^3.0"
 trycmd="^0.14"
-which = "4.3"
-fs_extra = "^1.2"
+which = "4.4"
+fs_extra = "^1.3"

@@ -84,7 +84,7 @@ Now, we want to have this new version of data available only in `uppercase` bran
 ```console
 $ xvc --from-ref data-file --to-branch uppercase pipeline run
 Already on 'data-file'
-[OUT] [to-uppercase]
+[OUT] [to-uppercase]  
 Switched to a new branch 'uppercase'
 
 $ git branch
