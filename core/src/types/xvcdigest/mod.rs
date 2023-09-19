@@ -131,13 +131,18 @@ impl Display for XvcDigest {
     }
 }
 
-/// A digest that's used as an attribute of an entity
-/// e.g., [ContentDigest], [CollectionDigest], [XvcMetadataDigest]
+/// A digest that's used as an attribute of an entity e.g., [ContentDigest], [CollectionDigest],
+/// [XvcMetadataDigest]
+///
+/// We can have multiple digests for an entity, e.g., a file can have a digest from its metadata
+/// and a digest from its content. This trait is used to assign names to digest as attributes
 pub trait AttributeDigest: Storable + From<XvcDigest> + Into<XvcDigest> + AsRef<XvcDigest> {
+    /// The name of this digest, e.g., "content-digest"
     fn attribute() -> String {
         <Self as Storable>::type_description()
     }
 
+    /// The digest value of this digest
     fn digest(&self) -> XvcDigest;
 }
 
@@ -205,47 +210,59 @@ where
 }
 
 impl XvcDigests {
+    /// Returns a new empty [XvcDigests]
     pub fn new() -> Self {
         Self(BTreeMap::new())
     }
+    /// Returns all available attributes/keys for an entity
     pub fn keys(&self) -> impl Iterator<Item = &String> {
         self.0.keys()
     }
 
+    /// Number of digests in [XvcDigests]
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
+    /// Returns true if there are no digests in [XvcDigests]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }
 
+    /// Inserts a digest into [XvcDigests]
     pub fn insert<T: AttributeDigest>(&mut self, attribute_digest: T) {
         self.0
             .insert(T::attribute().into(), attribute_digest.digest());
     }
 
+    /// Returns the digest for the specified attribute
     pub fn get<T: AttributeDigest>(&self) -> Option<T> {
         let attribute = T::attribute();
         self.0.get(&attribute).cloned().map(|d| d.into())
     }
+
+    /// Returns true if there is a digest for the specified attribute
     pub fn has_attribute<T: AttributeDigest>(&self) -> bool {
         self.0.contains_key(&T::attribute())
     }
 
+    /// Removes the digest for the specified attribute
     pub fn remove<T: AttributeDigest>(&mut self) -> Option<T> {
         let attribute = T::attribute();
         self.0.remove(&attribute).map(|d| d.into())
     }
 
+    /// Inserts a digest into [XvcDigests] with the a string key
     pub fn insert_with_arbitrary_attribute(&mut self, attribute: String, digest: XvcDigest) {
         self.0.insert(attribute, digest);
     }
 
+    /// Merges with another [XvcDigests]
     pub fn merge_with(&mut self, other: &Self) {
         self.0.extend(other.0.clone());
     }
 
+    /// Returns a new [XvcDigests] created from the specified attribute digest as only digest
     pub fn from_attribute_digest<T: AttributeDigest>(attribute_digest: T) -> Self {
         let mut s = Self::new();
         s.insert(attribute_digest);

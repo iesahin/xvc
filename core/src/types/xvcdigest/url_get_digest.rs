@@ -10,13 +10,13 @@ use serde::{Deserialize, Serialize};
 
 use super::AttributeDigest;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 /// Returns a stable digest of the content of a URL.
-
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct UrlContentDigest(XvcDigest);
 attribute_digest!(UrlContentDigest, "url-get-digest");
 
 impl UrlContentDigest {
+    /// Make a GET request to `url` and return a stable digest of the response.
     pub fn new(url: &Url, algorithm: HashAlgorithm) -> Result<Self> {
         let response = HttpClient::new()
             .get(url.as_str())

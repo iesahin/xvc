@@ -31,7 +31,7 @@ use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder};
 
 use self::gitignore::IgnoreOp;
 
-/// Represents whether a file is a text file or not
+/// Represents whether a file is a text file or not. We wrap [TextOrBinary] to specify [persist!] and [conf!].
 #[derive(
     Debug,
     Clone,
@@ -54,6 +54,7 @@ conf!(FileTextOrBinary, "file.track.text_or_binary");
 persist!(FileTextOrBinary, "file-text-or-binary");
 
 impl FileTextOrBinary {
+    /// Returns the inner TextOrBinary
     pub fn as_inner(&self) -> TextOrBinary {
         self.0
     }
@@ -65,6 +66,7 @@ impl Default for FileTextOrBinary {
     }
 }
 
+/// Receives path and metadata and sends content digests of the sent paths.
 pub fn pipe_path_digest(
     receiver: Receiver<(PathBuf, Metadata)>,
     sender: Sender<(PathBuf, ContentDigest)>,
@@ -241,6 +243,7 @@ pub fn targets_from_disk(
     }
 }
 
+/// Selects only the files in `targets` by matching them with the metadata in `xvc_metadata_store`.
 pub fn only_file_targets(
     xvc_metadata_store: &XvcStore<XvcMetadata>,
     targets: &HStore<XvcPath>,
@@ -437,8 +440,6 @@ pub fn move_xvc_path_to_cache(
 ) -> Result<()> {
     let path = xvc_path.to_absolute_path(xvc_root);
     let cache_path = cache_path.to_absolute_path(xvc_root);
-    watch!(path);
-    watch!(cache_path);
     move_to_cache(&path, &cache_path)
 }
 

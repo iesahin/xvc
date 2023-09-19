@@ -1,3 +1,4 @@
+//! File and directory ignore handler
 use chrono::Utc;
 use crossbeam_channel::Sender;
 use relative_path::RelativePathBuf;
@@ -13,13 +14,27 @@ use xvc_core::{XvcPath, XvcRoot};
 use xvc_logging::{debug, error, info, uwr, XvcOutputSender};
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
+/// Used to signal ignored files and directories to the ignore handler
 pub enum IgnoreOperation {
-    IgnoreDir { dir: XvcPath },
-    IgnoreFile { file: XvcPath },
+    /// Ignore a directory
+    IgnoreDir {
+        /// The directory to ignore
+        dir: XvcPath,
+    },
+    /// Ignore a file
+    IgnoreFile {
+        /// The file to ignore
+        file: XvcPath,
+    },
 }
 
+/// Used to signal ignored files and directories to the ignore handler
+/// If None is sent, the ignore handler quits
 pub type IgnoreOp = Option<IgnoreOperation>;
 
+/// Spawn a thread that writes ignored files and directories to .gitignore
+///
+/// Control the thread by sending [IgnoreOperation]s to the ignore handler.
 pub fn make_ignore_handler(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -154,6 +169,7 @@ pub fn update_dir_gitignores(
     Ok(())
 }
 
+/// Write file and directory names to .gitignore found in the same dir
 pub fn update_file_gitignores(
     xvc_root: &AbsolutePath,
     current_gitignore: &IgnoreRules,

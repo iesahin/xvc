@@ -1,3 +1,4 @@
+//! A short representation of the file metadata that fits into 32 bytes.
 use std::time::SystemTime;
 
 use serde::{Deserialize, Serialize};
@@ -6,6 +7,8 @@ use crate::types::diff::Diffable;
 use crate::Result;
 use crate::{attribute_digest, HashAlgorithm, XvcDigest, XvcMetadata};
 
+/// A short representation of the file metadata that fits into 32 bytes.
+/// This is used to quickly compare metadata of files without individual fields.
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct XvcMetadataDigest(XvcDigest);
 attribute_digest!(XvcMetadataDigest, "xvc-metadata-digest");
@@ -22,7 +25,6 @@ impl Diffable for XvcMetadataDigest {
             }
         }
     }
-    
 }
 
 impl XvcMetadataDigest {
@@ -54,6 +56,7 @@ impl XvcMetadataDigest {
         }))
     }
 
+    /// Return the inner digest
     pub fn digest(&self) -> XvcDigest {
         self.0.clone()
     }
