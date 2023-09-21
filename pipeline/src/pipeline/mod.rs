@@ -42,7 +42,7 @@ use std::time::Duration;
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, update_with_actual, Diff, HashAlgorithm, TextOrBinary, XvcDigests,
+    all_paths_and_metadata, update_with_actual, Diff, HashAlgorithm, XvcDigests,
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 

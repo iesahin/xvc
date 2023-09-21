@@ -23,10 +23,10 @@ xvc-logging = {version = "0.6.0", path = "../logging"}
 serde = { version = "^1.0", features=["derive"] }
 serde_json = "^1.0"
 rmp = "^0.8"
-rmp-serde = "1.1.1"
+rmp-serde = "1.1.2"
 
 ## Parallelization
-rayon = "^1.6"
+rayon = "^1.7"
 crossbeam-channel = "^0.5"
 
 ## Logging and errors
@@ -42,7 +42,7 @@ rand = "^0.8"
 
 [dev-dependencies]
 tempdir = "^0.3"
-jwalk = "^0.6"
+jwalk = "^0.8"
 
 [package.metadata.cargo-udeps.ignore]
 normal = ["xvc-logging", "test-case", "tempdir"]

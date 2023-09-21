@@ -1,6 +1,8 @@
 use anyhow::anyhow;
+use futures::StreamExt;
 use std::str::FromStr;
 use std::{env, fs};
+use tokio::io::AsyncWriteExt;
 
 use regex::Regex;
 use s3::creds::Credentials;
@@ -285,15 +287,15 @@ impl XvcDigitalOceanStorage {
             fs::create_dir_all(&abs_cache_dir)?;
             let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
             watch!(abs_cache_path);
-            let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
+            let response_data_stream = bucket.get_object_stream(remote_path.as_str()).await;
 
-            let response = bucket
-                .get_object_stream(remote_path.as_str(), &mut async_cache_path)
-                .await;
-
-            match response {
-                Ok(_) => {
+            match response_data_stream {
+                Ok(mut response) => {
                     info!(output_snd, "{} -> {}", remote_path.as_str(), abs_cache_path);
+                    let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
+                    while let Some(chunk) = response.bytes().next().await {
+                        async_cache_path.write_all(&chunk).await?;
+                    }
                     copied_paths.push(remote_path);
                     watch!(copied_paths.len());
                 }

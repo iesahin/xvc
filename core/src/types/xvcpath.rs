@@ -17,7 +17,7 @@ use xvc_walker::AbsolutePath;
 
 use std::ops::Deref;
 
-use crate::{AttributeDigest, ContentDigest, HashAlgorithm};
+use crate::{ContentDigest, HashAlgorithm};
 use xvc_ecs::persist;
 
 use super::diff::Diffable;

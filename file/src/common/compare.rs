@@ -1,3 +1,4 @@
+//! File comparison utilities.
 use crate::error::Error;
 use crate::Result;
 use anyhow::anyhow;
@@ -11,14 +12,12 @@ use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 
 use xvc_config::FromConfigKey;
-use xvc_core::types::xvcdigest::{
-    content_digest::ContentDigest, DIGEST_LENGTH,
-};
+use xvc_core::types::xvcdigest::{content_digest::ContentDigest, DIGEST_LENGTH};
 use xvc_ecs::{Error as EcsError, SharedXStore};
 
 use xvc_core::{
-    diff_store, AttributeDigest, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod,
-    XvcDigest, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    diff_store, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod, XvcDigest, XvcFileType,
+    XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
@@ -104,6 +103,10 @@ pub fn diff_text_or_binary(
     text_or_binary_diff
 }
 
+/// Compare the content of a file with the stored content digest.
+///
+/// The file is defined by the entity `xe`. The comparison is done only when the path (`xvc_path_diff`) or the metadata
+/// (`xvc_metadata_diff`) of the file has changed.
 pub fn diff_file_content_digest(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,

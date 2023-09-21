@@ -10,8 +10,6 @@ use crate::error::Result;
 
 use serde::{Deserialize, Serialize};
 
-use super::AttributeDigest;
-
 /// Digest for the content of a file.
 ///
 /// It's calculated by reading the file contents and hashing them with the given algortthm.
