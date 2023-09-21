@@ -26,10 +26,15 @@ use super::url::UrlDigestDep;
 #[derive(Clone, Debug)]
 /// Stored and gathered data to decide the validation of dependencies
 pub struct DependencyComparisonParams<'a> {
+    /// The base Xvc directory
     pub xvc_root: &'a XvcRoot,
+    /// Where the pipeline runs
     pub pipeline_rundir: &'a XvcPath,
+    /// All xvc paths and their metadata in the repository
     pub pmm: &'a XvcPathMetadataMap,
+    /// The hash algorithm co compare files
     pub algorithm: &'a HashAlgorithm,
+    /// Dependencies for each step
     pub step_dependencies: &'a HStore<XvcDependency>,
 }
 
