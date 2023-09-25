@@ -398,6 +398,13 @@ fn thorough_compare_lines(
     }
 }
 
+/// Compares dependencies with their earlier version _superficially_, meaning the cost of
+/// comparison is minimized by being optimistic that a dependency is unchanged.
+///
+/// For example, we compare the metadata of a file instead of its content to see if it has not
+/// changed.
+///
+/// This function loads the depdency from the store and calls the respective comparison function.
 pub fn superficial_compare_dependency(
     cmp_params: &StepStateParams,
     stored_dependency_e: XvcEntity,
