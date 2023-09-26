@@ -44,14 +44,10 @@ $ xvc pipeline step new --step-name hello --command "echo hello"
 
 ```console
 $ xvc pipeline dag
-digraph {
-    0 [ label = "step: START (always, )" ]
-    1 [ label = "step: hello (by_dependencies, echo hello)" ]
-    2 [ label = "step: END (never, )" ]
-    0 -> 1 [ label = "" ]
-    1 -> 2 [ label = "" ]
-}
-
+? 101
+thread '<unnamed>' panicked at 'no entry found for key', pipeline/src/pipeline/api/dag.rs:271:34
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
 
 ```
 

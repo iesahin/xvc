@@ -257,16 +257,18 @@ fn make_dot_graph(
         })
     });
 
-    // for n in dependency_graph.nodes() {
-    //     let desc = &step_descs[&n];
-    //     let step_node = dot_graph.add_node(desc);
-    //     dot_nodes.map.insert(n, step_node);
-    // }
-    //
+    for n in dependency_graph.nodes() {
+        for (_, e_to, dep) in dependency_graph.edges(n) {
+            let desc = &step_descs[&n];
+            let step_node = dot_graph.add_node(desc);
+            dot_nodes.map.insert(n, step_node);
+        }
+    }
+
     for n in dependency_graph.nodes() {
         for (_, e_to, dep) in dependency_graph.edges(n) {
             let desc = &dep_descs[&e_to];
-            let step_node = dot_graph.add_node(desc);
+            let step_node = dot_nodes[&n];
             if matches!(dep, XvcDependency::Step { .. }) {
                 let other_step = dot_nodes[&e_to];
                 dot_graph.add_edge(step_node, other_step, "");
