@@ -39,7 +39,14 @@ $ xvc pipeline step new --step-name preprocess --command "echo 'preprocess'"
 
 $ xvc pipeline step new --step-name train --command "echo 'train'"
 
-$ xvc pipeline dependency new --step-name train --step preprocess
+$ xvc pipeline step dependency new --step-name train --step preprocess
+? 2
+error: unexpected argument 'new' found
+
+Usage: xvc pipeline step dependency [OPTIONS] --step-name <STEP_NAME>
+
+For more information, try '--help'.
+
 ```
 
 ```console
