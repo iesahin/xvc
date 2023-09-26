@@ -46,7 +46,7 @@ $ xvc pipeline step dependency --step-name train --step preprocess
 ```console
 $ xvc pipeline dag
 ? 101
-thread '<unnamed>' panicked at 'no entry found for key', pipeline/src/pipeline/api/dag.rs:271:34
+thread '<unnamed>' panicked at 'no entry found for key', pipeline/src/pipeline/api/dag.rs:273:34
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
 
@@ -59,7 +59,7 @@ $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
 
 $ xvc pipeline dag
 ? 101
-thread '<unnamed>' panicked at 'no entry found for key', pipeline/src/pipeline/api/dag.rs:271:34
+thread '<unnamed>' panicked at 'no entry found for key', pipeline/src/pipeline/api/dag.rs:273:34
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
 

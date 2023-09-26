@@ -5,6 +5,7 @@ use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::{output, watch, XvcOutputSender};
 
+use std::collections::HashMap;
 use std::{fs::File, io::Write};
 
 use crate::error::{Error, Result};
@@ -243,7 +244,7 @@ fn make_dot_graph(
     dependency_graph: &DiGraphMap<XvcEntity, XvcDependency>,
     step_descs: &HStore<String>,
 ) -> Result<String> {
-    let mut dot_nodes = HStore::<NodeIndex>::new();
+    let mut dot_nodes = HashMap::<(XvcEntity, XvcEntity), NodeIndex>::new();
 
     let mut dot_graph = Graph::<&str, &str>::with_capacity(
         dependency_graph.node_count() + dependency_graph.edge_count(),
@@ -257,25 +258,21 @@ fn make_dot_graph(
         })
     });
 
-    for n in dependency_graph.nodes() {
-        for (_, e_to, dep) in dependency_graph.edges(n) {
-            let desc = &step_descs[&n];
-            let step_node = dot_graph.add_node(desc);
-            dot_nodes.map.insert(n, step_node);
-        }
+    for (e_from, e_to, dep) in dependency_graph.edges(n) {
+        let desc = &step_descs[&e_from];
+        let step_node = dot_graph.add_node(desc);
+        dot_nodes.insert((e_from, e_to), step_node);
     }
 
-    for n in dependency_graph.nodes() {
-        for (_, e_to, dep) in dependency_graph.edges(n) {
-            let desc = &dep_descs[&e_to];
-            let step_node = dot_nodes[&n];
-            if matches!(dep, XvcDependency::Step { .. }) {
-                let other_step = dot_nodes[&e_to];
-                dot_graph.add_edge(step_node, other_step, "");
-            } else {
-                let dep_node = dot_graph.add_node(desc);
-                dot_graph.add_edge(step_node, dep_node, "");
-            }
+    for (e_from, e_to, dep) in dependency_graph.edges(n) {
+        let step_node = dot_nodes[&(e_from, e_to)];
+        let desc = &dep_descs[&e_to];
+        if matches!(dep, XvcDependency::Step { .. }) {
+            let other_step = dot_nodes[&(e_from, e_to)];
+            dot_graph.add_edge(step_node, other_step, "");
+        } else {
+            let dep_node = dot_graph.add_node(desc);
+            dot_graph.add_edge(step_node, dep_node, "");
         }
     }
 
