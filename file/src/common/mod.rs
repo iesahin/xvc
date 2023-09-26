@@ -1,3 +1,4 @@
+//! Common operations for xvc file
 pub mod compare;
 pub mod gitignore;
 
@@ -410,6 +411,11 @@ pub fn cache_paths_for_xvc_paths(
     Ok(all_cache_paths)
 }
 
+/// Moves the `path` to `cache_path`.
+///
+/// It creates the cache directory and sets the cache file read only.
+///
+/// It overwrites the cache file if it already exists.
 pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<()> {
     let cache_dir = cache_path.parent().ok_or(Error::InternalError {
         message: "Cache path has no parent.".to_string(),
@@ -433,6 +439,8 @@ pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<(
     Ok(())
 }
 
+/// Move an xvc_path to the cache path.
+/// Uses [move_to_cache]
 pub fn move_xvc_path_to_cache(
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,

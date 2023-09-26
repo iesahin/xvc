@@ -30,7 +30,6 @@ pub struct XvcDependencyList<'a> {
     output_snd: &'a XvcOutputSender,
     xvc_root: &'a XvcRoot,
     current_dir: &'a AbsolutePath,
-    pipeline_e: XvcEntity,
     step_e: XvcEntity,
     step: XvcStep,
     deps: RefCell<Vec<XvcDependency>>,
@@ -51,7 +50,6 @@ impl<'a> XvcDependencyList<'a> {
         let (step_e, step) = XvcStep::from_name(xvc_root, &pipeline_e, &step_name)?;
         Ok(Self {
             xvc_root,
-            pipeline_e,
             step_e,
             step,
             deps: RefCell::new(Vec::new()),

@@ -26,10 +26,15 @@ use super::url::UrlDigestDep;
 #[derive(Clone, Debug)]
 /// Stored and gathered data to decide the validation of dependencies
 pub struct DependencyComparisonParams<'a> {
+    /// The base Xvc directory
     pub xvc_root: &'a XvcRoot,
+    /// Where the pipeline runs
     pub pipeline_rundir: &'a XvcPath,
+    /// All xvc paths and their metadata in the repository
     pub pmm: &'a XvcPathMetadataMap,
+    /// The hash algorithm co compare files
     pub algorithm: &'a HashAlgorithm,
+    /// Dependencies for each step
     pub step_dependencies: &'a HStore<XvcDependency>,
 }
 
@@ -393,6 +398,13 @@ fn thorough_compare_lines(
     }
 }
 
+/// Compares dependencies with their earlier version _superficially_, meaning the cost of
+/// comparison is minimized by being optimistic that a dependency is unchanged.
+///
+/// For example, we compare the metadata of a file instead of its content to see if it has not
+/// changed.
+///
+/// This function loads the depdency from the store and calls the respective comparison function.
 pub fn superficial_compare_dependency(
     cmp_params: &StepStateParams,
     stored_dependency_e: XvcEntity,
