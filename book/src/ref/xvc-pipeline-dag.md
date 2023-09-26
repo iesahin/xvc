@@ -34,26 +34,22 @@ All steps of the pipeline are shown as nodes in the graph.
 
 ```console
 $ xvc pipeline step new --step-name preprocess --command "echo 'preprocess'"
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc pipeline step new --step-name train --command "echo 'train'"
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
 
 ```
 
 ```console
 $ xvc pipeline dag
 digraph {
+    0 [ label = "step: START (always, )" ]
+    1 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
+    2 [ label = "step: END (never, )" ]
+    3 [ label = "step: train (by_dependencies, echo 'train')" ]
+    0 -> 1 [ label = "" ]
+    0 -> 3 [ label = "" ]
+    1 -> 2 [ label = "" ]
+    3 -> 2 [ label = "" ]
 }
 
 
