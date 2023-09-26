@@ -47,14 +47,14 @@ $ xvc pipeline step dependency --step-name train --step preprocess
 $ xvc pipeline dag
 digraph {
     0 [ label = "step: START (always, )" ]
-    1 [ label = "step: train (by_dependencies, echo 'train')" ]
+    1 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
     2 [ label = "step: END (never, )" ]
-    3 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
-    0 -> 1 [ label = "step" ]
-    0 -> 3 [ label = "step" ]
-    1 -> 2 [ label = "step" ]
-    1 -> 3 [ label = "step" ]
-    3 -> 2 [ label = "step" ]
+    3 [ label = "step: train (by_dependencies, echo 'train')" ]
+    0 -> 1 [ label = "" ]
+    0 -> 3 [ label = "" ]
+    1 -> 2 [ label = "" ]
+    3 -> 2 [ label = "" ]
+    3 -> 1 [ label = "" ]
 }
 
 
@@ -66,5 +66,17 @@ When you add a dependency between two steps, the graph shows it as a node.
 $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
 
 $ xvc pipeline dag
+digraph {
+    0 [ label = "step: START (always, )" ]
+    1 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
+    2 [ label = "step: END (never, )" ]
+    3 [ label = "step: train (by_dependencies, echo 'train')" ]
+    0 -> 1 [ label = "" ]
+    0 -> 3 [ label = "" ]
+    1 -> 2 [ label = "" ]
+    3 -> 2 [ label = "" ]
+    3 -> 1 [ label = "" ]
+}
+
 
 ```

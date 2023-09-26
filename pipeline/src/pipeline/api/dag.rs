@@ -243,6 +243,12 @@ fn make_dot_graph(
     dependency_graph: &DiGraphMap<XvcEntity, XvcDependency>,
     step_descs: &HStore<String>,
 ) -> Result<String> {
+    let mut dot_nodes = HStore::<NodeIndex>::new();
+
+    let mut dot_graph = Graph::<&str, &str>::with_capacity(
+        dependency_graph.node_count() + dependency_graph.edge_count(),
+        dependency_graph.edge_count() * dependency_graph.node_count(),
+    );
     let mut dep_descs = HStore::<String>::new();
     dependency_graph.nodes().for_each(|e_from| {
         dependency_graph.edges(e_from).for_each(|(_, e_to, dep)| {
@@ -251,35 +257,28 @@ fn make_dot_graph(
         })
     });
 
-    let mut output_nodes = HStore::<NodeIndex>::new();
-
-    let mut output_graph = Graph::<&str, &str>::with_capacity(
-        dependency_graph.node_count() + dependency_graph.edge_count(),
-        dependency_graph.edge_count() * dependency_graph.node_count(),
-    );
-
+    // for n in dependency_graph.nodes() {
+    //     let desc = &step_descs[&n];
+    //     let step_node = dot_graph.add_node(desc);
+    //     dot_nodes.map.insert(n, step_node);
+    // }
+    //
     for n in dependency_graph.nodes() {
-        let desc = &step_descs[&n];
-        let step_node = output_graph.add_node(desc);
-        output_nodes.map.insert(n, step_node);
-    }
-
-    for n in dependency_graph.nodes() {
-        let step_node = output_nodes[&n];
         for (_, e_to, dep) in dependency_graph.edges(n) {
             let desc = &dep_descs[&e_to];
+            let step_node = dot_graph.add_node(desc);
             if matches!(dep, XvcDependency::Step { .. }) {
-                let other_step = output_nodes[&e_to];
-                output_graph.add_edge(step_node, other_step, "");
+                let other_step = dot_nodes[&e_to];
+                dot_graph.add_edge(step_node, other_step, "");
             } else {
-                let dep_node = output_graph.add_node(desc);
-                output_graph.add_edge(step_node, dep_node, "");
+                let dep_node = dot_graph.add_node(desc);
+                dot_graph.add_edge(step_node, dep_node, "");
             }
         }
     }
 
-    watch!(output_graph);
-    dot_from_graph(output_graph)
+    watch!(dot_graph);
+    dot_from_graph(dot_graph)
 }
 
 /// Create a mermaid diagram from the given Graph.
