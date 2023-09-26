@@ -32,11 +32,14 @@ $ xvc init
 
 All steps of the pipeline are shown as nodes in the graph.
 
+We create a dependency between the two steps by using the `--dependencies` flag to make them run sequentially.
+
 ```console
 $ xvc pipeline step new --step-name preprocess --command "echo 'preprocess'"
 
 $ xvc pipeline step new --step-name train --command "echo 'train'"
 
+$ xvc pipeline dependency new --step-name train --step preprocess
 ```
 
 ```console
