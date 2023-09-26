@@ -25,16 +25,36 @@ As all other pipeline commands, this requires an Xvc repository.
 
 ```console
 $ git init
+Initialized empty Git repository in [CWD]/.git/
+
 $ xvc init
 ```
 
 All steps of the pipeline are shown as nodes in the graph.
 
 ```console
-$ xvc pipeline step new --name preprocess --command "echo 'preprocess'"
-$ xvc pipeline step new --name train --command "echo 'train'"
+$ xvc pipeline step new --step-name preprocess --command "echo 'preprocess'"
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
+
+$ xvc pipeline step new --step-name train --command "echo 'train'"
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
+
 ```
 
 ```console
 $ xvc pipeline dag
+digraph {
+}
+
+
 ```
