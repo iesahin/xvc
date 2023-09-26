@@ -258,21 +258,25 @@ fn make_dot_graph(
         })
     });
 
-    for (e_from, e_to, dep) in dependency_graph.edges(n) {
-        let desc = &step_descs[&e_from];
-        let step_node = dot_graph.add_node(desc);
-        dot_nodes.insert((e_from, e_to), step_node);
+    for n in dependency_graph.nodes() {
+        for (e_from, e_to, dep) in dependency_graph.edges(n) {
+            let desc = &step_descs[&e_from];
+            let step_node = dot_graph.add_node(desc);
+            dot_nodes.insert((e_from, e_to), step_node);
+        }
     }
 
-    for (e_from, e_to, dep) in dependency_graph.edges(n) {
-        let step_node = dot_nodes[&(e_from, e_to)];
-        let desc = &dep_descs[&e_to];
-        if matches!(dep, XvcDependency::Step { .. }) {
-            let other_step = dot_nodes[&(e_from, e_to)];
-            dot_graph.add_edge(step_node, other_step, "");
-        } else {
-            let dep_node = dot_graph.add_node(desc);
-            dot_graph.add_edge(step_node, dep_node, "");
+    for n in dependency_graph.nodes() {
+        for (e_from, e_to, dep) in dependency_graph.edges(n) {
+            let step_node = dot_nodes[&(e_from, e_to)];
+            let desc = &dep_descs[&e_to];
+            if matches!(dep, XvcDependency::Step { .. }) {
+                let other_step = dot_nodes[&(e_from, e_to)];
+                dot_graph.add_edge(step_node, other_step, "");
+            } else {
+                let dep_node = dot_graph.add_node(desc);
+                dot_graph.add_edge(step_node, dep_node, "");
+            }
         }
     }
 
