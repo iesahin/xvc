@@ -40,12 +40,6 @@ $ xvc pipeline step new --step-name preprocess --command "echo 'preprocess'"
 $ xvc pipeline step new --step-name train --command "echo 'train'"
 
 $ xvc pipeline step dependency --step-name train --step preprocess
-? 2
-error: unexpected argument 'new' found
-
-Usage: xvc pipeline step dependency [OPTIONS] --step-name <STEP_NAME>
-
-For more information, try '--help'.
 
 ```
 
@@ -60,6 +54,7 @@ digraph {
     0 -> 3 [ label = "" ]
     1 -> 2 [ label = "" ]
     3 -> 2 [ label = "" ]
+    3 -> 1 [ label = "" ]
 }
 
 

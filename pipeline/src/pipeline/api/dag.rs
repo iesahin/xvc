@@ -19,7 +19,6 @@ use crate::{
     XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcStep, XvcStepCommand,
 };
 
-
 #[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr)]
 #[strum(serialize_all = "lowercase")]
 pub enum XvcPipelineDagFormat {
@@ -271,10 +270,10 @@ fn make_dot_graph(
             let desc = &dep_descs[&e_to];
             if matches!(dep, XvcDependency::Step { .. }) {
                 let other_step = output_nodes[&e_to];
-                output_graph.add_edge(step_node, other_step, "");
+                output_graph.add_edge(step_node, other_step, "step");
             } else {
                 let dep_node = output_graph.add_node(desc);
-                output_graph.add_edge(step_node, dep_node, "");
+                output_graph.add_edge(step_node, dep_node, "dep");
             }
         }
     }
