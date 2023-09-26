@@ -45,10 +45,19 @@ $ xvc pipeline step dependency --step-name train --step preprocess
 
 ```console
 $ xvc pipeline dag
-? 101
-thread '<unnamed>' panicked at 'no entry found for key', pipeline/src/pipeline/api/dag.rs:273:34
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
+digraph {
+    0 [ label = "step: START (always, )" ]
+    1 [ label = "step: START (always, )" ]
+    2 [ label = "step: train (by_dependencies, echo 'train')" ]
+    3 [ label = "step: train (by_dependencies, echo 'train')" ]
+    4 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
+    0 -> 0 [ label = "" ]
+    1 -> 1 [ label = "" ]
+    2 -> 2 [ label = "" ]
+    3 -> 3 [ label = "" ]
+    4 -> 4 [ label = "" ]
+}
+
 
 ```
 
@@ -58,9 +67,18 @@ When you add a dependency between two steps, the graph shows it as a node.
 $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
 
 $ xvc pipeline dag
-? 101
-thread '<unnamed>' panicked at 'no entry found for key', pipeline/src/pipeline/api/dag.rs:273:34
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
+digraph {
+    0 [ label = "step: START (always, )" ]
+    1 [ label = "step: START (always, )" ]
+    2 [ label = "step: train (by_dependencies, echo 'train')" ]
+    3 [ label = "step: train (by_dependencies, echo 'train')" ]
+    4 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
+    0 -> 0 [ label = "" ]
+    1 -> 1 [ label = "" ]
+    2 -> 2 [ label = "" ]
+    3 -> 3 [ label = "" ]
+    4 -> 4 [ label = "" ]
+}
+
 
 ```

@@ -250,11 +250,11 @@ fn make_dot_graph(
         dependency_graph.node_count() + dependency_graph.edge_count(),
         dependency_graph.edge_count() * dependency_graph.node_count(),
     );
-    let mut dep_descs = HStore::<String>::new();
+    let mut dep_descs = HashMap::<(XvcEntity, XvcEntity), String>::new();
     dependency_graph.nodes().for_each(|e_from| {
         dependency_graph.edges(e_from).for_each(|(_, e_to, dep)| {
             let dep = dep_desc(pipeline_steps, step_descs, dep);
-            dep_descs.insert(e_to, dep);
+            dep_descs.insert((e_from, e_to), dep);
         })
     });
 
@@ -269,7 +269,7 @@ fn make_dot_graph(
     for n in dependency_graph.nodes() {
         for (e_from, e_to, dep) in dependency_graph.edges(n) {
             let step_node = dot_nodes[&(e_from, e_to)];
-            let desc = &dep_descs[&e_to];
+            let desc = &dep_descs[&(e_from, e_to)];
             if matches!(dep, XvcDependency::Step { .. }) {
                 let other_step = dot_nodes[&(e_from, e_to)];
                 dot_graph.add_edge(step_node, other_step, "");
