@@ -270,10 +270,10 @@ fn make_dot_graph(
             let desc = &dep_descs[&e_to];
             if matches!(dep, XvcDependency::Step { .. }) {
                 let other_step = output_nodes[&e_to];
-                output_graph.add_edge(step_node, other_step, "step");
+                output_graph.add_edge(step_node, other_step, "");
             } else {
                 let dep_node = output_graph.add_node(desc);
-                output_graph.add_edge(step_node, dep_node, "dep");
+                output_graph.add_edge(step_node, dep_node, "");
             }
         }
     }
