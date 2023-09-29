@@ -257,8 +257,8 @@ fn make_dot_graph(
 
 fn dep_identity(dep: &XvcDependency) -> Identity {
     match dep {
-        XvcDependency::Step(dep) => Identity::String(dep.name),
-        XvcDependency::Generic(dep) => Identity::String(dep.generic_command),
+        XvcDependency::Step(dep) => Identity::String(dep.name.clone()),
+        XvcDependency::Generic(dep) => Identity::String(dep.generic_command.clone()),
         XvcDependency::File(dep) => Identity::String(dep.path.to_string()),
         XvcDependency::GlobItems(dep) => Identity::String(dep.glob.to_string()),
         XvcDependency::Glob(dep) => Identity::String(dep.glob.to_string()),
@@ -295,20 +295,20 @@ fn dependency_graph_stmts(
         let step_deps = all_deps.children_of(&xe)?;
         let step_outs = all_outs.children_of(&xe)?;
 
-        stmts.add_edge(Edge::head_node(start_node, None).arrow_to_node(step_identity, None));
-        stmts.add_edge(Edge::head_node(step_identity, None).arrow_to_node(end_node, None));
+        stmts = stmts.add_edge(Edge::head_node(start_node.clone(), None).arrow_to_node(step_identity.clone(), None));
+        stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(end_node.clone(), None));
 
         for (xe_dep, dep) in step_deps.iter() {
             let dep_identity = dep_identity(dep);
-            stmts.add_edge(Edge::head_node(step_identity, None).arrow_to_node(dep_identity, None));
+            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
         }
 
         for (xe_dep, out) in step_outs.iter() {
-            stmts.add_edge(Edge::head_node(step_identity, None).arrow_to_node(out_identity(out), None));
+            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity(out), None));
         }
     }
 
-    stmts
+    Ok(stmts)
 }
 
 /// Create a mermaid diagram from the given Graph.

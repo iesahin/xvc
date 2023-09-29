@@ -25,18 +25,18 @@
         "./pipeline/Cargo.toml"
     ],
     "workbench.colorCustomizations": {
-        "titleBar.activeBackground": "#a6e559",
+        "titleBar.activeBackground": "#ed4d0e",
         "titleBar.activeForeground": "#000000",
-        "titleBar.inactiveBackground": "#a6e559",
+        "titleBar.inactiveBackground": "#ed4d0e",
         "titleBar.inactiveForeground": "#000000",
-        "titleBar.border": "#a6e559",
-        "activityBar.background": "#a6e559",
+        "titleBar.border": "#ed4d0e",
+        "activityBar.background": "#ed4d0e",
         "activityBar.foreground": "#000000",
-        "statusBar.background": "#a6e559",
+        "statusBar.background": "#ed4d0e",
         "statusBar.foreground": "#000000",
-        "statusBar.debuggingBackground": "#a6e559",
+        "statusBar.debuggingBackground": "#ed4d0e",
         "statusBar.debuggingForeground": "#000000",
-        "tab.activeBorder": "#a6e559",
+        "tab.activeBorder": "#ed4d0e",
         "iLoveWorkSpaceColors": true,
         "iLoveWorkSpaceRandom": true
     }
