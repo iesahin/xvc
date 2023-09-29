@@ -250,7 +250,7 @@ fn make_dot_graph(
     let graph = GraphBuilder::default()
         .graph_type(tabbycat::GraphType::DiGraph)
         .strict(false)
-        .id(Identity::id("pipeline".to_string()))
+        .id(Identity::id("pipeline".to_string())?)
         .stmts(dependency_graph_stmts(pipeline_steps, all_deps, all_outs)?)
         .build().map_err(|e| anyhow::anyhow!("Failed to build graph. {e}"))?;
 
@@ -259,25 +259,25 @@ fn make_dot_graph(
 
 fn dep_identity(dep: &XvcDependency) -> Result<Identity> {
     match dep {
-        XvcDependency::Step(dep) => Identity::id(dep.name.clone()),
-        XvcDependency::Generic(dep) => Identity::id(dep.generic_command.clone()),
-        XvcDependency::File(dep) => Identity::id(dep.path.to_string()),
-        XvcDependency::GlobItems(dep) => Identity::id(dep.glob.to_string()),
-        XvcDependency::Glob(dep) => Identity::id(dep.glob.to_string()),
-        XvcDependency::RegexItems(dep) => Identity::id(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
-        XvcDependency::Regex(dep) => Identity::id(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
-        XvcDependency::Param(dep) => Identity::id(format!("{}::{}", dep.path.to_string(), dep.key.to_string())),
-        XvcDependency::LineItems(dep) => Identity::id(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
-        XvcDependency::Lines(dep) => Identity::id(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
-        XvcDependency::UrlDigest(dep) => Identity::id(dep.url.to_string()),
+        XvcDependency::Step(dep) => Identity::id(dep.name.clone()).map_err(|e| e.into()),
+        XvcDependency::Generic(dep) => Identity::id(dep.generic_command.clone()).map_err(|e| e.into()),
+        XvcDependency::File(dep) => Identity::id(dep.path.to_string()).map_err(|e| e.into()),
+        XvcDependency::GlobItems(dep) => Identity::id(dep.glob.to_string()).map_err(|e| e.into()),
+        XvcDependency::Glob(dep) => Identity::id(dep.glob.to_string()).map_err(|e| e.into()),
+        XvcDependency::RegexItems(dep) => Identity::id(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())).map_err(|e| e.into()),
+        XvcDependency::Regex(dep) => Identity::id(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())).map_err(|e| e.into()),
+        XvcDependency::Param(dep) => Identity::id(format!("{}::{}", dep.path.to_string(), dep.key.to_string())).map_err(|e| e.into()),
+        XvcDependency::LineItems(dep) => Identity::id(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())).map_err(|e| e.into()),
+        XvcDependency::Lines(dep) => Identity::id(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())).map_err(|e| e.into()),
+        XvcDependency::UrlDigest(dep) => Identity::id(dep.url.to_string()).map_err(|e| e.into()),
     }
 }
 
 fn out_identity(out: &XvcOutput) -> Result<Identity> {
     match out {
-        XvcOutput::File { path } => Identity::id(path.to_string()),
-        XvcOutput::Metric { path, format } => Identity::id(path.to_string()),
-        XvcOutput::Image { path } => Identity::id(path.to_string()),
+        XvcOutput::File { path } => Identity::id(path.to_string()).map_err(|e| e.into()),
+        XvcOutput::Metric { path, format } => Identity::id(path.to_string()).map_err(|e| e.into()),
+        XvcOutput::Image { path } => Identity::id(path.to_string()).map_err(|e| e.into()),
     }
 }
 
@@ -301,12 +301,12 @@ fn dependency_graph_stmts(
         stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(end_node.clone(), None));
 
         for (xe_dep, dep) in step_deps.iter() {
-            let dep_identity = dep_identity(dep);
+            let dep_identity = dep_identity(dep)?;
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
         }
 
         for (xe_dep, out) in step_outs.iter() {
-            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity(out), None));
+            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity(out)?, None));
         }
     }
 

@@ -1,3 +1,4 @@
+//! Cloud storage implementations for xvc.
 #[cfg(feature = "digital-ocean")]
 pub mod digital_ocean;
 pub mod event;
