@@ -289,16 +289,11 @@ fn dependency_graph_stmts(
 ) -> Result<StmtList> {
     let mut stmts = StmtList::new();
 
-    let start_node = Identity::String("START".to_string());
-    let end_node = Identity::String("END".to_string());
 
     for (xe, step) in pipeline_steps.iter() {
         let step_identity = Identity::String(step.name.clone());
         let step_deps = all_deps.children_of(&xe)?;
         let step_outs = all_outs.children_of(&xe)?;
-
-        stmts = stmts.add_edge(Edge::head_node(start_node.clone(), None).arrow_to_node(step_identity.clone(), None));
-        stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(end_node.clone(), None));
 
         for (xe_dep, dep) in step_deps.iter() {
             let dep_identity = dep_identity(dep)?;
