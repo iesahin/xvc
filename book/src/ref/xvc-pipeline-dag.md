@@ -48,9 +48,9 @@ $ xvc pipeline dag
 digraph {
     0 [ label = "step: START (always, )" ]
     1 [ label = "step: START (always, )" ]
-    2 [ label = "step: train (by_dependencies, echo 'train')" ]
+    2 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
     3 [ label = "step: train (by_dependencies, echo 'train')" ]
-    4 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
+    4 [ label = "step: train (by_dependencies, echo 'train')" ]
     0 -> 0 [ label = "" ]
     1 -> 1 [ label = "" ]
     2 -> 2 [ label = "" ]
@@ -70,9 +70,9 @@ $ xvc pipeline dag
 digraph {
     0 [ label = "step: START (always, )" ]
     1 [ label = "step: START (always, )" ]
-    2 [ label = "step: train (by_dependencies, echo 'train')" ]
+    2 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
     3 [ label = "step: train (by_dependencies, echo 'train')" ]
-    4 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
+    4 [ label = "step: train (by_dependencies, echo 'train')" ]
     0 -> 0 [ label = "" ]
     1 -> 1 [ label = "" ]
     2 -> 2 [ label = "" ]

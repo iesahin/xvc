@@ -1,8 +1,10 @@
+use blake3::OUT_LEN;
 use petgraph::algo::toposort;
 
 use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
+use tabbycat::{GraphBuilder, StmtList, Identity, Edge};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, XvcEntity, XvcStore};
+use xvc_ecs::{HStore, XvcEntity, XvcStore, R1NStore};
 use xvc_logging::{output, watch, XvcOutputSender};
 
 use std::collections::HashMap;
@@ -220,7 +222,7 @@ pub fn cmd_dag(
 
     let out_string = match format {
         XvcPipelineDagFormat::Dot => {
-            make_dot_graph(&pipeline_steps, &dependency_graph, &step_descs)?
+            make_dot_graph(&pipeline_steps, &all_deps, &all_outs)?
         }
         XvcPipelineDagFormat::Mermaid => make_mermaid_graph(
             &pipeline_steps,
@@ -241,47 +243,72 @@ pub fn cmd_dag(
 
 fn make_dot_graph(
     pipeline_steps: &HStore<XvcStep>,
-    dependency_graph: &DiGraphMap<XvcEntity, XvcDependency>,
-    step_descs: &HStore<String>,
+    all_deps: &R1NStore<XvcStep, XvcDependency>,
+    all_outs: &R1NStore<XvcStep, XvcOutput>,
 ) -> Result<String> {
-    let mut dot_nodes = HashMap::<(XvcEntity, XvcEntity), NodeIndex>::new();
+    let graph = GraphBuilder::default()
+        .graph_type(tabbycat::GraphType::DiGraph)
+        .strict(false)
+        .stmts(dependency_graph_stmts(pipeline_steps, all_deps, all_outs)?)
+        .build().map_err(|e| anyhow::anyhow!("Failed to build graph. {e}"))?;
 
-    let mut dot_graph = Graph::<&str, &str>::with_capacity(
-        dependency_graph.node_count() + dependency_graph.edge_count(),
-        dependency_graph.edge_count() * dependency_graph.node_count(),
-    );
-    let mut dep_descs = HashMap::<(XvcEntity, XvcEntity), String>::new();
-    dependency_graph.nodes().for_each(|e_from| {
-        dependency_graph.edges(e_from).for_each(|(_, e_to, dep)| {
-            let dep = dep_desc(pipeline_steps, step_descs, dep);
-            dep_descs.insert((e_from, e_to), dep);
-        })
-    });
+    Ok(graph.to_string())
+}
 
-    for n in dependency_graph.nodes() {
-        for (e_from, e_to, dep) in dependency_graph.edges(n) {
-            let desc = &step_descs[&e_from];
-            let step_node = dot_graph.add_node(desc);
-            dot_nodes.insert((e_from, e_to), step_node);
+fn dep_identity(dep: &XvcDependency) -> Identity {
+    match dep {
+        XvcDependency::Step(dep) => Identity::String(dep.name),
+        XvcDependency::Generic(dep) => Identity::String(dep.generic_command),
+        XvcDependency::File(dep) => Identity::String(dep.path.to_string()),
+        XvcDependency::GlobItems(dep) => Identity::String(dep.glob.to_string()),
+        XvcDependency::Glob(dep) => Identity::String(dep.glob.to_string()),
+        XvcDependency::RegexItems(dep) => Identity::String(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
+        XvcDependency::Regex(dep) => Identity::String(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
+        XvcDependency::Param(dep) => Identity::String(format!("{}::{}", dep.path.to_string(), dep.key.to_string())),
+        XvcDependency::LineItems(dep) => Identity::String(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
+        XvcDependency::Lines(dep) => Identity::String(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
+        XvcDependency::UrlDigest(dep) => Identity::String(dep.url.to_string()),
+    }
+}
+
+fn out_identity(out: &XvcOutput) -> Identity {
+    match out {
+        XvcOutput::File { path } => Identity::String(path.to_string()),
+        XvcOutput::Metric { path, format } => Identity::String(path.to_string()),
+        XvcOutput::Image { path } => Identity::String(path.to_string()),
+    }
+}
+
+/// Create tabbycat::StmtList for dependencies and outputs
+fn dependency_graph_stmts(
+    pipeline_steps: &HStore<XvcStep>,
+    all_deps: &R1NStore<XvcStep, XvcDependency>,
+    all_outs: &R1NStore<XvcStep, XvcOutput>,
+) -> Result<StmtList> {
+    let mut stmts = StmtList::new();
+
+    let start_node = Identity::String("START".to_string());
+    let end_node = Identity::String("END".to_string());
+
+    for (xe, step) in pipeline_steps.iter() {
+        let step_identity = Identity::String(step.name.clone());
+        let step_deps = all_deps.children_of(&xe)?;
+        let step_outs = all_outs.children_of(&xe)?;
+
+        stmts.add_edge(Edge::head_node(start_node, None).arrow_to_node(step_identity, None));
+        stmts.add_edge(Edge::head_node(step_identity, None).arrow_to_node(end_node, None));
+
+        for (xe_dep, dep) in step_deps.iter() {
+            let dep_identity = dep_identity(dep);
+            stmts.add_edge(Edge::head_node(step_identity, None).arrow_to_node(dep_identity, None));
+        }
+
+        for (xe_dep, out) in step_outs.iter() {
+            stmts.add_edge(Edge::head_node(step_identity, None).arrow_to_node(out_identity(out), None));
         }
     }
 
-    for n in dependency_graph.nodes() {
-        for (e_from, e_to, dep) in dependency_graph.edges(n) {
-            let step_node = dot_nodes[&(e_from, e_to)];
-            let desc = &dep_descs[&(e_from, e_to)];
-            if matches!(dep, XvcDependency::Step { .. }) {
-                let other_step = dot_nodes[&(e_from, e_to)];
-                dot_graph.add_edge(step_node, other_step, "");
-            } else {
-                let dep_node = dot_graph.add_node(desc);
-                dot_graph.add_edge(step_node, dep_node, "");
-            }
-        }
-    }
-
-    watch!(dot_graph);
-    dot_from_graph(dot_graph)
+    stmts
 }
 
 /// Create a mermaid diagram from the given Graph.

@@ -199,6 +199,7 @@ pub enum Error {
     },
 }
 
+
 impl<T> From<crossbeam_channel::SendError<T>> for Error
 where
     T: Debug,
