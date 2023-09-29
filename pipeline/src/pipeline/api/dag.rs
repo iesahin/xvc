@@ -254,7 +254,7 @@ fn make_dot_graph(
         .stmts(dependency_graph_stmts(pipeline_steps, all_deps, all_outs)?)
         .build().map_err(|e| anyhow::anyhow!("Failed to build graph. {e}"))?;
 
-    Ok(format!("{:#?}", graph.to_string()))
+    Ok(format!("{}", graph))
 }
 
 fn dep_identity(dep: &XvcDependency) -> Result<Identity> {
