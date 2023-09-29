@@ -258,7 +258,7 @@ fn make_dot_graph(
 }
 
 fn id_from_string(s: &str) -> Result<Identity> {
-    let hash_val = format!("node-{}", seahash::hash(s.as_bytes()));
+    let hash_val = format!("i{}", seahash::hash(s.as_bytes()));
     Identity::id(hash_val).map_err(|e| e.into())
 }
 
