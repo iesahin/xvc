@@ -257,27 +257,32 @@ fn make_dot_graph(
     Ok(format!("{}", graph))
 }
 
+fn id_from_string(s: &str) -> Result<Identity> {
+    let hash_val = format!("node-{}", seahash::hash(s.as_bytes()));
+    Identity::id(hash_val).map_err(|e| e.into())
+}
+
 fn dep_identity(dep: &XvcDependency) -> Result<Identity> {
     match dep {
-        XvcDependency::Step(dep) => Identity::id(dep.name.clone()).map_err(|e| e.into()),
-        XvcDependency::Generic(dep) => Identity::id(dep.generic_command.clone()).map_err(|e| e.into()),
-        XvcDependency::File(dep) => Identity::id(dep.path.to_string()).map_err(|e| e.into()),
-        XvcDependency::GlobItems(dep) => Identity::id(dep.glob.to_string()).map_err(|e| e.into()),
-        XvcDependency::Glob(dep) => Identity::id(dep.glob.to_string()).map_err(|e| e.into()),
-        XvcDependency::RegexItems(dep) => Identity::id(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())).map_err(|e| e.into()),
-        XvcDependency::Regex(dep) => Identity::id(format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())).map_err(|e| e.into()),
-        XvcDependency::Param(dep) => Identity::id(format!("{}::{}", dep.path.to_string(), dep.key.to_string())).map_err(|e| e.into()),
-        XvcDependency::LineItems(dep) => Identity::id(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())).map_err(|e| e.into()),
-        XvcDependency::Lines(dep) => Identity::id(format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())).map_err(|e| e.into()),
-        XvcDependency::UrlDigest(dep) => Identity::id(dep.url.to_string()).map_err(|e| e.into()),
+        XvcDependency::Step(dep) => id_from_string(&dep.name),
+        XvcDependency::Generic(dep) => id_from_string(&dep.generic_command),
+        XvcDependency::File(dep) => id_from_string(&dep.path.to_string()),
+        XvcDependency::GlobItems(dep) => id_from_string(&dep.glob.to_string()),
+        XvcDependency::Glob(dep) => id_from_string(&dep.glob.to_string()),
+        XvcDependency::RegexItems(dep) => id_from_string(&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
+        XvcDependency::Regex(dep) => id_from_string(&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
+        XvcDependency::Param(dep) => id_from_string(&format!("{}::{}", dep.path.to_string(), dep.key.to_string())),
+        XvcDependency::LineItems(dep) => id_from_string(&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
+        XvcDependency::Lines(dep) => id_from_string(&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
+        XvcDependency::UrlDigest(dep) => id_from_string(&dep.url.to_string()),
     }
 }
 
 fn out_identity(out: &XvcOutput) -> Result<Identity> {
     match out {
-        XvcOutput::File { path } => Identity::id(path.to_string()).map_err(|e| e.into()),
-        XvcOutput::Metric { path, format } => Identity::id(path.to_string()).map_err(|e| e.into()),
-        XvcOutput::Image { path } => Identity::id(path.to_string()).map_err(|e| e.into()),
+        XvcOutput::File { path } => id_from_string(&path.to_string()),
+        XvcOutput::Metric { path,  .. } => id_from_string(&path.to_string()),
+        XvcOutput::Image { path } => id_from_string(&path.to_string()),
     }
 }
 
