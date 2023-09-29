@@ -1,4 +1,5 @@
 use blake3::OUT_LEN;
+use clap::Id;
 use petgraph::algo::toposort;
 
 use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
@@ -247,6 +248,7 @@ fn make_dot_graph(
     all_outs: &R1NStore<XvcStep, XvcOutput>,
 ) -> Result<String> {
     let graph = GraphBuilder::default()
+        .id(Identity::String("pipeline".to_string())
         .graph_type(tabbycat::GraphType::DiGraph)
         .strict(false)
         .stmts(dependency_graph_stmts(pipeline_steps, all_deps, all_outs)?)
