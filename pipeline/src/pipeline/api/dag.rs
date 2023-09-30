@@ -308,17 +308,17 @@ fn dep_node_attributes(dep: &XvcDependency) -> AttrList {
     };
 
     let dep_label = match dep {
-        XvcDependency::Step(dep) => (&dep.name),
-        XvcDependency::Generic(dep) => (&dep.generic_command),
-        XvcDependency::File(dep) => (&dep.path.to_string()),
-        XvcDependency::GlobItems(dep) => (&dep.glob.to_string()),
-        XvcDependency::Glob(dep) => (&dep.glob.to_string()),
-        XvcDependency::RegexItems(dep) => (&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
-        XvcDependency::Regex(dep) => (&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
-        XvcDependency::Param(dep) => (&format!("{}::{}", dep.path.to_string(), dep.key.to_string())),
-        XvcDependency::LineItems(dep) => (&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
-        XvcDependency::Lines(dep) => (&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
-        XvcDependency::UrlDigest(dep) => (&dep.url.to_string()),
+        XvcDependency::Step(dep) => dep.name.clone(),
+        XvcDependency::Generic(dep) => dep.generic_command.clone(),
+        XvcDependency::File(dep) => dep.path.to_string(),
+        XvcDependency::GlobItems(dep) => dep.glob.to_string(),
+        XvcDependency::Glob(dep) => dep.glob.to_string(),
+        XvcDependency::RegexItems(dep) => format!("{}:/{}", dep.path.to_string(), dep.regex.to_string()),
+        XvcDependency::Regex(dep) => format!("{}:/{}", dep.path.to_string(), dep.regex.to_string()),
+        XvcDependency::Param(dep) => format!("{}::{}", dep.path.to_string(), dep.key.to_string()),
+        XvcDependency::LineItems(dep) => format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string()),
+        XvcDependency::Lines(dep) => format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string()),
+        XvcDependency::UrlDigest(dep) => dep.url.to_string(),
     };
 
 
