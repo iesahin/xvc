@@ -3,7 +3,8 @@ use clap::Id;
 use petgraph::algo::toposort;
 
 use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
-use tabbycat::{GraphBuilder, StmtList, Identity, Edge};
+use tabbycat::attributes::{shape, Shape, label, Color, color};
+use tabbycat::{GraphBuilder, StmtList, Identity, Edge, AttrList};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore, R1NStore};
 use xvc_logging::{output, watch, XvcOutputSender};
@@ -286,6 +287,64 @@ fn out_identity(out: &XvcOutput) -> Result<Identity> {
     }
 }
 
+fn step_node_attributes(step: &XvcStep) -> AttrList {
+    AttrList::new().add_pair(shape(Shape::Box))
+}
+
+fn dep_node_attributes(dep: &XvcDependency) -> AttrList {
+
+    let dep_shape = match dep {
+        XvcDependency::Step(_) => Shape::Box,
+        XvcDependency::Generic(_) => Shape::Trapezium,
+        XvcDependency::File(_) => Shape::Note,
+        XvcDependency::GlobItems(_) => Shape::Folder,
+        XvcDependency::Glob(_) => Shape::Folder,
+        XvcDependency::RegexItems(_) => Shape::Signature,
+        XvcDependency::Regex(_) => Shape::Signature,
+        XvcDependency::Param(_) => Shape::Msquare,
+        XvcDependency::LineItems(_) => Shape::Component,
+        XvcDependency::Lines(_) => Shape::Component,
+        XvcDependency::UrlDigest(_) => Shape::Invtrapezium,
+    };
+
+    let dep_label = match dep {
+        XvcDependency::Step(dep) => (&dep.name),
+        XvcDependency::Generic(dep) => (&dep.generic_command),
+        XvcDependency::File(dep) => (&dep.path.to_string()),
+        XvcDependency::GlobItems(dep) => (&dep.glob.to_string()),
+        XvcDependency::Glob(dep) => (&dep.glob.to_string()),
+        XvcDependency::RegexItems(dep) => (&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
+        XvcDependency::Regex(dep) => (&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
+        XvcDependency::Param(dep) => (&format!("{}::{}", dep.path.to_string(), dep.key.to_string())),
+        XvcDependency::LineItems(dep) => (&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
+        XvcDependency::Lines(dep) => (&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
+        XvcDependency::UrlDigest(dep) => (&dep.url.to_string()),
+    };
+
+
+    AttrList::new().add_pair(shape(dep_shape)).add_pair(label(dep_label))
+
+}
+
+fn out_node_attributes(out: &XvcOutput) -> AttrList {
+
+    let out_shape = Shape::Note;
+
+    let out_label = match out {
+        XvcOutput::File { path } => path.to_string(),
+        XvcOutput::Metric { path, format } => path.to_string(),
+        XvcOutput::Image { path } => path.to_string(),
+    };
+
+    let out_color = match out {
+        XvcOutput::File { path } => Color::Black,
+        XvcOutput::Metric { path, format } => Color::Blue,
+        XvcOutput::Image { path } => Color::Green,
+    };
+
+    AttrList::new().add_pair(shape(out_shape)).add_pair(color(out_color)).add_pair(label(out_label))
+}
+
 /// Create tabbycat::StmtList for dependencies and outputs
 fn dependency_graph_stmts(
     pipeline_steps: &HStore<XvcStep>,
@@ -296,17 +355,22 @@ fn dependency_graph_stmts(
 
 
     for (xe, step) in pipeline_steps.iter() {
-        let step_identity = Identity::String(step.name.clone());
+        let step_identity = id_from_string(&step.name)?;
         let step_deps = all_deps.children_of(&xe)?;
         let step_outs = all_outs.children_of(&xe)?;
 
+        stmts = stmts.add_node(step_identity, None, Some(step_node_attributes(&step)));
+
         for (xe_dep, dep) in step_deps.iter() {
             let dep_identity = dep_identity(dep)?;
+            stmts = stmts.add_node(dep_identity, None, Some(dep_node_attributes(&dep)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
         }
 
         for (xe_dep, out) in step_outs.iter() {
-            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity(out)?, None));
+            let out_identity = out_identity(out)?;
+            stmts = stmts.add_node(out_identity, None, Some(out_node_attributes(&dep)));
+            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None));
         }
     }
 
