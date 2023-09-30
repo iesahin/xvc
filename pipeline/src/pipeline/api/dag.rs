@@ -1,4 +1,3 @@
-use cached::proc_macro::cached;
 use petgraph::algo::toposort;
 
 use petgraph::graphmap::DiGraphMap;
@@ -283,7 +282,7 @@ fn out_identity(out: &XvcOutput) -> Result<Identity> {
 }
 
 fn step_node_attributes(step: &XvcStep) -> AttrList {
-    AttrList::new().add_pair(shape(Shape::Box))
+    AttrList::new().add_pair(shape(Shape::Box)).add_pair(label(step.name.clone()))
 }
 
 fn dep_node_attributes(dep: &XvcDependency) -> AttrList {
