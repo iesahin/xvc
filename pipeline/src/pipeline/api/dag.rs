@@ -369,7 +369,7 @@ fn dependency_graph_stmts(
 
         for (xe_dep, out) in step_outs.iter() {
             let out_identity = out_identity(out)?;
-            stmts = stmts.add_node(out_identity, None, Some(out_node_attributes(&dep)));
+            stmts = stmts.add_node(out_identity, None, Some(out_node_attributes(&out)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None));
         }
     }
