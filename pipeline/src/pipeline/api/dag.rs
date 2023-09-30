@@ -349,7 +349,7 @@ fn dependency_graph_stmts(
 
     let  mut id_map = HashMap::<String, Identity>::new();
 
-    let short_id = |id: Identity| -> Result<Identity> {
+    let mut short_id = |id: Identity| -> Result<Identity> {
         let str_key = id.to_string();
         if !id_map.contains_key(&str_key) {
             id_map.insert(str_key.clone(), Identity::id(format!("n{}", id_map.len()))?);
@@ -358,20 +358,20 @@ fn dependency_graph_stmts(
     };
 
     for (xe, step) in pipeline_steps.iter() {
-        let step_identity = id_from_string(&step.name)?;
+        let step_identity = short_id(id_from_string(&step.name)?)?;
         let step_deps = all_deps.children_of(&xe)?;
         let step_outs = all_outs.children_of(&xe)?;
 
         stmts = stmts.add_node(step_identity.clone(), None, Some(step_node_attributes(&step)));
 
         for (xe_dep, dep) in step_deps.iter() {
-            let dep_identity = dep_identity(dep)?;
+            let dep_identity = short_id(dep_identity(dep)?)?;
             stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(&dep)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
         }
 
         for (xe_dep, out) in step_outs.iter() {
-            let out_identity = out_identity(out)?;
+            let out_identity = short_id(out_identity(out)?)?;
             stmts = stmts.add_node(out_identity.clone(), None, Some(out_node_attributes(&out)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None));
         }
