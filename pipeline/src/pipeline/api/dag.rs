@@ -1,8 +1,7 @@
-use blake3::OUT_LEN;
-use clap::Id;
+use cached::proc_macro::cached;
 use petgraph::algo::toposort;
 
-use petgraph::{dot::Dot, graph::NodeIndex, graphmap::DiGraphMap, Graph};
+use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{shape, Shape, label, Color, color};
 use tabbycat::{GraphBuilder, StmtList, Identity, Edge, AttrList};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
@@ -35,10 +34,6 @@ impl Default for XvcPipelineDagFormat {
     fn default() -> XvcPipelineDagFormat {
         XvcPipelineDagFormat::Dot
     }
-}
-
-pub fn dot_from_graph(graph: Graph<&str, &str>) -> Result<String> {
-    Ok(Dot::new(&graph).to_string())
 }
 
 fn step_desc(
@@ -353,6 +348,15 @@ fn dependency_graph_stmts(
 ) -> Result<StmtList> {
     let mut stmts = StmtList::new();
 
+    let  mut id_map = HashMap::<String, Identity>::new();
+
+    let short_id = |id: Identity| -> Result<Identity> {
+        let str_key = id.to_string();
+        if !id_map.contains_key(&str_key) {
+            id_map.insert(str_key.clone(), Identity::id(format!("n{}", id_map.len()))?);
+            }
+        Ok(id_map[&str_key].clone())
+    };
 
     for (xe, step) in pipeline_steps.iter() {
         let step_identity = id_from_string(&step.name)?;
