@@ -359,17 +359,17 @@ fn dependency_graph_stmts(
         let step_deps = all_deps.children_of(&xe)?;
         let step_outs = all_outs.children_of(&xe)?;
 
-        stmts = stmts.add_node(step_identity, None, Some(step_node_attributes(&step)));
+        stmts = stmts.add_node(step_identity.clone(), None, Some(step_node_attributes(&step)));
 
         for (xe_dep, dep) in step_deps.iter() {
             let dep_identity = dep_identity(dep)?;
-            stmts = stmts.add_node(dep_identity, None, Some(dep_node_attributes(&dep)));
+            stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(&dep)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
         }
 
         for (xe_dep, out) in step_outs.iter() {
             let out_identity = out_identity(out)?;
-            stmts = stmts.add_node(out_identity, None, Some(out_node_attributes(&out)));
+            stmts = stmts.add_node(out_identity.clone(), None, Some(out_node_attributes(&out)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None));
         }
     }
