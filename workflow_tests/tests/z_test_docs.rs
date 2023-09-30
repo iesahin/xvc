@@ -144,6 +144,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("perl", which::which("perl"))
         .register_bin("tree", which::which("tree"))
         .register_bin("zsh", which::which("zsh"))
+        .register_bin("dot", which::which("dot"))
         .case("docs/*/*.md")
         .timeout(Duration::from_secs(10))
         // We skip this for the time being.
