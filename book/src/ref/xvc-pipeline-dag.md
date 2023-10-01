@@ -63,11 +63,7 @@ You can use `--mermaid` option to get a [mermaid.js](https://mermaid.js.org) dia
 
 ```
 $ xvc pipeline dag --format=mermaid
-? 2
-error: unexpected argument '--mermaid' found
-
-Usage: xvc pipeline dag [OPTIONS]
-
-For more information, try '--help'.
+flowchart TD
+    n0["preprocess"]    n1["data/*"] --> n0    n2["train"]    n0["preprocess"] --> n2
 
 ```

@@ -362,20 +362,20 @@ fn make_mermaid_graph(
 
         let step_label = s.name.clone();
         let step_id = short_id(id_from_string(&step_label)?)?;
-        res_string.push_str(&format!("    {}[\"{}\"]", step_id, step_label));
+        res_string.push_str(&format!("    {}[\"{}\"]\n", step_id, step_label));
 
         for (_, dep) in deps.iter() {
             let dep_label = dep_label(dep);
             let dep_id = short_id(id_from_string(&dep_label)?)?;
             // TODO: Specialize the shape according to dependency type
-            res_string.push_str(&format!("    {}[\"{}\"] --> {}", dep_id, dep_label, step_id));
+            res_string.push_str(&format!("    {}[\"{}\"] --> {}\n", dep_id, dep_label, step_id));
         }
 
         for (_, out) in outs.iter() {
             let out_label = out_label(out);
             let out_id = short_id(id_from_string(&out_label)?)?;
             // TODO: Add commands that produce these outputs
-            res_string.push_str(&format!("    {}[\"{}\"] --> {}", out_id, out_label, step_id));
+            res_string.push_str(&format!("    {}[\"{}\"] --> {}\n", out_id, out_label, step_id));
         }
     }
 
