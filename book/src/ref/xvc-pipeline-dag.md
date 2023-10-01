@@ -45,7 +45,7 @@ $ xvc pipeline step dependency --step-name train --step preprocess
 
 ```console
 $ xvc pipeline dag
-digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=box;label="train";];n0[shape=box;label="preprocess";];n1->n0;}
+digraph pipeline{n0[shape=box;label="train";];n1[shape=box;label="preprocess";];n0->n1;n1[shape=box;label="preprocess";];}
 
 ```
 
@@ -62,6 +62,12 @@ digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=folder;label="data/*
 You can use `--mermaid` option to get a [mermaid.js](https://mermaid.js.org) diagram.
 
 ```
-$ xvc pipeline dag --mermaid
+$ xvc pipeline dag --format=mermaid
+? 2
+error: unexpected argument '--mermaid' found
+
+Usage: xvc pipeline dag [OPTIONS]
+
+For more information, try '--help'.
 
 ```
