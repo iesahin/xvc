@@ -64,7 +64,7 @@ jobs:
           brew install tree
 
       - name: Git config for automated Git tests
-        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev'
+        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev && git config --global init.defaultBranch main'
 
       - name: Write the private key file for one.emresult.com connection
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
