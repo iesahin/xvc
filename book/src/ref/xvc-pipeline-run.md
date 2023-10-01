@@ -44,7 +44,9 @@ $ xvc pipeline step new --step-name hello --command "echo hello"
 
 ```console
 $ xvc pipeline dag --format=mermaid
-digraph pipeline{n0[shape=box;label="hello";];}
+flowchart TD
+    n0["hello"]
+
 
 ```
 
@@ -53,7 +55,7 @@ You can run the default pipeline without specifying its name.
 ```console
 $ xvc pipeline run
 [OUT] [hello] hello
-
+ 
 
 ```
 
@@ -78,6 +80,6 @@ $ xvc pipeline --name my-pipeline step new --step-name my-hello --command "echo 
 ```console
 $ xvc pipeline run --name my-pipeline
 [OUT] [my-hello] hello from my-pipeline
-
+ 
 
 ```
