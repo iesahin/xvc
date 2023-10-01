@@ -45,19 +45,7 @@ $ xvc pipeline step dependency --step-name train --step preprocess
 
 ```console
 $ xvc pipeline dag
-digraph {
-    0 [ label = "step: START (always, )" ]
-    1 [ label = "step: START (always, )" ]
-    2 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
-    3 [ label = "step: train (by_dependencies, echo 'train')" ]
-    4 [ label = "step: train (by_dependencies, echo 'train')" ]
-    0 -> 0 [ label = "" ]
-    1 -> 1 [ label = "" ]
-    2 -> 2 [ label = "" ]
-    3 -> 3 [ label = "" ]
-    4 -> 4 [ label = "" ]
-}
-
+digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=box;label="train";];n0[shape=box;label="preprocess";];n1->n0;}
 
 ```
 
@@ -67,18 +55,13 @@ When you add a dependency between two steps, the graph shows it as a node.
 $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
 
 $ xvc pipeline dag
-digraph {
-    0 [ label = "step: START (always, )" ]
-    1 [ label = "step: START (always, )" ]
-    2 [ label = "step: preprocess (by_dependencies, echo 'preprocess')" ]
-    3 [ label = "step: train (by_dependencies, echo 'train')" ]
-    4 [ label = "step: train (by_dependencies, echo 'train')" ]
-    0 -> 0 [ label = "" ]
-    1 -> 1 [ label = "" ]
-    2 -> 2 [ label = "" ]
-    3 -> 3 [ label = "" ]
-    4 -> 4 [ label = "" ]
-}
+digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=folder;label="data/*";];n0->n1;n2[shape=box;label="train";];n0[shape=box;label="preprocess";];n2->n0;}
 
+```
+
+You can use `--mermaid` option to get a [mermaid.js](https://mermaid.js.org) diagram.
+
+```
+$ xvc pipeline dag --mermaid
 
 ```
