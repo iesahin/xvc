@@ -55,7 +55,7 @@ When you add a dependency between two steps, the graph shows it as a node.
 $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
 
 $ xvc pipeline dag
-digraph pipeline{n0[shape=box;label="train";];n1[shape=box;label="preprocess";];n0->n1;n1[shape=box;label="preprocess";];n2[shape=folder;label="data/*";];n1->n2;}
+digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=folder;label="data/*";];n0->n1;n2[shape=box;label="train";];n0[shape=box;label="preprocess";];n2->n0;}
 
 ```
 
