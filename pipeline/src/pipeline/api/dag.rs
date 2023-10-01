@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{shape, Shape, label, Color, color};
 use tabbycat::{GraphBuilder, StmtList, Identity, Edge, AttrList};
@@ -234,20 +235,20 @@ fn dependency_graph_stmts(
         Ok(id_map[&str_key].clone())
     };
 
-    for (xe, step) in pipeline_steps.iter() {
+    for (xe, step) in pipeline_steps.iter().sorted() {
         let step_identity = short_id(id_from_string(&step.name)?)?;
         let step_deps = all_deps.children_of(&xe)?;
         let step_outs = all_outs.children_of(&xe)?;
 
         stmts = stmts.add_node(step_identity.clone(), None, Some(step_node_attributes(&step)));
 
-        for (_, dep) in step_deps.iter() {
+        for (_, dep) in step_deps.iter().sorted() {
             let dep_identity = short_id(dep_identity(dep)?)?;
             stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(&dep)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
         }
 
-        for (_, out) in step_outs.iter() {
+        for (_, out) in step_outs.iter().sorted() {
             let out_identity = short_id(out_identity(out)?)?;
             stmts = stmts.add_node(out_identity.clone(), None, Some(out_node_attributes(&out)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None));
@@ -278,7 +279,7 @@ fn make_mermaid_graph(
     let mut res_string = String::new();
     res_string.push_str("flowchart TD\n");
 
-    for (xe, s) in pipeline_steps.iter() {
+    for (xe, s) in pipeline_steps.iter().sorted() {
         let deps = all_deps.children_of(xe)?;
         let outs = all_outs.children_of(xe)?;
 
@@ -286,14 +287,14 @@ fn make_mermaid_graph(
         let step_id = short_id(id_from_string(&step_label)?)?;
         res_string.push_str(&format!("    {}[\"{}\"]\n", step_id, step_label));
 
-        for (_, dep) in deps.iter() {
+        for (_, dep) in deps.iter().sorted() {
             let dep_label = dep_label(dep);
             let dep_id = short_id(id_from_string(&dep_label)?)?;
             // TODO: Specialize the shape according to dependency type
             res_string.push_str(&format!("    {}[\"{}\"] --> {}\n", dep_id, dep_label, step_id));
         }
 
-        for (_, out) in outs.iter() {
+        for (_, out) in outs.iter().sorted() {
             let out_label = out_label(out);
             let out_id = short_id(id_from_string(&out_label)?)?;
             // TODO: Add commands that produce these outputs
