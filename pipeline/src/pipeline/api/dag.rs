@@ -1,25 +1,22 @@
-use petgraph::algo::toposort;
-
 use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{shape, Shape, label, Color, color};
 use tabbycat::{GraphBuilder, StmtList, Identity, Edge, AttrList};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, XvcEntity, XvcStore, R1NStore};
+use xvc_ecs::{HStore, XvcEntity, R1NStore};
 use xvc_logging::{output, watch, XvcOutputSender};
 
 use std::collections::HashMap;
 use std::{fs::File, io::Write};
 
-use crate::error::{Error, Result};
+use crate::error::Result;
 
-use crate::pipeline::deps::step::StepDep;
 use std::path::PathBuf;
 
 use strum_macros::{Display, EnumString, IntoStaticStr};
 
 use crate::{
-    pipeline::{add_explicit_dependencies, add_implicit_dependencies, XvcStepInvalidate},
-    XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcStep, XvcStepCommand,
+    pipeline::{add_explicit_dependencies, add_implicit_dependencies},
+    XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcStep,
 };
 
 #[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr)]
@@ -32,75 +29,6 @@ pub enum XvcPipelineDagFormat {
 impl Default for XvcPipelineDagFormat {
     fn default() -> XvcPipelineDagFormat {
         XvcPipelineDagFormat::Dot
-    }
-}
-
-fn step_desc(
-    step_commands: &XvcStore<XvcStepCommand>,
-    invalidations: &XvcStore<XvcStepInvalidate>,
-    pipeline_steps: &HStore<XvcStep>,
-    start_e: XvcEntity,
-    end_e: XvcEntity,
-    step_e: XvcEntity,
-) -> String {
-    let step = pipeline_steps.get(&step_e).cloned().unwrap();
-
-    // Start step runs always
-    watch!(step_e, start_e, end_e);
-    let changes = if step_e == start_e {
-        XvcStepInvalidate::Always
-    } else if step_e == end_e {
-        XvcStepInvalidate::Never
-    } else {
-        invalidations.get(&step_e).copied().unwrap_or_default()
-    };
-
-    // Start step has no command
-    let command = if step_e == start_e {
-        XvcStepCommand {
-            command: "".to_string(),
-        }
-    } else if step_e == end_e {
-        XvcStepCommand {
-            command: "".to_string(),
-        }
-    } else {
-        step_commands.get(&step_e).cloned().unwrap()
-    };
-
-    format!("step: {} ({}, {})", step.name, changes, command)
-}
-
-fn dep_desc(
-    pipeline_steps: &HStore<XvcStep>,
-    step_descs: &HStore<String>,
-    dep: &XvcDependency,
-) -> String {
-    match dep {
-        XvcDependency::Step(step_dep) => {
-            let step_e = pipeline_steps
-                .entity_by_value(&XvcStep {
-                    name: step_dep.name.clone(),
-                })
-                .expect(&format!("Cannot find step {} in pipeline.", step_dep.name));
-            step_descs.get(&step_e).unwrap().clone()
-        }
-        XvcDependency::Generic(generic_dep) => {
-            format!("generic: {}", generic_dep.generic_command)
-        }
-        XvcDependency::File(dep) => format!("file: {}", dep.path),
-        XvcDependency::LineItems(dep) => {
-            format!("lines: {}::{}-{}", dep.path, dep.begin, dep.end)
-        }
-        XvcDependency::Lines(dep) => {
-            format!("lines (d): {}::{}-{}", dep.path, dep.begin, dep.end)
-        }
-        XvcDependency::RegexItems(dep) => format!("regex: {}:/{}", dep.path, dep.regex),
-        XvcDependency::Regex(dep) => format!("regex (d): {}:/{}", dep.path, dep.regex),
-        XvcDependency::Param(dep) => format!("param: {}::{}", dep.path, dep.key),
-        XvcDependency::GlobItems(dep) => format!("glob: {}", dep.glob),
-        XvcDependency::Glob(dep) => format!("glob (d): {}", dep.glob),
-        XvcDependency::UrlDigest(dep) => format!("url: {}", dep.url),
     }
 }
 
@@ -118,12 +46,9 @@ pub fn cmd_dag(
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
 
     // This is mutable to allow adding start and end nodes
-    let mut pipeline_steps = xvc_root
+    let pipeline_steps = xvc_root
         .load_r1nstore::<XvcPipeline, XvcStep>()?
         .children_of(&pipeline_e)?;
-
-    let invalidations = xvc_root.load_store::<XvcStepInvalidate>()?;
-    let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
@@ -167,11 +92,10 @@ pub fn cmd_dag(
 
     let out_string = match format {
         XvcPipelineDagFormat::Dot => {
-            make_dot_graph(&pipeline_steps, &pipeline_name, &all_deps, &all_outs)?
+            make_dot_graph(&pipeline_steps, &all_deps, &all_outs)?
         }
         XvcPipelineDagFormat::Mermaid => make_mermaid_graph(
             &pipeline_steps,
-            &pipeline_name,
             &all_deps,
             &all_outs
         )?,
@@ -188,7 +112,6 @@ pub fn cmd_dag(
 
 fn make_dot_graph(
     pipeline_steps: &HStore<XvcStep>,
-    pipeline_name: &str,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
     all_outs: &R1NStore<XvcStep, XvcOutput>,
 ) -> Result<String> {
@@ -285,9 +208,9 @@ fn out_node_attributes(out: &XvcOutput) -> AttrList {
 
 
     let out_color = match out {
-        XvcOutput::File { path } => Color::Black,
-        XvcOutput::Metric { path, format } => Color::Blue,
-        XvcOutput::Image { path } => Color::Green,
+        XvcOutput::File { .. } => Color::Black,
+        XvcOutput::Metric { .. } => Color::Blue,
+        XvcOutput::Image { .. } => Color::Green,
     };
 
     AttrList::new().add_pair(shape(out_shape)).add_pair(color(out_color)).add_pair(label(out_label(out)))
@@ -318,13 +241,13 @@ fn dependency_graph_stmts(
 
         stmts = stmts.add_node(step_identity.clone(), None, Some(step_node_attributes(&step)));
 
-        for (xe_dep, dep) in step_deps.iter() {
+        for (_, dep) in step_deps.iter() {
             let dep_identity = short_id(dep_identity(dep)?)?;
             stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(&dep)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
         }
 
-        for (xe_dep, out) in step_outs.iter() {
+        for (_, out) in step_outs.iter() {
             let out_identity = short_id(out_identity(out)?)?;
             stmts = stmts.add_node(out_identity.clone(), None, Some(out_node_attributes(&out)));
             stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None));
@@ -338,7 +261,6 @@ fn dependency_graph_stmts(
 /// Graph nodes are step descriptions, edges are dependencies.
 fn make_mermaid_graph(
     pipeline_steps: &HStore<XvcStep>,
-    pipeline_name: &str,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
     all_outs: &R1NStore<XvcStep, XvcOutput>
 ) -> Result<String> {

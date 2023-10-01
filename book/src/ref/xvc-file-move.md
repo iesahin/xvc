@@ -11,22 +11,22 @@ Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
 Arguments:
   <SOURCE>
           Source file, glob or directory within the workspace.
-          
+
           If the source ends with a slash, it's considered a directory and all files in that directory are copied.
-          
+
           If the number of source files is more than one, the destination must be a directory.
 
   <DESTINATION>
           Location we copy file(s) to within the workspace.
-          
+
           If the target ends with a slash, it's considered a directory and created if it doesn't exist.
-          
+
           If the number of source files is more than one, the destination must be a directory.
 
 Options:
       --recheck-method <RECHECK_METHOD>
           How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
-          
+
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
       --force
@@ -127,8 +127,8 @@ XH                                 c85f3e81          data6.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data4.txt
 DX          96 [..]                   another-set
 FX         130 [..]          ac46bf74 .xvcignore
-FX         534 [..]          [..] .gitignore
-Total #: 5 Workspace Size:         779 Cached Size:          19
+FX         [..][..]          [..] .gitignore
+Total #: 5 Workspace Size:         774 Cached Size:          19
 
 
 ```

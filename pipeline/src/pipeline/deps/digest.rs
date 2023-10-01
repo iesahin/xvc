@@ -15,7 +15,7 @@ use xvc_core::util::file::{
     filter_paths_by_directory, glob_paths, XvcPathMetadataMap,
 };
 use xvc_core::{
-    AttributeDigest, ContentDigest, HashAlgorithm, PathCollectionDigest,
+    ContentDigest, HashAlgorithm, PathCollectionDigest,
     XvcDigest, XvcMetadataDigest, XvcPath, XvcRoot,
 };
 
