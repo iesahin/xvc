@@ -45,7 +45,7 @@ $ xvc pipeline step dependency --step-name train --step preprocess
 
 ```console
 $ xvc pipeline dag
-digraph pipeline{n0[shape=box;label="train";];n1[shape=box;label="preprocess";];n0->n1;n1[shape=box;label="preprocess";];}
+digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=box;label="train";];n0[shape=box;label="preprocess";];n1->n0;}
 
 ```
 
@@ -64,6 +64,20 @@ You can use `--mermaid` option to get a [mermaid.js](https://mermaid.js.org) dia
 ```
 $ xvc pipeline dag --format=mermaid
 flowchart TD
-    n0["preprocess"]    n1["data/*"] --> n0    n2["train"]    n0["preprocess"] --> n2
+    n0["train"]
+    n1["preprocess"] --> n0
+    n1["preprocess"]
+    n2["data/*"] --> n1
 
+
+```
+
+The output can be used in [Mermaid Live Editor](https://mermaid.live) or any web page that support the format.
+
+```mermaid
+flowchart TD
+    n0["train"]
+    n1["preprocess"] --> n0
+    n1["preprocess"]
+    n2["data/*"] --> n1
 ```
