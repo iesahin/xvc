@@ -24,7 +24,7 @@ dag` command. It will generate a dot or mermaid diagram for the pipeline.
 As all other pipeline commands, this requires an Xvc repository.
 
 ```console
-$ git init
+$ git init --initial-branch=main
 Initialized empty Git repository in [CWD]/.git/
 
 $ xvc init
