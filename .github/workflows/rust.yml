@@ -64,7 +64,7 @@ jobs:
           brew install tree
 
       - name: Git config for automated Git tests
-        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev && git config --global init.defaultBranch main'
+        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
 
       - name: Write the private key file for one.emresult.com connection
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
@@ -99,6 +99,8 @@ jobs:
           args: ${{ matrix.test-args }}
         env:
           CARGO_INCREMENTAL: "0"
+          # To debug the output when commands fail
+          TRYCMD: "dump"
           RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
           RUSTDOCFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
       - name: Coverage
