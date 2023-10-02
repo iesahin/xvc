@@ -18,7 +18,7 @@ If `--from-ref` is not given, initial `git checkout` is not performed.
 Xvc operates in the current branch.
 This is the default behavior.
 
-```console
+```console,ignore
 $ git init --initial-branch=main
 ...
 $ xvc init
@@ -48,7 +48,7 @@ Total #: 1 Workspace Size:          19 Cached Size:          19
 
 If you return to `main` branch, you'll see the file is tracked by neither Git nor Xvc.
 
-```console
+```console,ignore
 $ git checkout main
 ...
 ```
@@ -67,7 +67,7 @@ $ git status -s
 Now, we'll add a step to the default pipeline to get an uppercase version of the data.
 We want this to work only in data
 
-```console
+```console,ignore
 $ xvc --from-ref data-file pipeline step new --step-name to-uppercase --command 'cat data.txt | tr a-z A-Z > uppercase.txt'
 Switched to branch 'data-file'
 
@@ -81,10 +81,10 @@ Note that `xvc pipeline step dependency` and `xvc pipeline step output` commands
 
 Now, we want to have this new version of data available only in `uppercase` branch.
 
-```console
+```console,ignore
 $ xvc --from-ref data-file --to-branch uppercase pipeline run
 Already on 'data-file'
-[OUT] [to-uppercase]  
+[OUT] [to-uppercase]
 Switched to a new branch 'uppercase'
 
 $ git branch
@@ -97,7 +97,7 @@ $ git branch
 You can use this for experimentation.
 Whenever you have a pipeline that you want to run and keep the results in another Git branch, you can use `--to-branch` for experimentation.
 
-```console
+```console,ignore
 $ xvcpr --from-ref data-file --to-branch another-uppercase
 $ git-branch
 * another-uppercase
