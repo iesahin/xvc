@@ -5,6 +5,8 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+## 0.6.1 (2023-10-05)
+
 - Added --min-size (-s) option to xvc-test-helper create-directory-tree
   - PR: <https://github.com/iesahin/xvc/pull/229>
 - Updated `xvc pipeline dag` and reference docs.
