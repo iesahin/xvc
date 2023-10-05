@@ -1,4 +1,4 @@
-# (Hyper-)Parameter Dependencies
+### (Hyper-)Parameter Dependencies
 
 You may be keeping pipeline-wide parameters in structured text files. You can specify such parameters found in JSON,
 TOML and YAML files as dependencies.

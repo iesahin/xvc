@@ -1,4 +1,4 @@
-# Regex Item Dependencies
+### Regex Item Dependencies
 
 You can specify a regular expression matched against the lines from a file as a dependency. The step is invalidated when
 the matched results changed.
