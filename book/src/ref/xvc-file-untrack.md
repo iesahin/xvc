@@ -19,7 +19,6 @@ Options:
 
 ```
 
-
 ## Examples
 
 This command removes a file from Xvc tracking and optionally deletes it from the local filesystem, cache, and the storages.
@@ -37,8 +36,8 @@ $ xvc file track 'd*.txt'
 $ xvc file list
 FC          19 [..] c85f3e81 c85f3e81 data.txt
 FX         130 [..]          [..] .xvcignore
-FX         191 [..]          [..] .gitignore
-Total #: 3 Workspace Size:         340 Cached Size:          19
+FX         [..] .gitignore
+Total #: 3 Workspace Size:         [..] Cached Size:          19
 
 
 ```

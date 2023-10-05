@@ -60,7 +60,7 @@ $ xvc file list
 FC        [..] c85f3e81 c85f3e81 data.txt
 FX        [..]          ac46bf74 .xvcignore
 FX        [..] .gitignore
-Total #: 3 Workspace Size:         340 Cached Size:          19
+Total #: 3 Workspace Size:         [..] Cached Size:          19
 
 
 $ tree .xvc/b3/
@@ -120,7 +120,7 @@ $ xvc file list
 FC         [..] c85f3e81 c85f3e81 data.txt
 FX         [..]          ac46bf74 .xvcignore
 FX         [..]          [..] .gitignore
-Total #: 3 Workspace Size:         340 Cached Size:          19
+Total #: 3 Workspace Size:         [..] Cached Size:          19
 
 
 $ tree .xvc/b3/
@@ -159,7 +159,7 @@ $ xvc file list
 FC         [..] 6602cff6 6602cff6 data.txt
 FX         [..]          ac46bf74 .xvcignore
 FX         [..]          [..] .gitignore
-Total #: 3 Workspace Size:         340 Cached Size:          19
+Total #: 3 Workspace Size:         339 Cached Size:          19
 
 
 $ xvc file remove --from-cache --only-version c85-f3e data.txt
@@ -282,7 +282,7 @@ $ xvc file list
 SS        [..] [..] 4a2e9d7c          data2.txt
 FC        1024 [..] 4a2e9d7c 4a2e9d7c data.txt
 FX         130 [..]          ac46bf74 .xvcignore
-FX         276 [..]          [..] .gitignore
+FX         [..] .gitignore
 Total #: 4 Workspace Size:        [..] Cached Size:        1024
 
 

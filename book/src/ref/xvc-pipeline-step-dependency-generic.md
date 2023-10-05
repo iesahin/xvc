@@ -42,7 +42,7 @@ For example, if you want to run a command when directory contents change, you ca
 
 ```console
 $ xvc pipeline step new --step-name directory-contents --command "echo 'Files changed'"
-$ xvc pipeline step dependency --step-name directory-contents --generic 'ls -lR'
+$ xvc pipeline step dependency --step-name directory-contents --generic 'ls'
 
 $ xvc pipeline run
 [OUT] [directory-contents] Files changed

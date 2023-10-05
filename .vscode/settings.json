@@ -23,5 +23,21 @@
     "grammarly.config.suggestions.UnnecessaryEllipses": true,
     "rust-analyzer.linkedProjects": [
         "./pipeline/Cargo.toml"
-    ]
+    ],
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#ed4d0e",
+        "titleBar.activeForeground": "#000000",
+        "titleBar.inactiveBackground": "#ed4d0e",
+        "titleBar.inactiveForeground": "#000000",
+        "titleBar.border": "#ed4d0e",
+        "activityBar.background": "#ed4d0e",
+        "activityBar.foreground": "#000000",
+        "statusBar.background": "#ed4d0e",
+        "statusBar.foreground": "#000000",
+        "statusBar.debuggingBackground": "#ed4d0e",
+        "statusBar.debuggingForeground": "#000000",
+        "tab.activeBorder": "#ed4d0e",
+        "iLoveWorkSpaceColors": true,
+        "iLoveWorkSpaceRandom": true
+    }
 }

@@ -43,18 +43,12 @@ $ xvc pipeline step new --step-name hello --command "echo hello"
 ```
 
 ```console
-$ xvc pipeline dag
-digraph {
-    0 [ label = "step: START (always, )" ]
-    1 [ label = "step: hello (by_dependencies, echo hello)" ]
-    2 [ label = "step: END (never, )" ]
-    0 -> 1 [ label = "" ]
-    1 -> 2 [ label = "" ]
-}
+$ xvc pipeline dag --format=mermaid
+flowchart TD
+    n0["hello"]
 
 
 ```
-
 
 You can run the default pipeline without specifying its name.
 

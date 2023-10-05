@@ -6,7 +6,11 @@ tree, and subtasks are marked with indentation.
 ## Unreleased
 
 - Added --min-size (-s) option to xvc-test-helper create-directory-tree
-  - <https://github.com/iesahin/xvc/pull/229>
+  - PR: <https://github.com/iesahin/xvc/pull/229>
+- Updated `xvc pipeline dag` and reference docs.
+  - PR: <https://github.com/iesahin/xvc/pull/232>
+  - Dependency and outputs are shown with different shapes according to their types in Graphviz format
+  - Simplify DAG creation for both dot and mermaid formats
 
 
 ## 0.6.0 (2023-08-28)
