@@ -40,7 +40,7 @@ You can mimic all kinds of pipeline behavior with this generic dependency.
 
 For example, if you want to run a command when directory contents change, you can depend on the output of `ls -lR`:
 
-```console
+```console,ignore
 $ xvc pipeline step new --step-name directory-contents --command "echo 'Files changed'"
 $ xvc pipeline step dependency --step-name directory-contents --generic 'ls -lR'
 
