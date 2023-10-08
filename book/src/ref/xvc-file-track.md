@@ -60,12 +60,16 @@ $ tree
 │   ├── file-0001.bin
 │   ├── file-0002.bin
 │   └── file-0003.bin
-└── dir-0002
+├── dir-0002
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+└── dir-0003
     ├── file-0001.bin
     ├── file-0002.bin
     └── file-0003.bin
 
-3 directories, 6 files
+4 directories, 9 files
 
 ```
 
@@ -95,7 +99,12 @@ called rechecking and analogous to Git checkout. For example, the above
 commands create a directory tree under `.xvc` as follows: 
 
 ```console
-$ tree .xvc/b2
+$ tree .xvc/b3
+? 2
+.xvc/b2  [error opening dir]
+
+0 directories, 0 files
+
 ```
 
 There are different _recheck (checkout) methods_ that Xvc connects the
@@ -107,9 +116,18 @@ If you want to make this connection with symbolic links, you can specify it with
 ```console
 $ xvc file track --recheck-method symlink dir-0003/file-0001.bin
 $ ls -l dir-0003/file-0001.bin
+lrwxr-xr-x  1 iex  staff  179 Oct  8 17:29 dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+
 ```
 
 You can also use `--hardlink` and `--reflink` options. Please see [`xvc file recheck`](/ref/xvc-file-recheck/) reference for details.  
+
+```console
+$ xvc file track --recheck-method hardlink dir-0003/file-0002.bin
+$ xvc file track --recheck-method reflink dir-0003/file-0003.bin
+$ ls -l dir-0003/
+```
+
 
 ```admonish info
 Note that, unlike DVC that specifies checkout/recheck option repository wide,
