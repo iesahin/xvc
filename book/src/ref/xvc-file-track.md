@@ -41,22 +41,41 @@ Options:
 
 ## Examples
 
+
+File tracking works only in Xvc repositories.
+
+```console
+$ git init
+...
+$ xvc init
+
+
+```
+Let's create a directory tree for these examples. 
+
+```console
+$ xvc-test-helper create-directory-tree --directories 2 --files 3  --seed 20231021
+$ tree
+```
+
 By default, the command runs similar to `git add` and `git commit`. 
 
-```console,ignore
-$ xvc file track my-large-image.jpeg
+You can track individual files.
+
+```console
+$ xvc file track dir-0001/file-0001.bin
 ```
 
 You can track directories with the same command. 
 
-```console,ignore
-$ xvc file track my-large-directory/
+```console
+$ xvc file track dir-0002/
 ```
 
 You can specify more than one target in a single command. 
 
-```console,ignore
-$ xvc file track my-large-image.jpeg my-large-directory
+```console
+$ xvc file track dir-0001/file-0002.bin dir-0001/file-0003.bin
 ```
 
 
