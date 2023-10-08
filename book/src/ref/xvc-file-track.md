@@ -49,13 +49,24 @@ $ git init
 ...
 $ xvc init
 
-
 ```
 Let's create a directory tree for these examples. 
 
 ```console
-$ xvc-test-helper create-directory-tree --directories 2 --files 3  --seed 20231021
+$ xvc-test-helper create-directory-tree --directories 3 --files 3  --seed 20231021
 $ tree
+.
+├── dir-0001
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+└── dir-0002
+    ├── file-0001.bin
+    ├── file-0002.bin
+    └── file-0003.bin
+
+3 directories, 6 files
+
 ```
 
 By default, the command runs similar to `git add` and `git commit`. 
@@ -77,6 +88,40 @@ You can specify more than one target in a single command.
 ```console
 $ xvc file track dir-0001/file-0002.bin dir-0001/file-0003.bin
 ```
+
+When you track a file, Xvc moves the file to the cache directory under `.xvc/`
+and _connects_ the workspace file with the cached file. This _connection_ is
+called rechecking and analogous to Git checkout. For example, the above
+commands create a directory tree under `.xvc` as follows: 
+
+```console
+$ tree .xvc/b2
+```
+
+There are different _recheck (checkout) methods_ that Xvc connects the
+workspace file to the cache. The default method for this is copying the file to
+the workspace. This way a separate copy of the cache file is created in the workspace. 
+
+If you want to make this connection with symbolic links, you can specify it with `--recheck-method` option. 
+
+```console
+$ xvc file track --recheck-method symlink dir-0003/file-0001.bin
+$ ls -l dir-0003/file-0001.bin
+```
+
+You can also use `--hardlink` and `--reflink` options. Please see [`xvc file recheck`](/ref/xvc-file-recheck/) reference for details.  
+
+```admonish info
+Note that, unlike DVC that specifies checkout/recheck option repository wide,
+Xvc lets you specify per file. You can recheck files data files as symbolic
+links (which are non-writable) and save space and make model files as copies of
+the cached original and commit (carry-in) every time they change.
+
+```
+
+When you track a file in Xvc, it's automatically commit (carry-in) to the cache
+directory. If you want to postpone this operation and don't need a cached copy
+for a file, you can use `--no-commit` option.
 
 
 ## Caveats
