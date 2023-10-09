@@ -131,7 +131,7 @@ If you want to make this connection with symbolic links, you can specify it with
 ```console
 $ xvc file track --recheck-method symlink dir-0003/file-0001.bin
 $ ls -l dir-0003/file-0001.bin
-lrwxr-xr-x  1 iex  staff  181 Oct  9 11:40 dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+lrwxr-xr-x  1 iex  staff  181 Oct  9 11:42 dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
 
 ```
 
@@ -142,9 +142,9 @@ $ xvc file track --recheck-method hardlink dir-0003/file-0002.bin
 $ xvc file track --recheck-method reflink dir-0003/file-0003.bin
 $ ls -l dir-0003/
 total 16
-lrwxr-xr-x  1 iex  staff   181 Oct  9 11:40 file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
--r--r--r--  2 iex  staff  2002 Oct  9 11:40 file-0002.bin
--r--r--r--  1 iex  staff  2003 Oct  9 11:40 file-0003.bin
+lrwxr-xr-x  1 iex  staff   181 Oct  9 11:42 file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+-r--r--r--  2 iex  staff  2002 Oct  9 11:42 file-0002.bin
+-r--r--r--  1 iex  staff  2003 Oct  9 11:42 file-0003.bin
 
 ```
 
@@ -167,14 +167,14 @@ cache.
 $ xvc file track --no-commit --recheck-method symlink dir-0004/
 $ ls -l dir-0004/
 total 24
--rw-r--r--  1 iex  staff  2001 Oct  9 11:40 file-0001.bin
--rw-r--r--  1 iex  staff  2002 Oct  9 11:40 file-0002.bin
--rw-r--r--  1 iex  staff  2003 Oct  9 11:40 file-0003.bin
+-rw-r--r--  1 iex  staff  2001 Oct  9 11:42 file-0001.bin
+-rw-r--r--  1 iex  staff  2002 Oct  9 11:42 file-0002.bin
+-rw-r--r--  1 iex  staff  2003 Oct  9 11:42 file-0003.bin
 
 $ xvc file list dir-0004/
-FC        2003 2023-10-09 08:40:14 ab361981 ab361981 dir-0004/file-0003.bin
-FC        2002 2023-10-09 08:40:14 493eeb65 493eeb65 dir-0004/file-0002.bin
-FC        2001 2023-10-09 08:40:14 e517d6b9 e517d6b9 dir-0004/file-0001.bin
+FS        2003 2023-10-09 08:42:57 ab361981 ab361981 dir-0004/file-0003.bin
+FS        2002 2023-10-09 08:42:57 493eeb65 493eeb65 dir-0004/file-0002.bin
+FS        2001 2023-10-09 08:42:57 e517d6b9 e517d6b9 dir-0004/file-0001.bin
 Total #: 3 Workspace Size:        6006 Cached Size:        6006
 
 
@@ -182,21 +182,13 @@ Total #: 3 Workspace Size:        6006 Cached Size:        6006
 You can carry-in (commit) these files to the cache with `xvc file carry-in` command. 
 
 ```console
-$ xvc file carry-in dir-0004/
-? 2
-error: unexpected argument '--recheck-method' found
-
-  tip: to pass '--recheck-method' as a value, use '-- --recheck-method'
-
-Usage: xvc file carry-in <--text-or-binary <TEXT_OR_BINARY>|--force|--no-parallel|TARGETS>
-
-For more information, try '--help'.
+$ xvc file carry-in --force dir-0004/
 
 $ ls -l dir-0004/
 total 24
--rw-r--r--  1 iex  staff  2001 Oct  9 11:40 file-0001.bin
--rw-r--r--  1 iex  staff  2002 Oct  9 11:40 file-0002.bin
--rw-r--r--  1 iex  staff  2003 Oct  9 11:40 file-0003.bin
+-rw-r--r--  1 iex  staff  2001 Oct  9 11:42 file-0001.bin
+-rw-r--r--  1 iex  staff  2002 Oct  9 11:42 file-0002.bin
+-rw-r--r--  1 iex  staff  2003 Oct  9 11:42 file-0003.bin
 
 ```
 
