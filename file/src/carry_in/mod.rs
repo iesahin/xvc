@@ -242,6 +242,8 @@ pub fn carry_in(
             if force {
                 let mut file_perm =
                     uwr!(abs_cache_path.as_path().metadata(), output_snd).permissions();
+                watch!(abs_cache_path);
+                watch!(file_perm);
                 file_perm.set_readonly(false);
                 uwr!(fs::set_permissions(&abs_cache_path, file_perm), output_snd);
                 /* let mut dir_perm = cache_dir.metadata()?.permissions(); */
