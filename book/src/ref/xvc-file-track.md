@@ -131,7 +131,7 @@ If you want to make this connection with symbolic links, you can specify it with
 ```console
 $ xvc file track --recheck-method symlink dir-0003/file-0001.bin
 $ ls -l dir-0003/file-0001.bin
-lrwxr-xr-x  1 iex  staff  181 Oct  9 12:07 dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+lrwxr-xr-x  1 iex  staff  181 Oct  9 12:17 dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
 
 ```
 
@@ -142,9 +142,9 @@ $ xvc file track --recheck-method hardlink dir-0003/file-0002.bin
 $ xvc file track --recheck-method reflink dir-0003/file-0003.bin
 $ ls -l dir-0003/
 total 16
-lrwxr-xr-x  1 iex  staff   181 Oct  9 12:07 file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
--r--r--r--  2 iex  staff  2002 Oct  9 12:07 file-0002.bin
--r--r--r--  1 iex  staff  2003 Oct  9 12:07 file-0003.bin
+lrwxr-xr-x  1 iex  staff   181 Oct  9 12:17 file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+-r--r--r--  2 iex  staff  2002 Oct  9 12:16 file-0002.bin
+-r--r--r--  1 iex  staff  2003 Oct  9 12:16 file-0003.bin
 
 ```
 
@@ -167,14 +167,14 @@ cache.
 $ xvc file track --no-commit --recheck-method symlink dir-0004/
 $ ls -l dir-0004/
 total 24
--rw-r--r--  1 iex  staff  2001 Oct  9 12:07 file-0001.bin
--rw-r--r--  1 iex  staff  2002 Oct  9 12:07 file-0002.bin
--rw-r--r--  1 iex  staff  2003 Oct  9 12:07 file-0003.bin
+-rw-r--r--  1 iex  staff  2001 Oct  9 12:16 file-0001.bin
+-rw-r--r--  1 iex  staff  2002 Oct  9 12:16 file-0002.bin
+-rw-r--r--  1 iex  staff  2003 Oct  9 12:16 file-0003.bin
 
 $ xvc file list dir-0004/
-FS        2003 2023-10-09 09:07:47 ab361981 ab361981 dir-0004/file-0003.bin
-FS        2002 2023-10-09 09:07:47 493eeb65 493eeb65 dir-0004/file-0002.bin
-FS        2001 2023-10-09 09:07:47 e517d6b9 e517d6b9 dir-0004/file-0001.bin
+FS        2003 2023-10-09 09:16:59 ab361981 ab361981 dir-0004/file-0003.bin
+FS        2002 2023-10-09 09:16:59 493eeb65 493eeb65 dir-0004/file-0002.bin
+FS        2001 2023-10-09 09:16:59 e517d6b9 e517d6b9 dir-0004/file-0001.bin
 Total #: 3 Workspace Size:        6006 Cached Size:        6006
 
 
@@ -182,8 +182,7 @@ Total #: 3 Workspace Size:        6006 Cached Size:        6006
 You can carry-in (commit) these files to the cache with `xvc file carry-in` command. 
 
 ```console
-$ xvc --debug file carry-in --force dir-0004/
-? 101
+$ xvc file carry-in --force dir-0004/
 [DEBUG][logging/src/lib.rs::236] Terminal logger enabled with level: Error
 [DEBUG][logging/src/lib.rs::239] File logger enabled with level: Trace to "/var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T//xvc.log"
 [TRACE][core/src/types/xvcroot.rs::247] "."
@@ -213,142 +212,142 @@ $ xvc --debug file carry-in --force dir-0004/
         XvcConfigMap {
             source: Default,
             map: {
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "pipeline.default": String(
-                    "default",
+                "pipeline.default_params_file": String(
+                    "params.yaml",
                 ),
                 "pipeline.current_pipeline": String(
                     "default",
                 ),
-                "git.auto_commit": Boolean(
-                    true,
+                "core.guid": String(
+                    "11d5ac05849d8d74",
                 ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "pipeline.process_pool_size": Integer(
-                    4,
-                ),
-                "file.track.no_parallel": Boolean(
-                    false,
-                ),
-                "git.command": String(
-                    "git",
+                "file.track.text_or_binary": String(
+                    "auto",
                 ),
                 "git.auto_stage": Boolean(
                     false,
                 ),
-                "file.track.no_commit": Boolean(
-                    false,
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "file.recheck.method": String(
+                    "copy",
                 ),
                 "file.list.recursive": Boolean(
-                    false,
-                ),
-                "file.list.no_summary": Boolean(
                     false,
                 ),
                 "core.verbosity": String(
                     "error",
                 ),
-                "cache.algorithm": String(
-                    "blake3",
+                "pipeline.process_pool_size": Integer(
+                    4,
                 ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
                 "git.use_git": Boolean(
                     true,
                 ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
                 "file.track.force": Boolean(
                     false,
                 ),
-                "core.guid": String(
-                    "ca2dc6839fad35db",
+                "pipeline.default": String(
+                    "default",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "pipeline.default": String(
-                    "default",
+                "file.recheck.method": String(
+                    "copy",
                 ),
-                "file.track.text_or_binary": String(
-                    "auto",
-                ),
-                "git.command": String(
-                    "git",
+                "file.carry-in.no_parallel": Boolean(
+                    false,
                 ),
                 "cache.algorithm": String(
                     "blake3",
                 ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
                 "file.track.no_commit": Boolean(
                     false,
                 ),
-                "pipeline.process_pool_size": Integer(
-                    4,
+                "core.guid": String(
+                    "1b8ee2c266971fae",
                 ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "file.list.recursive": Boolean(
+                "file.track.force": Boolean(
                     false,
                 ),
-                "pipeline.current_pipeline": String(
+                "git.auto_stage": Boolean(
+                    false,
+                ),
+                "file.track.text_or_binary": String(
+                    "auto",
+                ),
+                "file.list.no_summary": Boolean(
+                    false,
+                ),
+                "pipeline.default": String(
                     "default",
                 ),
                 "git.auto_commit": Boolean(
                     true,
                 ),
-                "git.auto_stage": Boolean(
+                "file.list.recursive": Boolean(
                     false,
                 ),
-                "file.list.sort": String(
-                    "name-desc",
+                "pipeline.process_pool_size": Integer(
+                    4,
                 ),
-                "file.list.no_summary": Boolean(
+                "file.track.no_parallel": Boolean(
                     false,
                 ),
                 "file.list.format": String(
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
+                "git.command": String(
+                    "git",
                 ),
-                "core.guid": String(
-                    "ee00a272e6eda583",
+                "pipeline.current_pipeline": String(
+                    "default",
                 ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
+                "git.use_git": Boolean(
+                    true,
                 ),
                 "core.verbosity": String(
                     "error",
-                ),
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "file.track.no_parallel": Boolean(
-                    false,
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
                 ),
             },
         },
@@ -373,25 +372,25 @@ $ xvc --debug file carry-in --force dir-0004/
         },
     ],
     the_config: {
-        "git.command": XvcConfigValue {
+        "pipeline.process_pool_size": XvcConfigValue {
             source: Project,
-            value: String(
-                "git",
+            value: Integer(
+                4,
             ),
         },
-        "file.carry-in.force": XvcConfigValue {
+        "cache.algorithm": XvcConfigValue {
+            source: Project,
+            value: String(
+                "blake3",
+            ),
+        },
+        "file.list.recursive": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "git.auto_commit": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                true,
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
+        "pipeline.current_pipeline": XvcConfigValue {
             source: Project,
             value: String(
                 "default",
@@ -409,25 +408,13 @@ $ xvc --debug file carry-in --force dir-0004/
                 "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
             ),
         },
-        "file.carry-in.no_parallel": XvcConfigValue {
+        "git.auto_stage": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
-            ),
-        },
-        "pipeline.process_pool_size": XvcConfigValue {
-            source: Project,
-            value: Integer(
-                4,
-            ),
-        },
-        "file.track.no_commit": XvcConfigValue {
+        "file.carry-in.no_parallel": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -439,10 +426,16 @@ $ xvc --debug file carry-in --force dir-0004/
                 "name-desc",
             ),
         },
-        "core.guid": XvcConfigValue {
+        "file.recheck.method": XvcConfigValue {
             source: Project,
             value: String(
-                "ee00a272e6eda583",
+                "copy",
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
             ),
         },
         "git.use_git": XvcConfigValue {
@@ -451,10 +444,16 @@ $ xvc --debug file carry-in --force dir-0004/
                 true,
             ),
         },
-        "pipeline.current_pipeline": XvcConfigValue {
+        "file.track.force": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
+        "git.command": XvcConfigValue {
             source: Project,
             value: String(
-                "default",
+                "git",
             ),
         },
         "file.track.no_parallel": XvcConfigValue {
@@ -463,28 +462,22 @@ $ xvc --debug file carry-in --force dir-0004/
                 false,
             ),
         },
-        "file.list.no_summary": XvcConfigValue {
+        "git.auto_commit": XvcConfigValue {
             source: Project,
             value: Boolean(
-                false,
+                true,
             ),
         },
-        "file.track.force": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "file.recheck.method": XvcConfigValue {
+        "pipeline.default_params_file": XvcConfigValue {
             source: Project,
             value: String(
-                "copy",
+                "params.yaml",
             ),
         },
-        "file.list.recursive": XvcConfigValue {
+        "core.guid": XvcConfigValue {
             source: Project,
-            value: Boolean(
-                false,
+            value: String(
+                "1b8ee2c266971fae",
             ),
         },
         "core.verbosity": XvcConfigValue {
@@ -493,20 +486,26 @@ $ xvc --debug file carry-in --force dir-0004/
                 "quiet",
             ),
         },
-        "git.auto_stage": XvcConfigValue {
+        "pipeline.default": XvcConfigValue {
+            source: Project,
+            value: String(
+                "default",
+            ),
+        },
+        "file.list.no_summary": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "cache.algorithm": XvcConfigValue {
-            source: Project,
-            value: String(
-                "blake3",
-            ),
-        },
         "core.quiet": XvcConfigValue {
             source: CommandLine,
+            value: Boolean(
+                false,
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
+            source: Project,
             value: Boolean(
                 false,
             ),
@@ -518,7 +517,7 @@ $ xvc --debug file carry-in --force dir-0004/
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"ca2dc6839fad35db/"
+guid = /"11d5ac05849d8d74/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -660,15 +659,15 @@ process_pool_size = 4
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1696842467578380",
-    "[CWD]/.xvc/ec/1696842467580772",
-    "[CWD]/.xvc/ec/1696842468338815",
-    "[CWD]/.xvc/ec/1696842468684048",
-    "[CWD]/.xvc/ec/1696842468977930",
-    "[CWD]/.xvc/ec/1696842469278876",
-    "[CWD]/.xvc/ec/1696842469597309",
-    "[CWD]/.xvc/ec/1696842470000173",
-    "[CWD]/.xvc/ec/1696842470341573",
+    "[CWD]/.xvc/ec/1696843019321783",
+    "[CWD]/.xvc/ec/1696843019324143",
+    "[CWD]/.xvc/ec/1696843019827290",
+    "[CWD]/.xvc/ec/1696843020211923",
+    "[CWD]/.xvc/ec/1696843020580610",
+    "[CWD]/.xvc/ec/1696843020917025",
+    "[CWD]/.xvc/ec/1696843021250333",
+    "[CWD]/.xvc/ec/1696843021596820",
+    "[CWD]/.xvc/ec/1696843021905712",
 ]
 [TRACE][file/src/lib.rs::157] opts: XvcFileCLI {
     verbosity: 0,
@@ -724,142 +723,142 @@ process_pool_size = 4
             XvcConfigMap {
                 source: Default,
                 map: {
-                    "file.recheck.method": String(
-                        "copy",
-                    ),
-                    "pipeline.default": String(
-                        "default",
+                    "pipeline.default_params_file": String(
+                        "params.yaml",
                     ),
                     "pipeline.current_pipeline": String(
                         "default",
                     ),
-                    "git.auto_commit": Boolean(
-                        true,
+                    "core.guid": String(
+                        "11d5ac05849d8d74",
                     ),
-                    "file.list.format": String(
-                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                    ),
-                    "pipeline.process_pool_size": Integer(
-                        4,
-                    ),
-                    "file.track.no_parallel": Boolean(
-                        false,
-                    ),
-                    "git.command": String(
-                        "git",
+                    "file.track.text_or_binary": String(
+                        "auto",
                     ),
                     "git.auto_stage": Boolean(
                         false,
                     ),
-                    "file.track.no_commit": Boolean(
-                        false,
+                    "file.list.sort": String(
+                        "name-desc",
+                    ),
+                    "cache.algorithm": String(
+                        "blake3",
+                    ),
+                    "file.recheck.method": String(
+                        "copy",
                     ),
                     "file.list.recursive": Boolean(
-                        false,
-                    ),
-                    "file.list.no_summary": Boolean(
                         false,
                     ),
                     "core.verbosity": String(
                         "error",
                     ),
-                    "cache.algorithm": String(
-                        "blake3",
+                    "pipeline.process_pool_size": Integer(
+                        4,
                     ),
-                    "file.track.text_or_binary": String(
-                        "auto",
-                    ),
-                    "file.list.sort": String(
-                        "name-desc",
-                    ),
-                    "file.carry-in.force": Boolean(
-                        false,
-                    ),
-                    "pipeline.default_params_file": String(
-                        "params.yaml",
-                    ),
-                    "file.carry-in.no_parallel": Boolean(
-                        false,
+                    "file.list.format": String(
+                        "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                     ),
                     "git.use_git": Boolean(
                         true,
                     ),
+                    "file.track.no_commit": Boolean(
+                        false,
+                    ),
+                    "git.auto_commit": Boolean(
+                        true,
+                    ),
+                    "file.track.no_parallel": Boolean(
+                        false,
+                    ),
                     "file.track.force": Boolean(
                         false,
                     ),
-                    "core.guid": String(
-                        "ca2dc6839fad35db",
+                    "pipeline.default": String(
+                        "default",
+                    ),
+                    "git.command": String(
+                        "git",
+                    ),
+                    "file.list.no_summary": Boolean(
+                        false,
+                    ),
+                    "file.carry-in.no_parallel": Boolean(
+                        false,
+                    ),
+                    "file.carry-in.force": Boolean(
+                        false,
                     ),
                 },
             },
             XvcConfigMap {
                 source: Project,
                 map: {
-                    "pipeline.default": String(
-                        "default",
+                    "file.recheck.method": String(
+                        "copy",
                     ),
-                    "file.track.text_or_binary": String(
-                        "auto",
-                    ),
-                    "git.command": String(
-                        "git",
+                    "file.carry-in.no_parallel": Boolean(
+                        false,
                     ),
                     "cache.algorithm": String(
                         "blake3",
                     ),
+                    "pipeline.default_params_file": String(
+                        "params.yaml",
+                    ),
+                    "file.list.sort": String(
+                        "name-desc",
+                    ),
+                    "file.carry-in.force": Boolean(
+                        false,
+                    ),
                     "file.track.no_commit": Boolean(
                         false,
                     ),
-                    "pipeline.process_pool_size": Integer(
-                        4,
+                    "core.guid": String(
+                        "1b8ee2c266971fae",
                     ),
-                    "git.use_git": Boolean(
-                        true,
-                    ),
-                    "file.list.recursive": Boolean(
+                    "file.track.force": Boolean(
                         false,
                     ),
-                    "pipeline.current_pipeline": String(
+                    "git.auto_stage": Boolean(
+                        false,
+                    ),
+                    "file.track.text_or_binary": String(
+                        "auto",
+                    ),
+                    "file.list.no_summary": Boolean(
+                        false,
+                    ),
+                    "pipeline.default": String(
                         "default",
                     ),
                     "git.auto_commit": Boolean(
                         true,
                     ),
-                    "git.auto_stage": Boolean(
+                    "file.list.recursive": Boolean(
                         false,
                     ),
-                    "file.list.sort": String(
-                        "name-desc",
+                    "pipeline.process_pool_size": Integer(
+                        4,
                     ),
-                    "file.list.no_summary": Boolean(
+                    "file.track.no_parallel": Boolean(
                         false,
                     ),
                     "file.list.format": String(
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                     ),
-                    "file.carry-in.no_parallel": Boolean(
-                        false,
+                    "git.command": String(
+                        "git",
                     ),
-                    "core.guid": String(
-                        "ee00a272e6eda583",
+                    "pipeline.current_pipeline": String(
+                        "default",
                     ),
-                    "file.track.force": Boolean(
-                        false,
-                    ),
-                    "file.carry-in.force": Boolean(
-                        false,
+                    "git.use_git": Boolean(
+                        true,
                     ),
                     "core.verbosity": String(
                         "error",
-                    ),
-                    "file.recheck.method": String(
-                        "copy",
-                    ),
-                    "file.track.no_parallel": Boolean(
-                        false,
-                    ),
-                    "pipeline.default_params_file": String(
-                        "params.yaml",
                     ),
                 },
             },
@@ -884,25 +883,25 @@ process_pool_size = 4
             },
         ],
         the_config: {
-            "git.command": XvcConfigValue {
+            "pipeline.process_pool_size": XvcConfigValue {
                 source: Project,
-                value: String(
-                    "git",
+                value: Integer(
+                    4,
                 ),
             },
-            "file.carry-in.force": XvcConfigValue {
+            "cache.algorithm": XvcConfigValue {
+                source: Project,
+                value: String(
+                    "blake3",
+                ),
+            },
+            "file.list.recursive": XvcConfigValue {
                 source: Project,
                 value: Boolean(
                     false,
                 ),
             },
-            "git.auto_commit": XvcConfigValue {
-                source: Project,
-                value: Boolean(
-                    true,
-                ),
-            },
-            "pipeline.default": XvcConfigValue {
+            "pipeline.current_pipeline": XvcConfigValue {
                 source: Project,
                 value: String(
                     "default",
@@ -920,25 +919,13 @@ process_pool_size = 4
                     "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
             },
-            "file.carry-in.no_parallel": XvcConfigValue {
+            "git.auto_stage": XvcConfigValue {
                 source: Project,
                 value: Boolean(
                     false,
                 ),
             },
-            "pipeline.default_params_file": XvcConfigValue {
-                source: Project,
-                value: String(
-                    "params.yaml",
-                ),
-            },
-            "pipeline.process_pool_size": XvcConfigValue {
-                source: Project,
-                value: Integer(
-                    4,
-                ),
-            },
-            "file.track.no_commit": XvcConfigValue {
+            "file.carry-in.no_parallel": XvcConfigValue {
                 source: Project,
                 value: Boolean(
                     false,
@@ -950,10 +937,16 @@ process_pool_size = 4
                     "name-desc",
                 ),
             },
-            "core.guid": XvcConfigValue {
+            "file.recheck.method": XvcConfigValue {
                 source: Project,
                 value: String(
-                    "ee00a272e6eda583",
+                    "copy",
+                ),
+            },
+            "file.track.no_commit": XvcConfigValue {
+                source: Project,
+                value: Boolean(
+                    false,
                 ),
             },
             "git.use_git": XvcConfigValue {
@@ -962,10 +955,16 @@ process_pool_size = 4
                     true,
                 ),
             },
-            "pipeline.current_pipeline": XvcConfigValue {
+            "file.track.force": XvcConfigValue {
+                source: Project,
+                value: Boolean(
+                    false,
+                ),
+            },
+            "git.command": XvcConfigValue {
                 source: Project,
                 value: String(
-                    "default",
+                    "git",
                 ),
             },
             "file.track.no_parallel": XvcConfigValue {
@@ -974,28 +973,22 @@ process_pool_size = 4
                     false,
                 ),
             },
-            "file.list.no_summary": XvcConfigValue {
+            "git.auto_commit": XvcConfigValue {
                 source: Project,
                 value: Boolean(
-                    false,
+                    true,
                 ),
             },
-            "file.track.force": XvcConfigValue {
-                source: Project,
-                value: Boolean(
-                    false,
-                ),
-            },
-            "file.recheck.method": XvcConfigValue {
+            "pipeline.default_params_file": XvcConfigValue {
                 source: Project,
                 value: String(
-                    "copy",
+                    "params.yaml",
                 ),
             },
-            "file.list.recursive": XvcConfigValue {
+            "core.guid": XvcConfigValue {
                 source: Project,
-                value: Boolean(
-                    false,
+                value: String(
+                    "1b8ee2c266971fae",
                 ),
             },
             "core.verbosity": XvcConfigValue {
@@ -1004,20 +997,26 @@ process_pool_size = 4
                     "quiet",
                 ),
             },
-            "git.auto_stage": XvcConfigValue {
+            "pipeline.default": XvcConfigValue {
+                source: Project,
+                value: String(
+                    "default",
+                ),
+            },
+            "file.list.no_summary": XvcConfigValue {
                 source: Project,
                 value: Boolean(
                     false,
                 ),
             },
-            "cache.algorithm": XvcConfigValue {
-                source: Project,
-                value: String(
-                    "blake3",
-                ),
-            },
             "core.quiet": XvcConfigValue {
                 source: CommandLine,
+                value: Boolean(
+                    false,
+                ),
+            },
+            "file.carry-in.force": XvcConfigValue {
+                source: Project,
                 value: Boolean(
                     false,
                 ),
@@ -1029,7 +1028,7 @@ process_pool_size = 4
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"ca2dc6839fad35db/"
+guid = /"11d5ac05849d8d74/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -1177,7 +1176,7 @@ process_pool_size = 4
     ),
     entity_generator: XvcEntityGenerator {
         counter: 14,
-        random: 1010924984839488082,
+        random: 12517610610491036851,
         dirty: false,
     },
 }
@@ -1206,21 +1205,21 @@ process_pool_size = 4
     map: {
         XvcEntity(
             13,
-            2127297647465362246,
+            6826636397237250639,
+        ): XvcPath(
+            "dir-0004/file-0003.bin",
+        ),
+        XvcEntity(
+            11,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0002.bin",
         ),
         XvcEntity(
             12,
-            2127297647465362246,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0001.bin",
-        ),
-        XvcEntity(
-            11,
-            2127297647465362246,
-        ): XvcPath(
-            "dir-0004/file-0003.bin",
         ),
     },
 }
@@ -1228,21 +1227,21 @@ process_pool_size = 4
     map: {
         XvcEntity(
             13,
-            2127297647465362246,
+            6826636397237250639,
+        ): XvcPath(
+            "dir-0004/file-0003.bin",
+        ),
+        XvcEntity(
+            11,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0002.bin",
         ),
         XvcEntity(
             12,
-            2127297647465362246,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0001.bin",
-        ),
-        XvcEntity(
-            11,
-            2127297647465362246,
-        ): XvcPath(
-            "dir-0004/file-0003.bin",
         ),
     },
 }
@@ -1250,21 +1249,21 @@ process_pool_size = 4
     map: {
         XvcEntity(
             13,
-            2127297647465362246,
+            6826636397237250639,
+        ): XvcPath(
+            "dir-0004/file-0003.bin",
+        ),
+        XvcEntity(
+            11,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0002.bin",
         ),
         XvcEntity(
             12,
-            2127297647465362246,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0001.bin",
-        ),
-        XvcEntity(
-            11,
-            2127297647465362246,
-        ): XvcPath(
-            "dir-0004/file-0003.bin",
         ),
     },
 }
@@ -1278,22 +1277,8 @@ process_pool_size = 4
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1696842467,
-                tv_nsec: 947409986,
-            },
-        ),
-    },
-    XvcPath(
-        "dir-0004/file-0001.bin",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            2001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1696842467,
-                tv_nsec: 947168320,
+                tv_sec: 1696843019,
+                tv_nsec: 469258001,
             },
         ),
     },
@@ -1306,8 +1291,22 @@ process_pool_size = 4
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1696842467,
-                tv_nsec: 947610403,
+                tv_sec: 1696843019,
+                tv_nsec: 469467407,
+            },
+        ),
+    },
+    XvcPath(
+        "dir-0004/file-0001.bin",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            2001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1696843019,
+                tv_nsec: 469068802,
             },
         ),
     },
@@ -1316,36 +1315,36 @@ process_pool_size = 4
     "dir-0004/file-0002.bin",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    11,
+    6826636397237250639,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "dir-0004/file-0003.bin",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
     13,
-    2127297647465362246,
+    6826636397237250639,
 )
 [TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
     "dir-0004/file-0001.bin",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
     12,
-    2127297647465362246,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "dir-0004/file-0003.bin",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    11,
-    2127297647465362246,
+    6826636397237250639,
 )
 [TRACE][file/src/carry_in/mod.rs::155] content_digest_diff: HStore {
     map: {
         XvcEntity(
             13,
-            2127297647465362246,
+            6826636397237250639,
         ): Skipped,
         XvcEntity(
             11,
-            2127297647465362246,
+            6826636397237250639,
         ): Skipped,
         XvcEntity(
             12,
-            2127297647465362246,
+            6826636397237250639,
         ): Skipped,
     },
 }
@@ -1353,66 +1352,146 @@ process_pool_size = 4
     map: {
         XvcEntity(
             12,
-            2127297647465362246,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0001.bin",
         ),
         XvcEntity(
-            13,
-            2127297647465362246,
+            11,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0002.bin",
         ),
         XvcEntity(
-            11,
-            2127297647465362246,
+            13,
+            6826636397237250639,
         ): XvcPath(
             "dir-0004/file-0003.bin",
         ),
     },
 }
-[TRACE][file/src/carry_in/mod.rs::245] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin",
-)
-[TRACE][file/src/carry_in/mod.rs::246] file_perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::245] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/ab3/619/814cae0456a5a291e4d5c8d339a8389630e476f9f9e8d3a09accc919f0/0.bin",
-)
-[TRACE][file/src/carry_in/mod.rs::245] abs_cache_path: AbsolutePath(
+[TRACE][file/src/carry_in/mod.rs::249] abs_cache_path: AbsolutePath(
     "[CWD]/.xvc/b3/493/eeb/6525ea5e94e1e760371108e4a525c696c773a774a4818e941fd6d1af79/0.bin",
 )
-[TRACE][file/src/carry_in/mod.rs::246] file_perm: Permissions(
+[TRACE][file/src/carry_in/mod.rs::250] file_perm: Permissions(
     FilePermissions {
         mode: 33060,
     },
 )
-thread 'thread '<unnamed><unnamed>' panicked at '' panicked at 'Os { code: 13, kind: PermissionDenied, message: "Permission denied" }[PANIC] Os { code: 13, kind: PermissionDenied, message: "Permission denied" }, [file/src/carry_in/mod.rs::251]', ', file/src/carry_in/mod.rslib/src/cli/mod.rs::251263::1752
-
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at 'Os { code: 13, kind: PermissionDenied, message: "Permission denied" }', file/src/carry_in/mod.rs:251:17
+[TRACE][file/src/carry_in/mod.rs::249] abs_cache_path: AbsolutePath(
+    "[CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin",
+)
+[TRACE][file/src/common/mod.rs::423] cache_dir: "[CWD]/.xvc/b3/493/eeb/6525ea5e94e1e760371108e4a525c696c773a774a4818e941fd6d1af79"
+[TRACE][file/src/carry_in/mod.rs::249] abs_cache_path: AbsolutePath(
+    "[CWD]/.xvc/b3/ab3/619/814cae0456a5a291e4d5c8d339a8389630e476f9f9e8d3a09accc919f0/0.bin",
+)
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
-[TRACE][file/src/carry_in/mod.rs::246] file_perm: Permissions(
+[TRACE][file/src/carry_in/mod.rs::250] file_perm: Permissions(
     FilePermissions {
         mode: 33060,
     },
 )
-thread '<unnamed>' panicked at 'Os { code: 13, kind: PermissionDenied, message: "Permission denied" }', file/src/carry_in/mod.rs:251:17
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0002/**", re: "(?-u)^(?:/|/.*/)dir//-0002/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('2'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0004/**", re: "(?-u)^(?:/|/.*/)dir//-0004/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('4'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 3 regexes
-thread 'main' panicked at 'called `Result::unwrap()` on an `Err` value: Any { .. }', lib/src/cli/mod.rs:403:37
+[TRACE][file/src/common/mod.rs::423] cache_dir: "[CWD]/.xvc/b3/ab3/619/814cae0456a5a291e4d5c8d339a8389630e476f9f9e8d3a09accc919f0"
+[TRACE][file/src/carry_in/mod.rs::273] target_path: AbsolutePath(
+    "[CWD]/dir-0004/file-0002.bin",
+)
+[TRACE][file/src/carry_in/mod.rs::250] file_perm: Permissions(
+    FilePermissions {
+        mode: 33060,
+    },
+)
+[TRACE][file/src/common/mod.rs::299] parent_dir: AbsolutePath(
+    "[CWD]/dir-0004",
+)
+[TRACE][file/src/common/mod.rs::318] path: AbsolutePath(
+    "[CWD]/dir-0004/file-0002.bin",
+)
+[TRACE][file/src/common/mod.rs::319] recheck_method: Symlink
+[TRACE][file/src/common/mod.rs::366] "Before return": "Before return"
+[TRACE][file/src/carry_in/mod.rs::273] target_path: AbsolutePath(
+    "[CWD]/dir-0004/file-0003.bin",
+)
+[TRACE][file/src/common/mod.rs::299] parent_dir: AbsolutePath(
+    "[CWD]/dir-0004",
+)
+[TRACE][file/src/common/mod.rs::318] path: AbsolutePath(
+    "[CWD]/dir-0004/file-0003.bin",
+)
+[TRACE][file/src/common/mod.rs::319] recheck_method: Symlink
+[TRACE][file/src/common/mod.rs::423] cache_dir: "[CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70"
+[TRACE][file/src/common/mod.rs::366] "Before return": "Before return"
+[TRACE][file/src/carry_in/mod.rs::273] target_path: AbsolutePath(
+    "[CWD]/dir-0004/file-0001.bin",
+)
+[TRACE][file/src/common/mod.rs::299] parent_dir: AbsolutePath(
+    "[CWD]/dir-0004",
+)
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/store/**", re: "(?-u)^(?:/|/.*/)//.xvc/store/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('s'), Literal('t'), Literal('o'), Literal('r'), Literal('e'), RecursiveSuffix]) }
+[TRACE][file/src/common/mod.rs::318] path: AbsolutePath(
+    "[CWD]/dir-0004/file-0001.bin",
+)
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/ec/**", re: "(?-u)^(?:/|/.*/)//.xvc/ec/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('e'), Literal('c'), RecursiveSuffix]) }
+[TRACE][file/src/common/mod.rs::319] recheck_method: Symlink
+[TRACE][file/src/common/mod.rs::366] "Before return": "Before return"
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 2 regexes
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0002/**", re: "(?-u)^(?:/|/.*/)dir//-0002/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('2'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0004/**", re: "(?-u)^(?:/|/.*/)dir//-0004/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('4'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 3 regexes
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0002/**", re: "(?-u)^(?:/|/.*/)dir//-0002/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('2'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0004/**", re: "(?-u)^(?:/|/.*/)dir//-0004/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('4'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 3 regexes
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0002/**", re: "(?-u)^(?:/|/.*/)dir//-0002/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('2'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0004/**", re: "(?-u)^(?:/|/.*/)dir//-0004/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('4'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 3 regexes
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/store/**", re: "(?-u)^(?:/|/.*/)//.xvc/store/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('s'), Literal('t'), Literal('o'), Literal('r'), Literal('e'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/ec/**", re: "(?-u)^(?:/|/.*/)//.xvc/ec/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('e'), Literal('c'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 2 regexes
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0002/**", re: "(?-u)^(?:/|/.*/)dir//-0002/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('2'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0004/**", re: "(?-u)^(?:/|/.*/)dir//-0004/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('4'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 3 regexes
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0002/**", re: "(?-u)^(?:/|/.*/)dir//-0002/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('2'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/dir-0004/**", re: "(?-u)^(?:/|/.*/)dir//-0004/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('i'), Literal('r'), Literal('-'), Literal('0'), Literal('0'), Literal('0'), Literal('4'), RecursiveSuffix]) }
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 3 regexes
+[TRACE][file/src/common/mod.rs::467] records.len(): 12
+[TRACE][file/src/common/mod.rs::469] new_store.len(): 12
+[TRACE][file/src/common/mod.rs::467] records.len(): 12
+[TRACE][file/src/common/mod.rs::469] new_store.len(): 12
+[TRACE][file/src/common/mod.rs::467] records.len(): 12
+[TRACE][file/src/common/mod.rs::469] new_store.len(): 12
+[TRACE][lib/src/cli/mod.rs::381] "Before handle_git_automation": "Before handle_git_automation"
+[TRACE][lib/src/cli/mod.rs::384] &cli_opts.command_string: "/Users/iex/github.com/iesahin/xvc/target/debug/xvc --debug file carry-in --force dir-0004/"
+[TRACE][lib/src/cli/mod.rs::433] args: [
+    "-C",
+    "[CWD]",
+    "diff",
+    "--name-only",
+    "--cached",
+]
+[TRACE][lib/src/cli/mod.rs::463] git_diff_staged_out: ""
+[TRACE][lib/src/cli/mod.rs::433] args: [
+    "-C",
+    "[CWD]",
+    "add",
+    "--verbose",
+    "[CWD]/.xvc",
+    "*.gitignore",
+    "*.xvcignore",
+]
+[TRACE][lib/src/cli/mod.rs::582] git_add_output: ""
 
 $ ls -l dir-0004/
-total 24
--rw-r--r--  1 iex  staff  2001 Oct  9 12:07 file-0001.bin
--rw-r--r--  1 iex  staff  2002 Oct  9 12:07 file-0002.bin
--rw-r--r--  1 iex  staff  2003 Oct  9 12:07 file-0003.bin
+total 0
+lrwxr-xr-x  1 iex  staff  181 Oct  9 12:17 file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+lrwxr-xr-x  1 iex  staff  181 Oct  9 12:17 file-0002.bin -> [CWD]/.xvc/b3/493/eeb/6525ea5e94e1e760371108e4a525c696c773a774a4818e941fd6d1af79/0.bin
+lrwxr-xr-x  1 iex  staff  181 Oct  9 12:17 file-0003.bin -> [CWD]/.xvc/b3/ab3/619/814cae0456a5a291e4d5c8d339a8389630e476f9f9e8d3a09accc919f0/0.bin
 
 ```
 
