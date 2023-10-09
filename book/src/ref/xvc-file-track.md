@@ -53,7 +53,7 @@ $ xvc init
 Let's create a directory tree for these examples. 
 
 ```console
-$ xvc-test-helper create-directory-tree --directories 3 --files 3  --seed 20231021
+$ xvc-test-helper create-directory-tree --directories 4 --files 3  --seed 20231021
 $ tree
 .
 ├── dir-0001
@@ -100,10 +100,21 @@ commands create a directory tree under `.xvc` as follows:
 
 ```console
 $ tree .xvc/b3
-? 2
-.xvc/b2  [error opening dir]
+.xvc/b3
+├── 493
+│   └── eeb
+│       └── 6525ea5e94e1e760371108e4a525c696c773a774a4818e941fd6d1af79
+│           └── 0.bin
+├── ab3
+│   └── 619
+│       └── 814cae0456a5a291e4d5c8d339a8389630e476f9f9e8d3a09accc919f0
+│           └── 0.bin
+└── e51
+    └── 7d6
+        └── b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70
+            └── 0.bin
 
-0 directories, 0 files
+10 directories, 3 files
 
 ```
 
@@ -116,7 +127,7 @@ If you want to make this connection with symbolic links, you can specify it with
 ```console
 $ xvc file track --recheck-method symlink dir-0003/file-0001.bin
 $ ls -l dir-0003/file-0001.bin
-lrwxr-xr-x  1 iex  staff  179 Oct  8 17:29 dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+lrwxr-xr-x  1 iex  staff  181 Oct  8 17:33 dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
 
 ```
 
@@ -126,6 +137,11 @@ You can also use `--hardlink` and `--reflink` options. Please see [`xvc file rec
 $ xvc file track --recheck-method hardlink dir-0003/file-0002.bin
 $ xvc file track --recheck-method reflink dir-0003/file-0003.bin
 $ ls -l dir-0003/
+total 16
+lrwxr-xr-x  1 iex  staff   181 Oct  8 17:33 file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+-r--r--r--  2 iex  staff  2002 Oct  8 17:33 file-0002.bin
+-r--r--r--  1 iex  staff  2003 Oct  8 17:33 file-0003.bin
+
 ```
 
 
@@ -139,7 +155,17 @@ the cached original and commit (carry-in) every time they change.
 
 When you track a file in Xvc, it's automatically commit (carry-in) to the cache
 directory. If you want to postpone this operation and don't need a cached copy
-for a file, you can use `--no-commit` option.
+for a file, you can use `--no-commit` option. You can later use [xvc file
+carry-in](/ref/xvc-file-carry-in) command to move these files to the repository
+cache.  
+
+```console
+$ xvc file track --no-commit dir-0004/
+$ ls -l dir-0004/
+$ xvc file list dir-0004/
+```
+
+
 
 
 ## Caveats
