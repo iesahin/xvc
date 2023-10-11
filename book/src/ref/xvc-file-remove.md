@@ -159,7 +159,7 @@ $ xvc file list
 FC         [..] 6602cff6 6602cff6 data.txt
 FX         [..]          ac46bf74 .xvcignore
 FX         [..]          [..] .gitignore
-Total #: 3 Workspace Size:         339 Cached Size:          19
+Total #: 3 Workspace Size:         [..] Cached Size:          19
 
 
 $ xvc file remove --from-cache --only-version c85-f3e data.txt

@@ -128,7 +128,7 @@ FH          19 [..] c85f3e81 c85f3e81 another-set/data4.txt
 DX          96 [..]                   another-set
 FX         130 [..]          ac46bf74 .xvcignore
 FX         [..] .gitignore
-Total #: 5 Workspace Size:         774 Cached Size:          19
+Total #: 5 Workspace Size:         [..] Cached Size:          19
 
 
 ```
