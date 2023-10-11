@@ -11,6 +11,10 @@ description = "A book that documents the tool that manages data and pipelines."
 [preprocessor.mermaid]
 command = "mdbook-mermaid"
 
+[preprocessor.admonish]
+command = "mdbook-admonish"
+assets_version = "3.0.0" # do not edit: managed by `mdbook-admonish install`
+
 [output]
 
 [output.html]
@@ -18,6 +22,7 @@ preferred-dark-theme = "ayu"
 additional-js = ["mermaid.min.js", "mermaid-init.js"]
 git-repository-url = "https://github.com/iesahin/xvc"
 edit-url-template = "https://github.com/iesahin/xvc/edit/main/book/{path}"
+additional-css = ["./mdbook-admonish.css"]
 
 [output.html.fold]
 enable = true
