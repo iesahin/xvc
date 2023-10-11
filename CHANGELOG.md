@@ -5,6 +5,8 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+- Updated `xvc file track` reference and examples
+
 ## 0.6.1 (2023-10-05)
 
 - Added --min-size (-s) option to xvc-test-helper create-directory-tree

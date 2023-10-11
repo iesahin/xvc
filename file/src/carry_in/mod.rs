@@ -240,8 +240,14 @@ pub fn carry_in(
         let abs_cache_path = cache_path.to_absolute_path(xvc_root);
         if abs_cache_path.exists() {
             if force {
+                let cache_dir = uwo!(abs_cache_path.parent(), output_snd);
+                let mut dir_perm = uwr!(cache_dir.metadata(), output_snd).permissions();
+                dir_perm.set_readonly(false);
+                uwr!(fs::set_permissions(&cache_dir, dir_perm), output_snd);
                 let mut file_perm =
                     uwr!(abs_cache_path.as_path().metadata(), output_snd).permissions();
+                watch!(abs_cache_path);
+                watch!(file_perm);
                 file_perm.set_readonly(false);
                 uwr!(fs::set_permissions(&abs_cache_path, file_perm), output_snd);
                 /* let mut dir_perm = cache_dir.metadata()?.permissions(); */
