@@ -6,6 +6,7 @@ tree, and subtasks are marked with indentation.
 ## Unreleased
 
 - Updated `xvc file track` reference and examples
+- Added mdbook-admonish for admonitions
 
 ## 0.6.1 (2023-10-05)
 
