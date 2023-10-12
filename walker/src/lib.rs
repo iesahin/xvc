@@ -16,6 +16,7 @@ pub use abspath::AbsolutePath;
 pub use error::{Error, Result};
 use itertools::Itertools;
 pub use std::hash::Hash;
+use xvc_logging::watch;
 
 use crossbeam_channel::Sender;
 use log::warn;
@@ -577,7 +578,7 @@ pub fn build_ignore_rules(
                 if entry.path().is_dir() {
                     child_dirs.push(entry.path());
                 }
-                if entry.file_name() == ignore_fn {
+                if entry.file_name() == ignore_fn && entry.path().exists() {
                     let ignore_path = entry.path();
                     new_patterns = Some(
                         patterns_from_file(&ignore_root, &ignore_path)?
@@ -672,8 +673,15 @@ fn patterns_from_file(
     ignore_root: &Path,
     ignore_path: &Path,
 ) -> Result<Vec<Pattern<Result<Glob>>>> {
-    let content = fs::read_to_string(ignore_path)
-        .with_context(|| format!("Cannot find file: {:?}", ignore_path))?;
+    watch!(ignore_root);
+    watch!(ignore_path);
+    let content = fs::read_to_string(ignore_path).with_context(|| {
+        format!(
+            "Cannot read file: {:?}\n
+        If the file is present, it may be an encoding issue. Please check if it's UTF-8 encoded.",
+            ignore_path
+        )
+    })?;
     Ok(content_to_patterns(
         ignore_root,
         Some(ignore_path),
