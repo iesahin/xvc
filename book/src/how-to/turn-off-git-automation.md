@@ -106,7 +106,7 @@ You can use usual Git workflow to add and commit the files.
 ```
 $ git add .xvc dir-0001/.gitignore
 $ git commit -m "Began to track dir-0001/file-0002.bin with Xvc"
-[main affb2c2] Began to track dir-0001/file-0002.bin with Xvc
+[main [..]] Began to track dir-0001/file-0002.bin with Xvc
  7 files changed, 8 insertions(+)
  create mode 100644 .xvc/ec/[..]
  create mode 100644 .xvc/store/content-digest-store/[..].json
