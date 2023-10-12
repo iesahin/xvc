@@ -675,8 +675,13 @@ fn patterns_from_file(
 ) -> Result<Vec<Pattern<Result<Glob>>>> {
     watch!(ignore_root);
     watch!(ignore_path);
-    let content = fs::read_to_string(ignore_path)
-        .with_context(|| format!("Cannot find file: {:?}", ignore_path))?;
+    let content = fs::read_to_string(ignore_path).with_context(|| {
+        format!(
+            "Cannot read file: {:?}\n
+        If the file is present, it may be an encoding issue. Please check if it's UTF-8 encoded.",
+            ignore_path
+        )
+    })?;
     Ok(content_to_patterns(
         ignore_root,
         Some(ignore_path),
