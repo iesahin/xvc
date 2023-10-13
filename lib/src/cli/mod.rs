@@ -382,14 +382,17 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
             match xvc_root_opt {
                 Some(xvc_root) => {
                     watch!(&cli_opts.command_string);
-                    handle_git_automation(
-                        &output_snd,
-                        xvc_root,
-                        cli_opts.to_branch.as_deref(),
-                        &cli_opts.command_string,
-                    )?;
+                    if cli_opts.skip_git {
+                        debug!(output_snd, "Skipping Git operations");
+                    } else {
+                        handle_git_automation(
+                            &output_snd,
+                            xvc_root,
+                            cli_opts.to_branch.as_deref(),
+                            &cli_opts.command_string,
+                        )?;
+                    }
                 }
-
                 None => {
                     debug!(
                         output_snd,
@@ -578,7 +581,6 @@ fn git_auto_commit(
         ],
     ) {
         Ok(git_add_output) => {
-
             watch!(git_add_output);
             if git_add_output.trim().len() == 0 {
                 debug!(output_snd, "No files to commit");
