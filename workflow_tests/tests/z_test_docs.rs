@@ -1,6 +1,5 @@
 use std::{
-    env,
-    fs,
+    env, fs,
     path::{Path, PathBuf},
 };
 
@@ -134,7 +133,18 @@ fn z_doc_tests() -> Result<()> {
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
     assert!(path_to_xvc_test_helper.exists());
 
+    let xvc_bin = escargot::CargoBuild::new()
+        .bin("xvc")
+        .current_release()
+        .current_target()
+        .manifest_path("../lib/Cargo.toml")
+        .run()
+        .map_err(|e| anyhow!("Failed to build xvc: {e:?}"))?;
+
+    let path_to_xvc_bin = xvc_bin.path().to_path_buf();
+
     trycmd::TestCases::new()
+        .register_bin("xvc", &path_to_xvc_bin)
         .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
         .register_bin("git", which::which("git")?)
         .register_bin("echo", which::which("echo"))

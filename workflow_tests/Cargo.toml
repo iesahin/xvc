@@ -11,7 +11,7 @@ categories = ["command-line-utilities", "development-tools"]
 keywords = ["file", "devops", "git", "versioning", "mlops"]
 
 [[bin]]
-name = "xvc"
+name = "xvc-test"
 path = "src/main.rs"
 
 [lib]
