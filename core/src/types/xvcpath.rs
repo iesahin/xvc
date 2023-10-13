@@ -260,7 +260,7 @@ impl XvcCachePath {
             watch!(parent);
             let mut dir_perm = parent.metadata()?.permissions();
             dir_perm.set_readonly(false);
-            fs::set_permissions(&parent, dir_perm)?;
+            fs::set_permissions(parent, dir_perm)?;
 
             let mut file_perm = abs_cp.metadata()?.permissions();
             file_perm.set_readonly(false);

@@ -38,6 +38,8 @@ impl From<ParamDep> for XvcDependency {
 }
 
 impl ParamDep {
+    /// Creates a new ParamDep with the given path and key. If the format is None, it's inferred
+    /// from the path.
     pub fn new(path: &XvcPath, format: Option<XvcParamFormat>, key: String) -> Result<Self> {
         Ok(Self {
             format: format.unwrap_or_else(|| XvcParamFormat::from_xvc_path(path)),
