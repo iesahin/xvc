@@ -44,7 +44,6 @@ rmp-serde = "1.1.2"
 toml = "^0.8"
 
 ## Caching
-sled = "^0.34"
 cached = "^0.46"
 
 ## Parallelization

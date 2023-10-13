@@ -50,9 +50,6 @@ rmp = "^0.8"
 rmp-serde = "1.1.2"
 toml = "^0.8"
 
-## Caching
-sled = "^0.34"
-
 ## Parallelization
 rayon = "^1.7"
 crossbeam-channel = "^0.5"
@@ -72,7 +69,7 @@ thiserror = "^1.0"
 log = "^0.4"
 anyhow = "^1.0"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
-fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+fern = { version = "^0.6", features = ["colored"] }
 
 
 ## macros

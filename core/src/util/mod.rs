@@ -1,7 +1,6 @@
 //! Various utility functions
 pub mod file;
 pub mod git;
-pub mod keyvaluestore;
 pub mod serde;
 pub mod store;
 pub mod xvcignore;

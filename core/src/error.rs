@@ -131,11 +131,6 @@ pub enum Error {
         #[from]
         source: relative_path::FromPathError,
     },
-    #[error("Error in Key/Value Store: {source}")]
-    SledError {
-        #[from]
-        source: SledError,
-    },
     #[error("Glob error: {source}")]
     GlobSetError {
         #[from]
