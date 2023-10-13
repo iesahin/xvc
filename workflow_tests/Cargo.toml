@@ -20,7 +20,7 @@ crate-type = ["rlib"]
 
 [dependencies]
 xvc = { version = "0.6.0", path = "../lib" }
-xvc-config = {version = "0.6.0",  path = "../config" }
+xvc-config = { version = "0.6.0", path = "../config" }
 xvc-core = { version = "0.6.0", path = "../core" }
 xvc-logging = { version = "0.6.0", path = "../logging" }
 xvc-ecs = { version = "0.6.0", path = "../ecs" }
@@ -30,7 +30,7 @@ xvc-walker = { version = "0.6.0", path = "../walker" }
 xvc-storage = { version = "0.6.0", path = "../storage" }
 
 ## packages for testing
-clap = {version = "^4.4", features=["derive"]}
+clap = { version = "^4.4", features = ["derive"] }
 
 itertools = "^0.11"
 serde = { version = "^1.0", features = ["derive"] }
@@ -53,13 +53,12 @@ wasabi = ["xvc-storage/wasabi"]
 digital-ocean = ["xvc-storage/digital-ocean"]
 test-s3 = ["s3"]
 test-minio = ["minio"]
-test-digital-ocean=["digital-ocean"]
-test-wasabi=["wasabi"]
-test-gcs =["gcs"]
+test-digital-ocean = ["digital-ocean"]
+test-wasabi = ["wasabi"]
+test-gcs = ["gcs"]
 test-r2 = ["r2"]
 test-rsync = []
 test-generic-rsync = []
-
 
 
 [dev-dependencies]
@@ -70,10 +69,10 @@ escargot = "^0.5"
 xvc-test-helper = { version = "0.6.0", path = "../test_helper" }
 shellfn = "^0.1"
 jwalk = "^0.8"
-anyhow =  "^1.0"
+anyhow = "^1.0"
 assert_cmd = "^2.0"
 assert_fs = "^1.0"
 predicates = "^3.0"
-trycmd="^0.14"
+trycmd = "^0.14"
 which = "4.4"
 fs_extra = "^1.3"

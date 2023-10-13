@@ -363,7 +363,7 @@ pub fn recheck_from_cache(
         })),
         output_snd
     );
-    watch!("Before return");
+    watch!("Return recheck_from_cache");
     Ok(())
 }
 

@@ -391,7 +391,9 @@ pub fn walk_parallel(
                 &path_sender,
                 patterns_from_file(&ignore_rules.root, &ignore_path)?,
             );
+            watch!(new_patterns);
             let ignore_rules = ignore_rules.update(new_patterns)?;
+            watch!(ignore_rules);
             ignore_sender.send(Ok(ignore_rules.clone()))?;
             ignore_rules
         } else {
@@ -402,10 +404,12 @@ pub fn walk_parallel(
     };
 
     let mut child_dirs = Vec::<PathMetadata>::new();
+    watch!(child_paths);
 
     for child_path in child_paths {
         match check_ignore(&dir_with_ignores, child_path.path.as_ref()) {
             MatchResult::NoMatch | MatchResult::Whitelist => {
+                watch!(child_path.path);
                 if child_path.metadata.is_dir() {
                     if walk_options.include_dirs {
                         path_sender.send(Ok(child_path.clone()))?;
@@ -416,7 +420,9 @@ pub fn walk_parallel(
                 }
             }
             // We can return anyhow! error here to notice the user that the path is ignored
-            MatchResult::Ignore => {}
+            MatchResult::Ignore => {
+                watch!(child_path.path);
+            }
         }
     }
 
@@ -427,6 +433,10 @@ pub fn walk_parallel(
             let path_sender = path_sender.clone();
             let ignore_sender = ignore_sender.clone();
             s.spawn(move |_| {
+                watch!(dwi);
+                watch!(walk_options);
+                watch!(path_sender);
+                watch!(ignore_sender);
                 walk_parallel(
                     dwi,
                     &child_dir.path,
@@ -438,6 +448,8 @@ pub fn walk_parallel(
         }
     })
     .expect("Error in crossbeam scope in walk_parallel");
+
+    watch!("End of walk_parallel");
 
     Ok(())
 }
@@ -682,6 +694,7 @@ fn patterns_from_file(
             ignore_path
         )
     })?;
+    watch!(&content);
     Ok(content_to_patterns(
         ignore_root,
         Some(ignore_path),
