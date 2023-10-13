@@ -4,7 +4,6 @@ use xvc_config::error::Error as XvcConfigError;
 use xvc_ecs::error::Error as XvcEcsError;
 use xvc_walker::error::Error as XvcWalkerError;
 
-use sled::Error as SledError;
 use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;

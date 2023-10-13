@@ -214,7 +214,7 @@ mod test {
             "right component".to_string(),
         );
         assert!(rs.left_to_right(&entity) == Some((&entity, &"right component".to_string())));
-        assert!(rs.left_to_right(&(101, 921309218309).into()) == None);
+        assert!(rs.left_to_right(&(101, 921309218309).into()).is_none());
         Ok(())
     }
     #[test]
@@ -223,7 +223,7 @@ mod test {
         let entity: XvcEntity = (100, 128012389012).into();
         rs.insert(&entity, "left component".into(), "right component".into());
         assert!(rs.right_to_left(&entity) == Some((&entity, &"left component".to_string())));
-        assert!(rs.right_to_left(&(101, 8120938120931).into()) == None);
+        assert!(rs.right_to_left(&(101, 8120938120931).into()).is_none());
         Ok(())
     }
 
@@ -233,8 +233,8 @@ mod test {
         let entity: XvcEntity = (100, 123980123819203).into();
         rs.insert(&entity, "left component".into(), "right component".into());
         let t = rs.tuple(&entity);
-        assert!(t.0.as_deref() == Some(&"left component".to_string()));
-        assert!(t.1.as_deref() == Some(&"right component".to_string()));
+        assert!(t.0 == Some(&"left component".to_string()));
+        assert!(t.1 == Some(&"right component".to_string()));
         Ok(())
     }
 }

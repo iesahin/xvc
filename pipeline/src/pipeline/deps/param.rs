@@ -31,9 +31,9 @@ pub struct ParamDep {
 
 persist!(ParamDep, "param-dependency");
 
-impl Into<XvcDependency> for ParamDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::Param(self)
+impl From<ParamDep> for XvcDependency {
+    fn from(val: ParamDep) -> Self {
+        XvcDependency::Param(val)
     }
 }
 
@@ -181,20 +181,7 @@ pub enum XvcParamValue {
 
 impl PartialOrd for XvcParamValue {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (self, other) {
-            (XvcParamValue::Json(json1), XvcParamValue::Json(json2)) => {
-                let json1str = json1.to_string();
-                let json2str = json2.to_string();
-                json1str.partial_cmp(&json2str)
-            }
-            (XvcParamValue::Yaml(yaml1), XvcParamValue::Yaml(yaml2)) => yaml1.partial_cmp(yaml2),
-            (XvcParamValue::Toml(toml1), XvcParamValue::Toml(toml2)) => {
-                let toml1str = toml1.to_string();
-                let toml2str = toml2.to_string();
-                toml1str.partial_cmp(&toml2str)
-            }
-            _ => None,
-        }
+        Some(self.cmp(other))
     }
 }
 
@@ -223,6 +210,7 @@ impl Display for XvcParamValue {
 }
 
 impl XvcParamValue {
+    /// Creates a new key with an empty value pointing to a file with an explicit [XvcParamFormat]
     pub fn new_with_format(path: &Path, format: &XvcParamFormat, key: &str) -> Result<Self> {
         let all_content = fs::read_to_string(path)?;
 

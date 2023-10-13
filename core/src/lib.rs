@@ -25,7 +25,6 @@ pub use types::diff::DiffStore;
 pub use types::diff::DiffStore2;
 pub use types::diff::DiffStore3;
 pub use types::diff::DiffStore4;
-pub use types::diff::DiffStore5;
 
 pub use types::diff::apply_diff;
 pub use types::diff::diff_store;

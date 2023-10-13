@@ -86,8 +86,8 @@ pub fn diff_store<T: Storable>(
     let mut diff_store = HStore::new();
 
     for xe in entities {
-        let record_value = records.get(&xe);
-        let actual_value = actuals.get(&xe);
+        let record_value = records.get(xe);
+        let actual_value = actuals.get(xe);
 
         match (record_value, actual_value) {
             (None, None) => {
@@ -283,44 +283,6 @@ impl<T: Storable, U: Storable, V: Storable, W: Storable> DiffStore4<T, U, V, W> 
             self.1.get(&xe).cloned().expect("Missing diff2"),
             self.2.get(&xe).cloned().expect("Missing diff3"),
             self.3.get(&xe).cloned().expect("Missing diff4"),
-        )
-    }
-}
-
-/// Keep five diffs for the same set of entities
-///
-/// This is used, for example, to keep path, metadata, digest, text-or-binary,
-/// recheck-method diffs for the same files.
-pub struct DiffStore5<T, U, V, W, X>(
-    DiffStore<T>,
-    DiffStore<U>,
-    DiffStore<V>,
-    DiffStore<W>,
-    DiffStore<X>,
-)
-where
-    T: Storable,
-    U: Storable,
-    V: Storable,
-    W: Storable,
-    X: Storable;
-
-impl<T, U, V, W, X> DiffStore5<T, U, V, W, X>
-where
-    T: Storable,
-    U: Storable,
-    V: Storable,
-    W: Storable,
-    X: Storable,
-{
-    /// Return a tuple of diffs for the same entity
-    pub fn diff_tuple(&self, xe: XvcEntity) -> (Diff<T>, Diff<U>, Diff<V>, Diff<W>, Diff<X>) {
-        (
-            self.0.get(&xe).cloned().expect("Missing diff1"),
-            self.1.get(&xe).cloned().expect("Missing diff2"),
-            self.2.get(&xe).cloned().expect("Missing diff3"),
-            self.3.get(&xe).cloned().expect("Missing diff4"),
-            self.4.get(&xe).cloned().expect("Missing diff5"),
         )
     }
 }

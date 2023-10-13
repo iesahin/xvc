@@ -207,7 +207,7 @@ impl<T> HStore<T> {
         let mut imap = HashMap::<T, XvcEntity>::with_capacity(self.len());
         for (e, v) in self.iter() {
             let ires = imap.insert(v.clone(), *e);
-            if ires != None {
+            if ires.is_some() {
                 debug!("Duplicate value in store: ({:?}, {:?})", e, v);
             }
         }
@@ -224,7 +224,7 @@ impl<T> HStore<T> {
         let mut imap = BTreeMap::<T, XvcEntity>::new();
         for (e, v) in self.map.iter() {
             let ires = imap.insert(v.clone(), *e);
-            if ires != None {
+            if ires.is_some() {
                 debug!("Duplicate value in store: ({:?}, {:?})", e, v);
             }
         }

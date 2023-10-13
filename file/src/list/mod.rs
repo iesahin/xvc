@@ -165,7 +165,7 @@ impl ListRow {
         let actual_timestamp = path_match
             .actual_metadata
             .and_then(|md| md.modified)
-            .unwrap_or_else(|| SystemTime::UNIX_EPOCH);
+            .unwrap_or(SystemTime::UNIX_EPOCH);
 
         let actual_timestamp_str =
             format_timestamp(path_match.actual_metadata.and_then(|md| md.modified));
@@ -196,42 +196,29 @@ impl ListRow {
             ap.strip_prefix(&path_prefix.to_string_lossy().to_string())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
+        } else if let Some(rp) = path_match.recorded_path {
+            watch!(rp);
+            rp.strip_prefix(&path_prefix.to_string_lossy().to_string())
+                .map_err(|e| Error::RelativeStripPrefixError { e })?
+                .to_string()
         } else {
-            if let Some(rp) = path_match.recorded_path {
-                watch!(rp);
-                rp.strip_prefix(&path_prefix.to_string_lossy().to_string())
-                    .map_err(|e| Error::RelativeStripPrefixError { e })?
-                    .to_string()
-            } else {
-                return Err(anyhow!("No actual or recorded path for {:?}", path_match).into());
-            }
+            return Err(anyhow!("No actual or recorded path for {:?}", path_match).into());
         };
 
         // We don't consider subsecond differences to be significant.
         let cache_status = if path_match.actual_metadata.is_some() {
             if path_match.recorded_metadata.is_some() {
-                if actual_timestamp < recorded_timestamp {
-                    if recorded_timestamp
-                        .duration_since(actual_timestamp)?
-                        .as_secs()
-                        > 0
-                    {
-                        "<".to_string()
-                    } else {
-                        "=".to_string()
-                    }
-                } else if recorded_timestamp > actual_timestamp {
-                    if actual_timestamp
-                        .duration_since(recorded_timestamp)?
-                        .as_secs()
-                        > 0
-                    {
-                        ">".to_string()
-                    } else {
-                        "=".to_string()
-                    }
-                } else {
-                    "=".to_string()
+                // We use seconds resolution for file system changes not to change results
+                let actual_secs = actual_timestamp
+                    .duration_since(SystemTime::UNIX_EPOCH)?
+                    .as_secs();
+                let recorded_secs = recorded_timestamp
+                    .duration_since(SystemTime::UNIX_EPOCH)?
+                    .as_secs();
+                match actual_secs.cmp(&recorded_secs) {
+                    std::cmp::Ordering::Less => "<".to_string(),
+                    std::cmp::Ordering::Greater => ">".to_string(),
+                    std::cmp::Ordering::Equal => "=".to_string(),
                 }
             } else {
                 "X".to_string()
@@ -365,7 +352,7 @@ impl ListRows {
                 }
                 ListColumn::RecordedTimestamp => output.push_str(&row.recorded_timestamp_str),
                 ListColumn::CacheStatus => output.push_str(&row.cache_status),
-                ListColumn::Literal(literal) => output.push_str(&literal),
+                ListColumn::Literal(literal) => output.push_str(literal),
             }
         }
         output
@@ -556,7 +543,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
             let recorded_metadata = stored_xvc_metadata.get(&xvc_entity).cloned();
             let recorded_path = from_store.get(&xvc_entity).cloned();
             let recorded_recheck_method = stored_recheck_method.get(&xvc_entity).cloned();
-            found_entities.insert(xvc_entity.clone());
+            found_entities.insert(xvc_entity);
             let pm = PathMatch {
                 xvc_entity: Some(xvc_entity),
                 actual_path: Some(disk_xvc_path),
@@ -596,17 +583,17 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
         .collect::<Vec<_>>();
 
     for xvc_entity in &not_found_entities {
-        let recorded_md = stored_xvc_metadata.get(&xvc_entity).cloned();
-        let recorded_path = from_store.get(&xvc_entity).cloned();
-        let recorded_recheck_method = stored_recheck_method.get(&xvc_entity).cloned();
+        let recorded_metadata = stored_xvc_metadata.get(xvc_entity).cloned();
+        let recorded_path = from_store.get(xvc_entity).cloned();
+        let recorded_recheck_method = stored_recheck_method.get(xvc_entity).cloned();
         let pm = PathMatch {
             xvc_entity: Some(*xvc_entity),
             actual_path: None,
             actual_metadata: None,
             // digests will be filled later if needed
             actual_digest: None,
-            recorded_path: recorded_path,
-            recorded_metadata: recorded_md,
+            recorded_path,
+            recorded_metadata,
             recorded_recheck_method,
             recorded_digest: None,
         };
@@ -648,7 +635,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
                     if pm
                         .actual_path
                         .as_deref()
-                        .and(pm.actual_metadata.and_then(|md| Some(md.is_file())))
+                        .and(pm.actual_metadata.map(|md| md.is_file()))
                         == Some(true)
                     {
                         let actual_path = pm.actual_path.as_ref().unwrap();
@@ -681,7 +668,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
             matches
         };
 
-    let path_prefix = current_dir.strip_prefix(&xvc_root.absolute_path())?;
+    let path_prefix = current_dir.strip_prefix(xvc_root.absolute_path())?;
 
     let rows = matches
         .into_iter()

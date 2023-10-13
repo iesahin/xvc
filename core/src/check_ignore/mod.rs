@@ -109,16 +109,14 @@ fn check_ignore_stdin<R: BufRead>(
     let conf = xvc_root.config();
     let current_dir = conf.current_dir()?;
     let mut buffer = String::new();
-    for line in input.lines() {
-        if let Ok(line) = line {
-            let xvc_path = XvcPath::new(xvc_root, current_dir, &PathBuf::from(line))?;
-            let absolute_path = xvc_path.to_absolute_path(xvc_root);
-            let res = check_ignore_line(ignore_rules, &absolute_path, opts.non_matching);
-            if !res.trim().is_empty() {
-                output!(output_snd, "{}", res);
-            }
-            buffer.clear();
+    for line in input.lines().flatten() {
+        let xvc_path = XvcPath::new(xvc_root, current_dir, &PathBuf::from(line))?;
+        let absolute_path = xvc_path.to_absolute_path(xvc_root);
+        let res = check_ignore_line(ignore_rules, &absolute_path, opts.non_matching);
+        if !res.trim().is_empty() {
+            output!(output_snd, "{}", res);
         }
+        buffer.clear();
     }
     Ok(())
 }

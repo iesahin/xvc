@@ -769,7 +769,7 @@ fn build_pattern(source: Source, original: &str) -> Pattern<String> {
     // matches
 
     let begin_exclamation = original.starts_with('!');
-    let mut line = if begin_exclamation || original.starts_with(r#"\!"#) {
+    let mut line = if begin_exclamation || original.starts_with(r"\!") {
         original[1..].to_owned()
     } else {
         original.to_owned()
@@ -823,16 +823,14 @@ fn build_pattern(source: Source, original: &str) -> Pattern<String> {
         PatternRelativity::Anywhere
     };
 
-    let pattern = Pattern::<String> {
+    Pattern::<String> {
         pattern: line,
         original: original.to_owned(),
         source,
         effect,
         relativity,
         path_kind,
-    };
-
-    pattern
+    }
 }
 
 /// Check whether `path` is whitelisted or ignored with `ignore_rules`
@@ -841,7 +839,7 @@ pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     // strip_prefix eats the final slash, and ends_with behave differently than str, so we work
     // around here
     let path_str = path.to_string_lossy();
-    let final_slash = path_str.ends_with("/");
+    let final_slash = path_str.ends_with('/');
 
     let path = if is_abs {
         if final_slash {
@@ -899,15 +897,15 @@ mod tests {
         pat.effect
     }
 
-    #[test_case("", "!mydir/*/file" => matches PatternRelativity::RelativeTo { directory } if directory == "" ; "t500415168")]
-    #[test_case("", "!mydir/myfile" => matches PatternRelativity::RelativeTo {directory} if directory == "" ; "t1158125354")]
+    #[test_case("", "!mydir/*/file" => matches PatternRelativity::RelativeTo { directory } if directory.is_empty() ; "t500415168")]
+    #[test_case("", "!mydir/myfile" => matches PatternRelativity::RelativeTo {directory} if directory.is_empty() ; "t1158125354")]
     #[test_case("dir/", "!mydir/*/file" => matches PatternRelativity::RelativeTo { directory } if directory == "/dir" ; "t3052699971")]
     #[test_case("dir/", "!mydir/myfile" => matches PatternRelativity::RelativeTo {directory} if directory == "/dir" ; "t885029019")]
     #[test_case("", "!myfile" => matches PatternRelativity::Anywhere; "t3101661374")]
     #[test_case("", "!myfile/" => matches PatternRelativity::Anywhere ; "t3954695505")]
-    #[test_case("", "/my/file" => matches PatternRelativity::RelativeTo { directory } if directory == "" ; "t1154256567")]
-    #[test_case("", "mydir/*" => matches PatternRelativity::RelativeTo { directory } if directory == "" ; "t865348822")]
-    #[test_case("", "mydir/file" => matches PatternRelativity::RelativeTo { directory } if directory == "" ; "t809589695")]
+    #[test_case("", "/my/file" => matches PatternRelativity::RelativeTo { directory } if directory.is_empty() ; "t1154256567")]
+    #[test_case("", "mydir/*" => matches PatternRelativity::RelativeTo { directory } if directory.is_empty() ; "t865348822")]
+    #[test_case("", "mydir/file" => matches PatternRelativity::RelativeTo { directory } if directory.is_empty() ; "t809589695")]
     #[test_case("root/", "/my/file" => matches PatternRelativity::RelativeTo { directory } if directory == "/root" ; "t7154256567")]
     #[test_case("root/", "mydir/*" => matches PatternRelativity::RelativeTo { directory } if directory == "/root" ; "t765348822")]
     #[test_case("root/", "mydir/file" => matches PatternRelativity::RelativeTo { directory } if directory == "/root" ; "t709589695")]
@@ -1117,17 +1115,14 @@ mod tests {
 
         if !temp_dir.exists() {
             // in parallel tests, sometimes this fail
-            match fs::create_dir(&temp_dir) {
-                Ok(_) => {}
-                Err(_) => {}
-            }
+            fs::create_dir(&temp_dir)?;
             create_directory_tree(&temp_dir, 10, 10, 1000, None)?;
             // root/dir1 may have another tree
             let level_1 = &temp_dir.join("dir-0001");
-            create_directory_tree(&level_1, 10, 10, 1000, None)?;
+            create_directory_tree(level_1, 10, 10, 1000, None)?;
             // and another level
             let level_2 = &level_1.join("dir-0001");
-            create_directory_tree(&level_2, 10, 10, 1000, None)?;
+            create_directory_tree(level_2, 10, 10, 1000, None)?;
         }
 
         Ok(AbsolutePath::from(temp_dir))
