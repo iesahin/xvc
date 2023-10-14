@@ -18,7 +18,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10, 1000, Some(47))?;
+    create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
 
     Ok(temp_dir)
 }
@@ -71,14 +71,14 @@ fn test_storage_new_rsync() -> Result<()> {
     ));
 
     watch!(storage_list);
-    assert!(storage_list.len() > 0);
+    assert!(!storage_list.is_empty());
 
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
     watch!(file_track_result);
 
-    let n_storage_files_before = jwalk::WalkDir::new(&local_test_dir)
+    let n_storage_files_before = jwalk::WalkDir::new(local_test_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()

@@ -21,13 +21,13 @@ fn test_is_text_file() {
         );
         let text_fn = format!("test-{}.txt", i);
         let text_p = Path::new(&text_fn);
-        common::generate_random_text_file(text_p.clone(), 100);
+        common::generate_random_text_file(text_p, 100);
         assert!(
-            is_text_file(&text_p).unwrap(),
+            is_text_file(text_p).unwrap(),
             "{:?} seems binary file incorrectly",
             text_p
         )
     }
 
-    fs::remove_dir_all(&repo_dir).unwrap();
+    fs::remove_dir_all(repo_dir).unwrap();
 }

@@ -144,9 +144,9 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<Xv
                 let entity_generator_dir = &xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH);
                 fs::create_dir_all(entity_generator_dir)?;
                 let entity_generator_path = entity_generator_dir.join(timestamp());
-                fs::write(&entity_generator_path, "1")?;
+                fs::write(entity_generator_path, "1")?;
                 let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
-                fs::create_dir(&store_dir)?;
+                fs::create_dir(store_dir)?;
                 // TODO: Add crate specific initializations
 
                 let xvcignore_path = abs_path.join(XVCIGNORE_FILENAME);
@@ -154,11 +154,11 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<Xv
 
                 let use_git = config.get_bool("git.use_git")?.option;
                 if use_git {
-                    let gitignore_path = abs_path.join(&PathBuf::from(".gitignore"));
+                    let gitignore_path = abs_path.join(PathBuf::from(".gitignore"));
                     let mut out = OpenOptions::new()
                         .create(true)
                         .append(true)
-                        .open(&gitignore_path)?;
+                        .open(gitignore_path)?;
                     writeln!(out, "{}", GITIGNORE_INITIAL_CONTENT)?;
                 }
                 load_xvc_root(&abs_path, project_config_opts)
@@ -252,7 +252,7 @@ impl XvcRootInner {
             if pb.join(XVC_DIR).is_dir() {
                 debug!("XVC DIR: {:?}", pb);
                 return Ok(pb.into());
-            } else if pb.parent() == None {
+            } else if pb.parent().is_none() {
                 return Err(Error::CannotFindXvcRoot { path: path.into() });
             } else {
                 pb.pop();

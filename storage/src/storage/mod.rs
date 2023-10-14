@@ -41,21 +41,32 @@ use xvc_ecs::{persist, XvcStore};
 
 use self::generic::XvcGenericStorage;
 
+/// A storage that can be used to send and receive files with several different backends
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub enum XvcStorage {
+    /// A local storage is a directory that is on the same machine as the repository.
     Local(XvcLocalStorage),
+    /// A generic storage creates the storage and sends, receives, deletes files with shell
+    /// commands
     Generic(XvcGenericStorage),
+    /// A rsync storage is a directory in an Rsync/SSH host
     Rsync(rsync::XvcRsyncStorage),
+    /// An S3 storage is a bucket in AWS S3
     #[cfg(feature = "s3")]
     S3(s3::XvcS3Storage),
+    /// An R2 storage is a bucket in R2
     #[cfg(feature = "r2")]
     R2(r2::XvcR2Storage),
+    /// A GCS storage is a bucket in Google Cloud Storage
     #[cfg(feature = "gcs")]
     Gcs(gcs::XvcGcsStorage),
+    /// A Minio storage is a bucket in Minio
     #[cfg(feature = "minio")]
     Minio(minio::XvcMinioStorage),
+    /// A Wasabi storage is a bucket in Wasabi
     #[cfg(feature = "wasabi")]
     Wasabi(wasabi::XvcWasabiStorage),
+    /// A DigitalOcean storage is a bucket in DigitalOcean
     #[cfg(feature = "digital-ocean")]
     DigitalOcean(digital_ocean::XvcDigitalOceanStorage),
 }
@@ -133,7 +144,11 @@ impl Display for XvcStorage {
     }
 }
 
+/// All storages implement this trait. xvc storage new   and xvc file send / bring / remove
+/// commands use this trait to communicate with the remotes.
 pub trait XvcStorageOperations {
+    /// The init operation is creates a directory with the "short guid" of the Xvc repository and
+    /// adds a .xvc-guid file with the guid of the storage.
     fn init(
         self,
         output: &XvcOutputSender,
@@ -142,7 +157,9 @@ pub trait XvcStorageOperations {
     where
         Self: Sized;
 
+    /// Used by xvc file list command to list the contents of a directory in the storage.
     fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent>;
+    /// Used by xvc file send command to send files to the storage.
     fn send(
         &self,
         output: &XvcOutputSender,
@@ -150,6 +167,7 @@ pub trait XvcStorageOperations {
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<XvcStorageSendEvent>;
+    /// Used by xvc file bring command to bring files from the storage.
     fn receive(
         &self,
         output: &XvcOutputSender,
@@ -157,6 +175,7 @@ pub trait XvcStorageOperations {
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)>;
+    /// Used by xvc file remove command to remove files from the storage.
     fn delete(
         &self,
         output: &XvcOutputSender,
@@ -316,25 +335,32 @@ impl XvcStorageOperations for XvcStorage {
     }
 }
 
+/// The temporary directory used to store files that are sent or received from a remote storage.
+/// Xvc downloads to a temporary directory and then copies the files to the cache directory.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq)]
 pub struct XvcStorageTempDir(AbsolutePath);
 impl XvcStorageTempDir {
+    /// Create a new temporary directory
     pub fn new() -> Result<Self> {
         let temp_dir = AbsolutePath::from(TempDir::new()?.into_path());
         Ok(Self(temp_dir))
     }
 
+    /// The path of the temporary directory
     pub fn path(&self) -> &AbsolutePath {
         &self.0
     }
 
+    /// A temporary directory for the cache directory
     pub fn temp_cache_dir(&self, cache_path: &XvcCachePath) -> Result<AbsolutePath> {
-        let temp_cache_dir = self.0.join(&cache_path.directory().as_str());
-        Ok(AbsolutePath::from(temp_cache_dir))
+        let temp_cache_dir = self.0.join(cache_path.directory().as_str());
+        Ok(temp_cache_dir)
     }
+
+    /// A temporary path for a cache file
     pub fn temp_cache_path(&self, cache_path: &XvcCachePath) -> Result<AbsolutePath> {
-        let temp_cache_path = self.0.join(&cache_path.inner().as_str());
-        Ok(AbsolutePath::from(temp_cache_path))
+        let temp_cache_path = self.0.join(cache_path.inner().as_str());
+        Ok(temp_cache_path)
     }
 }
 
@@ -391,6 +417,12 @@ impl XvcStorageGuid {
     pub fn new() -> Self {
         let guid = uuid::Uuid::new_v4();
         Self(guid)
+    }
+}
+
+impl Default for XvcStorageGuid {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

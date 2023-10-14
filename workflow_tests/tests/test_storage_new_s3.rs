@@ -120,7 +120,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10, 1000, Some(47))?;
+    create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
 
     Ok(temp_dir)
 }
@@ -178,7 +178,7 @@ fn test_storage_new_s3() -> Result<()> {
         &format!(" | rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
     watch!(s3_bucket_list);
-    assert!(s3_bucket_list.len() > 0);
+    assert!(!s3_bucket_list.is_empty());
 
     let the_file = "file-0000.bin";
 

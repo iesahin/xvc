@@ -1,4 +1,5 @@
-use crate::{Result};
+/// Glob dependency implementations where the digest of a path collection kept as a dependency
+use crate::Result;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
@@ -14,13 +15,17 @@ use crate::XvcDependency;
 /// Invalidates when contents of any of the files in the directory changes.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct GlobDep {
-    /// The path in the workspace
+    /// The glob pattern to match files against.
     pub glob: String,
+    /// The digest of the paths in the glob.
     pub xvc_paths_digest: Option<PathCollectionDigest>,
+    /// The digest of the metadata of the paths in the glob.
     pub xvc_metadata_digest: Option<PathCollectionMetadataDigest>,
+    /// The digest of the content of the paths in the glob.
     pub content_digest: Option<PathCollectionContentDigest>,
 }
 
+/// Digest of the metadata of a list of paths, e.g., a glob or a directory.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct PathCollectionMetadataDigest(XvcDigest);
 
@@ -33,6 +38,7 @@ impl Diffable for PathCollectionMetadataDigest {
     type Item = Self;
 }
 
+/// Digest of the contents of a collection of paths, e.g., a glob or a directory.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct PathCollectionContentDigest(XvcDigest);
 persist!(
@@ -45,13 +51,14 @@ impl Diffable for PathCollectionContentDigest {
 
 persist!(GlobDep, "glob-digest-dependency");
 
-impl Into<XvcDependency> for GlobDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::Glob(self)
+impl From<GlobDep> for XvcDependency {
+    fn from(val: GlobDep) -> Self {
+        XvcDependency::Glob(val)
     }
 }
 
 impl GlobDep {
+    /// Create a new glob dependency with the given pattern
     pub fn new(glob: String) -> Self {
         Self {
             glob,
@@ -61,6 +68,7 @@ impl GlobDep {
         }
     }
 
+    /// Collects the paths in the glob from `pmm`, sorts and hashes the list to update the xvc_paths_digest
     pub fn update_collection_digests(self, pmm: &XvcPathMetadataMap) -> Result<Self> {
         let compiled_glob = glob::Pattern::new(&self.glob)?;
         let paths = pmm
@@ -91,6 +99,7 @@ impl GlobDep {
         })
     }
 
+    /// Collects the paths in the glob from `pmm`, reads the contents of the files, sorts and hashes the list to update the content_digest
     pub fn update_content_digest(
         self,
         xvc_root: &XvcRoot,

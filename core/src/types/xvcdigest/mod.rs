@@ -209,6 +209,12 @@ where
     }
 }
 
+impl Default for XvcDigests {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl XvcDigests {
     /// Returns a new empty [XvcDigests]
     pub fn new() -> Self {
@@ -231,8 +237,7 @@ impl XvcDigests {
 
     /// Inserts a digest into [XvcDigests]
     pub fn insert<T: AttributeDigest>(&mut self, attribute_digest: T) {
-        self.0
-            .insert(T::attribute().into(), attribute_digest.digest());
+        self.0.insert(T::attribute(), attribute_digest.digest());
     }
 
     /// Returns the digest for the specified attribute

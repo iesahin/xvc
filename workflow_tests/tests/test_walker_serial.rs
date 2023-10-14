@@ -13,6 +13,25 @@ use xvc_logging::watch;
 use xvc_test_helper::*;
 use xvc_walker::AbsolutePath;
 
+fn new_dir_with_ignores(
+    root: &str,
+    dir: Option<&str>,
+    initial_patterns: &str,
+) -> Result<IgnoreRules> {
+    let patterns = create_patterns(root, dir, initial_patterns);
+    let empty = IgnoreRules::empty(&PathBuf::from(root));
+    watch!(patterns);
+    let initialized = empty.update(patterns).unwrap();
+    Ok(initialized)
+}
+
+fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern<Glob>> {
+    xvc_walker::content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
+        .into_iter()
+        .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
+        .collect()
+}
+
 // TODO: Patterns shouldn't have / prefix, but an appropriate PathKind
 #[test_case(true => matches Ok(_); "this is to refresh the dir for each test run")]
 // This builds a directory hierarchy to run the tests
@@ -25,17 +44,14 @@ fn create_directory_hierarchy(force: bool) -> Result<AbsolutePath> {
 
     if !temp_dir.exists() {
         // in parallel tests, sometimes this fail
-        match fs::create_dir(&temp_dir) {
-            Ok(_) => {}
-            Err(_) => {}
-        }
+        fs::create_dir(&temp_dir)?;
         create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
         // root/dir1 may have another tree
         let level_1 = &temp_dir.join("dir-0001");
-        create_directory_tree(&level_1, 10, 10, 1000, Some(47))?;
+        create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
         // and another level
         let level_2 = &level_1.join("dir-0001");
-        create_directory_tree(&level_2, 10, 10, 1000, Some(47))?;
+        create_directory_tree(level_2, 10, 10, 1000, Some(47))?;
     }
 
     Ok(AbsolutePath::from(temp_dir))
@@ -61,15 +77,11 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     let mut res_paths = Vec::<xvc_walker::Result<PathMetadata>>::new();
     // We assume ignore_src is among the directories created
     fs::write(
-        &format!(
-            "{}/{ignore_src}.gitignore",
-            root.to_string_lossy().to_string()
-        ),
+        format!("{}/{ignore_src}.gitignore", root.to_string_lossy()),
         ignore_content,
     )
     .unwrap();
-    let initial_rules =
-        new_dir_with_ignores(&format!("{}", root.to_string_lossy().to_string()), None, "").unwrap();
+    let initial_rules = new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap();
     let walk_options = WalkOptions {
         ignore_filename: Some(".gitignore".to_string()),
         include_dirs: true,
@@ -92,22 +104,4 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     watch!(paths);
     fs::remove_dir_all(&root).unwrap();
     paths
-}
-fn new_dir_with_ignores(
-    root: &str,
-    dir: Option<&str>,
-    initial_patterns: &str,
-) -> Result<IgnoreRules> {
-    let patterns = create_patterns(root, dir, initial_patterns);
-    let empty = IgnoreRules::empty(&PathBuf::from(root));
-    watch!(patterns);
-    let initialized = empty.update(patterns).unwrap();
-    Ok(initialized)
-}
-
-fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern<Glob>> {
-    xvc_walker::content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
-        .into_iter()
-        .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
-        .collect()
 }

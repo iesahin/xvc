@@ -3,6 +3,7 @@
 //! [XvcPath] is the basic path type to represent repository paths in Xvc. It
 //! corresponds to a path relative to the [XvcRoot]. It can be converted from a
 //! [fs::path::Path] and actually is a wrapper around [RelativePathBuf].
+
 use std::fs;
 use std::{fmt::Display, path::Path};
 
@@ -251,6 +252,8 @@ impl XvcCachePath {
 
     /// Remove a path from the cache.
     /// Removes all empty parent directories of the file as well.
+    // TODO: Remove this when we set unix permissions in platform dependent fashion
+    #[allow(clippy::permissions_set_readonly_false)]
     pub fn remove(&self, output_snd: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<()> {
         let abs_cp = self.to_absolute_path(xvc_root);
         watch!(abs_cp);
@@ -275,18 +278,16 @@ impl XvcCachePath {
         while let Some(parent) = rel_path.parent() {
             let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
             watch!(parent_abs_cp);
-            if parent_abs_cp.exists() {
-                if parent_abs_cp.is_dir() {
-                    if parent_abs_cp.read_dir().unwrap().count() == 0 {
-                        let mut perm = parent_abs_cp.metadata()?.permissions();
-                        perm.set_readonly(false);
-                        fs::set_permissions(&parent_abs_cp, perm)?;
-                        uwr!(fs::remove_dir(&parent_abs_cp), output_snd);
-                        output!(output_snd, "[DELETE] {}", parent_abs_cp.to_str().unwrap());
-                    }
-                }
+            if parent_abs_cp.exists()
+                && parent_abs_cp.is_dir()
+                && parent_abs_cp.read_dir().unwrap().count() == 0
+            {
+                let mut perm = parent_abs_cp.metadata()?.permissions();
+                perm.set_readonly(false);
+                fs::set_permissions(&parent_abs_cp, perm)?;
+                uwr!(fs::remove_dir(&parent_abs_cp), output_snd);
+                output!(output_snd, "[DELETE] {}", parent_abs_cp.to_str().unwrap());
             }
-
             rel_path = parent.to_relative_path_buf();
         }
 

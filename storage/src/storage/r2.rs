@@ -1,3 +1,4 @@
+//! Cloudflare R2 remote storage implementation.
 use std::str::FromStr;
 use std::{env, fs};
 
@@ -66,23 +67,29 @@ pub fn cmd_new_r2(
     Ok(())
 }
 
+/// A Cloudflare R2 remote storage
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcR2Storage {
+    /// GUID of the storage
     pub guid: XvcStorageGuid,
+    /// Name of the storage
     pub name: String,
+    /// Account ID of the R2 storage
     pub account_id: String,
+    /// Bucket name of the R2 storage
     pub bucket_name: String,
+    /// Remote prefix in the bucket
     pub remote_prefix: String,
 }
 
 impl XvcR2Storage {
     fn remote_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var(&format!(
+            Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
                 self.name
             ))?),
-            Some(&env::var(&format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
+            Some(&env::var(format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
             None,
             None,
             None,
@@ -208,12 +215,10 @@ impl XvcR2Storage {
     }
 
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
-        let remote_path = XvcStoragePath::from(format!(
+        XvcStoragePath::from(format!(
             "{}/{}/{}",
             self.remote_prefix, repo_guid, cache_path
-        ));
-
-        remote_path
+        ))
     }
 
     async fn a_send(

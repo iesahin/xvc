@@ -18,10 +18,10 @@ fn test_pipeline() -> Result<()> {
     x(&["new", "--name", "pipeline-2", "--workdir", "pipeline-2"])?;
     x(&["update", "--name", "pipeline-1", "--rename", "pipeline-old"])?;
     let pipelines_1 = x(&["list"])?;
-    assert!(matches!(pipelines_1.find("pipeline-old"), Some(..)));
+    assert!(pipelines_1.contains("pipeline-old"));
     x(&["delete", "--name", "pipeline-old"])?;
     let pipelines_2 = x(&["list"])?;
-    assert!(matches!(pipelines_2.find("pipeline-old"), None));
+    assert!(!pipelines_2.contains("pipeline-old"));
 
     let res = x(&[
         "-n",

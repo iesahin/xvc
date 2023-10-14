@@ -3,7 +3,6 @@ mod common;
 use std::{fs, path::PathBuf};
 
 use crate::common::run_in_temp_xvc_dir;
-use jwalk;
 use log::LevelFilter;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
@@ -20,7 +19,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     assert!(child_path.exists());
     create_directory_tree(&temp_dir, 10, 10, 1000, Some(23))?;
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10, 1000, Some(23))?;
+    create_directory_tree(level_1, 10, 10, 1000, Some(23))?;
 
     Ok(temp_dir)
 }

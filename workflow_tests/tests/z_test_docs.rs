@@ -4,11 +4,9 @@ use std::{
 };
 
 use anyhow::anyhow;
-use jwalk;
-use regex::Regex;
-use trycmd;
 
-use which;
+use regex::Regex;
+
 use xvc::error::Result;
 use xvc_logging::watch;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};

@@ -8,6 +8,6 @@ use xvc::error::Result;
 fn test_aliases() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let out = run_xvc(None, &["aliases"], XvcVerbosity::Trace)?;
-    assert!(out.len() > 0);
+    assert!(!out.is_empty());
     Ok(())
 }

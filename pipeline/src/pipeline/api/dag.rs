@@ -1,9 +1,9 @@
 use itertools::Itertools;
 use petgraph::graphmap::DiGraphMap;
-use tabbycat::attributes::{shape, Shape, label, Color, color};
-use tabbycat::{GraphBuilder, StmtList, Identity, Edge, AttrList};
+use tabbycat::attributes::{color, label, shape, Color, Shape};
+use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, XvcEntity, R1NStore};
+use xvc_ecs::{HStore, R1NStore, XvcEntity};
 use xvc_logging::{output, watch, XvcOutputSender};
 
 use std::collections::HashMap;
@@ -20,17 +20,12 @@ use crate::{
     XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcStep,
 };
 
-#[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr)]
+#[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr, Default)]
 #[strum(serialize_all = "lowercase")]
 pub enum XvcPipelineDagFormat {
+    #[default]
     Dot,
     Mermaid,
-}
-
-impl Default for XvcPipelineDagFormat {
-    fn default() -> XvcPipelineDagFormat {
-        XvcPipelineDagFormat::Dot
-    }
 }
 
 /// Entry point for `xvc pipeline dag` command.
@@ -56,7 +51,6 @@ pub fn cmd_dag(
     let (pmm, _ignore_rules) = all_paths_and_metadata(xvc_root);
 
     let pipeline_len = pipeline_steps.len();
-
 
     let mut dependency_graph = DiGraphMap::<XvcEntity, XvcDependency>::with_capacity(
         pipeline_len,
@@ -92,14 +86,8 @@ pub fn cmd_dag(
     watch!(dependency_graph);
 
     let out_string = match format {
-        XvcPipelineDagFormat::Dot => {
-            make_dot_graph(&pipeline_steps, &all_deps, &all_outs)?
-        }
-        XvcPipelineDagFormat::Mermaid => make_mermaid_graph(
-            &pipeline_steps,
-            &all_deps,
-            &all_outs
-        )?,
+        XvcPipelineDagFormat::Dot => make_dot_graph(&pipeline_steps, &all_deps, &all_outs)?,
+        XvcPipelineDagFormat::Mermaid => make_mermaid_graph(&pipeline_steps, &all_deps, &all_outs)?,
     };
 
     match file {
@@ -121,7 +109,8 @@ fn make_dot_graph(
         .strict(false)
         .id(Identity::id("pipeline".to_string())?)
         .stmts(dependency_graph_stmts(pipeline_steps, all_deps, all_outs)?)
-        .build().map_err(|e| anyhow::anyhow!("Failed to build graph. {e}"))?;
+        .build()
+        .map_err(|e| anyhow::anyhow!("Failed to build graph. {e}"))?;
 
     Ok(format!("{}", graph))
 }
@@ -135,32 +124,37 @@ fn dep_identity(dep: &XvcDependency) -> Result<Identity> {
     match dep {
         XvcDependency::Step(dep) => id_from_string(&dep.name),
         XvcDependency::Generic(dep) => id_from_string(&dep.generic_command),
-        XvcDependency::File(dep) => id_from_string(&dep.path.to_string()),
+        XvcDependency::File(dep) => id_from_string(dep.path.as_ref()),
         XvcDependency::GlobItems(dep) => id_from_string(&dep.glob.to_string()),
         XvcDependency::Glob(dep) => id_from_string(&dep.glob.to_string()),
-        XvcDependency::RegexItems(dep) => id_from_string(&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
-        XvcDependency::Regex(dep) => id_from_string(&format!("{}:/{}", dep.path.to_string(), dep.regex.to_string())),
-        XvcDependency::Param(dep) => id_from_string(&format!("{}::{}", dep.path.to_string(), dep.key.to_string())),
-        XvcDependency::LineItems(dep) => id_from_string(&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
-        XvcDependency::Lines(dep) => id_from_string(&format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string())),
-        XvcDependency::UrlDigest(dep) => id_from_string(&dep.url.to_string()),
+        XvcDependency::RegexItems(dep) => id_from_string(&format!("{}:/{}", dep.path, dep.regex)),
+        XvcDependency::Regex(dep) => id_from_string(&format!("{}:/{}", dep.path, dep.regex)),
+        XvcDependency::Param(dep) => id_from_string(&format!("{}::{}", dep.path, dep.key)),
+        XvcDependency::LineItems(dep) => {
+            id_from_string(&format!("{}::{}-{}", dep.path, dep.begin, dep.end))
+        }
+        XvcDependency::Lines(dep) => {
+            id_from_string(&format!("{}::{}-{}", dep.path, dep.begin, dep.end))
+        }
+        XvcDependency::UrlDigest(dep) => id_from_string(dep.url.as_ref()),
     }
 }
 
 fn out_identity(out: &XvcOutput) -> Result<Identity> {
     match out {
-        XvcOutput::File { path } => id_from_string(&path.to_string()),
-        XvcOutput::Metric { path,  .. } => id_from_string(&path.to_string()),
-        XvcOutput::Image { path } => id_from_string(&path.to_string()),
+        XvcOutput::File { path } => id_from_string(path.as_ref()),
+        XvcOutput::Metric { path, .. } => id_from_string(path.as_ref()),
+        XvcOutput::Image { path } => id_from_string(path.as_ref()),
     }
 }
 
 fn step_node_attributes(step: &XvcStep) -> AttrList {
-    AttrList::new().add_pair(shape(Shape::Box)).add_pair(label(step.name.clone()))
+    AttrList::new()
+        .add_pair(shape(Shape::Box))
+        .add_pair(label(step.name.clone()))
 }
 
 fn dep_node_attributes(dep: &XvcDependency) -> AttrList {
-
     let dep_shape = match dep {
         XvcDependency::Step(_) => Shape::Box,
         XvcDependency::Generic(_) => Shape::Trapezium,
@@ -175,38 +169,40 @@ fn dep_node_attributes(dep: &XvcDependency) -> AttrList {
         XvcDependency::UrlDigest(_) => Shape::Invtrapezium,
     };
 
-
-    AttrList::new().add_pair(shape(dep_shape)).add_pair(label(dep_label(dep)))
-
+    AttrList::new()
+        .add_pair(shape(dep_shape))
+        .add_pair(label(dep_label(dep)))
 }
 
 fn dep_label(dep: &XvcDependency) -> String {
-        match dep {
+    match dep {
         XvcDependency::Step(dep) => dep.name.clone(),
         XvcDependency::Generic(dep) => dep.generic_command.clone(),
         XvcDependency::File(dep) => dep.path.to_string(),
         XvcDependency::GlobItems(dep) => dep.glob.to_string(),
         XvcDependency::Glob(dep) => dep.glob.to_string(),
-        XvcDependency::RegexItems(dep) => format!("{}:/{}", dep.path.to_string(), dep.regex.to_string()),
-        XvcDependency::Regex(dep) => format!("{}:/{}", dep.path.to_string(), dep.regex.to_string()),
-        XvcDependency::Param(dep) => format!("{}::{}", dep.path.to_string(), dep.key.to_string()),
-        XvcDependency::LineItems(dep) => format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string()),
-        XvcDependency::Lines(dep) => format!("{}::{}-{}", dep.path.to_string(),dep.begin.to_string(), dep.end.to_string()),
+        XvcDependency::RegexItems(dep) => {
+            format!("{}:/{}", dep.path, dep.regex)
+        }
+        XvcDependency::Regex(dep) => {
+            format!("{}:/{}", dep.path, dep.regex)
+        }
+        XvcDependency::Param(dep) => format!("{}::{}", dep.path, dep.key),
+        XvcDependency::LineItems(dep) => format!("{}::{}-{}", dep.path, dep.begin, dep.end),
+        XvcDependency::Lines(dep) => format!("{}::{}-{}", dep.path, dep.begin, dep.end),
         XvcDependency::UrlDigest(dep) => dep.url.to_string(),
     }
 }
 
 fn out_label(out: &XvcOutput) -> String {
-        match out {
+    match out {
         XvcOutput::File { path } => path.to_string(),
-        XvcOutput::Metric { path, ..} => path.to_string(),
+        XvcOutput::Metric { path, .. } => path.to_string(),
         XvcOutput::Image { path } => path.to_string(),
     }
 }
 fn out_node_attributes(out: &XvcOutput) -> AttrList {
-
     let out_shape = Shape::Note;
-
 
     let out_color = match out {
         XvcOutput::File { .. } => Color::Black,
@@ -214,7 +210,10 @@ fn out_node_attributes(out: &XvcOutput) -> AttrList {
         XvcOutput::Image { .. } => Color::Green,
     };
 
-    AttrList::new().add_pair(shape(out_shape)).add_pair(color(out_color)).add_pair(label(out_label(out)))
+    AttrList::new()
+        .add_pair(shape(out_shape))
+        .add_pair(color(out_color))
+        .add_pair(label(out_label(out)))
 }
 
 /// Create tabbycat::StmtList for dependencies and outputs
@@ -225,33 +224,41 @@ fn dependency_graph_stmts(
 ) -> Result<StmtList> {
     let mut stmts = StmtList::new();
 
-    let  mut id_map = HashMap::<String, Identity>::new();
+    let mut id_map = HashMap::<String, Identity>::new();
 
     let mut short_id = |id: Identity| -> Result<Identity> {
         let str_key = id.to_string();
         if !id_map.contains_key(&str_key) {
             id_map.insert(str_key.clone(), Identity::id(format!("n{}", id_map.len()))?);
-            }
+        }
         Ok(id_map[&str_key].clone())
     };
 
     for (xe, step) in pipeline_steps.iter().sorted() {
         let step_identity = short_id(id_from_string(&step.name)?)?;
-        let step_deps = all_deps.children_of(&xe)?;
-        let step_outs = all_outs.children_of(&xe)?;
+        let step_deps = all_deps.children_of(xe)?;
+        let step_outs = all_outs.children_of(xe)?;
 
-        stmts = stmts.add_node(step_identity.clone(), None, Some(step_node_attributes(&step)));
+        stmts = stmts.add_node(
+            step_identity.clone(),
+            None,
+            Some(step_node_attributes(step)),
+        );
 
         for (_, dep) in step_deps.iter().sorted() {
             let dep_identity = short_id(dep_identity(dep)?)?;
-            stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(&dep)));
-            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None));
+            stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(dep)));
+            stmts = stmts.add_edge(
+                Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None),
+            );
         }
 
         for (_, out) in step_outs.iter().sorted() {
             let out_identity = short_id(out_identity(out)?)?;
-            stmts = stmts.add_node(out_identity.clone(), None, Some(out_node_attributes(&out)));
-            stmts = stmts.add_edge(Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None));
+            stmts = stmts.add_node(out_identity.clone(), None, Some(out_node_attributes(out)));
+            stmts = stmts.add_edge(
+                Edge::head_node(step_identity.clone(), None).arrow_to_node(out_identity, None),
+            );
         }
     }
 
@@ -263,16 +270,15 @@ fn dependency_graph_stmts(
 fn make_mermaid_graph(
     pipeline_steps: &HStore<XvcStep>,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
-    all_outs: &R1NStore<XvcStep, XvcOutput>
+    all_outs: &R1NStore<XvcStep, XvcOutput>,
 ) -> Result<String> {
-
-    let  mut id_map = HashMap::<String, String>::new();
+    let mut id_map = HashMap::<String, String>::new();
 
     let mut short_id = |id: Identity| -> Result<String> {
         let str_key = id.to_string();
         if !id_map.contains_key(&str_key) {
             id_map.insert(str_key.clone(), format!("n{}", id_map.len()));
-            }
+        }
         Ok(id_map[&str_key].clone())
     };
 
@@ -291,14 +297,20 @@ fn make_mermaid_graph(
             let dep_label = dep_label(dep);
             let dep_id = short_id(id_from_string(&dep_label)?)?;
             // TODO: Specialize the shape according to dependency type
-            res_string.push_str(&format!("    {}[\"{}\"] --> {}\n", dep_id, dep_label, step_id));
+            res_string.push_str(&format!(
+                "    {}[\"{}\"] --> {}\n",
+                dep_id, dep_label, step_id
+            ));
         }
 
         for (_, out) in outs.iter().sorted() {
             let out_label = out_label(out);
             let out_id = short_id(id_from_string(&out_label)?)?;
             // TODO: Add commands that produce these outputs
-            res_string.push_str(&format!("    {}[\"{}\"] --> {}\n", out_id, out_label, step_id));
+            res_string.push_str(&format!(
+                "    {}[\"{}\"] --> {}\n",
+                out_id, out_label, step_id
+            ));
         }
     }
 

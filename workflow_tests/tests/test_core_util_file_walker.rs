@@ -19,11 +19,11 @@ fn test_walk() -> Result<()> {
 
     let (pmp1, _) = walk_serial(&xvc_root, true)?;
 
-    assert!(pmp1.len() > 0);
+    assert!(!pmp1.is_empty());
 
     // Test skip list
-    for skipped in vec![".dvc", ".xvc", ".git"] {
-        let xp = XvcPath::new(&xvc_root, xvc_root.absolute_path(), &Path::new(skipped))?;
+    for skipped in [".dvc", ".xvc", ".git"] {
+        let xp = XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new(skipped))?;
         assert!(!pmp1.contains_key(&xp), "Result Contains {:?}", xp)
     }
 
@@ -32,7 +32,7 @@ fn test_walk() -> Result<()> {
 
     let mut diff1 = Vec::<&XvcPath>::new();
     for k in pmp1.keys() {
-        if !pmp2.contains_key(&k) {
+        if !pmp2.contains_key(k) {
             diff1.push(k);
         }
     }
@@ -41,15 +41,15 @@ fn test_walk() -> Result<()> {
 
     let mut diff2 = Vec::<&XvcPath>::new();
     for k in pmp2.keys() {
-        if !pmp1.contains_key(&k) {
+        if !pmp1.contains_key(k) {
             diff2.push(k);
         }
     }
 
     watch!(diff2);
 
-    assert!(diff1.len() == 0);
-    assert!(diff2.len() == 0);
+    assert!(diff1.is_empty());
+    assert!(diff2.is_empty());
 
     for (p, m) in pmp1 {
         assert!(pmp2[&p] == m)

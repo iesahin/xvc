@@ -180,7 +180,7 @@ impl ListRow {
         let recorded_timestamp = path_match
             .recorded_metadata
             .and_then(|md| md.modified)
-            .unwrap_or_else(|| SystemTime::UNIX_EPOCH);
+            .unwrap_or(SystemTime::UNIX_EPOCH);
 
         let recorded_timestamp_str =
             format_timestamp(path_match.recorded_metadata.and_then(|md| md.modified));

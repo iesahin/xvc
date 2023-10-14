@@ -6,11 +6,9 @@
 //!   update `.gitignore` files with the tracked paths.
 //! - [`carry_in`] is a specialized carry in function for `xvc file track`.
 
-
 use derive_more::From;
 
-use std::collections::{HashSet};
-
+use std::collections::HashSet;
 
 use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
@@ -26,8 +24,6 @@ use crate::common::compare::{
 use crate::common::gitignore::{update_dir_gitignores, update_file_gitignores};
 use crate::common::{targets_from_disk, update_store_records, FileTextOrBinary};
 use crate::error::Result;
-
-
 
 use clap::Parser;
 use std::path::PathBuf;
@@ -252,9 +248,9 @@ pub fn cmd_track(
             .iter()
             .filter_map(|(xe, cd)| {
                 current_xvc_path_store
-                    .get(&xe)
+                    .get(xe)
                     .and_then(|xp| XvcCachePath::new(xp, cd).ok())
-                    .and_then(|cp| Some((*xe, cp)))
+                    .map(|cp| (*xe, cp))
             })
             .collect();
 

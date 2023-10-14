@@ -238,6 +238,8 @@ pub fn carry_in(
     watch!(ignore_writer);
     watch!(ignore_thread);
 
+    // TODO: Remove this when we set unix permissions in platform dependent fashion
+    #[allow(clippy::permissions_set_readonly_false)]
     let copy_path_to_cache_and_recheck = |xe, xp| {
         let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
         watch!(cache_path);
@@ -251,7 +253,7 @@ pub fn carry_in(
                 watch!(dir_perm);
                 dir_perm.set_readonly(false);
                 watch!(dir_perm);
-                uwr!(fs::set_permissions(&cache_dir, dir_perm), output_snd);
+                uwr!(fs::set_permissions(cache_dir, dir_perm), output_snd);
                 watch!(cache_dir);
                 let mut file_perm =
                     uwr!(abs_cache_path.as_path().metadata(), output_snd).permissions();

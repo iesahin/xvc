@@ -46,7 +46,7 @@ pub fn diff_xvc_path_metadata(
 
     let actual_xvc_metadata_store: HStore<XvcMetadata> = actual_xvc_path_store
         .iter()
-        .map(|(xe, xp)| (*xe, pmm[xp].clone()))
+        .map(|(xe, xp)| (*xe, pmm[xp]))
         .collect();
 
     let xvc_path_diff = diff_store(
@@ -74,13 +74,11 @@ pub fn diff_recheck_method(
     let requested_recheck_method_store: HStore<RecheckMethod> =
         HStore::from_iter(entities.iter().map(|x| (*x, requested_recheck_method)));
 
-    let cache_store_diff = diff_store(
+    diff_store(
         stored_recheck_method_store,
         &requested_recheck_method_store,
         Some(entities),
-    );
-
-    cache_store_diff
+    )
 }
 
 /// For each command, we have a single requested_text_or_binary.
@@ -95,18 +93,19 @@ pub fn diff_text_or_binary(
         .iter()
         .map(|x| (*x, requested_text_or_binary))
         .collect();
-    let text_or_binary_diff = diff_store(
-        &stored_text_or_binary_store,
+
+    diff_store(
+        stored_text_or_binary_store,
         &requested_text_or_binary_store,
         Some(entities),
-    );
-    text_or_binary_diff
+    )
 }
 
 /// Compare the content of a file with the stored content digest.
 ///
 /// The file is defined by the entity `xe`. The comparison is done only when the path (`xvc_path_diff`) or the metadata
 /// (`xvc_metadata_diff`) of the file has changed.
+#[allow(clippy::too_many_arguments)]
 pub fn diff_file_content_digest(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -126,7 +125,7 @@ pub fn diff_file_content_digest(
         let path_from_store = || -> Result<PathBuf> {
             let xvc_path = stored_xvc_path_store
                 .get(&xe)
-                .ok_or_else(|| EcsError::CannotFindEntityInStore { entity: xe })?;
+                .ok_or(EcsError::CannotFindEntityInStore { entity: xe })?;
             let path = xvc_path.to_absolute_path(xvc_root).to_path_buf();
             Ok(path)
         };
@@ -165,12 +164,12 @@ pub fn diff_file_content_digest(
                         );
                     }
                     Diff::ActualMissing { .. } => Diff::ActualMissing {
-                        record: stored_content_digest.unwrap().clone(),
+                        record: *stored_content_digest.unwrap(),
                     },
                     // Either the metadata has changed, or the file is deleted.
                     Diff::Different { actual, .. } => match actual.file_type {
                         xvc_core::XvcFileType::Missing => Diff::ActualMissing {
-                            record: stored_content_digest.unwrap().clone(),
+                            record: *stored_content_digest.unwrap(),
                         },
                         xvc_core::XvcFileType::File => {
                             let path = path_from_store()?;
@@ -230,12 +229,18 @@ pub struct DiffRequest {
     xe: XvcEntity,
 }
 
+type FileContentDigestDiffHandlers = (
+    Sender<Option<DiffRequest>>,
+    Receiver<Option<Diff<ContentDigest>>>,
+    JoinHandle<()>,
+);
+
 /// This is a channel version of [diff_file_content_digest]. It creates a thread that listens to requests
 /// diff_request channel and sends the calculated diffs to the diff_result channel.
 ///
 /// The thread will exit when the other ends of channel is dropped or when the diff_request_rcv gets a None.
 /// It sends a None to the diff_result_snd when it exits.
-
+#[allow(clippy::too_many_arguments)]
 pub fn make_file_content_digest_diff_handler(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -245,11 +250,7 @@ pub fn make_file_content_digest_diff_handler(
     stored_text_or_binary_store: &SharedXStore<FileTextOrBinary>,
     requested_text_or_binary: Option<FileTextOrBinary>,
     requested_hash_algorithm: Option<HashAlgorithm>,
-) -> Result<(
-    Sender<Option<DiffRequest>>,
-    Receiver<Option<Diff<ContentDigest>>>,
-    JoinHandle<()>,
-)> {
+) -> Result<FileContentDigestDiffHandlers> {
     let algorithm: HashAlgorithm =
         requested_hash_algorithm.unwrap_or_else(|| HashAlgorithm::from_conf(xvc_root.config()));
 
@@ -294,7 +295,7 @@ pub fn make_file_content_digest_diff_handler(
                                 diff_result_snd
                                     .send(Some(Diff::Different {
                                         actual,
-                                        record: stored.clone(),
+                                        record: *stored,
                                     }))
                                     .unwrap();
                             }
@@ -311,16 +312,14 @@ pub fn make_file_content_digest_diff_handler(
                                 .unwrap();
                         }
                     }
+                } else if let Some(stored_content_digest) = stored_content_digest {
+                    diff_result_snd
+                        .send(Some(Diff::ActualMissing {
+                            record: *stored_content_digest,
+                        }))
+                        .unwrap();
                 } else {
-                    if let Some(stored_content_digest) = stored_content_digest {
-                        diff_result_snd
-                            .send(Some(Diff::ActualMissing {
-                                record: stored_content_digest.clone(),
-                            }))
-                            .unwrap();
-                    } else {
-                        diff_result_snd.send(Some(Diff::Identical)).unwrap();
-                    }
+                    diff_result_snd.send(Some(Diff::Identical)).unwrap();
                 }
             }
         }
@@ -337,6 +336,7 @@ pub fn make_file_content_digest_diff_handler(
 ///
 /// This is used to identify the files that requires attention in several
 /// commands, like recheck or carry-in.
+#[allow(clippy::too_many_arguments)]
 pub fn diff_content_digest(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -357,10 +357,10 @@ pub fn diff_content_digest(
     let diff_file = |xe| -> Result<(XvcEntity, Diff<ContentDigest>)> {
         let xvc_path_diff = xvc_path_diff_store
             .get(&xe)
-            .unwrap_or_else(|| &Diff::<XvcPath>::Skipped);
+            .unwrap_or(&Diff::<XvcPath>::Skipped);
         let xvc_metadata_diff = xvc_metadata_diff_store
             .get(&xe)
-            .unwrap_or_else(|| &Diff::<XvcMetadata>::Skipped);
+            .unwrap_or(&Diff::<XvcMetadata>::Skipped);
 
         let text_or_binary = requested_text_or_binary.unwrap_or_else(|| {
             stored_text_or_binary_store
@@ -411,9 +411,9 @@ pub fn diff_content_digest(
             .collect::<Vec<XvcEntity>>();
 
         diff_dir_content_digest(
-            stored_content_digest_store.get(&xe),
-            &stored_content_digest_store,
-            &file_content_digest_store,
+            stored_content_digest_store.get(xe),
+            stored_content_digest_store,
+            file_content_digest_store,
             &child_path_entities,
         )
     };
@@ -423,13 +423,11 @@ pub fn diff_content_digest(
             .get(&xe)
             .map(|xmd| Ok(xmd.file_type))
             .unwrap_or_else(|| match xvc_metadata_diff_store.get(&xe) {
-                None | Some(Diff::Identical) | Some(Diff::Skipped) => {
-                    return Err(anyhow!(
-                        "Cannot determine file type for path {} (entity {})",
-                        stored_xvc_path_store.get(&xe).unwrap(),
-                        xe
-                    ))
-                }
+                None | Some(Diff::Identical) | Some(Diff::Skipped) => Err(anyhow!(
+                    "Cannot determine file type for path {} (entity {})",
+                    stored_xvc_path_store.get(&xe).unwrap(),
+                    xe
+                )),
                 Some(Diff::RecordMissing { actual }) => Ok(actual.file_type),
                 Some(Diff::ActualMissing { record }) => Ok(record.file_type),
                 Some(Diff::Different { record, actual }) => match actual.file_type {
@@ -535,8 +533,8 @@ pub fn diff_content_digest(
         file_content_digest_diff_store.len() + dir_content_digest_diff_store.len(),
     );
 
-    diff_store.extend(file_content_digest_diff_store.into_iter());
-    diff_store.extend(dir_content_digest_diff_store.into_iter());
+    diff_store.extend(file_content_digest_diff_store);
+    diff_store.extend(dir_content_digest_diff_store);
     diff_store
 }
 

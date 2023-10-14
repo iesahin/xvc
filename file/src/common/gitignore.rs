@@ -108,7 +108,7 @@ pub fn update_dir_gitignores(
             let abs_path = if dir.ends_with("/") {
                 xvc_root.join(dir.to_string())
             } else {
-                xvc_root.join(format!("{}/", dir.to_string()))
+                xvc_root.join(format!("{}/", dir))
             };
 
             let ignore_res = check_ignore(current_gitignore, &abs_path);
@@ -204,7 +204,7 @@ pub fn update_file_gitignores(
         let path_v = changes.get_mut(&gi).unwrap();
         path_v.push(
             f.file_name()
-                .map(|f| format!("/{}", f.to_string()))
+                .map(|f| format!("/{}", f))
                 .unwrap_or_else(|| "## Path Contains final ..".to_string()),
         );
     }
@@ -216,7 +216,7 @@ pub fn update_file_gitignores(
             Utc::now().to_rfc2822(),
             values.join("\n")
         );
-        let gitignore_path = gitignore_file.to_path(&xvc_root);
+        let gitignore_path = gitignore_file.to_path(xvc_root);
 
         let mut file_o = OpenOptions::new()
             .create(true)

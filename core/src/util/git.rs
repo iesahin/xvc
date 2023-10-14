@@ -16,7 +16,7 @@ pub fn inside_git(path: &Path) -> Option<PathBuf> {
     loop {
         if pb.join(GIT_DIR).is_dir() {
             return Some(pb);
-        } else if pb.parent() == None {
+        } else if pb.parent().is_none() {
             return None;
         } else {
             pb.pop();
@@ -59,21 +59,19 @@ mod test {
         let path = git_root.join(PathBuf::from(path));
         let gitignore_path = git_root.join(PathBuf::from(gitignore_path));
         if let Some(ignore_dir) = gitignore_path.parent() {
-            fs::create_dir_all(&ignore_dir).unwrap();
+            fs::create_dir_all(ignore_dir).unwrap();
         }
         fs::write(&gitignore_path, format!("{}\n", ignore_line)).unwrap();
 
         let gitignore = build_ignore_rules(
             IgnoreRules::empty(&git_root),
-            &gitignore_path.parent().unwrap(),
+            gitignore_path.parent().unwrap(),
             ".gitignore",
         )
         .unwrap();
 
         watch!(gitignore);
 
-        let matches = check_ignore(&gitignore, &path);
-
-        matches
+        check_ignore(&gitignore, &path)
     }
 }

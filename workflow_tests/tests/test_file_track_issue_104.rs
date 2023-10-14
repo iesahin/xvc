@@ -42,7 +42,7 @@ fn test_file_track_issue_104() -> Result<()> {
     assert!(
         root_gitignore
             .lines()
-            .filter(|l| l.to_string() == "/dir-0001/".to_string())
+            .filter(|l| *l == "/dir-0001/")
             .count()
             == 1,
         "{}",

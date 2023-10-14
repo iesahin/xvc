@@ -1,5 +1,5 @@
+//! Step dependencies implementation
 pub mod compare;
-pub mod digest;
 pub mod file;
 pub mod generic;
 pub mod glob;
@@ -91,12 +91,12 @@ impl XvcDependency {
         }
     }
 
+    /// Send a list of items if the dependency has a list of items. Otherwise returns None.
     pub fn items(&self) -> Option<Vec<String>> {
         match self {
             XvcDependency::GlobItems(dep) => Some(
                 dep.xvc_path_metadata_map
                     .keys()
-                    .into_iter()
                     .map(|xp| xp.to_string())
                     .sorted()
                     .collect::<Vec<String>>(),
@@ -193,7 +193,7 @@ pub fn dependency_paths(
         XvcDependency::GlobItems(dep) => dep
             .xvc_path_metadata_map
             .iter()
-            .map(|(xp, xmd)| (xp.clone(), xmd.clone()))
+            .map(|(xp, xmd)| (xp.clone(), *xmd))
             .collect(),
         XvcDependency::Glob(dep) => glob_paths(xvc_root, pmm, pipeline_rundir, &dep.glob).unwrap(),
         XvcDependency::UrlDigest(_) => empty,

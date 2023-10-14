@@ -25,17 +25,14 @@ fn create_directory_hierarchy(force: bool) -> Result<AbsolutePath> {
 
     if !temp_dir.exists() {
         // in parallel tests, sometimes this fail
-        match fs::create_dir(&temp_dir) {
-            Ok(_) => {}
-            Err(_) => {}
-        }
+        fs::create_dir(&temp_dir)?;
         create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
         // root/dir1 may have another tree
         let level_1 = &temp_dir.join("dir-0001");
-        create_directory_tree(&level_1, 10, 10, 1000, Some(47))?;
+        create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
         // and another level
         let level_2 = &level_1.join("dir-0001");
-        create_directory_tree(&level_2, 10, 10, 1000, Some(47))?;
+        create_directory_tree(level_2, 10, 10, 1000, Some(47))?;
     }
 
     Ok(AbsolutePath::from(temp_dir))
@@ -80,15 +77,11 @@ fn test_walk_parallel(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     let (ignore_sender, _ignore_receiver) = crossbeam_channel::unbounded();
     // We assume ignore_src is among the directories created
     fs::write(
-        &format!(
-            "{}/{ignore_src}.gitignore",
-            root.to_string_lossy().to_string()
-        ),
+        format!("{}/{ignore_src}.gitignore", root.to_string_lossy()),
         ignore_content,
     )
     .unwrap();
-    let initial_rules =
-        new_dir_with_ignores(&format!("{}", root.to_string_lossy().to_string()), None, "").unwrap();
+    let initial_rules = new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap();
     let walk_options = WalkOptions {
         ignore_filename: Some(".gitignore".to_string()),
         include_dirs: true,

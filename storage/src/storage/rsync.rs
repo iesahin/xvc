@@ -1,5 +1,5 @@
+//! Rsync remote storage implementation.
 use std::{env, fs};
-
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -60,20 +60,27 @@ pub fn cmd_new_rsync(
     Ok(())
 }
 
+/// Specifies an Rsync remote
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcRsyncStorage {
+    /// The GUID of the storage
     pub guid: XvcStorageGuid,
+    /// The name of the storage
     pub name: String,
+    /// The host name of the storage without any protocol prefix
     pub host: String,
+    /// The port of the storage
     pub port: Option<usize>,
+    /// The user to connect to the storage
     pub user: Option<String>,
+    /// The storage directory on the remote
     pub storage_dir: String,
 }
 
 impl XvcRsyncStorage {
     fn ssh_url(&self) -> String {
         match (self.port, &self.user) {
-            (None, None) => format!("{}", self.host),
+            (None, None) => self.host.to_string(),
             (Some(port), None) => format!("{}:{port}", self.host),
             (None, Some(user)) => format!("{user}@{}", self.host),
             (Some(port), Some(user)) => format!("{user}@{}:{port}", self.host),
@@ -114,11 +121,6 @@ impl XvcRsyncStorage {
         let storage_dir = self.storage_dir.trim_end_matches('/');
         let remote_dir = cache_path.directory();
         format!("{storage_dir}/{xvc_guid}/{remote_dir}")
-    }
-
-    fn ssh_path(&self, path: &str) -> String {
-        let storage_dir = self.storage_dir.trim_end_matches('/');
-        format!("{storage_dir}/{path}")
     }
 
     fn rsync_path_url(&self, path: &str) -> String {
@@ -236,7 +238,7 @@ impl XvcRsyncStorage {
         cache_path: &XvcCachePath,
     ) -> Result<CaptureData> {
         let remote_dir = self.ssh_cache_dir(xvc_guid, cache_path);
-        self.ssh_cmd(&ssh_executable, &format!("mkdir -p '{}'", remote_dir))
+        self.ssh_cmd(ssh_executable, &format!("mkdir -p '{}'", remote_dir))
     }
 }
 
@@ -310,8 +312,13 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let paths = cmd_output
             .stdout_str()
             .lines()
-            .filter_map(|l| if re.is_match(l) { Some(l) } else { None })
-            .map(|l| XvcStoragePath::from(String::from(l)))
+            .filter_map(|l| {
+                if re.is_match(l) {
+                    Some(XvcStoragePath::from(String::from(l)))
+                } else {
+                    None
+                }
+            })
             .collect();
 
         Ok(XvcStorageListEvent {

@@ -3,7 +3,6 @@ use common::*;
 use log::LevelFilter;
 use std::{fs, path::PathBuf};
 
-use jwalk;
 use xvc::error::Result;
 use xvc::watch;
 use xvc_config::XvcVerbosity;
@@ -17,7 +16,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     create_directory_tree(&temp_dir, 10, 10, 1000, None)?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10, 1000, None)?;
+    create_directory_tree(level_1, 10, 10, 1000, None)?;
 
     Ok(temp_dir)
 }

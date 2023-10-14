@@ -1,3 +1,4 @@
+//! Minio remote storage implementation.
 use std::str::FromStr;
 use std::{env, fs};
 
@@ -31,6 +32,8 @@ use super::{
 /// This creates a [XvcMinioStorage], calls its
 /// [init][XvcMinioStorage::init] function to create/update guid, and
 /// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
+/// TODO: Reduce the number of parameters of this function.
+#[allow(clippy::too_many_arguments)]
 pub fn cmd_new_minio(
     _input: std::io::StdinLock,
     output_snd: &XvcOutputSender,
@@ -69,24 +72,31 @@ pub fn cmd_new_minio(
     Ok(())
 }
 
+/// A Minio storage is a remote storage that is compatible with the S3 protocol.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcMinioStorage {
+    /// GUID of the storage
     pub guid: XvcStorageGuid,
+    /// Name of the storage
     pub name: String,
+    /// Region of the storage
     pub region: String,
+    /// Bucket name of the storage
     pub bucket_name: String,
+    /// Prefix of the storage within the bucket_name
     pub remote_prefix: String,
+    /// Full endpoint of the storage
     pub endpoint: String,
 }
 
 impl XvcMinioStorage {
     fn remote_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var(&format!(
+            Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
                 self.name
             ))?),
-            Some(&env::var(&format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
+            Some(&env::var(format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
             None,
             None,
             None,
@@ -218,12 +228,10 @@ impl XvcMinioStorage {
     }
 
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
-        let remote_path = XvcStoragePath::from(format!(
+        XvcStoragePath::from(format!(
             "{}/{}/{}",
             self.remote_prefix, repo_guid, cache_path
-        ));
-
-        remote_path
+        ))
     }
 
     async fn a_send(

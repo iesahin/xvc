@@ -49,6 +49,7 @@ use self::gitignore::IgnoreOp;
     AsRef,
     Deref,
     Copy,
+    Default,
 )]
 pub struct FileTextOrBinary(TextOrBinary);
 conf!(FileTextOrBinary, "file.track.text_or_binary");
@@ -58,12 +59,6 @@ impl FileTextOrBinary {
     /// Returns the inner TextOrBinary
     pub fn as_inner(&self) -> TextOrBinary {
         self.0
-    }
-}
-
-impl Default for FileTextOrBinary {
-    fn default() -> Self {
-        Self(TextOrBinary::default())
     }
 }
 
@@ -166,8 +161,8 @@ pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Resul
     let paths = paths
         .filter(|_, p| {
             let str_path = &p.as_relative_path().as_str();
-            let is_match = glob_matcher.is_match(str_path);
-            is_match
+
+            glob_matcher.is_match(str_path)
         })
         .cloned();
 
@@ -219,18 +214,15 @@ pub fn targets_from_disk(
         targets.iter().for_each(|t| {
             if t.ends_with('/') {
                 glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
-            } else {
-                if !t.contains('*') {
-                    let abs_target = current_dir.join(Path::new(t));
-                    if abs_target.is_dir() {
-                        glob_matcher
-                            .add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
-                    } else {
-                        glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
-                    }
+            } else if !t.contains('*') {
+                let abs_target = current_dir.join(Path::new(t));
+                if abs_target.is_dir() {
+                    glob_matcher.add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
                 } else {
                     glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
                 }
+            } else {
+                glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
             }
         });
         let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
@@ -317,6 +309,9 @@ pub fn recheck_from_cache(
 
     watch!(path);
     watch!(recheck_method);
+
+    // TODO: Remove this when we set unix permissions in platform dependent fashion
+    #[allow(clippy::permissions_set_readonly_false)]
     match recheck_method {
         RecheckMethod::Copy => {
             watch!("Before copy");
@@ -416,6 +411,8 @@ pub fn cache_paths_for_xvc_paths(
 /// It creates the cache directory and sets the cache file read only.
 ///
 /// It overwrites the cache file if it already exists.
+// TODO: Remove this when we set unix permissions in platform dependent fashion
+#[allow(clippy::permissions_set_readonly_false)]
 pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<()> {
     let cache_dir = cache_path.parent().ok_or(Error::InternalError {
         message: "Cache path has no parent.".to_string(),
@@ -427,15 +424,15 @@ pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<(
         // Set to writable
         let mut dir_perm = cache_dir.metadata()?.permissions();
         dir_perm.set_readonly(false);
-        fs::set_permissions(&cache_dir, dir_perm)?;
+        fs::set_permissions(cache_dir, dir_perm)?;
     }
-    fs::rename(&path, &cache_path).map_err(|source| Error::IoError { source })?;
+    fs::rename(path, cache_path).map_err(|source| Error::IoError { source })?;
     let mut file_perm = cache_path.metadata()?.permissions();
     file_perm.set_readonly(true);
-    fs::set_permissions(&cache_path, file_perm)?;
+    fs::set_permissions(cache_path, file_perm)?;
     let mut dir_perm = cache_dir.metadata()?.permissions();
     dir_perm.set_readonly(true);
-    fs::set_permissions(&cache_dir, dir_perm)?;
+    fs::set_permissions(cache_dir, dir_perm)?;
     Ok(())
 }
 

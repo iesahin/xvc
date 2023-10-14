@@ -6,7 +6,6 @@ use std::time::Duration;
 use std::{fs, path::PathBuf};
 
 use crate::common::run_in_temp_xvc_dir;
-use jwalk;
 use regex::Regex;
 use xvc::error::{Error, Result};
 use xvc::watch;
@@ -21,7 +20,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     create_directory_tree(&temp_dir, 10, 10, 1000, Some(23))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10, 1000, Some(23))?;
+    create_directory_tree(level_1, 10, 10, 1000, Some(23))?;
 
     Ok(temp_dir)
 }
@@ -150,7 +149,7 @@ fn test_file_track_parallel() -> Result<()> {
 
     let data_line = line_captures(&list_after_delete, file_0);
 
-    assert!(data_line[0].len() > 0, "{}", data_line[0]);
+    assert!(!data_line[0].is_empty(), "{}", data_line[0]);
 
     clean_up(&xvc_root)
 }

@@ -74,12 +74,10 @@ fn test_notify() -> Result<()> {
                         deleted_paths_snd.send(path).unwrap();
                     }
                 }
+            } else if err_counter > 0 {
+                err_counter -= 1;
             } else {
-                if err_counter > 0 {
-                    err_counter -= 1;
-                } else {
-                    break;
-                }
+                break;
             }
 
             watch!(err_counter);
