@@ -35,7 +35,7 @@ pub fn cmd_import<R: BufRead>(
                             "".to_string()
                         })),
                     );
-                    buf.push_str("\n");
+                    buf.push('\n');
                 }
                 Ok((buf, format))
             } else {

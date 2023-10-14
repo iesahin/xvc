@@ -1,3 +1,4 @@
+//! A step dependency to a URL
 use crate::{Result, XvcDependency};
 
 use reqwest::blocking::Client as HttpClient;
@@ -12,20 +13,24 @@ use xvc_ecs::persist;
 pub struct UrlDigestDep {
     /// URL like https://example.com/my-file.html
     pub url: Url,
+    /// ETag header from the HEAD request
     pub etag: Option<String>,
+    /// Last-Modified header from the HEAD request
     pub last_modified: Option<String>,
+    /// Digest of the content from the URL
     pub url_content_digest: Option<UrlContentDigest>,
 }
 
 persist!(UrlDigestDep, "url-dependency");
 
-impl Into<XvcDependency> for UrlDigestDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::UrlDigest(self)
+impl From<UrlDigestDep> for XvcDependency {
+    fn from(val: UrlDigestDep) -> Self {
+        XvcDependency::UrlDigest(val)
     }
 }
 
 impl UrlDigestDep {
+    /// Create a new URL dependency with the given URL and empty headers and content digest.
     pub fn new(url: Url) -> Self {
         Self {
             url,
@@ -35,6 +40,7 @@ impl UrlDigestDep {
         }
     }
 
+    /// Make a HEAD request and fill Etag and Last-Modified headers.
     pub fn update_headers(self) -> Result<Self> {
         let client = HttpClient::new();
         let response = client.head(self.url.as_str()).send()?.error_for_status()?;
@@ -52,6 +58,7 @@ impl UrlDigestDep {
         })
     }
 
+    /// Make a GET request, download the content and fill the content digest.
     pub fn update_content_digest(self) -> Result<Self> {
         let url_get_digest = Some(UrlContentDigest::new(&self.url, HashAlgorithm::Blake3)?);
         Ok(Self {

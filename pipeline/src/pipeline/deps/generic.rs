@@ -1,3 +1,4 @@
+//! A generic dependency that's invalidated when the given command's output has changed.
 use crate::error::Error;
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};

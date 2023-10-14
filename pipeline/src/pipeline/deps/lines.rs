@@ -1,3 +1,7 @@
+//! Lines dependency that tracks the change of a range of lines in a file. Unlike [LineItemsDep],
+//! this dependency doesn't track the change of individual lines, but their collected digest to
+//! save space.
+
 use std::io::{self, BufRead};
 
 use itertools::Itertools;
@@ -8,6 +12,9 @@ use xvc_ecs::persist;
 
 use crate::XvcDependency;
 
+/// Dependency that tracks the change of a range of lines in a file. Unlike [LineItemsDep], this
+/// dependency doesn't track the change of individual lines, but their collected digest to save
+/// space.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct LinesDep {
     /// Path of the file in the workspace
@@ -16,19 +23,23 @@ pub struct LinesDep {
     pub begin: usize,
     /// The end of range
     pub end: usize,
+    /// Metadata of the file
     pub xvc_metadata: Option<XvcMetadata>,
+    /// Digest of the lines
     pub digest: Option<ContentDigest>,
 }
 
 persist!(LinesDep, "lines-digest-dependency");
 
-impl Into<XvcDependency> for LinesDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::Lines(self)
+impl From<LinesDep> for XvcDependency {
+    fn from(val: LinesDep) -> Self {
+        XvcDependency::Lines(val)
     }
 }
 
 impl LinesDep {
+    /// Create a new dependency to track the change of a range of lines in a file.
+    /// Initially the metadata and digest of lines is blank.
     pub fn new(path: XvcPath, begin: usize, end: usize) -> Self {
         Self {
             path,
@@ -39,6 +50,7 @@ impl LinesDep {
         }
     }
 
+    /// Update the digest of the lines in the file.
     pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Self {
         let path = self.path.to_absolute_path(xvc_root);
         let file = std::fs::File::open(path).unwrap();
@@ -55,6 +67,7 @@ impl LinesDep {
         }
     }
 
+    /// Update the file metadata with the supplied metadata
     pub fn update_metadata(self, xvc_metadata: Option<XvcMetadata>) -> Self {
         Self {
             xvc_metadata,
@@ -108,7 +121,7 @@ impl Diffable for LinesDep {
     /// ⚠️ Call actual.update_metadata and actual.update_lines before calling this. ⚠️
     fn diff(record: Option<&LinesDep>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
         match (record, actual) {
-            (Some(record), Some(actual)) => match Self::diff_superficial(&record, &actual) {
+            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
                 Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),
                 diff => diff,
             },

@@ -1,3 +1,5 @@
+//! An explicit step dependency in a pipeline. Unlike other dependencies, this depends directly to
+//! other steps and runs after them.
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 
@@ -14,13 +16,14 @@ pub struct StepDep {
 
 persist!(StepDep, "step-dependency");
 
-impl Into<XvcDependency> for StepDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::Step(self)
+impl From<StepDep> for XvcDependency {
+    fn from(val: StepDep) -> Self {
+        XvcDependency::Step(val)
     }
 }
 
 impl StepDep {
+    /// Create a new step depdenency
     pub fn new(name: String) -> Self {
         Self { name }
     }

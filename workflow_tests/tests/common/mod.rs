@@ -76,7 +76,7 @@ pub fn download_example_project() -> Result<()> {
     let curl_output = Command::new("curl")
         .arg(example_project_url()?)
         .arg("--output")
-        .arg(curl_output_filename.to_string())
+        .arg(&curl_output_filename)
         .output()?;
 
     if !curl_output.status.success() {

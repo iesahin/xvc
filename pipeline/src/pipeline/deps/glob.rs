@@ -1,4 +1,4 @@
-/// Glob dependency implementations where the digest of a path collection kept as a dependency
+//! Glob dependency implementations where the digest of a path collection kept as a dependency
 use crate::Result;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
