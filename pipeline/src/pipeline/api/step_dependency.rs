@@ -47,7 +47,7 @@ impl<'a> XvcDependencyList<'a> {
     ) -> Result<Self> {
         let current_dir = xvc_root.config().current_dir()?;
         let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, pipeline_name)?;
-        let (step_e, step) = XvcStep::from_name(xvc_root, &pipeline_e, &step_name)?;
+        let (step_e, step) = XvcStep::from_name(xvc_root, &pipeline_e, step_name)?;
         Ok(Self {
             xvc_root,
             step_e,

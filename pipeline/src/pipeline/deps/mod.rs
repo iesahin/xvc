@@ -1,5 +1,5 @@
+//! Step dependencies implementation
 pub mod compare;
-pub mod digest;
 pub mod file;
 pub mod generic;
 pub mod glob;
@@ -33,6 +33,7 @@ pub use self::regex_items::RegexItemsDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
 
+/// Return default name for the params file from the config
 pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
     Ok(conf.get_str("pipeline.default_params_file")?.option)
 }
@@ -44,19 +45,29 @@ pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
     Debug, strum_macros::Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize,
 )]
 pub enum XvcDependency {
+    /// Explicitly defined step depenedencies
     Step(StepDep),
+    /// Dependencies which checks the change of output of a shell command
     Generic(GenericDep),
     /// Invalidates when the file content changes.
     File(FileDep),
-    /// Invalidates when contents in any of the files this glob describes
+    /// Invalidates when contents in any of the files this glob describes. Keeps track of
+    /// individual files.
     GlobItems(GlobItemsDep),
+    /// Invalidates when contents in any of the files this glob describes. Doesn't keep track of
+    /// individual files.
     Glob(GlobDep),
+    /// A dependency to a set of lines defined by a regex. Keeps track of individual lines.
     RegexItems(RegexItemsDep),
+    /// A dependency to a set of lines defined by a regex. Doesn't keep track of individual lines.
     Regex(RegexDep),
+    /// A dependency to a parameter in JSON, YAML or TOML file.
     Param(ParamDep),
-    /// When a step depends to a set of lines in a text file
+    /// A dependenci to a set of lines defined by a range. Keeps track of individual lines.
     LineItems(LineItemsDep),
+    /// A dependenci to a set of lines defined by a range. Doesn't keep track of individual lines.
     Lines(LinesDep),
+    /// A dependency to a URL's content
     UrlDigest(UrlDigestDep),
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
@@ -91,12 +102,12 @@ impl XvcDependency {
         }
     }
 
+    /// Send a list of items if the dependency has a list of items. Otherwise returns None.
     pub fn items(&self) -> Option<Vec<String>> {
         match self {
             XvcDependency::GlobItems(dep) => Some(
                 dep.xvc_path_metadata_map
                     .keys()
-                    .into_iter()
                     .map(|xp| xp.to_string())
                     .sorted()
                     .collect::<Vec<String>>(),
@@ -193,7 +204,7 @@ pub fn dependency_paths(
         XvcDependency::GlobItems(dep) => dep
             .xvc_path_metadata_map
             .iter()
-            .map(|(xp, xmd)| (xp.clone(), xmd.clone()))
+            .map(|(xp, xmd)| (xp.clone(), *xmd))
             .collect(),
         XvcDependency::Glob(dep) => glob_paths(xvc_root, pmm, pipeline_rundir, &dep.glob).unwrap(),
         XvcDependency::UrlDigest(_) => empty,

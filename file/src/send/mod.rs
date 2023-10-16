@@ -69,7 +69,7 @@ pub fn cmd_send(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: SendCLI)
                         e
                     })
                     .ok()
-                    .and_then(|cache_path| Some((*xe, cache_path)))
+                    .map(|cache_path| (*xe, cache_path))
             })
         })
         .collect();

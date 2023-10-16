@@ -40,7 +40,7 @@ fn test_storage_new_local() -> Result<()> {
         "--name",
         "local-storage",
         "--path",
-        &storage_dir.to_string_lossy().to_string(),
+        storage_dir.to_string_lossy().as_ref(),
     ])?;
 
     assert!(storage_dir.join(XVC_STORAGE_GUID_FILENAME).exists());
@@ -133,7 +133,7 @@ fn test_storage_new_local() -> Result<()> {
 
     // When we reinit with the same storage path, it shouldn't update the GUID.
     // See https://github.com/iesahin/xvc/issues/123
-    let current_guid = fs::read_to_string(&storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
+    let current_guid = fs::read_to_string(storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
     watch!(current_guid);
     // We'll use a separate process to run the following tests.
     // Entity counter cannot be loaded to the same process twice.
@@ -143,17 +143,17 @@ fn test_storage_new_local() -> Result<()> {
     watch!(xvc);
     xvc.current_dir(&another_xvc_root);
     xvc.arg("init").assert();
-    xvc.args(&[
+    xvc.args([
         "storage",
         "new",
         "local",
         "--name",
         "local-storage",
         "--path",
-        &storage_dir.to_string_lossy().to_string(),
+        storage_dir.to_string_lossy().as_ref(),
     ])
     .assert();
-    let reread_guid = fs::read_to_string(&storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
+    let reread_guid = fs::read_to_string(storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
 
     assert!(
         current_guid == reread_guid,

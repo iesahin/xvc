@@ -237,7 +237,7 @@ pub fn most_recent_file(dir: &Path) -> Result<Option<PathBuf>> {
         Ok(None)
     } else {
         watch!(files);
-        Ok(files.get(files.len() - 1).cloned())
+        Ok(files.last().cloned())
     }
 }
 
@@ -296,13 +296,13 @@ mod tests {
         fs::create_dir_all(&gen_dir)?;
         let r: u64 = rand::random();
         let gen_file_1 = gen_dir.join(timestamp());
-        fs::write(&gen_file_1, format!("{}", r))?;
+        fs::write(gen_file_1, format!("{}", r))?;
         sleep(Duration::from_millis(1));
         let gen_file_2 = gen_dir.join(timestamp());
-        fs::write(&gen_file_2, format!("{}", r + 1000))?;
+        fs::write(gen_file_2, format!("{}", r + 1000))?;
         sleep(Duration::from_millis(1));
         let gen_file_3 = gen_dir.join(timestamp());
-        fs::write(&gen_file_3, format!("{}", r + 2000))?;
+        fs::write(gen_file_3, format!("{}", r + 2000))?;
         let gen = XvcEntityGenerator::load(&gen_dir)?;
         assert_eq!(gen.counter.load(Ordering::SeqCst), r + 2000);
         assert_eq!(gen.next_element().0, (r + 2000));

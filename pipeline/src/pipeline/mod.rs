@@ -1,3 +1,4 @@
+//! Xvc Pipelines implementation
 pub mod api;
 pub mod command;
 pub mod deps;
@@ -42,8 +43,8 @@ use std::time::Duration;
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, update_with_actual, Diff, HashAlgorithm, XvcDigests,
-    XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, update_with_actual, Diff, HashAlgorithm, XvcFileType, XvcMetadata,
+    XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
 use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
@@ -53,11 +54,23 @@ use subprocess as sp;
 
 /// The option whether to consider a step changed
 #[derive(
-    Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord, EnumString, Display, Serialize, Deserialize,
+    Debug,
+    Clone,
+    Copy,
+    Eq,
+    PartialEq,
+    PartialOrd,
+    Ord,
+    EnumString,
+    Display,
+    Serialize,
+    Deserialize,
+    Default,
 )]
 #[strum(serialize_all = "snake_case")]
 pub enum XvcStepInvalidate {
     /// Change when dependencies change or outputs missing
+    #[default]
     ByDependencies,
     /// Always consider changed
     Always,
@@ -66,12 +79,6 @@ pub enum XvcStepInvalidate {
 }
 
 persist!(XvcStepInvalidate, "xvc-step-invalidate");
-
-impl Default for XvcStepInvalidate {
-    fn default() -> Self {
-        XvcStepInvalidate::ByDependencies
-    }
-}
 
 /// Adds dependencies to `graph` in the form of `XvcDependency::Step`. These are called explicit
 /// dependencies, as steps are defined explicitly to be depending to each other.
@@ -114,6 +121,7 @@ pub fn add_explicit_dependencies(
 /// Adds implicit dependencies between files
 /// If `step-A` outputs `file-X`  and `step-B` depends on `file-X`, `step-B` is considered as
 /// depending to `step-A`.
+#[allow(clippy::too_many_arguments)]
 pub fn add_implicit_dependencies(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -175,14 +183,11 @@ use step::*;
 struct RunConditions {
     never: bool,
     always: bool,
-    wait_running_dep_steps: bool,
     ignore_broken_dep_steps: bool,
-    ignore_missing_dependencies: bool,
-    ignore_superficial_diffs: bool,
-    ignore_thorough_diffs: bool,
     ignore_missing_outputs: bool,
 }
 
+/// Parameters supplied to a step state
 #[derive(Debug, Clone)]
 pub struct StepStateParams<'a> {
     xvc_root: &'a XvcRoot,
@@ -210,7 +215,6 @@ pub struct StepStateParams<'a> {
     recorded_dependencies: &'a R1NStore<XvcStep, XvcDependency>,
     step_dependencies: &'a HashSet<XvcEntity>,
     step_outputs: &'a HStore<XvcOutput>,
-    step_xvc_digests: &'a HStore<XvcDigests>,
 }
 
 /// This structure is passed to step_threads as a parameter.
@@ -220,9 +224,7 @@ struct StepThreadParams<'a> {
     xvc_root: &'a XvcRoot,
     output_snd: &'a XvcOutputSender,
     pipeline_rundir: &'a XvcPath,
-    step_e: XvcEntity,
     state_sender: Sender<Option<XvcStepState>>,
-    state_notifier: Receiver<Option<(XvcEntity, XvcStepState)>>,
     current_states: Arc<RwLock<HStore<XvcStepState>>>,
     step_commands: &'a XvcStore<XvcStepCommand>,
     steps: &'a HStore<XvcStep>,
@@ -232,18 +234,14 @@ struct StepThreadParams<'a> {
     terminate_on_timeout: bool,
     algorithm: HashAlgorithm,
     current_pmm: Arc<RwLock<XvcPathMetadataMap>>,
-    process_pool: Arc<RwLock<HStore<CommandProcess>>>,
     process_pool_size: usize,
     recorded_dependencies: &'a R1NStore<XvcStep, XvcDependency>,
     recorded_outputs: &'a R1NStore<XvcStep, XvcOutput>,
-    recorded_xvc_digests: &'a R1NStore<XvcStep, XvcDigests>,
 
     // TODO: We can convert these to HStore<Arc<RwLock<...>>>
     dependency_diffs: Arc<RwLock<HStore<Diff<XvcDependency>>>>,
     output_diffs: Arc<RwLock<HStore<Diff<XvcOutput>>>>,
 }
-
-type XvcDependencyDiff = Diff<XvcDigests>;
 
 /// # XVC Pipeline Dependency Graph Rules
 ///
@@ -362,11 +360,7 @@ pub fn the_grand_pipeline_loop(
         never: true,
         always: false,
         ignore_missing_outputs: false,
-        ignore_missing_dependencies: false,
-        wait_running_dep_steps: false,
         ignore_broken_dep_steps: false,
-        ignore_superficial_diffs: false,
-        ignore_thorough_diffs: false,
     };
 
     //  This is the DVC behavior. It doesn't run when _only_ dependency timestamp changed. For
@@ -374,23 +368,15 @@ pub fn the_grand_pipeline_loop(
     let run_calculated = RunConditions {
         never: false,
         always: false,
-        wait_running_dep_steps: true,
         ignore_broken_dep_steps: false,
         ignore_missing_outputs: true,
-        ignore_missing_dependencies: false,
-        ignore_superficial_diffs: false,
-        ignore_thorough_diffs: false,
     };
 
     let run_always = RunConditions {
         never: false,
         always: true,
         ignore_missing_outputs: true,
-        ignore_missing_dependencies: true,
-        wait_running_dep_steps: true,
         ignore_broken_dep_steps: true,
-        ignore_superficial_diffs: true,
-        ignore_thorough_diffs: true,
     };
 
     let run_conditions: HStore<RunConditions> = pipeline_steps
@@ -435,10 +421,6 @@ pub fn the_grand_pipeline_loop(
         .map(|step_e| (*step_e, Duration::from_secs(default_step_timeout)))
         .collect();
 
-    let process_pool = Arc::new(RwLock::new(HStore::<CommandProcess>::with_capacity(
-        pipeline_len,
-    )));
-
     let current_pmm = Arc::new(RwLock::new(pmm.clone()));
 
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
@@ -468,13 +450,12 @@ pub fn the_grand_pipeline_loop(
     let recorded_outputs = xvc_root
         .load_r1nstore::<XvcStep, XvcOutput>()
         .expect("Cannot load store");
-    let recorded_xvc_digests = xvc_root
-        .load_r1nstore::<XvcStep, XvcDigests>()
-        .expect("Cannot load store");
 
     let dependency_diffs = Arc::new(RwLock::new(HStore::new()));
     let output_diffs = Arc::new(RwLock::new(HStore::new()));
 
+    // FIXME: Why don't we use state_bulletin_receiver here?
+    #[allow(unused_variables)]
     let (state_bulletin_sender, state_bulletin_receiver) =
         crossbeam_channel::bounded::<Option<(XvcEntity, XvcStepState)>>(CHANNEL_CAPACITY);
     let (kill_signal_sender, kill_signal_receiver) = crossbeam_channel::bounded::<bool>(1);
@@ -510,10 +491,8 @@ pub fn the_grand_pipeline_loop(
                         let step_thread_params = StepThreadParams {
                             xvc_root,
                             pipeline_rundir: &pipeline_rundir,
-                            step_e: *step_e,
                             state_sender: state_channels[step_e].0.clone(),
                             current_states: step_states.clone(),
-                            state_notifier: state_bulletin_receiver.clone(),
                             dependency_graph: &dependency_graph,
                             step_timeout: &step_timeout,
                             run_conditions: &run_conditions[step_e],
@@ -522,12 +501,10 @@ pub fn the_grand_pipeline_loop(
                             output_snd: &output_snd,
                             step_commands: &step_commands,
                             steps: &pipeline_steps,
-                            process_pool: process_pool.clone(),
                             process_pool_size,
                             algorithm,
                             recorded_dependencies: &recorded_dependencies,
                             recorded_outputs: &recorded_outputs,
-                            recorded_xvc_digests: &recorded_xvc_digests,
                             dependency_diffs: dependency_diffs.clone(),
                             output_diffs: output_diffs.clone(),
                         };
@@ -570,22 +547,17 @@ pub fn the_grand_pipeline_loop(
     // We only save the stores if the pipeline was run successfully
     if let Ok(true) = done_successfully {
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcDependency>| {
-            dependency_diffs.read().as_deref().and_then(|diffs| {
-                update_with_actual(store, diffs, true, true);
-                Ok(())
-            })?;
-
-            Ok(())
+            dependency_diffs
+                .read()
+                .as_deref()
+                .map(|diffs| update_with_actual(store, diffs, true, true))?
         })?;
 
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcOutput>| {
-            output_diffs.read().as_deref().and_then(|output_diffs| {
-                update_with_actual(store, output_diffs, true, true);
-                watch!(output_diffs);
-                watch!(store);
-                Ok(())
-            })?;
-            Ok(())
+            output_diffs
+                .read()
+                .as_deref()
+                .map(|output_diffs| update_with_actual(store, output_diffs, true, true))?
         })?;
     }
     Ok(())
@@ -662,7 +634,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     watch!(dependency_steps(step_e, params.dependency_graph)?);
     let step_dependencies = dependency_steps(step_e, params.dependency_graph)?;
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
-    let step_xvc_digests = params.recorded_xvc_digests.children_of(&step_e)?;
     let step = &params.steps[&step_e];
     let step_command = &params.step_commands[&step_e];
     let command_process = Arc::new(RwLock::new(CommandProcess::new(step, step_command)));
@@ -671,16 +642,16 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let mut step_params = StepStateParams {
         step_e,
         step,
-        output_snd: &params.output_snd,
+        output_snd: params.output_snd,
         algorithm: params.algorithm,
         step_command,
         command_process,
         // TODO: Convert this to AtomicUsize
-        available_process_slots: Arc::new(RwLock::new(1)),
+        available_process_slots: Arc::new(RwLock::new(params.process_pool_size)),
         terminate_timeout_processes: params.terminate_on_timeout,
         current_states,
         step_timeout: params.step_timeout,
-        run_conditions: &params.run_conditions,
+        run_conditions: params.run_conditions,
         xvc_root: params.xvc_root,
         pipeline_rundir: params.pipeline_rundir,
         pmm: params.current_pmm,
@@ -689,7 +660,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         recorded_dependencies: params.recorded_dependencies,
         step_dependencies: &step_dependencies,
         step_outputs: &step_outputs,
-        step_xvc_digests: &step_xvc_digests,
         dependency_diffs: params.dependency_diffs,
         output_diffs: params.output_diffs,
         process_poll_milliseconds,
@@ -966,7 +936,7 @@ fn s_waiting_dependency_steps_f_run_conditional<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     let dependencies = params.step_dependencies;
-    if dependencies.len() == 0 {
+    if dependencies.is_empty() {
         info!(
             params.output_snd,
             "No dependency steps for step {}", params.step.name
@@ -1002,7 +972,9 @@ fn s_comparing_diffs_and_outputs_f_thorough_diffs_not_changed<'a>(
     }
 
     // Run if we have missing outputs, or dependencies have changed, or run conditions require to run always.
-    let mut changed = false;
+    let changed: bool;
+
+    // Create a new scope to read params.output_diffs
     {
         let output_diffs = params.output_diffs.read()?;
         if output_diffs
@@ -1047,7 +1019,7 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
     {
         watch!(params.step_dependencies);
         // Check if there are any step dependencies that we depend and done by running
-        changed = params.step_dependencies.into_iter().any(|xe| {
+        changed = params.step_dependencies.iter().any(|xe| {
             if let Ok(hstore) = params.current_states.read() {
                 if let Some(s) = hstore.get(xe) {
                     if matches!(s, XvcStepState::DoneByRunning(_)) {
@@ -1079,7 +1051,7 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
                 "[{}] No missing Outputs and no changed dependencies", params.step.name
             );
             // We don't update the state
-            changed = changed;
+            // changed = changed;
         }
     }
 
@@ -1124,7 +1096,7 @@ fn s_checking_superficial_diffs<'a>(
         for (dep_e, diff) in step_dependency_diffs.into_iter() {
             watch!(diff);
             watch!(diff.changed());
-            changed = changed | &diff.changed();
+            changed |= &diff.changed();
             dependency_diffs.insert(dep_e, diff);
         }
     }
@@ -1182,7 +1154,7 @@ fn s_checking_thorough_diffs_f_superficial_diffs_changed<'a>(
     {
         let mut dependency_diffs = params.dependency_diffs.write()?;
         for (dep_e, diff) in step_dependency_diffs.into_iter() {
-            changed = changed | &diff.changed();
+            changed |= &diff.changed();
             dependency_diffs.insert(dep_e, diff);
         }
     }
@@ -1223,7 +1195,7 @@ fn s_checking_thorough_diffs_f_superficial_diffs_ignored<'a>(
     {
         let mut dependency_diffs = params.dependency_diffs.write()?;
         for (dep_e, diff) in step_dependency_diffs.into_iter() {
-            changed = changed | &diff.changed();
+            changed |= &diff.changed();
             dependency_diffs.insert(dep_e, diff);
         }
     }
@@ -1508,7 +1480,7 @@ fn s_running_f_wait_process<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     watch!(params);
-    let mut return_state: Option<XvcStepState> = None;
+    let return_state: Option<XvcStepState>;
     let command_process = params.command_process.clone();
     let timeout = params.step_timeout;
     let step = params.step.clone();

@@ -4,7 +4,6 @@ use crate::types::hashalgorithm::HashAlgorithm;
 use crate::{attribute_digest, XvcDigest, XvcMetadata, XvcPath};
 use itertools::Itertools;
 
-
 use crate::error::Result;
 
 use serde::{Deserialize, Serialize};
@@ -23,8 +22,8 @@ impl Diffable for PathCollectionDigest {
             crate::Diff::Identical
         } else {
             crate::Diff::Different {
-                record: record.clone(),
-                actual: actual.clone(),
+                record: *record,
+                actual: *actual,
             }
         }
     }

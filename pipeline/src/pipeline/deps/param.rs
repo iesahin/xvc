@@ -1,3 +1,5 @@
+//! A parameter dependency is a key-value pair that is extracted from a parameter in YAML,
+//! TOML or JSON file.
 use crate::error::{Error, Result};
 use crate::XvcDependency;
 use serde_json::value::Value as JsonValue;
@@ -31,13 +33,15 @@ pub struct ParamDep {
 
 persist!(ParamDep, "param-dependency");
 
-impl Into<XvcDependency> for ParamDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::Param(self)
+impl From<ParamDep> for XvcDependency {
+    fn from(val: ParamDep) -> Self {
+        XvcDependency::Param(val)
     }
 }
 
 impl ParamDep {
+    /// Creates a new ParamDep with the given path and key. If the format is None, it's inferred
+    /// from the path.
     pub fn new(path: &XvcPath, format: Option<XvcParamFormat>, key: String) -> Result<Self> {
         Ok(Self {
             format: format.unwrap_or_else(|| XvcParamFormat::from_xvc_path(path)),
@@ -48,6 +52,7 @@ impl ParamDep {
         })
     }
 
+    /// Update metada from the [XvcPathMetadataMap]
     pub fn update_metadata(self, pmm: &XvcPathMetadataMap) -> Result<Self> {
         let xvc_metadata = pmm.get(&self.path).cloned();
         Ok(Self {
@@ -56,6 +61,7 @@ impl ParamDep {
         })
     }
 
+    /// Update value by reading the file
     pub fn update_value(self, xvc_root: &XvcRoot) -> Result<Self> {
         let path = self.path.to_absolute_path(xvc_root);
         let value = Some(XvcParamValue::new_with_format(
@@ -162,6 +168,7 @@ impl XvcParamFormat {
         }
     }
 
+    /// Infer the (hyper)parameter file format from the xvc_path's extension
     pub fn from_xvc_path(xvc_path: &XvcPath) -> Self {
         let extension: OsString = xvc_path
             .extension()
@@ -172,29 +179,20 @@ impl XvcParamFormat {
     }
 }
 
+/// The value of a parameter
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum XvcParamValue {
+    /// Value of a key in JSON file
     Json(JsonValue),
+    /// Value of a key in YAML file
     Yaml(YamlValue),
+    /// Value of a key in TOML file
     Toml(TomlValue),
 }
 
 impl PartialOrd for XvcParamValue {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (self, other) {
-            (XvcParamValue::Json(json1), XvcParamValue::Json(json2)) => {
-                let json1str = json1.to_string();
-                let json2str = json2.to_string();
-                json1str.partial_cmp(&json2str)
-            }
-            (XvcParamValue::Yaml(yaml1), XvcParamValue::Yaml(yaml2)) => yaml1.partial_cmp(yaml2),
-            (XvcParamValue::Toml(toml1), XvcParamValue::Toml(toml2)) => {
-                let toml1str = toml1.to_string();
-                let toml2str = toml2.to_string();
-                toml1str.partial_cmp(&toml2str)
-            }
-            _ => None,
-        }
+        Some(self.cmp(other))
     }
 }
 
@@ -223,6 +221,7 @@ impl Display for XvcParamValue {
 }
 
 impl XvcParamValue {
+    /// Creates a new key with an empty value pointing to a file with an explicit [XvcParamFormat]
     pub fn new_with_format(path: &Path, format: &XvcParamFormat, key: &str) -> Result<Self> {
         let all_content = fs::read_to_string(path)?;
 

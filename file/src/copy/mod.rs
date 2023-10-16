@@ -61,7 +61,7 @@ pub(crate) fn get_source_path_metadata(
     source: &str,
     destination: &str,
 ) -> Result<(HStore<XvcPath>, HStore<XvcMetadata>)> {
-    let source_targets = if source.ends_with("/") {
+    let source_targets = if source.ends_with('/') {
         let mut source = source.to_string();
         source.push('*');
         vec![source]
@@ -72,14 +72,14 @@ pub(crate) fn get_source_path_metadata(
     let current_dir = xvc_root.config().current_dir()?;
     let all_sources = filter_targets_from_store(
         xvc_root,
-        &stored_xvc_path_store,
+        stored_xvc_path_store,
         current_dir,
         &Some(source_targets),
     )?;
     let source_metadata = stored_xvc_metadata_store.subset(all_sources.keys().copied())?;
     let source_metadata_files = source_metadata.filter(|_xe, md| md.is_file()).cloned();
 
-    if source_metadata_files.len() > 1 && !destination.ends_with("/") {
+    if source_metadata_files.len() > 1 && !destination.ends_with('/') {
         return Err(anyhow!("Target must be a directory if multiple sources are given").into());
     }
 
@@ -93,10 +93,7 @@ pub(crate) fn check_if_destination_is_a_directory(
     stored_xvc_path_store: &XvcStore<XvcPath>,
     stored_metadata_store: &XvcStore<XvcMetadata>,
 ) -> Result<()> {
-    let current_dir_entity = match stored_xvc_path_store.entities_for(&dir_path) {
-        Some(v) => Some(v[0]),
-        None => None,
-    };
+    let current_dir_entity = stored_xvc_path_store.entities_for(dir_path).map(|v| v[0]);
 
     let current_dir_metadata = current_dir_entity.and_then(|e| stored_metadata_store.get(&e));
 
@@ -120,20 +117,16 @@ pub(crate) fn check_if_sources_have_changed(
     _source_metadata: &HStore<XvcMetadata>,
 ) -> Result<()> {
     // We don't parallelize the diff operation because we abort all operations if there is a single changed file.
-    let pmm = xvc_path_metadata_map_from_disk(xvc_root, &source_xvc_paths);
-    let xvc_path_metadata_diff = diff_xvc_path_metadata(
-        xvc_root,
-        &stored_xvc_path_store,
-        &stored_metadata_store,
-        &pmm,
-    );
+    let pmm = xvc_path_metadata_map_from_disk(xvc_root, source_xvc_paths);
+    let xvc_path_metadata_diff =
+        diff_xvc_path_metadata(xvc_root, stored_xvc_path_store, stored_metadata_store, &pmm);
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
     let content_digest_diff = diff_content_digest(
         output_snd,
         xvc_root,
-        &stored_xvc_path_store,
-        &stored_metadata_store,
+        stored_xvc_path_store,
+        stored_metadata_store,
         &stored_content_digest_store,
         &stored_text_or_binary_store,
         &xvc_path_metadata_diff.0,
@@ -173,6 +166,7 @@ pub(crate) fn check_if_sources_have_changed(
 /// It creates the destination entities with [`XvcRoot::new_entity()`] if they are not already found.
 /// `stored_xvc_path_store` and `stored_xvc_metadata_store` are loaded with `XvcRoot::load_store`, and
 /// `source_xvc_paths` and `source_xvc_metadata` are the results of [`targets_from_disk`].
+#[allow(clippy::too_many_arguments)]
 pub fn get_copy_source_dest_store(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -189,8 +183,8 @@ pub fn get_copy_source_dest_store(
     // force is not set.
     let source_dest_store = if destination.ends_with('/') {
         let dir_path = XvcPath::new(
-            &xvc_root,
-            &xvc_root,
+            xvc_root,
+            xvc_root,
             Path::new(destination.strip_suffix('/').unwrap()),
         )?;
 
@@ -254,7 +248,7 @@ pub fn get_copy_source_dest_store(
         let source_xe = source_xvc_paths.keys().next().unwrap();
 
         let mut source_dest_store = HStore::<(XvcEntity, XvcPath)>::with_capacity(1);
-        let dest_path = XvcPath::new(&xvc_root, current_dir, Path::new(destination))?;
+        let dest_path = XvcPath::new(xvc_root, current_dir, Path::new(destination))?;
 
         match stored_xvc_path_store.entities_for(&dest_path) {
             Some(dest_xe) => {
@@ -354,12 +348,12 @@ pub(crate) fn cmd_copy(
             store.left.insert(*dest_xe, dest_path.clone());
             // If we recheck, we'll update the metadata with the actual
             // file metadata below.
-            store.right.insert(*dest_xe, source_md.clone());
+            store.right.insert(*dest_xe, *source_md);
 
             // Create destination parent directory records if they don't exist
             for parent in dest_path.parents() {
                 let parent_entities = store.left.entities_for(&parent);
-                if parent_entities.is_none() || parent_entities.unwrap().len() == 0 {
+                if parent_entities.is_none() || parent_entities.unwrap().is_empty() {
                     let parent_entity = xvc_root.new_entity();
                     store.left.insert(parent_entity, parent.clone());
                     store.right.insert(

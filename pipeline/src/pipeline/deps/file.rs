@@ -1,3 +1,4 @@
+//! File dependencies for a pipeline step
 use std::ffi::OsString;
 
 use crate::error::Error;
@@ -5,28 +6,32 @@ use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcPath,
-    XvcPathMetadataMap, XvcRoot,
+    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcPath, XvcPathMetadataMap,
+    XvcRoot,
 };
 use xvc_ecs::persist;
 
-
+/// A file dependency for a pipeline step.
+/// It keeps track of path, metadata and the digest of the file.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct FileDep {
     /// The path in the workspace
     pub path: XvcPath,
+    /// [XvcMetadata] of the file if it's available
     pub xvc_metadata: Option<XvcMetadata>,
+    /// [ContentDigest] of the file if it's available
     pub content_digest: Option<ContentDigest>,
 }
 persist!(FileDep, "file-dependency");
 
-impl Into<XvcDependency> for FileDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::File(self)
+impl From<FileDep> for XvcDependency {
+    fn from(val: FileDep) -> Self {
+        XvcDependency::File(val)
     }
 }
 
 impl FileDep {
+    /// Create a new file dependency with metadata and digest set to None.
     pub fn new(path: XvcPath) -> Self {
         Self {
             path,
@@ -35,6 +40,7 @@ impl FileDep {
         }
     }
 
+    /// Create a file dependency with the given path and metadata obtained from [XvcPathMetadataMap]
     pub fn from_pmm(path: &XvcPath, pmm: &XvcPathMetadataMap) -> Result<Self> {
         let path = path.clone();
         let xvc_metadata = pmm.get(&path).cloned();
@@ -51,6 +57,7 @@ impl FileDep {
         })
     }
 
+    /// Returns a new instance with the updated content digest
     pub fn calculate_content_digest(
         self,
         xvc_root: &XvcRoot,
@@ -65,6 +72,7 @@ impl FileDep {
         })
     }
 
+    /// Returns a new instance with a new content digest if the metadata has changed
     pub fn calculate_content_digest_if_changed(
         self,
         xvc_root: &XvcRoot,
@@ -76,7 +84,7 @@ impl FileDep {
             self.calculate_content_digest(xvc_root, algorithm, text_or_binary)
         } else {
             Ok(Self {
-                content_digest: record.content_digest.clone(),
+                content_digest: record.content_digest,
                 ..self
             })
         }

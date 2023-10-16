@@ -1,3 +1,4 @@
+//! A generic dependency that's invalidated when the given command's output has changed.
 use crate::error::Error;
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
@@ -10,19 +11,22 @@ use xvc_logging::watch;
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 /// A generic dependency that's invalidated when the given command's output has changed.
 pub struct GenericDep {
+    /// The command that the step runs to check its output
     pub generic_command: String,
+    /// The output digest collected from the command output
     pub output_digest: Option<StdoutDigest>,
 }
 
 persist!(GenericDep, "generic-dependency");
 
-impl Into<XvcDependency> for GenericDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::Generic(self)
+impl From<GenericDep> for XvcDependency {
+    fn from(val: GenericDep) -> Self {
+        XvcDependency::Generic(val)
     }
 }
 
 impl GenericDep {
+    /// Create a new generic dependency with the specified command
     pub fn new(generic_command: String) -> Self {
         Self {
             generic_command,
@@ -30,6 +34,7 @@ impl GenericDep {
         }
     }
 
+    /// Run the command and update the output digest
     pub fn update_output_digest(self) -> Result<Self> {
         let generic_command = self.generic_command;
         watch!(generic_command);
@@ -42,11 +47,11 @@ impl GenericDep {
         watch!(stderr);
         let algorithm = HashAlgorithm::Blake3;
         let return_code = command_output.exit_status;
-        if stderr.len() > 0 || !return_code.success() {
+        if !stderr.is_empty() || !return_code.success() {
             Err(Error::ProcessError { stdout, stderr })
         } else {
             Ok(Self {
-                output_digest: Some(StdoutDigest::new(&stdout, algorithm).into()),
+                output_digest: Some(StdoutDigest::new(&stdout, algorithm)),
                 generic_command,
             })
         }

@@ -141,7 +141,7 @@ impl XvcCLI {
         let mut output = self.config.clone().unwrap_or_default();
         output.push(format!(
             "core.verbosity = {}",
-            XvcVerbosity::from(self.verbosity).to_string()
+            XvcVerbosity::from(self.verbosity)
         ));
         output.push(format!("core.quiet = {}", self.quiet));
 
@@ -251,7 +251,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Info(_) => {}
                         XvcOutputLine::Warn(_) => {}
                         XvcOutputLine::Error(_) => {}
-                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                         XvcOutputLine::Tick(_) => todo!(),
                         XvcOutputLine::Debug(_) => {}
                     },
@@ -259,45 +259,45 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                         XvcOutputLine::Output(m) => println!("{m}"),
                         XvcOutputLine::Info(_) => {}
                         XvcOutputLine::Warn(_) => {}
-                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                         XvcOutputLine::Tick(_) => todo!(),
                         XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Warn => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
-                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m.to_string()),
-                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m),
+                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                         XvcOutputLine::Info(_) => {}
                         XvcOutputLine::Tick(_) => todo!(),
                         XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Info => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
-                        XvcOutputLine::Info(m) => eprintln!("[INFO] {}", m.to_string()),
-                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m.to_string()),
-                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Info(m) => eprintln!("[INFO] {}", m),
+                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m),
+                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                         XvcOutputLine::Tick(_) => todo!(),
                         XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Debug => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
-                        XvcOutputLine::Info(m) => eprintln!("[INFO] {}", m.to_string()),
-                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m.to_string()),
-                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m.to_string()),
-                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Info(m) => eprintln!("[INFO] {}", m),
+                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m),
+                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                         XvcOutputLine::Tick(_) => todo!(),
                         XvcOutputLine::Debug(m) => eprintln!("[DEBUG] {}", m),
                     },
                     LevelFilter::Trace => match output_line {
                         XvcOutputLine::Output(m) => println!("{m}"),
-                        XvcOutputLine::Info(m) => eprintln!("[INFO] {}", m.to_string()),
-                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m.to_string()),
-                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m.to_string()),
+                        XvcOutputLine::Info(m) => eprintln!("[INFO] {}", m),
+                        XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m),
+                        XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
                         XvcOutputLine::Debug(m) => eprintln!("[DEBUG] {}", m),
-                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m.to_string()),
+                        XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                         XvcOutputLine::Tick(_) => todo!(),
                     },
                 }
@@ -466,7 +466,7 @@ fn stash_user_staged_files(
     watch!(git_diff_staged_out);
 
     // If so stash them
-    if git_diff_staged_out.trim().len() > 0 {
+    if !git_diff_staged_out.trim().is_empty() {
         debug!(
             output_snd,
             "Stashing user staged files: {git_diff_staged_out}"
@@ -503,7 +503,7 @@ fn git_checkout_ref(
     let git_diff_staged_out = stash_user_staged_files(output_snd, &git_command, xvc_directory)?;
     exec_git(&git_command, xvc_directory, &["checkout", &from_ref])?;
 
-    if git_diff_staged_out.trim().len() > 0 {
+    if !git_diff_staged_out.trim().is_empty() {
         debug!("Unstashing user staged files: {git_diff_staged_out}");
         unstash_user_staged_files(output_snd, &git_command, xvc_directory)?;
     }
@@ -559,16 +559,16 @@ fn git_auto_commit(
 ) -> Result<()> {
     debug!(output_snd, "Using Git: {git_command}");
 
-    let git_diff_staged_out = stash_user_staged_files(output_snd, &git_command, xvc_root_str)?;
+    let git_diff_staged_out = stash_user_staged_files(output_snd, git_command, xvc_root_str)?;
 
     if let Some(branch) = to_branch {
         debug!(output_snd, "Checking out branch {branch}");
-        exec_git(&git_command, xvc_root_str, &["checkout", "-b", branch])?;
+        exec_git(git_command, xvc_root_str, &["checkout", "-b", branch])?;
     }
 
     // Add and commit `.xvc`
     match exec_git(
-        &git_command,
+        git_command,
         xvc_root_str,
         // We check the output of the git add command to see if there were any files added.
         // "--verbose" is required to get the output we need.
@@ -582,12 +582,12 @@ fn git_auto_commit(
     ) {
         Ok(git_add_output) => {
             watch!(git_add_output);
-            if git_add_output.trim().len() == 0 {
+            if git_add_output.trim().is_empty() {
                 debug!(output_snd, "No files to commit");
                 return Ok(());
             } else {
                 match exec_git(
-                    &git_command,
+                    git_command,
                     xvc_root_str,
                     &[
                         "commit",
@@ -613,12 +613,12 @@ fn git_auto_commit(
 
     // Pop the stash if there were files we stashed
 
-    if git_diff_staged_out.trim().len() > 0 {
+    if !git_diff_staged_out.trim().is_empty() {
         debug!(
             output_snd,
             "Unstashing user staged files: {git_diff_staged_out}"
         );
-        unstash_user_staged_files(output_snd, &git_command, xvc_root_str)?;
+        unstash_user_staged_files(output_snd, git_command, xvc_root_str)?;
     }
     Ok(())
 }
@@ -630,7 +630,7 @@ fn git_auto_stage(
     xvc_dir_str: &str,
 ) -> Result<()> {
     let res_git_add = exec_git(
-        &git_command,
+        git_command,
         xvc_root_str,
         &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
     )?;

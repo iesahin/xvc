@@ -5,7 +5,7 @@
 #![forbid(unsafe_code)]
 use log::LevelFilter;
 use rand::distributions::Alphanumeric;
-use rand::rngs::{StdRng};
+use rand::rngs::StdRng;
 use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
@@ -109,7 +109,7 @@ pub fn temp_git_dir() -> PathBuf {
     watch!(temp_dir);
     Command::new("git")
         .arg("-C")
-        .arg(&temp_dir.as_os_str())
+        .arg(temp_dir.as_os_str())
         .arg("init")
         .output()
         .unwrap_or_else(|e| panic!("failed to execute process: {}", e));
@@ -126,8 +126,8 @@ pub fn generate_random_file(filename: &Path, size: usize, seed: Option<u64>) {
     let mut writer = BufWriter::new(f);
 
     let mut rng: StdRng = seed
-        .map(|state| StdRng::seed_from_u64(state))
-        .unwrap_or_else(|| StdRng::from_entropy());
+        .map(StdRng::seed_from_u64)
+        .unwrap_or_else(StdRng::from_entropy);
     let mut buffer = [0u8; 1024];
     let mut remaining_size = size;
 

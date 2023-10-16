@@ -17,10 +17,10 @@ crate-type = ["rlib"]
 
 
 [dependencies]
-xvc-logging = {version = "0.6.0", path = "../logging"}
+xvc-logging = { version = "0.6.0", path = "../logging" }
 
 ## Serialization
-serde = { version = "^1.0", features=["derive"] }
+serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
 rmp = "^0.8"
 rmp-serde = "1.1.2"
@@ -32,7 +32,7 @@ crossbeam-channel = "^0.5"
 ## Logging and errors
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
-fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+fern = { version = "^0.6", features = ["colored"] }
 thiserror = "^1.0"
 
 ## Misc

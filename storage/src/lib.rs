@@ -19,7 +19,6 @@ pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
 
-use xvc_ecs;
 use xvc_ecs::XvcStore;
 
 use xvc_core::XvcRoot;
@@ -29,6 +28,7 @@ use xvc_logging::{output, XvcOutputSender};
 #[derive(Debug, Parser)]
 #[command(name = "storage", about = "")]
 pub struct StorageCLI {
+    /// Subcommand for storage management
     #[command(subcommand)]
     pub subcommand: StorageSubCommand,
 }
@@ -311,7 +311,9 @@ pub enum StorageNewSubCommand {
 /// kept in Storage structs.
 #[derive(Debug, Clone, PartialEq, Eq, Display)]
 pub enum StorageIdentifier {
+    /// Name of the storage
     Name(String),
+    /// GUID of the storage
     Uuid(uuid::Uuid),
 }
 

@@ -81,73 +81,70 @@ pub(crate) fn cmd_remove(
         // Return all cache paths used by the targets
         cache_paths_for_targets
             .iter()
-            .map(|(xe, vec_cp)| {
+            .flat_map(|(xe, vec_cp)| {
                 vec_cp
                     .iter()
                     .map(|cp| (*xe, cp.clone()))
                     .collect::<Vec<_>>()
             })
-            .flatten()
             .collect::<Vec<_>>()
-    } else {
-        if let Some(version) = opts.only_version {
-            // Return only the cache paths that match the version prefix
-            let version_cmp_str = version.replace("-", "");
-            watch!(version_cmp_str);
-            let version_cmp = |v: &&XvcCachePath| {
-                let digest_str = v.digest_string(DIGEST_LENGTH).replace("-", "");
-                watch!(digest_str);
-                // We skip the first two characters because they are the hash algorithm identifier
-                digest_str[2..].starts_with(&version_cmp_str)
-            };
-            let paths = cache_paths_for_targets
-                .iter()
-                .filter_map(|(xe, vec_cp)| {
-                    let possible_paths = vec_cp
-                        .iter()
-                        .filter(version_cmp)
-                        .cloned()
-                        .collect::<Vec<XvcCachePath>>();
-                    if !possible_paths.is_empty() {
-                        Some((*xe, possible_paths))
-                    } else {
-                        None
-                    }
-                })
-                .fold(
-                    Vec::<(XvcEntity, XvcCachePath)>::new(),
-                    |mut acc, (xe, vec_cp)| {
-                        vec_cp.into_iter().for_each(|xcp| acc.push((xe, xcp)));
-                        watch!(acc);
-                        acc
-                    },
-                );
+    } else if let Some(version) = opts.only_version {
+        // Return only the cache paths that match the version prefix
+        let version_cmp_str = version.replace('-', "");
+        watch!(version_cmp_str);
+        let version_cmp = |v: &&XvcCachePath| {
+            let digest_str = v.digest_string(DIGEST_LENGTH).replace('-', "");
+            watch!(digest_str);
+            // We skip the first two characters because they are the hash algorithm identifier
+            digest_str[2..].starts_with(&version_cmp_str)
+        };
+        let paths = cache_paths_for_targets
+            .iter()
+            .filter_map(|(xe, vec_cp)| {
+                let possible_paths = vec_cp
+                    .iter()
+                    .filter(version_cmp)
+                    .cloned()
+                    .collect::<Vec<XvcCachePath>>();
+                if !possible_paths.is_empty() {
+                    Some((*xe, possible_paths))
+                } else {
+                    None
+                }
+            })
+            .fold(
+                Vec::<(XvcEntity, XvcCachePath)>::new(),
+                |mut acc, (xe, vec_cp)| {
+                    vec_cp.into_iter().for_each(|xcp| acc.push((xe, xcp)));
+                    watch!(acc);
+                    acc
+                },
+            );
 
-            watch!(paths);
+        watch!(paths);
 
-            if paths.len() > 1 {
-                return Err(anyhow::anyhow!(
-                    "Version prefix is not unique:\n{}",
-                    paths
-                        .iter()
-                        .map(|(_, xcp)| xcp.digest_string(DIGEST_LENGTH))
-                        .join("\n")
-                )
-                .into());
-            } else {
+        if paths.len() > 1 {
+            return Err(anyhow::anyhow!(
+                "Version prefix is not unique:\n{}",
                 paths
-            }
+                    .iter()
+                    .map(|(_, xcp)| xcp.digest_string(DIGEST_LENGTH))
+                    .join("\n")
+            )
+            .into());
         } else {
-            remove_targets
-                .iter()
-                .map(|(xe, xp)| {
-                    (
-                        *xe,
-                        XvcCachePath::new(xp, all_content_digests.get(xe).unwrap()).unwrap(),
-                    )
-                })
-                .collect::<Vec<(XvcEntity, XvcCachePath)>>()
+            paths
         }
+    } else {
+        remove_targets
+            .iter()
+            .map(|(xe, xp)| {
+                (
+                    *xe,
+                    XvcCachePath::new(xp, all_content_digests.get(xe).unwrap()).unwrap(),
+                )
+            })
+            .collect::<Vec<(XvcEntity, XvcCachePath)>>()
     };
 
     watch!(candidate_paths);

@@ -112,12 +112,12 @@ where
                 entity: (*child_entity),
             }),
             Some(p_e) => {
-                let (_, v) =
-                    self.parents
-                        .get_key_value(&p_e)
-                        .ok_or(Error::NoParentEntityFound {
-                            entity: (*child_entity).into(),
-                        })?;
+                let (_, v) = self
+                    .parents
+                    .get_key_value(p_e)
+                    .ok_or(Error::NoParentEntityFound {
+                        entity: *child_entity,
+                    })?;
                 Ok((p_e, v))
             }
         }

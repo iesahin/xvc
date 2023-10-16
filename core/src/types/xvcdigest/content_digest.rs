@@ -29,8 +29,8 @@ impl Diffable for ContentDigest {
             crate::Diff::Identical
         } else {
             crate::Diff::Different {
-                record: record.clone(),
-                actual: actual.clone(),
+                record: *record,
+                actual: *actual,
             }
         }
     }

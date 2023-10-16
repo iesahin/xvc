@@ -1,7 +1,6 @@
 //! Various utility functions
 pub mod file;
 pub mod git;
-pub mod keyvaluestore;
 pub mod serde;
 pub mod store;
 pub mod xvcignore;
@@ -66,16 +65,16 @@ pub fn stdin_channel() -> Receiver<String> {
         s.spawn(move |_| -> Result<()> {
             let stdin = io::stdin();
             loop {
-                if let Err(_) = input_snd.try_send("".into()) {
+                if input_snd.try_send("".into()).is_err() {
                     break;
                 }
                 let mut input = stdin.lock();
                 watch!(&input);
                 let mut buf = Vec::<u8>::new();
                 watch!(&buf);
-                input.read(&mut buf)?;
+                let read_bytes = input.read(&mut buf)?;
                 watch!(&buf);
-                if !buf.is_empty() {
+                if read_bytes > 0 {
                     let s = String::from_utf8(buf);
                     input_snd
                         .send(s.unwrap_or_else(|_| "[ERROR] Requires UTF-8 Input".into()))

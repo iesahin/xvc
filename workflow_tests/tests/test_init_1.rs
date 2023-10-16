@@ -21,7 +21,7 @@ fn test_remote_add() -> Result<()> {
     )?;
     assert!(xvc_root.absolute_path().join(XVC_DIR).exists());
     assert!(xvc_root.absolute_path().join(XVCIGNORE_FILENAME).exists());
-    assert!(xvc_root.absolute_path().join(".gitignore").exists() == false);
+    assert!(!xvc_root.absolute_path().join(".gitignore").exists());
 
     clean_up(&xvc_root)
 }

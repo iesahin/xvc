@@ -25,7 +25,7 @@ use xvc_logging::{output, XvcOutputSender};
 pub struct AliasesCLI {}
 
 /// Standard Xvc command aliases for longer commands.
-pub const XVC_ALIASES: &'static str = r#"
+pub const XVC_ALIASES: &str = r#"
 alias xls='xvc file list'
 alias pvc='xvc pipeline'
 alias fvc='xvc file'

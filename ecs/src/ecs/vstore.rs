@@ -64,13 +64,11 @@ where
         for event in events.iter() {
             match event {
                 Event::Add { entity, value } => map.insert(*entity, value.clone()),
-                Event::Remove { entity } => map.remove(&entity),
+                Event::Remove { entity } => map.remove(entity),
             };
         }
 
-        let vec = Vec::from_iter(map.into_iter());
-
-        vec
+        Vec::from_iter(map)
     }
 
     /// Loads the store from the given `dir`.

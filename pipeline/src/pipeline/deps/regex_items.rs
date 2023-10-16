@@ -1,3 +1,5 @@
+//! A dependency that depends on a regex searched in a text file. Unline [RegexDep], this
+//! dependency tracks all the lines that matches the regex.
 use std::io::{self, BufRead};
 
 use regex::Regex;
@@ -16,19 +18,22 @@ pub struct RegexItemsDep {
     /// The regex to search in the file
     // We use this because Regex is not Serializable
     pub regex: String,
+    /// Lines that match the regex in the file
     pub lines: Vec<String>,
+    /// Metadata of the file
     pub xvc_metadata: Option<XvcMetadata>,
 }
 
 persist!(RegexItemsDep, "regex-dependency");
 
-impl Into<XvcDependency> for RegexItemsDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::RegexItems(self)
+impl From<RegexItemsDep> for XvcDependency {
+    fn from(val: RegexItemsDep) -> Self {
+        XvcDependency::RegexItems(val)
     }
 }
 
 impl RegexItemsDep {
+    /// Create a new RegexItemsDep with empty lines and metadata
     pub fn new(path: XvcPath, regex: String) -> Self {
         Self {
             path,
@@ -38,6 +43,7 @@ impl RegexItemsDep {
         }
     }
 
+    /// Update the metadata of the dependency
     pub fn update_metadata(self, xvc_metadata: Option<XvcMetadata>) -> Self {
         Self {
             xvc_metadata,
@@ -45,11 +51,13 @@ impl RegexItemsDep {
         }
     }
 
+    /// Update the metadata of the dependency from the given path metadata map
     pub fn update_metadata_from_pmm(self, pmm: &XvcPathMetadataMap) -> Self {
         let xvc_metadata = pmm.get(&self.path).cloned();
         self.update_metadata(xvc_metadata)
     }
 
+    /// Update the lines of the dependency by reading the file and searching the regex in it
     pub fn update_lines(self, xvc_root: &XvcRoot) -> Self {
         let path = self.path.to_absolute_path(xvc_root);
         let regex = self.regex();
@@ -72,6 +80,7 @@ impl RegexItemsDep {
         Self { lines, ..self }
     }
 
+    /// Returns the regex of the dependency
     pub fn regex(&self) -> Regex {
         Regex::new(&self.regex).unwrap()
     }

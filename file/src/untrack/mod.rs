@@ -113,17 +113,11 @@ pub fn cmd_untrack(
             let xvc_path = all_paths[xe].clone();
             let destination_path = xvc_path.to_absolute_path(&abs_restore_dir);
             let destination_dir = destination_path.parent().unwrap();
-            let stem = xvc_path
-                .as_relative_path()
-                .file_stem()
-                .unwrap_or_else(|| "");
-            let extension = xvc_path
-                .as_relative_path()
-                .extension()
-                .unwrap_or_else(|| "");
+            let stem = xvc_path.as_relative_path().file_stem().unwrap_or("");
+            let extension = xvc_path.as_relative_path().extension().unwrap_or("");
 
             if !destination_dir.exists() {
-                uwr!(fs::create_dir_all(&destination_dir), output_snd);
+                uwr!(fs::create_dir_all(destination_dir), output_snd);
             }
 
             // TODO: Parallelize this if we have a lot of versions

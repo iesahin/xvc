@@ -20,8 +20,8 @@ impl Diffable for XvcMetadataDigest {
             crate::Diff::Identical
         } else {
             crate::Diff::Different {
-                record: record.clone(),
-                actual: actual.clone(),
+                record: *record,
+                actual: *actual,
             }
         }
     }
@@ -58,6 +58,6 @@ impl XvcMetadataDigest {
 
     /// Return the inner digest
     pub fn digest(&self) -> XvcDigest {
-        self.0.clone()
+        self.0
     }
 }

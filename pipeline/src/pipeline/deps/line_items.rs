@@ -1,3 +1,4 @@
+//! LineItemsDep is a dependency that contains a range of lines from a file.
 use std::io::{self, BufRead};
 
 use serde::{Deserialize, Serialize};
@@ -7,6 +8,8 @@ use xvc_ecs::persist;
 
 use crate::XvcDependency;
 
+/// A dependency that contains a range of lines from a file. Unlike [LinesDep], this keeps track of
+/// the lines themselves.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct LineItemsDep {
     /// Path of the file in the workspace
@@ -15,19 +18,22 @@ pub struct LineItemsDep {
     pub begin: usize,
     /// The end of range
     pub end: usize,
+    /// Metadata of the file
     pub xvc_metadata: Option<XvcMetadata>,
+    /// Lines of the file
     pub lines: Vec<String>,
 }
 
 persist!(LineItemsDep, "lines-dependency");
 
-impl Into<XvcDependency> for LineItemsDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::LineItems(self)
+impl From<LineItemsDep> for XvcDependency {
+    fn from(val: LineItemsDep) -> Self {
+        XvcDependency::LineItems(val)
     }
 }
 
 impl LineItemsDep {
+    /// Create a new [LineItemsDep] with blank metadata and lines.
     pub fn new(path: XvcPath, begin: usize, end: usize) -> Self {
         Self {
             path,
@@ -38,6 +44,7 @@ impl LineItemsDep {
         }
     }
 
+    /// Update the lines by reading the file
     pub fn update_lines(self, xvc_root: &XvcRoot) -> Self {
         let path = self.path.to_absolute_path(xvc_root);
         let file = std::fs::File::open(path).unwrap();
@@ -50,6 +57,7 @@ impl LineItemsDep {
         Self { lines, ..self }
     }
 
+    /// Update metadata with the supplied metadata
     pub fn update_metadata(self, xvc_metadata: Option<XvcMetadata>) -> Self {
         Self {
             xvc_metadata,
@@ -103,7 +111,7 @@ impl Diffable for LineItemsDep {
     /// ⚠️ Call actual.update_metadata and actual.update_lines before calling this. ⚠️
     fn diff(record: Option<&LineItemsDep>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
         match (record, actual) {
-            (Some(record), Some(actual)) => match Self::diff_superficial(&record, &actual) {
+            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
                 Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),
                 diff => diff,
             },

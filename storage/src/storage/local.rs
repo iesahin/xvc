@@ -1,3 +1,4 @@
+//! Local storage implementation
 use std::{
     fs::{self, create_dir_all},
     path::PathBuf,
@@ -17,6 +18,7 @@ use super::{
 };
 use crate::{Result, XvcStorage, XvcStorageEvent};
 
+/// Entry point for `xvc storage new local` command
 pub fn cmd_storage_new_local(
     _input: std::io::StdinLock,
     output_snd: &XvcOutputSender,
@@ -46,10 +48,14 @@ pub fn cmd_storage_new_local(
     Ok(())
 }
 
+/// A local storage is a directory that is on the same machine as the repository.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcLocalStorage {
+    /// GUID of the storage
     pub guid: XvcStorageGuid,
+    /// Name of the storage
     pub name: String,
+    /// Path to the storage
     pub path: PathBuf,
 }
 
@@ -138,7 +144,7 @@ impl XvcStorageOperations for XvcLocalStorage {
             }
             let abs_cache_path = cache_path.to_absolute_path(xvc_root);
             let abs_remote_dir = abs_remote_path.parent().unwrap();
-            fs::create_dir_all(&abs_remote_dir)?;
+            fs::create_dir_all(abs_remote_dir)?;
             fs::copy(&abs_cache_path, &abs_remote_path)?;
             copied_paths.push(remote_path);
             watch!(copied_paths.len());

@@ -22,7 +22,7 @@ fn test_xvc_file_metadata(filesize in 0..100000u64, filestr in "file-[0-9][0-9][
     let dir = common::run_in_temp_dir();
 
     let filename = Path::new(&filestr);
-    common::generate_random_file(&filename, filesize as usize, None);
+    common::generate_random_file(filename, filesize as usize, None);
     // Wait the file to be written, the test fails sometimes for this
     sleep(Duration::from_millis(10));
     let file_md = filename.metadata()?;
@@ -34,7 +34,7 @@ fn test_xvc_file_metadata(filesize in 0..100000u64, filestr in "file-[0-9][0-9][
         .unwrap();
     prop_assert!(duration < Duration::from_secs(2));
 
-    fs::remove_dir_all(&dir).unwrap();
+    fs::remove_dir_all(dir).unwrap();
 }
 
 

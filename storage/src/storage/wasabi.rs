@@ -1,3 +1,4 @@
+//! Wasabi storage implementation.
 use std::str::FromStr;
 use std::{env, fs};
 
@@ -99,11 +100,11 @@ pub struct XvcWasabiStorage {
 impl XvcWasabiStorage {
     fn remote_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var(&format!(
+            Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
                 self.name
             ))?),
-            Some(&env::var(&format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
+            Some(&env::var(format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
             None,
             None,
             None,
@@ -232,12 +233,10 @@ impl XvcWasabiStorage {
     }
 
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
-        let remote_path = XvcStoragePath::from(format!(
+        XvcStoragePath::from(format!(
             "{}/{}/{}",
             self.storage_prefix, repo_guid, cache_path
-        ));
-
-        remote_path
+        ))
     }
 
     async fn a_send(

@@ -42,6 +42,15 @@ pub struct EventLog<T>(Vec<Event<T>>)
 where
     T: Serialize + for<'lt> Deserialize<'lt> + Clone + Debug;
 
+impl<T> Default for EventLog<T>
+where
+    T: Serialize + for<'lt> Deserialize<'lt> + Clone + Debug,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T> EventLog<T>
 where
     T: Serialize + for<'lt> Deserialize<'lt> + Clone + Debug,
@@ -89,10 +98,10 @@ where
             .iter()
             .map(|f| {
                 Self::from_file(f)
-                    .expect(&format!("Error reading event log: {}", f.to_string_lossy()))
+                    .unwrap_or_else(|_| panic!("Error reading event log: {}", f.to_string_lossy()))
             })
             .fold(Self::new(), |mut merged, new| {
-                merged.0.extend(new.0.into_iter());
+                merged.0.extend(new.0);
                 merged
             });
         Ok(merged)

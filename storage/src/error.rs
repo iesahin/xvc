@@ -1,3 +1,4 @@
+//! Error messages for xvc-storage
 use log::{debug, error, info, trace, warn};
 
 use std::fmt::Debug;

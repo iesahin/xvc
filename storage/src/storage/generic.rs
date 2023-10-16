@@ -1,6 +1,5 @@
+//! The generic storage implementation with shell commands.
 use std::{collections::HashMap, env, fs, path::Path};
-
-
 
 use regex::Regex;
 use relative_path::RelativePath;
@@ -17,6 +16,10 @@ use super::{
     XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
 };
 
+/// Entry point for `xvc storage new generic` command. Receives all parameters from the command
+/// line.
+/// TODO: Reduce the number of parameters
+#[allow(clippy::too_many_arguments)]
 pub fn cmd_storage_new_generic(
     _input: std::io::StdinLock,
     output_snd: &XvcOutputSender,
@@ -63,17 +66,33 @@ pub fn cmd_storage_new_generic(
     Ok(())
 }
 
+/// Generic storage implementation
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcGenericStorage {
+    /// GUID for this storage
     pub guid: XvcStorageGuid,
+    /// Name of the storage
     pub name: String,
+    /// The value for the URL parameter in the commands. If it's Some(url), the `{URL}`s are filled
+    /// with this value. This is only the hostname part of the URL. For the directory in the host,
+    /// user [storage_dir]
     pub url: Option<String>,
+    /// The directory for the storage. The full storage path is built using `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}` if this is Some(dir)
     pub storage_dir: Option<String>,
+    /// The command to create the directories and upload the .xvc-guid file to the host.
+    /// The command should have {LOCAL_GUID_FILE_PATH}  and {STORAGE_GUID_FILE_PATH} fields to
+    /// upload the guid file.
     pub init_command: String,
+    /// The command to list all files in the storage. The output of the command should list all
+    /// files.
     pub list_command: String,
+    /// The command to upload a file to the storage.
     pub upload_command: String,
+    /// The command to download a file from the storage.
     pub download_command: String,
+    /// The command to delete a file from the storage.
     pub delete_command: String,
+    /// How many parallel connections to use for upload/download
     pub max_processes: usize,
 }
 
@@ -90,14 +109,13 @@ impl XvcGenericStorage {
     /// - `{URL}` : The content of `--url` option. (default "")
     /// - `{STORAGE_DIR}` Content of `--storage-dir`  option. (default "")
     fn address_map(&self) -> HashMap<&str, String> {
-        let hm = HashMap::from([
-            ("{URL}", self.url.clone().unwrap_or_else(|| "".to_string())),
+        HashMap::from([
+            ("{URL}", self.url.clone().unwrap_or_default()),
             (
                 "{STORAGE_DIR}",
-                self.storage_dir.clone().unwrap_or_else(|| "".to_string()),
+                self.storage_dir.clone().unwrap_or_default(),
             ),
-        ]);
-        hm
+        ])
     }
 
     /// returns a map that contains keys and values for path elements in commands
@@ -126,13 +144,13 @@ impl XvcGenericStorage {
             .unwrap_or(Path::new(""))
             .to_string_lossy()
             .to_string();
-        let url = self.url.clone().unwrap_or_else(|| "".to_string());
-        let storage_dir = self.storage_dir.clone().unwrap_or_else(|| "".to_string());
+        let url = self.url.clone().unwrap_or_default();
+        let storage_dir = self.storage_dir.clone().unwrap_or_default();
 
         let full_storage_path = format!("{url}{storage_dir}{xvc_guid}/{relative_cache_path}");
         let full_storage_dir = format!("{url}{storage_dir}{xvc_guid}/{relative_cache_dir}");
 
-        let hm = HashMap::from([
+        HashMap::from([
             ("{XVC_GUID}", xvc_guid),
             ("{RELATIVE_CACHE_PATH}", relative_cache_path),
             ("{ABSOLUTE_CACHE_PATH}", absolute_cache_path),
@@ -140,9 +158,7 @@ impl XvcGenericStorage {
             ("{ABSOLUTE_CACHE_DIR}", absolute_cache_dir),
             ("{FULL_STORAGE_PATH}", full_storage_path),
             ("{FULL_STORAGE_DIR}", full_storage_dir),
-        ]);
-
-        hm
+        ])
     }
 
     /// returns a map that contains keys and values for path elements in commands.
@@ -174,13 +190,13 @@ impl XvcGenericStorage {
         let absolute_cache_path = temp_dir.temp_cache_path(cache_path).unwrap().to_string();
         let absolute_cache_dir = temp_dir.temp_cache_dir(cache_path).unwrap().to_string();
 
-        let url = self.url.clone().unwrap_or_else(|| "".to_string());
-        let storage_dir = self.storage_dir.clone().unwrap_or_else(|| "".to_string());
+        let url = self.url.clone().unwrap_or_default();
+        let storage_dir = self.storage_dir.clone().unwrap_or_default();
 
         let full_storage_path = format!("{url}{storage_dir}{xvc_guid}/{relative_cache_path}");
         let full_storage_dir = format!("{url}{storage_dir}{xvc_guid}/{relative_cache_dir}");
 
-        let hm = HashMap::from([
+        HashMap::from([
             ("{XVC_GUID}", xvc_guid),
             ("{RELATIVE_CACHE_PATH}", relative_cache_path),
             ("{ABSOLUTE_CACHE_PATH}", absolute_cache_path),
@@ -188,9 +204,7 @@ impl XvcGenericStorage {
             ("{ABSOLUTE_CACHE_DIR}", absolute_cache_dir),
             ("{FULL_STORAGE_PATH}", full_storage_path),
             ("{FULL_STORAGE_DIR}", full_storage_dir),
-        ]);
-
-        hm
+        ])
     }
 
     // TODO: This and run_for_paths can be merged by receiving a parameter function to
@@ -356,8 +370,13 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         let paths = cmd_output
             .lines()
-            .filter_map(|l| if re.is_match(l) { Some(l) } else { None })
-            .map(|l| XvcStoragePath::from(String::from(l)))
+            .filter_map(|l| {
+                if re.is_match(l) {
+                    Some(XvcStoragePath::from(String::from(l)))
+                } else {
+                    None
+                }
+            })
             .collect();
 
         Ok(XvcStorageListEvent {

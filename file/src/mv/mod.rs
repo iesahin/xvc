@@ -58,7 +58,7 @@ pub struct MoveCLI {
 /// Unlike [`get_copy_source_dest_store`], this function doesn't create any new entities. The move sources should
 /// already be recorded.
 /// `stored_xvc_path_store` and `stored_xvc_metadata_store` are results of `load_targets_from_store`, and
-/// `source_xvc_paths` and `source_xvc_metadata` are loaded from `targets_from_disk`. 
+/// `source_xvc_paths` and `source_xvc_metadata` are loaded from `targets_from_disk`.
 pub fn get_move_source_dest_store(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -74,8 +74,8 @@ pub fn get_move_source_dest_store(
     // force is not set.
     if destination.ends_with('/') {
         let dir_path = XvcPath::new(
-            &xvc_root,
-            &xvc_root,
+            xvc_root,
+            xvc_root,
             Path::new(destination.strip_suffix('/').unwrap()),
         )?;
 
@@ -111,7 +111,7 @@ pub fn get_move_source_dest_store(
             }
         }
 
-        if error_paths.len() > 0 {
+        if !error_paths.is_empty() {
             Err(anyhow!(
                 "Destination files already exist. Operation cancelled. Delete them first: {}",
                 error_paths.iter().map(|xp| xp.to_string()).join("\n")
@@ -141,7 +141,7 @@ pub fn get_move_source_dest_store(
         let source_xe = source_xvc_paths.keys().next().unwrap();
 
         let mut source_dest_store = HStore::<XvcPath>::with_capacity(1);
-        let dest_path = XvcPath::new(&xvc_root, current_dir, Path::new(destination))?;
+        let dest_path = XvcPath::new(xvc_root, current_dir, Path::new(destination))?;
 
         match stored_xvc_path_store.entity_by_value(&dest_path) {
             Some(_) => Err(anyhow!(
@@ -191,7 +191,7 @@ pub(crate) fn cmd_move(
                 // Create destination parent directory records if they don't exist
                 for parent in dest_path.parents() {
                     let parent_entities = xvc_path_store.entities_for(&parent);
-                    if parent_entities.is_none() || parent_entities.unwrap().len() == 0 {
+                    if parent_entities.is_none() || parent_entities.unwrap().is_empty() {
                         let parent_entity = xvc_root.new_entity();
                         xvc_path_store.insert(parent_entity, parent.clone());
                         xvc_metadata_store.insert(
@@ -217,7 +217,7 @@ pub(crate) fn cmd_move(
             let source_recheck_method = recheck_method_store
                 .get(source_xe)
                 .copied()
-                .unwrap_or_else(|| RecheckMethod::from_conf(&xvc_root.config()));
+                .unwrap_or_else(|| RecheckMethod::from_conf(xvc_root.config()));
 
             let dest_recheck_method = if let Some(given_recheck_method) = opts.recheck_method {
                 given_recheck_method

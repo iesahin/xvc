@@ -1,3 +1,4 @@
+//! Google Cloud Storage remote
 use std::str::FromStr;
 use std::{env, fs};
 
@@ -67,23 +68,29 @@ pub fn cmd_new_gcs(
     Ok(())
 }
 
+/// A Google Cloud Storage remote.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcGcsStorage {
+    /// The unique identifier of the remote.
     pub guid: XvcStorageGuid,
+    /// The name of the remote.
     pub name: String,
+    /// The region of the remote.
     pub region: String,
+    /// The bucket name of the remote.
     pub bucket_name: String,
+    /// The remote prefix of the remote.
     pub remote_prefix: String,
 }
 
 impl XvcGcsStorage {
     fn remote_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
-            Some(&env::var(&format!(
+            Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
                 self.name
             ))?),
-            Some(&env::var(&format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
+            Some(&env::var(format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
             None,
             None,
             None,
@@ -215,12 +222,10 @@ impl XvcGcsStorage {
     }
 
     fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
-        let remote_path = XvcStoragePath::from(format!(
+        XvcStoragePath::from(format!(
             "{}/{}/{}",
             self.remote_prefix, repo_guid, cache_path
-        ));
-
-        remote_path
+        ))
     }
 
     async fn a_send(

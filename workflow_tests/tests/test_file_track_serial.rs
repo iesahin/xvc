@@ -5,7 +5,6 @@ use std::thread::sleep;
 use std::time::Duration;
 use std::{fs, path::PathBuf};
 
-use jwalk;
 use regex::Regex;
 use subprocess::Exec;
 use xvc::error::{Error, Result};
@@ -21,7 +20,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(&level_1, 10, 10, 1000, Some(47))?;
+    create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
 
     Ok(temp_dir)
 }
@@ -160,26 +159,26 @@ fn test_file_track_serial() -> Result<()> {
 
     let data_line = line_captures(&list_after_delete, file_0);
 
-    assert!(data_line[0].len() > 0, "{}", data_line[0]);
+    assert!(!data_line[0].is_empty(), "{}", data_line[0]);
 
     // todo!("Test different types of cache (symlink, hardlink, copy, reflink");
 
     //
 
     let git_status_res = sh("git status -s".to_string());
-    let gs_xvc = line_captures(&git_status_res, r#".* \.xvc/.*"#);
+    let gs_xvc = line_captures(&git_status_res, r".* \.xvc/.*");
     assert!(
         gs_xvc.is_empty(),
         "{gs_xvc:?} shouldn't contain any `.xvc/` lines."
     );
 
-    let gs_gitignore = line_captures(&git_status_res, r#".* \.gitignore"#);
+    let gs_gitignore = line_captures(&git_status_res, r".* \.gitignore");
     assert!(
         gs_gitignore.is_empty(),
         "{gs_gitignore:?} shouldn't contain any `.gitignore` lines."
     );
 
-    let gs_xvcignore = line_captures(&git_status_res, r#".* \.xvcignore"#);
+    let gs_xvcignore = line_captures(&git_status_res, r".* \.xvcignore");
     assert!(
         gs_xvcignore.is_empty(),
         "{gs_xvcignore:?} shouldn't contain any `.xvcignore` lines."

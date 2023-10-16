@@ -42,8 +42,8 @@ where
     pub fn load_rmnstore(store_root: &Path) -> Result<RMNStore<T, U>> {
         let left = XvcStore::<T>::load_store(store_root)?;
         let right = XvcStore::<U>::load_store(store_root)?;
-        let left_to_right = XvcStore::<ChildEntity<T, U>>::load_store(&store_root)?;
-        let right_to_left = XvcStore::<ChildEntity<U, T>>::load_store(&store_root)?;
+        let left_to_right = XvcStore::<ChildEntity<T, U>>::load_store(store_root)?;
+        let right_to_left = XvcStore::<ChildEntity<U, T>>::load_store(store_root)?;
         Ok(RMNStore {
             left,
             right,

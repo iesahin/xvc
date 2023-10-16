@@ -1,3 +1,4 @@
+//! A regex dependency is a dependency that is based on a regex search in a text file.
 use std::io::{self, BufRead};
 
 use itertools::Itertools;
@@ -9,7 +10,7 @@ use xvc_ecs::persist;
 
 use crate::XvcDependency;
 
-/// When a step depends to a regex searched in a text file
+/// When a step depends to a regex search in a text file
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RegexDep {
     /// Path of the file in the workspace
@@ -17,19 +18,22 @@ pub struct RegexDep {
     /// The regex to search in the file
     // We use this because Regex is not Serializable
     pub regex: String,
+    /// The digest of the lines that match the regex
     pub lines_digest: Option<ContentDigest>,
+    /// The metadata of the file
     pub xvc_metadata: Option<XvcMetadata>,
 }
 
 persist!(RegexDep, "regex-digest-dependency");
 
-impl Into<XvcDependency> for RegexDep {
-    fn into(self) -> XvcDependency {
-        XvcDependency::Regex(self)
+impl From<RegexDep> for XvcDependency {
+    fn from(val: RegexDep) -> Self {
+        XvcDependency::Regex(val)
     }
 }
 
 impl RegexDep {
+    /// Create a new RegexDep with empty metadata and digest
     pub fn new(path: XvcPath, regex: String) -> Self {
         Self {
             path,
@@ -38,7 +42,7 @@ impl RegexDep {
             xvc_metadata: None,
         }
     }
-
+    /// Update the metadata of the file
     pub fn update_metadata(self, xvc_metadata: Option<XvcMetadata>) -> Self {
         Self {
             xvc_metadata,
@@ -46,6 +50,7 @@ impl RegexDep {
         }
     }
 
+    /// Update the digest of the file by reading the file and collecting all lines that match the regex
     pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Self {
         let path = self.path.to_absolute_path(xvc_root);
         let regex = self.regex();
@@ -72,6 +77,7 @@ impl RegexDep {
         }
     }
 
+    /// Returns the inner regex
     pub fn regex(&self) -> Regex {
         Regex::new(&self.regex).unwrap()
     }

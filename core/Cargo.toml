@@ -18,12 +18,12 @@ crate-type = ["rlib"]
 
 [dependencies]
 xvc-config = { version = "0.6.0", path = "../config" }
-xvc-logging = {version = "0.6.0",  path = "../logging" }
-xvc-ecs = {version = "0.6.0",  path = "../ecs" }
-xvc-walker = {version = "0.6.0",  path = "../walker" }
+xvc-logging = { version = "0.6.0", path = "../logging" }
+xvc-ecs = { version = "0.6.0", path = "../ecs" }
+xvc-walker = { version = "0.6.0", path = "../walker" }
 
 ## Cli and config
-clap = {version = "^4.4", features=["derive"]}
+clap = { version = "^4.4", features = ["derive"] }
 directories-next = "2.0"
 
 ## Hashing
@@ -45,9 +45,6 @@ toml = "^0.8"
 ## Network
 reqwest = { version = "^0.11", features = ["blocking", "json", "gzip"] }
 
-## Caching
-sled = "^0.34"
-
 ## Parallelization
 rayon = "^1.7"
 crossbeam-channel = "^0.5"
@@ -65,7 +62,7 @@ thiserror = "^1.0"
 anyhow = "^1.0"
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
-fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+fern = { version = "^0.6", features = ["colored"] }
 
 
 ## macros
@@ -78,7 +75,7 @@ strum_macros = "0.25.2"
 lazy_static = "^1.4"
 uuid = { version = "^1.4", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
-cached = "0.45.1"
+cached = "^0.46"
 derive_more = "^0.99"
 itertools = "^0.11"
 

@@ -1,15 +1,12 @@
 use std::{
-    env,
-    fs,
+    env, fs,
     path::{Path, PathBuf},
 };
 
 use anyhow::anyhow;
-use jwalk;
-use regex::Regex;
-use trycmd;
 
-use which;
+use regex::Regex;
+
 use xvc::error::Result;
 use xvc_logging::watch;
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
@@ -134,7 +131,18 @@ fn z_doc_tests() -> Result<()> {
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
     assert!(path_to_xvc_test_helper.exists());
 
+    // let xvc_bin = escargot::CargoBuild::new()
+    //     .bin("xvc")
+    //     .current_release()
+    //     .current_target()
+    //     .manifest_path("../lib/Cargo.toml")
+    //     .run()
+    //     .map_err(|e| anyhow!("Failed to build xvc: {e:?}"))?;
+    //
+    // let path_to_xvc_bin = xvc_bin.path().to_path_buf();
+
     trycmd::TestCases::new()
+        // .register_bin("xvc", &path_to_xvc_bin)
         .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
         .register_bin("git", which::which("git")?)
         .register_bin("echo", which::which("echo"))

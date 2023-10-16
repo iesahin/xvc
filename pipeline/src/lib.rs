@@ -59,6 +59,7 @@ pub struct PipelineCLI {
 /// Pipeline management subcommands
 #[derive(Debug, Clone, Parser)]
 #[command()]
+#[allow(clippy::large_enum_variant)]
 pub enum PipelineSubCommand {
     /// Create a new pipeline
     #[command()]
@@ -524,7 +525,7 @@ pub fn handle_step_cli(
             regexes,
             line_items,
             lines,
-        } => XvcDependencyList::new(output_snd, xvc_root, &pipeline_name, &step_name)?
+        } => XvcDependencyList::new(output_snd, xvc_root, pipeline_name, &step_name)?
             .files(files)?
             .glob_items(glob_items)?
             .globs(globs)?

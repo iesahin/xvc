@@ -150,8 +150,7 @@ where
                 self.entity_index.insert(value.clone(), vec![entity]);
             }
         }
-        let ret = self.map.insert(entity, value);
-        ret
+        self.map.insert(entity, value)
     }
 
     /// Updates the data associated with an entity.
@@ -185,14 +184,14 @@ where
         for event in previous.iter() {
             match event {
                 Event::Add { entity, value } => map.insert(*entity, value.clone()),
-                Event::Remove { entity } => map.remove(&entity),
+                Event::Remove { entity } => map.remove(entity),
             };
         }
 
         for event in current.iter() {
             match event {
                 Event::Add { entity, value } => map.insert(*entity, value.clone()),
-                Event::Remove { entity } => map.remove(&entity),
+                Event::Remove { entity } => map.remove(entity),
             };
         }
 
@@ -203,7 +202,7 @@ where
         let mut entity_index = BTreeMap::<T, Vec<XvcEntity>>::new();
 
         map.iter()
-            .for_each(|(entity, value)| match entity_index.get_mut(&value) {
+            .for_each(|(entity, value)| match entity_index.get_mut(value) {
                 Some(v) => {
                     v.push(*entity);
                 }
@@ -244,6 +243,11 @@ where
     /// Return the number of elements
     pub fn len(&self) -> usize {
         self.map.len()
+    }
+
+    /// Returns true if the map is empty
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
     }
 
     /// A subset of this maps identified by `XvcEntity` elements of the iterator.
@@ -425,18 +429,18 @@ mod test {
         store.insert((1, 123).into(), "1".into());
         store.insert((2, 123).into(), "2".into());
 
-        store.to_dir(&dir)?;
+        store.to_dir(dir)?;
 
-        let reincarnation = XvcStore::<String>::from_dir(&dir)?;
+        let reincarnation = XvcStore::<String>::from_dir(dir)?;
 
         assert!(store.len() == reincarnation.len());
         assert!(store.current_events().len() == reincarnation.previous_events().len());
 
         assert!(reincarnation.current_events().is_empty());
 
-        let n_files_before = jwalk::WalkDir::new(&dir).into_iter().count();
-        reincarnation.to_dir(&dir)?;
-        let n_files_after = jwalk::WalkDir::new(&dir).into_iter().count();
+        let n_files_before = jwalk::WalkDir::new(dir).into_iter().count();
+        reincarnation.to_dir(dir)?;
+        let n_files_after = jwalk::WalkDir::new(dir).into_iter().count();
 
         assert!(
             n_files_before == n_files_after,

@@ -235,17 +235,29 @@ pub fn carry_in(
 
     let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
 
+    watch!(ignore_writer);
+    watch!(ignore_thread);
+
+    // TODO: Remove this when we set unix permissions in platform dependent fashion
+    #[allow(clippy::permissions_set_readonly_false)]
     let copy_path_to_cache_and_recheck = |xe, xp| {
         let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
+        watch!(cache_path);
         let abs_cache_path = cache_path.to_absolute_path(xvc_root);
+        watch!(abs_cache_path);
         if abs_cache_path.exists() {
             if force {
                 let cache_dir = uwo!(abs_cache_path.parent(), output_snd);
+                watch!(cache_dir);
                 let mut dir_perm = uwr!(cache_dir.metadata(), output_snd).permissions();
+                watch!(dir_perm);
                 dir_perm.set_readonly(false);
-                uwr!(fs::set_permissions(&cache_dir, dir_perm), output_snd);
+                watch!(dir_perm);
+                uwr!(fs::set_permissions(cache_dir, dir_perm), output_snd);
+                watch!(cache_dir);
                 let mut file_perm =
                     uwr!(abs_cache_path.as_path().metadata(), output_snd).permissions();
+                watch!(file_perm);
                 watch!(abs_cache_path);
                 watch!(file_perm);
                 file_perm.set_readonly(false);
@@ -288,6 +300,9 @@ pub fn carry_in(
             ),
             output_snd
         );
+        watch!(&cache_path);
+        watch!(recheck_method);
+        watch!(&xp);
         info!(output_snd, "[RECHECK] {cache_path} -> {xp}");
     };
 

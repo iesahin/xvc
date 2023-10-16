@@ -92,9 +92,7 @@ pub fn cmd_recheck(
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
-    let recheck_method = opts
-        .recheck_method
-        .unwrap_or_else(|| RecheckMethod::default());
+    let recheck_method = opts.recheck_method.unwrap_or_else(RecheckMethod::default);
     watch!(recheck_method);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -151,9 +149,9 @@ pub fn cmd_recheck(
                 "{} has changed on disk. Either carry in, force, or delete the target to recheck. ",
                 xp
             );
-            return false;
+            false
         } else {
-            return true;
+            true
         }
     });
 
@@ -286,7 +284,7 @@ fn recheck(
 
     let inner = |xe, xvc_path: &XvcPath| -> Result<()> {
         let content_digest = content_digest_store[&xe];
-        let cache_path = XvcCachePath::new(&xvc_path, &content_digest)?;
+        let cache_path = XvcCachePath::new(xvc_path, &content_digest)?;
         watch!(cache_path);
         if cache_path.to_absolute_path(xvc_root).exists() {
             let target_path = xvc_path.to_absolute_path(xvc_root);
@@ -298,7 +296,7 @@ fn recheck(
             }
             let recheck_method = recheck_method_store[&xe];
             recheck_from_cache(
-                &output_snd,
+                output_snd,
                 xvc_root,
                 xvc_path,
                 &cache_path,
