@@ -77,7 +77,7 @@ fn link_to_docs() -> Result<()> {
             .filter_map(|f| {
                 watch!(f);
                 if let Ok(f) = f {
-                    if f.metadata().unwrap().is_file()
+                    if (f.metadata().unwrap().is_file() || f.metadata().unwrap().is_symlink())
                         && name_filter.is_match(f.file_name().to_string_lossy().as_ref())
                     {
                         Some(f.path())
