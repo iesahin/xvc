@@ -99,6 +99,7 @@ fn link_to_docs() -> Result<()> {
             if symlink_path.is_symlink() {
                 fs::remove_file(&symlink_path)?;
             }
+            println!("{symlink_path:?}");
             make_symlink(Path::new("../..").join(p), &symlink_path)?;
 
             // If we have a template input directory in `templates/`, we copy it.
@@ -126,6 +127,8 @@ fn link_to_docs() -> Result<()> {
             if in_dir_symlink.is_symlink() {
                 fs::remove_file(&in_dir_symlink)?;
             }
+            println!("{in_dir_symlink:?}");
+            println!("{in_dir:?}");
             make_symlink(&in_dir, &in_dir_symlink)?;
 
             // Create output dir if only template dir exists
