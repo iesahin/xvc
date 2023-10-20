@@ -103,7 +103,7 @@ For this example, we'll use [a Python script](https://github.com/iesahin/xvc/blo
 The script uses the Faker library and this library must be available where you run the pipeline. To make it repeatable, we start the pipeline by adding a step that installs dependencies.
 
 ```console
-$ xvc pipeline step new --step-name install-deps --command 'python -m pip --user install -r requirements.txt'
+$ xvc pipeline step new --step-name install-deps --command 'python3 -m pip --user install -r requirements.txt'
 ```
 
 We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run. 
@@ -126,7 +126,7 @@ After you define the pipeline, you can run it by:
 ```console
 $ xvc pipeline run
 [OUT] [install-deps]  
-[ERROR] Step install-deps finished UNSUCCESSFULLY with command python -m pip install -r requirements.txt
+[ERROR] Step install-deps finished UNSUCCESSFULLY with command python -m pip --user install -r requirements.txt
 
 ```
 
