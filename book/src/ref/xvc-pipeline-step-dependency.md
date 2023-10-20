@@ -70,6 +70,7 @@ Options:
 
 ```
 
+{{#include xvc-pipeline-step-dependency-generic.md}}
 {{#include xvc-pipeline-step-dependency-file.md}}
 {{#include xvc-pipeline-step-dependency-glob.md}}
 {{#include xvc-pipeline-step-dependency-regex.md}}

@@ -42,7 +42,7 @@ $ cargo install xvc
 
 Xvc tracks your files and directories on top of Git. To start run the following command in the repository.
 
-```shell
+```console
 $ git init # if you're not already in a Git repository
 $ xvc init
 ```
@@ -59,14 +59,14 @@ The command calculates data content hashes (with BLAKE-3, by default) and record
 It commits these changes to Git.
 It also copies these files to content-addressed directories under `.xvc/b3` and creates read-only symbolic links to them.
 
-You can specify different [recheck methods] for files and directories, depending on your use case.
+You can specify different [recheck (checkout) methods](https://docs.xvc.dev/ref/xvc-file-recheck/) for files and directories, depending on your use case.
 If you need to track model files that change frequently, you can set recheck method `--as copy` (the default).
 
 ```shell
 $ xvc file track my-models/ --as copy
 ```
 
-When you want to share them, configure a cloud storage to share the files you added.
+Configure a cloud storage to share the files you added.
 
 ```shell
 $ xvc storage new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
@@ -81,69 +81,91 @@ $ xvc file send --to my-remote
 When you (or someone else) want to access these files later, you can clone the Git repository and get the files from the
 storage.
 
-```console
+```shell
 $ git clone https://example.com/my-machine-learning-project
+Cloning into 'my-machine-learning-project'...
+
 $ cd my-machine-learning-project
 $ xvc file bring my-data/ --from my-remote
+
 ```
 
 You don't have to reconfigure the storage after cloning, but you need to have valid credentials as environment variables
 to access the storage.
-Xvc doesn't store any credentials.
+Xvc never stores any credentials.
 
 If you have commands that depend on data or code elements, you can configure a pipeline.
 
-Create a step for each command.
+For this example, we'll use [a Python script](https://github.com/iesahin/xvc/blob/main/workflow_tests/templates/README.in/generate_data.py) to generate a data set with random names with random IQ scores.
 
-```shell
-$ xvc pipeline step new --step-name preprocess --command 'python3 preprocess.py'
-$ xvc pipeline step new --step-name train --command 'python3 train.py'
-$ xvc pipeline step new --step-name test --command 'python3 test.py'
-```
-
-Then, configure dependencies between these steps.
+The script uses the Faker library and this library must be available where you run the pipeline. To make it repeatable, we start the pipeline by adding a step that installs dependencies.
 
 ```console
-$ xvc pipeline step dependency --step-name preprocess --glob 'my-data/*.jpg' \
-                                                      --file preprocess.py \
-                                                      --regex 'names.txt:/^Name:' \
-                                                      --lines a-long-file.csv::-1000
-$ xvc pipeline step dependency --step-name train  --step preprocess
-$ xvc pipeline step dependency --step-name test   --file test-data.npz \
-                                                  --file my-models/model.h5
-$ xvc pipeline step output --step-name preprocess --output-file test-data.npz
-$ xvc pipeline step output --step-name train --output-file my-models/model.h5
+$ xvc pipeline step new --step-name install-deps --command 'python -m pip install -r requirements.txt'
+```
+
+We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run. 
+
+```console
+$ xvc pipeline step dependency --step-name install-deps --file requirements.txt
+```
+
+Xvc allows to create dependencies between pipeline steps. Dependent steps wait for dependencies to finish successfully. 
+
+Now we create a step to run the script and make `install-deps` step a dependency of it. 
+
+```console
+$ xvc pipeline step new --step-name generate-data --command 'python generate_data.py'
+$ xvc pipeline step dependency --step-name generate-data --step install-deps
+```
+
+After you define the pipeline, you can run it by:
+
+```console
+$ xvc pipeline run
+```
+
+Xvc allows many kinds of dependnecies, like [files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependencies), 
+[groups of files and directories defined by globs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-dependencies), 
+[regular expression searches in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-dependencies), 
+[line ranges in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-dependencies), 
+[hyper-parameters defined in YAML, JSON or TOML files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#hyper-parameter-dependencies)
+[HTTP URLs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#url-dependencies),
+[shell command outputs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic-command-dependencies), 
+and [other steps](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dependencies). 
+
+Suppose you're only interested in the IQ scores of Greg's and how they differ from the rest in the dataset we created above. Let's create a regex search dependency to the data file that will show all Greg's IQ scores. 
+
+```console
+$ xvc pipeline step new --step-name greg-iq --command 'echo "${XVC_REGEX_ALL_ITEMS}" > greg-iq-scores.csv '
+$ xvc pipeline step dependency --step-name greg-iq --regex-items 'random_names_iq_scores.csv:/.*Greg.*'
 ```
 
 
-The above commands define three steps in `default` pipeline. You can have multiple pipelines if you need.
-
-The first is `preprocess` that depends on 'jpg' files in `my-data/` directory, lines that start with `Name:` in `names.txt`; and the first 1000 lines in `a-long-file.csv`. It also depends on the script itself, so when you make changes to the script itself, it invalidates the step.
-The second step is called `train`. It depends on `preprocess` step directly, anything that make `preprocess` to rerun, makes `train` to run as well.
-The `test` step depends on `train` and `preprocess` via their outputs. It's run when these outputs (`test-data.npz` and `model.h5`) are changed.
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
 ```console
 $ xvc pipeline dag
-digraph {
-    0 [ label = "step: train (by_dependencies, python3 train.py)" ]
-    1 [ label = "step: preprocess (by_dependencies, python3 preprocess.py)" ]
-    2 [ label = "step: test (by_dependencies, python3 test.py)" ]
-    3 [ label = "file: my-models/model.h5" ]
-    4 [ label = "file: test-data.npz" ]
-    0 -> 1 [ label = "" ]
-    2 -> 3 [ label = "" ]
-    2 -> 4 [ label = "" ]
-}
+[ERROR] [E2004] Requires xvc repository.
+
 ```
 
 You can also export and import the pipeline to JSON to edit in your editor.
 
 ```console
 $ xvc pipeline export > my-pipeline.json
+? 2
+error: unexpected argument '>' found
+
+Usage: xvc pipeline export [OPTIONS]
+
+For more information, try '--help'.
+
 $ nvim my-pipeline.json
 $ xvc pipeline import --file my-pipeline.json --overwrite
+[ERROR] [E2004] Requires xvc repository.
+
 ```
 
 You can run the pipeline with.
