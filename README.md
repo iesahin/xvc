@@ -124,7 +124,7 @@ $ xvc pipeline step dependency --step-name generate-data --step install-deps
 After you define the pipeline, you can run it by:
 
 ```console
-$ xvc pipeline run
+$ xvc --debug pipeline run
 [OUT] [install-deps]  
 [ERROR] Step install-deps finished UNSUCCESSFULLY with command python3 -m pip --user install -r requirements.txt
 
