@@ -44,6 +44,8 @@ Xvc tracks your files and directories on top of Git. To start run the following 
 
 ```console
 $ git init # if you're not already in a Git repository
+Initialized empty Git repository in [CWD]/.git/
+
 $ xvc init
 ```
 
@@ -101,7 +103,7 @@ For this example, we'll use [a Python script](https://github.com/iesahin/xvc/blo
 The script uses the Faker library and this library must be available where you run the pipeline. To make it repeatable, we start the pipeline by adding a step that installs dependencies.
 
 ```console
-$ xvc pipeline step new --step-name install-deps --command 'python -m pip install -r requirements.txt'
+$ xvc pipeline step new --step-name install-deps --command 'python -m pip --user install -r requirements.txt'
 ```
 
 We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run. 
@@ -123,6 +125,9 @@ After you define the pipeline, you can run it by:
 
 ```console
 $ xvc pipeline run
+[OUT] [install-deps]  
+[ERROR] Step install-deps finished UNSUCCESSFULLY with command python -m pip install -r requirements.txt
+
 ```
 
 Xvc allows many kinds of dependnecies, like [files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependencies), 
@@ -147,7 +152,7 @@ You can get the pipeline in Graphviz DOT format to convert to an image.
 
 ```console
 $ xvc pipeline dag
-[ERROR] [E2004] Requires xvc repository.
+digraph pipeline{n0[shape=box;label="install-deps";];n1[shape=note;label="requirements.txt";];n0->n1;n2[shape=box;label="generate-data";];n0[shape=box;label="install-deps";];n2->n0;n3[shape=box;label="greg-iq";];n4[shape=signature;label="random_names_iq_scores.csv:/.*Greg.*";];n3->n4;}
 
 ```
 
@@ -164,7 +169,7 @@ For more information, try '--help'.
 
 $ nvim my-pipeline.json
 $ xvc pipeline import --file my-pipeline.json --overwrite
-[ERROR] [E2004] Requires xvc repository.
+[ERROR] Pipeline Error: I/O Error: No such file or directory (os error 2)
 
 ```
 
