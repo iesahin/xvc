@@ -35,6 +35,7 @@ use xvc_ecs::{self, persist, XvcEntity};
 use crate::pipeline::api::dag::XvcPipelineDagFormat;
 
 use crate::error::{Error, Result};
+pub use crate::pipeline::command::CommandProcess;
 pub use crate::pipeline::command::XvcStepCommand;
 pub use crate::pipeline::deps::{param::XvcParamFormat, XvcDependency};
 pub use crate::pipeline::outs::XvcMetricsFormat;
@@ -547,3 +548,4 @@ pub fn handle_step_cli(
         StepSubCommand::Show { step_name } => cmd_step_show(xvc_root, pipeline_name, step_name),
     }
 }
+

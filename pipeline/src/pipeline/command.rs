@@ -110,7 +110,7 @@ impl CommandProcess {
                 let mut err = String::new();
                 stderr.read_to_string(&mut err)?;
                 self.stderr_sender
-                    .send(format!("[err] [{}] {} ", self.step.name, err))
+                    .send(format!("[ERR] [{}] {} ", self.step.name, err))
                     .ok();
             }
         }
