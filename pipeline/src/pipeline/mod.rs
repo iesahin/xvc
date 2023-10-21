@@ -1497,13 +1497,17 @@ fn s_running_f_wait_process<'a>(
             // We currently pass all the output to the main thread
             // In the future, these can be passed to different channels.
             let output_snd = params.output_snd;
-            cp.stderr_receiver
-                .try_iter()
-                .for_each(|out| warn!(output_snd, "{}", out));
+            cp.stderr_receiver.try_iter().for_each(|out| {
+                if !out.is_empty() {
+                    warn!(output_snd, "{}", out)
+                }
+            });
 
-            cp.stdout_receiver
-                .try_iter()
-                .for_each(|out| output!(output_snd, "{}", out));
+            cp.stdout_receiver.try_iter().for_each(|out| {
+                if !out.is_empty() {
+                    output!(output_snd, "{}", out);
+                }
+            });
 
             Ok(())
         };
