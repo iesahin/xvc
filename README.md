@@ -103,7 +103,7 @@ For this example, we'll use [a Python script](https://github.com/iesahin/xvc/blo
 The script uses the Faker library and this library must be available where you run the pipeline. To make it repeatable, we start the pipeline by adding a step that installs dependencies.
 
 ```console
-$ xvc pipeline step new --step-name install-deps --command 'python3 -m pip install --user faker'
+$ xvc pipeline step new --step-name install-deps --command 'python3 -m pip install --quiet --user faker'
 ```
 
 We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run. 
@@ -125,14 +125,10 @@ After you define the pipeline, you can run it by:
 
 ```console
 $ xvc pipeline run
-[OUT] [install-deps] Requirement already satisfied: faker in /Users/iex/Library/Python/3.11/lib/python/site-packages (from -r requirements.txt (line 1)) (19.11.0)
-Requirement already satisfied: python-dateutil>=2.4 in /opt/homebrew/lib/python3.11/site-packages (from faker->-r requirements.txt (line 1)) (2.8.2)
-Requirement already satisfied: six>=1.5 in /opt/homebrew/lib/python3.11/site-packages (from python-dateutil>=2.4->faker->-r requirements.txt (line 1)) (1.16.0)
+[DONE] install-deps (python3 -m pip install --quiet --user faker)
+[OUT] [generate-data] CSV file generated successfully.
  
-[OUT] [install-deps]  
-[OUT] [generate-data]  
-[ERROR] Step generate-data finished UNSUCCESSFULLY with command python generate_data.py
-[OUT] [generate-data]  
+[DONE] generate-data (python3 generate_data.py)
 
 ```
 
