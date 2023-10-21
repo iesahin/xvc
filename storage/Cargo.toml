@@ -29,10 +29,10 @@ directories-next = "2.0"
 
 ## Hashing
 seahash = "^4.1"
-byteorder = "^1.4"
-blake3 = "^1.4"
+byteorder = "^1.5"
+blake3 = "^1.5"
 blake2 = "0.10.6"
-sha2 = "0.10.7"
+sha2 = "0.10.8"
 sha3 = "0.10.8"
 
 ## Serialization
@@ -44,7 +44,7 @@ rmp-serde = "1.1.2"
 toml = "^0.8"
 
 ## Parallelization
-rayon = "^1.7"
+rayon = "^1.8"
 crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
@@ -69,11 +69,11 @@ paste = "1.0"
 
 ## Misc
 subprocess = "^0.2"
-regex = "^1.9"
+regex = "^1.10"
 strum = "0.25.0"
-strum_macros = "0.25.2"
+strum_macros = "0.25.3"
 lazy_static = "^1.4"
-uuid = { version = "^1.4", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "^1.5", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.4", features = ["serde"] }
 itertools = "^0.11"
