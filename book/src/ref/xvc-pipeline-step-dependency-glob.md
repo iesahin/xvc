@@ -48,6 +48,7 @@ The step is invalidated when a file described by the glob is added, removed or c
 $ xvc pipeline run
 [OUT] [files-changed] Files have changed.
  
+[DONE] files-changed (echo 'Files have changed.')
 
 $ xvc pipeline run
 
@@ -59,5 +60,6 @@ $ rm dir-0001/file-0001.bin
 $ xvc pipeline run
 [OUT] [files-changed] Files have changed.
  
+[DONE] files-changed (echo 'Files have changed.')
 
 ```
