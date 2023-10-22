@@ -160,26 +160,38 @@ When you run the pipeline again, a file named `dr-iq-scores.csv` will be created
 
 ```console
 $ xvc pipeline run
-[DONE] greg-iq (echo "${XVC_REGEX_ALL_ITEMS}" > greg-iq-scores.csv )
+[DONE] dr-iq (echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv )
 
 $ cat dr-iq-scores.csv
-
+Dr. Brian Shaffer,122
+Dr. Brittany Chang,82
+Dr. Mallory Payne MD,70
+Dr. Sherry Leonard,93
+Dr. Susan Swanson,81
 
 ````
 
 We are using this feature to get lines starting with `Dr.` from the file and write them to another file. When the file changes, e.g. another record matching the dependency regex added to the `random_names_iq_scores.csv` file, it will also be added to `dr-iq-scores.csv` file.
 
 ```console
-$ echo 'Dr. Albert Einstein,144' >> random_names_iq_scores.csv
+$ zsh -cl 'echo "Dr. Albert Einstein,144" >> random_names_iq_scores.csv'
+Dr. Albert Einstein,144 >> random_names_iq_scores.csv
+
 $ xvc pipeline run
 $ cat dr-iq-scores.csv
+Dr. Brian Shaffer,122
+Dr. Brittany Chang,82
+Dr. Mallory Payne MD,70
+Dr. Sherry Leonard,93
+Dr. Susan Swanson,81
+
 ```
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
 ```console
 $ xvc pipeline dag
-digraph pipeline{n0[shape=box;label="install-deps";];n1[shape=note;label="requirements.txt";];n0->n1;n2[shape=box;label="generate-data";];n0[shape=box;label="install-deps";];n2->n0;n3[shape=box;label="greg-iq";];n4[shape=signature;label="random_names_iq_scores.csv:/.*Greg.*";];n3->n4;}
+digraph pipeline{n0[shape=box;label="install-deps";];n1[shape=note;label="requirements.txt";];n0->n1;n2[shape=box;label="generate-data";];n0[shape=box;label="install-deps";];n2->n0;n3[shape=box;label="dr-iq";];n4[shape=signature;label="random_names_iq_scores.csv:/^Dr//..*";];n3->n4;}
 
 ```
 
