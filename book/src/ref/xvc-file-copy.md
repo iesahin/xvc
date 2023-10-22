@@ -97,7 +97,7 @@ Xvc can change the destination file's recheck method.
 ```console
 $ xvc file copy data.txt data3.txt --as symlink
 
-$ ls -l
+$ lsd -l
 total[..]
 -rw-rw-rw-  1 [..] data.txt
 -rw-rw-rw-  1 [..] data2.txt
@@ -137,7 +137,7 @@ $ rm -f data.txt
 
 $ xvc file copy data.txt data6.txt
 
-$ ls -l data6.txt
+$ lsd -l data6.txt
 -rw-rw-rw-  [..] data6.txt
 
 ```
@@ -177,7 +177,7 @@ Later, you can recheck them to work in the workspace.
 ```console
 $ xvc file recheck data7.txt
 
-$ ls -l data7.txt
--rw-rw-rw-  [..] data7.txt
+$ lsd -l data7.txt
+-rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data7.txt
 
 ```
