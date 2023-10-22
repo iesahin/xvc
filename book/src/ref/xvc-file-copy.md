@@ -59,9 +59,9 @@ $ xvc init
 
 $ xvc file track data.txt
 
-$ ls -l
+$ lsd -l
 total[..]
--rw-rw-rw-  [..] data.txt
+-rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
 
 ```
 
@@ -98,10 +98,9 @@ Xvc can change the destination file's recheck method.
 $ xvc file copy data.txt data3.txt --as symlink
 
 $ lsd -l
-total[..]
--rw-rw-rw-  1 [..] data.txt
--rw-rw-rw-  1 [..] data2.txt
-lrwxr-xr-x  1 [..] data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+.rw-rw-rw- [..] data.txt
+.rw-rw-rw- [..] data2.txt
+lrwxr-xr-x [..] data3.txt ⇒ [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 ```
 
@@ -138,7 +137,7 @@ $ rm -f data.txt
 $ xvc file copy data.txt data6.txt
 
 $ lsd -l data6.txt
--rw-rw-rw-  [..] data6.txt
+.rw-rw-rw- iex staff 19 B Wed Oct 18 10:45:25 2023 data6.txt
 
 ```
 
@@ -178,6 +177,6 @@ Later, you can recheck them to work in the workspace.
 $ xvc file recheck data7.txt
 
 $ lsd -l data7.txt
--rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data7.txt
+.rw-rw-rw- iex staff 19 B Wed Oct 18 10:45:25 2023 data7.txt
 
 ```
