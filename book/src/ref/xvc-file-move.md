@@ -60,8 +60,7 @@ $ xvc init
 $ xvc file track data.txt
 
 $ lsd -l
-total[..]
--rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
+.rw-rw-rw- [..] data.txt
 
 ```
 
@@ -139,6 +138,6 @@ Later, you can recheck them in the workspace.
 $ xvc file recheck data6.txt
 
 $ lsd -l data6.txt
--rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data6.txt
+.rw-rw-rw- [..] data6.txt
 
 ```

@@ -148,7 +148,12 @@ $ xvc pipeline step new --step-name greg-iq --command 'echo "${XVC_REGEX_ALL_ITE
 $ xvc pipeline step dependency --step-name greg-iq --regex-items 'random_names_iq_scores.csv:/.*Greg.*'
 ```
 
+When you run the pipeline again, a file named `greg-iq-scores.csv` will be created. 
 
+```console
+$ xvc pipeline run
+$ cat greg-iq-scores.csv
+````
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
