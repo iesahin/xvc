@@ -60,8 +60,7 @@ $ xvc init
 $ xvc file track data.txt
 
 $ lsd -l
-total[..]
--rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
+.rw-rw-rw- [..] data.txt
 
 ```
 

@@ -69,9 +69,8 @@ If you have [rechecked](/concepts/recheck.md) the file as symlink or reflink, it
 ```console
 $ xvc file track data.txt --as symlink
 
-$ ls -l
-total 0
-lrwxr-xr-x  [..] data.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+$ lsd -l
+lrwxr-xr-x [..] data.txt ⇒ [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 $ xvc file untrack data.txt
 [DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
@@ -82,7 +81,7 @@ $ xvc file untrack data.txt
 
 $ ls -l
 total 8
--rw-rw-rw-  [..] data.txt
+-rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
 
 ```
 
@@ -113,7 +112,7 @@ $ xvc file untrack data.txt --restore-versions data-versions/
 $ ls -l data-versions/
 total 16
 -r--r--r--  [..] data-b3-660-2cf-f6a4.txt
--r--r--r--  [..] data-b3-c85-f3e-8108.txt
+-r--r--r--@ 1 iex  staff  19 Oct 18 10:45 data-b3-c85-f3e-8108.txt
 
 ```
 

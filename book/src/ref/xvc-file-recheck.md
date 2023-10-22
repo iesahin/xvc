@@ -48,9 +48,9 @@ $ xvc init
 
 $ xvc file track data.txt
 
-$ ls -l
+$ lsd -l
 total[..]
--rw-rw-rw- [..] data.txt
+-rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
 
 ```
 
@@ -70,7 +70,7 @@ $ xvc file recheck data.txt
 
 $ ls -l
 total [..]
--rw-rw-rw- [..] data.txt
+-rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
 
 ```
 
@@ -104,7 +104,7 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
--r--r--r-- [..] data.txt
+-r--r--r--@ 2 iex  staff  19 Oct 18 10:45 data.txt
 
 ```
 
