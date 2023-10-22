@@ -8,7 +8,7 @@ Faker.seed(20231018)
 
 # Function to generate random IQ scores
 def generate_random_iq_score():
-    return random.randint(70, 140)
+    return fake.random.randint(70, 140)
 
 # Number of records to generate
 num_records = 1000
