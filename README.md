@@ -141,23 +141,39 @@ Xvc allows many kinds of dependnecies, like [files](https://docs.xvc.dev/ref/xvc
 [shell command outputs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic-command-dependencies), 
 and [other steps](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dependencies). 
 
-Suppose you're only interested in the IQ scores of Greg's and how they differ from the rest in the dataset we created above. Let's create a regex search dependency to the data file that will show all Greg's IQ scores. 
+Suppose you're only interested in the IQ scores of those with _Dr._ in front of their names and how they differ from the rest in the dataset we created. Let's create a regex search dependency to the data file that will show all _doctors_ IQ scores.
 
 ```console
-$ xvc pipeline step new --step-name greg-iq --command 'echo "${XVC_REGEX_ALL_ITEMS}" > greg-iq-scores.csv '
-$ xvc pipeline step dependency --step-name greg-iq --regex-items 'random_names_iq_scores.csv:/.*Greg.*'
+$ xvc pipeline step new --step-name dr-iq --command 'echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv '
+$ xvc pipeline step dependency --step-name dr-iq --regex-items 'random_names_iq_scores.csv:/^Dr\..*'
 ```
 
-When you run the pipeline again, a file named `greg-iq-scores.csv` will be created. Note that, as `requirements.txt` didn't change `install-deps` step and its dependent `generate-data` steps didn't run.
+The first line specifies a command, when run writes `${XVC_REGEX_ADDED_ITEMS}` environment variable to `dr-iq-scores.csv` file. 
+The second line specifies the dependency which will also populate the `$[XVC_REGEX_ADDED_ITEMS]` environment variable in the command. 
+
+Some dependency types like [regex items], 
+[line items] and [glob items] inject environment variables in the commands they are a dependency.
+For example, if you have two million files specified with a glob, but want to run a script only on the added files after the last run, you can use these environment variables. 
+
+
+When you run the pipeline again, a file named `dr-iq-scores.csv` will be created. Note that, as `requirements.txt` didn't change `install-deps` step and its dependent `generate-data` steps didn't run.
 
 ```console
 $ xvc pipeline run
 [DONE] greg-iq (echo "${XVC_REGEX_ALL_ITEMS}" > greg-iq-scores.csv )
 
-$ cat greg-iq-scores.csv
+$ cat dr-iq-scores.csv
 
 
 ````
+
+We are using this feature to get lines starting with `Dr.` from the file and write them to another file. When the file changes, e.g. another record matching the dependency regex added to the `random_names_iq_scores.csv` file, it will also be added to `dr-iq-scores.csv` file.
+
+```console
+$ echo 'Dr. Albert Einstein,144' >> random_names_iq_scores.csv
+$ xvc pipeline run
+$ cat dr-iq-scores.csv
+```
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
