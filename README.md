@@ -125,7 +125,7 @@ After you define the pipeline, you can run it by:
 
 ```console
 $ xvc pipeline run
-[DONE] install-deps (python3 -m pip install --quiet --user faker)
+[DONE] install-deps (python3 -m pip install --quiet --user -r requirements.txt)
 [OUT] [generate-data] CSV file generated successfully.
  
 [DONE] generate-data (python3 generate_data.py)
@@ -155,9 +155,7 @@ $ xvc pipeline run
 [DONE] greg-iq (echo "${XVC_REGEX_ALL_ITEMS}" > greg-iq-scores.csv )
 
 $ cat greg-iq-scores.csv
-Greg Neal,85
-Gregory Ball,137
-Gregory Mclaughlin,102
+
 
 ````
 
