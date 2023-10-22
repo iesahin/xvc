@@ -175,16 +175,27 @@ We are using this feature to get lines starting with `Dr.` from the file and wri
 
 ```console
 $ zsh -cl 'echo "Dr. Albert Einstein,144" >> random_names_iq_scores.csv'
-Dr. Albert Einstein,144 >> random_names_iq_scores.csv
 
 $ xvc pipeline run
+[DONE] dr-iq (echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv )
+
 $ cat dr-iq-scores.csv
 Dr. Brian Shaffer,122
 Dr. Brittany Chang,82
 Dr. Mallory Payne MD,70
 Dr. Sherry Leonard,93
 Dr. Susan Swanson,81
+Dr. Albert Einstein,144
 
+```
+
+Now we want to add a another command that draws a fancy histogram from `dr-iq-scores.csv`. As this new step must wait `dr-iq-scores.csv` file to be ready, we'll define `dr-iq-scores.csv` as an _output_ of `dr-iq` step and set the file as a dependency to this new `visualize` step.
+
+```console
+$ xvc pipeline step output --step-name dr-iq --output-file dr-iq-scores.csv
+$ xvc pipeline step new --step-name visualize --command 'python3 visualize.py'
+$ xvc pipeline step dependency --step-name visualize --file dr-iq-scores.csv
+$ xvc pipeline run
 ```
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
