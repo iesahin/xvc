@@ -49,7 +49,7 @@ $ xvc init
 $ xvc file track data.txt
 
 $ lsd -l
-.rw-rw-rw- iex staff 19 B Wed Oct 18 10:45:25 2023 data.txt
+.rw-rw-rw- [..] data.txt
 
 ```
 

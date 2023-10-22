@@ -103,7 +103,7 @@ For this example, we'll use [a Python script](https://github.com/iesahin/xvc/blo
 The script uses the Faker library and this library must be available where you run the pipeline. To make it repeatable, we start the pipeline by adding a step that installs dependencies.
 
 ```console
-$ xvc pipeline step new --step-name install-deps --command 'python3 -m pip install --quiet --user faker'
+$ xvc pipeline step new --step-name install-deps --command 'python3 -m pip install --quiet --user -r requirements.txt'
 ```
 
 We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run. 
@@ -148,11 +148,17 @@ $ xvc pipeline step new --step-name greg-iq --command 'echo "${XVC_REGEX_ALL_ITE
 $ xvc pipeline step dependency --step-name greg-iq --regex-items 'random_names_iq_scores.csv:/.*Greg.*'
 ```
 
-When you run the pipeline again, a file named `greg-iq-scores.csv` will be created. 
+When you run the pipeline again, a file named `greg-iq-scores.csv` will be created. Note that, as `requirements.txt` didn't change `install-deps` step and its dependent `generate-data` steps didn't run.
 
 ```console
 $ xvc pipeline run
+[DONE] greg-iq (echo "${XVC_REGEX_ALL_ITEMS}" > greg-iq-scores.csv )
+
 $ cat greg-iq-scores.csv
+Greg Neal,85
+Gregory Ball,137
+Gregory Mclaughlin,102
+
 ````
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
