@@ -204,14 +204,13 @@ You can get the pipeline in Graphviz DOT format to convert to an image.
 
 ```console
 $ zsh -cl 'xvc pipeline dag | dot -opipeline.png'
-digraph pipeline{n0[shape=box;label="install-deps";];n1[shape=note;label="requirements.txt";];n0->n1;n2[shape=box;label="generate-data";];n0[shape=box;label="install-deps";];n2->n0;n3[shape=box;label="dr-iq";];n4[shape=signature;label="random_names_iq_scores.csv:/^Dr//..*";];n3->n4;n5[shape=note;color=black;label="dr-iq-scores.csv";];n3->n5;n6[shape=box;label="visualize";];n5[shape=note;label="dr-iq-scores.csv";];n6->n5;}
 
 ```
 
 You can also export and import the pipeline to JSON to edit in your editor.
 
 ```console
-$ zsl -cl 'xvc pipeline export > my-pipeline.json'
+$ xvc pipeline export --file my-pipeline.json
 ? 2
 error: unexpected argument '>' found
 
@@ -220,6 +219,9 @@ Usage: xvc pipeline export [OPTIONS]
 For more information, try '--help'.
 
 $ cat my-pipeline.json
+? 1
+cat: my-pipeline.json: No such file or directory
+
 $ xvc pipeline import --file my-pipeline.json --overwrite
 [ERROR] Pipeline Error: I/O Error: No such file or directory (os error 2)
 
