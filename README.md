@@ -203,7 +203,7 @@ $ xvc pipeline run
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
 ```console
-$ xvc pipeline dag | dot -opipeline.png
+$ zsh -cl 'xvc pipeline dag | dot -opipeline.png'
 digraph pipeline{n0[shape=box;label="install-deps";];n1[shape=note;label="requirements.txt";];n0->n1;n2[shape=box;label="generate-data";];n0[shape=box;label="install-deps";];n2->n0;n3[shape=box;label="dr-iq";];n4[shape=signature;label="random_names_iq_scores.csv:/^Dr//..*";];n3->n4;n5[shape=note;color=black;label="dr-iq-scores.csv";];n3->n5;n6[shape=box;label="visualize";];n5[shape=note;label="dr-iq-scores.csv";];n6->n5;}
 
 ```
@@ -211,7 +211,7 @@ digraph pipeline{n0[shape=box;label="install-deps";];n1[shape=note;label="requir
 You can also export and import the pipeline to JSON to edit in your editor.
 
 ```console
-$ xvc pipeline export > my-pipeline.json
+$ zsl -cl 'xvc pipeline export > my-pipeline.json'
 ? 2
 error: unexpected argument '>' found
 
@@ -219,22 +219,11 @@ Usage: xvc pipeline export [OPTIONS]
 
 For more information, try '--help'.
 
-$ nvim my-pipeline.json
+$ cat my-pipeline.json
 $ xvc pipeline import --file my-pipeline.json --overwrite
 [ERROR] Pipeline Error: I/O Error: No such file or directory (os error 2)
 
 ```
-
-You can run the pipeline with.
-
-```shell
-$ xvc pipeline run
-```
-
-If the steps you defined doesn't depend to each other, they are run in parallel.
-
-You can define fairly complex dependencies with globs, files, directories, regular expression searches in files, lines in files, other steps and pipelines with `xvc pipeline step dependency` commands.
-More dependency types like database queries, content from URLs, S3 (and compatible) buckets, REST and GraphQL results are in the backlog.
 Please create an issue or discussion for any other kinds of dependencies that you'd like to be included.
 
 Please check [`docs.xvc.dev`](https://docs.xvc.dev) for documentation.
