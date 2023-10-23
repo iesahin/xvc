@@ -305,8 +305,8 @@ $ cat my-pipeline.json
             "xvc_metadata": {
               "file_type": "File",
               "modified": {
-                "nanos_since_epoch": 345771132,
-                "secs_since_epoch": 1698058326
+                "nanos_since_epoch": 653402557,
+                "secs_since_epoch": 1698058381
               },
               "size": 19021
             }
