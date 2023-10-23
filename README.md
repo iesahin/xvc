@@ -203,7 +203,7 @@ $ xvc pipeline run
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
 ```console
-$ xvc pipeline dag
+$ xvc pipeline dag | dot -opipeline.png
 digraph pipeline{n0[shape=box;label="install-deps";];n1[shape=note;label="requirements.txt";];n0->n1;n2[shape=box;label="generate-data";];n0[shape=box;label="install-deps";];n2->n0;n3[shape=box;label="dr-iq";];n4[shape=signature;label="random_names_iq_scores.csv:/^Dr//..*";];n3->n4;n5[shape=note;color=black;label="dr-iq-scores.csv";];n3->n5;n6[shape=box;label="visualize";];n5[shape=note;label="dr-iq-scores.csv";];n6->n5;}
 
 ```
