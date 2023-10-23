@@ -211,21 +211,152 @@ You can also export and import the pipeline to JSON to edit in your editor.
 
 ```console
 $ xvc pipeline export --file my-pipeline.json
-? 2
-error: unexpected argument '>' found
-
-Usage: xvc pipeline export [OPTIONS]
-
-For more information, try '--help'.
 
 $ cat my-pipeline.json
-? 1
-cat: my-pipeline.json: No such file or directory
-
-$ xvc pipeline import --file my-pipeline.json --overwrite
-[ERROR] Pipeline Error: I/O Error: No such file or directory (os error 2)
-
+{
+  "name": "default",
+  "steps": [
+    {
+      "command": "python3 -m pip install --quiet --user -r requirements.txt",
+      "dependencies": [
+        {
+          "File": {
+            "content_digest": {
+              "algorithm": "Blake3",
+              "digest": [
+                43,
+                86,
+                244,
+                111,
+                13,
+                243,
+                28,
+                110,
+                140,
+                213,
+                105,
+                20,
+                239,
+                62,
+                73,
+                75,
+                13,
+                146,
+                82,
+                17,
+                148,
+                152,
+                66,
+                86,
+                154,
+                230,
+                154,
+                246,
+                213,
+                214,
+                40,
+                119
+              ]
+            },
+            "path": "requirements.txt",
+            "xvc_metadata": {
+              "file_type": "File",
+              "modified": {
+                "nanos_since_epoch": 150280724,
+                "secs_since_epoch": 1697996653
+              },
+              "size": 14
+            }
+          }
+        }
+      ],
+      "invalidate": "ByDependencies",
+      "name": "install-deps",
+      "outputs": []
+    },
+    {
+      "command": "python3 generate_data.py",
+      "dependencies": [
+        {
+          "Step": {
+            "name": "install-deps"
+          }
+        }
+      ],
+      "invalidate": "ByDependencies",
+      "name": "generate-data",
+      "outputs": []
+    },
+    {
+      "command": "echo /"${XVC_REGEX_ADDED_ITEMS}/" >> dr-iq-scores.csv ",
+      "dependencies": [
+        {
+          "RegexItems": {
+            "lines": [
+              "Dr. Brian Shaffer,122",
+              "Dr. Susan Swanson,81",
+              "Dr. Brittany Chang,82",
+              "Dr. Mallory Payne MD,70",
+              "Dr. Sherry Leonard,93",
+              "Dr. Albert Einstein,144"
+            ],
+            "path": "random_names_iq_scores.csv",
+            "regex": "^Dr//..*",
+            "xvc_metadata": {
+              "file_type": "File",
+              "modified": {
+                "nanos_since_epoch": 617901187,
+                "secs_since_epoch": 1698057537
+              },
+              "size": 19021
+            }
+          }
+        }
+      ],
+      "invalidate": "ByDependencies",
+      "name": "dr-iq",
+      "outputs": [
+        {
+          "File": {
+            "path": "dr-iq-scores.csv"
+          }
+        }
+      ]
+    },
+    {
+      "command": "python3 visualize.py",
+      "dependencies": [
+        {
+          "File": {
+            "content_digest": null,
+            "path": "dr-iq-scores.csv",
+            "xvc_metadata": null
+          }
+        }
+      ],
+      "invalidate": "ByDependencies",
+      "name": "visualize",
+      "outputs": []
+    }
+  ],
+  "version": 1,
+  "workdir": ""
+}
 ```
+
+You can edit the file to change commands, add new dependencies, etc. and import it back to Xvc.
+
+```console
+$ xvc pipeline import --file my-pipeline.json --overwrite
+```
+
+Lastly, if you noticed that the commands are long to type, there is an `xvc aliases` command that prints a set of aliases for commands. You can source the output in your `.zshrc` or `.bashrc`, and use the following commands instead, e.g., `xvc pipelines run` becomes `pvc run`. 
+
+
+```console
+$ xvc aliases
+```
+
 Please create an issue or discussion for any other kinds of dependencies that you'd like to be included.
 
 Please check [`docs.xvc.dev`](https://docs.xvc.dev) for documentation.
@@ -234,7 +365,7 @@ Please check [`docs.xvc.dev`](https://docs.xvc.dev) for documentation.
 
 xvc stands on the following (giant) crates:
 
-- [trycmd] is used to run all example commands in the [reference and how-to documentation](https://docs.xvc.dev) at
+- [trycmd] is used to run all example commands in this file, [reference, and how-to documentation](https://docs.xvc.dev) at
   every PR. It makes sure that the documentation is always up-to-date and shown commands work as described. We start
   development by writing documentation and implementing them thanks to [trycmd].
 
@@ -288,14 +419,14 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 
 ## 👐 Contributing
 
-- Star this repo. I feel very happy for five minutes for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks.
+- Star this repo. I feel very happy for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks.
 - Use xvc. Tell me how it works for you, read the [documentation](https://docs.xvc.dev), [report bugs](https://github.com/iesahin/xvc/issues), [discuss features](https://github.com/iesahin/xvc/discussions).
-- Note that, I don't accept large code PRs. Please open an issue to discuss your idea and write/modify a
-  reference page before sending a PR. I'm happy to discuss and help you to implement your idea.
+- Please note that, I don't accept large code PRs. Please open an issue to discuss your idea and write/modify a
+  reference page before sending a PR. I'm happy to discuss and help you to implement your idea. Also, it may require a copyright transfer to me, as there may be cases which I provide the code in other licenses. 
 
 ## 📜 License
 
-Xvc is licensed under the [Apache 2.0 License](https://github.com/iesahin/xvc/blob/main/LICENSE).
+Xvc is licensed under the [GNU GPL 3.0 License](https://github.com/iesahin/xvc/blob/main/LICENSE). If you want to use the code in your project with other licenses, please contact me.
 
 ## 🌦️ Future and Maintenance
 
