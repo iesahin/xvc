@@ -12,6 +12,7 @@ tree, and subtasks are marked with indentation.
 - Fixed `--skip-git` option not working correctly
   - Added documentation for turning off automated Git operations
   - PR: <https://github.com/iesahin/xvc/pull/238>
+- Updated Readme and added it to tests
 
 ## 0.6.1 (2023-10-05)
 

@@ -22,9 +22,6 @@ A fast and robust MLOps tool to manage data and pipelines
 
 - (for x = files) Track large files on Git, store them in the cloud, create view-only subsets, retrieve them only when necessary.
 - (for x = pipelines) Define and run data -> model pipelines whose dependencies may be files, hyperparameters, regex searches, arbitrary URLs, and more.
-- (for x = data) Annotate data and run queries and retrieve subsets of it. ([TODO](https://github.com/iesahin/xvc/discussions/208))
-- (for x = experiments) Run isolated experiments, share them and store them in Git when necessary ([TODO](https://github.com/iesahin/xvc/discussions/207))
-- (for x = models) Associate models with datasets, metadata and features, then track, store, and deploy them ([TODO](https://github.com/iesahin/xvc/discussions/211))
 
 ## 🔽 Installation
 
@@ -387,6 +384,8 @@ alias xvcsr='xvc storage remove'
 ```
 
 Please create an issue or discussion for any other kinds of dependencies that you'd like to be included.
+
+I'm planning to add [data label and annotations tracking](https://github.com/iesahin/xvc/discussions/208)), [experiments tracking](https://github.com/iesahin/xvc/discussions/207)), [model tracking](https://github.com/iesahin/xvc/discussions/211)), encrypted cache, server to control all commands from a web interface, and more as my time permits.
 
 Please check [`docs.xvc.dev`](https://docs.xvc.dev) for documentation.
 
