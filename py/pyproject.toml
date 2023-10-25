@@ -1,0 +1,102 @@
+[project]
+name = "xvc"
+dynamic = ["version"]
+description = "An MLOps tool to manage data files and pipelines on top of Git"
+requires-python = ">=3.7"
+license = { file = "LICENSE" }
+keywords = ["machine-learning", "development", "devops", "Git"]                # Optional
+
+maintainers = [{ name = "Emre Sahin", email = "contact@emresahin.net" }]
+# Classifiers help users find your project by categorizing it.
+
+#
+# For a list of valid classifiers, see https://pypi.org/classifiers/
+classifiers = [ # Optional
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Environment :: MacOS X",
+  "Environment :: Win32 (MS Windows)",
+
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: System Administrators",
+
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: POSIX :: Linux",
+
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Rust",
+
+
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Software Development",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Software Development :: Version Control",
+  "Topic :: Software Development :: Version Control :: Git",
+  "Topic :: System :: Archiving",
+  "Topic :: System :: Filesystems",
+  "Topic :: System :: Software Distribution",
+  "Topic :: System :: Systems Administration",
+  "Topic :: Utilities",
+]
+
+dependencies = []
+
+# List additional groups of dependencies here (e.g. development
+# dependencies). Users will be able to install these using the "extras"
+# syntax, for example:
+#
+#   $ pip install sampleproject[dev]
+#
+# Similar to `dependencies` above, these must be valid existing
+# projects.
+# [project.optional-dependencies] # Optional
+# dev = ["check-manifest"]
+# test = ["coverage"]
+
+# List URLs that are relevant to your project
+#
+# This field corresponds to the "Project-URL" and "Home-Page" metadata fields:
+# https://packaging.python.org/specifications/core-metadata/#project-url-multiple-use
+# https://packaging.python.org/specifications/core-metadata/#home-page-optional
+#
+# Examples listed include a pattern for specifying where the package tracks
+# issues, where the source is hosted, where to say thanks to the package
+# maintainers, and where to support the project financially. The key is
+# what's used to render the link text on PyPI.
+[project.urls] # Optional
+"Homepage" = "https://xvc.dev"
+"Bug Reports" = "https://github.com/iesahin/xvc/issues"
+"Documentation" = "https://docs.xvc.dev"
+# "Funding" = "https://donate.pypi.org"
+# "Say Thanks!" = "http://saythanks.io/to/example"
+"Source" = "https://github.com/iesahin/xvc/"
+
+# The following would provide a command line executable called `sample`
+# which executes the function `main` from this package when invoked.
+# [project.scripts] # Optional
+# sample = "sample:main"
+
+# This is configuration specific to the `setuptools` build backend.
+# If you are using a different build backend, you will need to change this.
+# [tool.setuptools]
+# If there are data files included in your packages that need to be
+# installed, specify them here.
+# package-data = { "sample" = ["*.dat"] }
+
+[build-system]
+requires = ["maturin>=1.0,<2.0", "wheel"]
+build-backend = "maturin"

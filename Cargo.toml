@@ -11,6 +11,7 @@ members = [
   "walker",
   "test_helper",
   "workflow_tests",
+  "py",
 ]
 resolver = "2"
 
