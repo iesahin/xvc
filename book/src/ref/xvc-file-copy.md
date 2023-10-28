@@ -136,7 +136,7 @@ $ rm -f data.txt
 $ xvc file copy data.txt data6.txt
 
 $ lsd -l data6.txt
-.rw-rw-rw- iex staff 19 B Wed Oct 18 10:45:25 2023 data6.txt
+.rw-rw-rw- [..] data6.txt
 
 ```
 
@@ -176,6 +176,6 @@ Later, you can recheck them to work in the workspace.
 $ xvc file recheck data7.txt
 
 $ lsd -l data7.txt
-.rw-rw-rw- iex staff 19 B Wed Oct 18 10:45:25 2023 data7.txt
+.rw-rw-rw- [..] data7.txt
 
 ```

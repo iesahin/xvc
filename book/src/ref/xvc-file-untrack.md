@@ -79,7 +79,7 @@ $ xvc file untrack data.txt
 [DELETE] [CWD]/.xvc/b3/c85
 [DELETE] [CWD]/.xvc/b3
 
-$ ls -l
+$ lsd -l
 total 8
 -rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
 
