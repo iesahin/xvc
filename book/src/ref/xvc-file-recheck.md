@@ -67,9 +67,9 @@ Then, recheck the file. By default, it makes a copy of the file.
 ```console
 $ xvc file recheck data.txt
 
-$ ls -l
+$ lsd -l
 total [..]
--rw-rw-rw-@ 1 iex  staff  19 Oct 18 10:45 data.txt
+-rw-rw-rw-[..] data.txt
 
 ```
 
@@ -103,7 +103,7 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
--r--r--r--@ 2 iex  staff  19 Oct 18 10:45 data.txt
+-r--r--r--[..] data.txt
 
 ```
 
