@@ -68,8 +68,7 @@ Then, recheck the file. By default, it makes a copy of the file.
 $ xvc file recheck data.txt
 
 $ lsd -l
-total [..]
--rw-rw-rw-[..] data.txt
+.rw-rw-rw- [..] data.txt
 
 ```
 

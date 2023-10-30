@@ -109,8 +109,8 @@ $ xvc file untrack data.txt --restore-versions data-versions/
 [DELETE] [CWD]/.xvc/b3
 
 $ lsd -l data-versions/
-total 16
--r--r--r--  [..] data-b3-660-2cf-f6a4.txt
+.r--r--r-- [..] data-b3-660-2cf-f6a4.txt
+.r--r--r-- [..] data-b3-c85-f3e-8108.txt
 
 ```
 
