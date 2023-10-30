@@ -18,7 +18,46 @@ const DOC_TEST_DIR: &str = "docs/";
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
-    let book_dirs_and_filters = vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")];
+    let book_dirs_and_filters = if std::option_env!("XVC_TRYCMD_ALL").is_some() {
+        vec![
+            ("intro", r".*"),
+            ("ref", r".*"),
+            ("start", r".*"),
+            ("how-to", r".*"),
+        ]
+    } else {
+        let mut book_dirs_and_filters = vec![];
+        if std::option_env!("XVC_TRYCMD_INTRO").is_some() {
+            book_dirs_and_filters.push(("intro", r".*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_START").is_some() {
+            book_dirs_and_filters.push(("start", r".*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_HOWTO").is_some() {
+            book_dirs_and_filters.push(("how-to", r".*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_STORAGE").is_some() {
+            book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_FILE").is_some() {
+            book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_PIPELINE").is_some() {
+            book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_CORE").is_some() {
+            book_dirs_and_filters.push(("ref", r"^xvc-(?!.*(?:pipeline|storage|file)).*$"));
+        }
+
+        book_dirs_and_filters
+    };
+
     let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
