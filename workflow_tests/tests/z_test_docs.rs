@@ -18,7 +18,37 @@ const DOC_TEST_DIR: &str = "docs/";
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
-    let book_dirs_and_filters = vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")];
+    let book_dirs_and_filters = if std::option_env!("XVC_TRYCMD_ALL").is_some() {
+        vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")]
+    } else {
+        let mut book_dirs_and_filters = vec![];
+        if std::option_env!("XVC_TRYCMD_START").is_some() {
+            book_dirs_and_filters.push(("start", r".*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_HOWTO").is_some() {
+            book_dirs_and_filters.push(("how-to", r".*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_STORAGE").is_some() {
+            book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_FILE").is_some() {
+            book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_PIPELINE").is_some() {
+            book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+        }
+
+        if std::option_env!("XVC_TRYCMD_CORE").is_some() {
+            book_dirs_and_filters.push(("ref", r"^xvc-(?!.*(?:pipeline|storage|file)).*$"));
+        }
+
+        book_dirs_and_filters
+    };
+
     let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
@@ -34,6 +64,7 @@ fn link_to_docs() -> Result<()> {
     fs::create_dir_all(&test_collections_dir)?;
 
     let doc_dir = Path::new(DOC_TEST_DIR);
+    watch!(doc_dir);
 
     for (dir, filter_regex) in book_dirs_and_filters {
         let test_collection_dir = test_collections_dir.join(dir);
@@ -44,6 +75,7 @@ fn link_to_docs() -> Result<()> {
         let book_paths: Vec<PathBuf> = jwalk::WalkDir::new(book_base.join(dir))
             .into_iter()
             .filter_map(|f| {
+                watch!(f);
                 if let Ok(f) = f {
                     if f.metadata().unwrap().is_file()
                         && name_filter.is_match(f.file_name().to_string_lossy().as_ref())
@@ -58,8 +90,9 @@ fn link_to_docs() -> Result<()> {
             })
             .collect();
 
+        watch!(test_collection_dir);
         fs::create_dir_all(&test_collection_dir)?;
-
+        // TODO: Remove all symlinks, not only those linked to older docs
         for p in book_paths {
             let basename: PathBuf = p.file_name().unwrap().into();
             let symlink_path = doc_dir.join(dir).join(&basename);
@@ -130,16 +163,6 @@ fn z_doc_tests() -> Result<()> {
 
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
     assert!(path_to_xvc_test_helper.exists());
-
-    // let xvc_bin = escargot::CargoBuild::new()
-    //     .bin("xvc")
-    //     .current_release()
-    //     .current_target()
-    //     .manifest_path("../lib/Cargo.toml")
-    //     .run()
-    //     .map_err(|e| anyhow!("Failed to build xvc: {e:?}"))?;
-    //
-    // let path_to_xvc_bin = xvc_bin.path().to_path_buf();
 
     trycmd::TestCases::new()
         // .register_bin("xvc", &path_to_xvc_bin)
