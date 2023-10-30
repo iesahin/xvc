@@ -19,18 +19,9 @@ fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
     let book_dirs_and_filters = if std::option_env!("XVC_TRYCMD_ALL").is_some() {
-        vec![
-            ("intro", r".*"),
-            ("ref", r".*"),
-            ("start", r".*"),
-            ("how-to", r".*"),
-        ]
+        vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")]
     } else {
         let mut book_dirs_and_filters = vec![];
-        if std::option_env!("XVC_TRYCMD_INTRO").is_some() {
-            book_dirs_and_filters.push(("intro", r".*"));
-        }
-
         if std::option_env!("XVC_TRYCMD_START").is_some() {
             book_dirs_and_filters.push(("start", r".*"));
         }
