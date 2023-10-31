@@ -18,35 +18,43 @@ const DOC_TEST_DIR: &str = "docs/";
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
-    let book_dirs_and_filters = if std::option_env!("XVC_TRYCMD_ALL").is_some() {
-        vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")]
-    } else {
+    let book_dirs_and_filters = if let Some(trycmd_tests) = std::option_env!("XVC_TRYCMD_TESTS") {
         let mut book_dirs_and_filters = vec![];
-        if std::option_env!("XVC_TRYCMD_START").is_some() {
+        if trycmd_tests.contains("intro") {
+            book_dirs_and_filters.push(("intro", r".*"));
+        }
+        if trycmd_tests.contains("start") {
             book_dirs_and_filters.push(("start", r".*"));
         }
-
-        if std::option_env!("XVC_TRYCMD_HOWTO").is_some() {
+        if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
             book_dirs_and_filters.push(("how-to", r".*"));
         }
 
-        if std::option_env!("XVC_TRYCMD_STORAGE").is_some() {
+        if trycmd_tests.contains("storage") {
             book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
         }
-
-        if std::option_env!("XVC_TRYCMD_FILE").is_some() {
+        if trycmd_tests.contains("file") {
             book_dirs_and_filters.push(("ref", r"xvc-file.*"));
         }
 
-        if std::option_env!("XVC_TRYCMD_PIPELINE").is_some() {
+        if trycmd_tests.contains("pipeline") {
             book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
         }
 
-        if std::option_env!("XVC_TRYCMD_CORE").is_some() {
-            book_dirs_and_filters.push(("ref", r"^xvc-(?!.*(?:pipeline|storage|file)).*$"));
+        if trycmd_tests.contains("core") {
+            book_dirs_and_filters.push(("", r"^xvc-(?!.*(?:pipeline|storage|file)).*$"));
         }
 
         book_dirs_and_filters
+    } else {
+        // If not defined, make all tests
+        // // If not defined, make all tests
+        vec![
+            ("intro", ".*"),
+            ("ref", r".*"),
+            ("start", r".*"),
+            ("how-to", r".*"),
+        ]
     };
 
     let template_dir_root = Path::new("templates");
@@ -77,7 +85,7 @@ fn link_to_docs() -> Result<()> {
             .filter_map(|f| {
                 watch!(f);
                 if let Ok(f) = f {
-                    if (f.metadata().unwrap().is_file() || f.metadata().unwrap().is_symlink())
+                    if f.metadata().unwrap().is_file()
                         && name_filter.is_match(f.file_name().to_string_lossy().as_ref())
                     {
                         Some(f.path())
@@ -99,7 +107,6 @@ fn link_to_docs() -> Result<()> {
             if symlink_path.is_symlink() {
                 fs::remove_file(&symlink_path)?;
             }
-            println!("{symlink_path:?}");
             make_symlink(Path::new("../..").join(p), &symlink_path)?;
 
             // If we have a template input directory in `templates/`, we copy it.
@@ -127,8 +134,6 @@ fn link_to_docs() -> Result<()> {
             if in_dir_symlink.is_symlink() {
                 fs::remove_file(&in_dir_symlink)?;
             }
-            println!("{in_dir_symlink:?}");
-            println!("{in_dir:?}");
             make_symlink(&in_dir, &in_dir_symlink)?;
 
             // Create output dir if only template dir exists
@@ -174,7 +179,6 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("echo", which::which("echo"))
         .register_bin("cat", which::which("cat"))
         .register_bin("ls", which::which("ls"))
-        .register_bin("lsd", which::which("lsd"))
         .register_bin("rm", which::which("rm"))
         .register_bin("perl", which::which("perl"))
         .register_bin("tree", which::which("tree"))
