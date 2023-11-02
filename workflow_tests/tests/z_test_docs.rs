@@ -42,7 +42,7 @@ fn link_to_docs() -> Result<()> {
         }
 
         if trycmd_tests.contains("core") {
-            book_dirs_and_filters.push(("", r"^xvc-(?!.*(?:pipeline|storage|file)).*$"));
+            book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
         }
 
         book_dirs_and_filters

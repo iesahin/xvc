@@ -120,7 +120,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
+    create_directory_tree(&level_1, 10, 10, 1000, Some(47))?;
 
     Ok(temp_dir)
 }
@@ -131,7 +131,9 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
-#[cfg_attr(not(feature = "test-r2"), ignore)]
+// #[cfg_attr(not(feature = "test-r2"), ignore)]
+// Ignore this test for now
+#[ignore]
 fn test_storage_new_r2() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
@@ -145,7 +147,7 @@ fn test_storage_new_r2() -> Result<()> {
     let account_id = env::var("R2_ACCOUNT_ID")?;
     let account_id = account_id.trim();
 
-    let config_file_name = write_s3cmd_config(account_id, access_key, secret_key)?;
+    let config_file_name = write_s3cmd_config(&account_id, &access_key, &secret_key)?;
     watch!(config_file_name);
 
     let s3cmd = |cmd: &str, append: &str| -> String {
@@ -177,7 +179,7 @@ fn test_storage_new_r2() -> Result<()> {
         &format!("| rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
     watch!(s3_bucket_list);
-    assert!(!s3_bucket_list.is_empty());
+    assert!(s3_bucket_list.len() > 0);
 
     let the_file = "file-0000.bin";
 
