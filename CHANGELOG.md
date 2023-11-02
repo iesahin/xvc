@@ -5,6 +5,13 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+## 0.6.3 (2023-11-02)
+
+- Updated README and added its commands to the tests
+- Updated openssl dependency to use vendored feature for Python bindings
+- Fixed clippy warnings
+- Initial Python bindings in https://github.com/iesahin/xvc.py
+
 ## 0.6.2 (2023-10-13)
 
 - Updated `xvc file track` reference and examples

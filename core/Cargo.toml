@@ -1,6 +1,6 @@
 [package]
 name = "xvc-core"
-version = "0.6.1"
+version = "0.6.3"
 edition = "2021"
 description = "Xvc core for common elements for all commands"
 authors = ["Emre Şahin <contact@emresahin.net>"]
