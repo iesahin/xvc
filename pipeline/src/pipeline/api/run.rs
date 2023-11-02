@@ -1,10 +1,9 @@
 use crate::error::Result;
 
 use xvc_core::XvcRoot;
-use xvc_logging::{XvcOutputSender};
+use xvc_logging::XvcOutputSender;
 
 use crate::pipeline::the_grand_pipeline_loop;
-
 
 /// Entry point for `xvc pipeline run` command.
 ///
@@ -17,3 +16,4 @@ pub fn cmd_run(
 ) -> Result<()> {
     the_grand_pipeline_loop(output_snd, xvc_root, pipeline_name)
 }
+

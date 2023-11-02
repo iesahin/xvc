@@ -50,8 +50,10 @@ Run for the first time, as initially all dependencies are invalid:
 $ xvc pipeline run
 [OUT] [read-hyperparams] Update Hyperparameters
  
+[DONE] read-hyperparams (echo "Update Hyperparameters")
 [OUT] [read-database-config] Updated Database Configuration
  
+[DONE] read-database-config (echo "Updated Database Configuration")
 
 ```
 
@@ -73,6 +75,7 @@ $ perl -pi -e 's/5432/9876/g' myparams.yaml
 $ xvc pipeline run
 [OUT] [read-database-config] Updated Database Configuration
  
+[DONE] read-database-config (echo "Updated Database Configuration")
 
 ```
 

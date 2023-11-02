@@ -1480,7 +1480,7 @@ fn s_running_f_wait_process<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     watch!(params);
-    let return_state: Option<XvcStepState>;
+    let mut return_state: Option<XvcStepState>;
     let command_process = params.command_process.clone();
     let timeout = params.step_timeout;
     let step = params.step.clone();
@@ -1491,29 +1491,34 @@ fn s_running_f_wait_process<'a>(
         .ok_or(anyhow!("Process birth not found"))?;
     let sleep_duration = Duration::from_millis(params.process_poll_milliseconds);
     loop {
-        // We put process operations in an inner scope not to interfere with the process while sleeping
-        {
-            // Check whether the process is still running
-            let mut command_process = command_process.write()?;
-
-            command_process.update_output_channels()?;
-
+        let send_output = |cp: Arc<RwLock<CommandProcess>>| -> Result<()> {
+            let mut cp = cp.write()?;
+            cp.update_output_channels()?;
             // We currently pass all the output to the main thread
             // In the future, these can be passed to different channels.
             let output_snd = params.output_snd;
-            command_process
-                .stderr_receiver
-                .try_iter()
-                .for_each(|out| warn!(output_snd, "{}", out));
+            cp.stderr_receiver.try_iter().for_each(|out| {
+                if !out.is_empty() {
+                    warn!(output_snd, "{}", out)
+                }
+            });
 
-            command_process
-                .stdout_receiver
-                .try_iter()
-                .for_each(|out| output!(output_snd, "{}", out));
+            cp.stdout_receiver.try_iter().for_each(|out| {
+                if !out.is_empty() {
+                    output!(output_snd, "{}", out);
+                }
+            });
 
-            watch!(command_process);
+            Ok(())
+        };
 
-            let process = command_process
+        // We put process operations in an inner scope not to interfere with the process while sleeping
+        // Check whether the process is still running
+
+        {
+            let cp = command_process.clone();
+            let mut cp = cp.write()?;
+            let process = cp
                 .process
                 .as_mut()
                 .ok_or_else(|| anyhow!("Cannot find process"))?;
@@ -1525,13 +1530,14 @@ fn s_running_f_wait_process<'a>(
                     watch!(process);
                     if birth.elapsed() < *timeout {
                         debug!(
-                            output_snd,
+                            params.output_snd,
                             "Step {} with command {} is still running", &step.name, &step_command
                         );
+                        return_state = None;
                     } else {
                         if params.terminate_timeout_processes {
                             error!(
-                                output_snd,
+                                params.output_snd,
                                 "Process timeout for step {} with command {} ",
                                 &step.name,
                                 &step_command
@@ -1539,28 +1545,32 @@ fn s_running_f_wait_process<'a>(
                             process.terminate().ok();
                         }
                         return_state = Some(s.process_timeout());
-                        break;
                     }
                 }
 
                 Some(exit_code) => match exit_code {
             ExitStatus::Exited(0) => {
-                info!(output_snd, "Step {} finished successfully with command {}", step.name, step_command);
+                output!(params.output_snd, "[DONE] {} ({})", step.name, step_command);
                 return_state = Some(s.process_completed_successfully());
-                break;
             }
             ,
             // we don't handle other variants in the state machine. Either it exited
             // successfully or died for some reason.
             //
             _ => {
-                error!(output_snd, "Step {} finished UNSUCCESSFULLY with command {}", step.name, step_command);
+    // We get the remaining output at the end;
+                error!(params.output_snd, "Step {} finished UNSUCCESSFULLY with command {}", step.name, step_command);
                 return_state = Some(s.process_returned_non_zero());
-                break;
             },
         },
             }
         }
+
+        send_output(command_process.clone())?;
+        if return_state.is_some() {
+            break;
+        }
+
         sleep(sleep_duration);
     }
 

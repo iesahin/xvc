@@ -26,6 +26,7 @@ The step is invalidated when the page is updated.
 $ xvc pipeline run
 [OUT] [xvc-docs-update] Xvc docs updated!
  
+[DONE] xvc-docs-update (echo 'Xvc docs updated!')
 
 ```
 

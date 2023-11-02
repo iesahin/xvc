@@ -48,9 +48,8 @@ $ xvc init
 
 $ xvc file track data.txt
 
-$ ls -l
-total[..]
--rw-rw-rw- [..] data.txt
+$ lsd -l
+.rw-rw-rw- [..] data.txt
 
 ```
 
@@ -68,9 +67,8 @@ Then, recheck the file. By default, it makes a copy of the file.
 ```console
 $ xvc file recheck data.txt
 
-$ ls -l
-total [..]
--rw-rw-rw- [..] data.txt
+$ lsd -l
+.rw-rw-rw- [..] data.txt
 
 ```
 
@@ -104,7 +102,7 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
--r--r--r-- [..] data.txt
+-r--r--r--[..] data.txt
 
 ```
 

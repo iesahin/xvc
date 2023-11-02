@@ -59,9 +59,8 @@ $ xvc init
 
 $ xvc file track data.txt
 
-$ ls -l
-total[..]
--rw-rw-rw-  [..] data.txt
+$ lsd -l
+.rw-rw-rw- [..] data.txt
 
 ```
 
@@ -138,7 +137,7 @@ Later, you can recheck them in the workspace.
 ```console
 $ xvc file recheck data6.txt
 
-$ ls -l data6.txt
--rw-rw-rw-  [..] data6.txt
+$ lsd -l data6.txt
+.rw-rw-rw- [..] data6.txt
 
 ```

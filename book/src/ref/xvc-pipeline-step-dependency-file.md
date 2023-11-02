@@ -27,6 +27,7 @@ When you run the command, it will print `data.txt has changed` if the file `data
 $ xvc pipeline run
 [OUT] [file-dependency] data.txt has changed
  
+[DONE] file-dependency (echo data.txt has changed)
 
 ```
 
@@ -43,6 +44,7 @@ A step will run if any of its dependencies have changed.
 $ xvc pipeline run
 [OUT] [file-dependency] data.txt has changed
  
+[DONE] file-dependency (echo data.txt has changed)
 
 ```
 
@@ -65,5 +67,6 @@ Now the step will run even if none of the dependencies have changed.
 $ xvc pipeline run
 [OUT] [file-dependency] data.txt has changed
  
+[DONE] file-dependency (echo data.txt has changed)
 
 ```

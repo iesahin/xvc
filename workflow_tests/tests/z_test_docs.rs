@@ -18,35 +18,43 @@ const DOC_TEST_DIR: &str = "docs/";
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
-    let book_dirs_and_filters = if std::option_env!("XVC_TRYCMD_ALL").is_some() {
-        vec![("ref", r".*"), ("start", r".*"), ("how-to", r".*")]
-    } else {
+    let book_dirs_and_filters = if let Some(trycmd_tests) = std::option_env!("XVC_TRYCMD_TESTS") {
         let mut book_dirs_and_filters = vec![];
-        if std::option_env!("XVC_TRYCMD_START").is_some() {
+        if trycmd_tests.contains("intro") {
+            book_dirs_and_filters.push(("intro", r".*"));
+        }
+        if trycmd_tests.contains("start") {
             book_dirs_and_filters.push(("start", r".*"));
         }
-
-        if std::option_env!("XVC_TRYCMD_HOWTO").is_some() {
+        if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
             book_dirs_and_filters.push(("how-to", r".*"));
         }
 
-        if std::option_env!("XVC_TRYCMD_STORAGE").is_some() {
+        if trycmd_tests.contains("storage") {
             book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
         }
-
-        if std::option_env!("XVC_TRYCMD_FILE").is_some() {
+        if trycmd_tests.contains("file") {
             book_dirs_and_filters.push(("ref", r"xvc-file.*"));
         }
 
-        if std::option_env!("XVC_TRYCMD_PIPELINE").is_some() {
+        if trycmd_tests.contains("pipeline") {
             book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
         }
 
-        if std::option_env!("XVC_TRYCMD_CORE").is_some() {
-            book_dirs_and_filters.push(("ref", r"^xvc-(?!.*(?:pipeline|storage|file)).*$"));
+        if trycmd_tests.contains("core") {
+            book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
         }
 
         book_dirs_and_filters
+    } else {
+        // If not defined, make all tests
+        // // If not defined, make all tests
+        vec![
+            ("intro", ".*"),
+            ("ref", r".*"),
+            ("start", r".*"),
+            ("how-to", r".*"),
+        ]
     };
 
     let template_dir_root = Path::new("templates");

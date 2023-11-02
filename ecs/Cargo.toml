@@ -26,7 +26,7 @@ rmp = "^0.8"
 rmp-serde = "1.1.2"
 
 ## Parallelization
-rayon = "^1.7"
+rayon = "^1.8"
 crossbeam-channel = "^0.5"
 
 ## Logging and errors

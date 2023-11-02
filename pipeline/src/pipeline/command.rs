@@ -101,17 +101,21 @@ impl CommandProcess {
             if let Some(mut stdout) = p.stdout.as_ref() {
                 let mut out = String::new();
                 stdout.read_to_string(&mut out)?;
-                self.stdout_sender
-                    .send(format!("[OUT] [{}] {} ", self.step.name, out))
-                    .ok();
+                if !out.is_empty() {
+                    self.stdout_sender
+                        .send(format!("[OUT] [{}] {} ", self.step.name, out))
+                        .ok();
+                }
             }
 
             if let Some(mut stderr) = p.stderr.as_ref() {
                 let mut err = String::new();
                 stderr.read_to_string(&mut err)?;
-                self.stderr_sender
-                    .send(format!("[err] [{}] {} ", self.step.name, err))
-                    .ok();
+                if !err.is_empty() {
+                    self.stderr_sender
+                        .send(format!("[ERR] [{}] {} ", self.step.name, err))
+                        .ok();
+                }
             }
         }
         Ok(())

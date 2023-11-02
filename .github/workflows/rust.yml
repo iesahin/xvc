@@ -48,7 +48,8 @@ jobs:
       MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
       MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
       XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
-
+      # We don't run xvc-storage tests here
+      XVC_TRYCMD_TESTS: core,file,pipeline,intro,howto,start
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -62,6 +63,8 @@ jobs:
           brew install s3cmd
           brew install ripgrep
           brew install tree
+          brew install lsd
+          brew install python3
 
       - name: Git config for automated Git tests
         run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
