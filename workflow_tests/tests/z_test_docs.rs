@@ -48,9 +48,8 @@ fn link_to_docs() -> Result<()> {
         book_dirs_and_filters
     } else {
         // If not defined, make all tests
-        // // If not defined, make all tests
         vec![
-            ("intro", ".*"),
+            ("intro", r".*"),
             ("ref", r".*"),
             ("start", r".*"),
             ("how-to", r".*"),

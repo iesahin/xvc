@@ -9,8 +9,8 @@ Run a pipeline
 Usage: xvc pipeline run [OPTIONS]
 
 Options:
-  -n, --name <NAME>  Name of the pipeline to run
-  -h, --help         Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline to run
+  -h, --help                           Print help
 
 ```
 
@@ -74,14 +74,31 @@ $ xvc pipeline run
 You can run a specific pipeline by specifying its name with `--name` option.
 
 ```console
-$ xvc pipeline new --name my-pipeline
-$ xvc pipeline --name my-pipeline step new --step-name my-hello --command "echo 'hello from my-pipeline'"
+$ xvc pipeline new --pipeline-name my-pipeline
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline new [OPTIONS] --pipeline-name <PIPELINE_NAME>
+
+For more information, try '--help'.
+
+$ xvc pipeline --pipeline-name my-pipeline step new --step-name my-hello --command "echo 'hello from my-pipeline'"
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline [OPTIONS] <COMMAND>
+
+For more information, try '--help'.
+
 ```
 
 ```console
-$ xvc pipeline run --name my-pipeline
-[OUT] [my-hello] hello from my-pipeline
- 
-[DONE] my-hello (echo 'hello from my-pipeline')
+$ xvc pipeline run --pipeline-name my-pipeline
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline run [OPTIONS]
+
+For more information, try '--help'.
 
 ```
