@@ -12,6 +12,7 @@ use crate::pipeline::deps::regex_items::RegexItemsDep;
 use crate::pipeline::deps::step::StepDep;
 use crate::pipeline::deps::url::UrlDigestDep;
 use crate::pipeline::deps::ParamDep;
+use crate::pipeline::step::StepSubCommand;
 
 use regex::Regex;
 use url::Url;
@@ -24,6 +25,47 @@ use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep}
 
 /// Entry point for `xvc pipeline step dependency` command.
 /// Add a set of new dependencies to the given step in the pipeline.
+///
+/// Unlike other entry points, this receives the options directly to avoid a long list of
+/// parameters.
+pub fn cmd_step_dependency(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    pipeline_name: &str,
+    cmd_opts: StepSubCommand,
+) -> Result<()> {
+    if let StepSubCommand::Dependency {
+        step_name,
+        generics,
+        urls,
+        files,
+        steps,
+        glob_items,
+        globs,
+        params,
+        regex_items,
+        regexes,
+        line_items,
+        lines,
+    } = cmd_opts
+    {
+        XvcDependencyList::new(output_snd, xvc_root, pipeline_name, &step_name)?
+            .files(files)?
+            .glob_items(glob_items)?
+            .globs(globs)?
+            .params(params)?
+            .steps(steps)?
+            .generic_commands(generics)?
+            .regexes(regexes)?
+            .regex_items(regex_items)?
+            .lines(lines)?
+            .line_items(line_items)?
+            .urls(urls)?
+            .record()
+    } else {
+        Err(anyhow::anyhow!("This method is only for StepSubCommand::Dependency").into())
+    }
+}
 ///
 /// Parses dependencies using member functions, in order to avoid a single function with a lot of parameters.
 pub struct XvcDependencyList<'a> {
@@ -358,3 +400,4 @@ impl<'a> XvcDependencyList<'a> {
         Ok(())
     }
 }
+

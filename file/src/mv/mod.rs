@@ -158,11 +158,7 @@ pub fn get_move_source_dest_store(
 }
 
 /// Entry point for `xvc file move`
-pub(crate) fn cmd_move(
-    output_snd: &XvcOutputSender,
-    xvc_root: &XvcRoot,
-    opts: MoveCLI,
-) -> Result<()> {
+pub fn cmd_move(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: MoveCLI) -> Result<()> {
     // Get all files to move
     let stored_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;

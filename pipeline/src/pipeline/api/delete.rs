@@ -1,13 +1,24 @@
 use crate::error::{Error, Result};
+use clap::Parser;
 use xvc_config::FromConfigKey;
 use xvc_core::XvcRoot;
 
 use crate::XvcPipeline;
 
+/// Delete a pipeline
+#[derive(Debug, Clone, Parser)]
+#[command(name = "delete")]
+pub struct DeleteCLI {
+    /// Name or GUID of the pipeline to be deleted
+    #[arg(long, short)]
+    pipeline_name: String,
+}
+
 /// Entry point for `xvc pipeline delete` command.
 /// It deletes the pipeline with the given name.
 /// It is not possible to delete the default pipeline.
-pub fn cmd_delete(xvc_root: &XvcRoot, name: String) -> Result<()> {
+pub fn cmd_delete(xvc_root: &XvcRoot, opts: DeleteCLI) -> Result<()> {
+    let name = opts.pipeline_name;
     let conf = xvc_root.config();
     let default_pipeline = XvcPipeline::from_conf(conf);
     if name == default_pipeline.name {

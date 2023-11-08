@@ -5,12 +5,16 @@ pub mod cli;
 pub mod error;
 pub mod init;
 
+pub mod api;
+
 pub use xvc_config as config;
 pub use xvc_core as core;
 pub use xvc_ecs as ecs;
 pub use xvc_file as file;
 pub use xvc_logging as logging;
 pub use xvc_pipeline as pipeline;
+pub use xvc_storage as storage;
+pub use xvc_walker as walker;
 
 pub use xvc_logging::watch;
 
