@@ -18,7 +18,7 @@ pub use xvc_walker as walker;
 
 pub use xvc_logging::watch;
 
-pub use crate::error::Result;
+pub use crate::error::{Error, Result};
 
 /// Adds `xvc` as the first elements to `args` and calls [cli::dispatch] after parsing them.
 pub fn dispatch(args: Vec<&str>) -> Result<()> {

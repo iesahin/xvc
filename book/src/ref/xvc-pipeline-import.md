@@ -249,12 +249,6 @@ This way you can edit and import similar pipelines with minor differences.
 
 ```console
 $ xvc pipeline import --pipeline-name another-pipeline --file pipeline.yaml
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline import [OPTIONS]
-
-For more information, try '--help'.
 
 ```
 
