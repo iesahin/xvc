@@ -1,5 +1,7 @@
 //! The `xvc` API.
 
+pub use crate::error::{Error, Result};
+
 pub use xvc_config as config;
 pub use xvc_core as core;
 pub use xvc_ecs as ecs;
@@ -59,4 +61,11 @@ pub use xvc_pipeline::cmd_step_output as pipeline_step_output;
 pub use xvc_pipeline::cmd_step_show as pipeline_step_show;
 pub use xvc_pipeline::cmd_step_update as pipeline_step_update;
 
-pub use xvc_pipeline;
+pub use crate::git::exec_git;
+pub use crate::git::get_absolute_git_command;
+pub use crate::git::git_auto_commit;
+pub use crate::git::git_auto_stage;
+pub use crate::git::git_checkout_ref;
+pub use crate::git::handle_git_automation;
+pub use crate::git::stash_user_staged_files;
+pub use crate::git::unstash_user_staged_files;
