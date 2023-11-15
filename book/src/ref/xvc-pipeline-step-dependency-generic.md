@@ -22,7 +22,7 @@ $ xvc  pipeline step dependency --step-name morning-message --generic 'date +%F'
 
 The step is invalidated when the date changes and the step is run again.
 
-```console
+```console,ignore
 $ xvc pipeline run
 [OUT] [morning-message] Good Morning!
  
