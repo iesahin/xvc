@@ -447,6 +447,8 @@ pub fn diff_content_digest(
         .copied()
         .collect::<HashSet<XvcEntity>>();
 
+    watch!(file_entities);
+
     let dir_entities = entities
         .iter()
         .filter(|xe| {
@@ -456,6 +458,7 @@ pub fn diff_content_digest(
         })
         .copied()
         .collect::<HashSet<XvcEntity>>();
+    watch!(dir_entities);
 
     entities
         .difference(&file_entities)
@@ -528,6 +531,9 @@ pub fn diff_content_digest(
             dir_content_digest_diff_store,
         )
     };
+
+    watch!(file_content_digest_diff_store.keys());
+    watch!(dir_content_digest_diff_store.keys());
 
     let mut diff_store = DiffStore::with_capacity(
         file_content_digest_diff_store.len() + dir_content_digest_diff_store.len(),
