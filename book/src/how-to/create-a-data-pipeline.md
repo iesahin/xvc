@@ -43,7 +43,7 @@ data
 
 
 ```console
-$ xvc --debug file track data
+$ xvc file track data
 [DEBUG][logging/src/lib.rs::236] Terminal logger enabled with level: Error
 [DEBUG][logging/src/lib.rs::239] File logger enabled with level: Trace to "/var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T//xvc.log"
 [TRACE][core/src/types/xvcroot.rs::247] "."
