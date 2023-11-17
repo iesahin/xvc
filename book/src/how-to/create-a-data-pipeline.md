@@ -115,7 +115,7 @@ handwriting.
 
 ```console 
 $ mkdir data/train
-$ zsh -cl 'for p in {1..60} ; do xvc file copy \\\'data/data/input_${p}_*\\\' data/train/ ; done'
+$ zsh -cl 'for p in {1..60} ; do xvc file copy data/data/input_${p}_\* data/train/ ; done'
 ? 1
 zsh:1: no matches found: /data/data/input_1_* data/train/
 zsh:1: no matches found: /data/data/input_2_* data/train/
