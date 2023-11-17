@@ -247,15 +247,16 @@ pub fn cmd_track(
             current_xvc_path_store.subset(updated_content_digest_store.keys().cloned())?;
 
         // Filter directories from carry_in / recheck
-        let xvc_paths_to_carry = xvc_paths_to_carry
+        let xvc_paths_to_carry: HStore<XvcPath> = xvc_paths_to_carry
             .into_iter()
             .filter(|(_, xp)| targets.contains_key(xp))
             .collect();
+        watch!(xvc_paths_to_carry);
 
         let cache_paths = updated_content_digest_store
             .iter()
             .filter_map(|(xe, cd)| {
-                current_xvc_path_store
+                xvc_paths_to_carry
                     .get(xe)
                     .and_then(|xp| XvcCachePath::new(xp, cd).ok())
                     .map(|cp| (*xe, cp))

@@ -290,7 +290,6 @@ pub fn carry_in(
             info!(output_snd, "[REMOVE] {target_path}");
         }
         let recheck_method = uwo!(recheck_methods.get(xe).cloned(), output_snd);
-
         uwr!(
             recheck_from_cache(
                 output_snd,
