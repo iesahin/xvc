@@ -32,7 +32,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 8
-lrwxr-xr-x  1 iex  staff  192 Nov 18 01:42 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 18 01:43 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rwxr-xr-x  1 iex  staff  267 Nov 18 00:16 create-subsets.zsh
 
 ```
@@ -46,7 +46,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 8
-lrwxr-xr-x  1 iex  staff  192 Nov 18 01:42 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 18 01:43 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rwxr-xr-x  1 iex  staff  267 Nov 18 00:16 create-subsets.zsh
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
@@ -75,21 +75,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         192 2023-11-17 22:42:54 3a714d65          data/data/input_9_9_9.jpg
-SS         192 2023-11-17 22:42:55 9ffccc4d          data/data/input_9_9_8.jpg
-SS         192 2023-11-17 22:42:55 5d6312a4          data/data/input_9_9_7.jpg
-SS         192 2023-11-17 22:42:56 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         192 2023-11-17 22:42:55 2047d7f3          data/data/input_9_9_5.jpg
-SS         192 2023-11-17 22:42:55 10fcf309          data/data/input_9_9_4.jpg
-SS         192 2023-11-17 22:42:56 0bdcd918          data/data/input_9_9_3.jpg
-SS         192 2023-11-17 22:42:54 aebcbc03          data/data/input_9_9_2.jpg
-SS         192 2023-11-17 22:42:55 38abd173          data/data/input_9_9_15.jpg
-SS         192 2023-11-17 22:42:54 7c6a9003          data/data/input_9_9_14.jpg
-SS         192 2023-11-17 22:42:54 a9f04ad9          data/data/input_9_9_13.jpg
-SS         192 2023-11-17 22:42:54 2d372f95          data/data/input_9_9_12.jpg
-SS         192 2023-11-17 22:42:54 8fe799b4          data/data/input_9_9_11.jpg
-SS         192 2023-11-17 22:42:56 ee35e5d5          data/data/input_9_9_10.jpg
-SS         192 2023-11-17 22:42:55 7576894f          data/data/input_9_9_1.jpg
+SS         192 2023-11-17 22:44:06 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-17 22:44:05 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-17 22:44:05 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-17 22:44:06 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-17 22:44:06 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-17 22:44:05 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-17 22:44:05 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-17 22:44:05 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-17 22:44:06 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-17 22:44:04 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-17 22:44:04 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-17 22:44:05 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-17 22:44:05 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-17 22:44:06 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-17 22:44:06 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
@@ -115,7 +115,7 @@ testing. This will ensure that the model is not trained with the same person's
 handwriting.
 
 ```console
-$ xvc --debug file copy --name=only data/data/input_1_* data/train/ 
+$ xvc --debug file copy --name-only data/data/input_1_* data/train/ 
 ? 2
 error: unexpected argument '--name' found
 
