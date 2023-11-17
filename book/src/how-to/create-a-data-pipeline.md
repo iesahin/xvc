@@ -32,7 +32,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 8
-lrwxr-xr-x  1 iex  staff  191 Nov 18 02:03 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 18 02:05 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rwxr-xr-x  1 iex  staff  369 Nov 18 01:55 create-subsets.zsh
 
 ```
@@ -46,7 +46,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 8
-lrwxr-xr-x  1 iex  staff  191 Nov 18 02:03 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 18 02:05 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rwxr-xr-x  1 iex  staff  369 Nov 18 01:55 create-subsets.zsh
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
@@ -75,22 +75,22 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         191 2023-11-17 23:03:54 3a714d65          data/data/input_9_9_9.jpg
-SS         191 2023-11-17 23:03:52 9ffccc4d          data/data/input_9_9_8.jpg
-SS         191 2023-11-17 23:03:53 5d6312a4          data/data/input_9_9_7.jpg
-SS         191 2023-11-17 23:03:52 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         191 2023-11-17 23:03:53 2047d7f3          data/data/input_9_9_5.jpg
-SS         191 2023-11-17 23:03:53 10fcf309          data/data/input_9_9_4.jpg
-SS         191 2023-11-17 23:03:52 0bdcd918          data/data/input_9_9_3.jpg
-SS         191 2023-11-17 23:03:52 aebcbc03          data/data/input_9_9_2.jpg
-SS         191 2023-11-17 23:03:52 38abd173          data/data/input_9_9_15.jpg
-SS         191 2023-11-17 23:03:52 7c6a9003          data/data/input_9_9_14.jpg
-SS         191 2023-11-17 23:03:52 a9f04ad9          data/data/input_9_9_13.jpg
-SS         191 2023-11-17 23:03:52 2d372f95          data/data/input_9_9_12.jpg
-SS         191 2023-11-17 23:03:53 8fe799b4          data/data/input_9_9_11.jpg
-SS         191 2023-11-17 23:03:51 ee35e5d5          data/data/input_9_9_10.jpg
-SS         191 2023-11-17 23:03:51 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2865 Cached Size:        8710
+SS         192 2023-11-17 23:05:58 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-17 23:06:00 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-17 23:05:59 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-17 23:05:58 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-17 23:05:58 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-17 23:05:58 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-17 23:05:59 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-17 23:05:58 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-17 23:05:59 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-17 23:05:59 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-17 23:05:59 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-17 23:05:59 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-17 23:05:58 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-17 23:05:58 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-17 23:05:58 7576894f          data/data/input_9_9_1.jpg
+Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
 ```
@@ -123,7 +123,7 @@ $ cat create-subsets.zsh
 
 for p in {1..60} ; do echo "Copying ${p}" ; xvc file copy --name-only 'data/data/input_${p}_*' data/train/ ; done
 
-for p in {61..80} ; do echo "Copying ${p}" ; xvc file copy --name-only 'data/data/input_${p}_*' data/validate/ ; done
+for p in {61..80} ; do echo "Copying ${p}" ; xvc -v file copy --name-only 'data/data/input_${p}_*' data/validate/ ; done
 
 for p in {81..100} ; do echo "Copying ${p}" ; xvc file copy --name-only 'data/data/input_${p}_*' data/test/ ; done
 
