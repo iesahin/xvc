@@ -106,7 +106,7 @@ the workspace.
 Now, we'll create a subset of these files with `xvc file copy` comand. 
 
 The data set contains 15 classes. It has 10 samples for each of these classes
-from 100 different people. As we'll train a Chinese digit recogonizer, we'll
+from 100 different people. As we'll train a Chinese digit recognizer, we'll
 first divide volunteers 1-60 for training, 61-80 for validation, and 81-100 for
 testing. This will ensure that the model is not trained with the same person's
 handwriting.
