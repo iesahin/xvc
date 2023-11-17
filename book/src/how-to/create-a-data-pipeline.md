@@ -31,8 +31,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 $ ls -l
 ```
 
-
+```
 $ xvc pipeline step new -s convert-docx-to-txt --command "./convert-docx-to-txt.zsh" 
 ```
-
 
