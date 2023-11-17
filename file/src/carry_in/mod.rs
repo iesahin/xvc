@@ -275,6 +275,8 @@ pub fn carry_in(
                 info!(output_snd, "[EXISTS] {abs_cache_path} for {xp}");
             }
         } else {
+            watch!(&cache_path);
+            watch!(&xp);
             uwr!(
                 move_xvc_path_to_cache(xvc_root, xp, &cache_path),
                 output_snd
