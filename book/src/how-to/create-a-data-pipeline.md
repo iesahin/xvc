@@ -115,7 +115,7 @@ testing. This will ensure that the model is not trained with the same person's
 handwriting.
 
 ```console
-$ xvc file copy data/data/input_1_* data/train/ 
+$ xvc --debug file copy data/data/input_1_* data/train/ 
 
 ```
 
