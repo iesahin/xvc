@@ -31,7 +31,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 17 21:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 17 21:49 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -41,7 +41,11 @@ As we'll work with the file contents, let's unzip the data file.
 
 ```console
 $ unzip chinese_mnist.zip
+
+$ ls -l
 ```
+
+
 
 ```
 $ xvc pipeline step new -s convert-docx-to-txt --command "./convert-docx-to-txt.zsh" 
