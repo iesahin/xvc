@@ -315,6 +315,8 @@ pub fn recheck_from_cache(
     match recheck_method {
         RecheckMethod::Copy => {
             watch!("Before copy");
+            watch!(&cache_path);
+            watch!(&path);
             fs::copy(&cache_path, &path)?;
             info!(output_snd, "[COPY] {} -> {}", cache_path, path);
             let mut perm = path.metadata()?.permissions();
