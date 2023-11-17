@@ -123,7 +123,6 @@ $ zsh -cl 'for p in {81..100} ; do xvc file copy data/data/input_${p}_\* data/te
 If you look at the contents of these directories, you'll see that they are
 symbolic links to the same files we started to track. 
 
-```
-
+```console
 $ ls -l data/train/input_9_9*
 ```
