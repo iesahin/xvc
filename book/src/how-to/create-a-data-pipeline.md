@@ -14990,6 +14990,10 @@ add '.xvc/store/xvc-path-store/1700257666270171.json'
 
 ```
 
+```console
+$ tree data/train/
+```
+
 We'll use the following shell script to create subsets.
 
 ```console
