@@ -241,8 +241,16 @@ pub fn cmd_track(
             })
             .collect();
 
+        // Only the updated paths are carried in
+        // TODO: Allow --force option to carry-in all paths
         let xvc_paths_to_carry =
             current_xvc_path_store.subset(updated_content_digest_store.keys().cloned())?;
+
+        // Filter directories from carry_in / recheck
+        let xvc_paths_to_carry = xvc_paths_to_carry
+            .into_iter()
+            .filter(|(_, xp)| targets.contains_key(xp))
+            .collect();
 
         let cache_paths = updated_content_digest_store
             .iter()
