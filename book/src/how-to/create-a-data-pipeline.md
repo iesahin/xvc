@@ -70,7 +70,3 @@ Let's list the track status of files first.
 $ xvc file list data/
 ```
 
-
-$ xvc pipeline step new -s convert-docx-to-txt --command "./convert-docx-to-txt.zsh" 
-```
-
