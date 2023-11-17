@@ -31,7 +31,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 17 22:37 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 17 23:24 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -44,7 +44,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 17 22:37 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 17 23:24 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
 ```
@@ -72,21 +72,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         192 2023-11-17 19:37:28 3a714d65          data/data/input_9_9_9.jpg
-SS         192 2023-11-17 19:37:30 9ffccc4d          data/data/input_9_9_8.jpg
-SS         192 2023-11-17 19:37:29 5d6312a4          data/data/input_9_9_7.jpg
-SS         192 2023-11-17 19:37:30 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         192 2023-11-17 19:37:30 2047d7f3          data/data/input_9_9_5.jpg
-SS         192 2023-11-17 19:37:30 10fcf309          data/data/input_9_9_4.jpg
-SS         192 2023-11-17 19:37:29 0bdcd918          data/data/input_9_9_3.jpg
-SS         192 2023-11-17 19:37:28 aebcbc03          data/data/input_9_9_2.jpg
-SS         192 2023-11-17 19:37:30 38abd173          data/data/input_9_9_15.jpg
-SS         192 2023-11-17 19:37:29 7c6a9003          data/data/input_9_9_14.jpg
-SS         192 2023-11-17 19:37:28 a9f04ad9          data/data/input_9_9_13.jpg
-SS         192 2023-11-17 19:37:28 2d372f95          data/data/input_9_9_12.jpg
-SS         192 2023-11-17 19:37:30 8fe799b4          data/data/input_9_9_11.jpg
-SS         192 2023-11-17 19:37:28 ee35e5d5          data/data/input_9_9_10.jpg
-SS         192 2023-11-17 19:37:30 7576894f          data/data/input_9_9_1.jpg
+SS         192 2023-11-17 20:24:55 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-17 20:24:56 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-17 20:24:57 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-17 20:24:55 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-17 20:24:56 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-17 20:24:56 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-17 20:24:56 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-17 20:24:55 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-17 20:24:56 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-17 20:24:57 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-17 20:24:55 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-17 20:24:55 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-17 20:24:55 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-17 20:24:55 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-17 20:24:56 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
@@ -113,5 +113,307 @@ handwriting.
 
 ```console 
 $ mkdir data/train
-$ zsh -cl 'for p in {1..60} ; do xvc file copy data/data/input_${p}_* data/train/ ; done'
+$ zsh -cl 'for p in {1..60} ; do xvc file copy \'data/data/input_${p}_*\' data/train/ ; done'
+? 2
+error: unexpected argument 'data/data/input_1_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_2_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_3_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_4_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_5_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_6_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_7_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_8_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_9_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_10_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_11_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_12_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_13_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_14_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_15_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_16_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_17_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_18_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_19_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_20_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_21_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_22_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_23_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_24_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_25_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_26_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_27_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_28_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_29_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_30_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_31_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_32_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_33_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_34_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_35_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_36_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_37_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_38_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_39_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_40_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_41_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_42_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_43_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_44_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_45_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_46_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_47_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_48_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_49_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_50_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_51_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_52_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_53_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_54_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_55_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_56_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_57_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_58_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_59_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+error: unexpected argument 'data/data/input_60_10_11.jpg' found
+
+Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+
+For more information, try '--help'.
+
 ```

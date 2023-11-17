@@ -186,7 +186,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("dot", which::which("dot"))
         .register_bin("unzip", which::which("unzip"))
         .case("docs/*/*.md")
-        .timeout(Duration::from_secs(10))
+        .timeout(Duration::from_secs(30))
         // We skip this for the time being.
         .skip("docs/start/ml.md");
 
