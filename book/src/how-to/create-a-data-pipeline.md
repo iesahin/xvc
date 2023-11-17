@@ -31,7 +31,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  191 Nov 17 23:29 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 17 23:34 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -44,7 +44,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  191 Nov 17 23:29 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 17 23:34 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
 ```
@@ -72,22 +72,22 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         191 2023-11-17 20:29:58 3a714d65          data/data/input_9_9_9.jpg
-SS         191 2023-11-17 20:29:58 9ffccc4d          data/data/input_9_9_8.jpg
-SS         191 2023-11-17 20:29:59 5d6312a4          data/data/input_9_9_7.jpg
-SS         191 2023-11-17 20:29:59 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         191 2023-11-17 20:29:58 2047d7f3          data/data/input_9_9_5.jpg
-SS         191 2023-11-17 20:29:59 10fcf309          data/data/input_9_9_4.jpg
-SS         191 2023-11-17 20:29:58 0bdcd918          data/data/input_9_9_3.jpg
-SS         191 2023-11-17 20:29:58 aebcbc03          data/data/input_9_9_2.jpg
-SS         191 2023-11-17 20:29:59 38abd173          data/data/input_9_9_15.jpg
-SS         191 2023-11-17 20:29:57 7c6a9003          data/data/input_9_9_14.jpg
-SS         191 2023-11-17 20:29:58 a9f04ad9          data/data/input_9_9_13.jpg
-SS         191 2023-11-17 20:29:59 2d372f95          data/data/input_9_9_12.jpg
-SS         191 2023-11-17 20:29:58 8fe799b4          data/data/input_9_9_11.jpg
-SS         191 2023-11-17 20:29:58 ee35e5d5          data/data/input_9_9_10.jpg
-SS         191 2023-11-17 20:29:58 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2865 Cached Size:        8710
+SS         192 2023-11-17 20:34:52 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-17 20:34:51 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-17 20:34:52 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-17 20:34:51 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-17 20:34:52 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-17 20:34:52 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-17 20:34:52 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-17 20:34:52 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-17 20:34:51 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-17 20:34:52 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-17 20:34:52 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-17 20:34:53 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-17 20:34:51 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-17 20:34:51 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-17 20:34:50 7576894f          data/data/input_9_9_1.jpg
+Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
 ```
@@ -114,68 +114,16 @@ handwriting.
 
 
 ```console 
-$ mkdir data/train
 $ zsh -cl 'for p in {1..60} ; do xvc file copy data/data/input_${p}_\* data/train/ ; done'
-? 1
-zsh:1: no matches found: /data/data/input_1_* data/train/
-zsh:1: no matches found: /data/data/input_2_* data/train/
-zsh:1: no matches found: /data/data/input_3_* data/train/
-zsh:1: no matches found: /data/data/input_4_* data/train/
-zsh:1: no matches found: /data/data/input_5_* data/train/
-zsh:1: no matches found: /data/data/input_6_* data/train/
-zsh:1: no matches found: /data/data/input_7_* data/train/
-zsh:1: no matches found: /data/data/input_8_* data/train/
-zsh:1: no matches found: /data/data/input_9_* data/train/
-zsh:1: no matches found: /data/data/input_10_* data/train/
-zsh:1: no matches found: /data/data/input_11_* data/train/
-zsh:1: no matches found: /data/data/input_12_* data/train/
-zsh:1: no matches found: /data/data/input_13_* data/train/
-zsh:1: no matches found: /data/data/input_14_* data/train/
-zsh:1: no matches found: /data/data/input_15_* data/train/
-zsh:1: no matches found: /data/data/input_16_* data/train/
-zsh:1: no matches found: /data/data/input_17_* data/train/
-zsh:1: no matches found: /data/data/input_18_* data/train/
-zsh:1: no matches found: /data/data/input_19_* data/train/
-zsh:1: no matches found: /data/data/input_20_* data/train/
-zsh:1: no matches found: /data/data/input_21_* data/train/
-zsh:1: no matches found: /data/data/input_22_* data/train/
-zsh:1: no matches found: /data/data/input_23_* data/train/
-zsh:1: no matches found: /data/data/input_24_* data/train/
-zsh:1: no matches found: /data/data/input_25_* data/train/
-zsh:1: no matches found: /data/data/input_26_* data/train/
-zsh:1: no matches found: /data/data/input_27_* data/train/
-zsh:1: no matches found: /data/data/input_28_* data/train/
-zsh:1: no matches found: /data/data/input_29_* data/train/
-zsh:1: no matches found: /data/data/input_30_* data/train/
-zsh:1: no matches found: /data/data/input_31_* data/train/
-zsh:1: no matches found: /data/data/input_32_* data/train/
-zsh:1: no matches found: /data/data/input_33_* data/train/
-zsh:1: no matches found: /data/data/input_34_* data/train/
-zsh:1: no matches found: /data/data/input_35_* data/train/
-zsh:1: no matches found: /data/data/input_36_* data/train/
-zsh:1: no matches found: /data/data/input_37_* data/train/
-zsh:1: no matches found: /data/data/input_38_* data/train/
-zsh:1: no matches found: /data/data/input_39_* data/train/
-zsh:1: no matches found: /data/data/input_40_* data/train/
-zsh:1: no matches found: /data/data/input_41_* data/train/
-zsh:1: no matches found: /data/data/input_42_* data/train/
-zsh:1: no matches found: /data/data/input_43_* data/train/
-zsh:1: no matches found: /data/data/input_44_* data/train/
-zsh:1: no matches found: /data/data/input_45_* data/train/
-zsh:1: no matches found: /data/data/input_46_* data/train/
-zsh:1: no matches found: /data/data/input_47_* data/train/
-zsh:1: no matches found: /data/data/input_48_* data/train/
-zsh:1: no matches found: /data/data/input_49_* data/train/
-zsh:1: no matches found: /data/data/input_50_* data/train/
-zsh:1: no matches found: /data/data/input_51_* data/train/
-zsh:1: no matches found: /data/data/input_52_* data/train/
-zsh:1: no matches found: /data/data/input_53_* data/train/
-zsh:1: no matches found: /data/data/input_54_* data/train/
-zsh:1: no matches found: /data/data/input_55_* data/train/
-zsh:1: no matches found: /data/data/input_56_* data/train/
-zsh:1: no matches found: /data/data/input_57_* data/train/
-zsh:1: no matches found: /data/data/input_58_* data/train/
-zsh:1: no matches found: /data/data/input_59_* data/train/
-zsh:1: no matches found: /data/data/input_60_* data/train/
+$ zsh -cl 'for p in {61..80} ; do xvc file copy data/data/input_${p}_\* data/validate/ ; done'
+$ zsh -cl 'for p in {81..100} ; do xvc file copy data/data/input_${p}_\* data/test/ ; done'
 
+```
+
+If you look at the contents of these directories, you'll see that they are
+symbolic links to the same files we started to track. 
+
+```
+
+$ ls -l data/train/input_9_9*
 ```
