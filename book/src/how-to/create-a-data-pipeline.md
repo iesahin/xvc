@@ -67,7 +67,7 @@ The reason we're tracking the data directory separately is that we'll use differ
 Let's list the track status of files first. 
 
 ```console
-$ xvc file list data/data/
+$ xvc file list data/
 ```
 
 
