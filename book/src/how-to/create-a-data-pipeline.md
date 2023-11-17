@@ -56,11 +56,11 @@ $ xvc --debug file track --no-parallel data
     "core.quiet = false",
 ]
 [TRACE][config/src/lib.rs::540] map: {
-    "core.quiet": Boolean(
-        false,
-    ),
     "core.verbosity": String(
         "quiet",
+    ),
+    "core.quiet": Boolean(
+        false,
     ),
 }
 [TRACE][config/src/lib.rs::543] conf: XvcConfig {
@@ -74,11 +74,38 @@ $ xvc --debug file track --no-parallel data
         XvcConfigMap {
             source: Default,
             map: {
-                "file.recheck.method": String(
-                    "copy",
+                "file.list.sort": String(
+                    "name-desc",
                 ),
-                "git.auto_stage": Boolean(
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                ),
+                "core.verbosity": String(
+                    "error",
+                ),
+                "file.list.no_summary": Boolean(
                     false,
+                ),
+                "file.track.force": Boolean(
+                    false,
+                ),
+                "pipeline.current_pipeline": String(
+                    "default",
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "git.use_git": Boolean(
+                    true,
                 ),
                 "git.command": String(
                     "git",
@@ -86,106 +113,67 @@ $ xvc --debug file track --no-parallel data
                 "git.auto_commit": Boolean(
                     true,
                 ),
-                "file.track.force": Boolean(
-                    false,
-                ),
-                "pipeline.default": String(
-                    "default",
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "file.carry-in.no_parallel": Boolean(
-                    false,
+                "core.guid": String(
+                    "7fad519da5f3bb99",
                 ),
                 "pipeline.process_pool_size": Integer(
                     4,
                 ),
-                "core.verbosity": String(
-                    "error",
-                ),
-                "core.guid": String(
-                    "f324d10d8abfd4bb",
-                ),
                 "file.track.text_or_binary": String(
                     "auto",
-                ),
-                "git.use_git": Boolean(
-                    true,
-                ),
-                "file.carry-in.force": Boolean(
-                    false,
-                ),
-                "pipeline.current_pipeline": String(
-                    "default",
-                ),
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "file.track.no_parallel": Boolean(
-                    false,
-                ),
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
                 "file.list.recursive": Boolean(
                     false,
                 ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
+                "file.recheck.method": String(
+                    "copy",
                 ),
-                "file.list.no_summary": Boolean(
+                "git.auto_stage": Boolean(
                     false,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "file.carry-in.force": Boolean(
+                    false,
+                ),
+                "pipeline.default": String(
+                    "default",
                 ),
             },
         },
         XvcConfigMap {
             source: Project,
             map: {
-                "cache.algorithm": String(
-                    "blake3",
-                ),
-                "pipeline.default_params_file": String(
-                    "params.yaml",
-                ),
-                "git.use_git": Boolean(
-                    true,
+                "file.list.format": String(
+                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                 ),
                 "pipeline.default": String(
                     "default",
                 ),
+                "file.recheck.method": String(
+                    "copy",
+                ),
                 "file.track.force": Boolean(
                     false,
                 ),
-                "file.track.no_parallel": Boolean(
+                "file.list.recursive": Boolean(
                     false,
-                ),
-                "core.verbosity": String(
-                    "error",
                 ),
                 "git.auto_stage": Boolean(
-                    false,
-                ),
-                "file.list.sort": String(
-                    "name-desc",
-                ),
-                "git.auto_commit": Boolean(
-                    true,
-                ),
-                "file.track.no_commit": Boolean(
-                    false,
-                ),
-                "file.carry-in.no_parallel": Boolean(
                     false,
                 ),
                 "file.carry-in.force": Boolean(
                     false,
                 ),
-                "git.command": String(
-                    "git",
+                "pipeline.process_pool_size": Integer(
+                    4,
+                ),
+                "file.carry-in.no_parallel": Boolean(
+                    false,
+                ),
+                "cache.algorithm": String(
+                    "blake3",
                 ),
                 "file.track.text_or_binary": String(
                     "auto",
@@ -193,23 +181,35 @@ $ xvc --debug file track --no-parallel data
                 "pipeline.current_pipeline": String(
                     "default",
                 ),
+                "git.auto_commit": Boolean(
+                    true,
+                ),
+                "file.track.no_parallel": Boolean(
+                    false,
+                ),
+                "file.track.no_commit": Boolean(
+                    false,
+                ),
                 "file.list.no_summary": Boolean(
                     false,
                 ),
-                "file.recheck.method": String(
-                    "copy",
-                ),
-                "pipeline.process_pool_size": Integer(
-                    4,
-                ),
-                "file.list.format": String(
-                    "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                ),
-                "file.list.recursive": Boolean(
-                    false,
-                ),
                 "core.guid": String(
-                    "d31854f2e4e4c74e",
+                    "9b3f6dc7a8970ab3",
+                ),
+                "pipeline.default_params_file": String(
+                    "params.yaml",
+                ),
+                "core.verbosity": String(
+                    "error",
+                ),
+                "git.command": String(
+                    "git",
+                ),
+                "file.list.sort": String(
+                    "name-desc",
+                ),
+                "git.use_git": Boolean(
+                    true,
                 ),
             },
         },
@@ -224,29 +224,35 @@ $ xvc --debug file track --no-parallel data
         XvcConfigMap {
             source: CommandLine,
             map: {
-                "core.quiet": Boolean(
-                    false,
-                ),
                 "core.verbosity": String(
                     "quiet",
+                ),
+                "core.quiet": Boolean(
+                    false,
                 ),
             },
         },
     ],
     the_config: {
-        "core.verbosity": XvcConfigValue {
+        "core.quiet": XvcConfigValue {
             source: CommandLine,
-            value: String(
-                "quiet",
+            value: Boolean(
+                false,
             ),
         },
-        "pipeline.current_pipeline": XvcConfigValue {
+        "pipeline.default": XvcConfigValue {
             source: Project,
             value: String(
                 "default",
             ),
         },
-        "file.track.force": XvcConfigValue {
+        "file.recheck.method": XvcConfigValue {
+            source: Project,
+            value: String(
+                "copy",
+            ),
+        },
+        "file.carry-in.no_parallel": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -258,22 +264,22 @@ $ xvc --debug file track --no-parallel data
                 false,
             ),
         },
-        "file.recheck.method": XvcConfigValue {
+        "file.list.sort": XvcConfigValue {
             source: Project,
             value: String(
-                "copy",
+                "name-desc",
             ),
         },
-        "file.track.no_commit": XvcConfigValue {
+        "pipeline.process_pool_size": XvcConfigValue {
             source: Project,
-            value: Boolean(
-                false,
+            value: Integer(
+                4,
             ),
         },
-        "file.list.format": XvcConfigValue {
-            source: Project,
+        "core.verbosity": XvcConfigValue {
+            source: CommandLine,
             value: String(
-                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                "quiet",
             ),
         },
         "file.list.recursive": XvcConfigValue {
@@ -282,13 +288,31 @@ $ xvc --debug file track --no-parallel data
                 false,
             ),
         },
-        "file.list.no_summary": XvcConfigValue {
+        "git.auto_stage": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "git.auto_stage": XvcConfigValue {
+        "git.command": XvcConfigValue {
+            source: Project,
+            value: String(
+                "git",
+            ),
+        },
+        "pipeline.default_params_file": XvcConfigValue {
+            source: Project,
+            value: String(
+                "params.yaml",
+            ),
+        },
+        "core.guid": XvcConfigValue {
+            source: Project,
+            value: String(
+                "9b3f6dc7a8970ab3",
+            ),
+        },
+        "file.carry-in.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
@@ -306,70 +330,46 @@ $ xvc --debug file track --no-parallel data
                 true,
             ),
         },
+        "file.list.no_summary": XvcConfigValue {
+            source: Project,
+            value: Boolean(
+                false,
+            ),
+        },
         "cache.algorithm": XvcConfigValue {
             source: Project,
             value: String(
                 "blake3",
             ),
         },
-        "core.quiet": XvcConfigValue {
-            source: CommandLine,
+        "file.list.format": XvcConfigValue {
+            source: Project,
+            value: String(
+                "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+            ),
+        },
+        "file.track.no_commit": XvcConfigValue {
+            source: Project,
             value: Boolean(
                 false,
             ),
         },
-        "core.guid": XvcConfigValue {
-            source: Project,
-            value: String(
-                "d31854f2e4e4c74e",
-            ),
-        },
-        "pipeline.default": XvcConfigValue {
+        "pipeline.current_pipeline": XvcConfigValue {
             source: Project,
             value: String(
                 "default",
             ),
         },
-        "file.carry-in.force": XvcConfigValue {
+        "file.track.force": XvcConfigValue {
             source: Project,
             value: Boolean(
                 false,
-            ),
-        },
-        "pipeline.default_params_file": XvcConfigValue {
-            source: Project,
-            value: String(
-                "params.yaml",
             ),
         },
         "file.track.text_or_binary": XvcConfigValue {
             source: Project,
             value: String(
                 "auto",
-            ),
-        },
-        "file.carry-in.no_parallel": XvcConfigValue {
-            source: Project,
-            value: Boolean(
-                false,
-            ),
-        },
-        "git.command": XvcConfigValue {
-            source: Project,
-            value: String(
-                "git",
-            ),
-        },
-        "pipeline.process_pool_size": XvcConfigValue {
-            source: Project,
-            value: Integer(
-                4,
-            ),
-        },
-        "file.list.sort": XvcConfigValue {
-            source: Project,
-            value: String(
-                "name-desc",
             ),
         },
     },
@@ -379,7 +379,7 @@ $ xvc --debug file track --no-parallel data
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"f324d10d8abfd4bb/"
+guid = /"7fad519da5f3bb99/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -521,8 +521,8 @@ process_pool_size = 4
 }
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1700212386757807",
-    "[CWD]/.xvc/ec/1700212386764249",
+    "[CWD]/.xvc/ec/1700212742192910",
+    "[CWD]/.xvc/ec/1700212742195402",
 ]
 [TRACE][file/src/lib.rs::157] opts: XvcFileCLI {
     verbosity: 0,
@@ -757,20 +757,20 @@ process_pool_size = 4
             ),
             modified: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 757894296,
+                    tv_sec: 1700212742,
+                    tv_nsec: 193002072,
                 },
             ),
             accessed: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 784846631,
+                    tv_sec: 1700212742,
+                    tv_nsec: 214822835,
                 },
             ),
             created: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 754423272,
+                    tv_sec: 1700212742,
+                    tv_nsec: 189973844,
                 },
             ),
             ..
@@ -829,20 +829,20 @@ process_pool_size = 4
             ),
             modified: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 758031252,
+                    tv_sec: 1700212742,
+                    tv_nsec: 193128613,
                 },
             ),
             accessed: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 801887425,
+                    tv_sec: 1700212742,
+                    tv_nsec: 236322391,
                 },
             ),
             created: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 757986378,
+                    tv_sec: 1700212742,
+                    tv_nsec: 193089322,
                 },
             ),
             ..
@@ -865,20 +865,20 @@ process_pool_size = 4
             ),
             modified: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 796083815,
+                    tv_sec: 1700212742,
+                    tv_nsec: 230367641,
                 },
             ),
             accessed: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 321183574,
+                    tv_sec: 1700212741,
+                    tv_nsec: 767138004,
                 },
             ),
             created: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 321183574,
+                    tv_sec: 1700212741,
+                    tv_nsec: 767138004,
                 },
             ),
             ..
@@ -901,20 +901,20 @@ process_pool_size = 4
             ),
             modified: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 239899494,
+                    tv_sec: 1700212741,
+                    tv_nsec: 684765712,
                 },
             ),
             accessed: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 805305701,
+                    tv_sec: 1700212742,
+                    tv_nsec: 240269363,
                 },
             ),
             created: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 239594290,
+                    tv_sec: 1700212741,
+                    tv_nsec: 684483172,
                 },
             ),
             ..
@@ -937,20 +937,20 @@ process_pool_size = 4
             ),
             modified: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 757958253,
+                    tv_sec: 1700212742,
+                    tv_nsec: 193062572,
                 },
             ),
             accessed: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 802057714,
+                    tv_sec: 1700212742,
+                    tv_nsec: 236484098,
                 },
             ),
             created: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 757925129,
+                    tv_sec: 1700212742,
+                    tv_nsec: 193027531,
                 },
             ),
             ..
@@ -1200,20 +1200,20 @@ process_pool_size = 4
             ),
             modified: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 241738629,
+                    tv_sec: 1700212741,
+                    tv_nsec: 686320326,
                 },
             ),
             accessed: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 805342367,
+                    tv_sec: 1700212742,
+                    tv_nsec: 240308238,
                 },
             ),
             created: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 239640915,
+                    tv_sec: 1700212741,
+                    tv_nsec: 684524714,
                 },
             ),
             ..
@@ -1236,20 +1236,20 @@ process_pool_size = 4
             ),
             modified: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 242975817,
+                    tv_sec: 1700212741,
+                    tv_nsec: 687240944,
                 },
             ),
             accessed: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 805346075,
+                    tv_sec: 1700212742,
+                    tv_nsec: 240310821,
                 },
             ),
             created: Ok(
                 SystemTime {
-                    tv_sec: 1700212386,
-                    tv_nsec: 239682664,
+                    tv_sec: 1700212741,
+                    tv_nsec: 684564047,
                 },
             ),
             ..
@@ -1912,6 +1912,14 @@ process_pool_size = 4
         },
     },
 ]
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Investment-Contract (HLoom).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/.DS_Store"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Limited Warranty (Pro remodeler).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/AGREEMENT TO SETTLE (BCHRT).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/House-Rental-Contract (HLoom).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/XYZ Corp Employment Agreement.docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Project-Manager-Contract (Hloom).docx"
 [TRACE][walker/src/lib.rs::436] dwi: IgnoreRules {
     root: "[CWD]",
     patterns: [
@@ -2087,7 +2095,7 @@ process_pool_size = 4
         ],
     },
 }
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Investment-Contract (HLoom).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx"
 [TRACE][walker/src/lib.rs::437] walk_options: WalkOptions {
     ignore_filename: Some(
         ".xvcignore",
@@ -2422,19 +2430,6 @@ process_pool_size = 4
         },
     },
 ]
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/.DS_Store"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Limited Warranty (Pro remodeler).docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/AGREEMENT TO SETTLE (BCHRT).docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/House-Rental-Contract (HLoom).docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/XYZ Corp Employment Agreement.docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Project-Manager-Contract (Hloom).docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Non-Compete (Signaturely).docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Roofing Contract (Signaturely).docx"
-[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Services Contract -Cyberdyne Systems V12.docx"
-[TRACE][walker/src/lib.rs::452] "End of walk_parallel": "End of walk_parallel"
 [TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/non-contracts/Invoice (HLoom).docx"
 [TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx"
 [TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/non-contracts/Determining Culture Fit.docx"
@@ -2444,6 +2439,11 @@ process_pool_size = 4
 [TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/non-contracts/10 steps for marketing your law firm.docx"
 [TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx"
 [TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/non-contracts/Is Remote Work Working.docx"
+[TRACE][walker/src/lib.rs::452] "End of walk_parallel": "End of walk_parallel"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Non-Compete (Signaturely).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Roofing Contract (Signaturely).docx"
+[TRACE][walker/src/lib.rs::412] child_path.path: "[CWD]/data/contracts/Services Contract -Cyberdyne Systems V12.docx"
 [TRACE][walker/src/lib.rs::452] "End of walk_parallel": "End of walk_parallel"
 [TRACE][walker/src/lib.rs::452] "End of walk_parallel": "End of walk_parallel"
 [TRACE][walker/src/lib.rs::452] "End of walk_parallel": "End of walk_parallel"
@@ -2552,41 +2552,6 @@ process_pool_size = 4
 [TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
     "[CWD]",
 )
-[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx"
-[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx"
-[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Non-Compete (Signaturely).docx"
-[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Roofing Contract (Signaturely).docx"
-[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Services Contract -Cyberdyne Systems V12.docx"
-[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
-    "[CWD]",
-)
-[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
-    "[CWD]",
-)
 [TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/non-contracts/Invoice (HLoom).docx"
 [TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
     "[CWD]",
@@ -2650,200 +2615,53 @@ process_pool_size = 4
 [TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
     "[CWD]",
 )
+[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx"
+[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx"
+[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Non-Compete (Signaturely).docx"
+[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Roofing Contract (Signaturely).docx"
+[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::88] abs_path: "[CWD]/data/contracts/Services Contract -Cyberdyne Systems V12.docx"
+[TRACE][core/src/types/xvcpath.rs::89] current_dir: AbsolutePath(
+    "[CWD]",
+)
+[TRACE][core/src/types/xvcpath.rs::90] xvc_root.absolute_path(): AbsolutePath(
+    "[CWD]",
+)
 [TRACE][file/src/common/mod.rs::210] all_paths: {
     XvcPath(
-        "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
+        ".gitignore",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            21169,
+            107,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66540472,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/XYZ Corp Employment Agreement.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            42357,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 63048728,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Project-Manager-Contract (Hloom).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            24201,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64109505,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/10 steps for marketing your law firm.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            11133,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66977300,
-            },
-        ),
-    },
-    XvcPath(
-        "convert-to-text.zsh",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            157,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163709,
-                tv_nsec: 431025363,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/invoice-spiceimporter.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            21719,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66382308,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Is Remote Work Working.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            8950,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 67812955,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Roofing Contract (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17302,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64779496,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            40728,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65227740,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            480,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 241738629,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Determining Culture Fit.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            10144,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66122937,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Invoice (HLoom).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            43002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65650234,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66810635,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            45096,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64280670,
+                tv_sec: 1700212742,
+                tv_nsec: 193128613,
             },
         ),
     },
@@ -2856,162 +2674,8 @@ process_pool_size = 4
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 242975817,
-            },
-        ),
-    },
-    XvcPath(
-        ".gitignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            107,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 758031252,
-            },
-        ),
-    },
-    XvcPath(
-        ".xvcignore",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            130,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 757958253,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Website Work-for_hire (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            18700,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64436501,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Investment-Contract (HLoom).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            22290,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 60969173,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/House-Rental-Contract (HLoom).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            23062,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 62479403,
-            },
-        ),
-    },
-    XvcPath(
-        "data",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            160,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 239899494,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            102912,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 63950049,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Non-Compete (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            8301,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64629915,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61256711,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17930,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61995117,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Women who broke barriers in the music industry.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            9441,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 67429585,
+                tv_sec: 1700212741,
+                tv_nsec: 687240944,
             },
         ),
     },
@@ -3030,6 +2694,20 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/contracts/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61256711,
+            },
+        ),
+    },
+    XvcPath(
         "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
     ): XvcMetadata {
         file_type: File,
@@ -3044,6 +2722,76 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            40728,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65227740,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Roofing Contract (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            17302,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64779496,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/XYZ Corp Employment Agreement.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            42357,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 63048728,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Non-Compete (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8301,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64629915,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Website Work-for_hire (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            18700,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64436501,
+            },
+        ),
+    },
+    XvcPath(
         "data/.DS_Store",
     ): XvcMetadata {
         file_type: File,
@@ -3054,6 +2802,258 @@ process_pool_size = 4
             SystemTime {
                 tv_sec: 1700163690,
                 tv_nsec: 60510471,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/House-Rental-Contract (HLoom).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            23062,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 62479403,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Investment-Contract (HLoom).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            22290,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 60969173,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/10 steps for marketing your law firm.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            11133,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66977300,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Women who broke barriers in the music industry.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            9441,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67429585,
+            },
+        ),
+    },
+    XvcPath(
+        "convert-to-text.zsh",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            157,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163709,
+                tv_nsec: 431025363,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Is Remote Work Working.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8950,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67812955,
+            },
+        ),
+    },
+    XvcPath(
+        ".xvcignore",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            130,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700212742,
+                tv_nsec: 193062572,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            45096,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64280670,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            480,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700212741,
+                tv_nsec: 686320326,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Project-Manager-Contract (Hloom).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            24201,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64109505,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Invoice (HLoom).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            43002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65650234,
+            },
+        ),
+    },
+    XvcPath(
+        "data",
+    ): XvcMetadata {
+        file_type: Directory,
+        size: Some(
+            160,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700212741,
+                tv_nsec: 684765712,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Determining Culture Fit.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            10144,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66122937,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66810635,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            17930,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61995117,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            102912,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 63950049,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/invoice-spiceimporter.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            21719,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66382308,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            21169,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66540472,
             },
         ),
     },
@@ -3150,58 +3150,16 @@ process_pool_size = 4
 }
 [TRACE][file/src/track/mod.rs::121] targets: {
     XvcPath(
-        "data/non-contracts/Is Remote Work Working.docx",
+        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            8950,
+            17930,
         ),
         modified: Some(
             SystemTime {
                 tv_sec: 1700163690,
-                tv_nsec: 67812955,
-            },
-        ),
-    },
-    XvcPath(
-        "data/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 60510471,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Invoice (HLoom).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            43002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65650234,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Website Work-for_hire (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            18700,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64436501,
+                tv_nsec: 61995117,
             },
         ),
     },
@@ -3220,6 +3178,62 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/non-contracts/invoice-spiceimporter.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            21719,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66382308,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Determining Culture Fit.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            10144,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66122937,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Is Remote Work Working.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8950,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67812955,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            45096,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64280670,
+            },
+        ),
+    },
+    XvcPath(
         "data/contracts/Non-Compete (Signaturely).docx",
     ): XvcMetadata {
         file_type: File,
@@ -3230,6 +3244,76 @@ process_pool_size = 4
             SystemTime {
                 tv_sec: 1700163690,
                 tv_nsec: 64629915,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61256711,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Women who broke barriers in the music industry.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            9441,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67429585,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Roofing Contract (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            17302,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64779496,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Website Work-for_hire (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            18700,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64436501,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Invoice (HLoom).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            43002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65650234,
             },
         ),
     },
@@ -3248,6 +3332,20 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65962772,
+            },
+        ),
+    },
+    XvcPath(
         "data/non-contracts",
     ): XvcMetadata {
         file_type: Directory,
@@ -3256,8 +3354,50 @@ process_pool_size = 4
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 242975817,
+                tv_sec: 1700212741,
+                tv_nsec: 687240944,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Limited Warranty (Pro remodeler).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            19263,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61441083,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/10 steps for marketing your law firm.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            11133,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66977300,
+            },
+        ),
+    },
+    XvcPath(
+        "data/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 60510471,
             },
         ),
     },
@@ -3276,16 +3416,16 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/contracts/Limited Warranty (Pro remodeler).docx",
+        "data/contracts/XYZ Corp Employment Agreement.docx",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            19263,
+            42357,
         ),
         modified: Some(
             SystemTime {
                 tv_sec: 1700163690,
-                tv_nsec: 61441083,
+                tv_nsec: 63048728,
             },
         ),
     },
@@ -3318,30 +3458,16 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+        "data/contracts",
     ): XvcMetadata {
-        file_type: File,
+        file_type: Directory,
         size: Some(
-            8224,
+            480,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65962772,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/XYZ Corp Employment Agreement.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            42357,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 63048728,
+                tv_sec: 1700212741,
+                tv_nsec: 686320326,
             },
         ),
     },
@@ -3360,118 +3486,6 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/non-contracts/10 steps for marketing your law firm.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            11133,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66977300,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Roofing Contract (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17302,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64779496,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61256711,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/invoice-spiceimporter.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            21719,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66382308,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            480,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 241738629,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            45096,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64280670,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17930,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61995117,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Determining Culture Fit.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            10144,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66122937,
-            },
-        ),
-    },
-    XvcPath(
         "data/non-contracts/.DS_Store",
     ): XvcMetadata {
         file_type: File,
@@ -3482,78 +3496,22 @@ process_pool_size = 4
             SystemTime {
                 tv_sec: 1700163690,
                 tv_nsec: 66810635,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Women who broke barriers in the music industry.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            9441,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 67429585,
             },
         ),
     },
 }
 [TRACE][file/src/common/compare.rs::38] pmm: {
     XvcPath(
-        "data/non-contracts/Is Remote Work Working.docx",
+        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            8950,
+            17930,
         ),
         modified: Some(
             SystemTime {
                 tv_sec: 1700163690,
-                tv_nsec: 67812955,
-            },
-        ),
-    },
-    XvcPath(
-        "data/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 60510471,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Invoice (HLoom).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            43002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65650234,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Website Work-for_hire (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            18700,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64436501,
+                tv_nsec: 61995117,
             },
         ),
     },
@@ -3572,6 +3530,62 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/non-contracts/invoice-spiceimporter.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            21719,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66382308,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Determining Culture Fit.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            10144,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66122937,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Is Remote Work Working.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8950,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67812955,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            45096,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64280670,
+            },
+        ),
+    },
+    XvcPath(
         "data/contracts/Non-Compete (Signaturely).docx",
     ): XvcMetadata {
         file_type: File,
@@ -3582,6 +3596,76 @@ process_pool_size = 4
             SystemTime {
                 tv_sec: 1700163690,
                 tv_nsec: 64629915,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61256711,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Women who broke barriers in the music industry.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            9441,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67429585,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Roofing Contract (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            17302,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64779496,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Website Work-for_hire (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            18700,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64436501,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Invoice (HLoom).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            43002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65650234,
             },
         ),
     },
@@ -3600,6 +3684,20 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65962772,
+            },
+        ),
+    },
+    XvcPath(
         "data/non-contracts",
     ): XvcMetadata {
         file_type: Directory,
@@ -3608,8 +3706,50 @@ process_pool_size = 4
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 242975817,
+                tv_sec: 1700212741,
+                tv_nsec: 687240944,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Limited Warranty (Pro remodeler).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            19263,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61441083,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/10 steps for marketing your law firm.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            11133,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66977300,
+            },
+        ),
+    },
+    XvcPath(
+        "data/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 60510471,
             },
         ),
     },
@@ -3628,16 +3768,16 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/contracts/Limited Warranty (Pro remodeler).docx",
+        "data/contracts/XYZ Corp Employment Agreement.docx",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            19263,
+            42357,
         ),
         modified: Some(
             SystemTime {
                 tv_sec: 1700163690,
-                tv_nsec: 61441083,
+                tv_nsec: 63048728,
             },
         ),
     },
@@ -3670,30 +3810,16 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+        "data/contracts",
     ): XvcMetadata {
-        file_type: File,
+        file_type: Directory,
         size: Some(
-            8224,
+            480,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65962772,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/XYZ Corp Employment Agreement.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            42357,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 63048728,
+                tv_sec: 1700212741,
+                tv_nsec: 686320326,
             },
         ),
     },
@@ -3712,118 +3838,6 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/non-contracts/10 steps for marketing your law firm.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            11133,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66977300,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Roofing Contract (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17302,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64779496,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61256711,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/invoice-spiceimporter.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            21719,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66382308,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            480,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 241738629,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            45096,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64280670,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17930,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61995117,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Determining Culture Fit.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            10144,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66122937,
-            },
-        ),
-    },
-    XvcPath(
         "data/non-contracts/.DS_Store",
     ): XvcMetadata {
         file_type: File,
@@ -3837,429 +3851,284 @@ process_pool_size = 4
             },
         ),
     },
-    XvcPath(
-        "data/non-contracts/Women who broke barriers in the music industry.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            9441,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 67429585,
-            },
-        ),
-    },
 }
 [TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/non-contracts/Is Remote Work Working.docx",
+    "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
     2,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/.DS_Store",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    3,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    4,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    5,
-    7455966604501631515,
+    16378980373205155483,
 )
 [TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
     "data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    6,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    7,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    8,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    9,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    10,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    11,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    12,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    13,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    14,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/XYZ Corp Employment Agreement.docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    15,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Project-Manager-Contract (Hloom).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    16,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    17,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    18,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/.DS_Store",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    19,
-    7455966604501631515,
+    3,
+    16378980373205155483,
 )
 [TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
     "data/non-contracts/invoice-spiceimporter.docx",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    20,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    21,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    22,
-    7455966604501631515,
-)
-[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
-)
-[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    23,
-    7455966604501631515,
+    4,
+    16378980373205155483,
 )
 [TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
     "data/non-contracts/Determining Culture Fit.docx",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    24,
-    7455966604501631515,
+    5,
+    16378980373205155483,
 )
 [TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
-    "data/non-contracts/.DS_Store",
+    "data/non-contracts/Is Remote Work Working.docx",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
-    25,
-    7455966604501631515,
+    6,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    7,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Non-Compete (Signaturely).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    8,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/.DS_Store",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    9,
+    16378980373205155483,
 )
 [TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
     "data/non-contracts/Women who broke barriers in the music industry.docx",
 )
 [TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    10,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Roofing Contract (Signaturely).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    11,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Website Work-for_hire (Signaturely).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    12,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/non-contracts/Invoice (HLoom).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    13,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    14,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    15,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/non-contracts",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    16,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Limited Warranty (Pro remodeler).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    17,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/non-contracts/10 steps for marketing your law firm.docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    18,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/.DS_Store",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    19,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    20,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/XYZ Corp Employment Agreement.docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    21,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/House-Rental-Contract (HLoom).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    22,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Investment-Contract (HLoom).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    23,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    24,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/contracts/Project-Manager-Contract (Hloom).docx",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
+    25,
+    16378980373205155483,
+)
+[TRACE][ecs/src/ecs/hstore.rs::105] value: XvcPath(
+    "data/non-contracts/.DS_Store",
+)
+[TRACE][ecs/src/ecs/hstore.rs::110] key: XvcEntity(
     26,
-    7455966604501631515,
+    16378980373205155483,
 )
 [TRACE][file/src/common/compare.rs::457] file_entities: {
     XvcEntity(
-        22,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        25,
-        7455966604501631515,
-    ),
-    XvcEntity(
         26,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        18,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        12,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        13,
-        7455966604501631515,
+        16378980373205155483,
     ),
     XvcEntity(
         6,
-        7455966604501631515,
+        16378980373205155483,
     ),
     XvcEntity(
-        8,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        4,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        5,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        20,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        19,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        15,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        14,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        2,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        23,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        17,
-        7455966604501631515,
+        21,
+        16378980373205155483,
     ),
     XvcEntity(
         11,
-        7455966604501631515,
+        16378980373205155483,
     ),
     XvcEntity(
-        3,
-        7455966604501631515,
+        20,
+        16378980373205155483,
     ),
     XvcEntity(
-        24,
-        7455966604501631515,
+        15,
+        16378980373205155483,
     ),
     XvcEntity(
-        10,
-        7455966604501631515,
+        22,
+        16378980373205155483,
     ),
     XvcEntity(
-        16,
-        7455966604501631515,
+        8,
+        16378980373205155483,
     ),
     XvcEntity(
         7,
-        7455966604501631515,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        19,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        23,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        3,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        10,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        25,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        4,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        13,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        14,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        12,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        2,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        9,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        18,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        17,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        5,
+        16378980373205155483,
     ),
 }
 [TRACE][file/src/common/compare.rs::468] dir_entities: {
     XvcEntity(
-        9,
-        7455966604501631515,
+        24,
+        16378980373205155483,
     ),
     XvcEntity(
-        21,
-        7455966604501631515,
-    ),
-}
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            26,
-            49,
-            86,
-            120,
-            34,
-            250,
-            158,
-            114,
-            129,
-            12,
-            212,
-            37,
-            112,
-            89,
-            225,
-            1,
-            36,
-            98,
-            77,
-            56,
-            204,
-            237,
-            164,
-            172,
-            203,
-            249,
-            100,
-            35,
-            37,
-            116,
-            102,
-            226,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            26,
-            49,
-            86,
-            120,
-            34,
-            250,
-            158,
-            114,
-            129,
-            12,
-            212,
-            37,
-            112,
-            89,
-            225,
-            1,
-            36,
-            98,
-            77,
-            56,
-            204,
-            237,
-            164,
-            172,
-            203,
-            249,
-            100,
-            35,
-            37,
-            116,
-            102,
-            226,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                26,
-                49,
-                86,
-                120,
-                34,
-                250,
-                158,
-                114,
-                129,
-                12,
-                212,
-                37,
-                112,
-                89,
-                225,
-                1,
-                36,
-                98,
-                77,
-                56,
-                204,
-                237,
-                164,
-                172,
-                203,
-                249,
-                100,
-                35,
-                37,
-                116,
-                102,
-                226,
-            ],
-        },
+        16,
+        16378980373205155483,
     ),
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
@@ -4395,51 +4264,51 @@ process_pool_size = 4
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
     actual: XvcPath(
-        "data/non-contracts/Women who broke barriers in the music industry.docx",
+        "data/non-contracts/Is Remote Work Working.docx",
     ),
 }
 [TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/non-contracts/Women who broke barriers in the music industry.docx",
+    "data/non-contracts/Is Remote Work Working.docx",
 )
 [TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx",
+    "[CWD]/data/non-contracts/Is Remote Work Working.docx",
 )
 [TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            198,
+            253,
+            3,
+            63,
+            211,
+            248,
+            131,
+            219,
+            46,
             130,
-            225,
-            139,
-            142,
-            135,
-            26,
-            80,
-            26,
-            32,
-            51,
-            109,
-            79,
+            137,
+            98,
+            4,
+            83,
+            133,
+            5,
+            159,
+            25,
+            160,
+            48,
+            251,
+            152,
+            126,
+            196,
+            190,
+            231,
+            68,
+            254,
             180,
-            228,
-            11,
-            138,
-            178,
-            128,
-            34,
-            228,
-            226,
-            187,
-            1,
-            14,
-            117,
-            75,
-            28,
-            217,
-            226,
-            110,
-            44,
+            77,
+            157,
+            18,
+            17,
         ],
     },
 )
@@ -4448,38 +4317,38 @@ process_pool_size = 4
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            198,
+            253,
+            3,
+            63,
+            211,
+            248,
+            131,
+            219,
+            46,
             130,
-            225,
-            139,
-            142,
-            135,
-            26,
-            80,
-            26,
-            32,
-            51,
-            109,
-            79,
+            137,
+            98,
+            4,
+            83,
+            133,
+            5,
+            159,
+            25,
+            160,
+            48,
+            251,
+            152,
+            126,
+            196,
+            190,
+            231,
+            68,
+            254,
             180,
-            228,
-            11,
-            138,
-            178,
-            128,
-            34,
-            228,
-            226,
-            187,
-            1,
-            14,
-            117,
-            75,
-            28,
-            217,
-            226,
-            110,
-            44,
+            77,
+            157,
+            18,
+            17,
         ],
     },
 )
@@ -4488,38 +4357,169 @@ process_pool_size = 4
         XvcDigest {
             algorithm: Blake3,
             digest: [
-                198,
+                253,
+                3,
+                63,
+                211,
+                248,
+                131,
+                219,
+                46,
                 130,
-                225,
-                139,
-                142,
-                135,
-                26,
-                80,
-                26,
-                32,
-                51,
-                109,
-                79,
+                137,
+                98,
+                4,
+                83,
+                133,
+                5,
+                159,
+                25,
+                160,
+                48,
+                251,
+                152,
+                126,
+                196,
+                190,
+                231,
+                68,
+                254,
                 180,
-                228,
+                77,
+                157,
+                18,
+                17,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "data/contracts/XYZ Corp Employment Agreement.docx",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/contracts/XYZ Corp Employment Agreement.docx",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/contracts/XYZ Corp Employment Agreement.docx",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            141,
+            17,
+            62,
+            17,
+            192,
+            139,
+            168,
+            60,
+            26,
+            180,
+            158,
+            132,
+            11,
+            199,
+            11,
+            119,
+            184,
+            88,
+            222,
+            58,
+            0,
+            132,
+            104,
+            135,
+            40,
+            229,
+            210,
+            251,
+            121,
+            167,
+            221,
+            35,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            141,
+            17,
+            62,
+            17,
+            192,
+            139,
+            168,
+            60,
+            26,
+            180,
+            158,
+            132,
+            11,
+            199,
+            11,
+            119,
+            184,
+            88,
+            222,
+            58,
+            0,
+            132,
+            104,
+            135,
+            40,
+            229,
+            210,
+            251,
+            121,
+            167,
+            221,
+            35,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                141,
+                17,
+                62,
+                17,
+                192,
+                139,
+                168,
+                60,
+                26,
+                180,
+                158,
+                132,
                 11,
-                138,
-                178,
-                128,
-                34,
-                228,
-                226,
-                187,
-                1,
-                14,
-                117,
-                75,
-                28,
-                217,
-                226,
-                110,
-                44,
+                199,
+                11,
+                119,
+                184,
+                88,
+                222,
+                58,
+                0,
+                132,
+                104,
+                135,
+                40,
+                229,
+                210,
+                251,
+                121,
+                167,
+                221,
+                35,
             ],
         },
     ),
@@ -4657,6 +4657,268 @@ process_pool_size = 4
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
     actual: XvcPath(
+        "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            56,
+            168,
+            86,
+            108,
+            233,
+            78,
+            94,
+            61,
+            64,
+            183,
+            76,
+            11,
+            106,
+            175,
+            34,
+            19,
+            177,
+            184,
+            117,
+            167,
+            149,
+            40,
+            138,
+            58,
+            161,
+            197,
+            125,
+            75,
+            58,
+            16,
+            233,
+            227,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            56,
+            168,
+            86,
+            108,
+            233,
+            78,
+            94,
+            61,
+            64,
+            183,
+            76,
+            11,
+            106,
+            175,
+            34,
+            19,
+            177,
+            184,
+            117,
+            167,
+            149,
+            40,
+            138,
+            58,
+            161,
+            197,
+            125,
+            75,
+            58,
+            16,
+            233,
+            227,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                56,
+                168,
+                86,
+                108,
+                233,
+                78,
+                94,
+                61,
+                64,
+                183,
+                76,
+                11,
+                106,
+                175,
+                34,
+                19,
+                177,
+                184,
+                117,
+                167,
+                149,
+                40,
+                138,
+                58,
+                161,
+                197,
+                125,
+                75,
+                58,
+                16,
+                233,
+                227,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            100,
+            18,
+            204,
+            44,
+            7,
+            36,
+            123,
+            96,
+            236,
+            87,
+            36,
+            108,
+            12,
+            250,
+            55,
+            211,
+            7,
+            158,
+            23,
+            247,
+            4,
+            177,
+            38,
+            224,
+            241,
+            56,
+            217,
+            151,
+            191,
+            139,
+            207,
+            225,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            100,
+            18,
+            204,
+            44,
+            7,
+            36,
+            123,
+            96,
+            236,
+            87,
+            36,
+            108,
+            12,
+            250,
+            55,
+            211,
+            7,
+            158,
+            23,
+            247,
+            4,
+            177,
+            38,
+            224,
+            241,
+            56,
+            217,
+            151,
+            191,
+            139,
+            207,
+            225,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                100,
+                18,
+                204,
+                44,
+                7,
+                36,
+                123,
+                96,
+                236,
+                87,
+                36,
+                108,
+                12,
+                250,
+                55,
+                211,
+                7,
+                158,
+                23,
+                247,
+                4,
+                177,
+                38,
+                224,
+                241,
+                56,
+                217,
+                151,
+                191,
+                139,
+                207,
+                225,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
         "data/contracts/House-Rental-Contract (HLoom).docx",
     ),
 }
@@ -4782,6 +5044,399 @@ process_pool_size = 4
                 118,
                 5,
                 195,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "data/contracts/Non-Compete (Signaturely).docx",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/contracts/Non-Compete (Signaturely).docx",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/contracts/Non-Compete (Signaturely).docx",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            240,
+            59,
+            125,
+            5,
+            72,
+            126,
+            178,
+            227,
+            154,
+            224,
+            72,
+            33,
+            91,
+            63,
+            89,
+            13,
+            135,
+            68,
+            161,
+            105,
+            131,
+            156,
+            48,
+            48,
+            42,
+            170,
+            220,
+            68,
+            247,
+            201,
+            162,
+            177,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            240,
+            59,
+            125,
+            5,
+            72,
+            126,
+            178,
+            227,
+            154,
+            224,
+            72,
+            33,
+            91,
+            63,
+            89,
+            13,
+            135,
+            68,
+            161,
+            105,
+            131,
+            156,
+            48,
+            48,
+            42,
+            170,
+            220,
+            68,
+            247,
+            201,
+            162,
+            177,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                240,
+                59,
+                125,
+                5,
+                72,
+                126,
+                178,
+                227,
+                154,
+                224,
+                72,
+                33,
+                91,
+                63,
+                89,
+                13,
+                135,
+                68,
+                161,
+                105,
+                131,
+                156,
+                48,
+                48,
+                42,
+                170,
+                220,
+                68,
+                247,
+                201,
+                162,
+                177,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            26,
+            49,
+            86,
+            120,
+            34,
+            250,
+            158,
+            114,
+            129,
+            12,
+            212,
+            37,
+            112,
+            89,
+            225,
+            1,
+            36,
+            98,
+            77,
+            56,
+            204,
+            237,
+            164,
+            172,
+            203,
+            249,
+            100,
+            35,
+            37,
+            116,
+            102,
+            226,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            26,
+            49,
+            86,
+            120,
+            34,
+            250,
+            158,
+            114,
+            129,
+            12,
+            212,
+            37,
+            112,
+            89,
+            225,
+            1,
+            36,
+            98,
+            77,
+            56,
+            204,
+            237,
+            164,
+            172,
+            203,
+            249,
+            100,
+            35,
+            37,
+            116,
+            102,
+            226,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                26,
+                49,
+                86,
+                120,
+                34,
+                250,
+                158,
+                114,
+                129,
+                12,
+                212,
+                37,
+                112,
+                89,
+                225,
+                1,
+                36,
+                98,
+                77,
+                56,
+                204,
+                237,
+                164,
+                172,
+                203,
+                249,
+                100,
+                35,
+                37,
+                116,
+                102,
+                226,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "data/.DS_Store",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/.DS_Store",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/.DS_Store",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            144,
+            81,
+            228,
+            149,
+            75,
+            108,
+            103,
+            104,
+            7,
+            10,
+            129,
+            159,
+            230,
+            63,
+            173,
+            15,
+            148,
+            162,
+            186,
+            25,
+            3,
+            100,
+            215,
+            170,
+            203,
+            191,
+            141,
+            156,
+            97,
+            72,
+            200,
+            204,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            144,
+            81,
+            228,
+            149,
+            75,
+            108,
+            103,
+            104,
+            7,
+            10,
+            129,
+            159,
+            230,
+            63,
+            173,
+            15,
+            148,
+            162,
+            186,
+            25,
+            3,
+            100,
+            215,
+            170,
+            203,
+            191,
+            141,
+            156,
+            97,
+            72,
+            200,
+            204,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                144,
+                81,
+                228,
+                149,
+                75,
+                108,
+                103,
+                104,
+                7,
+                10,
+                129,
+                159,
+                230,
+                63,
+                173,
+                15,
+                148,
+                162,
+                186,
+                25,
+                3,
+                100,
+                215,
+                170,
+                203,
+                191,
+                141,
+                156,
+                97,
+                72,
+                200,
+                204,
             ],
         },
     ),
@@ -5050,51 +5705,51 @@ process_pool_size = 4
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
     actual: XvcPath(
-        "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
+        "data/non-contracts/Women who broke barriers in the music industry.docx",
     ),
 }
 [TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
+    "data/non-contracts/Women who broke barriers in the music industry.docx",
 )
 [TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
+    "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx",
 )
 [TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            218,
-            10,
-            8,
-            169,
-            104,
-            68,
-            188,
-            162,
-            128,
-            99,
-            48,
-            92,
-            24,
-            191,
-            11,
-            240,
-            39,
-            66,
-            213,
-            118,
-            89,
-            176,
-            111,
-            93,
-            87,
-            191,
-            201,
-            175,
-            119,
-            171,
-            226,
+            198,
+            130,
+            225,
+            139,
+            142,
+            135,
+            26,
+            80,
+            26,
             32,
+            51,
+            109,
+            79,
+            180,
+            228,
+            11,
+            138,
+            178,
+            128,
+            34,
+            228,
+            226,
+            187,
+            1,
+            14,
+            117,
+            75,
+            28,
+            217,
+            226,
+            110,
+            44,
         ],
     },
 )
@@ -5103,38 +5758,38 @@ process_pool_size = 4
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            218,
-            10,
-            8,
-            169,
-            104,
-            68,
-            188,
-            162,
-            128,
-            99,
-            48,
-            92,
-            24,
-            191,
-            11,
-            240,
-            39,
-            66,
-            213,
-            118,
-            89,
-            176,
-            111,
-            93,
-            87,
-            191,
-            201,
-            175,
-            119,
-            171,
-            226,
+            198,
+            130,
+            225,
+            139,
+            142,
+            135,
+            26,
+            80,
+            26,
             32,
+            51,
+            109,
+            79,
+            180,
+            228,
+            11,
+            138,
+            178,
+            128,
+            34,
+            228,
+            226,
+            187,
+            1,
+            14,
+            117,
+            75,
+            28,
+            217,
+            226,
+            110,
+            44,
         ],
     },
 )
@@ -5143,220 +5798,89 @@ process_pool_size = 4
         XvcDigest {
             algorithm: Blake3,
             digest: [
-                218,
-                10,
-                8,
-                169,
-                104,
-                68,
-                188,
-                162,
-                128,
-                99,
-                48,
-                92,
-                24,
-                191,
-                11,
-                240,
-                39,
-                66,
-                213,
-                118,
-                89,
-                176,
-                111,
-                93,
-                87,
-                191,
-                201,
-                175,
-                119,
-                171,
-                226,
-                32,
-            ],
-        },
-    ),
-}
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "data/non-contracts/Invoice (HLoom).docx",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            211,
-            10,
-            224,
-            175,
-            180,
-            211,
-            234,
-            167,
-            173,
-            251,
-            55,
-            97,
-            57,
-            206,
-            197,
-            6,
-            3,
-            84,
-            201,
-            220,
-            39,
-            120,
-            104,
-            213,
-            234,
-            39,
-            96,
-            20,
-            35,
-            21,
-            163,
-            198,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            211,
-            10,
-            224,
-            175,
-            180,
-            211,
-            234,
-            167,
-            173,
-            251,
-            55,
-            97,
-            57,
-            206,
-            197,
-            6,
-            3,
-            84,
-            201,
-            220,
-            39,
-            120,
-            104,
-            213,
-            234,
-            39,
-            96,
-            20,
-            35,
-            21,
-            163,
-            198,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                211,
-                10,
-                224,
-                175,
-                180,
-                211,
-                234,
-                167,
-                173,
-                251,
-                55,
-                97,
-                57,
-                206,
-                197,
-                6,
-                3,
-                84,
-                201,
-                220,
-                39,
-                120,
-                104,
-                213,
-                234,
-                39,
-                96,
-                20,
-                35,
-                21,
-                163,
                 198,
+                130,
+                225,
+                139,
+                142,
+                135,
+                26,
+                80,
+                26,
+                32,
+                51,
+                109,
+                79,
+                180,
+                228,
+                11,
+                138,
+                178,
+                128,
+                34,
+                228,
+                226,
+                187,
+                1,
+                14,
+                117,
+                75,
+                28,
+                217,
+                226,
+                110,
+                44,
             ],
         },
     ),
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
     actual: XvcPath(
-        "data/contracts/Website Work-for_hire (Signaturely).docx",
+        "data/contracts/Project-Manager-Contract (Hloom).docx",
     ),
 }
 [TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/contracts/Website Work-for_hire (Signaturely).docx",
+    "data/contracts/Project-Manager-Contract (Hloom).docx",
 )
 [TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx",
+    "[CWD]/data/contracts/Project-Manager-Contract (Hloom).docx",
 )
 [TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            82,
-            241,
-            157,
-            196,
-            71,
+            222,
+            22,
+            9,
+            80,
+            93,
+            229,
+            249,
+            166,
+            55,
             70,
-            154,
-            106,
-            137,
-            143,
-            196,
-            25,
-            74,
-            98,
-            17,
-            109,
-            202,
-            84,
+            76,
+            131,
             216,
-            153,
-            149,
-            236,
-            159,
-            225,
-            42,
-            202,
-            141,
-            2,
-            251,
-            209,
-            228,
-            42,
+            231,
+            123,
+            34,
+            221,
+            17,
+            102,
+            244,
+            5,
+            161,
+            58,
+            20,
+            195,
+            212,
+            27,
+            172,
+            200,
+            97,
+            32,
+            116,
         ],
     },
 )
@@ -5365,38 +5889,38 @@ process_pool_size = 4
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            82,
-            241,
-            157,
-            196,
-            71,
+            222,
+            22,
+            9,
+            80,
+            93,
+            229,
+            249,
+            166,
+            55,
             70,
-            154,
-            106,
-            137,
-            143,
-            196,
-            25,
-            74,
-            98,
-            17,
-            109,
-            202,
-            84,
+            76,
+            131,
             216,
-            153,
-            149,
-            236,
-            159,
-            225,
-            42,
-            202,
-            141,
-            2,
-            251,
-            209,
-            228,
-            42,
+            231,
+            123,
+            34,
+            221,
+            17,
+            102,
+            244,
+            5,
+            161,
+            58,
+            20,
+            195,
+            212,
+            27,
+            172,
+            200,
+            97,
+            32,
+            116,
         ],
     },
 )
@@ -5405,38 +5929,38 @@ process_pool_size = 4
         XvcDigest {
             algorithm: Blake3,
             digest: [
-                82,
-                241,
-                157,
-                196,
-                71,
+                222,
+                22,
+                9,
+                80,
+                93,
+                229,
+                249,
+                166,
+                55,
                 70,
-                154,
-                106,
-                137,
-                143,
-                196,
-                25,
-                74,
-                98,
-                17,
-                109,
-                202,
-                84,
+                76,
+                131,
                 216,
-                153,
-                149,
-                236,
-                159,
-                225,
-                42,
-                202,
-                141,
-                2,
-                251,
-                209,
-                228,
-                42,
+                231,
+                123,
+                34,
+                221,
+                17,
+                102,
+                244,
+                5,
+                161,
+                58,
+                20,
+                195,
+                212,
+                27,
+                172,
+                200,
+                97,
+                32,
+                116,
             ],
         },
     ),
@@ -5574,313 +6098,51 @@ process_pool_size = 4
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
     actual: XvcPath(
-        "data/contracts/.DS_Store",
+        "data/non-contracts/Invoice (HLoom).docx",
     ),
 }
 [TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/contracts/.DS_Store",
+    "data/non-contracts/Invoice (HLoom).docx",
 )
 [TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/contracts/.DS_Store",
+    "[CWD]/data/non-contracts/Invoice (HLoom).docx",
 )
 [TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            235,
-            121,
-            69,
-            35,
-            241,
-            36,
-            122,
-            69,
-            106,
-            24,
-            83,
-            24,
-            161,
-            232,
-            0,
-            18,
-            36,
-            68,
-            166,
-            51,
-            241,
-            208,
-            34,
-            169,
-            58,
-            8,
-            160,
-            139,
-            88,
-            14,
-            7,
-            72,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            235,
-            121,
-            69,
-            35,
-            241,
-            36,
-            122,
-            69,
-            106,
-            24,
-            83,
-            24,
-            161,
-            232,
-            0,
-            18,
-            36,
-            68,
-            166,
-            51,
-            241,
-            208,
-            34,
-            169,
-            58,
-            8,
-            160,
-            139,
-            88,
-            14,
-            7,
-            72,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                235,
-                121,
-                69,
-                35,
-                241,
-                36,
-                122,
-                69,
-                106,
-                24,
-                83,
-                24,
-                161,
-                232,
-                0,
-                18,
-                36,
-                68,
-                166,
-                51,
-                241,
-                208,
-                34,
-                169,
-                58,
-                8,
-                160,
-                139,
-                88,
-                14,
-                7,
-                72,
-            ],
-        },
-    ),
-}
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "data/contracts/XYZ Corp Employment Agreement.docx",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/contracts/XYZ Corp Employment Agreement.docx",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/contracts/XYZ Corp Employment Agreement.docx",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            141,
-            17,
-            62,
-            17,
-            192,
-            139,
-            168,
-            60,
-            26,
-            180,
-            158,
-            132,
-            11,
-            199,
-            11,
-            119,
-            184,
-            88,
-            222,
-            58,
-            0,
-            132,
-            104,
-            135,
-            40,
-            229,
-            210,
-            251,
-            121,
-            167,
-            221,
-            35,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            141,
-            17,
-            62,
-            17,
-            192,
-            139,
-            168,
-            60,
-            26,
-            180,
-            158,
-            132,
-            11,
-            199,
-            11,
-            119,
-            184,
-            88,
-            222,
-            58,
-            0,
-            132,
-            104,
-            135,
-            40,
-            229,
-            210,
-            251,
-            121,
-            167,
-            221,
-            35,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                141,
-                17,
-                62,
-                17,
-                192,
-                139,
-                168,
-                60,
-                26,
-                180,
-                158,
-                132,
-                11,
-                199,
-                11,
-                119,
-                184,
-                88,
-                222,
-                58,
-                0,
-                132,
-                104,
-                135,
-                40,
-                229,
-                210,
-                251,
-                121,
-                167,
-                221,
-                35,
-            ],
-        },
-    ),
-}
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            100,
-            18,
-            204,
-            44,
-            7,
-            36,
-            123,
-            96,
-            236,
-            87,
-            36,
-            108,
-            12,
-            250,
-            55,
             211,
-            7,
-            158,
-            23,
-            247,
-            4,
-            177,
-            38,
+            10,
             224,
-            241,
-            56,
-            217,
-            151,
-            191,
-            139,
-            207,
-            225,
+            175,
+            180,
+            211,
+            234,
+            167,
+            173,
+            251,
+            55,
+            97,
+            57,
+            206,
+            197,
+            6,
+            3,
+            84,
+            201,
+            220,
+            39,
+            120,
+            104,
+            213,
+            234,
+            39,
+            96,
+            20,
+            35,
+            21,
+            163,
+            198,
         ],
     },
 )
@@ -5889,38 +6151,38 @@ process_pool_size = 4
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            100,
-            18,
-            204,
-            44,
-            7,
-            36,
-            123,
-            96,
-            236,
-            87,
-            36,
-            108,
-            12,
-            250,
-            55,
             211,
-            7,
-            158,
-            23,
-            247,
-            4,
-            177,
-            38,
+            10,
             224,
-            241,
-            56,
-            217,
-            151,
-            191,
-            139,
-            207,
-            225,
+            175,
+            180,
+            211,
+            234,
+            167,
+            173,
+            251,
+            55,
+            97,
+            57,
+            206,
+            197,
+            6,
+            3,
+            84,
+            201,
+            220,
+            39,
+            120,
+            104,
+            213,
+            234,
+            39,
+            96,
+            20,
+            35,
+            21,
+            163,
+            198,
         ],
     },
 )
@@ -5929,89 +6191,89 @@ process_pool_size = 4
         XvcDigest {
             algorithm: Blake3,
             digest: [
-                100,
-                18,
-                204,
-                44,
-                7,
-                36,
-                123,
-                96,
-                236,
-                87,
-                36,
-                108,
-                12,
-                250,
-                55,
                 211,
-                7,
-                158,
-                23,
-                247,
-                4,
-                177,
-                38,
+                10,
                 224,
-                241,
-                56,
-                217,
-                151,
-                191,
-                139,
-                207,
-                225,
+                175,
+                180,
+                211,
+                234,
+                167,
+                173,
+                251,
+                55,
+                97,
+                57,
+                206,
+                197,
+                6,
+                3,
+                84,
+                201,
+                220,
+                39,
+                120,
+                104,
+                213,
+                234,
+                39,
+                96,
+                20,
+                35,
+                21,
+                163,
+                198,
             ],
         },
     ),
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
     actual: XvcPath(
-        "data/non-contracts/Is Remote Work Working.docx",
+        "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
     ),
 }
 [TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/non-contracts/Is Remote Work Working.docx",
+    "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
 )
 [TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Is Remote Work Working.docx",
+    "[CWD]/data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
 )
 [TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            253,
-            3,
-            63,
-            211,
-            248,
-            131,
-            219,
-            46,
-            130,
-            137,
-            98,
-            4,
-            83,
-            133,
-            5,
-            159,
-            25,
-            160,
-            48,
-            251,
-            152,
-            126,
-            196,
-            190,
-            231,
+            218,
+            10,
+            8,
+            169,
+            104,
             68,
-            254,
-            180,
-            77,
-            157,
-            18,
-            17,
+            188,
+            162,
+            128,
+            99,
+            48,
+            92,
+            24,
+            191,
+            11,
+            240,
+            39,
+            66,
+            213,
+            118,
+            89,
+            176,
+            111,
+            93,
+            87,
+            191,
+            201,
+            175,
+            119,
+            171,
+            226,
+            32,
         ],
     },
 )
@@ -6020,38 +6282,38 @@ process_pool_size = 4
     XvcDigest {
         algorithm: Blake3,
         digest: [
-            253,
-            3,
-            63,
-            211,
-            248,
-            131,
-            219,
-            46,
-            130,
-            137,
-            98,
-            4,
-            83,
-            133,
-            5,
-            159,
-            25,
-            160,
-            48,
-            251,
-            152,
-            126,
-            196,
-            190,
-            231,
+            218,
+            10,
+            8,
+            169,
+            104,
             68,
-            254,
-            180,
-            77,
-            157,
-            18,
-            17,
+            188,
+            162,
+            128,
+            99,
+            48,
+            92,
+            24,
+            191,
+            11,
+            240,
+            39,
+            66,
+            213,
+            118,
+            89,
+            176,
+            111,
+            93,
+            87,
+            191,
+            201,
+            175,
+            119,
+            171,
+            226,
+            32,
         ],
     },
 )
@@ -6060,38 +6322,169 @@ process_pool_size = 4
         XvcDigest {
             algorithm: Blake3,
             digest: [
-                253,
-                3,
-                63,
-                211,
-                248,
-                131,
-                219,
-                46,
-                130,
-                137,
-                98,
-                4,
-                83,
-                133,
-                5,
-                159,
-                25,
-                160,
-                48,
-                251,
-                152,
-                126,
-                196,
-                190,
-                231,
+                218,
+                10,
+                8,
+                169,
+                104,
                 68,
-                254,
-                180,
-                77,
+                188,
+                162,
+                128,
+                99,
+                48,
+                92,
+                24,
+                191,
+                11,
+                240,
+                39,
+                66,
+                213,
+                118,
+                89,
+                176,
+                111,
+                93,
+                87,
+                191,
+                201,
+                175,
+                119,
+                171,
+                226,
+                32,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "data/contracts/Website Work-for_hire (Signaturely).docx",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/contracts/Website Work-for_hire (Signaturely).docx",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            82,
+            241,
+            157,
+            196,
+            71,
+            70,
+            154,
+            106,
+            137,
+            143,
+            196,
+            25,
+            74,
+            98,
+            17,
+            109,
+            202,
+            84,
+            216,
+            153,
+            149,
+            236,
+            159,
+            225,
+            42,
+            202,
+            141,
+            2,
+            251,
+            209,
+            228,
+            42,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            82,
+            241,
+            157,
+            196,
+            71,
+            70,
+            154,
+            106,
+            137,
+            143,
+            196,
+            25,
+            74,
+            98,
+            17,
+            109,
+            202,
+            84,
+            216,
+            153,
+            149,
+            236,
+            159,
+            225,
+            42,
+            202,
+            141,
+            2,
+            251,
+            209,
+            228,
+            42,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                82,
+                241,
                 157,
-                18,
+                196,
+                71,
+                70,
+                154,
+                106,
+                137,
+                143,
+                196,
+                25,
+                74,
+                98,
                 17,
+                109,
+                202,
+                84,
+                216,
+                153,
+                149,
+                236,
+                159,
+                225,
+                42,
+                202,
+                141,
+                2,
+                251,
+                209,
+                228,
+                42,
             ],
         },
     ),
@@ -6223,6 +6616,137 @@ process_pool_size = 4
                 7,
                 56,
                 231,
+            ],
+        },
+    ),
+}
+[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
+    actual: XvcPath(
+        "data/contracts/.DS_Store",
+    ),
+}
+[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
+    "data/contracts/.DS_Store",
+)
+[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
+    "[CWD]/data/contracts/.DS_Store",
+)
+[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            235,
+            121,
+            69,
+            35,
+            241,
+            36,
+            122,
+            69,
+            106,
+            24,
+            83,
+            24,
+            161,
+            232,
+            0,
+            18,
+            36,
+            68,
+            166,
+            51,
+            241,
+            208,
+            34,
+            169,
+            58,
+            8,
+            160,
+            139,
+            88,
+            14,
+            7,
+            72,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
+[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
+    XvcDigest {
+        algorithm: Blake3,
+        digest: [
+            235,
+            121,
+            69,
+            35,
+            241,
+            36,
+            122,
+            69,
+            106,
+            24,
+            83,
+            24,
+            161,
+            232,
+            0,
+            18,
+            36,
+            68,
+            166,
+            51,
+            241,
+            208,
+            34,
+            169,
+            58,
+            8,
+            160,
+            139,
+            88,
+            14,
+            7,
+            72,
+        ],
+    },
+)
+[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
+    actual: ContentDigest(
+        XvcDigest {
+            algorithm: Blake3,
+            digest: [
+                235,
+                121,
+                69,
+                35,
+                241,
+                36,
+                122,
+                69,
+                106,
+                24,
+                83,
+                24,
+                161,
+                232,
+                0,
+                18,
+                36,
+                68,
+                166,
+                51,
+                241,
+                208,
+                34,
+                169,
+                58,
+                8,
+                160,
+                139,
+                88,
+                14,
+                7,
+                72,
             ],
         },
     ),
@@ -6491,137 +7015,6 @@ process_pool_size = 4
 }
 [TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
     actual: XvcPath(
-        "data/.DS_Store",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/.DS_Store",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/.DS_Store",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            144,
-            81,
-            228,
-            149,
-            75,
-            108,
-            103,
-            104,
-            7,
-            10,
-            129,
-            159,
-            230,
-            63,
-            173,
-            15,
-            148,
-            162,
-            186,
-            25,
-            3,
-            100,
-            215,
-            170,
-            203,
-            191,
-            141,
-            156,
-            97,
-            72,
-            200,
-            204,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            144,
-            81,
-            228,
-            149,
-            75,
-            108,
-            103,
-            104,
-            7,
-            10,
-            129,
-            159,
-            230,
-            63,
-            173,
-            15,
-            148,
-            162,
-            186,
-            25,
-            3,
-            100,
-            215,
-            170,
-            203,
-            191,
-            141,
-            156,
-            97,
-            72,
-            200,
-            204,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                144,
-                81,
-                228,
-                149,
-                75,
-                108,
-                103,
-                104,
-                7,
-                10,
-                129,
-                159,
-                230,
-                63,
-                173,
-                15,
-                148,
-                162,
-                186,
-                25,
-                3,
-                100,
-                215,
-                170,
-                203,
-                191,
-                141,
-                156,
-                97,
-                72,
-                200,
-                204,
-            ],
-        },
-    ),
-}
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
         "data/non-contracts/Determining Culture Fit.docx",
     ),
 }
@@ -6751,1246 +7144,149 @@ process_pool_size = 4
         },
     ),
 }
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/contracts/Services Contract -Cyberdyne Systems V12.docx",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            56,
-            168,
-            86,
-            108,
-            233,
-            78,
-            94,
-            61,
-            64,
-            183,
-            76,
-            11,
-            106,
-            175,
-            34,
-            19,
-            177,
-            184,
-            117,
-            167,
-            149,
-            40,
-            138,
-            58,
-            161,
-            197,
-            125,
-            75,
-            58,
-            16,
-            233,
-            227,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            56,
-            168,
-            86,
-            108,
-            233,
-            78,
-            94,
-            61,
-            64,
-            183,
-            76,
-            11,
-            106,
-            175,
-            34,
-            19,
-            177,
-            184,
-            117,
-            167,
-            149,
-            40,
-            138,
-            58,
-            161,
-            197,
-            125,
-            75,
-            58,
-            16,
-            233,
-            227,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                56,
-                168,
-                86,
-                108,
-                233,
-                78,
-                94,
-                61,
-                64,
-                183,
-                76,
-                11,
-                106,
-                175,
-                34,
-                19,
-                177,
-                184,
-                117,
-                167,
-                149,
-                40,
-                138,
-                58,
-                161,
-                197,
-                125,
-                75,
-                58,
-                16,
-                233,
-                227,
-            ],
-        },
-    ),
-}
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "data/contracts/Project-Manager-Contract (Hloom).docx",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/contracts/Project-Manager-Contract (Hloom).docx",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/contracts/Project-Manager-Contract (Hloom).docx",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            222,
-            22,
-            9,
-            80,
-            93,
-            229,
-            249,
-            166,
-            55,
-            70,
-            76,
-            131,
-            216,
-            231,
-            123,
-            34,
-            221,
-            17,
-            102,
-            244,
-            5,
-            161,
-            58,
-            20,
-            195,
-            212,
-            27,
-            172,
-            200,
-            97,
-            32,
-            116,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            222,
-            22,
-            9,
-            80,
-            93,
-            229,
-            249,
-            166,
-            55,
-            70,
-            76,
-            131,
-            216,
-            231,
-            123,
-            34,
-            221,
-            17,
-            102,
-            244,
-            5,
-            161,
-            58,
-            20,
-            195,
-            212,
-            27,
-            172,
-            200,
-            97,
-            32,
-            116,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                222,
-                22,
-                9,
-                80,
-                93,
-                229,
-                249,
-                166,
-                55,
-                70,
-                76,
-                131,
-                216,
-                231,
-                123,
-                34,
-                221,
-                17,
-                102,
-                244,
-                5,
-                161,
-                58,
-                20,
-                195,
-                212,
-                27,
-                172,
-                200,
-                97,
-                32,
-                116,
-            ],
-        },
-    ),
-}
-[TRACE][file/src/common/compare.rs::150] xvc_path_diff: RecordMissing {
-    actual: XvcPath(
-        "data/contracts/Non-Compete (Signaturely).docx",
-    ),
-}
-[TRACE][file/src/common/compare.rs::191] actual: XvcPath(
-    "data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/compare.rs::193] path: AbsolutePath(
-    "[CWD]/data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/compare.rs::195] actual_digest: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            240,
-            59,
-            125,
-            5,
-            72,
-            126,
-            178,
-            227,
-            154,
-            224,
-            72,
-            33,
-            91,
-            63,
-            89,
-            13,
-            135,
-            68,
-            161,
-            105,
-            131,
-            156,
-            48,
-            48,
-            42,
-            170,
-            220,
-            68,
-            247,
-            201,
-            162,
-            177,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::133] stored_content_digest: None
-[TRACE][file/src/common/compare.rs::134] actual: ContentDigest(
-    XvcDigest {
-        algorithm: Blake3,
-        digest: [
-            240,
-            59,
-            125,
-            5,
-            72,
-            126,
-            178,
-            227,
-            154,
-            224,
-            72,
-            33,
-            91,
-            63,
-            89,
-            13,
-            135,
-            68,
-            161,
-            105,
-            131,
-            156,
-            48,
-            48,
-            42,
-            170,
-            220,
-            68,
-            247,
-            201,
-            162,
-            177,
-        ],
-    },
-)
-[TRACE][file/src/common/compare.rs::197] res: RecordMissing {
-    actual: ContentDigest(
-        XvcDigest {
-            algorithm: Blake3,
-            digest: [
-                240,
-                59,
-                125,
-                5,
-                72,
-                126,
-                178,
-                227,
-                154,
-                224,
-                72,
-                33,
-                91,
-                63,
-                89,
-                13,
-                135,
-                68,
-                161,
-                105,
-                131,
-                156,
-                48,
-                48,
-                42,
-                170,
-                220,
-                68,
-                247,
-                201,
-                162,
-                177,
-            ],
-        },
-    ),
-}
 [TRACE][file/src/common/compare.rs::546] file_content_digest_diff_store.keys(): [
     XvcEntity(
-        11,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        3,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        24,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        14,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        12,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        16,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        18,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        4,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        10,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        5,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        25,
-        7455966604501631515,
-    ),
-    XvcEntity(
         13,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        17,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        22,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        19,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        6,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        8,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        7,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        20,
-        7455966604501631515,
-    ),
-    XvcEntity(
-        26,
-        7455966604501631515,
+        16378980373205155483,
     ),
     XvcEntity(
         23,
-        7455966604501631515,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        8,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        6,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        11,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        22,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        4,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        14,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        7,
+        16378980373205155483,
     ),
     XvcEntity(
         15,
-        7455966604501631515,
+        16378980373205155483,
     ),
     XvcEntity(
         2,
-        7455966604501631515,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        21,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        9,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        25,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        12,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        26,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        20,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        3,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        18,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        5,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        10,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        17,
+        16378980373205155483,
+    ),
+    XvcEntity(
+        19,
+        16378980373205155483,
     ),
 ]
 [TRACE][file/src/track/mod.rs::184] content_digest_diff: HStore {
     map: {
         XvcEntity(
-            17,
-            7455966604501631515,
+            9,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
                     algorithm: Blake3,
                     digest: [
-                        213,
-                        78,
-                        143,
-                        168,
-                        230,
-                        39,
-                        93,
-                        128,
-                        243,
-                        254,
-                        107,
-                        87,
-                        29,
-                        176,
-                        239,
-                        183,
-                        20,
-                        31,
-                        177,
-                        56,
-                        28,
-                        27,
-                        210,
-                        234,
-                        161,
-                        200,
-                        3,
-                        41,
-                        17,
-                        100,
-                        109,
-                        46,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            12,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        192,
-                        255,
-                        225,
-                        124,
-                        51,
-                        74,
-                        8,
-                        117,
-                        20,
-                        170,
-                        202,
-                        81,
-                        5,
-                        15,
-                        152,
-                        107,
-                        10,
-                        125,
-                        2,
-                        78,
-                        181,
-                        19,
-                        54,
-                        207,
-                        175,
-                        226,
-                        211,
-                        176,
-                        29,
-                        118,
-                        5,
-                        195,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            10,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        56,
-                        168,
-                        86,
-                        108,
-                        233,
-                        78,
-                        94,
-                        61,
-                        64,
-                        183,
-                        76,
-                        11,
+                        235,
+                        121,
+                        69,
+                        35,
+                        241,
+                        36,
+                        122,
+                        69,
                         106,
-                        175,
-                        34,
-                        19,
-                        177,
-                        184,
-                        117,
-                        167,
-                        149,
-                        40,
-                        138,
-                        58,
-                        161,
-                        197,
-                        125,
-                        75,
-                        58,
-                        16,
-                        233,
-                        227,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            2,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        253,
-                        3,
-                        63,
-                        211,
-                        248,
-                        131,
-                        219,
-                        46,
-                        130,
-                        137,
-                        98,
-                        4,
+                        24,
                         83,
-                        133,
-                        5,
-                        159,
-                        25,
-                        160,
-                        48,
-                        251,
-                        152,
-                        126,
-                        196,
-                        190,
-                        231,
-                        68,
-                        254,
-                        180,
-                        77,
-                        157,
+                        24,
+                        161,
+                        232,
+                        0,
                         18,
-                        17,
+                        36,
+                        68,
+                        166,
+                        51,
+                        241,
+                        208,
+                        34,
+                        169,
+                        58,
+                        8,
+                        160,
+                        139,
+                        88,
+                        14,
+                        7,
+                        72,
                     ],
                 },
             ),
         },
         XvcEntity(
             11,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        99,
-                        140,
-                        24,
-                        89,
-                        29,
-                        45,
-                        130,
-                        228,
-                        98,
-                        60,
-                        155,
-                        211,
-                        103,
-                        63,
-                        118,
-                        53,
-                        186,
-                        127,
-                        113,
-                        248,
-                        201,
-                        239,
-                        202,
-                        90,
-                        47,
-                        170,
-                        251,
-                        204,
-                        255,
-                        237,
-                        87,
-                        112,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            16,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        222,
-                        22,
-                        9,
-                        80,
-                        93,
-                        229,
-                        249,
-                        166,
-                        55,
-                        70,
-                        76,
-                        131,
-                        216,
-                        231,
-                        123,
-                        34,
-                        221,
-                        17,
-                        102,
-                        244,
-                        5,
-                        161,
-                        58,
-                        20,
-                        195,
-                        212,
-                        27,
-                        172,
-                        200,
-                        97,
-                        32,
-                        116,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            26,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        198,
-                        130,
-                        225,
-                        139,
-                        142,
-                        135,
-                        26,
-                        80,
-                        26,
-                        32,
-                        51,
-                        109,
-                        79,
-                        180,
-                        228,
-                        11,
-                        138,
-                        178,
-                        128,
-                        34,
-                        228,
-                        226,
-                        187,
-                        1,
-                        14,
-                        117,
-                        75,
-                        28,
-                        217,
-                        226,
-                        110,
-                        44,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            14,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        100,
-                        18,
-                        204,
-                        44,
-                        7,
-                        36,
-                        123,
-                        96,
-                        236,
-                        87,
-                        36,
-                        108,
-                        12,
-                        250,
-                        55,
-                        211,
-                        7,
-                        158,
-                        23,
-                        247,
-                        4,
-                        177,
-                        38,
-                        224,
-                        241,
-                        56,
-                        217,
-                        151,
-                        191,
-                        139,
-                        207,
-                        225,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            7,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        240,
-                        59,
-                        125,
-                        5,
-                        72,
-                        126,
-                        178,
-                        227,
-                        154,
-                        224,
-                        72,
-                        33,
-                        91,
-                        63,
-                        89,
-                        13,
-                        135,
-                        68,
-                        161,
-                        105,
-                        131,
-                        156,
-                        48,
-                        48,
-                        42,
-                        170,
-                        220,
-                        68,
-                        247,
-                        201,
-                        162,
-                        177,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            3,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        144,
-                        81,
-                        228,
-                        149,
-                        75,
-                        108,
-                        103,
-                        104,
-                        7,
-                        10,
-                        129,
-                        159,
-                        230,
-                        63,
-                        173,
-                        15,
-                        148,
-                        162,
-                        186,
-                        25,
-                        3,
-                        100,
-                        215,
-                        170,
-                        203,
-                        191,
-                        141,
-                        156,
-                        97,
-                        72,
-                        200,
-                        204,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            4,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        211,
-                        10,
-                        224,
-                        175,
-                        180,
-                        211,
-                        234,
-                        167,
-                        173,
-                        251,
-                        55,
-                        97,
-                        57,
-                        206,
-                        197,
-                        6,
-                        3,
-                        84,
-                        201,
-                        220,
-                        39,
-                        120,
-                        104,
-                        213,
-                        234,
-                        39,
-                        96,
-                        20,
-                        35,
-                        21,
-                        163,
-                        198,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            13,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        195,
-                        99,
-                        214,
-                        230,
-                        88,
-                        205,
-                        107,
-                        139,
-                        79,
-                        146,
-                        188,
-                        168,
-                        118,
-                        136,
-                        228,
-                        169,
-                        248,
-                        38,
-                        201,
-                        111,
-                        223,
-                        81,
-                        156,
-                        64,
-                        215,
-                        26,
-                        64,
-                        45,
-                        168,
-                        13,
-                        18,
-                        151,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            6,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        217,
-                        212,
-                        153,
-                        214,
-                        72,
-                        135,
-                        48,
-                        210,
-                        13,
-                        18,
-                        253,
-                        19,
-                        190,
-                        232,
-                        238,
-                        143,
-                        114,
-                        87,
-                        206,
-                        211,
-                        93,
-                        150,
-                        80,
-                        32,
-                        119,
-                        33,
-                        22,
-                        99,
-                        129,
-                        243,
-                        47,
-                        69,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            20,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        190,
-                        117,
-                        25,
-                        70,
-                        74,
-                        197,
-                        61,
-                        220,
-                        12,
-                        108,
-                        42,
-                        111,
-                        157,
-                        196,
-                        217,
-                        63,
-                        76,
-                        120,
-                        60,
-                        228,
-                        62,
-                        46,
-                        106,
-                        154,
-                        218,
-                        179,
-                        13,
-                        193,
-                        221,
-                        29,
-                        188,
-                        123,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            22,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        26,
-                        49,
-                        86,
-                        120,
-                        34,
-                        250,
-                        158,
-                        114,
-                        129,
-                        12,
-                        212,
-                        37,
-                        112,
-                        89,
-                        225,
-                        1,
-                        36,
-                        98,
-                        77,
-                        56,
-                        204,
-                        237,
-                        164,
-                        172,
-                        203,
-                        249,
-                        100,
-                        35,
-                        37,
-                        116,
-                        102,
-                        226,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            23,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        60,
-                        141,
-                        114,
-                        229,
-                        5,
-                        15,
-                        124,
-                        179,
-                        208,
-                        107,
-                        139,
-                        87,
-                        228,
-                        82,
-                        176,
-                        162,
-                        77,
-                        254,
-                        245,
-                        39,
-                        202,
-                        96,
-                        78,
-                        8,
-                        65,
-                        199,
-                        87,
-                        132,
-                        166,
-                        7,
-                        56,
-                        231,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            9,
-            7455966604501631515,
-        ): RecordMissing {
-            actual: ContentDigest(
-                XvcDigest {
-                    algorithm: Blake3,
-                    digest: [
-                        240,
-                        29,
-                        80,
-                        32,
-                        182,
-                        184,
-                        135,
-                        207,
-                        76,
-                        63,
-                        18,
-                        214,
-                        108,
-                        50,
-                        102,
-                        26,
-                        144,
-                        136,
-                        142,
-                        32,
-                        36,
-                        78,
-                        234,
-                        195,
-                        33,
-                        57,
-                        83,
-                        182,
-                        185,
-                        16,
-                        128,
-                        129,
-                    ],
-                },
-            ),
-        },
-        XvcEntity(
-            18,
-            7455966604501631515,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
@@ -8033,52 +7329,184 @@ process_pool_size = 4
             ),
         },
         XvcEntity(
-            5,
-            7455966604501631515,
+            25,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
                     algorithm: Blake3,
                     digest: [
-                        82,
-                        241,
-                        157,
-                        196,
-                        71,
+                        222,
+                        22,
+                        9,
+                        80,
+                        93,
+                        229,
+                        249,
+                        166,
+                        55,
                         70,
-                        154,
-                        106,
-                        137,
-                        143,
-                        196,
-                        25,
-                        74,
-                        98,
-                        17,
-                        109,
-                        202,
-                        84,
+                        76,
+                        131,
                         216,
-                        153,
-                        149,
-                        236,
-                        159,
-                        225,
-                        42,
-                        202,
-                        141,
-                        2,
-                        251,
-                        209,
-                        228,
-                        42,
+                        231,
+                        123,
+                        34,
+                        221,
+                        17,
+                        102,
+                        244,
+                        5,
+                        161,
+                        58,
+                        20,
+                        195,
+                        212,
+                        27,
+                        172,
+                        200,
+                        97,
+                        32,
+                        116,
                     ],
                 },
             ),
         },
         XvcEntity(
-            8,
-            7455966604501631515,
+            6,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        253,
+                        3,
+                        63,
+                        211,
+                        248,
+                        131,
+                        219,
+                        46,
+                        130,
+                        137,
+                        98,
+                        4,
+                        83,
+                        133,
+                        5,
+                        159,
+                        25,
+                        160,
+                        48,
+                        251,
+                        152,
+                        126,
+                        196,
+                        190,
+                        231,
+                        68,
+                        254,
+                        180,
+                        77,
+                        157,
+                        18,
+                        17,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            2,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        60,
+                        141,
+                        114,
+                        229,
+                        5,
+                        15,
+                        124,
+                        179,
+                        208,
+                        107,
+                        139,
+                        87,
+                        228,
+                        82,
+                        176,
+                        162,
+                        77,
+                        254,
+                        245,
+                        39,
+                        202,
+                        96,
+                        78,
+                        8,
+                        65,
+                        199,
+                        87,
+                        132,
+                        166,
+                        7,
+                        56,
+                        231,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            20,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        56,
+                        168,
+                        86,
+                        108,
+                        233,
+                        78,
+                        94,
+                        61,
+                        64,
+                        183,
+                        76,
+                        11,
+                        106,
+                        175,
+                        34,
+                        19,
+                        177,
+                        184,
+                        117,
+                        167,
+                        149,
+                        40,
+                        138,
+                        58,
+                        161,
+                        197,
+                        125,
+                        75,
+                        58,
+                        16,
+                        233,
+                        227,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            14,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
@@ -8121,52 +7549,228 @@ process_pool_size = 4
             ),
         },
         XvcEntity(
-            24,
-            7455966604501631515,
+            10,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
                     algorithm: Blake3,
                     digest: [
-                        213,
-                        94,
-                        23,
-                        50,
-                        21,
+                        198,
+                        130,
+                        225,
+                        139,
+                        142,
+                        135,
+                        26,
+                        80,
+                        26,
+                        32,
+                        51,
                         109,
-                        15,
-                        61,
-                        86,
-                        87,
-                        175,
-                        19,
-                        30,
-                        113,
-                        182,
-                        113,
-                        37,
-                        194,
-                        30,
-                        195,
-                        115,
+                        79,
+                        180,
+                        228,
+                        11,
                         138,
-                        84,
-                        237,
-                        144,
-                        222,
+                        178,
+                        128,
+                        34,
+                        228,
+                        226,
+                        187,
+                        1,
+                        14,
+                        117,
+                        75,
+                        28,
+                        217,
+                        226,
+                        110,
+                        44,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            17,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        99,
+                        140,
+                        24,
+                        89,
+                        29,
+                        45,
+                        130,
+                        228,
+                        98,
+                        60,
+                        155,
+                        211,
+                        103,
+                        63,
+                        118,
+                        53,
+                        186,
+                        127,
+                        113,
+                        248,
+                        201,
                         239,
-                        165,
-                        168,
-                        219,
-                        182,
-                        147,
+                        202,
+                        90,
+                        47,
+                        170,
+                        251,
+                        204,
+                        255,
+                        237,
+                        87,
+                        112,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            12,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        82,
+                        241,
+                        157,
+                        196,
+                        71,
+                        70,
+                        154,
+                        106,
+                        137,
+                        143,
+                        196,
+                        25,
+                        74,
+                        98,
+                        17,
+                        109,
+                        202,
+                        84,
+                        216,
+                        153,
+                        149,
+                        236,
+                        159,
+                        225,
+                        42,
+                        202,
+                        141,
+                        2,
+                        251,
+                        209,
+                        228,
+                        42,
                     ],
                 },
             ),
         },
         XvcEntity(
             15,
-            7455966604501631515,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        100,
+                        18,
+                        204,
+                        44,
+                        7,
+                        36,
+                        123,
+                        96,
+                        236,
+                        87,
+                        36,
+                        108,
+                        12,
+                        250,
+                        55,
+                        211,
+                        7,
+                        158,
+                        23,
+                        247,
+                        4,
+                        177,
+                        38,
+                        224,
+                        241,
+                        56,
+                        217,
+                        151,
+                        191,
+                        139,
+                        207,
+                        225,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            4,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        190,
+                        117,
+                        25,
+                        70,
+                        74,
+                        197,
+                        61,
+                        220,
+                        12,
+                        108,
+                        42,
+                        111,
+                        157,
+                        196,
+                        217,
+                        63,
+                        76,
+                        120,
+                        60,
+                        228,
+                        62,
+                        46,
+                        106,
+                        154,
+                        218,
+                        179,
+                        13,
+                        193,
+                        221,
+                        29,
+                        188,
+                        123,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            21,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
@@ -8209,52 +7813,52 @@ process_pool_size = 4
             ),
         },
         XvcEntity(
-            21,
-            7455966604501631515,
+            7,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
                     algorithm: Blake3,
                     digest: [
-                        242,
-                        43,
-                        27,
-                        142,
-                        137,
-                        47,
-                        187,
-                        48,
-                        18,
-                        99,
-                        236,
-                        252,
+                        26,
+                        49,
+                        86,
+                        120,
+                        34,
+                        250,
+                        158,
+                        114,
+                        129,
+                        12,
+                        212,
+                        37,
                         112,
-                        51,
-                        248,
-                        131,
-                        241,
-                        178,
-                        222,
-                        117,
-                        130,
-                        61,
-                        54,
-                        56,
-                        118,
-                        188,
-                        203,
+                        89,
+                        225,
+                        1,
                         36,
-                        79,
-                        228,
-                        253,
-                        139,
+                        98,
+                        77,
+                        56,
+                        204,
+                        237,
+                        164,
+                        172,
+                        203,
+                        249,
+                        100,
+                        35,
+                        37,
+                        116,
+                        102,
+                        226,
                     ],
                 },
             ),
         },
         XvcEntity(
-            25,
-            7455966604501631515,
+            26,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
@@ -8297,45 +7901,441 @@ process_pool_size = 4
             ),
         },
         XvcEntity(
-            19,
-            7455966604501631515,
+            24,
+            16378980373205155483,
         ): RecordMissing {
             actual: ContentDigest(
                 XvcDigest {
                     algorithm: Blake3,
                     digest: [
-                        235,
-                        121,
-                        69,
-                        35,
-                        241,
-                        36,
-                        122,
-                        69,
                         106,
-                        24,
-                        83,
-                        24,
-                        161,
-                        232,
-                        0,
-                        18,
-                        36,
-                        68,
-                        166,
-                        51,
-                        241,
-                        208,
-                        34,
-                        169,
-                        58,
-                        8,
-                        160,
-                        139,
+                        181,
+                        74,
+                        9,
+                        155,
+                        74,
+                        99,
+                        234,
+                        128,
+                        5,
+                        81,
+                        147,
+                        31,
+                        199,
+                        40,
+                        33,
+                        211,
+                        25,
+                        157,
+                        131,
+                        151,
+                        226,
+                        73,
+                        131,
+                        242,
+                        48,
+                        153,
+                        107,
+                        60,
+                        38,
+                        45,
+                        116,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            23,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        195,
+                        99,
+                        214,
+                        230,
                         88,
-                        14,
-                        7,
+                        205,
+                        107,
+                        139,
+                        79,
+                        146,
+                        188,
+                        168,
+                        118,
+                        136,
+                        228,
+                        169,
+                        248,
+                        38,
+                        201,
+                        111,
+                        223,
+                        81,
+                        156,
+                        64,
+                        215,
+                        26,
+                        64,
+                        45,
+                        168,
+                        13,
+                        18,
+                        151,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            3,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        217,
+                        212,
+                        153,
+                        214,
                         72,
+                        135,
+                        48,
+                        210,
+                        13,
+                        18,
+                        253,
+                        19,
+                        190,
+                        232,
+                        238,
+                        143,
+                        114,
+                        87,
+                        206,
+                        211,
+                        93,
+                        150,
+                        80,
+                        32,
+                        119,
+                        33,
+                        22,
+                        99,
+                        129,
+                        243,
+                        47,
+                        69,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            5,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        213,
+                        94,
+                        23,
+                        50,
+                        21,
+                        109,
+                        15,
+                        61,
+                        86,
+                        87,
+                        175,
+                        19,
+                        30,
+                        113,
+                        182,
+                        113,
+                        37,
+                        194,
+                        30,
+                        195,
+                        115,
+                        138,
+                        84,
+                        237,
+                        144,
+                        222,
+                        239,
+                        165,
+                        168,
+                        219,
+                        182,
+                        147,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            13,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        211,
+                        10,
+                        224,
+                        175,
+                        180,
+                        211,
+                        234,
+                        167,
+                        173,
+                        251,
+                        55,
+                        97,
+                        57,
+                        206,
+                        197,
+                        6,
+                        3,
+                        84,
+                        201,
+                        220,
+                        39,
+                        120,
+                        104,
+                        213,
+                        234,
+                        39,
+                        96,
+                        20,
+                        35,
+                        21,
+                        163,
+                        198,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            8,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        240,
+                        59,
+                        125,
+                        5,
+                        72,
+                        126,
+                        178,
+                        227,
+                        154,
+                        224,
+                        72,
+                        33,
+                        91,
+                        63,
+                        89,
+                        13,
+                        135,
+                        68,
+                        161,
+                        105,
+                        131,
+                        156,
+                        48,
+                        48,
+                        42,
+                        170,
+                        220,
+                        68,
+                        247,
+                        201,
+                        162,
+                        177,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            18,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        213,
+                        78,
+                        143,
+                        168,
+                        230,
+                        39,
+                        93,
+                        128,
+                        243,
+                        254,
+                        107,
+                        87,
+                        29,
+                        176,
+                        239,
+                        183,
+                        20,
+                        31,
+                        177,
+                        56,
+                        28,
+                        27,
+                        210,
+                        234,
+                        161,
+                        200,
+                        3,
+                        41,
+                        17,
+                        100,
+                        109,
+                        46,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            19,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        144,
+                        81,
+                        228,
+                        149,
+                        75,
+                        108,
+                        103,
+                        104,
+                        7,
+                        10,
+                        129,
+                        159,
+                        230,
+                        63,
+                        173,
+                        15,
+                        148,
+                        162,
+                        186,
+                        25,
+                        3,
+                        100,
+                        215,
+                        170,
+                        203,
+                        191,
+                        141,
+                        156,
+                        97,
+                        72,
+                        200,
+                        204,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            22,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        192,
+                        255,
+                        225,
+                        124,
+                        51,
+                        74,
+                        8,
+                        117,
+                        20,
+                        170,
+                        202,
+                        81,
+                        5,
+                        15,
+                        152,
+                        107,
+                        10,
+                        125,
+                        2,
+                        78,
+                        181,
+                        19,
+                        54,
+                        207,
+                        175,
+                        226,
+                        211,
+                        176,
+                        29,
+                        118,
+                        5,
+                        195,
+                    ],
+                },
+            ),
+        },
+        XvcEntity(
+            16,
+            16378980373205155483,
+        ): RecordMissing {
+            actual: ContentDigest(
+                XvcDigest {
+                    algorithm: Blake3,
+                    digest: [
+                        66,
+                        23,
+                        178,
+                        39,
+                        178,
+                        86,
+                        195,
+                        251,
+                        216,
+                        237,
+                        185,
+                        25,
+                        232,
+                        81,
+                        171,
+                        210,
+                        68,
+                        44,
+                        161,
+                        9,
+                        222,
+                        6,
+                        91,
+                        242,
+                        60,
+                        33,
+                        245,
+                        96,
+                        45,
+                        107,
+                        23,
+                        254,
                     ],
                 },
             ),
@@ -8354,58 +8354,16 @@ process_pool_size = 4
 [TRACE][file/src/common/mod.rs::476] new_store.len(): 25
 [TRACE][file/src/track/mod.rs::192] targets: {
     XvcPath(
-        "data/non-contracts/Is Remote Work Working.docx",
+        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            8950,
+            17930,
         ),
         modified: Some(
             SystemTime {
                 tv_sec: 1700163690,
-                tv_nsec: 67812955,
-            },
-        ),
-    },
-    XvcPath(
-        "data/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 60510471,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Invoice (HLoom).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            43002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65650234,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Website Work-for_hire (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            18700,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64436501,
+                tv_nsec: 61995117,
             },
         ),
     },
@@ -8424,6 +8382,62 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/non-contracts/invoice-spiceimporter.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            21719,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66382308,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Determining Culture Fit.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            10144,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66122937,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Is Remote Work Working.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8950,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67812955,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            45096,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64280670,
+            },
+        ),
+    },
+    XvcPath(
         "data/contracts/Non-Compete (Signaturely).docx",
     ): XvcMetadata {
         file_type: File,
@@ -8434,6 +8448,76 @@ process_pool_size = 4
             SystemTime {
                 tv_sec: 1700163690,
                 tv_nsec: 64629915,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61256711,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Women who broke barriers in the music industry.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            9441,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 67429585,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Roofing Contract (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            17302,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64779496,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Website Work-for_hire (Signaturely).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            18700,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 64436501,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/Invoice (HLoom).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            43002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65650234,
             },
         ),
     },
@@ -8452,6 +8536,20 @@ process_pool_size = 4
         ),
     },
     XvcPath(
+        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            8224,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 65962772,
+            },
+        ),
+    },
+    XvcPath(
         "data/non-contracts",
     ): XvcMetadata {
         file_type: Directory,
@@ -8460,8 +8558,50 @@ process_pool_size = 4
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 242975817,
+                tv_sec: 1700212741,
+                tv_nsec: 687240944,
+            },
+        ),
+    },
+    XvcPath(
+        "data/contracts/Limited Warranty (Pro remodeler).docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            19263,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 61441083,
+            },
+        ),
+    },
+    XvcPath(
+        "data/non-contracts/10 steps for marketing your law firm.docx",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            11133,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 66977300,
+            },
+        ),
+    },
+    XvcPath(
+        "data/.DS_Store",
+    ): XvcMetadata {
+        file_type: File,
+        size: Some(
+            6148,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1700163690,
+                tv_nsec: 60510471,
             },
         ),
     },
@@ -8480,16 +8620,16 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/contracts/Limited Warranty (Pro remodeler).docx",
+        "data/contracts/XYZ Corp Employment Agreement.docx",
     ): XvcMetadata {
         file_type: File,
         size: Some(
-            19263,
+            42357,
         ),
         modified: Some(
             SystemTime {
                 tv_sec: 1700163690,
-                tv_nsec: 61441083,
+                tv_nsec: 63048728,
             },
         ),
     },
@@ -8522,30 +8662,16 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+        "data/contracts",
     ): XvcMetadata {
-        file_type: File,
+        file_type: Directory,
         size: Some(
-            8224,
+            480,
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 65962772,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/XYZ Corp Employment Agreement.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            42357,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 63048728,
+                tv_sec: 1700212741,
+                tv_nsec: 686320326,
             },
         ),
     },
@@ -8564,118 +8690,6 @@ process_pool_size = 4
         ),
     },
     XvcPath(
-        "data/non-contracts/10 steps for marketing your law firm.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            11133,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66977300,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Roofing Contract (Signaturely).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17302,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64779496,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/.DS_Store",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            6148,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61256711,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/invoice-spiceimporter.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            21719,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66382308,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts",
-    ): XvcMetadata {
-        file_type: Directory,
-        size: Some(
-            480,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700212386,
-                tv_nsec: 241738629,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            45096,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 64280670,
-            },
-        ),
-    },
-    XvcPath(
-        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            17930,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 61995117,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Determining Culture Fit.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            10144,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 66122937,
-            },
-        ),
-    },
-    XvcPath(
         "data/non-contracts/.DS_Store",
     ): XvcMetadata {
         file_type: File,
@@ -8686,20 +8700,6 @@ process_pool_size = 4
             SystemTime {
                 tv_sec: 1700163690,
                 tv_nsec: 66810635,
-            },
-        ),
-    },
-    XvcPath(
-        "data/non-contracts/Women who broke barriers in the music industry.docx",
-    ): XvcMetadata {
-        file_type: File,
-        size: Some(
-            9441,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1700163690,
-                tv_nsec: 67429585,
             },
         ),
     },
@@ -8728,31 +8728,61 @@ process_pool_size = 4
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 2 regexes
 [TRACE][file/src/track/mod.rs::222] file_targets: [
     XvcPath(
-        "data/non-contracts/Is Remote Work Working.docx",
-    ),
-    XvcPath(
-        "data/.DS_Store",
-    ),
-    XvcPath(
-        "data/non-contracts/Invoice (HLoom).docx",
-    ),
-    XvcPath(
-        "data/contracts/Website Work-for_hire (Signaturely).docx",
+        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
     ),
     XvcPath(
         "data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC",
     ),
     XvcPath(
+        "data/non-contracts/invoice-spiceimporter.docx",
+    ),
+    XvcPath(
+        "data/non-contracts/Determining Culture Fit.docx",
+    ),
+    XvcPath(
+        "data/non-contracts/Is Remote Work Working.docx",
+    ),
+    XvcPath(
+        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+    ),
+    XvcPath(
         "data/contracts/Non-Compete (Signaturely).docx",
+    ),
+    XvcPath(
+        "data/contracts/.DS_Store",
+    ),
+    XvcPath(
+        "data/non-contracts/Women who broke barriers in the music industry.docx",
+    ),
+    XvcPath(
+        "data/contracts/Roofing Contract (Signaturely).docx",
+    ),
+    XvcPath(
+        "data/contracts/Website Work-for_hire (Signaturely).docx",
+    ),
+    XvcPath(
+        "data/non-contracts/Invoice (HLoom).docx",
     ),
     XvcPath(
         "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
     ),
     XvcPath(
-        "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
     ),
     XvcPath(
         "data/contracts/Limited Warranty (Pro remodeler).docx",
+    ),
+    XvcPath(
+        "data/non-contracts/10 steps for marketing your law firm.docx",
+    ),
+    XvcPath(
+        "data/.DS_Store",
+    ),
+    XvcPath(
+        "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+    ),
+    XvcPath(
+        "data/contracts/XYZ Corp Employment Agreement.docx",
     ),
     XvcPath(
         "data/contracts/House-Rental-Contract (HLoom).docx",
@@ -8761,40 +8791,10 @@ process_pool_size = 4
         "data/contracts/Investment-Contract (HLoom).docx",
     ),
     XvcPath(
-        "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-    ),
-    XvcPath(
-        "data/contracts/XYZ Corp Employment Agreement.docx",
-    ),
-    XvcPath(
         "data/contracts/Project-Manager-Contract (Hloom).docx",
     ),
     XvcPath(
-        "data/non-contracts/10 steps for marketing your law firm.docx",
-    ),
-    XvcPath(
-        "data/contracts/Roofing Contract (Signaturely).docx",
-    ),
-    XvcPath(
-        "data/contracts/.DS_Store",
-    ),
-    XvcPath(
-        "data/non-contracts/invoice-spiceimporter.docx",
-    ),
-    XvcPath(
-        "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
-    ),
-    XvcPath(
-        "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
-    ),
-    XvcPath(
-        "data/non-contracts/Determining Culture Fit.docx",
-    ),
-    XvcPath(
         "data/non-contracts/.DS_Store",
-    ),
-    XvcPath(
-        "data/non-contracts/Women who broke barriers in the music industry.docx",
     ),
 ]
 [TRACE][file/src/track/mod.rs::223] dir_targets: [
@@ -8811,7 +8811,7 @@ process_pool_size = 4
 !.xvc/ec/
 !.xvc/config.toml
 
-### Following 1 lines are added by xvc on Fri, 17 Nov 2023 09:13:07 +0000
+### Following 1 lines are added by xvc on Fri, 17 Nov 2023 09:19:02 +0000
 /data/
 "
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
@@ -8820,1152 +8820,193 @@ process_pool_size = 4
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/store/**", re: "(?-u)^(?:/|/.*/)//.xvc/store/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('s'), Literal('t'), Literal('o'), Literal('r'), Literal('e'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/ec/**", re: "(?-u)^(?:/|/.*/)//.xvc/ec/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('e'), Literal('c'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 2 regexes
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Is Remote Work Working.docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/.DS_Store
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Invoice (HLoom).docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Website Work-for_hire (Signaturely).docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/AGREEMENT TO SETTLE (BCHRT).docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/invoice-spiceimporter.docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Determining Culture Fit.docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Is Remote Work Working.docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Non-Compete (Signaturely).docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/.DS_Store
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Women who broke barriers in the music industry.docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Roofing Contract (Signaturely).docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Website Work-for_hire (Signaturely).docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Invoice (HLoom).docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Services Contract -Cyberdyne Systems V12.docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/How Does Working In-House Differ from Private Practice_.docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Limited Warranty (Pro remodeler).docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/10 steps for marketing your law firm.docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/.DS_Store
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Services Contract -Cyberdyne Systems V12.docx
+[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/XYZ Corp Employment Agreement.docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/House-Rental-Contract (HLoom).docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Investment-Contract (HLoom).docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/How Does Working In-House Differ from Private Practice_.docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/XYZ Corp Employment Agreement.docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Project-Manager-Contract (Hloom).docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/10 steps for marketing your law firm.docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Roofing Contract (Signaturely).docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/.DS_Store
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/invoice-spiceimporter.docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/contracts/AGREEMENT TO SETTLE (BCHRT).docx
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Determining Culture Fit.docx
 [INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/.DS_Store
-[INFO][file/src/common/gitignore.rs::184] Already gitignored: data/non-contracts/Women who broke barriers in the music industry.docx
+[TRACE][file/src/track/mod.rs::254] xvc_paths_to_carry: HStore {
+    map: {
+        XvcEntity(
+            24,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts",
+        ),
+        XvcEntity(
+            2,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/AGREEMENT TO SETTLE (BCHRT).docx",
+        ),
+        XvcEntity(
+            21,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/XYZ Corp Employment Agreement.docx",
+        ),
+        XvcEntity(
+            16,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts",
+        ),
+        XvcEntity(
+            18,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/10 steps for marketing your law firm.docx",
+        ),
+        XvcEntity(
+            22,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/House-Rental-Contract (HLoom).docx",
+        ),
+        XvcEntity(
+            20,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Services Contract -Cyberdyne Systems V12.docx",
+        ),
+        XvcEntity(
+            26,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/.DS_Store",
+        ),
+        XvcEntity(
+            15,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
+        ),
+        XvcEntity(
+            19,
+            16378980373205155483,
+        ): XvcPath(
+            "data/.DS_Store",
+        ),
+        XvcEntity(
+            14,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
+        ),
+        XvcEntity(
+            12,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Website Work-for_hire (Signaturely).docx",
+        ),
+        XvcEntity(
+            7,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Mutual Confidentiality Agreement Blue sun & Stay Puft V8docx.docx",
+        ),
+        XvcEntity(
+            23,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Investment-Contract (HLoom).docx",
+        ),
+        XvcEntity(
+            17,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Limited Warranty (Pro remodeler).docx",
+        ),
+        XvcEntity(
+            3,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/A Consulting Agreement- Consumer Recreations Services V10.DOC",
+        ),
+        XvcEntity(
+            6,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/Is Remote Work Working.docx",
+        ),
+        XvcEntity(
+            25,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Project-Manager-Contract (Hloom).docx",
+        ),
+        XvcEntity(
+            10,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/Women who broke barriers in the music industry.docx",
+        ),
+        XvcEntity(
+            9,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/.DS_Store",
+        ),
+        XvcEntity(
+            13,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/Invoice (HLoom).docx",
+        ),
+        XvcEntity(
+            8,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Non-Compete (Signaturely).docx",
+        ),
+        XvcEntity(
+            11,
+            16378980373205155483,
+        ): XvcPath(
+            "data/contracts/Roofing Contract (Signaturely).docx",
+        ),
+        XvcEntity(
+            4,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/invoice-spiceimporter.docx",
+        ),
+        XvcEntity(
+            5,
+            16378980373205155483,
+        ): XvcPath(
+            "data/non-contracts/Determining Culture Fit.docx",
+        ),
+    },
+}
 [TRACE][file/src/carry_in/mod.rs::238] ignore_writer: Sender { .. }
 [TRACE][file/src/carry_in/mod.rs::239] ignore_thread: JoinHandle { .. }
 [TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c/0.docx",
+    "b3/6ab/54a/099b4a63ea800551931fc72821d3199d8397e24983f230996b3c262d74/0.",
 )
 [TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c/0.docx",
+    "[CWD]/.xvc/b3/6ab/54a/099b4a63ea800551931fc72821d3199d8397e24983f230996b3c262d74/0.",
 )
 [TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/Women who broke barriers in the music industry.docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c"
-[TRACE][walker/src/lib.rs::688] ignore_root: "[CWD]"
-[TRACE][walker/src/lib.rs::689] ignore_path: "[CWD]/.gitignore"
-[TRACE][walker/src/lib.rs::697] &content: "
-## Following are required for Xvc to function correctly.
-.xvc/*
-!.xvc/store/
-!.xvc/ec/
-!.xvc/config.toml
-
-### Following 1 lines are added by xvc on Fri, 17 Nov 2023 09:13:07 +0000
-/data/
-"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c/0.docx",
-)
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx",
-)
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/data/**", re: "(?-u)^(?:/|/.*/)data/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('a'), Literal('t'), Literal('a'), RecursiveSuffix]) }
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 2 regexes
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/Women who broke barriers in the music industry.docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/c68/2e1/8b8e871a501a20336d4fb4e40b8ab28022e4e2bb010e754b1cd9e26e2c/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/Women who broke barriers in the music industry.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/invoice-spiceimporter.docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/invoice-spiceimporter.docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b"
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/store/**", re: "(?-u)^(?:/|/.*/)//.xvc/store/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('s'), Literal('t'), Literal('o'), Literal('r'), Literal('e'), RecursiveSuffix]) }
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/ec/**", re: "(?-u)^(?:/|/.*/)//.xvc/ec/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('e'), Literal('c'), RecursiveSuffix]) }
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 2 regexes
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/invoice-spiceimporter.docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/invoice-spiceimporter.docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/invoice-spiceimporter.docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/invoice-spiceimporter.docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/be7/519/464ac53ddc0c6c2a6f9dc4d93f4c783ce43e2e6a9adab30dc1dd1dbc7b/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/invoice-spiceimporter.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/638/c18/591d2d82e4623c9bd3673f7635ba7f71f8c9efca5a2faafbccffed5770/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/contracts/Limited Warranty (Pro remodeler).docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a/0.",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a/0.",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a/0.",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/2b0/38f/91e81820d81cb8cd2f4a1ce34fc8044deb52bb160e47fac0a0e82d270a/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/.DS_Store",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/c0f/fe1/7c334a087514aaca51050f986b0a7d024eb51336cfafe2d3b01d7605c3/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/contracts/House-Rental-Contract (HLoom).docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/d54/e8f/a8e6275d80f3fe6b571db0efb7141fb1381c1bd2eaa1c8032911646d2e/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/10 steps for marketing your law firm.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/641/2cc/2c07247b60ec57246c0cfa37d3079e17f704b126e0f138d997bf8bcfe1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/How Does Working In-House Differ from Private Practice_.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/52f/19d/c447469a6a898fc4194a62116dca54d89995ec9fe12aca8d02fbd1e42a/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/contracts/Website Work-for_hire (Signaturely).docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/Determining Culture Fit.docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Determining Culture Fit.docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/Determining Culture Fit.docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Determining Culture Fit.docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Determining Culture Fit.docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/Determining Culture Fit.docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/d55/e17/32156d0f3d5657af131e71b67125c21ec3738a54ed90deefa5a8dbb693/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/Determining Culture Fit.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/bb3/89c/b566de32471e7cde9c8414e71f224bd65c13fe52e3645b5b1d2d7ffc55/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/contracts/Roofing Contract (Signaturely).docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/c36/3d6/e658cd6b8b4f92bca87688e4a9f826c96fdf519c40d71a402da80d1297/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/contracts/Investment-Contract (HLoom).docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc/0.",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc/0.",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc/0.",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/.DS_Store",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/905/1e4/954b6c6768070a819fe63fad0f94a2ba190364d7aacbbf8d9c6148c8cc/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/.DS_Store",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/da0/a08/a96844bca28063305c18bf0bf02742d57659b06f5d57bfc9af77abe220/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/20+ Future Business in India for 2025 _ Future Business Ideas for 2030 and beyond.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/f03/b7d/05487eb2e39ae048215b3f590d8744a169839c30302aaadc44f7c9a2b1/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/contracts/Non-Compete (Signaturely).docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
-    "data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::455] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6/0.docx",
-)
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6"
-[TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33188,
-    },
-)
-[TRACE][file/src/common/mod.rs::440] &file_perm.clone(): Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/carry_in/mod.rs::287] target_path: AbsolutePath(
-    "[CWD]/data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::290] parent: XvcPath(
-    "data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::292] parent_dir: AbsolutePath(
-    "[CWD]/data/non-contracts",
-)
-[TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6/0.docx",
-)
-[TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::314] path: AbsolutePath(
-    "[CWD]/data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::315] recheck_method: Copy
-[TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
-[TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6/0.docx",
-)
-[TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
-    "[CWD]/data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/common/mod.rs::327] &perm: Permissions(
-    FilePermissions {
-        mode: 33060,
-    },
-)
-[TRACE][file/src/common/mod.rs::329] &perm: Permissions(
-    FilePermissions {
-        mode: 33206,
-    },
-)
-[TRACE][file/src/common/mod.rs::367] "Return recheck_from_cache": "Return recheck_from_cache"
-[TRACE][file/src/carry_in/mod.rs::305] &cache_path: XvcCachePath(
-    "b3/d30/ae0/afb4d3eaa7adfb376139cec5060354c9dc277868d5ea2760142315a3c6/0.docx",
-)
-[TRACE][file/src/carry_in/mod.rs::306] recheck_method: Copy
-[TRACE][file/src/carry_in/mod.rs::307] &xp: XvcPath(
-    "data/non-contracts/Invoice (HLoom).docx",
-)
-[TRACE][file/src/carry_in/mod.rs::245] cache_path: XvcCachePath(
-    "b3/f22/b1b/8e892fbb301263ecfc7033f883f1b2de75823d363876bccb244fe4fd8b/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::247] abs_cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f22/b1b/8e892fbb301263ecfc7033f883f1b2de75823d363876bccb244fe4fd8b/0.",
-)
-[TRACE][file/src/carry_in/mod.rs::278] &cache_path: XvcCachePath(
-    "b3/f22/b1b/8e892fbb301263ecfc7033f883f1b2de75823d363876bccb244fe4fd8b/0.",
+    "b3/6ab/54a/099b4a63ea800551931fc72821d3199d8397e24983f230996b3c262d74/0.",
 )
 [TRACE][file/src/carry_in/mod.rs::279] &xp: XvcPath(
     "data/contracts",
@@ -9974,9 +9015,9 @@ process_pool_size = 4
     "[CWD]/data/contracts",
 )
 [TRACE][file/src/common/mod.rs::457] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f22/b1b/8e892fbb301263ecfc7033f883f1b2de75823d363876bccb244fe4fd8b/0.",
+    "[CWD]/.xvc/b3/6ab/54a/099b4a63ea800551931fc72821d3199d8397e24983f230996b3c262d74/0.",
 )
-[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/f22/b1b/8e892fbb301263ecfc7033f883f1b2de75823d363876bccb244fe4fd8b"
+[TRACE][file/src/common/mod.rs::426] cache_dir: "[CWD]/.xvc/b3/6ab/54a/099b4a63ea800551931fc72821d3199d8397e24983f230996b3c262d74"
 [TRACE][file/src/common/mod.rs::437] &file_perm.clone(): Permissions(
     FilePermissions {
         mode: 16877,
@@ -9997,7 +9038,7 @@ process_pool_size = 4
     "[CWD]/data",
 )
 [TRACE][file/src/common/mod.rs::305] cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f22/b1b/8e892fbb301263ecfc7033f883f1b2de75823d363876bccb244fe4fd8b/0.",
+    "[CWD]/.xvc/b3/6ab/54a/099b4a63ea800551931fc72821d3199d8397e24983f230996b3c262d74/0.",
 )
 [TRACE][file/src/common/mod.rs::307] path: AbsolutePath(
     "[CWD]/data/contracts",
@@ -10008,16 +9049,14 @@ process_pool_size = 4
 [TRACE][file/src/common/mod.rs::315] recheck_method: Copy
 [TRACE][file/src/common/mod.rs::321] "Before copy": "Before copy"
 [TRACE][file/src/common/mod.rs::322] &cache_path: AbsolutePath(
-    "[CWD]/.xvc/b3/f22/b1b/8e892fbb301263ecfc7033f883f1b2de75823d363876bccb244fe4fd8b/0.",
+    "[CWD]/.xvc/b3/6ab/54a/099b4a63ea800551931fc72821d3199d8397e24983f230996b3c262d74/0.",
 )
 [TRACE][file/src/common/mod.rs::323] &path: AbsolutePath(
     "[CWD]/data/contracts",
 )
-thread '<unnamed>' panicked at file/src/carry_in/mod.rs:294:9:
+thread '<unnamed>' panicked at file/src/carry_in/mod.rs:293:9:
 IoError { source: Error { kind: InvalidInput, message: "the source path is neither a regular file nor a symlink to a regular file" } }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread 'main' panicked at lib/src/cli/mod.rs:406:37:
-called `Result::unwrap()` on an `Err` value: Any { .. }
 [TRACE][walker/src/lib.rs::688] ignore_root: "[CWD]"
 [TRACE][walker/src/lib.rs::689] ignore_path: "[CWD]/.gitignore"
 [TRACE][walker/src/lib.rs::697] &content: "
@@ -10027,17 +9066,19 @@ called `Result::unwrap()` on an `Err` value: Any { .. }
 !.xvc/ec/
 !.xvc/config.toml
 
-### Following 1 lines are added by xvc on Fri, 17 Nov 2023 09:13:07 +0000
+### Following 1 lines are added by xvc on Fri, 17 Nov 2023 09:19:02 +0000
 /data/
 "
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/*", re: "(?-u)^(?:/|/.*/)//.xvc/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), ZeroOrMore]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/data/**", re: "(?-u)^(?:/|/.*/)data/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('d'), Literal('a'), Literal('t'), Literal('a'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 2 regexes
+thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
+[PANIC] IoError { source: Error { kind: InvalidInput, message: "the source path is neither a regular file nor a symlink to a regular file" } }, [file/src/carry_in/mod.rs::293]
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/store/**", re: "(?-u)^(?:/|/.*/)//.xvc/store/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('s'), Literal('t'), Literal('o'), Literal('r'), Literal('e'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::426] glob converted to regex: Glob { glob: "/**/.xvc/ec/**", re: "(?-u)^(?:/|/.*/)//.xvc/ec/.*$", opts: GlobOptions { case_insensitive: false, literal_separator: false, backslash_escape: true, empty_alternates: false }, tokens: Tokens([RecursiveZeroOrMore, Literal('.'), Literal('x'), Literal('v'), Literal('c'), Literal('/'), Literal('e'), Literal('c'), RecursiveSuffix]) }
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 0 basenames, 0 extensions, 0 prefixes, 0 suffixes, 1 required extensions, 2 regexes
-thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
-[PANIC] IoError { source: Error { kind: InvalidInput, message: "the source path is neither a regular file nor a symlink to a regular file" } }, [file/src/carry_in/mod.rs::294]
+thread 'main' panicked at lib/src/cli/mod.rs:406:37:
+called `Result::unwrap()` on an `Err` value: Any { .. }
 
 $ xvc pipeline step new -s convert-docx-to-txt --command "./convert-docx-to-txt.zsh" 
 ```

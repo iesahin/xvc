@@ -249,7 +249,15 @@ pub fn cmd_track(
         // Filter directories from carry_in / recheck
         let xvc_paths_to_carry: HStore<XvcPath> = xvc_paths_to_carry
             .into_iter()
-            .filter(|(_, xp)| targets.contains_key(xp))
+            .filter_map(|(xe, xp)| {
+                targets.get(&xp).and_then(|xmd| {
+                    if xmd.file_type == XvcFileType::File {
+                        Some((xe, xp))
+                    } else {
+                        None
+                    }
+                })
+            })
             .collect();
         watch!(xvc_paths_to_carry);
 
