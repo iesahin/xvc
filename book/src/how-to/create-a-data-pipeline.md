@@ -20,7 +20,16 @@ total 21080
 Let's start by tracking the data file with Xvc.
 
 ```console
-$ xvc file track chinese_mnist.zip --recheck-as symlink
+$ xvc file track chinese_mnist.zip --as symlink
+? 2
+error: unexpected argument '--recheck-as' found
+
+  tip: a similar argument exists: '--recheck-method'
+
+Usage: xvc file track <--recheck-method <RECHECK_METHOD>|--no-commit|--text-or-binary <TEXT_OR_BINARY>|--force|--no-parallel|TARGETS>
+
+For more information, try '--help'.
+
 ```
 
 The default [recheck (checkout) method](/ref/xvc-file-recheck.md) is _copy_ that means the file is
@@ -29,6 +38,9 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 
 ```console
 $ ls -l
+total 21080
+-rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
+
 ```
 
 ```
