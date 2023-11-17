@@ -347,6 +347,7 @@ pub(crate) fn cmd_copy(
         &source_xvc_paths,
         &source_metadata,
         &opts.destination,
+        opts.name_only,
         opts.force,
     )?;
 
