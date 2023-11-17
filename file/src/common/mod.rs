@@ -287,6 +287,7 @@ pub fn recheck_from_cache(
     ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<()> {
     if let Some(parent) = xvc_path.parents().get(0) {
+        watch!(parent);
         let parent_dir = parent.to_absolute_path(xvc_root);
         watch!(parent_dir);
         if !parent_dir.exists() {
@@ -301,9 +302,12 @@ pub fn recheck_from_cache(
         }
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
+    watch!(cache_path);
     let path = xvc_path.to_absolute_path(xvc_root);
+    watch!(path);
     // If the file already exists, we delete it.
     if path.exists() {
+        watch!("exists!");
         fs::remove_file(&path)?;
     }
 
