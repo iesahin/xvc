@@ -63,7 +63,6 @@ $ xvc file track data --as symlink
 
 The reason we're tracking the data directory separately is that we'll use different subsets as training, validation, and test data. 
 
-
 Let's list the track status of files first. 
 
 ```console
