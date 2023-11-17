@@ -124,7 +124,7 @@ If you look at the contents of these directories, you'll see that they are
 symbolic links to the same files we started to track. 
 
 ```console
-$ ls -l data/train/input_9_9*
+$ ls -l data/train/
 ? 1
 ls: data/train/input_9_9*: No such file or directory
 
