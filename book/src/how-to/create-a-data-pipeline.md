@@ -21,26 +21,26 @@ Let's start by tracking the data file with Xvc.
 
 ```console
 $ xvc file track chinese_mnist.zip --as symlink
-? 2
-error: unexpected argument '--recheck-as' found
-
-  tip: a similar argument exists: '--recheck-method'
-
-Usage: xvc file track <--recheck-method <RECHECK_METHOD>|--no-commit|--text-or-binary <TEXT_OR_BINARY>|--force|--no-parallel|TARGETS>
-
-For more information, try '--help'.
 
 ```
 
 The default [recheck (checkout) method](/ref/xvc-file-recheck.md) is _copy_ that means the file is
-duplicated in the workspace as a writable file. We don't need to write on this
+duplicated in the workspace as a writable file. We don't need to write over this
 data file, we'll only read from it, so we set the recheck type as symlink.
 
 ```console
 $ ls -l
-total 21080
--rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
+total 0
+lrwxr-xr-x  1 iex  staff  192 Nov 17 21:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
+```
+
+The long directory name is the BLAKE-3 hash of the data file.
+
+As we'll work with the file contents, let's unzip the data file.
+
+```console
+$ unzip chinese_mnist.zip
 ```
 
 ```
