@@ -32,7 +32,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 8
-lrwxr-xr-x  1 iex  staff  192 Nov 18 02:49 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 18 13:28 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rwxr-xr-x  1 iex  staff  372 Nov 18 02:20 create-subsets.zsh
 
 ```
@@ -46,7 +46,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 8
-lrwxr-xr-x  1 iex  staff  192 Nov 18 02:49 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 18 13:28 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rwxr-xr-x  1 iex  staff  372 Nov 18 02:20 create-subsets.zsh
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
@@ -75,21 +75,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         192 2023-11-17 23:49:15 3a714d65          data/data/input_9_9_9.jpg
-SS         192 2023-11-17 23:49:15 9ffccc4d          data/data/input_9_9_8.jpg
-SS         192 2023-11-17 23:49:16 5d6312a4          data/data/input_9_9_7.jpg
-SS         192 2023-11-17 23:49:16 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         192 2023-11-17 23:49:15 2047d7f3          data/data/input_9_9_5.jpg
-SS         192 2023-11-17 23:49:16 10fcf309          data/data/input_9_9_4.jpg
-SS         192 2023-11-17 23:49:17 0bdcd918          data/data/input_9_9_3.jpg
-SS         192 2023-11-17 23:49:16 aebcbc03          data/data/input_9_9_2.jpg
-SS         192 2023-11-17 23:49:16 38abd173          data/data/input_9_9_15.jpg
-SS         192 2023-11-17 23:49:17 7c6a9003          data/data/input_9_9_14.jpg
-SS         192 2023-11-17 23:49:16 a9f04ad9          data/data/input_9_9_13.jpg
-SS         192 2023-11-17 23:49:16 2d372f95          data/data/input_9_9_12.jpg
-SS         192 2023-11-17 23:49:15 8fe799b4          data/data/input_9_9_11.jpg
-SS         192 2023-11-17 23:49:16 ee35e5d5          data/data/input_9_9_10.jpg
-SS         192 2023-11-17 23:49:16 7576894f          data/data/input_9_9_1.jpg
+SS         192 2023-11-18 10:28:51 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-18 10:28:51 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-18 10:28:50 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-18 10:28:52 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-18 10:28:50 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-18 10:28:51 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-18 10:28:50 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-18 10:28:51 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-18 10:28:50 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-18 10:28:52 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-18 10:28:50 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-18 10:28:50 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-18 10:28:51 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-18 10:28:50 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-18 10:28:52 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
@@ -140,7 +140,7 @@ If you look at the contents of these directories, you'll see that they are
 symbolic links to the same files we started to track. 
 
 ```console
-$ ls data/train/input_100_*
+$ zsh -c 'ls -1 data/train/*.png | wc -l'
 ? 1
 ls: data/train/input_100_*: No such file or directory
 
