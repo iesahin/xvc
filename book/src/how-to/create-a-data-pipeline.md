@@ -140,7 +140,7 @@ If you look at the contents of these directories, you'll see that they are
 symbolic links to the same files we started to track. 
 
 ```console
-$ zsh -c 'ls -1 data/train/*.png | wc -l'
+$ zsh -c 'ls -1 data/train/*.jpg | wc -l'
 ? 1
 ls: data/train/input_100_*: No such file or directory
 
