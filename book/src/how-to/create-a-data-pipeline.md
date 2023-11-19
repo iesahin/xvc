@@ -1,7 +1,25 @@
 # How to create a data pipeline with Xvc
 
-A data pipeline starts from data and ends with models. 
+A data pipeline starts from data and ends with models. Between there is various data transformations and model training. We try to make all pieces reproducible and Xvc helps with this goal. 
 
+In this document, we'll create the following pipeline for a digit recognition system. Our purpose is to show how Xvc helps in versioning data, so this document doesn't try to achieve a high classification performance. 
+
+```mermaid
+graph LR
+A[Data Gathering] --> B[Splitting Test and Train Sets]
+B --> C[Preprocessing Images into Numpy Arrays]
+C --> D[Training Model]
+D --> E[Sharing Data and Models]
+```
+
+
+```admonish info
+This document can be more verbose than usual, because all commands in this document are run on a clean directory during tests to check outputs. Some of the idiosyncrasies, e.g., running certain commands with `zsh -c` are due to this reason.
+```
+```
+```
+
+Although you can do without, most of the times Xvc runs in a Git repository. This allows to version control both the data and the code together. 
 ```console
 $ git init
 Initialized empty Git repository in [CWD]/.git/
@@ -31,7 +49,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  191 Nov 18 13:33 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  191 Nov 18 13:53 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -44,7 +62,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  191 Nov 18 13:33 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  191 Nov 18 13:53 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
 ```
@@ -72,21 +90,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         191 2023-11-18 10:33:08 3a714d65          data/data/input_9_9_9.jpg
-SS         191 2023-11-18 10:33:10 9ffccc4d          data/data/input_9_9_8.jpg
-SS         191 2023-11-18 10:33:09 5d6312a4          data/data/input_9_9_7.jpg
-SS         191 2023-11-18 10:33:09 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         191 2023-11-18 10:33:10 2047d7f3          data/data/input_9_9_5.jpg
-SS         191 2023-11-18 10:33:09 10fcf309          data/data/input_9_9_4.jpg
-SS         191 2023-11-18 10:33:08 0bdcd918          data/data/input_9_9_3.jpg
-SS         191 2023-11-18 10:33:10 aebcbc03          data/data/input_9_9_2.jpg
-SS         191 2023-11-18 10:33:10 38abd173          data/data/input_9_9_15.jpg
-SS         191 2023-11-18 10:33:09 7c6a9003          data/data/input_9_9_14.jpg
-SS         191 2023-11-18 10:33:09 a9f04ad9          data/data/input_9_9_13.jpg
-SS         191 2023-11-18 10:33:08 2d372f95          data/data/input_9_9_12.jpg
-SS         191 2023-11-18 10:33:10 8fe799b4          data/data/input_9_9_11.jpg
-SS         191 2023-11-18 10:33:08 ee35e5d5          data/data/input_9_9_10.jpg
-SS         191 2023-11-18 10:33:09 7576894f          data/data/input_9_9_1.jpg
+SS         191 2023-11-18 10:53:54 3a714d65          data/data/input_9_9_9.jpg
+SS         191 2023-11-18 10:53:57 9ffccc4d          data/data/input_9_9_8.jpg
+SS         191 2023-11-18 10:53:57 5d6312a4          data/data/input_9_9_7.jpg
+SS         191 2023-11-18 10:53:57 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         191 2023-11-18 10:53:55 2047d7f3          data/data/input_9_9_5.jpg
+SS         191 2023-11-18 10:53:56 10fcf309          data/data/input_9_9_4.jpg
+SS         191 2023-11-18 10:53:56 0bdcd918          data/data/input_9_9_3.jpg
+SS         191 2023-11-18 10:53:55 aebcbc03          data/data/input_9_9_2.jpg
+SS         191 2023-11-18 10:53:56 38abd173          data/data/input_9_9_15.jpg
+SS         191 2023-11-18 10:53:55 7c6a9003          data/data/input_9_9_14.jpg
+SS         191 2023-11-18 10:53:55 a9f04ad9          data/data/input_9_9_13.jpg
+SS         191 2023-11-18 10:53:56 2d372f95          data/data/input_9_9_12.jpg
+SS         191 2023-11-18 10:53:56 8fe799b4          data/data/input_9_9_11.jpg
+SS         191 2023-11-18 10:53:56 ee35e5d5          data/data/input_9_9_10.jpg
+SS         191 2023-11-18 10:53:57 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2865 Cached Size:        8710
 
 
@@ -98,12 +116,12 @@ in the workspace as a symlink. The next column shows the file size, then the
 last modified date, then the BLAKE-3 hash of the file, and finally the file
 name. The empty column contains the actual hash of the file if the file is
 available in the workspace. Here it's empty because the workspace file is a
-link. 
+link to the file in cache.
 
 The summary line shows the total size of the files and the size they occupy in
 the workspace.
 
-Now, we'll create a subset of these files with `xvc file copy` comand. 
+The first step of out pipeline is to create subsets of the data. 
 
 The data set contains 15 classes. It has 10 samples for each of these classes
 from 100 different people. As we'll train a Chinese digit recognizer, we'll
@@ -115,9 +133,9 @@ handwriting.
 ```console
 $ xvc file copy --name-only data/data/input_?_* data/train/
 $ xvc file copy --name-only data/data/input_[12345]?_* data/train/
+$ xvc file copy --name-only data/data/input_100_* data/train/
 $ xvc file copy --name-only data/data/input_[67]?_* data/validate/
 $ xvc file copy --name-only data/data/input_[89]?_* data/test/
-$ xvc file copy --name-only data/data/input_100_* data/train/
 
 $ tree -d data/
 data/
@@ -130,17 +148,58 @@ data/
 
 ```
 
-We'll use the following shell script to create subsets.
-
-
 If you look at the contents of these directories, you'll see that they are
 symbolic links to the same files we started to track. 
 
+Let's check the number of images in each set. 
 
 ```console
 $ zsh -c 'ls -1 data/train/*.jpg | wc -l'
     9000
+
 $ zsh -c 'ls -1 data/validate/*.jpg | wc -l'
+    3000
 
 $ zsh -c 'ls -1 data/test/*.jpg | wc -l'
+    3000
+
 ```
+
+The first step in the pipeline will be creating these subsets. 
+
+```console
+$ xvc pipeline step new -s unzip-dataset --command 'unzip -q chinese_mnist.zip'
+$ xvc pipeline step new -s split-train --command 'xvc file copy --name-only data/data/input_?_* data/train/ && xvc file copy --name-only data/data/input_[12345]?_* data/train/ && xvc file copy --name-only data/data/input_100_* data/train/'
+$ xvc pipeline step new -s split-validate --command 'xvc file copy --name-only data/data/input_[67]?_* data/validate/'
+$ xvc pipeline step new -s split-test --command 'xvc file copy --name-only data/data/input_[89]?_* data/test/'
+```
+
+As `split-*` steps require the files to be unzipped first, we create dependencies between steps.
+
+```console
+$ xvc pipeline step dependency -s split-train --step unzip-dataset
+$ xvc pipeline step dependency -s split-validate --step unzip-dataset
+$ xvc pipeline step dependency -s split-test --step unzip-dataset
+```
+
+We can also add a file dependency to the `unzip-dataset` step to let it run when the file changes. 
+
+```console
+$ xvc pipeline step dependency -s unzip-dataset --file chinese_mnist.zip
+```
+
+When run for already copied files, `xvc file copy` works as if [`xvc file
+recheck`](/ref/xvc-file-recheck.md) that only checkouts (reinstates) the files.
+Let's run the pipeline by first deleting the files we created.
+
+```console
+$ rm -rf data/train data/validate data/test
+```
+
+We run the steps we created.
+
+```console
+$ xvc pipeline run
+```
+
+The Python script to train a model runs with Numpy arrays. So we'll convert each of these 
