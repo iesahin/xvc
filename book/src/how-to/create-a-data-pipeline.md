@@ -168,30 +168,14 @@ $ zsh -c 'ls -1 data/test/*.jpg | wc -l'
 The first step in the pipeline will be creating these subsets. 
 
 ```console
-$ xvc pipeline step new -s unzip-dataset --command 'unzip -q chinese_mnist.zip'
 $ xvc pipeline step new -s split-train --command 'xvc file copy --name-only data/data/input_?_* data/train/ && xvc file copy --name-only data/data/input_[12345]?_* data/train/ && xvc file copy --name-only data/data/input_100_* data/train/'
 $ xvc pipeline step new -s split-validate --command 'xvc file copy --name-only data/data/input_[67]?_* data/validate/'
 $ xvc pipeline step new -s split-test --command 'xvc file copy --name-only data/data/input_[89]?_* data/test/'
 ```
 
-As `split-*` steps require the files to be unzipped first, we create dependencies between steps.
-
-```console
-$ xvc pipeline step dependency -s split-train --step unzip-dataset
-$ xvc pipeline step dependency -s split-validate --step unzip-dataset
-$ xvc pipeline step dependency -s split-test --step unzip-dataset
-```
-
-We can also add a file dependency to the `unzip-dataset` step to let it run when the file changes. 
-
-```console
-$ xvc pipeline step dependency -s unzip-dataset --file chinese_mnist.zip
-```
-
 When run for already copied files, `xvc file copy` works as if [`xvc file
 recheck`](/ref/xvc-file-recheck.md) that only checkouts (reinstates) the files.
-Let's run the pipeline by first deleting the files we created.
-
+Let's test the pipeline by first deleting the files we manually created.
 ```console
 $ rm -rf data/train data/validate data/test
 ```
