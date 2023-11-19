@@ -172,6 +172,12 @@ fn z_doc_tests() -> Result<()> {
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
     assert!(path_to_xvc_test_helper.exists());
 
+    let timeout = if std::option_env!("CI").is_some() {
+        Duration::from_secs(90)
+    } else {
+        Duration::from_secs(30)
+    };
+
     trycmd::TestCases::new()
         // .register_bin("xvc", &path_to_xvc_bin)
         .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
@@ -186,7 +192,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("dot", which::which("dot"))
         .register_bin("unzip", which::which("unzip"))
         .case("docs/*/*.md")
-        .timeout(Duration::from_secs(30))
+        .timeout(timeout)
         // We skip this for the time being.
         .skip("docs/start/ml.md");
 
