@@ -18,44 +18,40 @@ const DOC_TEST_DIR: &str = "docs/";
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let book_base = Path::new("../book/src/");
-    let book_dirs_and_filters = if let Some(trycmd_tests) = std::option_env!("XVC_TRYCMD_TESTS") {
-        let mut book_dirs_and_filters = vec![];
-        if trycmd_tests.contains("intro") {
-            book_dirs_and_filters.push(("intro", r".*"));
-        }
-        if trycmd_tests.contains("start") {
-            book_dirs_and_filters.push(("start", r".*"));
-        }
-        if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
-            book_dirs_and_filters.push(("how-to", r".*"));
-        }
 
-        if trycmd_tests.contains("storage") {
-            book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
-        }
-        if trycmd_tests.contains("file") {
-            book_dirs_and_filters.push(("ref", r"xvc-file.*"));
-        }
-
-        if trycmd_tests.contains("pipeline") {
-            book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
-        }
-
-        if trycmd_tests.contains("core") {
-            book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
-        }
-
-        book_dirs_and_filters
+    let trycmd_tests = if let Ok(trycmd_tests) = std::env::var("XVC_TRYCMD_TESTS") {
+        trycmd_tests.to_lowercase()
     } else {
-        // If not defined, make all tests
-        // // If not defined, make all tests
-        vec![
-            ("intro", ".*"),
-            ("ref", r".*"),
-            ("start", r".*"),
-            ("how-to", r".*"),
-        ]
+        "intro,start,ref,how-to,storage,file,pipeline,core".to_owned()
     };
+
+    let mut book_dirs_and_filters = vec![];
+    if trycmd_tests.contains("intro") {
+        book_dirs_and_filters.push(("intro", r".*"));
+    }
+    if trycmd_tests.contains("start") {
+        book_dirs_and_filters.push(("start", r".*"));
+    }
+    if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
+        book_dirs_and_filters.push(("how-to", r".*"));
+    }
+
+    if trycmd_tests.contains("storage") {
+        book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+    }
+    if trycmd_tests.contains("file") {
+        book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+    }
+
+    if trycmd_tests.contains("pipeline") {
+        book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+    }
+
+    if trycmd_tests.contains("core") {
+        book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
+    }
+
+    let book_dirs_and_filters = book_dirs_and_filters;
 
     let template_dir_root = Path::new("templates");
 
@@ -71,8 +67,17 @@ fn link_to_docs() -> Result<()> {
 
     fs::create_dir_all(&test_collections_dir)?;
 
+    //Remove all symlinks to create new ones
     let doc_dir = Path::new(DOC_TEST_DIR);
     watch!(doc_dir);
+    jwalk::WalkDir::new(doc_dir).into_iter().for_each(|f| {
+        watch!(f);
+        if let Ok(f) = f {
+            if f.metadata().unwrap().is_symlink() {
+                fs::remove_file(f.path()).unwrap();
+            }
+        }
+    });
 
     for (dir, filter_regex) in book_dirs_and_filters {
         let test_collection_dir = test_collections_dir.join(dir);
@@ -100,13 +105,10 @@ fn link_to_docs() -> Result<()> {
 
         watch!(test_collection_dir);
         fs::create_dir_all(&test_collection_dir)?;
-        // TODO: Remove all symlinks, not only those linked to older docs
         for p in book_paths {
             let basename: PathBuf = p.file_name().unwrap().into();
             let symlink_path = doc_dir.join(dir).join(&basename);
-            if symlink_path.is_symlink() {
-                fs::remove_file(&symlink_path)?;
-            }
+
             make_symlink(Path::new("../..").join(p), &symlink_path)?;
 
             // If we have a template input directory in `templates/`, we copy it.
@@ -172,7 +174,9 @@ fn z_doc_tests() -> Result<()> {
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
     assert!(path_to_xvc_test_helper.exists());
 
-    let timeout = if std::option_env!("CI").is_some() {
+    let timeout = if let Ok(secs) = std::env::var("XVC_TRYCMD_DURATION") {
+        Duration::from_secs(secs.parse::<u64>().unwrap())
+    } else if std::option_env!("CI").is_some() {
         Duration::from_secs(90)
     } else {
         Duration::from_secs(30)
