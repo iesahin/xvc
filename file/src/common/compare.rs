@@ -66,13 +66,25 @@ pub fn diff_xvc_path_metadata(
 
 /// For each command, we have a single requested_recheck_method.
 /// We build an actual store by repeating it for all entities we have.
+///
+/// If there is no requested_recheck_method, we use the stored one and if there is nothing in the
+/// store, we use the default from config.
 pub fn diff_recheck_method(
+    default_recheck_method: RecheckMethod,
     stored_recheck_method_store: &XvcStore<RecheckMethod>,
-    requested_recheck_method: RecheckMethod,
+    requested_recheck_method: Option<RecheckMethod>,
     entities: &HashSet<XvcEntity>,
 ) -> DiffStore<RecheckMethod> {
     let requested_recheck_method_store: HStore<RecheckMethod> =
-        HStore::from_iter(entities.iter().map(|x| (*x, requested_recheck_method)));
+        HStore::from_iter(entities.iter().map(|x| {
+            if let Some(recheck_method) = requested_recheck_method {
+                (*x, recheck_method)
+            } else if stored_recheck_method_store.contains_key(x) {
+                (*x, *stored_recheck_method_store.get(x).unwrap())
+            } else {
+                (*x, default_recheck_method)
+            }
+        }));
 
     diff_store(
         stored_recheck_method_store,

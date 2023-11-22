@@ -92,7 +92,7 @@ pub fn cmd_recheck(
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
-    let recheck_method = opts.recheck_method.unwrap_or_else(RecheckMethod::default);
+    let recheck_method = opts.recheck_method;
     watch!(recheck_method);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -103,8 +103,13 @@ pub fn cmd_recheck(
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
-    let recheck_method_diff =
-        diff_recheck_method(&stored_recheck_method_store, recheck_method, &entities);
+    let default_recheck_method = RecheckMethod::from_conf(xvc_root.config());
+    let recheck_method_diff = diff_recheck_method(
+        default_recheck_method,
+        &stored_recheck_method_store,
+        recheck_method,
+        &entities,
+    );
     let mut recheck_method_targets = recheck_method_diff.filter(|_, d| d.changed());
 
     let xvc_path_metadata_diff = diff_xvc_path_metadata(
