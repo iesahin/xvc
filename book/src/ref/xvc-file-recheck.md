@@ -42,8 +42,8 @@ It copies or links a cached file to the workspace.
 Let's create an example directory hierarchy as a showcase. 
 
 ```console
-$ xvc-test-helper create-directory-tree --directories 2 --files 3
-$ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2
+$ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 231123
+$ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2 --seed 231123
 $ tree
 .
 ├── dir-0001
@@ -85,9 +85,8 @@ Once you added the file to the cache, you can delete the workspace copy.
 $ rm dir-0001/file-0001.bin
 $ lsd -l dir-0001/*
 total[..]
--rw-r--r--  1 iex  staff  10792680 Nov 22 11:35 chinese_mnist.zip
-drwxr-xr-x  7 iex  staff       224 Nov 22 12:06 dir-0001
-drwxr-xr-x  5 iex  staff       160 Nov 22 12:06 dir-0002
+drwxr-xr-x [..] dir-0001
+drwxr-xr-x [..] dir-0002
 
 ```
 
@@ -109,9 +108,9 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/
 $ ls -l dir-0002/
 total 24
--rw-rw-rw-  1 iex  staff  2001 Nov 22 21:32 file-0001.bin
--rw-rw-rw-  1 iex  staff  2002 Nov 22 21:32 file-0002.bin
--rw-rw-rw-  1 iex  staff  2003 Nov 22 21:32 file-0003.bin
+-rw-rw-rw- [..] file-0001.bin
+-rw-rw-rw- [..] file-0002.bin
+-rw-rw-rw- [..] file-0003.bin
 
 ```
 
@@ -122,26 +121,26 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ --as symlink
 $ ls -l dir-0002/
 total 0
-lrwxr-xr-x  1 iex  staff  183 Nov 22 21:32 file-0001.bin -> [CWD]/.xvc/b3/625/e1c/860437759e19abff23812e917d32e320d237800fda85da75a6dec132ad/0.bin
-lrwxr-xr-x  1 iex  staff  183 Nov 22 21:32 file-0002.bin -> [CWD]/.xvc/b3/aaf/bb5/bcca5a3a7ed2754183d198678e8c999f2286b3840e903c9e279fa7ab16/0.bin
-lrwxr-xr-x  1 iex  staff  183 Nov 22 21:32 file-0003.bin -> [CWD]/.xvc/b3/801/d0b/bba0f33a69dc58ea4103c99894defc9b3854e31bb380f28d9e14664d6d/0.bin
+lrwxr-xr-x [..] file-0001.bin -> [CWD]/.xvc/b3/13d/5c5/3e0ecb114dc368d025b6533fe2fb0957aff14ea093bae1eb9c16a0fb34/0.bin
+lrwxr-xr-x [..] file-0002.bin -> [CWD]/.xvc/b3/fac/78e/b458466ade07920b89179e446dd89db34118fe3be9e2e15f3bc9ec0615/0.bin
+lrwxr-xr-x [..] file-0003.bin -> [CWD]/.xvc/b3/477/8e5/eb6f4fd2f0eb13448048d3184d0c5217d9cd35430560410988b7917a9c/0.bin
 
 $ rm -rf dir-0002/
-$ xvc -vvvv file recheck dir-0002/ 
+$ xvc -v file recheck dir-0002/ 
+
 $ ls -l dir-0002/
-total 24
--rw-rw-rw-  1 iex  staff  2001 Nov 22 21:32 file-0001.bin
--rw-rw-rw-  1 iex  staff  2002 Nov 22 21:32 file-0002.bin
--rw-rw-rw-  1 iex  staff  2003 Nov 22 21:32 file-0003.bin
+total 0
+lrwxr-xr-x [..] file-0001.bin -> [CWD]/.xvc/b3/13d/5c5/3e0ecb114dc368d025b6533fe2fb0957aff14ea093bae1eb9c16a0fb34/0.bin
+lrwxr-xr-x [..] file-0002.bin -> [CWD]/.xvc/b3/fac/78e/b458466ade07920b89179e446dd89db34118fe3be9e2e15f3bc9ec0615/0.bin
+lrwxr-xr-x [..] file-0003.bin -> [CWD]/.xvc/b3/477/8e5/eb6f4fd2f0eb13448048d3184d0c5217d9cd35430560410988b7917a9c/0.bin
 
 ```
 
 Symlink and hardlinks are read-only.
-You can delete the symlink, and replace with an updated copy.
-(As `perl -i` does below.)
+You can delete the symlink, and recheck as copy to update.
 
 ```console
-$ perl -i -pe 's/a/ee/g' data.txt
+$ echo "120912" >> dir-0002/file-0001.bin
 Can't open data.txt: No such file or directory.
 
 $ xvc file recheck data.txt --as copy
@@ -157,8 +156,8 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
-drwxr-xr-x  8 iex  staff  256 Nov 22 21:32 dir-0001
-drwxr-xr-x  5 iex  staff  160 Nov 22 21:32 dir-0002
+drwxr-xr-x  8 iex  staff  256 Nov 22 23:14 dir-0001
+drwxr-xr-x  5 iex  staff  160 Nov 22 23:14 dir-0002
 
 ```
 
