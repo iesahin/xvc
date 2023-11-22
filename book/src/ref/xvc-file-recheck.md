@@ -43,7 +43,6 @@ Let's create an example directory hierarchy as a showcase.
 
 ```console
 $ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 231123
-$ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2 --seed 231123 --prefix inner
 $ tree
 .
 ├── dir-0001
