@@ -591,7 +591,7 @@ fn step_state_bulletin(
     }
     loop {
         watch!(select);
-        if let Ok(index) = select.ready_timeout(Duration::from_millis(1000)) {
+        if let Ok(index) = select.ready_timeout(Duration::from_millis(10)) {
             let res = state_senders[index].1.recv()?;
             if let Some(state) = res {
                 let step_e = state_senders[index].0;
@@ -600,6 +600,7 @@ fn step_state_bulletin(
             }
         } else {
             if current_states.read()?.iter().all(|(_, s)| {
+                watch!(s);
                 matches!(
                     s,
                     XvcStepState::DoneByRunning(_)
@@ -1491,6 +1492,7 @@ fn s_running_f_wait_process<'a>(
         .ok_or(anyhow!("Process birth not found"))?;
     let sleep_duration = Duration::from_millis(params.process_poll_milliseconds);
     loop {
+        watch!(&command_process);
         let send_output = |cp: Arc<RwLock<CommandProcess>>| -> Result<()> {
             let mut cp = cp.write()?;
             cp.update_output_channels()?;
