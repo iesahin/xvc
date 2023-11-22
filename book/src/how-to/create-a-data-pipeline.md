@@ -49,7 +49,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 19 13:46 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 19 13:57 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -62,7 +62,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 19 13:46 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 19 13:57 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
 ```
@@ -90,21 +90,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         192 2023-11-19 10:46:58 3a714d65          data/data/input_9_9_9.jpg
-SS         192 2023-11-19 10:46:58 9ffccc4d          data/data/input_9_9_8.jpg
-SS         192 2023-11-19 10:46:57 5d6312a4          data/data/input_9_9_7.jpg
-SS         192 2023-11-19 10:46:58 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         192 2023-11-19 10:46:57 2047d7f3          data/data/input_9_9_5.jpg
-SS         192 2023-11-19 10:46:58 10fcf309          data/data/input_9_9_4.jpg
-SS         192 2023-11-19 10:46:59 0bdcd918          data/data/input_9_9_3.jpg
-SS         192 2023-11-19 10:46:58 aebcbc03          data/data/input_9_9_2.jpg
-SS         192 2023-11-19 10:46:56 38abd173          data/data/input_9_9_15.jpg
-SS         192 2023-11-19 10:46:56 7c6a9003          data/data/input_9_9_14.jpg
-SS         192 2023-11-19 10:46:58 a9f04ad9          data/data/input_9_9_13.jpg
-SS         192 2023-11-19 10:46:57 2d372f95          data/data/input_9_9_12.jpg
-SS         192 2023-11-19 10:46:58 8fe799b4          data/data/input_9_9_11.jpg
-SS         192 2023-11-19 10:46:57 ee35e5d5          data/data/input_9_9_10.jpg
-SS         192 2023-11-19 10:46:57 7576894f          data/data/input_9_9_1.jpg
+SS         192 2023-11-19 10:57:29 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-19 10:57:28 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-19 10:57:29 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-19 10:57:29 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-19 10:57:30 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-19 10:57:28 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-19 10:57:29 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-19 10:57:29 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-19 10:57:29 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-19 10:57:30 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-19 10:57:29 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-19 10:57:28 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-19 10:57:29 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-19 10:57:29 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-19 10:57:28 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
@@ -165,16 +165,13 @@ $ zsh -c 'ls -1 data/test/*.jpg | wc -l'
 
 ```
 
-The first step in the pipeline will be creating these subsets. 
+The first step in the pipeline will be rechecking (checking out) these subsets.
 
 ```console
-$ xvc pipeline step new -s split-train --command "xvc file copy --name-only 'data/data/input_?_*' data/train/ && xvc file copy --name-only 'data/data/input_[12345]?_*' data/train/ && xvc file copy --name-only 'data/data/input_100_*' data/train/"
-$ xvc pipeline step new -s split-validate --command "xvc file copy --name-only 'data/data/input_[67]?_*' data/validate/"
-$ xvc pipeline step new -s split-test --command "xvc file copy --name-only 'data/data/input_[89]?_*' data/test/"
+$ xvc pipeline step new -s recheck-data --command 'xvc file recheck data/train/ data/validate/ data/test/'
 ```
 
-When run for already copied files, `xvc file copy` works as if [`xvc file
-recheck`](/ref/xvc-file-recheck.md) that only checkouts (reinstates) the files.
+[`xvc file recheck`](/ref/xvc-file-recheck.md) is used in to instate files from Xvc cache.
 Let's test the pipeline by first deleting the files we manually created.
 ```console
 $ rm -rf data/train data/validate data/test
@@ -184,6 +181,7 @@ We run the steps we created.
 
 ```console
 $ xvc -vvv pipeline run 
+? interrupted
 [DEBUG][logging/src/lib.rs::236] Terminal logger enabled with level: Debug
 [DEBUG][core/src/types/xvcroot.rs::253] XVC DIR: "[CWD]"
 [DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
@@ -191,45 +189,24 @@ $ xvc -vvv pipeline run
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30011, 7616904094995077032)" ]
-    1 [ label = "(30009, 6703050485687325591)" ]
-    2 [ label = "(30010, 16049726314937551449)" ]
+    0 [ label = "(30009, 3369599426960165934)" ]
+    1 [ label = "(30011, 362257949990916002)" ]
+    2 [ label = "(30010, 4862199801939579866)" ]
 }
 
 
-[INFO] No dependency steps for step split-validate
 [INFO] No dependency steps for step split-train
-[INFO] No dependency steps for step split-test
-[INFO] [split-validate] Dependencies has changed
 [INFO] [split-train] Dependencies has changed
+[INFO] No dependency steps for step split-test
 [INFO] [split-test] Dependencies has changed
-[DEBUG] Step split-train with command xvc file copy --name-only data/data/input_?_* data/train/ && xvc file copy --name-only data/data/input_[12345]?_* data/train/ && xvc file copy --name-only data/data/input_100_* data/train/ is still running
-[DEBUG] Step split-validate with command xvc file copy --name-only data/data/input_[67]?_* data/validate/ is still running
-[DEBUG] Step split-test with command xvc file copy --name-only data/data/input_[89]?_* data/test/ is still running
-[WARN] [ERR] [split-train] error: unexpected argument 'data/data/input_1_10_11.jpg' found
-
-Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
-
-For more information, try '--help'.
- 
-[WARN] [ERR] [split-validate] error: unexpected argument 'data/data/input_60_10_11.jpg' found
-
-Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
-
-For more information, try '--help'.
- 
-[WARN] [ERR] [split-test] error: unexpected argument 'data/data/input_80_10_11.jpg' found
-
-Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
-
-For more information, try '--help'.
- 
-[ERROR] Step split-validate finished UNSUCCESSFULLY with command xvc file copy --name-only data/data/input_[67]?_* data/validate/
-[ERROR] Step split-train finished UNSUCCESSFULLY with command xvc file copy --name-only data/data/input_?_* data/train/ && xvc file copy --name-only data/data/input_[12345]?_* data/train/ && xvc file copy --name-only data/data/input_100_* data/train/
-[ERROR] Step split-test finished UNSUCCESSFULLY with command xvc file copy --name-only data/data/input_[89]?_* data/test/
-[DEBUG] Using Git: /opt/homebrew/bin/git
-[DEBUG] No files to commit
-[DEBUG] Command completed successfully.
+[INFO] No dependency steps for step split-validate
+[INFO] [split-validate] Dependencies has changed
+[DEBUG] Step split-test with command xvc file copy --name-only 'data/data/input_[89]?_*' data/test/ is still running
+[DEBUG] Step split-validate with command xvc file copy --name-only 'data/data/input_[67]?_*' data/validate/ is still running
+[DEBUG] Step split-train with command xvc file copy --name-only 'data/data/input_?_*' data/train/ && xvc file copy --name-only 'data/data/input_[12345]?_*' data/train/ && xvc file copy --name-only 'data/data/input_100_*' data/train/ is still running
+thread 'notify-rs fsevents loop' panicked at walker/src/notify.rs:113:72:
+called `Result::unwrap()` on an `Err` value: IoError { source: Os { code: 2, kind: NotFound, message: "No such file or directory" } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 ```
 
