@@ -65,13 +65,11 @@ $ git init
 ...
 $ xvc init
 
-$ xvc file track dir-*
+$ xvc -vvvv file track dir-*
 ? 101
 thread '<unnamed>' panicked at file/src/carry_in/mod.rs:280:13:
 IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at file/src/carry_in/mod.rs:280:13:
-IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }
 thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
 [PANIC] IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }, [file/src/carry_in/mod.rs::280]
 thread 'main' panicked at lib/src/cli/mod.rs:406:37:
