@@ -137,30 +137,29 @@ lrwxr-xr-x [..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe
 ```
 
 Symlink and hardlinks are read-only.
-You can delete the symlink, and recheck as copy to update.
+You can recheck as copy to update.
 
 ```console
 $ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
-
-$ xvc file recheck data.txt --as copy
-
-$ rm data.txt
 ? 1
-rm: data.txt: No such file or directory
+zsh:1: permission denied: dir-0002/file-0001.bin
+
+$ xvc file recheck dir-0002/file-0001.bin --as copy
+
+$ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
 
 ```
+Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
 
 ```console
 $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
-drwxr-xr-x  8 iex  staff  256 Nov 22 23:20 dir-0001
-drwxr-xr-x  5 iex  staff  160 Nov 22 23:20 dir-0002
+drwxr-xr-x  8 iex  staff  256 Nov 22 23:22 dir-0001
+drwxr-xr-x  5 iex  staff  160 Nov 22 23:22 dir-0002
 
 ```
-
-Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
 
 Reflinks are supported by Xvc, but the underlying file system should also support it.
 Otherwise it uses `copy`.
