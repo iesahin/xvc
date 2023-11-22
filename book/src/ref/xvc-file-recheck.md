@@ -46,8 +46,6 @@ $ xvc-test-helper create-directory-tree --directories 2 --files 3
 $ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2
 $ tree
 .
-├── chinese_mnist.zip
-├── data.txt
 ├── dir-0001
 │   ├── dir-0001
 │   │   ├── file-0001.bin
@@ -63,7 +61,7 @@ $ tree
     ├── file-0002.bin
     └── file-0003.bin
 
-5 directories, 12 files
+5 directories, 10 files
 
 ```
 
@@ -108,17 +106,34 @@ You can track and recheck complete directories
 ```console
 $ xvc file track dir-0002/
 $ rm -rf dir-0002/
-$ xvc file recheck dir-0002/
+$ xvc -v file recheck dir-0002/
+$ ls -l dir-0002/
+total 24
+-rw-rw-rw-  1 iex  staff  2001 Nov 22 20:45 file-0001.bin
+-rw-rw-rw-  1 iex  staff  2002 Nov 22 20:45 file-0002.bin
+-rw-rw-rw-  1 iex  staff  2003 Nov 22 20:45 file-0003.bin
+
+```
+
+You can update the recheck method of a file. Otherwise it will be kept as same before.
+
+```console
+$ rm -rf dir-0002/
+$ xvc -v file recheck dir-0002/ --as symlink
+$ ls -l dir-0002/
+$ rm -rf dir-0002/
+$ xvc -v file recheck dir-0002/ 
 $ ls -l dir-0002/
 ```
 
-Xvc only updates the recheck method if the file is not changed.
+
 
 ```console
 $ xvc file recheck data.txt --as symlink
 
 $ ls -l data.txt
-l[..] data.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+? 1
+ls: data.txt: No such file or directory
 
 ```
 
@@ -128,24 +143,23 @@ You can delete the symlink, and replace with an updated copy.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
+Can't open data.txt: No such file or directory.
 
 $ xvc file recheck data.txt --as copy
-[ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
 
 $ rm data.txt
+? 1
+rm: data.txt: No such file or directory
 
 ```
 
 ```console
 $ xvc -vv file recheck data.txt --as hardlink
-[INFO] [HARDLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
 
 $ ls -l
 total[..]
--rw-r--r--  1 iex  staff  10792680 Nov 22 11:35 chinese_mnist.zip
--r--r--r--@ 2 iex  staff        19 Oct 18 10:45 data.txt
-drwxr-xr-x  7 iex  staff       224 Nov 22 12:06 dir-0001
-drwxr-xr-x  5 iex  staff       160 Nov 22 12:06 dir-0002
+drwxr-xr-x  8 iex  staff  256 Nov 22 20:45 dir-0001
+drwxr-xr-x  5 iex  staff  160 Nov 22 20:46 dir-0002
 
 ```
 
