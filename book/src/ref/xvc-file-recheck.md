@@ -46,12 +46,6 @@ $ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 231123
 $ tree
 .
 ├── dir-0001
-│   ├── dir-0001
-│   │   ├── file-0001.bin
-│   │   └── file-0002.bin
-│   ├── dir-0002
-│   │   ├── file-0001.bin
-│   │   └── file-0002.bin
 │   ├── file-0001.bin
 │   ├── file-0002.bin
 │   └── file-0003.bin
@@ -60,7 +54,7 @@ $ tree
     ├── file-0002.bin
     └── file-0003.bin
 
-5 directories, 10 files
+3 directories, 6 files
 
 ```
 
@@ -71,7 +65,17 @@ $ git init
 ...
 $ xvc init
 
-$ xvc file track dir-0001/ dir-0002/
+$ xvc file track dir-*
+? 101
+thread '<unnamed>' panicked at file/src/carry_in/mod.rs:280:13:
+IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread '<unnamed>' panicked at file/src/carry_in/mod.rs:280:13:
+IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }
+thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
+[PANIC] IoError { source: Os { code: 13, kind: PermissionDenied, message: "Permission denied" } }, [file/src/carry_in/mod.rs::280]
+thread 'main' panicked at lib/src/cli/mod.rs:406:37:
+called `Result::unwrap()` on an `Err` value: Any { .. }
 
 ```
 
