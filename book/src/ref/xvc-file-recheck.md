@@ -72,10 +72,9 @@ $ git init
 ...
 $ xvc init
 
-$ xvc file track dir-0001/file-0001.bin
+$ xvc file track dir-0001/ dir-0002/
 
 $ lsd -l dir-0001/*
-.rw-rw-rw- [..] data.txt
 
 ```
 
@@ -113,6 +112,11 @@ total 24
 -rw-rw-rw- [..] file-0003.bin
 
 ```
+You can use glob patterns to recheck files.
+```console
+```console
+$ xvc file track 'dir-*'
+
 
 You can update the recheck method of a file. Otherwise it will be kept as same before.
 
@@ -156,8 +160,8 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
-drwxr-xr-x  8 iex  staff  256 Nov 22 23:22 dir-0001
-drwxr-xr-x  5 iex  staff  160 Nov 22 23:22 dir-0002
+drwxr-xr-x [..] dir-0001
+drwxr-xr-x [..] dir-0002
 
 ```
 
