@@ -42,8 +42,8 @@ It copies or links a cached file to the workspace.
 Let's create an example directory hierarchy as a showcase. 
 
 ```console
-$ xvc-test-helper create-directory-tree --dirs 2 --files 3
-$ xvc-test-helper create-directory-tree --root dir-0001 --dirs 2 --files 2
+$ xvc-test-helper create-directory-tree --directories 2 --files 3
+$ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2
 $ tree
 ```
 
