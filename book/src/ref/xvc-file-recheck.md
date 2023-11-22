@@ -109,9 +109,9 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/
 $ ls -l dir-0002/
 total 24
--rw-rw-rw-  1 iex  staff  2001 Nov 22 20:45 file-0001.bin
--rw-rw-rw-  1 iex  staff  2002 Nov 22 20:45 file-0002.bin
--rw-rw-rw-  1 iex  staff  2003 Nov 22 20:45 file-0003.bin
+-rw-rw-rw-  1 iex  staff  2001 Nov 22 21:32 file-0001.bin
+-rw-rw-rw-  1 iex  staff  2002 Nov 22 21:32 file-0002.bin
+-rw-rw-rw-  1 iex  staff  2003 Nov 22 21:32 file-0003.bin
 
 ```
 
@@ -121,19 +121,18 @@ You can update the recheck method of a file. Otherwise it will be kept as same b
 $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ --as symlink
 $ ls -l dir-0002/
+total 0
+lrwxr-xr-x  1 iex  staff  183 Nov 22 21:32 file-0001.bin -> [CWD]/.xvc/b3/625/e1c/860437759e19abff23812e917d32e320d237800fda85da75a6dec132ad/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 22 21:32 file-0002.bin -> [CWD]/.xvc/b3/aaf/bb5/bcca5a3a7ed2754183d198678e8c999f2286b3840e903c9e279fa7ab16/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 22 21:32 file-0003.bin -> [CWD]/.xvc/b3/801/d0b/bba0f33a69dc58ea4103c99894defc9b3854e31bb380f28d9e14664d6d/0.bin
+
 $ rm -rf dir-0002/
-$ xvc -v file recheck dir-0002/ 
+$ xvc -vvvv file recheck dir-0002/ 
 $ ls -l dir-0002/
-```
-
-
-
-```console
-$ xvc file recheck data.txt --as symlink
-
-$ ls -l data.txt
-? 1
-ls: data.txt: No such file or directory
+total 24
+-rw-rw-rw-  1 iex  staff  2001 Nov 22 21:32 file-0001.bin
+-rw-rw-rw-  1 iex  staff  2002 Nov 22 21:32 file-0002.bin
+-rw-rw-rw-  1 iex  staff  2003 Nov 22 21:32 file-0003.bin
 
 ```
 
@@ -158,8 +157,8 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
-drwxr-xr-x  8 iex  staff  256 Nov 22 20:45 dir-0001
-drwxr-xr-x  5 iex  staff  160 Nov 22 20:46 dir-0002
+drwxr-xr-x  8 iex  staff  256 Nov 22 21:32 dir-0001
+drwxr-xr-x  5 iex  staff  160 Nov 22 21:32 dir-0002
 
 ```
 
