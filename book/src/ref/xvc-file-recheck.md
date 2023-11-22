@@ -121,18 +121,18 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ --as symlink
 $ ls -l dir-0002/
 total 0
-lrwxr-xr-x [..] file-0001.bin -> [CWD]/.xvc/b3/13d/5c5/3e0ecb114dc368d025b6533fe2fb0957aff14ea093bae1eb9c16a0fb34/0.bin
-lrwxr-xr-x [..] file-0002.bin -> [CWD]/.xvc/b3/fac/78e/b458466ade07920b89179e446dd89db34118fe3be9e2e15f3bc9ec0615/0.bin
-lrwxr-xr-x [..] file-0003.bin -> [CWD]/.xvc/b3/477/8e5/eb6f4fd2f0eb13448048d3184d0c5217d9cd35430560410988b7917a9c/0.bin
+lrwxr-xr-x [..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x [..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x [..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ 
 
 $ ls -l dir-0002/
 total 0
-lrwxr-xr-x [..] file-0001.bin -> [CWD]/.xvc/b3/13d/5c5/3e0ecb114dc368d025b6533fe2fb0957aff14ea093bae1eb9c16a0fb34/0.bin
-lrwxr-xr-x [..] file-0002.bin -> [CWD]/.xvc/b3/fac/78e/b458466ade07920b89179e446dd89db34118fe3be9e2e15f3bc9ec0615/0.bin
-lrwxr-xr-x [..] file-0003.bin -> [CWD]/.xvc/b3/477/8e5/eb6f4fd2f0eb13448048d3184d0c5217d9cd35430560410988b7917a9c/0.bin
+lrwxr-xr-x [..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x [..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x [..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 ```
 
@@ -140,8 +140,7 @@ Symlink and hardlinks are read-only.
 You can delete the symlink, and recheck as copy to update.
 
 ```console
-$ echo "120912" >> dir-0002/file-0001.bin
-Can't open data.txt: No such file or directory.
+$ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
 
 $ xvc file recheck data.txt --as copy
 
@@ -156,8 +155,8 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
-drwxr-xr-x  8 iex  staff  256 Nov 22 23:14 dir-0001
-drwxr-xr-x  5 iex  staff  160 Nov 22 23:14 dir-0002
+drwxr-xr-x  8 iex  staff  256 Nov 22 23:20 dir-0001
+drwxr-xr-x  5 iex  staff  160 Nov 22 23:20 dir-0002
 
 ```
 
