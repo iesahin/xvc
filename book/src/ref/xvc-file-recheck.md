@@ -76,7 +76,7 @@ $ xvc init
 
 $ xvc file track dir-0001/file-0001.bin
 
-$ lsd -l
+$ lsd -l dir-0001/*
 .rw-rw-rw- [..] data.txt
 
 ```
@@ -85,7 +85,7 @@ Once you added the file to the cache, you can delete the workspace copy.
 
 ```console
 $ rm dir-0001/file-0001.bin
-$ ls -l dir-0001
+$ lsd -l dir-0001/*
 total[..]
 -rw-r--r--  1 iex  staff  10792680 Nov 22 11:35 chinese_mnist.zip
 drwxr-xr-x  7 iex  staff       224 Nov 22 12:06 dir-0001
@@ -96,11 +96,20 @@ drwxr-xr-x  5 iex  staff       160 Nov 22 12:06 dir-0002
 Then, recheck the file. By default, it makes a copy of the file.
 
 ```console
-$ xvc file recheck data.txt
+$ xvc file recheck dir-0001/file-0001.bin
 
 $ lsd -l
 .rw-rw-rw- [..] data.txt
 
+```
+
+You can track and recheck complete directories
+
+```console
+$ xvc file track dir-0002/
+$ rm -rf dir-0002/
+$ xvc file recheck dir-0002/
+$ ls -l dir-0002/
 ```
 
 Xvc only updates the recheck method if the file is not changed.
@@ -152,4 +161,5 @@ $ xvc file recheck data.txt --as reflink
 ```
 
 The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems.
+
 
