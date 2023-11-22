@@ -43,7 +43,7 @@ Let's create an example directory hierarchy as a showcase.
 
 ```console
 $ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 231123
-$ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2 --seed 231123
+$ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2 --seed 231123 --prefix inner
 $ tree
 .
 ├── dir-0001
@@ -65,7 +65,7 @@ $ tree
 
 ```
 
-Start by tracking a file.
+Start by tracking files. 
 
 ```console
 $ git init
@@ -74,15 +74,13 @@ $ xvc init
 
 $ xvc file track dir-0001/ dir-0002/
 
-$ lsd -l dir-0001/*
-
 ```
 
 Once you added the file to the cache, you can delete the workspace copy.
 
 ```console
 $ rm dir-0001/file-0001.bin
-$ lsd -l dir-0001/*
+$ lsd -l dir-0001/file-*
 total[..]
 drwxr-xr-x [..] dir-0001
 drwxr-xr-x [..] dir-0002
