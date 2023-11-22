@@ -39,6 +39,14 @@ This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if yo
 Rechecking is analogous to [git checkout](https://git-scm.com/docs/git-checkout).
 It copies or links a cached file to the workspace.
 
+Let's create an example directory hierarchy as a showcase. 
+
+```console
+$ xvc-test-helper create-directory-tree --dirs 2 --files 3
+$ xvc-test-helper create-directory-tree --root dir-0001 --dirs 2 --files 2
+$ tree
+```
+
 Start by tracking a file.
 
 ```console
@@ -118,3 +126,4 @@ $ xvc file recheck data.txt --as reflink
 ```
 
 The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems.
+

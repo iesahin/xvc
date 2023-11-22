@@ -120,7 +120,7 @@ Total #: 3 Workspace Size:          57 Cached Size:          19
 
 ```
 
-If the targets you specify are changed, Xvc cancels the copy operation. Please either recheck old versions or carry in new versions.
+If the source files you specify are changed, Xvc cancels the copy operation. Please either recheck old versions or carry in new versions.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt
