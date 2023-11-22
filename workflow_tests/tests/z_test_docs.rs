@@ -22,7 +22,7 @@ fn link_to_docs() -> Result<()> {
     let trycmd_tests = if let Ok(trycmd_tests) = std::env::var("XVC_TRYCMD_TESTS") {
         trycmd_tests.to_lowercase()
     } else {
-        "intro,start,ref,how-to,storage,file,pipeline,core".to_owned()
+        "intro,start,how-to,storage,file,pipeline,core".to_owned()
     };
 
     let mut book_dirs_and_filters = vec![];
@@ -109,6 +109,7 @@ fn link_to_docs() -> Result<()> {
             let basename: PathBuf = p.file_name().unwrap().into();
             let symlink_path = doc_dir.join(dir).join(&basename);
 
+            watch!(symlink_path);
             make_symlink(Path::new("../..").join(p), &symlink_path)?;
 
             // If we have a template input directory in `templates/`, we copy it.
