@@ -45,6 +45,26 @@ Let's create an example directory hierarchy as a showcase.
 $ xvc-test-helper create-directory-tree --directories 2 --files 3
 $ xvc-test-helper create-directory-tree --root dir-0001 --directories 2 --files 2
 $ tree
+.
+├── chinese_mnist.zip
+├── data.txt
+├── dir-0001
+│   ├── dir-0001
+│   │   ├── file-0001.bin
+│   │   └── file-0002.bin
+│   ├── dir-0002
+│   │   ├── file-0001.bin
+│   │   └── file-0002.bin
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+└── dir-0002
+    ├── file-0001.bin
+    ├── file-0002.bin
+    └── file-0003.bin
+
+5 directories, 12 files
+
 ```
 
 Start by tracking a file.
@@ -54,7 +74,7 @@ $ git init
 ...
 $ xvc init
 
-$ xvc file track data.txt
+$ xvc file track dir-0001/file-0001.bin
 
 $ lsd -l
 .rw-rw-rw- [..] data.txt
@@ -64,9 +84,12 @@ $ lsd -l
 Once you added the file to the cache, you can delete the workspace copy.
 
 ```console
-$ rm data.txt
-$ ls -l
+$ rm dir-0001/file-0001.bin
+$ ls -l dir-0001
 total[..]
+-rw-r--r--  1 iex  staff  10792680 Nov 22 11:35 chinese_mnist.zip
+drwxr-xr-x  7 iex  staff       224 Nov 22 12:06 dir-0001
+drwxr-xr-x  5 iex  staff       160 Nov 22 12:06 dir-0002
 
 ```
 
@@ -110,7 +133,10 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
--r--r--r--[..] data.txt
+-rw-r--r--  1 iex  staff  10792680 Nov 22 11:35 chinese_mnist.zip
+-r--r--r--@ 2 iex  staff        19 Oct 18 10:45 data.txt
+drwxr-xr-x  7 iex  staff       224 Nov 22 12:06 dir-0001
+drwxr-xr-x  5 iex  staff       160 Nov 22 12:06 dir-0002
 
 ```
 
