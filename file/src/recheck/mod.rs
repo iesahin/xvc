@@ -87,13 +87,14 @@ pub fn cmd_recheck(
     cli_opts: RecheckCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
+    // We copy this before
+    let requested_recheck_method = cli_opts.recheck_method;
+    watch!(requested_recheck_method);
+
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
-
-    let recheck_method = opts.recheck_method;
-    watch!(recheck_method);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
@@ -107,7 +108,7 @@ pub fn cmd_recheck(
     let recheck_method_diff = diff_recheck_method(
         default_recheck_method,
         &stored_recheck_method_store,
-        recheck_method,
+        requested_recheck_method,
         &entities,
     );
     let mut recheck_method_targets = recheck_method_diff.filter(|_, d| d.changed());
