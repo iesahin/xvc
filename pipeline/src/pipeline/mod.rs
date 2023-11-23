@@ -1492,7 +1492,6 @@ fn s_running_f_wait_process<'a>(
         .ok_or(anyhow!("Process birth not found"))?;
     let sleep_duration = Duration::from_millis(params.process_poll_milliseconds);
     loop {
-        watch!(&command_process);
         let send_output = |cp: Arc<RwLock<CommandProcess>>| -> Result<()> {
             let mut cp = cp.write()?;
             cp.update_output_channels()?;
