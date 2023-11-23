@@ -14,7 +14,7 @@ D --> E[Sharing Data and Models]
 
 
 ```admonish info
-This document can be more verbose than usual, because all commands in this document are run on a clean directory during tests to check outputs. Some of the idiosyncrasies, e.g., running certain commands with `zsh -c` are due to this reason.
+This document can be more verbose than usual, because all commands in this document are run on a clean directory during tests to check outputs. Some of the idiosyncrasies, e.g., running certain commands with `zsh -c` are due to this reason. Some of the output that changes in 
 ```
 ```
 ```
@@ -189,6 +189,7 @@ If we check the contents of the directories, we'll see that they are back.
 ```console
 $ zsh -c 'ls -1 data/train/*.jpg | wc -l'
     9000
+
 ```
 
 
