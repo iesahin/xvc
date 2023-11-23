@@ -28,7 +28,7 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
-use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder};
+use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder, PathSync};
 
 use self::gitignore::IgnoreOp;
 
@@ -417,31 +417,46 @@ pub fn cache_paths_for_xvc_paths(
 /// It creates the cache directory and sets the cache file read only.
 ///
 /// It overwrites the cache file if it already exists.
+///
+/// The [PathSync] struct is used to lock the paths during the operation, so that no two threads
+/// try to accessl to the same path at the same time.
 // TODO: Remove this when we set unix permissions in platform dependent fashion
 #[allow(clippy::permissions_set_readonly_false)]
-pub fn move_to_cache(path: &AbsolutePath, cache_path: &AbsolutePath) -> Result<()> {
+pub fn move_to_cache(
+    path: &AbsolutePath,
+    cache_path: &AbsolutePath,
+    path_sync: &PathSync,
+) -> Result<()> {
     let cache_dir = cache_path.parent().ok_or(Error::InternalError {
         message: "Cache path has no parent.".to_string(),
     })?;
     watch!(cache_dir);
-    if !cache_dir.exists() {
-        fs::create_dir_all(cache_dir)?;
-    }
-    // Set to writable
-    let mut dir_perm = cache_dir.metadata()?.permissions();
-    dir_perm.set_readonly(false);
-    fs::set_permissions(cache_dir, dir_perm)?;
+    // We don't lock the path_sync here because we don't want to block other threads.
+    path_sync
+        .with_sync_abs_path(path, |path| {
+            path_sync.with_sync_abs_path(cache_path, |cache_path| {
+                if !cache_dir.exists() {
+                    fs::create_dir_all(cache_dir)?;
+                }
+                // Set to writable
+                let mut dir_perm = cache_dir.metadata()?.permissions();
+                dir_perm.set_readonly(false);
+                fs::set_permissions(cache_dir, dir_perm)?;
 
-    fs::rename(path, cache_path).map_err(|source| Error::IoError { source })?;
-    let mut file_perm = cache_path.metadata()?.permissions();
-    watch!(&file_perm.clone());
-    file_perm.set_readonly(true);
-    fs::set_permissions(cache_path, file_perm.clone())?;
-    watch!(&file_perm.clone());
-    let mut dir_perm = cache_dir.metadata()?.permissions();
-    dir_perm.set_readonly(true);
-    fs::set_permissions(cache_dir, dir_perm)?;
-    Ok(())
+                fs::rename(path, cache_path)
+                    .map_err(|source| xvc_walker::Error::IoError { source })?;
+                let mut file_perm = cache_path.metadata()?.permissions();
+                watch!(&file_perm.clone());
+                file_perm.set_readonly(true);
+                fs::set_permissions(cache_path, file_perm.clone())?;
+                watch!(&file_perm.clone());
+                let mut dir_perm = cache_dir.metadata()?.permissions();
+                dir_perm.set_readonly(true);
+                fs::set_permissions(cache_dir, dir_perm)?;
+                Ok(())
+            })
+        })
+        .map_err(|e| e.into())
 }
 
 /// Move an xvc_path to the cache path.
@@ -450,12 +465,13 @@ pub fn move_xvc_path_to_cache(
     xvc_root: &XvcRoot,
     xvc_path: &XvcPath,
     cache_path: &XvcCachePath,
+    path_sync: &PathSync,
 ) -> Result<()> {
     let path = xvc_path.to_absolute_path(xvc_root);
     watch!(path);
     let cache_path = cache_path.to_absolute_path(xvc_root);
     watch!(cache_path);
-    move_to_cache(&path, &cache_path)
+    move_to_cache(&path, &cache_path, path_sync)
 }
 
 /// Record store records checking their Diff.

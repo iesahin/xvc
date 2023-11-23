@@ -21,6 +21,7 @@ use xvc_logging::{debug, uwr, warn, watch, XvcOutputSender};
 
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
+use xvc_walker::PathSync;
 
 /// Bring (download, pull, fetch) files from storage.
 ///
@@ -132,11 +133,15 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
     watch!(temp_dir);
     watch!(event);
 
+    let path_sync = PathSync::new();
     // Move the files from temp dir to cache
     for (_, cp) in cache_paths {
         let cache_path = cp.to_absolute_path(xvc_root);
         let temp_path = temp_dir.temp_cache_path(&cp)?;
-        uwr!(move_to_cache(&temp_path, &cache_path), output_snd);
+        uwr!(
+            move_to_cache(&temp_path, &cache_path, &path_sync),
+            output_snd
+        );
     }
 
     xvc_root.with_store_mut(|store: &mut XvcStore<XvcStorageEvent>| {
