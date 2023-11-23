@@ -180,7 +180,7 @@ $ rm -rf data/train data/validate data/test
 We run the steps we created.
 
 ```console
-$ xvc -vvvv pipeline run 
+$ xvc pipeline run 
 [DEBUG][logging/src/lib.rs::236] Terminal logger enabled with level: Debug
 [DEBUG][core/src/types/xvcroot.rs::253] XVC DIR: "[CWD]"
 [DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
