@@ -32,7 +32,7 @@ In this HOWTO, we use Chinese MNIST dataset to create an image classification pi
 ```console
 $ ls -l
 total 21080
--rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
+-rw-r--r--  [..] chinese_mnist.zip
 
 ```
 Let's start by tracking the data file with Xvc.
@@ -49,7 +49,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 23 23:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  [..] chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -62,8 +62,8 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 23 23:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
-drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
+lrwxr-xr-x  [..] chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+drwxr-xr-x  [..] data
 
 ```
 
@@ -90,21 +90,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         192 2023-11-23 20:06:21 3a714d65          data/data/input_9_9_9.jpg
-SS         192 2023-11-23 20:06:21 9ffccc4d          data/data/input_9_9_8.jpg
-SS         192 2023-11-23 20:06:21 5d6312a4          data/data/input_9_9_7.jpg
-SS         192 2023-11-23 20:06:21 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         192 2023-11-23 20:06:20 2047d7f3          data/data/input_9_9_5.jpg
-SS         192 2023-11-23 20:06:22 10fcf309          data/data/input_9_9_4.jpg
-SS         192 2023-11-23 20:06:20 0bdcd918          data/data/input_9_9_3.jpg
-SS         192 2023-11-23 20:06:21 aebcbc03          data/data/input_9_9_2.jpg
-SS         192 2023-11-23 20:06:20 38abd173          data/data/input_9_9_15.jpg
-SS         192 2023-11-23 20:06:22 7c6a9003          data/data/input_9_9_14.jpg
-SS         192 2023-11-23 20:06:20 a9f04ad9          data/data/input_9_9_13.jpg
-SS         192 2023-11-23 20:06:20 2d372f95          data/data/input_9_9_12.jpg
-SS         192 2023-11-23 20:06:20 8fe799b4          data/data/input_9_9_11.jpg
-SS         192 2023-11-23 20:06:21 ee35e5d5          data/data/input_9_9_10.jpg
-SS         192 2023-11-23 20:06:22 7576894f          data/data/input_9_9_1.jpg
+SS         [..] 3a714d65          data/data/input_9_9_9.jpg
+SS         [..] 9ffccc4d          data/data/input_9_9_8.jpg
+SS         [..] 5d6312a4          data/data/input_9_9_7.jpg
+SS         [..] 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         [..] 2047d7f3          data/data/input_9_9_5.jpg
+SS         [..] 10fcf309          data/data/input_9_9_4.jpg
+SS         [..] 0bdcd918          data/data/input_9_9_3.jpg
+SS         [..] aebcbc03          data/data/input_9_9_2.jpg
+SS         [..] 38abd173          data/data/input_9_9_15.jpg
+SS         [..] 7c6a9003          data/data/input_9_9_14.jpg
+SS         [..] a9f04ad9          data/data/input_9_9_13.jpg
+SS         [..] 2d372f95          data/data/input_9_9_12.jpg
+SS         [..] 8fe799b4          data/data/input_9_9_11.jpg
+SS         [..] ee35e5d5          data/data/input_9_9_10.jpg
+SS         [..] 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
