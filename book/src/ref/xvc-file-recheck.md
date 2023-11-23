@@ -42,15 +42,31 @@ It copies or links a cached file to the workspace.
 Let's create an example directory hierarchy as a showcase. 
 
 ```console
-$ xvc-test-helper create-directory-tree --directories 5 --files 3 --seed 231123
+$ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 231123
 $ tree
 .
-└── dir-0001
+├── dir-0001
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+├── dir-0002
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+├── dir-0003
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+├── dir-0004
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+└── dir-0005
     ├── file-0001.bin
     ├── file-0002.bin
     └── file-0003.bin
 
-2 directories, 3 files
+6 directories, 15 files
 
 ```
 
@@ -93,8 +109,10 @@ $ xvc file track dir-0002/
 $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/
 $ ls -l dir-0002/
-? 1
-ls: dir-0002/: No such file or directory
+total 24
+-rw-rw-rw-  1 iex  staff  2001 Nov 23 19:04 file-0001.bin
+-rw-rw-rw-  1 iex  staff  2002 Nov 23 19:04 file-0002.bin
+-rw-rw-rw-  1 iex  staff  2003 Nov 23 19:04 file-0003.bin
 
 ```
 You can use glob patterns to recheck files.
@@ -109,15 +127,19 @@ You can update the recheck method of a file. Otherwise it will be kept as same b
 $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ --as symlink
 $ ls -l dir-0002/
-? 1
-ls: dir-0002/: No such file or directory
+total 0
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ 
 
 $ ls -l dir-0002/
-? 1
-ls: dir-0002/: No such file or directory
+total 0
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 ```
 
@@ -127,13 +149,11 @@ You can recheck as copy to update.
 ```console
 $ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
 ? 1
-zsh:1: no such file or directory: dir-0002/file-0001.bin
+zsh:1: permission denied: dir-0002/file-0001.bin
 
 $ xvc file recheck dir-0002/file-0001.bin --as copy
 
 $ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
-? 1
-zsh:1: no such file or directory: dir-0002/file-0001.bin
 
 ```
 Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
@@ -144,6 +164,10 @@ $ xvc -vv file recheck data.txt --as hardlink
 $ ls -l
 total[..]
 drwxr-xr-x [..] dir-0001
+drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0002
+drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0003
+drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0004
+drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0005
 
 ```
 
