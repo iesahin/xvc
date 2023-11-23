@@ -407,7 +407,6 @@ pub fn the_grand_pipeline_loop(
 
     watch!(step_states);
 
-    let _continue_running = true;
     let process_pool_size: usize = xvc_root
         .config()
         .get_int("pipeline.process_pool_size")?
@@ -816,6 +815,7 @@ fn update_pmp(
     };
 
     loop {
+        watch!(fs_receiver);
         select! {
             recv(fs_receiver) -> fs_event => match fs_event {
                 Ok(Some(fs_event)) => {

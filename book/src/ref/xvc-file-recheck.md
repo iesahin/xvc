@@ -49,24 +49,12 @@ $ tree
 │   ├── file-0001.bin
 │   ├── file-0002.bin
 │   └── file-0003.bin
-├── dir-0002
-│   ├── file-0001.bin
-│   ├── file-0002.bin
-│   └── file-0003.bin
-├── dir-0003
-│   ├── file-0001.bin
-│   ├── file-0002.bin
-│   └── file-0003.bin
-├── dir-0004
-│   ├── file-0001.bin
-│   ├── file-0002.bin
-│   └── file-0003.bin
-└── dir-0005
+└── dir-0002
     ├── file-0001.bin
     ├── file-0002.bin
     └── file-0003.bin
 
-6 directories, 15 files
+3 directories, 6 files
 
 ```
 
@@ -110,9 +98,9 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/
 $ ls -l dir-0002/
 total 24
--rw-rw-rw-  1 iex  staff  2001 Nov 23 19:04 file-0001.bin
--rw-rw-rw-  1 iex  staff  2002 Nov 23 19:04 file-0002.bin
--rw-rw-rw-  1 iex  staff  2003 Nov 23 19:04 file-0003.bin
+-rw-rw-rw-  1 iex  staff  2001 Nov 23 19:17 file-0001.bin
+-rw-rw-rw-  1 iex  staff  2002 Nov 23 19:17 file-0002.bin
+-rw-rw-rw-  1 iex  staff  2003 Nov 23 19:17 file-0003.bin
 
 ```
 You can use glob patterns to recheck files.
@@ -128,18 +116,18 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ --as symlink
 $ ls -l dir-0002/
 total 0
-lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
-lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
-lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:17 file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:17 file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:17 file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ 
 
 $ ls -l dir-0002/
 total 0
-lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
-lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
-lrwxr-xr-x  1 iex  staff  183 Nov 23 19:04 file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:17 file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:17 file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x  1 iex  staff  183 Nov 23 19:17 file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 ```
 
@@ -164,10 +152,7 @@ $ xvc -vv file recheck data.txt --as hardlink
 $ ls -l
 total[..]
 drwxr-xr-x [..] dir-0001
-drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0002
-drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0003
-drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0004
-drwxr-xr-x  6 iex  staff  192 Nov 23 19:04 dir-0005
+drwxr-xr-x  6 iex  staff  192 Nov 23 19:17 dir-0002
 
 ```
 
