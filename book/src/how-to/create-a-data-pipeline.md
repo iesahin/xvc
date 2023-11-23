@@ -49,7 +49,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 23 22:26 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 23 22:59 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -62,7 +62,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 23 22:26 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 23 22:59 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
 ```
@@ -90,21 +90,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         192 2023-11-23 19:26:09 3a714d65          data/data/input_9_9_9.jpg
-SS         192 2023-11-23 19:26:10 9ffccc4d          data/data/input_9_9_8.jpg
-SS         192 2023-11-23 19:26:09 5d6312a4          data/data/input_9_9_7.jpg
-SS         192 2023-11-23 19:26:08 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         192 2023-11-23 19:26:10 2047d7f3          data/data/input_9_9_5.jpg
-SS         192 2023-11-23 19:26:09 10fcf309          data/data/input_9_9_4.jpg
-SS         192 2023-11-23 19:26:09 0bdcd918          data/data/input_9_9_3.jpg
-SS         192 2023-11-23 19:26:09 aebcbc03          data/data/input_9_9_2.jpg
-SS         192 2023-11-23 19:26:09 38abd173          data/data/input_9_9_15.jpg
-SS         192 2023-11-23 19:26:09 7c6a9003          data/data/input_9_9_14.jpg
-SS         192 2023-11-23 19:26:09 a9f04ad9          data/data/input_9_9_13.jpg
-SS         192 2023-11-23 19:26:08 2d372f95          data/data/input_9_9_12.jpg
-SS         192 2023-11-23 19:26:09 8fe799b4          data/data/input_9_9_11.jpg
-SS         192 2023-11-23 19:26:11 ee35e5d5          data/data/input_9_9_10.jpg
-SS         192 2023-11-23 19:26:09 7576894f          data/data/input_9_9_1.jpg
+SS         192 2023-11-23 20:00:01 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-23 20:00:00 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-23 20:00:01 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-23 20:00:02 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-23 20:00:00 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-23 20:00:02 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-23 20:00:01 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-23 20:00:01 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-23 20:00:01 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-23 20:00:02 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-23 20:00:01 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-23 20:00:01 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-23 20:00:01 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-23 20:00:02 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-23 20:00:02 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
@@ -181,24 +181,11 @@ We run the steps we created.
 
 ```console
 $ xvc pipeline run 
-[DEBUG][logging/src/lib.rs::236] Terminal logger enabled with level: Debug
-[DEBUG][core/src/types/xvcroot.rs::253] XVC DIR: "[CWD]"
-[DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
-[DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.13/src/lib.rs::431] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
-[INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
-digraph {
-    0 [ label = "(30009, 3014500988412730681)" ]
-}
-
-
-[INFO] No dependency steps for step recheck-data
-[INFO] [recheck-data] Dependencies has changed
-[DEBUG] Step recheck-data with command xvc file recheck data/train/ data/validate/ data/test/ is still running
+? interrupted
+thread 'notify-rs fsevents loop' panicked at walker/src/notify.rs:97:72:
+called `Result::unwrap()` on an `Err` value: IoError { source: Os { code: 2, kind: NotFound, message: "No such file or directory" } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
-[DEBUG] Using Git: /opt/homebrew/bin/git
-[DEBUG] No files to commit
-[DEBUG] Command completed successfully.
 
 ```
 
