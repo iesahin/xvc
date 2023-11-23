@@ -49,7 +49,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 23 22:59 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 23 23:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 
 ```
 
@@ -62,7 +62,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 0
-lrwxr-xr-x  1 iex  staff  192 Nov 23 22:59 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff  192 Nov 23 23:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff  128 Nov 17 19:45 data
 
 ```
@@ -90,21 +90,21 @@ Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
-SS         192 2023-11-23 20:00:01 3a714d65          data/data/input_9_9_9.jpg
-SS         192 2023-11-23 20:00:00 9ffccc4d          data/data/input_9_9_8.jpg
-SS         192 2023-11-23 20:00:01 5d6312a4          data/data/input_9_9_7.jpg
-SS         192 2023-11-23 20:00:02 7a0ddb0e          data/data/input_9_9_6.jpg
-SS         192 2023-11-23 20:00:00 2047d7f3          data/data/input_9_9_5.jpg
-SS         192 2023-11-23 20:00:02 10fcf309          data/data/input_9_9_4.jpg
-SS         192 2023-11-23 20:00:01 0bdcd918          data/data/input_9_9_3.jpg
-SS         192 2023-11-23 20:00:01 aebcbc03          data/data/input_9_9_2.jpg
-SS         192 2023-11-23 20:00:01 38abd173          data/data/input_9_9_15.jpg
-SS         192 2023-11-23 20:00:02 7c6a9003          data/data/input_9_9_14.jpg
-SS         192 2023-11-23 20:00:01 a9f04ad9          data/data/input_9_9_13.jpg
-SS         192 2023-11-23 20:00:01 2d372f95          data/data/input_9_9_12.jpg
-SS         192 2023-11-23 20:00:01 8fe799b4          data/data/input_9_9_11.jpg
-SS         192 2023-11-23 20:00:02 ee35e5d5          data/data/input_9_9_10.jpg
-SS         192 2023-11-23 20:00:02 7576894f          data/data/input_9_9_1.jpg
+SS         192 2023-11-23 20:06:21 3a714d65          data/data/input_9_9_9.jpg
+SS         192 2023-11-23 20:06:21 9ffccc4d          data/data/input_9_9_8.jpg
+SS         192 2023-11-23 20:06:21 5d6312a4          data/data/input_9_9_7.jpg
+SS         192 2023-11-23 20:06:21 7a0ddb0e          data/data/input_9_9_6.jpg
+SS         192 2023-11-23 20:06:20 2047d7f3          data/data/input_9_9_5.jpg
+SS         192 2023-11-23 20:06:22 10fcf309          data/data/input_9_9_4.jpg
+SS         192 2023-11-23 20:06:20 0bdcd918          data/data/input_9_9_3.jpg
+SS         192 2023-11-23 20:06:21 aebcbc03          data/data/input_9_9_2.jpg
+SS         192 2023-11-23 20:06:20 38abd173          data/data/input_9_9_15.jpg
+SS         192 2023-11-23 20:06:22 7c6a9003          data/data/input_9_9_14.jpg
+SS         192 2023-11-23 20:06:20 a9f04ad9          data/data/input_9_9_13.jpg
+SS         192 2023-11-23 20:06:20 2d372f95          data/data/input_9_9_12.jpg
+SS         192 2023-11-23 20:06:20 8fe799b4          data/data/input_9_9_11.jpg
+SS         192 2023-11-23 20:06:21 ee35e5d5          data/data/input_9_9_10.jpg
+SS         192 2023-11-23 20:06:22 7576894f          data/data/input_9_9_1.jpg
 Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
@@ -181,12 +181,15 @@ We run the steps we created.
 
 ```console
 $ xvc pipeline run 
-? interrupted
-thread 'notify-rs fsevents loop' panicked at walker/src/notify.rs:97:72:
-called `Result::unwrap()` on an `Err` value: IoError { source: Os { code: 2, kind: NotFound, message: "No such file or directory" } }
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 
 ```
+If we check the contents of the directories, we'll see that they are back.
+
+```console
+$ zsh -c 'ls -1 data/train/*.jpg | wc -l'
+    9000
+```
+
 
 The Python script to train a model runs with Numpy arrays. So we'll convert each of these 
