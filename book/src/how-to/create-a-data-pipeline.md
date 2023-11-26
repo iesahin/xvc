@@ -31,8 +31,10 @@ In this HOWTO, we use Chinese MNIST dataset to create an image classification pi
 
 ```console
 $ ls -l
-total 21080
--rw-r--r--  [..] chinese_mnist.zip
+total 21096
+-rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
+-rw-r--r--  1 iex  staff      1035 Nov 25 12:57 image_to_numpy_array.py
+-rw-r--r--  1 iex  staff         4 Nov 25 12:57 requirements.txt
 
 ```
 Let's start by tracking the data file with Xvc.
@@ -48,8 +50,10 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 
 ```console
 $ ls -l
-total 0
-lrwxr-xr-x  [..] chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+total 16
+lrwxr-xr-x  1 iex  staff   192 Nov 26 20:21 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+-rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
+-rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
 
 ```
 
@@ -61,9 +65,11 @@ As we'll work with the file contents, let's unzip the data file.
 $ unzip -q chinese_mnist.zip
 
 $ ls -l
-total 0
-lrwxr-xr-x  [..] chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
-drwxr-xr-x  [..] data
+total 16
+lrwxr-xr-x  1 iex  staff   192 Nov 26 20:21 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
+-rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
+-rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
 
 ```
 
@@ -242,15 +248,72 @@ Note that, unlike other tools, you can specify direct dependencies between steps
 The above `create-*-array` steps will depend on to `install-requirements` to ensure that requirements are installed when the scripts are run. 
 
 ```console
-$ xvc pipeline step new --step-name create-train-array --step install-requirements
-$ xvc pipeline step new --step-name create-validate-array --step install-requirements
-$ xvc pipeline step new --step-name create-test-array --step install-requirements
+$ xvc pipeline step dependency --step-name create-train-array --step install-requirements
+? 2
+error: unexpected argument '--step' found
+
+  tip: a similar argument exists: '--step-name'
+
+Usage: xvc pipeline step new <--step-name <STEP_NAME>|--command <COMMAND>|--when <WHEN>>
+
+For more information, try '--help'.
+
+$ xvc pipeline step dependency --step-name create-validate-array --step install-requirements
+? 2
+error: unexpected argument '--step' found
+
+  tip: a similar argument exists: '--step-name'
+
+Usage: xvc pipeline step new <--step-name <STEP_NAME>|--command <COMMAND>|--when <WHEN>>
+
+For more information, try '--help'.
+
+$ xvc pipeline step dependency --step-name create-test-array --step install-requirements
+? 2
+error: unexpected argument '--step' found
+
+  tip: a similar argument exists: '--step-name'
+
+Usage: xvc pipeline step new <--step-name <STEP_NAME>|--command <COMMAND>|--when <WHEN>>
+
+For more information, try '--help'.
+
 ```
 
 Now, as the pipeline grows, it may be nice to see the graph. 
 
 ```console
 $ xvc pipeline dag --format mermaid
+flowchart TD
+    n0["recheck-data"]
+    n1["create-train-array"]
+    n2["data/train/*.jpg"] --> n1
+    n3["create-test-array"]
+    n4["data/test/*.jpg"] --> n3
+    n5["create-validate-array"]
+    n6["data/validate/*.jpg"] --> n5
+    n7["init-venv"]
+    n8[".venv/bin/activate"] --> n7
+    n9["install-requirements"]
+    n7["init-venv"] --> n9
+    n10["requirements.txt"] --> n9
+
+
+```
+```mermaid
+flowchart TD
+    n0["recheck-data"]
+    n1["create-train-array"]
+    n2["data/train/*.jpg"] --> n1
+    n3["create-test-array"]
+    n4["data/test/*.jpg"] --> n3
+    n5["create-validate-array"]
+    n6["data/validate/*.jpg"] --> n5
+    n7["init-venv"]
+    n8[".venv/bin/activate"] --> n7
+    n9["install-requirements"]
+    n7["init-venv"] --> n9
+    n10["requirements.txt"] --> n9
 ```
 
 `dag` command can also produce GraphViz DOT output. For larger graphs, it may be more suitable. We'll use DOT to create images in later sections. 
@@ -259,5 +322,12 @@ Let's run the pipeline at this point to test.
 
 ```console
 $ xvc pipeline run
+? interrupted
+thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
+[PANIC] PathNotFound { path: ".venv/bin/activate" }, [pipeline/src/pipeline/mod.rs::1085]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1085:28:
+PathNotFound { path: ".venv/bin/activate" }
+
 ```
 ````
