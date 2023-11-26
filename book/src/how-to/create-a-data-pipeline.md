@@ -121,7 +121,9 @@ link to the file in cache.
 The summary line shows the total size of the files and the size they occupy in
 the workspace.
 
-The first step of out pipeline is to create subsets of the data. 
+## Splitting Train, Validation, and Test Sets
+
+The first step of the pipeline is to create subsets of the data. 
 
 The data set contains 15 classes. It has 10 samples for each of these classes
 from 100 different people. As we'll train a Chinese digit recognizer, we'll
@@ -192,5 +194,70 @@ $ zsh -c 'ls -1 data/train/*.jpg | wc -l'
 
 ```
 
+## Preprocessing Images into Numpy Arrays
 
-The Python script to train a model runs with Numpy arrays. So we'll convert each of these 
+```mermaid
+graph LR
+A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
+B --> C[Preprocessing Images into Numpy Arrays]
+C --> D[Training Model]
+D --> E[Sharing Data and Models]
+```
+
+The Python script to train a model runs with Numpy arrays. So we'll convert each of these directories with images into two numpy arrays. 
+One of the arrays will keep $n$ 64x64 images and the other will keep $n$ labels for these images.
+
+```console
+$ xvc pipeline step new --step-name create-train-array --command 'source .venv/bin/activate ; python3 image_to_numpy_array.py data/train/'
+$ xvc pipeline step new --step-name create-test-array --command 'source .venv/bin/activate ; python3 image_to_numpy_array.py data/test/'
+$ xvc pipeline step new --step-name create-validate-array --command 'source .venv/bin/activate ; python3 image_to_numpy_array.py data/validate/'
+```
+
+These commands will run when the image files in those directories will change. Xvc can keep track of file groups and invalidate a step when the _content_ of any of these files change. Moreover, it's possible to track which files have changed if there are too many files. We don't need this feature of tracking individual items in _globs_, so we'll use a _glob_ dependency. 
+
+```console
+$ xvc pipeline step dependency --step-name create-train-array --glob 'data/train/*.jpg'
+$ xvc pipeline step dependency --step-name create-test-array --glob 'data/test/*.jpg'
+$ xvc pipeline step dependency --step-name create-validate-array --glob 'data/validate/*.jpg'
+```
+
+Now we have three more steps that depend on changed files. The script depends on OpenCV to read images. Python best practices ask to create a separate virtual environment for each project. We'll also make sure that the venv is created and the requirements are installed before running the script.
+
+Create a command to initialize the virtual environment. It will run if there is no `.venv/bin/activate` file. 
+
+```console
+$ xvc pipeline step new --step-name init-venv --command 'python3 -m venv .venv'
+$ xvc pipeline step dependency --step-name init-venv --file .venv/bin/activate
+```
+
+Then, another step that depends on `init-venv` and `requirements.txt` will install the dependencies. 
+
+```console
+$ xvc pipeline step new --step-name install-requirements --command 'python3 -m pip install -r requirements.txt'
+$ xvc pipeline step dependency --step-name install-requirements --step init-venv
+$ xvc pipeline step dependency --step-name install-requirements --file requirements.txt
+```
+Note that, unlike other tools, you can specify direct dependencies between steps in Xvc. When a pipeline step must wait another step to finish successfully, a dependency between these two can be defined. 
+
+The above `create-*-array` steps will depend on to `install-requirements` to ensure that requirements are installed when the scripts are run. 
+
+```console
+$ xvc pipeline step new --step-name create-train-array --step install-requirements
+$ xvc pipeline step new --step-name create-validate-array --step install-requirements
+$ xvc pipeline step new --step-name create-test-array --step install-requirements
+```
+
+Now, as the pipeline grows, it may be nice to see the graph. 
+
+```console
+$ xvc pipeline dag --format mermaid
+```
+
+`dag` command can also produce GraphViz DOT output. For larger graphs, it may be more suitable. We'll use DOT to create images in later sections. 
+
+Let's run the pipeline at this point to test.
+
+```console
+$ xvc pipeline run
+```
+````
