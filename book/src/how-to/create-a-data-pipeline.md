@@ -51,7 +51,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 26 20:21 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   191 Nov 26 20:25 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
 
@@ -66,7 +66,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 26 20:21 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   191 Nov 26 20:25 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
@@ -111,7 +111,7 @@ SS         [..] 2d372f95          data/data/input_9_9_12.jpg
 SS         [..] 8fe799b4          data/data/input_9_9_11.jpg
 SS         [..] ee35e5d5          data/data/input_9_9_10.jpg
 SS         [..] 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2880 Cached Size:        8710
+Total #: 15 Workspace Size:        2865 Cached Size:        8710
 
 
 ```
@@ -249,34 +249,10 @@ The above `create-*-array` steps will depend on to `install-requirements` to ens
 
 ```console
 $ xvc pipeline step dependency --step-name create-train-array --step install-requirements
-? 2
-error: unexpected argument '--step' found
-
-  tip: a similar argument exists: '--step-name'
-
-Usage: xvc pipeline step new <--step-name <STEP_NAME>|--command <COMMAND>|--when <WHEN>>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name create-validate-array --step install-requirements
-? 2
-error: unexpected argument '--step' found
-
-  tip: a similar argument exists: '--step-name'
-
-Usage: xvc pipeline step new <--step-name <STEP_NAME>|--command <COMMAND>|--when <WHEN>>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name create-test-array --step install-requirements
-? 2
-error: unexpected argument '--step' found
-
-  tip: a similar argument exists: '--step-name'
-
-Usage: xvc pipeline step new <--step-name <STEP_NAME>|--command <COMMAND>|--when <WHEN>>
-
-For more information, try '--help'.
 
 ```
 
@@ -288,15 +264,18 @@ flowchart TD
     n0["recheck-data"]
     n1["create-train-array"]
     n2["data/train/*.jpg"] --> n1
-    n3["create-test-array"]
-    n4["data/test/*.jpg"] --> n3
-    n5["create-validate-array"]
-    n6["data/validate/*.jpg"] --> n5
-    n7["init-venv"]
-    n8[".venv/bin/activate"] --> n7
-    n9["install-requirements"]
-    n7["init-venv"] --> n9
-    n10["requirements.txt"] --> n9
+    n3["install-requirements"] --> n1
+    n4["create-test-array"]
+    n5["data/test/*.jpg"] --> n4
+    n3["install-requirements"] --> n4
+    n6["create-validate-array"]
+    n7["data/validate/*.jpg"] --> n6
+    n3["install-requirements"] --> n6
+    n8["init-venv"]
+    n9[".venv/bin/activate"] --> n8
+    n3["install-requirements"]
+    n8["init-venv"] --> n3
+    n10["requirements.txt"] --> n3
 
 
 ```
@@ -305,15 +284,18 @@ flowchart TD
     n0["recheck-data"]
     n1["create-train-array"]
     n2["data/train/*.jpg"] --> n1
-    n3["create-test-array"]
-    n4["data/test/*.jpg"] --> n3
-    n5["create-validate-array"]
-    n6["data/validate/*.jpg"] --> n5
-    n7["init-venv"]
-    n8[".venv/bin/activate"] --> n7
-    n9["install-requirements"]
-    n7["init-venv"] --> n9
-    n10["requirements.txt"] --> n9
+    n3["install-requirements"] --> n1
+    n4["create-test-array"]
+    n5["data/test/*.jpg"] --> n4
+    n3["install-requirements"] --> n4
+    n6["create-validate-array"]
+    n7["data/validate/*.jpg"] --> n6
+    n3["install-requirements"] --> n6
+    n8["init-venv"]
+    n9[".venv/bin/activate"] --> n8
+    n3["install-requirements"]
+    n8["init-venv"] --> n3
+    n10["requirements.txt"] --> n3
 ```
 
 `dag` command can also produce GraphViz DOT output. For larger graphs, it may be more suitable. We'll use DOT to create images in later sections. 
@@ -321,13 +303,13 @@ flowchart TD
 Let's run the pipeline at this point to test.
 
 ```console
-$ xvc pipeline run
+$ xvc --debug pipeline run
 ? interrupted
-thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
-[PANIC] PathNotFound { path: ".venv/bin/activate" }, [pipeline/src/pipeline/mod.rs::1085]
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1085:28:
 PathNotFound { path: ".venv/bin/activate" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
+[PANIC] PathNotFound { path: ".venv/bin/activate" }, [pipeline/src/pipeline/mod.rs::1085]
 
 ```
 ````
