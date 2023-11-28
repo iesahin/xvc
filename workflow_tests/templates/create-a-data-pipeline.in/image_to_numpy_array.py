@@ -34,3 +34,6 @@ for image_name in os.listdir(image_dir):
 # Convert the lists of images and classes to numpy arrays using numpy.array()
 images = np.array(images)
 classes = np.array(classes)
+
+np.save(f'{image_dir}/images.npy', images)
+np.save(f'{image_dir}/classes.npy', classes)
