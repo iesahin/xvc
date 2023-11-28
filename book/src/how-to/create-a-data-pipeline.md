@@ -51,7 +51,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 26 20:33 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   190 Nov 26 22:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
 
@@ -66,7 +66,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 26 20:33 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   190 Nov 26 22:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
@@ -111,7 +111,7 @@ SS         [..] 2d372f95          data/data/input_9_9_12.jpg
 SS         [..] 8fe799b4          data/data/input_9_9_11.jpg
 SS         [..] ee35e5d5          data/data/input_9_9_10.jpg
 SS         [..] 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2880 Cached Size:        8710
+Total #: 15 Workspace Size:        2850 Cached Size:        8710
 
 
 ```
@@ -233,8 +233,10 @@ Create a command to initialize the virtual environment. It will run if there is 
 
 ```console
 $ xvc pipeline step new --step-name init-venv --command 'python3 -m venv .venv'
-$ xvc pipeline step dependency --step-name init-venv --file .venv/bin/activate
+$ xvc pipeline step dependency --step-name init-venv --generic 'echo "$(hostname)/$(pwd)"'
 ```
+
+We used `--generic` dependency that runs a command and checks its output to see whether the step requires to be run again. We only want to run `init-env` once per deployment, so checking output of `hostname` and `pwd` is better than existence of a file. File dependencies must be available before running the pipeline to record their metadata. There is no such restriction for generic dependencies.
 
 Then, another step that depends on `init-venv` and `requirements.txt` will install the dependencies. 
 
@@ -256,7 +258,7 @@ $ xvc pipeline step dependency --step-name create-test-array --step install-requ
 
 ```
 
-Now, as the pipeline grows, it may be nice to see the graph. 
+Now, as the pipeline grows, it may be nice to see the graph what we have done so far. 
 
 ```console
 $ xvc pipeline dag --format mermaid
@@ -304,4 +306,11 @@ Let's run the pipeline at this point to test.
 
 ```console
 $ xvc pipeline run
+? interrupted
+thread 'thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
+[PANIC] PathNotFound { path: ".venv/bin/activate" }, [pipeline/src/pipeline/mod.rs::1085]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1085:28:
+PathNotFound { path: ".venv/bin/activate" }
+
 ```
