@@ -34,7 +34,7 @@ $ ls -l
 total 21096
 -rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
 -rw-r--r--  1 iex  staff      1124 Nov 28 14:27 image_to_numpy_array.py
--rw-r--r--  1 iex  staff         4 Nov 25 12:57 requirements.txt
+-rw-r--r--  1 iex  staff        14 Nov 28 14:36 requirements.txt
 
 ```
 Let's start by tracking the data file with Xvc.
@@ -51,9 +51,9 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 28 14:28 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   192 Nov 28 14:36 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
--rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
+-rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
 
 ```
 
@@ -66,10 +66,10 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 28 14:28 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   192 Nov 28 14:36 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
--rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
+-rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
 
 ```
 
@@ -306,43 +306,44 @@ Let's run the pipeline at this point to test.
 
 ```console
 $ xvc -vv pipeline run
+? interrupted
 [INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30010, 6999942686904318243)" ]
-    1 [ label = "(30009, 360855975037785942)" ]
-    2 [ label = "(30012, 1119259443404674952)" ]
-    3 [ label = "(30011, 12962661444745119662)" ]
-    4 [ label = "(30016, 10958866160201762056)" ]
-    5 [ label = "(30018, 10970077377866642604)" ]
-    0 -> 5 [ label = "Step" ]
+    0 [ label = "(30016, 9182854946950364992)" ]
+    1 [ label = "(30010, 6791469512215289605)" ]
+    2 [ label = "(30011, 2555854024776593454)" ]
+    3 [ label = "(30012, 17756524221412557787)" ]
+    4 [ label = "(30009, 14336765070070040683)" ]
+    5 [ label = "(30018, 7797089978661101978)" ]
+    1 -> 5 [ label = "Step" ]
     2 -> 5 [ label = "Step" ]
     3 -> 5 [ label = "Step" ]
-    5 -> 4 [ label = "Step" ]
+    5 -> 0 [ label = "Step" ]
 }
 
 
-[INFO] Waiting for dependency steps for step create-test-array
-[INFO] No dependency steps for step recheck-data
 [INFO] No dependency steps for step init-venv
-[INFO] Waiting for dependency steps for step create-train-array
+[INFO] No dependency steps for step recheck-data
 [INFO] [recheck-data] Dependencies has changed
-[INFO] Waiting for dependency steps for step install-requirements
 [INFO] Waiting for dependency steps for step create-validate-array
+[INFO] Waiting for dependency steps for step create-test-array
+[INFO] Waiting for dependency steps for step create-train-array
+[INFO] Waiting for dependency steps for step install-requirements
 [INFO] [init-venv] Dependencies has changed
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [DONE] init-venv (python3 -m venv .venv)
 [INFO] Dependency steps completed successfully for step install-requirements
 [INFO] [install-requirements] Dependencies has changed
-[WARN] [ERR] [install-requirements] ERROR: Could not find a version that satisfies the requirement cv2 (from versions: none)
-ERROR: No matching distribution found for cv2
- 
-[ERROR] Step install-requirements finished UNSUCCESSFULLY with command python3 -m pip install -r requirements.txt
-[INFO] Dependency steps are broken for step create-train-array
-[INFO] Dependency steps are broken for step create-validate-array
-[INFO] Dependency steps are broken for step create-test-array
 
 ```
+
+Now, when we take a look at the data directories, we find `images.npy` and `classes.npy` files.
+
+```console
+$ ls -l data/train/*.npy
+$ ls -l data/test/*.npy
+$ ls -l data/validate/*.npy
