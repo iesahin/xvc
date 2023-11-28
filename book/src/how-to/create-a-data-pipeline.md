@@ -51,7 +51,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   190 Nov 26 22:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   192 Nov 28 14:14 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
 
@@ -66,7 +66,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   190 Nov 26 22:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   192 Nov 28 14:14 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
@@ -111,7 +111,7 @@ SS         [..] 2d372f95          data/data/input_9_9_12.jpg
 SS         [..] 8fe799b4          data/data/input_9_9_11.jpg
 SS         [..] ee35e5d5          data/data/input_9_9_10.jpg
 SS         [..] 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2850 Cached Size:        8710
+Total #: 15 Workspace Size:        2880 Cached Size:        8710
 
 
 ```
@@ -274,7 +274,7 @@ flowchart TD
     n7["data/validate/*.jpg"] --> n6
     n3["install-requirements"] --> n6
     n8["init-venv"]
-    n9[".venv/bin/activate"] --> n8
+    n9["echo "$(hostname)/$(pwd)""] --> n8
     n3["install-requirements"]
     n8["init-venv"] --> n3
     n10["requirements.txt"] --> n3
@@ -305,12 +305,9 @@ flowchart TD
 Let's run the pipeline at this point to test.
 
 ```console
-$ xvc pipeline run
-? interrupted
-thread 'thread '<unnamed>' panicked at lib/src/cli/mod.rs:263:52:
-[PANIC] PathNotFound { path: ".venv/bin/activate" }, [pipeline/src/pipeline/mod.rs::1085]
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1085:28:
-PathNotFound { path: ".venv/bin/activate" }
+$ xvc -vv pipeline run
+[DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
+[DONE] init-venv (python3 -m venv .venv)
+[ERROR] Step install-requirements finished UNSUCCESSFULLY with command python3 -m pip install -r requirements.txt
 
 ```
