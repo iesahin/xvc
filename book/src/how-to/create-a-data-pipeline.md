@@ -33,7 +33,7 @@ In this HOWTO, we use Chinese MNIST dataset to create an image classification pi
 $ ls -l
 total 21096
 -rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
--rw-r--r--  1 iex  staff      1035 Nov 25 12:57 image_to_numpy_array.py
+-rw-r--r--  1 iex  staff      1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff         4 Nov 25 12:57 requirements.txt
 
 ```
@@ -51,8 +51,8 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 28 14:16 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
--rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
+lrwxr-xr-x  1 iex  staff   192 Nov 28 14:28 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+-rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
 
 ```
@@ -66,9 +66,9 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 28 14:16 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   192 Nov 28 14:28 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
--rw-r--r--  1 iex  staff  1035 Nov 25 12:57 image_to_numpy_array.py
+-rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff     4 Nov 25 12:57 requirements.txt
 
 ```
@@ -306,48 +306,43 @@ Let's run the pipeline at this point to test.
 
 ```console
 $ xvc -vv pipeline run
-[INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
 [INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30018, 10718386903375961323)" ]
-    1 [ label = "(30010, 4721754929668833422)" ]
-    2 [ label = "(30009, 89389240476511446)" ]
-    3 [ label = "(30012, 11474427451934087506)" ]
-    4 [ label = "(30016, 8903014373797831097)" ]
-    5 [ label = "(30011, 10912300053456893111)" ]
-    0 -> 4 [ label = "Step" ]
-    1 -> 0 [ label = "Step" ]
-    3 -> 0 [ label = "Step" ]
-    5 -> 0 [ label = "Step" ]
+    0 [ label = "(30010, 6999942686904318243)" ]
+    1 [ label = "(30009, 360855975037785942)" ]
+    2 [ label = "(30012, 1119259443404674952)" ]
+    3 [ label = "(30011, 12962661444745119662)" ]
+    4 [ label = "(30016, 10958866160201762056)" ]
+    5 [ label = "(30018, 10970077377866642604)" ]
+    0 -> 5 [ label = "Step" ]
+    2 -> 5 [ label = "Step" ]
+    3 -> 5 [ label = "Step" ]
+    5 -> 4 [ label = "Step" ]
 }
 
 
+[INFO] Waiting for dependency steps for step create-test-array
+[INFO] No dependency steps for step recheck-data
+[INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step create-train-array
+[INFO] [recheck-data] Dependencies has changed
 [INFO] Waiting for dependency steps for step install-requirements
 [INFO] Waiting for dependency steps for step create-validate-array
-[INFO] No dependency steps for step init-venv
-[INFO] No dependency steps for step recheck-data
-[INFO] Waiting for dependency steps for step create-test-array
-[INFO] [recheck-data] Dependencies has changed
-[INFO] Waiting for dependency steps for step create-train-array
 [INFO] [init-venv] Dependencies has changed
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [DONE] init-venv (python3 -m venv .venv)
 [INFO] Dependency steps completed successfully for step install-requirements
 [INFO] [install-requirements] Dependencies has changed
-[WARN] [ERR] [install-requirements] WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x103019590>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/cv2/
-WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x104735350>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/cv2/
-WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x104736bd0>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/cv2/
-WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x104735ad0>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/cv2/
-WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x104736350>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/cv2/
-ERROR: Could not find a version that satisfies the requirement cv2 (from versions: none)
+[WARN] [ERR] [install-requirements] ERROR: Could not find a version that satisfies the requirement cv2 (from versions: none)
 ERROR: No matching distribution found for cv2
  
 [ERROR] Step install-requirements finished UNSUCCESSFULLY with command python3 -m pip install -r requirements.txt
-[INFO] Dependency steps are broken for step create-validate-array
 [INFO] Dependency steps are broken for step create-train-array
+[INFO] Dependency steps are broken for step create-validate-array
 [INFO] Dependency steps are broken for step create-test-array
 
 ```
