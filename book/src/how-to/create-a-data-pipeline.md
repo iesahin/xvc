@@ -214,9 +214,9 @@ The Python script to train a model runs with Numpy arrays. So we'll convert each
 One of the arrays will keep $n$ 64x64 images and the other will keep $n$ labels for these images.
 
 ```console
-$ xvc pipeline step new --step-name create-train-array --command '.venv/bin/python3 image_to_numpy_array.py data/train/'
-$ xvc pipeline step new --step-name create-test-array --command '.venv/bin/python3 image_to_numpy_array.py data/test/'
-$ xvc pipeline step new --step-name create-validate-array --command '.venv/bin/python3 image_to_numpy_array.py data/validate/'
+$ xvc pipeline step new --step-name create-train-array --command '.venv/bin/python3 image_to_numpy_array.py --dir data/train/'
+$ xvc pipeline step new --step-name create-test-array --command '.venv/bin/python3 image_to_numpy_array.py --dir data/test/'
+$ xvc pipeline step new --step-name create-validate-array --command '.venv/bin/python3 image_to_numpy_array.py --dir data/validate/'
 ```
 
 These commands will run when the image files in those directories will change. Xvc can keep track of file groups and invalidate a step when the _content_ of any of these files change. Moreover, it's possible to track which files have changed if there are too many files. We don't need this feature of tracking individual items in _globs_, so we'll use a _glob_ dependency. 
