@@ -51,7 +51,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 28 15:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   192 Nov 29 11:50 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
 
@@ -66,7 +66,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 16
-lrwxr-xr-x  1 iex  staff   192 Nov 28 15:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   192 Nov 29 11:50 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
@@ -306,54 +306,49 @@ Let's run the pipeline at this point to test.
 
 ```console
 $ xvc -vv pipeline run
-? interrupted
-[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
+[INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30009, 5085633915282382019)" ]
-    1 [ label = "(30016, 2158553954043808661)" ]
-    2 [ label = "(30010, 13592684648390326585)" ]
-    3 [ label = "(30011, 16574786440189077728)" ]
-    4 [ label = "(30012, 13037629747275253491)" ]
-    5 [ label = "(30018, 2715263805633401108)" ]
-    2 -> 5 [ label = "Step" ]
-    3 -> 5 [ label = "Step" ]
-    4 -> 5 [ label = "Step" ]
-    5 -> 1 [ label = "Step" ]
+    0 [ label = "(30012, 2420190664408157521)" ]
+    1 [ label = "(30009, 12984723029826187399)" ]
+    2 [ label = "(30018, 11057361041774844847)" ]
+    3 [ label = "(30016, 14135818198533109764)" ]
+    4 [ label = "(30011, 2049076354473064347)" ]
+    5 [ label = "(30010, 13199323068121052754)" ]
+    0 -> 2 [ label = "Step" ]
+    2 -> 3 [ label = "Step" ]
+    4 -> 2 [ label = "Step" ]
+    5 -> 2 [ label = "Step" ]
 }
 
 
-[INFO] Waiting for dependency steps for step create-train-array
-[INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step create-validate-array
 [INFO] Waiting for dependency steps for step install-requirements
+[INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step create-test-array
 [INFO] No dependency steps for step recheck-data
 [INFO] [recheck-data] Dependencies has changed
-[INFO] Waiting for dependency steps for step create-validate-array
-[INFO] Waiting for dependency steps for step create-test-array
+[INFO] Waiting for dependency steps for step create-train-array
 [INFO] [init-venv] Dependencies has changed
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [DONE] init-venv (python3 -m venv .venv)
 [INFO] Dependency steps completed successfully for step install-requirements
 [INFO] [install-requirements] Dependencies has changed
-[OUT] [install-requirements] Collecting opencv-python (from -r requirements.txt (line 1))
-  Using cached opencv_python-4.8.1.78-cp37-abi3-macosx_11_0_arm64.whl.metadata (19 kB)
-Collecting numpy>=1.21.2 (from opencv-python->-r requirements.txt (line 1))
-  Using cached numpy-1.26.2-cp311-cp311-macosx_11_0_arm64.whl.metadata (115 kB)
-Using cached opencv_python-4.8.1.78-cp37-abi3-macosx_11_0_arm64.whl (33.1 MB)
-Using cached numpy-1.26.2-cp311-cp311-macosx_11_0_arm64.whl (14.0 MB)
-Installing collected packages: numpy, opencv-python
-Successfully installed numpy-1.26.2 opencv-python-4.8.1.78
+[WARN] [ERR] [install-requirements] WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x106722410>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/opencv-python/
+WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x104a76190>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/opencv-python/
+WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x106723550>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/opencv-python/
+WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x106434550>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/opencv-python/
+WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0x10670f850>: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known')': /simple/opencv-python/
+ERROR: Could not find a version that satisfies the requirement opencv-python (from versions: none)
+ERROR: No matching distribution found for opencv-python
  
-[DONE] install-requirements (.venv/bin/python3 -m pip install -r requirements.txt)
-[INFO] Dependency steps completed successfully for step create-validate-array
-[INFO] Dependency steps completed successfully for step create-train-array
-[INFO] Dependency steps completed successfully for step create-test-array
-[INFO] [create-validate-array] Dependencies has changed
-[INFO] [create-test-array] Dependencies has changed
-[INFO] [create-train-array] Dependencies has changed
+[ERROR] Step install-requirements finished UNSUCCESSFULLY with command .venv/bin/python3 -m pip install -r requirements.txt
+[INFO] Dependency steps are broken for step create-train-array
+[INFO] Dependency steps are broken for step create-test-array
+[INFO] Dependency steps are broken for step create-validate-array
 
 ```
 
