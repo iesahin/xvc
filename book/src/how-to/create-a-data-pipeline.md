@@ -227,7 +227,7 @@ $ xvc pipeline step dependency --step-name create-test-array --glob 'data/test/*
 $ xvc pipeline step dependency --step-name create-validate-array --glob 'data/validate/*.jpg'
 ```
 
-Now we have three more steps that depend on changed files. The script depends on OpenCV to read images. Python best practices ask to create a separate virtual environment for each project. We'll also make sure that the venv is created and the requirements are installed before running the script.
+Now we have three more steps that depend on changed files. The script depends on OpenCV to read images. Python best practices recommend to create a separate virtual environment for each project. We'll also make sure that the venv is created and the requirements are installed before running the script.
 
 Create a command to initialize the virtual environment. It will run if there is no `.venv/bin/activate` file. 
 
