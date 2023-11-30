@@ -31,10 +31,11 @@ In this HOWTO, we use Chinese MNIST dataset to create an image classification pi
 
 ```console
 $ ls -l
-total 21096
+total 21112
 -rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
 -rw-r--r--  1 iex  staff      1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff        14 Nov 28 14:36 requirements.txt
+-rw-r--r--  1 iex  staff      4266 Nov 30 22:14 train.py
 
 ```
 Let's start by tracking the data file with Xvc.
@@ -50,10 +51,11 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 
 ```console
 $ ls -l
-total 16
-lrwxr-xr-x  1 iex  staff   195 Nov 29 12:37 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+total 32
+lrwxr-xr-x  1 iex  staff   195 Nov 30 22:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
+-rw-r--r--  1 iex  staff  4266 Nov 30 22:14 train.py
 
 ```
 
@@ -65,11 +67,12 @@ As we'll work with the file contents, let's unzip the data file.
 $ unzip -q chinese_mnist.zip
 
 $ ls -l
-total 16
-lrwxr-xr-x  1 iex  staff   195 Nov 29 12:37 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+total 32
+lrwxr-xr-x  1 iex  staff   195 Nov 30 22:45 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
+-rw-r--r--  1 iex  staff  4266 Nov 30 22:14 train.py
 
 ```
 
@@ -306,32 +309,32 @@ Let's run the pipeline at this point to test.
 
 ```console
 $ xvc -vv pipeline run
-[INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
+[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30011, 529519914063594906)" ]
-    1 [ label = "(30010, 11855833673424205734)" ]
-    2 [ label = "(30016, 4131021162493051574)" ]
-    3 [ label = "(30018, 52404733241081241)" ]
-    4 [ label = "(30012, 9785380216649415683)" ]
-    5 [ label = "(30009, 11685241825190191957)" ]
-    0 -> 3 [ label = "Step" ]
-    1 -> 3 [ label = "Step" ]
-    3 -> 2 [ label = "Step" ]
-    4 -> 3 [ label = "Step" ]
+    0 [ label = "(30018, 3569162150268509324)" ]
+    1 [ label = "(30010, 14136677234924363923)" ]
+    2 [ label = "(30009, 7661108749634080056)" ]
+    3 [ label = "(30011, 14610688208071877757)" ]
+    4 [ label = "(30012, 12636637574389175078)" ]
+    5 [ label = "(30016, 3352487861216342230)" ]
+    0 -> 5 [ label = "Step" ]
+    1 -> 0 [ label = "Step" ]
+    3 -> 0 [ label = "Step" ]
+    4 -> 0 [ label = "Step" ]
 }
 
 
-[INFO] Waiting for dependency steps for step create-train-array
-[INFO] No dependency steps for step recheck-data
 [INFO] Waiting for dependency steps for step create-test-array
 [INFO] Waiting for dependency steps for step create-validate-array
-[INFO] [recheck-data] Dependencies has changed
-[INFO] Waiting for dependency steps for step install-requirements
 [INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step create-train-array
+[INFO] Waiting for dependency steps for step install-requirements
+[INFO] No dependency steps for step recheck-data
+[INFO] [recheck-data] Dependencies has changed
 [INFO] [init-venv] Dependencies has changed
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [DONE] init-venv (python3 -m venv .venv)
@@ -347,15 +350,15 @@ Installing collected packages: numpy, opencv-python
 Successfully installed numpy-1.26.2 opencv-python-4.8.1.78
  
 [DONE] install-requirements (.venv/bin/python3 -m pip install -r requirements.txt)
-[INFO] Dependency steps completed successfully for step create-train-array
 [INFO] Dependency steps completed successfully for step create-test-array
 [INFO] Dependency steps completed successfully for step create-validate-array
+[INFO] Dependency steps completed successfully for step create-train-array
 [INFO] [create-test-array] Dependencies has changed
 [INFO] [create-train-array] Dependencies has changed
 [INFO] [create-validate-array] Dependencies has changed
 [DONE] create-test-array (.venv/bin/python3 image_to_numpy_array.py --dir data/test/)
-[DONE] create-train-array (.venv/bin/python3 image_to_numpy_array.py --dir data/train/)
 [DONE] create-validate-array (.venv/bin/python3 image_to_numpy_array.py --dir data/validate/)
+[DONE] create-train-array (.venv/bin/python3 image_to_numpy_array.py --dir data/train/)
 
 ```
 
@@ -363,16 +366,16 @@ Now, when we take a look at the data directories, we find `images.npy` and `clas
 
 ```console
 $ zsh -cl 'ls -l data/train/*.npy'
--rw-r--r--  1 iex  staff      72128 Nov 29 12:38 data/train/classes.npy
--rw-r--r--  1 iex  staff  110592128 Nov 29 12:38 data/train/images.npy
+-rw-r--r--  1 iex  staff      72128 Nov 30 22:46 data/train/classes.npy
+-rw-r--r--  1 iex  staff  110592128 Nov 30 22:46 data/train/images.npy
 
 $ zsh -cl 'ls -l data/test/*.npy'
--rw-r--r--  1 iex  staff     24128 Nov 29 12:38 data/test/classes.npy
--rw-r--r--  1 iex  staff  36864128 Nov 29 12:38 data/test/images.npy
+-rw-r--r--  1 iex  staff     24128 Nov 30 22:46 data/test/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Nov 30 22:46 data/test/images.npy
 
 $ zsh -cl 'ls -l data/validate/*.npy'
--rw-r--r--  1 iex  staff     24128 Nov 29 12:38 data/validate/classes.npy
--rw-r--r--  1 iex  staff  36864128 Nov 29 12:38 data/validate/images.npy
+-rw-r--r--  1 iex  staff     24128 Nov 30 22:46 data/validate/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Nov 30 22:46 data/validate/images.npy
 
 ```
 
@@ -400,7 +403,21 @@ $ xvc pipeline step new --step-name train-model --command '.venv/bin/python3 tra
 The step will depend to array generation steps by depending on the files they produce. In order to define a dependency between `train-model` and `create-train-array` step, we must tell that `create-array-dependency` outputs a file called `images.npy`. We can do this by using `--file` option of `step output` command. 
 ```console
 $ xvc pipeline step output --step-name create-train-array --file data/train/images.npy
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step output --step-name create-train-array --file data/train/classes.npy
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step dependency --step-name train-model --file data/train/images.npy
 $ xvc pipeline step dependency --step-name train-model --file data/train/classes.npy
 ```
@@ -411,20 +428,57 @@ We'll create these dependencies for other files as well.
 
 ```console
 $ xvc pipeline step output --step-name create-test-array --file data/test/images.npy
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step output --step-name create-test-array --file data/test/classes.npy
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step dependency --step-name test-model --file data/test/images.npy
+[ERROR] Pipeline Error: Step test-model not found in pipeline
+
 $ xvc pipeline step dependency --step-name test-model --file data/test/classes.npy
+[ERROR] Pipeline Error: Step test-model not found in pipeline
 
 $ xvc pipeline step output --step-name create-validate-array --file data/validate/images.npy
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step output --step-name create-validate-array --file data/validate/classes.npy
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step dependency --step-name validate-model --file data/validate/images.npy
+[ERROR] Pipeline Error: Step validate-model not found in pipeline
+
 $ xvc pipeline step dependency --step-name validate-model --file data/validate/classes.npy
+[ERROR] Pipeline Error: Step validate-model not found in pipeline
+
 ```
 
 Before running the pipeline, let's see the pipeline DAG once more. This time in DOT format. 
 
 ```console
 $ xvc pipeline dag 
+digraph pipeline{n0[shape=box;label="recheck-data";];n1[shape=box;label="create-train-array";];n2[shape=folder;label="data/train/*.jpg";];n1->n2;n3[shape=box;label="install-requirements";];n1->n3;n4[shape=box;label="create-test-array";];n5[shape=folder;label="data/test/*.jpg";];n4->n5;n3[shape=box;label="install-requirements";];n4->n3;n6[shape=box;label="create-validate-array";];n7[shape=folder;label="data/validate/*.jpg";];n6->n7;n3[shape=box;label="install-requirements";];n6->n3;n8[shape=box;label="init-venv";];n9[shape=trapezium;label="echo /"$(hostname)/$(pwd)/"";];n8->n9;n3[shape=box;label="install-requirements";];n8[shape=box;label="init-venv";];n3->n8;n10[shape=note;label="requirements.txt";];n3->n10;n11[shape=box;label="train-model";];n12[shape=note;label="data/train/images.npy";];n11->n12;n13[shape=note;label="data/train/classes.npy";];n11->n13;}
+
 ```
 
 It's not very readable but you can feed the output to `dot` command to create a PNG file. 
