@@ -441,7 +441,8 @@ digraph pipeline{n0[shape=box;label="recheck-data";];n1[shape=box;label="create-
 
 ```
 
-It's not readable but you can feed the output to `dot` command to create an SVG file. 
+It's not the most readable graph description but you can feed the output to `dot` command to create an SVG file. 
+
 ```console
 $ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline.svg'
 
