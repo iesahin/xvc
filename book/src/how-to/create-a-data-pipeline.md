@@ -493,9 +493,9 @@ Note that, as we forgot to create a `params.yaml` file containing the hyperparam
 
 ```console
 $ zsh -cl 'echo "batch_size: 64" > params.yaml'
-$ zsh -cl 'echo "num_epochs: 2" >> params.yaml'
+$ zsh -cl 'echo "epochs: 2" >> params.yaml'
 $ xvc pipeline step  dependency --step-name train-model --param params.yaml::batch_size
-$ xvc pipeline step  dependency --step-name train-model --param params.yaml::num_epochs
+$ xvc pipeline step  dependency --step-name train-model --param params.yaml::epochs
 
 ```
 
