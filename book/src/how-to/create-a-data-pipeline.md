@@ -52,7 +52,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 32
-lrwxr-xr-x  1 iex  staff   195 Dec  1 12:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   195 Dec  1 18:53 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    40 Dec  1 11:59 requirements.txt
 -rw-r--r--  1 iex  staff  4266 Nov 30 22:14 train.py
@@ -68,7 +68,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 32
-lrwxr-xr-x  1 iex  staff   195 Dec  1 12:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   195 Dec  1 18:53 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    40 Dec  1 11:59 requirements.txt
@@ -81,7 +81,7 @@ Now we have the data directory with the following structure:
 ```console
 $ tree -d data
 data
-└── data
+`-- data
 
 2 directories
 
@@ -150,10 +150,10 @@ $ xvc file copy --name-only data/data/input_[89]?_* data/test/
 
 $ tree -d data/
 data/
-├── data
-├── test
-├── train
-└── validate
+|-- data
+|-- test
+|-- train
+`-- validate
 
 5 directories
 
@@ -315,26 +315,26 @@ $ xvc -vv pipeline run
 [INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30012, 1333564177825621640)" ]
-    1 [ label = "(30016, 16431996334175212558)" ]
-    2 [ label = "(30018, 4746735027651947266)" ]
-    3 [ label = "(30009, 8656943607598329927)" ]
-    4 [ label = "(30010, 10685859123930203195)" ]
-    5 [ label = "(30011, 9318673793007443596)" ]
+    0 [ label = "(30012, 9710904424449645253)" ]
+    1 [ label = "(30016, 9266392836441060852)" ]
+    2 [ label = "(30018, 13270285249299112987)" ]
+    3 [ label = "(30010, 10729370162394064674)" ]
+    4 [ label = "(30009, 9471156808325162796)" ]
+    5 [ label = "(30011, 7392225433410812946)" ]
     0 -> 2 [ label = "Step" ]
     2 -> 1 [ label = "Step" ]
-    4 -> 2 [ label = "Step" ]
+    3 -> 2 [ label = "Step" ]
     5 -> 2 [ label = "Step" ]
 }
 
 
-[INFO] Waiting for dependency steps for step create-validate-array
+[INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step install-requirements
 [INFO] Waiting for dependency steps for step create-test-array
 [INFO] Waiting for dependency steps for step create-train-array
-[INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step create-validate-array
 [INFO] No dependency steps for step recheck-data
 [INFO] [recheck-data] Dependencies has changed
-[INFO] Waiting for dependency steps for step install-requirements
 [INFO] [init-venv] Dependencies has changed
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [DONE] init-venv (python3 -m venv .venv)
@@ -390,17 +390,14 @@ Successfully installed MarkupSafe-2.1.3 filelock-3.13.1 fsspec-2023.10.0 jinja2-
  
 [DONE] install-requirements (.venv/bin/python3 -m pip install -r requirements.txt)
 [INFO] Dependency steps completed successfully for step create-test-array
-[INFO] Dependency steps completed successfully for step create-train-array
 [INFO] Dependency steps completed successfully for step create-validate-array
+[INFO] Dependency steps completed successfully for step create-train-array
 [INFO] [create-test-array] Dependencies has changed
-[INFO] [create-train-array] Dependencies has changed
 [INFO] [create-validate-array] Dependencies has changed
+[INFO] [create-train-array] Dependencies has changed
 [DONE] create-test-array (.venv/bin/python3 image_to_numpy_array.py --dir data/test/)
-[DONE] create-train-array (.venv/bin/python3 image_to_numpy_array.py --dir data/train/)
 [DONE] create-validate-array (.venv/bin/python3 image_to_numpy_array.py --dir data/validate/)
-[WARN][walker/src/error.rs::91] Crossbeam Send Error for Type: "Some(/n    Create {/n        path: /"[CWD]/data/train/images.npy/",/n        metadata: Metadata {/n            file_type: FileType(/n                FileType {/n                    mode: 33188,/n                },/n            ),/n            is_dir: false,/n            is_file: true,/n            permissions: Permissions(/n                FilePermissions {/n                    mode: 33188,/n                },/n            ),/n            modified: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 929989231,/n                },/n            ),/n            accessed: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 872524832,/n                },/n            ),/n            created: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 872524832,/n                },/n            ),/n            ../n        },/n    },/n)" "sending on a disconnected channel"
-[WARN][walker/src/error.rs::91] Crossbeam Send Error for Type: "Some(/n    Create {/n        path: /"[CWD]/data/train/classes.npy/",/n        metadata: Metadata {/n            file_type: FileType(/n                FileType {/n                    mode: 33188,/n                },/n            ),/n            is_dir: false,/n            is_file: true,/n            permissions: Permissions(/n                FilePermissions {/n                    mode: 33188,/n                },/n            ),/n            modified: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 930244479,/n                },/n            ),/n            accessed: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 930102897,/n                },/n            ),/n            created: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 930102897,/n                },/n            ),/n            ../n        },/n    },/n)" "sending on a disconnected channel"
-[WARN][walker/src/error.rs::91] Crossbeam Send Error for Type: "Some(/n    Create {/n        path: /"[CWD]/data/train/classes.npy/",/n        metadata: Metadata {/n            file_type: FileType(/n                FileType {/n                    mode: 33188,/n                },/n            ),/n            is_dir: false,/n            is_file: true,/n            permissions: Permissions(/n                FilePermissions {/n                    mode: 33188,/n                },/n            ),/n            modified: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 930244479,/n                },/n            ),/n            accessed: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 930102897,/n                },/n            ),/n            created: Ok(/n                SystemTime {/n                    tv_sec: 1701421653,/n                    tv_nsec: 930102897,/n                },/n            ),/n            ../n        },/n    },/n)" "sending on a disconnected channel"
+[DONE] create-train-array (.venv/bin/python3 image_to_numpy_array.py --dir data/train/)
 
 ```
 
@@ -408,16 +405,16 @@ Now, when we take a look at the data directories, we find `images.npy` and `clas
 
 ```console
 $ zsh -cl 'ls -l data/train/*.npy'
--rw-r--r--  1 iex  staff      72128 Dec  1 12:07 data/train/classes.npy
--rw-r--r--  1 iex  staff  110592128 Dec  1 12:07 data/train/images.npy
+-rw-r--r--  1 iex  staff      72128 Dec  1 18:54 data/train/classes.npy
+-rw-r--r--  1 iex  staff  110592128 Dec  1 18:54 data/train/images.npy
 
 $ zsh -cl 'ls -l data/test/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 12:07 data/test/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 12:07 data/test/images.npy
+-rw-r--r--  1 iex  staff     24128 Dec  1 18:54 data/test/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Dec  1 18:54 data/test/images.npy
 
 $ zsh -cl 'ls -l data/validate/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 12:07 data/validate/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 12:07 data/validate/images.npy
+-rw-r--r--  1 iex  staff     24128 Dec  1 18:54 data/validate/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Dec  1 18:54 data/validate/images.npy
 
 ```
 
@@ -492,7 +489,7 @@ $ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline1.svg'
 Note that, as we forgot to create a `params.yaml` file containing the hyperparameters. When a step in the pipeline doesn't run successfully, its dependent steps won't be run. Let's add a `params.yaml` file and add it as a dependency to the train step. 
 
 ```console
-$ zsh -cl 'echo "batch_size: 64" > params.yaml'
+$ zsh -cl 'echo "batch_size: 4" > params.yaml'
 $ zsh -cl 'echo "epochs: 2" >> params.yaml'
 $ xvc pipeline step  dependency --step-name train-model --param params.yaml::batch_size
 $ xvc pipeline step  dependency --step-name train-model --param params.yaml::epochs
@@ -509,6 +506,15 @@ We can also specify the model and the results as output and the graph will show 
 ```console
 $ xvc pipeline step output --step-name train-model --output-file model.pth
 $ xvc pipeline step output --step-name train-model --output-metrics results.json
+? 2
+error: unexpected argument '--output-metrics' found
+
+  tip: a similar argument exists: '--output-metric'
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 ```
 
 Let's see the pipeline DAG once more:
@@ -521,51 +527,51 @@ We're ready to run the pipeline and train the model.
 
 ```console
 $ xvc -vv pipeline run
-[INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
-[INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-test-array" } (via XvcPath("data/test/images.npy"))
+[INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
+[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/images.npy"))
+[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/classes.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-test-array" } (via XvcPath("data/test/classes.npy"))
+[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-test-array" } (via XvcPath("data/test/images.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-validate-array" } (via XvcPath("data/validate/images.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-validate-array" } (via XvcPath("data/validate/classes.npy"))
-[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/classes.npy"))
-[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/images.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30016, 16431996334175212558)" ]
-    1 [ label = "(30011, 9318673793007443596)" ]
-    2 [ label = "(30024, 2160673407201956042)" ]
-    3 [ label = "(30018, 4746735027651947266)" ]
-    4 [ label = "(30012, 1333564177825621640)" ]
-    5 [ label = "(30010, 10685859123930203195)" ]
-    6 [ label = "(30009, 8656943607598329927)" ]
-    1 -> 3 [ label = "Step" ]
-    3 -> 0 [ label = "Step" ]
-    4 -> 3 [ label = "Step" ]
-    5 -> 3 [ label = "Step" ]
-    2 -> 1 [ label = "File" ]
-    2 -> 4 [ label = "File" ]
-    2 -> 5 [ label = "File" ]
+    0 [ label = "(30024, 9871243381348089808)" ]
+    1 [ label = "(30010, 10729370162394064674)" ]
+    2 [ label = "(30016, 9266392836441060852)" ]
+    3 [ label = "(30009, 9471156808325162796)" ]
+    4 [ label = "(30011, 7392225433410812946)" ]
+    5 [ label = "(30012, 9710904424449645253)" ]
+    6 [ label = "(30018, 13270285249299112987)" ]
+    1 -> 6 [ label = "Step" ]
+    4 -> 6 [ label = "Step" ]
+    5 -> 6 [ label = "Step" ]
+    6 -> 2 [ label = "Step" ]
+    0 -> 1 [ label = "File" ]
+    0 -> 4 [ label = "File" ]
+    0 -> 5 [ label = "File" ]
 }
 
 
-[INFO] No dependency steps for step init-venv
-[INFO] No dependency steps for step recheck-data
 [INFO] Waiting for dependency steps for step create-test-array
-[INFO] Waiting for dependency steps for step train-model
-[INFO] [recheck-data] Dependencies has changed
-[INFO] Waiting for dependency steps for step create-validate-array
 [INFO] Waiting for dependency steps for step create-train-array
+[INFO] Waiting for dependency steps for step create-validate-array
+[INFO] Waiting for dependency steps for step train-model
 [INFO] Waiting for dependency steps for step install-requirements
+[INFO] No dependency steps for step recheck-data
+[INFO] No dependency steps for step init-venv
+[INFO] [recheck-data] Dependencies has changed
 [INFO] [init-venv] No changed dependencies. Skipping thorough comparison.
 [INFO] [init-venv] No missing Outputs and no changed dependencies
 [INFO] Dependency steps completed successfully for step install-requirements
 [INFO] [install-requirements] No changed dependencies. Skipping thorough comparison.
 [INFO] [install-requirements] No missing Outputs and no changed dependencies
 [INFO] Dependency steps completed successfully for step create-validate-array
-[INFO] Dependency steps completed successfully for step create-test-array
 [INFO] Dependency steps completed successfully for step create-train-array
+[INFO] Dependency steps completed successfully for step create-test-array
 [INFO] [create-validate-array] No changed dependencies. Skipping thorough comparison.
 [INFO] [create-validate-array] No missing Outputs and no changed dependencies
 [INFO] [create-test-array] No changed dependencies. Skipping thorough comparison.
@@ -576,10 +582,31 @@ digraph {
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [INFO] [train-model] Dependencies has changed
 [WARN] [ERR] [train-model] Traceback (most recent call last):
-  File "[CWD]/train.py", line 40, in <module>
-    with open('params.yaml') as file:
-         ^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: 'params.yaml'
+  File "[CWD]/train.py", line 72, in <module>
+    outputs = model(inputs)
+              ^^^^^^^^^^^^^
+  File "[CWD]/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "[CWD]/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "[CWD]/train.py", line 24, in forward
+    x = self.pool(F.relu(self.conv1(x)))
+                         ^^^^^^^^^^^^^
+  File "[CWD]/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "[CWD]/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "[CWD]/.venv/lib/python3.11/site-packages/torch/nn/modules/conv.py", line 460, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "[CWD]/.venv/lib/python3.11/site-packages/torch/nn/modules/conv.py", line 456, in _conv_forward
+    return F.conv2d(input, weight, bias, self.stride,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Given groups=1, weight of size [6, 3, 5, 5], expected input[64, 64, 64, 3] to have 3 channels, but got 64 channels instead
  
 [ERROR] Step train-model finished UNSUCCESSFULLY with command .venv/bin/python3 train.py  --train_dir data/train/ --val_dir data/validate --test_dir data/test
 
