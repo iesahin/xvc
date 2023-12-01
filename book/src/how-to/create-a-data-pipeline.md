@@ -31,10 +31,10 @@ In this HOWTO, we use Chinese MNIST dataset to create an image classification pi
 
 ```console
 $ ls -l
-total 21112
+total 21104
 -rw-r--r--  1 iex  staff  10792680 Nov 17 19:46 chinese_mnist.zip
 -rw-r--r--  1 iex  staff      1124 Nov 28 14:27 image_to_numpy_array.py
--rw-r--r--  1 iex  staff        14 Nov 28 14:36 requirements.txt
+-rw-r--r--  1 iex  staff         0 Dec  1 11:26 requirements.txt
 -rw-r--r--  1 iex  staff      4266 Nov 30 22:14 train.py
 
 ```
@@ -51,10 +51,10 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 
 ```console
 $ ls -l
-total 32
-lrwxr-xr-x  1 iex  staff   192 Dec  1 11:20 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+total 24
+lrwxr-xr-x  1 iex  staff   195 Dec  1 11:26 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
--rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
+-rw-r--r--  1 iex  staff     0 Dec  1 11:26 requirements.txt
 -rw-r--r--  1 iex  staff  4266 Nov 30 22:14 train.py
 
 ```
@@ -67,11 +67,11 @@ As we'll work with the file contents, let's unzip the data file.
 $ unzip -q chinese_mnist.zip
 
 $ ls -l
-total 32
-lrwxr-xr-x  1 iex  staff   192 Dec  1 11:20 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+total 24
+lrwxr-xr-x  1 iex  staff   195 Dec  1 11:26 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
--rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
+-rw-r--r--  1 iex  staff     0 Dec  1 11:26 requirements.txt
 -rw-r--r--  1 iex  staff  4266 Nov 30 22:14 train.py
 
 ```
@@ -114,7 +114,7 @@ SS         [..] 2d372f95          data/data/input_9_9_12.jpg
 SS         [..] 8fe799b4          data/data/input_9_9_11.jpg
 SS         [..] ee35e5d5          data/data/input_9_9_10.jpg
 SS         [..] 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2880 Cached Size:        8710
+Total #: 15 Workspace Size:        2925 Cached Size:        8710
 
 
 ```
@@ -310,29 +310,29 @@ Let's run the pipeline at this point to test.
 ```console
 $ xvc -vv pipeline run
 [INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
 [INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30011, 4227696884303206400)" ]
-    1 [ label = "(30012, 18156396158854219388)" ]
-    2 [ label = "(30016, 10561290546073663451)" ]
-    3 [ label = "(30018, 10917270925901732027)" ]
-    4 [ label = "(30009, 3811065146922207890)" ]
-    5 [ label = "(30010, 4880294529724902968)" ]
-    0 -> 3 [ label = "Step" ]
-    1 -> 3 [ label = "Step" ]
+    0 [ label = "(30011, 17371030352800233585)" ]
+    1 [ label = "(30016, 2887259601787087382)" ]
+    2 [ label = "(30018, 7455977755821617963)" ]
+    3 [ label = "(30010, 9184761221286190627)" ]
+    4 [ label = "(30012, 8311219256091240245)" ]
+    5 [ label = "(30009, 14550058755350592042)" ]
+    0 -> 2 [ label = "Step" ]
+    2 -> 1 [ label = "Step" ]
     3 -> 2 [ label = "Step" ]
-    5 -> 3 [ label = "Step" ]
+    4 -> 2 [ label = "Step" ]
 }
 
 
-[INFO] No dependency steps for step init-venv
 [INFO] Waiting for dependency steps for step create-train-array
+[INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step create-validate-array
 [INFO] Waiting for dependency steps for step create-test-array
 [INFO] Waiting for dependency steps for step install-requirements
-[INFO] Waiting for dependency steps for step create-validate-array
 [INFO] No dependency steps for step recheck-data
 [INFO] [recheck-data] Dependencies has changed
 [INFO] [init-venv] Dependencies has changed
@@ -340,25 +340,31 @@ digraph {
 [DONE] init-venv (python3 -m venv .venv)
 [INFO] Dependency steps completed successfully for step install-requirements
 [INFO] [install-requirements] Dependencies has changed
-[OUT] [install-requirements] Collecting opencv-python (from -r requirements.txt (line 1))
-  Using cached opencv_python-4.8.1.78-cp37-abi3-macosx_11_0_arm64.whl.metadata (19 kB)
-Collecting numpy>=1.21.2 (from opencv-python->-r requirements.txt (line 1))
-  Using cached numpy-1.26.2-cp311-cp311-macosx_11_0_arm64.whl.metadata (115 kB)
-Using cached opencv_python-4.8.1.78-cp37-abi3-macosx_11_0_arm64.whl (33.1 MB)
-Using cached numpy-1.26.2-cp311-cp311-macosx_11_0_arm64.whl (14.0 MB)
-Installing collected packages: numpy, opencv-python
-Successfully installed numpy-1.26.2 opencv-python-4.8.1.78
- 
 [DONE] install-requirements (.venv/bin/python3 -m pip install -r requirements.txt)
-[INFO] Dependency steps completed successfully for step create-test-array
 [INFO] Dependency steps completed successfully for step create-validate-array
 [INFO] Dependency steps completed successfully for step create-train-array
+[INFO] Dependency steps completed successfully for step create-test-array
+[INFO] [create-validate-array] Dependencies has changed
+[WARN] [ERR] [create-validate-array] Traceback (most recent call last):
+  File "[CWD]/image_to_numpy_array.py", line 3, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+ 
+[ERROR] Step create-validate-array finished UNSUCCESSFULLY with command .venv/bin/python3 image_to_numpy_array.py --dir data/validate/
 [INFO] [create-test-array] Dependencies has changed
 [INFO] [create-train-array] Dependencies has changed
-[INFO] [create-validate-array] Dependencies has changed
-[DONE] create-test-array (.venv/bin/python3 image_to_numpy_array.py --dir data/test/)
-[DONE] create-train-array (.venv/bin/python3 image_to_numpy_array.py --dir data/train/)
-[DONE] create-validate-array (.venv/bin/python3 image_to_numpy_array.py --dir data/validate/)
+[WARN] [ERR] [create-test-array] Traceback (most recent call last):
+  File "[CWD]/image_to_numpy_array.py", line 3, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+ 
+[WARN] [ERR] [create-train-array] Traceback (most recent call last):
+  File "[CWD]/image_to_numpy_array.py", line 3, in <module>
+    import cv2
+ModuleNotFoundError: No module named 'cv2'
+ 
+[ERROR] Step create-test-array finished UNSUCCESSFULLY with command .venv/bin/python3 image_to_numpy_array.py --dir data/test/
+[ERROR] Step create-train-array finished UNSUCCESSFULLY with command .venv/bin/python3 image_to_numpy_array.py --dir data/train/
 
 ```
 
@@ -366,16 +372,16 @@ Now, when we take a look at the data directories, we find `images.npy` and `clas
 
 ```console
 $ zsh -cl 'ls -l data/train/*.npy'
--rw-r--r--  1 iex  staff      72128 Dec  1 11:21 data/train/classes.npy
--rw-r--r--  1 iex  staff  110592128 Dec  1 11:21 data/train/images.npy
+? 1
+zsh:1: no matches found: data/train/*.npy
 
 $ zsh -cl 'ls -l data/test/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 11:21 data/test/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 11:21 data/test/images.npy
+? 1
+zsh:1: no matches found: data/test/*.npy
 
 $ zsh -cl 'ls -l data/validate/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 11:21 data/validate/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 11:21 data/validate/images.npy
+? 1
+zsh:1: no matches found: data/validate/*.npy
 
 ```
 
