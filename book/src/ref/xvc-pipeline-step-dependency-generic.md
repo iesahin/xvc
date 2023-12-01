@@ -34,6 +34,9 @@ The step won't run until tomorrow, when `date +%F` changes.
 
 ```console
 $ xvc pipeline run
+[OUT] [morning-message] Good Morning!
+ 
+[DONE] morning-message (echo 'Good Morning!')
 
 ```
 
