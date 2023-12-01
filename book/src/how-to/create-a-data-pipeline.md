@@ -451,7 +451,12 @@ It's not the most readable graph description but you can feed the output to `dot
 
 ```console
 $ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline.svg'
-
 ```
 
+Let's run the pipeline and train the model. 
+
+
+```console
+$ xvc -vv pipeline run
+```
 
