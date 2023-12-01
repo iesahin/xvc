@@ -9,6 +9,7 @@ import numpy as np
 import yaml
 from sklearn.metrics import confusion_matrix
 
+
 # Define the CNN model
 class Net(nn.Module):
     def __init__(self):
@@ -29,18 +30,19 @@ class Net(nn.Module):
         x = self.fc3(x)
         return x
 
+
 # Parse command line arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--train_dir', type=str, required=True)
-parser.add_argument('--val_dir', type=str, required=True)
-parser.add_argument('--test_dir', type=str, required=True)
+parser.add_argument("--train_dir", type=str, required=True)
+parser.add_argument("--val_dir", type=str, required=True)
+parser.add_argument("--test_dir", type=str, required=True)
 args = parser.parse_args()
 
 # Load hyperparameters from yaml file
-with open('params.yaml') as file:
+with open("params.yaml") as file:
     params = yaml.safe_load(file)
-batch_size = params['batch_size']
-epochs = params['epochs']
+batch_size = params["batch_size"]
+epochs = params["epochs"]
 
 # Initialize the model, loss function and optimizer
 model = Net()
@@ -48,16 +50,16 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 # Load the training dataset
-train_images = np.load(args.train_dir + '/images.npy')
-train_labels = np.load(args.train_dir + '/classes.npy')
+train_images = np.load(args.train_dir + "/images.npy")
+train_labels = np.load(args.train_dir + "/classes.npy")
 train_images = torch.from_numpy(train_images).float()
 train_labels = torch.from_numpy(train_labels).long()
 train_dataset = TensorDataset(train_images, train_labels)
 trainloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Load the validation dataset
-val_images = np.load(args.val_dir + '/images.npy')
-val_labels = np.load(args.val_dir + '/classes.npy')
+val_images = np.load(args.val_dir + "/images.npy")
+val_labels = np.load(args.val_dir + "/classes.npy")
 val_images = torch.from_numpy(val_images).float()
 val_labels = torch.from_numpy(val_labels).long()
 val_dataset = TensorDataset(val_images, val_labels)
@@ -68,6 +70,7 @@ for epoch in range(epochs):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
+        print(inputs.shape)
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, labels)
@@ -75,8 +78,8 @@ for epoch in range(epochs):  # loop over the dataset multiple times
         optimizer.step()
 
         running_loss += loss.item()
-        if i % 2000 == 1999:    # print every 2000 mini-batches
-            print('[%d, %5d] loss: %.3f' % (epoch + 1, i + 1, running_loss / 2000))
+        if i % 2000 == 1999:  # print every 2000 mini-batches
+            print("[%d, %5d] loss: %.3f" % (epoch + 1, i + 1, running_loss / 2000))
             running_loss = 0.0
 
     # Validate the model
@@ -90,14 +93,17 @@ for epoch in range(epochs):  # loop over the dataset multiple times
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-    print('Accuracy of the network on the validation images: %d %%' % (100 * correct / total))
+    print(
+        "Accuracy of the network on the validation images: %d %%"
+        % (100 * correct / total)
+    )
 
 # Save the trained model
-torch.save(model.state_dict(), 'model.pth')
+torch.save(model.state_dict(), "model.pth")
 
 # Load the test dataset
-test_images = np.load(args.test_dir + '/images.npy')
-test_labels = np.load(args.test_dir + '/classes.npy')
+test_images = np.load(args.test_dir + "/images.npy")
+test_labels = np.load(args.test_dir + "/classes.npy")
 test_images = torch.from_numpy(test_images).float()
 test_labels = torch.from_numpy(test_labels).long()
 test_dataset = TensorDataset(test_images, test_labels)
@@ -120,9 +126,9 @@ with torch.no_grad():
 
 # Compute confusion matrix
 conf_mat = confusion_matrix(all_labels, all_predictions)
-print('Confusion Matrix:')
+print("Confusion Matrix:")
 print(conf_mat)
 
 # Save confusion matrix to a json file
-with open('results.json', 'w') as f:
+with open("results.json", "w") as f:
     json.dump(conf_mat.tolist(), f)
