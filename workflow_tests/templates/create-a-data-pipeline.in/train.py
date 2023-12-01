@@ -71,6 +71,7 @@ for epoch in range(epochs):  # loop over the dataset multiple times
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
         print(inputs.shape)
+        inputs = inputs.permute(0, 3, 1, 2)
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, labels)
