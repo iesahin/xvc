@@ -52,7 +52,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 32
-lrwxr-xr-x  1 iex  staff   193 Dec  1 10:48 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   195 Dec  1 10:55 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
 -rw-r--r--  1 iex  staff  4266 Nov 30 22:14 train.py
@@ -68,7 +68,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 32
-lrwxr-xr-x  1 iex  staff   193 Dec  1 10:48 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   195 Dec  1 10:55 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    14 Nov 28 14:36 requirements.txt
@@ -114,7 +114,7 @@ SS         [..] 2d372f95          data/data/input_9_9_12.jpg
 SS         [..] 8fe799b4          data/data/input_9_9_11.jpg
 SS         [..] ee35e5d5          data/data/input_9_9_10.jpg
 SS         [..] 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2895 Cached Size:        8710
+Total #: 15 Workspace Size:        2925 Cached Size:        8710
 
 
 ```
@@ -315,26 +315,26 @@ $ xvc -vv pipeline run
 [INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30011, 13920769622768270081)" ]
-    1 [ label = "(30016, 5694852261186864439)" ]
-    2 [ label = "(30009, 13979892572697361113)" ]
-    3 [ label = "(30012, 10553880720207786819)" ]
-    4 [ label = "(30018, 7259434792859309279)" ]
-    5 [ label = "(30010, 16987818442204794993)" ]
-    0 -> 4 [ label = "Step" ]
-    3 -> 4 [ label = "Step" ]
-    4 -> 1 [ label = "Step" ]
-    5 -> 4 [ label = "Step" ]
+    0 [ label = "(30009, 3133346587219904106)" ]
+    1 [ label = "(30011, 3978600373243050192)" ]
+    2 [ label = "(30012, 7097585986794152488)" ]
+    3 [ label = "(30018, 7014435414431453876)" ]
+    4 [ label = "(30010, 15781307687659832701)" ]
+    5 [ label = "(30016, 17174800164399411076)" ]
+    1 -> 3 [ label = "Step" ]
+    2 -> 3 [ label = "Step" ]
+    3 -> 5 [ label = "Step" ]
+    4 -> 3 [ label = "Step" ]
 }
 
 
-[INFO] Waiting for dependency steps for step install-requirements
 [INFO] Waiting for dependency steps for step create-train-array
+[INFO] Waiting for dependency steps for step create-test-array
+[INFO] Waiting for dependency steps for step create-validate-array
+[INFO] Waiting for dependency steps for step install-requirements
 [INFO] No dependency steps for step init-venv
 [INFO] No dependency steps for step recheck-data
-[INFO] Waiting for dependency steps for step create-validate-array
 [INFO] [recheck-data] Dependencies has changed
-[INFO] Waiting for dependency steps for step create-test-array
 [INFO] [init-venv] Dependencies has changed
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [DONE] init-venv (python3 -m venv .venv)
@@ -353,12 +353,14 @@ Successfully installed numpy-1.26.2 opencv-python-4.8.1.78
 [INFO] Dependency steps completed successfully for step create-train-array
 [INFO] Dependency steps completed successfully for step create-test-array
 [INFO] Dependency steps completed successfully for step create-validate-array
+[INFO] [create-validate-array] Dependencies has changed
 [INFO] [create-test-array] Dependencies has changed
 [INFO] [create-train-array] Dependencies has changed
-[INFO] [create-validate-array] Dependencies has changed
+[DONE] create-validate-array (.venv/bin/python3 image_to_numpy_array.py --dir data/validate/)
 [DONE] create-test-array (.venv/bin/python3 image_to_numpy_array.py --dir data/test/)
 [DONE] create-train-array (.venv/bin/python3 image_to_numpy_array.py --dir data/train/)
-[DONE] create-validate-array (.venv/bin/python3 image_to_numpy_array.py --dir data/validate/)
+[WARN][walker/src/error.rs::91] Crossbeam Send Error for Type: "Some(/n    Create {/n        path: /"[CWD]/.xvc/store/xvc-dependency-store/1701417399936438.json/",/n        metadata: Metadata {/n            file_type: FileType(/n                FileType {/n                    mode: 33188,/n                },/n            ),/n            is_dir: false,/n            is_file: true,/n            permissions: Permissions(/n                FilePermissions {/n                    mode: 33188,/n                },/n            ),/n            modified: Ok(/n                SystemTime {/n                    tv_sec: 1701417399,/n                    tv_nsec: 936725061,/n                },/n            ),/n            accessed: Ok(/n                SystemTime {/n                    tv_sec: 1701417399,/n                    tv_nsec: 936642854,/n                },/n            ),/n            created: Ok(/n                SystemTime {/n                    tv_sec: 1701417399,/n                    tv_nsec: 936642854,/n                },/n            ),/n            ../n        },/n    },/n)" "sending on a disconnected channel"
+[WARN][walker/src/error.rs::91] Crossbeam Send Error for Type: "Some(/n    Create {/n        path: /"[CWD]/.xvc/store/xvc-dependency-store/1701417399936438.json/",/n        metadata: Metadata {/n            file_type: FileType(/n                FileType {/n                    mode: 33188,/n                },/n            ),/n            is_dir: false,/n            is_file: true,/n            permissions: Permissions(/n                FilePermissions {/n                    mode: 33188,/n                },/n            ),/n            modified: Ok(/n                SystemTime {/n                    tv_sec: 1701417399,/n                    tv_nsec: 936725061,/n                },/n            ),/n            accessed: Ok(/n                SystemTime {/n                    tv_sec: 1701417399,/n                    tv_nsec: 936642854,/n                },/n            ),/n            created: Ok(/n                SystemTime {/n                    tv_sec: 1701417399,/n                    tv_nsec: 936642854,/n                },/n            ),/n            ../n        },/n    },/n)" "sending on a disconnected channel"
 
 ```
 
@@ -366,16 +368,16 @@ Now, when we take a look at the data directories, we find `images.npy` and `clas
 
 ```console
 $ zsh -cl 'ls -l data/train/*.npy'
--rw-r--r--  1 iex  staff      72128 Dec  1 10:49 data/train/classes.npy
--rw-r--r--  1 iex  staff  110592128 Dec  1 10:49 data/train/images.npy
+-rw-r--r--  1 iex  staff      72128 Dec  1 10:56 data/train/classes.npy
+-rw-r--r--  1 iex  staff  110592128 Dec  1 10:56 data/train/images.npy
 
 $ zsh -cl 'ls -l data/test/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 10:49 data/test/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 10:49 data/test/images.npy
+-rw-r--r--  1 iex  staff     24128 Dec  1 10:56 data/test/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Dec  1 10:56 data/test/images.npy
 
 $ zsh -cl 'ls -l data/validate/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 10:49 data/validate/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 10:49 data/validate/images.npy
+-rw-r--r--  1 iex  staff     24128 Dec  1 10:56 data/validate/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Dec  1 10:56 data/validate/images.npy
 
 ```
 
@@ -437,13 +439,13 @@ Before running the pipeline, let's see the pipeline DAG once more. This time in 
 
 ```console
 $ xvc pipeline dag 
-digraph pipeline{n0[shape=box;label="recheck-data";];n1[shape=box;label="create-train-array";];n2[shape=folder;label="data/train/*.jpg";];n1->n2;n3[shape=box;label="install-requirements";];n1->n3;n4[shape=note;color=black;label="data/train/images.npy";];n1->n4;n5[shape=note;color=black;label="data/train/classes.npy";];n1->n5;n6[shape=box;label="create-test-array";];n7[shape=folder;label="data/test/*.jpg";];n6->n7;n3[shape=box;label="install-requirements";];n6->n3;n8[shape=note;color=black;label="data/test/images.npy";];n6->n8;n9[shape=note;color=black;label="data/test/classes.npy";];n6->n9;n10[shape=box;label="create-validate-array";];n11[shape=folder;label="data/validate/*.jpg";];n10->n11;n3[shape=box;label="install-requirements";];n10->n3;n12[shape=note;color=black;label="data/validate/images.npy";];n10->n12;n13[shape=note;color=black;label="data/validate/classes.npy";];n10->n13;n14[shape=box;label="init-venv";];n15[shape=trapezium;label="echo /"$(hostname)/$(pwd)/"";];n14->n15;n3[shape=box;label="install-requirements";];n14[shape=box;label="init-venv";];n3->n14;n16[shape=note;label="requirements.txt";];n3->n16;n17[shape=box;label="train-model";];n4[shape=note;label="data/train/images.npy";];n17->n4;n5[shape=note;label="data/train/classes.npy";];n17->n5;n8[shape=note;label="data/test/images.npy";];n17->n8;n9[shape=note;label="data/test/classes.npy";];n17->n9;n12[shape=note;label="data/validate/images.npy";];n17->n12;n13[shape=note;label="data/validate/classes.npy";];n17->n13;}
+digraph pipeline{n0[shape=box;label="recheck-data";];n1[shape=box;label="create-train-array";];n2[shape=folder;label="data/train/*.jpg";];n2->n1;n3[shape=box;label="install-requirements";];n3->n1;n4[shape=note;color=black;label="data/train/images.npy";];n1->n4;n5[shape=note;color=black;label="data/train/classes.npy";];n1->n5;n6[shape=box;label="create-test-array";];n7[shape=folder;label="data/test/*.jpg";];n7->n6;n3[shape=box;label="install-requirements";];n3->n6;n8[shape=note;color=black;label="data/test/images.npy";];n6->n8;n9[shape=note;color=black;label="data/test/classes.npy";];n6->n9;n10[shape=box;label="create-validate-array";];n11[shape=folder;label="data/validate/*.jpg";];n11->n10;n3[shape=box;label="install-requirements";];n3->n10;n12[shape=note;color=black;label="data/validate/images.npy";];n10->n12;n13[shape=note;color=black;label="data/validate/classes.npy";];n10->n13;n14[shape=box;label="init-venv";];n15[shape=trapezium;label="echo /"$(hostname)/$(pwd)/"";];n15->n14;n3[shape=box;label="install-requirements";];n14[shape=box;label="init-venv";];n14->n3;n16[shape=note;label="requirements.txt";];n16->n3;n17[shape=box;label="train-model";];n4[shape=note;label="data/train/images.npy";];n4->n17;n5[shape=note;label="data/train/classes.npy";];n5->n17;n8[shape=note;label="data/test/images.npy";];n8->n17;n9[shape=note;label="data/test/classes.npy";];n9->n17;n12[shape=note;label="data/validate/images.npy";];n12->n17;n13[shape=note;label="data/validate/classes.npy";];n13->n17;}
 
 ```
 
 It's not very readable but you can feed the output to `dot` command to create a PNG file. 
 ```console
-$ zsh -cl 'xvc pipeline dag | dot -Tpng > pipeline.png'
+$ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline.svg'
 
 ```
 
