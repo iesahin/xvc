@@ -127,7 +127,7 @@ Now it lists all files and directories.
 ```console
 $ xvc file list --sort name-asc
 FX         107 [..]          ce9fcf30 .gitignore
-FX         130 [..]          ac46bf74 .xvcignore
+FX         141 [..]          3054b812 .xvcignore
 DX         224 [..]                   dir-0001
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
@@ -157,8 +157,8 @@ FX        2001 [..]          1953f05d dir-0005/file-0001.bin
 FX        2002 [..]          7e807161 dir-0005/file-0002.bin
 FX        2003 [..]          d2432259 dir-0005/file-0003.bin
 FX        2004 [..]          63535612 dir-0005/file-0004.bin
-FX        2005 [..]     447933dc dir-0005/file-0005.bin
-Total #: 32 Workspace Size:       51432 Cached Size:           0
+FX        2005 [..]          447933dc dir-0005/file-0005.bin
+Total #: 32 Workspace Size:       51443 Cached Size:           0
 
 
 ```

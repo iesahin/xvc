@@ -125,9 +125,9 @@ $ xvc file list
 XH                                 c85f3e81          data6.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data4.txt
 DX          96 [..]                   another-set
-FX         130 [..]          ac46bf74 .xvcignore
-FX         [..] .gitignore
-Total #: 5 Workspace Size:         [..] Cached Size:          19
+FX         141 [..]          3054b812 .xvcignore
+FX         529 [..]          5ce04f08 .gitignore
+Total #: 5 Workspace Size:         785 Cached Size:          19
 
 
 ```
