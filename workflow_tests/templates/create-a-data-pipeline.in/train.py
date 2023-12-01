@@ -24,7 +24,7 @@ class Net(nn.Module):
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 13 * 13)
+        x = x.reshape(x.size(0), -1)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
@@ -51,7 +51,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 # Load the training dataset
 train_images = np.load(args.train_dir + "/images.npy")
-train_labels = np.load(args.train_dir + "/classes.npy")
+train_labels = np.load(args.train_dir + "/classes.npy") - 1
 train_images = torch.from_numpy(train_images).float()
 train_labels = torch.from_numpy(train_labels).long()
 train_dataset = TensorDataset(train_images, train_labels)
@@ -59,7 +59,7 @@ trainloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
 # Load the validation dataset
 val_images = np.load(args.val_dir + "/images.npy")
-val_labels = np.load(args.val_dir + "/classes.npy")
+val_labels = np.load(args.val_dir + "/classes.npy") - 1
 val_images = torch.from_numpy(val_images).float()
 val_labels = torch.from_numpy(val_labels).long()
 val_dataset = TensorDataset(val_images, val_labels)
@@ -70,7 +70,6 @@ for epoch in range(epochs):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         inputs, labels = data
-        print(inputs.shape)
         inputs = inputs.permute(0, 3, 1, 2)
         optimizer.zero_grad()
         outputs = model(inputs)
@@ -89,6 +88,7 @@ for epoch in range(epochs):  # loop over the dataset multiple times
     with torch.no_grad():
         for data in valloader:
             images, labels = data
+            images = images.permute(0, 3, 1, 2)
             outputs = model(images)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
@@ -104,7 +104,7 @@ torch.save(model.state_dict(), "model.pth")
 
 # Load the test dataset
 test_images = np.load(args.test_dir + "/images.npy")
-test_labels = np.load(args.test_dir + "/classes.npy")
+test_labels = np.load(args.test_dir + "/classes.npy") - 1
 test_images = torch.from_numpy(test_images).float()
 test_labels = torch.from_numpy(test_labels).long()
 test_dataset = TensorDataset(test_images, test_labels)
@@ -118,6 +118,7 @@ all_predictions = []
 with torch.no_grad():
     for data in testloader:
         images, labels = data
+        images = images.permute(0, 3, 1, 2)
         outputs = model(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
