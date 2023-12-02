@@ -48,8 +48,8 @@ jobs:
       MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
       MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
       XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
-      # We don't run xvc-storage tests here
-      XVC_TRYCMD_TESTS: core,file,pipeline,intro,howto,start
+      # We don't run xvc-storage and how-to tests here
+      XVC_TRYCMD_TESTS: core,file,pipeline,intro,start
     steps:
       - name: Checkout
         uses: actions/checkout@v1
