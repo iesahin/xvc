@@ -10,7 +10,7 @@ Usage: xvc pipeline [OPTIONS] <COMMAND>
 
 Commands:
   new     Create a new pipeline
-  update  Rename, change dir or set a pipeline as default
+  update  Update the name and other attributes of a pipeline
   delete  Delete a pipeline
   run     Run a pipeline
   list    List all pipelines
@@ -21,7 +21,7 @@ Commands:
   help    Print this message or the help of the given subcommand(s)
 
 Options:
-  -n, --name <NAME>  Name of the pipeline this command applies
-  -h, --help         Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+  -h, --help                           Print help
 
 ```

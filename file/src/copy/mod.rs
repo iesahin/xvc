@@ -319,11 +319,9 @@ pub(crate) fn recheck_destination(
     Ok(())
 }
 
-pub(crate) fn cmd_copy(
-    output_snd: &XvcOutputSender,
-    xvc_root: &XvcRoot,
-    opts: CopyCLI,
-) -> Result<()> {
+/// Entry point for `xvc file copy` command.
+/// Copies a file (and its records) to a new location in the repository
+pub fn cmd_copy(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: CopyCLI) -> Result<()> {
     // Get all files to copy
 
     let stored_metadata_store = xvc_root.load_store::<XvcMetadata>()?;

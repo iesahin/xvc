@@ -6,12 +6,12 @@
 $ xvc pipeline new --help
 Create a new pipeline
 
-Usage: xvc pipeline new [OPTIONS] --name <NAME>
+Usage: xvc pipeline new [OPTIONS] --pipeline-name <PIPELINE_NAME>
 
 Options:
-  -n, --name <NAME>        Name of the pipeline this command applies to
-  -w, --workdir <WORKDIR>  Default working directory
-  -h, --help               Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+  -w, --workdir <WORKDIR>              Default working directory
+  -h, --help                           Print help
 
 ```
 
@@ -28,7 +28,8 @@ $ xvc init
 You can create a new pipeline with a name.
 
 ```console
-$ xvc pipeline new --name my-pipeline
+$ xvc pipeline new --pipeline-name my-pipeline
+
 ```
 
 By default it will run the commands in the repository root.
@@ -49,7 +50,7 @@ If you want to define a pipeline specific to a directory, you can set the workin
 
 ```console
 $ xvc-test-helper create-directory-tree --directories 1 --files 3  --seed 20230215
-$ xvc pipeline new --name another-pipeline --workdir dir-0001
+$ xvc pipeline new --pipeline-name another-pipeline --workdir dir-0001
 
 ```
 

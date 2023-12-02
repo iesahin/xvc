@@ -60,7 +60,7 @@ jobs:
 
       - name: Install required packages
         run: |
-          brew install s3cmd
+          brew install --head s3cmd # 2.3.0 has a bug with Python 3.12
           brew install ripgrep
           brew install tree
           brew install lsd

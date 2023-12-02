@@ -512,7 +512,7 @@ fn git_checkout_ref(
 
 /// This receives `xvc_root` ownership because as a final operation, it must drop the root to
 /// record the last entity counter before commit.
-fn handle_git_automation(
+pub fn handle_git_automation(
     output_snd: &XvcOutputSender,
     xvc_root: XvcRoot,
     to_branch: Option<&str>,

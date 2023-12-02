@@ -37,6 +37,9 @@ pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
 pub use types::xvcroot::XvcRoot;
 
+pub use walker::AbsolutePath;
+pub use xvc_walker as walker;
+
 pub use error::Error;
 pub use error::Result;
 
@@ -67,6 +70,8 @@ pub const XVCIGNORE_INITIAL_CONTENT: &str = "
 # Add patterns of files xvc should ignore, which could improve
 # the performance.
 # It's in the same format as .gitignore files.
+
+.DS_Store
 ";
 
 /// The Git directory for a project.
