@@ -20,10 +20,13 @@ This document uses the most recent version of Xvc and DVC. Let's start by instal
 
 ```console
 $ python3 -m venv .venv
-$ zsh -cl '.venv/bin/pip install -q dvc'
+$ zsh -cl '.venv/bin/pip install dvc'
 
-$ zsh -cl 'which dvc'
-$ lsd -l .venv/bin/
+$ zsh -cl '.venv/bin/dvc --version'
+? 1
+dvc not found
+
+$ lsd -l .venv/
 $ dvc --version
 
 ```
