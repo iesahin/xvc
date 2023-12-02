@@ -23,6 +23,7 @@ $ python3 -m venv .venv
 $ zsh -cl '.venv/bin/pip install -q dvc'
 
 $ zsh -cl 'which dvc'
+$ lsd -l .venv/bin/
 $ dvc --version
 
 ```
