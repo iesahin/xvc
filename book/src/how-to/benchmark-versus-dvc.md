@@ -22,7 +22,9 @@ This document uses the most recent version of Xvc and DVC. Let's start by instal
 $ python3 -m venv .venv
 $ zsh -cl '.venv/bin/pip install -q dvc'
 
+$ zsh -cl 'which dvc'
 $ dvc --version
+
 ```
 
 ```console
