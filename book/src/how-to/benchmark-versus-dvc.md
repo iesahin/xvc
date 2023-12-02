@@ -19,8 +19,8 @@ We'll test the tools in the following scenarios:
 This document uses the most recent version of Xvc and DVC. Let's start by installing DVC.
 
 ```console
-$ python3 -m venv .venv
-$ .venv/bin/python3 -m pip install dvc
+$ python -m venv .venv
+$ .venv/bin/python -m pip install dvc
 $ .venv/bin/dvc --version
 ```
 
