@@ -16,19 +16,40 @@ We'll test the tools in the following scenarios:
 
 ## Setup
 
-This document uses the most recent version of Xvc and DVC. Let's start by installing DVC.
+This document uses the most recent versions of Xvc and DVC. DVC is installed via Homebrew. 
 
 ```console
-$ zsh -cl 'brew upgrade dvc | brew install dvc'
 $ dvc --version
 3.30.3
 
-```
-
-```console
 $ xvc --version
 xvc 0.6.4-alpha.0
-
 ```
 
+## Init Repositories
+
+Let's start by measuring the performance of initializing repositories. 
+
+```console
+$ git init
+
+$ hyperfine -r 1 'xvc init'
+
+$ hyperfine -r 1 'dvc init'
+```
+
+## Unzip the images
+
+```console
+$ unzip -q chinese_mnist.zip
+$ tree -d 
+```
+
+
+## 15K Small Files Performance
+
+```console
+$ hyperfine -r 1 'dvc add data/'
+$ hyperfine -r 1 'xvc file track data/'
+```
 
