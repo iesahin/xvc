@@ -204,7 +204,8 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("dot", which::which("dot"))
         .register_bin("unzip", which::which("unzip"))
         .register_bin("python3", which::which("python3"))
-        .register_bin("dvc", Path::new(".venv/bin/dvc"))
+        .register_bin("dvc", which::which("dvc"))
+        .register_bin("hyperfine", which::which("hyperfine"))
         .case("docs/*/*.md")
         .timeout(timeout)
         // We skip this for the time being.

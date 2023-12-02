@@ -19,11 +19,10 @@ We'll test the tools in the following scenarios:
 This document uses the most recent version of Xvc and DVC. Let's start by installing DVC.
 
 ```console
-$ python3 -m venv .venv
-$ zsh -cl '.venv/bin/pip install -q dvc'
-
-$ zsh -cl '.venv/bin/dvc --version'
+$ brew upgrade dvc
+$ dvc --version
 3.30.3
+
 ```
 
 ```console
