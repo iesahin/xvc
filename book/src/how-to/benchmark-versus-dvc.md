@@ -24,6 +24,7 @@ $ dvc --version
 
 $ xvc --version
 xvc 0.6.4-alpha.0
+
 ```
 
 ## Init Repositories
@@ -32,10 +33,18 @@ Let's start by measuring the performance of initializing repositories.
 
 ```console
 $ git init
+Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
+Benchmark 1: xvc init
+  Time (abs ≡):         32.7 ms               [User: 11.1 ms, System: 17.2 ms]
+ 
 
 $ hyperfine -r 1 'dvc init'
+Benchmark 1: dvc init
+  Time (abs ≡):        270.1 ms               [User: 192.9 ms, System: 63.1 ms]
+ 
+$ git status -s
 ```
 
 ## Unzip the images
@@ -43,13 +52,28 @@ $ hyperfine -r 1 'dvc init'
 ```console
 $ unzip -q chinese_mnist.zip
 $ tree -d 
+.
+└── data
+    └── data
+
+3 directories
+
 ```
 
 
 ## 15K Small Files Performance
 
 ```console
-$ hyperfine -r 1 'dvc add data/'
-$ hyperfine -r 1 'xvc file track data/'
+$ hyperfine -r 1 'xvc file track data/data/*.jpg'
+Benchmark 1: xvc file track data/
+  Time (abs ≡):         9.600 s               [User: 8.985 s, System: 11.442 s]
+ 
+$ hyperfine -r 1 'dvc add data/data/*.jpg'
+Benchmark 1: dvc add data/
+  Time (abs ≡):        12.595 s               [User: 4.701 s, System: 6.392 s]
+
+$ git status -s
+
+
 ```
 
