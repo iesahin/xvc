@@ -26,4 +26,6 @@ $ .venv/bin/dvc --version
 
 ```console
 $ xvc --version
+xvc 0.6.4-alpha.0
+
 ```
