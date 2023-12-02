@@ -35,6 +35,9 @@ Options:
       --no-recheck
           Do not recheck the destination files This is useful when you want to copy only records, without updating the workspace
 
+      --name-only
+          When copying multiple files, by default whole path is copied to the destination. This option sets the destination to be created with the file name only
+
   -h, --help
           Print help (see a summary with '-h')
 
@@ -117,7 +120,7 @@ Total #: 3 Workspace Size:          57 Cached Size:          19
 
 ```
 
-If the targets you specify are changed, Xvc cancels the copy operation. Please either recheck old versions or carry in new versions.
+If the source files you specify are changed, Xvc cancels the copy operation. Please either recheck old versions or carry in new versions.
 
 ```console
 $ perl -i -pe 's/a/ee/g' data.txt

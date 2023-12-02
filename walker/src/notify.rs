@@ -91,12 +91,18 @@ impl PathEventHandler {
     fn write_event(&mut self, path: PathBuf) {
         match check_ignore(&self.ignore_rules, &path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
-                self.sender
-                    .send(Some(PathEvent::Create {
-                        path: path.clone(),
-                        metadata: path.metadata().map_err(Error::from).unwrap(),
-                    }))
-                    .unwrap_or_else(|e| warn!("{}", e));
+                if let Ok(metadata) = path.metadata() {
+                    self.sender
+                        .send(Some(PathEvent::Create {
+                            path: path.clone(),
+                            metadata,
+                        }))
+                        .unwrap_or_else(|e| {
+                            Error::from(e).warn();
+                        });
+                } else {
+                    debug!("Error in metadata for {}", path.to_string_lossy());
+                }
             }
             MatchResult::Ignore => {
                 debug!("FS Notification Ignored: {}", path.to_string_lossy());
@@ -107,14 +113,18 @@ impl PathEventHandler {
     fn create_event(&mut self, path: PathBuf) {
         match check_ignore(&self.ignore_rules, &path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
-                self.sender
-                    .send(Some(PathEvent::Create {
-                        path: path.clone(),
-                        metadata: path.metadata().map_err(Error::from).unwrap(),
-                    }))
-                    .unwrap_or_else(|e| {
-                        Error::from(e).warn();
-                    });
+                if let Ok(metadata) = path.metadata() {
+                    self.sender
+                        .send(Some(PathEvent::Create {
+                            path: path.clone(),
+                            metadata,
+                        }))
+                        .unwrap_or_else(|e| {
+                            Error::from(e).warn();
+                        });
+                } else {
+                    debug!("Error in metadata for {}", path.to_string_lossy());
+                }
             }
             MatchResult::Ignore => {
                 debug!("FS Notification Ignored: {}", path.to_string_lossy());
@@ -180,7 +190,7 @@ pub fn make_polling_watcher(
         },
         Config::default().with_poll_interval(Duration::from_secs(2)),
     )?;
-   
+
     watcher.watch(&root, RecursiveMode::Recursive)?;
     watch!(watcher);
     Ok((watcher, receiver))

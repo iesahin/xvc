@@ -265,7 +265,8 @@ fn dependency_graph_stmts(
             let dep_identity = short_id(dep_identity(dep)?)?;
             stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(dep)));
             stmts = stmts.add_edge(
-                Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None),
+                Edge::head_node(dep_identity.clone(), None)
+                    .arrow_to_node(step_identity.clone(), None),
             );
         }
 

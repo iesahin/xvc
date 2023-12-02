@@ -3,10 +3,10 @@
 ## Synopsis
 
 ```console
-$ xvc file copy --help
-Copy from source to another location in the workspace
+$ xvc file move --help
+Move files to another location in the workspace
 
-Usage: xvc file copy [OPTIONS] <SOURCE> <DESTINATION>
+Usage: xvc file move [OPTIONS] <SOURCE> <DESTINATION>
 
 Arguments:
   <SOURCE>
@@ -14,23 +14,20 @@ Arguments:
           
           If the source ends with a slash, it's considered a directory and all files in that directory are copied.
           
-          If the number of source files is more than one, the destination must be a directory.
+          If there are multiple source files, the destination must be a directory.
 
   <DESTINATION>
-          Location we copy file(s) to within the workspace.
+          Location we move file(s) to within the workspace.
           
-          If the target ends with a slash, it's considered a directory and created if it doesn't exist.
+          If this ends with a slash, it's considered a directory and created if it doesn't exist.
           
           If the number of source files is more than one, the destination must be a directory.
 
 Options:
       --recheck-method <RECHECK_METHOD>
-          How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
+          How the destination should be rechecked: One of copy, symlink, hardlink, reflink.
           
           Note: Reflink uses copy if the underlying file system doesn't support it.
-
-      --force
-          Force even if target exists
 
       --no-recheck
           Do not recheck the destination files This is useful when you want to copy only records, without updating the workspace

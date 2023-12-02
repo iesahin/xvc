@@ -11,11 +11,13 @@
 pub mod abspath;
 pub mod error;
 pub mod notify;
+pub mod sync;
 
 pub use abspath::AbsolutePath;
 pub use error::{Error, Result};
 use itertools::Itertools;
 pub use std::hash::Hash;
+pub use sync::{PathSync, PathSyncSingleton};
 use xvc_logging::watch;
 
 use crossbeam_channel::Sender;

@@ -66,13 +66,25 @@ pub fn diff_xvc_path_metadata(
 
 /// For each command, we have a single requested_recheck_method.
 /// We build an actual store by repeating it for all entities we have.
+///
+/// If there is no requested_recheck_method, we use the stored one and if there is nothing in the
+/// store, we use the default from config.
 pub fn diff_recheck_method(
+    default_recheck_method: RecheckMethod,
     stored_recheck_method_store: &XvcStore<RecheckMethod>,
-    requested_recheck_method: RecheckMethod,
+    requested_recheck_method: Option<RecheckMethod>,
     entities: &HashSet<XvcEntity>,
 ) -> DiffStore<RecheckMethod> {
     let requested_recheck_method_store: HStore<RecheckMethod> =
-        HStore::from_iter(entities.iter().map(|x| (*x, requested_recheck_method)));
+        HStore::from_iter(entities.iter().map(|x| {
+            if let Some(recheck_method) = requested_recheck_method {
+                (*x, recheck_method)
+            } else if stored_recheck_method_store.contains_key(x) {
+                (*x, *stored_recheck_method_store.get(x).unwrap())
+            } else {
+                (*x, default_recheck_method)
+            }
+        }));
 
     diff_store(
         stored_recheck_method_store,
@@ -382,7 +394,9 @@ pub fn diff_content_digest(
         )
     };
 
-    let diff_dir = |xe, file_content_digest_store: &DiffStore<ContentDigest>| {
+    let diff_dir = |xe,
+                    dir_entities: &HashSet<XvcEntity>,
+                    file_content_digest_store: &DiffStore<ContentDigest>| {
         let from_store = |xe| stored_xvc_path_store.get(xe).unwrap();
         let the_dir = match xvc_path_diff_store.get(xe) {
             None | Some(Diff::Identical) | Some(Diff::Skipped) => from_store(xe),
@@ -394,6 +408,11 @@ pub fn diff_content_digest(
         let child_path_entities = entities
             .iter()
             .filter_map(|xe| {
+                // We don't consider directories in directories
+                if dir_entities.contains(xe) {
+                    return None;
+                }
+
                 let xvc_path = match xvc_path_diff_store.get(xe) {
                     None | Some(Diff::Identical) | Some(Diff::Skipped) => from_store(xe),
                     Some(Diff::RecordMissing { actual }) => actual,
@@ -447,6 +466,8 @@ pub fn diff_content_digest(
         .copied()
         .collect::<HashSet<XvcEntity>>();
 
+    watch!(file_entities);
+
     let dir_entities = entities
         .iter()
         .filter(|xe| {
@@ -456,6 +477,7 @@ pub fn diff_content_digest(
         })
         .copied()
         .collect::<HashSet<XvcEntity>>();
+    watch!(dir_entities);
 
     entities
         .difference(&file_entities)
@@ -487,13 +509,15 @@ pub fn diff_content_digest(
 
         let dir_content_digest_diff_store = dir_entities
             .par_iter()
-            .filter_map(|e| match diff_dir(e, &file_content_digest_diff_store) {
-                Ok(d) => Some((*e, d)),
-                Err(e) => {
-                    error!(output_snd, "{}", e);
-                    None
-                }
-            })
+            .filter_map(
+                |e| match diff_dir(e, &dir_entities, &file_content_digest_diff_store) {
+                    Ok(d) => Some((*e, d)),
+                    Err(e) => {
+                        error!(output_snd, "{}", e);
+                        None
+                    }
+                },
+            )
             .collect::<DiffStore<ContentDigest>>();
 
         (
@@ -514,13 +538,15 @@ pub fn diff_content_digest(
 
         let dir_content_digest_diff_store = dir_entities
             .iter()
-            .filter_map(|e| match diff_dir(e, &file_content_digest_diff_store) {
-                Ok(d) => Some((*e, d)),
-                Err(e) => {
-                    error!(output_snd, "{}", e);
-                    None
-                }
-            })
+            .filter_map(
+                |e| match diff_dir(e, &dir_entities, &file_content_digest_diff_store) {
+                    Ok(d) => Some((*e, d)),
+                    Err(e) => {
+                        error!(output_snd, "{}", e);
+                        None
+                    }
+                },
+            )
             .collect::<DiffStore<ContentDigest>>();
 
         (
@@ -529,6 +555,7 @@ pub fn diff_content_digest(
         )
     };
 
+    watch!(file_content_digest_diff_store.keys());
     let mut diff_store = DiffStore::with_capacity(
         file_content_digest_diff_store.len() + dir_content_digest_diff_store.len(),
     );
