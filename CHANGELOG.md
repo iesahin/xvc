@@ -5,6 +5,10 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+- Add benchmarks between Xvc and DVC 
+  - Add how-to/benchmark-versus-dvc.md
+  - Add regex filtering for how-to documents to trycmd test docs
+
 - Refactored Pipelines API to expose more functionality
   - PR: <https://github.com/iesahin/xvc/pull/243>
   - Exposed Git operations in the API

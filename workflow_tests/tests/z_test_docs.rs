@@ -32,8 +32,15 @@ fn link_to_docs() -> Result<()> {
     if trycmd_tests.contains("start") {
         book_dirs_and_filters.push(("start", r".*"));
     }
+
+    let howto_regex;
     if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
-        book_dirs_and_filters.push(("how-to", r".*"));
+        if let Ok(regex) = std::env::var("XVC_TRYCMD_HOWTO_REGEX") {
+            howto_regex = format!(".*{regex}.*");
+            book_dirs_and_filters.push(("how-to", &howto_regex));
+        } else {
+            book_dirs_and_filters.push(("how-to", r".*"));
+        }
     }
 
     if trycmd_tests.contains("storage") {
