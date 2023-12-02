@@ -52,7 +52,7 @@ data file, we'll only read from it, so we set the recheck type as symlink.
 ```console
 $ ls -l
 total 32
-lrwxr-xr-x  1 iex  staff   195 Dec  1 22:52 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   193 Dec  2 12:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    40 Dec  1 11:59 requirements.txt
 -rw-r--r--  1 iex  staff  4436 Dec  1 22:52 train.py
@@ -68,7 +68,7 @@ $ unzip -q chinese_mnist.zip
 
 $ ls -l
 total 32
-lrwxr-xr-x  1 iex  staff   195 Dec  1 22:52 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
+lrwxr-xr-x  1 iex  staff   193 Dec  2 12:06 chinese_mnist.zip -> [CWD]/.xvc/b3/b24/2c9/422f91b804ea3008bc0bc025e97bf50c1d902ae7a0f13588b84f59023d/0.zip
 drwxr-xr-x  4 iex  staff   128 Nov 17 19:45 data
 -rw-r--r--  1 iex  staff  1124 Nov 28 14:27 image_to_numpy_array.py
 -rw-r--r--  1 iex  staff    40 Dec  1 11:59 requirements.txt
@@ -114,7 +114,7 @@ SS         [..] 2d372f95          data/data/input_9_9_12.jpg
 SS         [..] 8fe799b4          data/data/input_9_9_11.jpg
 SS         [..] ee35e5d5          data/data/input_9_9_10.jpg
 SS         [..] 7576894f          data/data/input_9_9_1.jpg
-Total #: 15 Workspace Size:        2925 Cached Size:        8710
+Total #: 15 Workspace Size:        2895 Cached Size:        8710
 
 
 ```
@@ -309,32 +309,32 @@ Let's run the pipeline at this point to test.
 
 ```console
 $ xvc -vv pipeline run
-[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
 [INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
 [INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30010, 4200972040571775892)" ]
-    1 [ label = "(30016, 9393516097102918615)" ]
-    2 [ label = "(30018, 11297886604680049042)" ]
-    3 [ label = "(30009, 3311159181882078797)" ]
-    4 [ label = "(30012, 3998576099235507000)" ]
-    5 [ label = "(30011, 4322586287807154762)" ]
-    0 -> 2 [ label = "Step" ]
+    0 [ label = "(30012, 17926533267780954007)" ]
+    1 [ label = "(30018, 8343178575888479150)" ]
+    2 [ label = "(30011, 15139340766603745623)" ]
+    3 [ label = "(30016, 4118185354324884449)" ]
+    4 [ label = "(30010, 3099198173071891469)" ]
+    5 [ label = "(30009, 3943814104291685201)" ]
+    0 -> 1 [ label = "Step" ]
+    1 -> 3 [ label = "Step" ]
     2 -> 1 [ label = "Step" ]
-    4 -> 2 [ label = "Step" ]
-    5 -> 2 [ label = "Step" ]
+    4 -> 1 [ label = "Step" ]
 }
 
 
-[INFO] Waiting for dependency steps for step create-test-array
-[INFO] No dependency steps for step init-venv
 [INFO] Waiting for dependency steps for step create-train-array
-[INFO] Waiting for dependency steps for step install-requirements
+[INFO] Waiting for dependency steps for step create-test-array
 [INFO] No dependency steps for step recheck-data
-[INFO] [recheck-data] Dependencies has changed
 [INFO] Waiting for dependency steps for step create-validate-array
+[INFO] Waiting for dependency steps for step install-requirements
+[INFO] No dependency steps for step init-venv
+[INFO] [recheck-data] Dependencies has changed
 [INFO] [init-venv] Dependencies has changed
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [DONE] init-venv (python3 -m venv .venv)
@@ -390,11 +390,11 @@ Successfully installed MarkupSafe-2.1.3 filelock-3.13.1 fsspec-2023.10.0 jinja2-
  
 [DONE] install-requirements (.venv/bin/python3 -m pip install -r requirements.txt)
 [INFO] Dependency steps completed successfully for step create-test-array
-[INFO] Dependency steps completed successfully for step create-train-array
 [INFO] Dependency steps completed successfully for step create-validate-array
+[INFO] Dependency steps completed successfully for step create-train-array
 [INFO] [create-test-array] Dependencies has changed
-[INFO] [create-train-array] Dependencies has changed
 [INFO] [create-validate-array] Dependencies has changed
+[INFO] [create-train-array] Dependencies has changed
 [DONE] create-test-array (.venv/bin/python3 image_to_numpy_array.py --dir data/test/)
 [DONE] create-validate-array (.venv/bin/python3 image_to_numpy_array.py --dir data/validate/)
 [DONE] create-train-array (.venv/bin/python3 image_to_numpy_array.py --dir data/train/)
@@ -405,16 +405,16 @@ Now, when we take a look at the data directories, we find `images.npy` and `clas
 
 ```console
 $ zsh -cl 'ls -l data/train/*.npy'
--rw-r--r--  1 iex  staff      72128 Dec  1 22:53 data/train/classes.npy
--rw-r--r--  1 iex  staff  110592128 Dec  1 22:53 data/train/images.npy
+-rw-r--r--  1 iex  staff      72128 Dec  2 12:07 data/train/classes.npy
+-rw-r--r--  1 iex  staff  110592128 Dec  2 12:07 data/train/images.npy
 
 $ zsh -cl 'ls -l data/test/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 22:53 data/test/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 22:53 data/test/images.npy
+-rw-r--r--  1 iex  staff     24128 Dec  2 12:07 data/test/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Dec  2 12:07 data/test/images.npy
 
 $ zsh -cl 'ls -l data/validate/*.npy'
--rw-r--r--  1 iex  staff     24128 Dec  1 22:53 data/validate/classes.npy
--rw-r--r--  1 iex  staff  36864128 Dec  1 22:53 data/validate/images.npy
+-rw-r--r--  1 iex  staff     24128 Dec  2 12:07 data/validate/classes.npy
+-rw-r--r--  1 iex  staff  36864128 Dec  2 12:07 data/validate/images.npy
 
 ```
 
@@ -506,14 +506,6 @@ We can also specify the model and the results as output and the graph will show 
 ```console
 $ xvc pipeline step output --step-name train-model --output-file model.pth
 $ xvc pipeline step output --step-name train-model --output-metric results.json
-? 2
-error: unexpected argument '--output-metrics' found
-
-  tip: a similar argument exists: '--output-metric'
-
-Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
-
-For more information, try '--help'.
 
 ```
 
@@ -528,50 +520,50 @@ We're ready to run the pipeline and train the model.
 ```console
 $ xvc -vv pipeline run
 [INFO] Found explicit dependency: XvcStep { name: "install-requirements" } -> Step(StepDep { name: "init-venv" })
-[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-test-array" } -> Step(StepDep { name: "install-requirements" })
+[INFO] Found explicit dependency: XvcStep { name: "create-train-array" } -> Step(StepDep { name: "install-requirements" })
 [INFO] Found explicit dependency: XvcStep { name: "create-validate-array" } -> Step(StepDep { name: "install-requirements" })
-[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/classes.npy"))
-[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/images.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-test-array" } (via XvcPath("data/test/classes.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-test-array" } (via XvcPath("data/test/images.npy"))
+[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/classes.npy"))
+[INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-train-array" } (via XvcPath("data/train/images.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-validate-array" } (via XvcPath("data/validate/classes.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::151] Found implicit dependency: XvcStep { name: "train-model" } -> XvcStep { name: "create-validate-array" } (via XvcPath("data/validate/images.npy"))
 [INFO][pipeline/src/pipeline/mod.rs::343] Pipeline Graph:
 digraph {
-    0 [ label = "(30018, 11297886604680049042)" ]
-    1 [ label = "(30010, 4200972040571775892)" ]
-    2 [ label = "(30011, 4322586287807154762)" ]
-    3 [ label = "(30009, 3311159181882078797)" ]
-    4 [ label = "(30012, 3998576099235507000)" ]
-    5 [ label = "(30016, 9393516097102918615)" ]
-    6 [ label = "(30024, 1564924864017263034)" ]
-    0 -> 5 [ label = "Step" ]
+    0 [ label = "(30018, 8343178575888479150)" ]
+    1 [ label = "(30011, 15139340766603745623)" ]
+    2 [ label = "(30009, 3943814104291685201)" ]
+    3 [ label = "(30016, 4118185354324884449)" ]
+    4 [ label = "(30024, 3433552857848291113)" ]
+    5 [ label = "(30010, 3099198173071891469)" ]
+    6 [ label = "(30012, 17926533267780954007)" ]
+    0 -> 3 [ label = "Step" ]
     1 -> 0 [ label = "Step" ]
-    2 -> 0 [ label = "Step" ]
-    4 -> 0 [ label = "Step" ]
-    6 -> 1 [ label = "File" ]
-    6 -> 2 [ label = "File" ]
-    6 -> 4 [ label = "File" ]
+    5 -> 0 [ label = "Step" ]
+    6 -> 0 [ label = "Step" ]
+    4 -> 1 [ label = "File" ]
+    4 -> 5 [ label = "File" ]
+    4 -> 6 [ label = "File" ]
 }
 
 
 [INFO] Waiting for dependency steps for step train-model
-[INFO] Waiting for dependency steps for step create-train-array
-[INFO] Waiting for dependency steps for step install-requirements
-[INFO] Waiting for dependency steps for step create-test-array
-[INFO] No dependency steps for step init-venv
 [INFO] No dependency steps for step recheck-data
-[INFO] [recheck-data] Dependencies has changed
 [INFO] Waiting for dependency steps for step create-validate-array
+[INFO] Waiting for dependency steps for step create-train-array
+[INFO] No dependency steps for step init-venv
+[INFO] Waiting for dependency steps for step create-test-array
+[INFO] Waiting for dependency steps for step install-requirements
+[INFO] [recheck-data] Dependencies has changed
 [INFO] [init-venv] No changed dependencies. Skipping thorough comparison.
 [INFO] [init-venv] No missing Outputs and no changed dependencies
 [INFO] Dependency steps completed successfully for step install-requirements
 [INFO] [install-requirements] No changed dependencies. Skipping thorough comparison.
 [INFO] [install-requirements] No missing Outputs and no changed dependencies
-[INFO] Dependency steps completed successfully for step create-validate-array
-[INFO] Dependency steps completed successfully for step create-test-array
 [INFO] Dependency steps completed successfully for step create-train-array
+[INFO] Dependency steps completed successfully for step create-test-array
+[INFO] Dependency steps completed successfully for step create-validate-array
 [INFO] [create-test-array] No changed dependencies. Skipping thorough comparison.
 [INFO] [create-test-array] No missing Outputs and no changed dependencies
 [INFO] [create-validate-array] No changed dependencies. Skipping thorough comparison.
@@ -581,26 +573,26 @@ digraph {
 [INFO] Dependency steps completed successfully for step train-model
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 [INFO] [train-model] Dependencies has changed
-[OUT] [train-model] [1,  2000] loss: 1.036
-Accuracy of the network on the validation images: 78 %
-[2,  2000] loss: 0.468
-Accuracy of the network on the validation images: 76 %
+[OUT] [train-model] [1,  2000] loss: 0.973
+Accuracy of the network on the validation images: 73 %
+[2,  2000] loss: 0.412
+Accuracy of the network on the validation images: 84 %
 Confusion Matrix:
-[[158   0   0   1   6   1   3   9   1   4   0   6   4   1   6]
- [  0 167  28   0   0   0   0   0   0   0   0   0   3   0   2]
- [  0   7 175  10   0   1   0   6   0   0   0   0   1   0   0]
- [  4   2 104  86   0   2   1   0   0   1   0   0   0   0   0]
- [  0   2   1   0 190   0   0   3   0   0   0   4   0   0   0]
- [  0   3  36  24   2  91   0  29   0   2   0   2   4   0   7]
- [  0   8   6   2   1   0 149   5  15   3   4   4   2   1   0]
- [  0   5  11   0   3   1   0 148   0   9   2   0   1   0  20]
- [  0   2   1   0   2   0   0   6 183   0   0   1   1   2   2]
- [  0   1   3   0   1   0   0  19   5 132   0   2   1   2  34]
- [  0  10   0   0   0   0   1   3   0   0 168   0  18   0   0]
- [  1   0   4   0  43   1   0  22   0   0   0 120   6   0   3]
- [  0  12   3   5   1   1   1   5   0   0  66   1 105   0   0]
- [  2   1   0   0   6   3   1   8   0   4  13  18   5 137   2]
- [  0   0   3   0   8   0   0   5   0  20   0   2   3   2 157]]
+[[191   0   0   0   0   0   1   0   0   0   0   3   0   5   0]
+ [  0 174  16   0   0   0   6   4   0   0   0   0   0   0   0]
+ [  0   3 148  33   5   2   3   5   0   0   0   1   0   0   0]
+ [  8   2  26 152   1   9   0   2   0   0   0   0   0   0   0]
+ [  1   0   0   0 179   1   0   1   0   0   0  11   0   2   5]
+ [  8   0   3  15   3 159   0   3   0   3   0   3   2   1   0]
+ [  2   2   2   0   0   0 172   0   1   1   2   3   5  10   0]
+ [  2   1   1   1   1   3   1 173   0   8   0   0   0   4   5]
+ [  1   0   0   0   2   0   7   8 167   5   0   0   0   7   3]
+ [  3   0   0   0   0   3   5  14   0 153   0   0   2  10  10]
+ [  0   0   0   0   1   0   1   3   0   0 157   1  35   2   0]
+ [  9   0   0   1  15   5   0   3   0   2   1 146   2   8   8]
+ [  0   0   1   1   0   1  10   5   0   0   6  12 162   2   0]
+ [  3   0   0   0   0   0   4   0   0   0   0   8   0 185   0]
+ [  5   0   0   0   3   0   0   8   1  46   0   0   1  10 126]]
  
 [DONE] train-model (.venv/bin/python3 train.py  --train_dir data/train/ --val_dir data/validate --test_dir data/test)
 
@@ -630,6 +622,14 @@ In this example, we'll create a new S3 bucket and share all files there.
 ```console
 $ xvc storage new s3 --name my-s3 --bucket-name xvc-test --region eu-central-1 --storage-prefix how-to-create-a-pipeline
 $ xvc file send 
+? 2
+error: the following required arguments were not provided:
+  --remote <REMOTE>
+
+Usage: xvc file send --remote <REMOTE> [TARGETS]...
+
+For more information, try '--help'.
+
 ```
 
 These two commands will define a new remote storage and sends all files to this storage. When you want to share the pipeline and all code and data it runs with, they can clone the repository and run the following command to get the files. Don't forget to push the most recent version of your repository.
