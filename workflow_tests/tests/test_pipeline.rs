@@ -14,17 +14,29 @@ fn test_pipeline() -> Result<()> {
         common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
-    x(&["new", "--name", "pipeline-1"])?;
-    x(&["new", "--name", "pipeline-2", "--workdir", "pipeline-2"])?;
-    x(&["update", "--name", "pipeline-1", "--rename", "pipeline-old"])?;
+    x(&["new", "--pipeline-name", "pipeline-1"])?;
+    x(&[
+        "new",
+        "--pipeline-name",
+        "pipeline-2",
+        "--workdir",
+        "pipeline-2",
+    ])?;
+    x(&[
+        "update",
+        "--pipeline-name",
+        "pipeline-1",
+        "--rename",
+        "pipeline-old",
+    ])?;
     let pipelines_1 = x(&["list"])?;
     assert!(pipelines_1.contains("pipeline-old"));
-    x(&["delete", "--name", "pipeline-old"])?;
+    x(&["delete", "--pipeline-name", "pipeline-old"])?;
     let pipelines_2 = x(&["list"])?;
     assert!(!pipelines_2.contains("pipeline-old"));
 
     let res = x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "new",
@@ -37,7 +49,7 @@ fn test_pipeline() -> Result<()> {
     watch!(res);
 
     x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "new",
@@ -49,7 +61,7 @@ fn test_pipeline() -> Result<()> {
         "always",
     ])?;
     x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "dependency",
@@ -60,7 +72,7 @@ fn test_pipeline() -> Result<()> {
     ])?;
 
     x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "dependency",
@@ -71,7 +83,7 @@ fn test_pipeline() -> Result<()> {
     ])?;
 
     x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "dependency",
@@ -82,7 +94,7 @@ fn test_pipeline() -> Result<()> {
     ])?;
 
     x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "dependency",
@@ -93,7 +105,7 @@ fn test_pipeline() -> Result<()> {
     ])?;
 
     x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "dependency",
@@ -104,7 +116,7 @@ fn test_pipeline() -> Result<()> {
     ])?;
 
     x(&[
-        "-n",
+        "-p",
         "pipeline-2",
         "step",
         "dependency",

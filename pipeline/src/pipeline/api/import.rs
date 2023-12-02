@@ -1,6 +1,8 @@
 use crate::error::{Error, Result};
+use clap::Parser;
 use log::warn;
 use std::{fs, io::BufRead, path::PathBuf};
+use xvc_config::FromConfigKey;
 use xvc_core::XvcRoot;
 use xvc_ecs::{R11Store, R1NStore};
 
@@ -10,20 +12,41 @@ use crate::{
     XvcStepCommand,
 };
 
+#[derive(Debug, Clone, Parser)]
+#[command(name = "import")]
+pub struct ImportCLI {
+    /// Name of the pipeline to import.
+    /// If not set, the name from the file is used.
+    #[arg(long, short)]
+    pipeline_name: Option<String>,
+
+    /// File to read the pipeline. Use stdin if not specified.
+    #[arg(long)]
+    file: Option<PathBuf>,
+
+    /// Input format. One of json or yaml. If not set, the format is
+    /// guessed from the file extension. If the file extension is not set,
+    /// json is used as default.
+    #[arg(long)]
+    format: Option<XvcSchemaSerializationFormat>,
+
+    /// Overwrite the pipeline even if the name already exists
+    #[arg(long)]
+    overwrite: bool,
+}
+
 /// Entry point for `xvc pipeline import` command.
 /// Reads a pipeline definition in JSON or YAML formats and creates/updates it.
 /// If `name` is None, uses the pipeline name from the file.
 /// If `file` is None, reads from stdin.
 /// If `format` is None, uses the file extension to determine the format.
 /// If `overwrite` is true, overwrites the pipeline if it already exists.
-pub fn cmd_import<R: BufRead>(
-    input: R,
-    xvc_root: &XvcRoot,
-    pipeline_name: String,
-    file: Option<PathBuf>,
-    format: Option<XvcSchemaSerializationFormat>,
-    overwrite: bool,
-) -> Result<()> {
+pub fn cmd_import<R: BufRead>(input: R, xvc_root: &XvcRoot, opts: ImportCLI) -> Result<()> {
+    let pipeline = XvcPipeline::from_conf(xvc_root.config());
+    let pipeline_name = opts.pipeline_name.unwrap_or(pipeline.name);
+    let file = opts.file;
+    let format = opts.format;
+    let overwrite = opts.overwrite;
     let (content, format) = match file {
         None => {
             if let Some(format) = format {

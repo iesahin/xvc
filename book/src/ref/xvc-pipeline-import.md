@@ -9,11 +9,11 @@ Import the pipeline from a file
 Usage: xvc pipeline import [OPTIONS]
 
 Options:
-  -n, --name <NAME>      Name of the pipeline to import. If not set, the name from the file is used
-      --file <FILE>      File to read the pipeline. Use stdin if not specified
-      --format <FORMAT>  Input format. One of json or yaml. If not set, the format is guessed from the file extension. If the file extension is not set, json is used as default
-      --overwrite        Overwrite the pipeline even if the name already exists
-  -h, --help             Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline to import. If not set, the name from the file is used
+      --file <FILE>                    File to read the pipeline. Use stdin if not specified
+      --format <FORMAT>                Input format. One of json or yaml. If not set, the format is guessed from the file extension. If the file extension is not set, json is used as default
+      --overwrite                      Overwrite the pipeline even if the name already exists
+  -h, --help                           Print help
 
 ```
 
@@ -248,7 +248,7 @@ You can specify a new name for the pipeline and it will override the name set in
 This way you can edit and import similar pipelines with minor differences.
 
 ```console
-$ xvc pipeline import --name another-pipeline --file pipeline.yaml
+$ xvc pipeline import --pipeline-name another-pipeline --file pipeline.yaml
 
 ```
 

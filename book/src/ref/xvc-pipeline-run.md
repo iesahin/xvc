@@ -9,8 +9,8 @@ Run a pipeline
 Usage: xvc pipeline run [OPTIONS]
 
 Options:
-  -n, --name <NAME>  Name of the pipeline to run
-  -h, --help         Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline to run
+  -h, --help                           Print help
 
 ```
 
@@ -74,12 +74,14 @@ $ xvc pipeline run
 You can run a specific pipeline by specifying its name with `--name` option.
 
 ```console
-$ xvc pipeline new --name my-pipeline
-$ xvc pipeline --name my-pipeline step new --step-name my-hello --command "echo 'hello from my-pipeline'"
+$ xvc pipeline new --pipeline-name my-pipeline
+
+$ xvc pipeline --pipeline-name my-pipeline step new --step-name my-hello --command "echo 'hello from my-pipeline'"
+
 ```
 
 ```console
-$ xvc pipeline run --name my-pipeline
+$ xvc pipeline run --pipeline-name my-pipeline
 [OUT] [my-hello] hello from my-pipeline
  
 [DONE] my-hello (echo 'hello from my-pipeline')

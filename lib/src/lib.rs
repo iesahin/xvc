@@ -3,18 +3,12 @@
 //! The main dispatching functions for the entire XVC CLI
 pub mod cli;
 pub mod error;
+pub mod git;
 pub mod init;
 
-pub use xvc_config as config;
-pub use xvc_core as core;
-pub use xvc_ecs as ecs;
-pub use xvc_file as file;
-pub use xvc_logging as logging;
-pub use xvc_pipeline as pipeline;
+pub mod api;
 
-pub use xvc_logging::watch;
-
-pub use crate::error::Result;
+pub use api::*;
 
 /// Adds `xvc` as the first elements to `args` and calls [cli::dispatch] after parsing them.
 pub fn dispatch(args: Vec<&str>) -> Result<()> {

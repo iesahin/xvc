@@ -49,11 +49,8 @@ pub struct RemoveCLI {
     targets: Vec<String>,
 }
 
-pub(crate) fn cmd_remove(
-    output_snd: &XvcOutputSender,
-    xvc_root: &XvcRoot,
-    opts: RemoveCLI,
-) -> Result<()> {
+/// Removes a file from XVC cache or storage
+pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: RemoveCLI) -> Result<()> {
     if !opts.from_cache && opts.from_storage.is_none() {
         return Err(anyhow::anyhow!(
             "At least one of --from-cache or --from-storage must be specified"

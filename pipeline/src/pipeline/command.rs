@@ -42,18 +42,30 @@ impl AsRef<str> for XvcStepCommand {
 /// processes.
 #[derive(Debug)]
 pub struct CommandProcess {
+    /// Environment variables injected to the shell that runs the command. This is used to pass
+    /// added, removed items in certain dependency types.  
     pub environment: HashMap<String, String>,
+    /// The step that this command belongs to
     pub step: XvcStep,
+    /// The command to run
     pub step_command: XvcStepCommand,
+    /// When we started running the command
     pub birth: Option<Instant>,
+    /// The process that runs the command
     pub process: Option<sp::Popen>,
+    /// Channel to send stdout to
     pub stdout_sender: Sender<String>,
+    /// Channel to send stderr to
     pub stderr_sender: Sender<String>,
+    /// Channel to receive stdout from
     pub stdout_receiver: Receiver<String>,
+    /// Channel to receive stderr from
     pub stderr_receiver: Receiver<String>,
 }
 
 impl CommandProcess {
+    /// Create a new CommandProcess by creating channels and setting other variables to their
+    /// default values.
     pub fn new(step: &XvcStep, step_command: &XvcStepCommand) -> Self {
         let (stdout_sender, stdout_receiver) = crossbeam_channel::bounded(CHANNEL_CAPACITY);
         let (stderr_sender, stderr_receiver) = crossbeam_channel::bounded(CHANNEL_CAPACITY);
@@ -70,6 +82,7 @@ impl CommandProcess {
         }
     }
 
+    /// Add an environment variable to inject to the shell that runs the command.
     pub fn add_environment_variable(&mut self, key: &str, value: &str) -> Result<&mut Self> {
         watch!(self);
         self.environment.insert(key.to_owned(), value.to_owned());
@@ -77,6 +90,8 @@ impl CommandProcess {
         Ok(self)
     }
 
+    /// Start executing the command in a shell. Updates birth and process variables after
+    /// detaching.
     pub fn run(&mut self) -> Result<()> {
         watch!(self.environment);
         let process = sp::Exec::shell(self.step_command.command.clone())
@@ -96,6 +111,7 @@ impl CommandProcess {
         Ok(())
     }
 
+    /// Collects the output from process and sends to output channels.
     pub fn update_output_channels(&mut self) -> Result<()> {
         if let Some(p) = &self.process {
             if let Some(mut stdout) = p.stdout.as_ref() {

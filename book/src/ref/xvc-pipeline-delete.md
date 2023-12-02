@@ -6,10 +6,10 @@
 $ xvc pipeline delete --help
 Delete a pipeline
 
-Usage: xvc pipeline delete --name <NAME>
+Usage: xvc pipeline delete --pipeline-name <PIPELINE_NAME>
 
 Options:
-  -n, --name <NAME>  Name or GUID of the pipeline to be deleted
-  -h, --help         Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name or GUID of the pipeline to be deleted
+  -h, --help                           Print help
 
 ```

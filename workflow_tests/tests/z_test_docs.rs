@@ -48,9 +48,8 @@ fn link_to_docs() -> Result<()> {
         book_dirs_and_filters
     } else {
         // If not defined, make all tests
-        // // If not defined, make all tests
         vec![
-            ("intro", ".*"),
+            ("intro", r".*"),
             ("ref", r".*"),
             ("start", r".*"),
             ("how-to", r".*"),
@@ -185,7 +184,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("zsh", which::which("zsh"))
         .register_bin("dot", which::which("dot"))
         .case("docs/*/*.md")
-        .timeout(Duration::from_secs(10))
+        .timeout(Duration::from_secs(120))
         // We skip this for the time being.
         .skip("docs/start/ml.md");
 

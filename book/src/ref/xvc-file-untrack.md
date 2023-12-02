@@ -35,9 +35,9 @@ $ xvc file track 'd*.txt'
 
 $ xvc file list
 FC          19 [..] c85f3e81 c85f3e81 data.txt
-FX         130 [..]          [..] .xvcignore
+FX         141 [..]          3054b812 .xvcignore
 FX         [..] .gitignore
-Total #: 3 Workspace Size:         [..] Cached Size:          19
+Total #: 3 Workspace Size:         350 Cached Size:          19
 
 
 ```

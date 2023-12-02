@@ -1,7 +1,9 @@
+use clap::Parser;
 use itertools::Itertools;
 use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{color, label, shape, Color, Shape};
 use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
+use xvc_config::FromConfigKey;
 use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R1NStore, XvcEntity};
 use xvc_logging::{output, watch, XvcOutputSender};
@@ -20,6 +22,22 @@ use crate::{
     XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcStep,
 };
 
+#[derive(Debug, Clone, Parser)]
+#[command(name = "dag")]
+pub struct DagCLI {
+    /// Name of the pipeline to generate the diagram
+    #[arg(long, short)]
+    pipeline_name: Option<String>,
+
+    /// Output file. Writes to stdout if not set.
+    #[arg(long)]
+    file: Option<PathBuf>,
+
+    /// Format for graph. Either dot or mermaid.
+    #[arg(long, default_value = "dot")]
+    format: XvcPipelineDagFormat,
+}
+
 #[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr, Default)]
 #[strum(serialize_all = "lowercase")]
 pub enum XvcPipelineDagFormat {
@@ -30,13 +48,11 @@ pub enum XvcPipelineDagFormat {
 
 /// Entry point for `xvc pipeline dag` command.
 /// Create a graph of the pipeline and output it in the specified format.
-pub fn cmd_dag(
-    output_snd: &XvcOutputSender,
-    xvc_root: &XvcRoot,
-    pipeline_name: String,
-    file: Option<PathBuf>,
-    format: XvcPipelineDagFormat,
-) -> Result<()> {
+pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -> Result<()> {
+    let pipeline = XvcPipeline::from_conf(xvc_root.config());
+    let pipeline_name = opts.pipeline_name.unwrap_or(pipeline.name);
+    let file = opts.file;
+    let format = opts.format;
     let _conf = xvc_root.config();
 
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
@@ -316,3 +332,4 @@ fn make_mermaid_graph(
 
     Ok(res_string)
 }
+

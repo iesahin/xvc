@@ -22,22 +22,28 @@ pub mod send;
 pub mod track;
 pub mod untrack;
 
+pub use bring::cmd_bring;
+pub use carry_in::cmd_carry_in;
+pub use copy::cmd_copy;
+pub use hash::cmd_hash;
+pub use list::cmd_list;
+pub use mv::cmd_move;
+pub use recheck::cmd_recheck;
+pub use remove::cmd_remove;
+pub use send::cmd_send;
+pub use track::cmd_track;
+pub use untrack::cmd_untrack;
+
 use crate::error::{Error, Result};
-use carry_in::CarryInCLI;
 use clap::Subcommand;
-use copy::CopyCLI;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 
-use list::ListCLI;
 use log::{debug, error, info, warn, LevelFilter};
-use mv::MoveCLI;
-use remove::RemoveCLI;
 use std::io;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use untrack::UntrackCLI;
 use xvc_config::XvcConfigInitParams;
 use xvc_config::XvcVerbosity;
 use xvc_core::default_project_config;
@@ -48,11 +54,17 @@ use xvc_logging::{setup_logging, watch};
 use xvc_logging::{XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
-use bring::BringCLI;
-use hash::HashCLI;
-use recheck::RecheckCLI;
-use send::SendCLI;
-use track::TrackCLI;
+pub use bring::BringCLI;
+pub use carry_in::CarryInCLI;
+pub use copy::CopyCLI;
+pub use hash::HashCLI;
+pub use list::ListCLI;
+pub use mv::MoveCLI;
+pub use recheck::RecheckCLI;
+pub use remove::RemoveCLI;
+pub use send::SendCLI;
+pub use track::TrackCLI;
+pub use untrack::UntrackCLI;
 
 use clap::Parser;
 
@@ -156,53 +168,53 @@ pub fn run(
 ) -> Result<()> {
     watch!(opts);
     match opts.subcommand {
-        XvcFileSubCommand::Track(opts) => track::cmd_track(
+        XvcFileSubCommand::Track(opts) => cmd_track(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Hash(opts) => hash::cmd_hash(output_snd, xvc_root, opts),
-        XvcFileSubCommand::CarryIn(opts) => carry_in::cmd_carry_in(
+        XvcFileSubCommand::Hash(opts) => cmd_hash(output_snd, xvc_root, opts),
+        XvcFileSubCommand::CarryIn(opts) => cmd_carry_in(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Recheck(opts) => recheck::cmd_recheck(
+        XvcFileSubCommand::Recheck(opts) => cmd_recheck(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::List(opts) => list::cmd_list(
+        XvcFileSubCommand::List(opts) => cmd_list(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Send(opts) => send::cmd_send(
+        XvcFileSubCommand::Send(opts) => cmd_send(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Bring(opts) => bring::cmd_bring(
+        XvcFileSubCommand::Bring(opts) => cmd_bring(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Copy(opts) => copy::cmd_copy(
+        XvcFileSubCommand::Copy(opts) => cmd_copy(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Move(opts) => mv::cmd_move(
+        XvcFileSubCommand::Move(opts) => cmd_move(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Untrack(opts) => untrack::cmd_untrack(
+        XvcFileSubCommand::Untrack(opts) => cmd_untrack(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,
         ),
-        XvcFileSubCommand::Remove(opts) => remove::cmd_remove(
+        XvcFileSubCommand::Remove(opts) => cmd_remove(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

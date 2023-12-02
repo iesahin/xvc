@@ -5,6 +5,10 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+- Refactored Pipelines API to expose more functionality
+  - PR: <https://github.com/iesahin/xvc/pull/243>
+  - Exposed Git operations in the API
+
 ## 0.6.3 (2023-11-02)
 
 - Updated README and added its commands to the tests

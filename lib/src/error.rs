@@ -90,8 +90,10 @@ pub enum Error {
         #[from]
         source: serde_yaml::Error,
     },
-    #[error("[E2004] Requires xvc repository.")]
+
+    #[error("This command requires Xvc repository. Please use xvc init first.")]
     RequiresXvcRepository,
+
     #[error("I/O Error: {source}")]
     IoError {
         #[from]

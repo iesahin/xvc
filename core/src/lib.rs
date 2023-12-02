@@ -37,6 +37,9 @@ pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
 pub use types::xvcroot::XvcRoot;
 
+pub use walker::AbsolutePath;
+pub use xvc_walker as walker;
+
 pub use error::Error;
 pub use error::Result;
 

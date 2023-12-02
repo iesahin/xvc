@@ -37,7 +37,7 @@ $ cargo install xvc
 
 ## 🏃🏾 Quicktart
 
-Xvc tracks your files and directories on top of Git. To start run the following command in the repository.
+Xvc seamlessly monitors your files and directories on top of Git. To commence, execute the following command within the repository:
 
 ```console
 $ git init # if you're not already in a Git repository
@@ -46,17 +46,15 @@ Initialized empty Git repository in [CWD]/.git/
 $ xvc init
 ```
 
-It initializes the metafiles in `.xvc/` directory and adds `.xvcignore` file for paths you may want to hide from Xvc.
+This command initializes the `.xvc/` directory and adds a `.xvcignore` file for specifying paths you wish to conceal from Xvc.
 
-Add your data files and directories for tracking.
+Include your data files and directories for tracking:
 
 ```shell
 $ xvc file track my-data/ --as symlink
 ```
 
-The command calculates data content hashes (with BLAKE-3, by default) and records them.
-It commits these changes to Git.
-It also copies these files to content-addressed directories under `.xvc/b3` and creates read-only symbolic links to them.
+This command calculates content hashes for data (using BLAKE-3, by default) and logs them. The changes are committed to Git, and the files are copied to content-addressed directories within `.xvc/b3`. Additionally, read-only symbolic links to these directories are created. 
 
 You can specify different [recheck (checkout) methods](https://docs.xvc.dev/ref/xvc-file-recheck/) for files and directories, depending on your use case.
 If you need to track model files that change frequently, you can set recheck method `--as copy` (the default).
@@ -88,6 +86,8 @@ $ cd my-machine-learning-project
 $ xvc file bring my-data/ --from my-remote
 
 ```
+
+This approach ensures convenient access to files from the shared storage when needed.
 
 You don't have to reconfigure the storage after cloning, but you need to have valid credentials as environment variables
 to access the storage.
