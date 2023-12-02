@@ -505,7 +505,7 @@ We can also specify the model and the results as output and the graph will show 
 
 ```console
 $ xvc pipeline step output --step-name train-model --output-file model.pth
-$ xvc pipeline step output --step-name train-model --output-metrics results.json
+$ xvc pipeline step output --step-name train-model --output-metric results.json
 ? 2
 error: unexpected argument '--output-metrics' found
 
@@ -605,3 +605,46 @@ Confusion Matrix:
 [DONE] train-model (.venv/bin/python3 train.py  --train_dir data/train/ --val_dir data/validate --test_dir data/test)
 
 ```
+
+We now have a model and a result file. Let's track the model with Xvc as well. 
+```console
+$ xvc file track model.pth results.json
+```
+
+## Sharing Data and Models
+
+```mermaid
+graph LR
+A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
+B --> C[Preprocessing Images into Numpy Arrays ✅]
+C --> D[Training Model ✅]
+D --> E[Sharing Data and Models]
+```
+
+Sharing a machine learning project with Xvc means to share the Git repository and the data and model files that are tracked by Xvc in this repository. For the first, we can use any kind of Git remote, e.g. Github. Xvc doesn't require any special setup (like Git-LFS) to share binary files. 
+
+In order to share the binary files, we need to specify an Xvc storage. This can be on a local folder, an SSH host with rsync, AWS S3 bucket or any of the supported storage backends. (See `xvc storage new` documentation for the full list.)
+
+In this example, we'll create a new S3 bucket and share all files there. 
+
+```console
+$ xvc storage new s3 --name my-s3 --bucket-name xvc-test --region eu-central-1 --storage-prefix how-to-create-a-pipeline
+$ xvc file send 
+```
+
+These two commands will define a new remote storage and sends all files to this storage. When you want to share the pipeline and all code and data it runs with, they can clone the repository and run the following command to get the files. Don't forget to push the most recent version of your repository.
+
+```console,ignore
+$ git push
+```
+
+```console,ignore
+# On another machine
+$ git clone git@github.com:my-user/my-ml-pipeline
+$ xvc file bring
+
+````
+
+Note that, the second time there is no need to configure the remote storage, but the user must have AWS credentials in their environment. You can also automate this on Github and train your pipelines on CI. 
+
+In this how-to we created an end-to-end machine learning pipeline. Please ask about any issues that are not clear in the comment box below. Thank you for reading so far. 
