@@ -20,7 +20,7 @@ This document uses the most recent version of Xvc and DVC. Let's start by instal
 
 ```console
 $ python3 -m venv .venv
-$ zsh -cl '.venv/bin/pip install dvc'
+$ zsh -cl '.venv/bin/pip install -q dvc'
 Collecting dvc
   Using cached dvc-3.30.3-py3-none-any.whl.metadata (17 kB)
 Collecting colorama>=0.3.9 (from dvc)
