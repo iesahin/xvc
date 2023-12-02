@@ -19,7 +19,7 @@ We'll test the tools in the following scenarios:
 This document uses the most recent version of Xvc and DVC. Let's start by installing DVC.
 
 ```console
-$ brew upgrade dvc
+$ zsh -cl 'brew upgrade dvc'
 $ dvc --version
 3.30.3
 
