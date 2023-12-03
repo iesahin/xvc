@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         35.4 ms               [User: 11.5 ms, System: 20.2 ms]
+  Time (abs ≡):         32.9 ms               [User: 11.1 ms, System: 17.1 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        452.6 ms               [User: 205.8 ms, System: 108.2 ms]
+  Time (abs ≡):        276.4 ms               [User: 199.8 ms, System: 70.1 ms]
  
 
 $ git status -s
@@ -71,12 +71,12 @@ Xvc commits the changed metafiles automatically unless otherwise specified in th
 ```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
-  Time (abs ≡):        31.061 s               [User: 30.104 s, System: 12.251 s]
+  Time (abs ≡):        32.670 s               [User: 30.866 s, System: 11.796 s]
  
 
 $ hyperfine -r 1 'dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"'
 Benchmark 1: dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"
-  Time (abs ≡):        211.110 s               [User: 149.914 s, System: 39.271 s]
+  Time (abs ≡):        225.679 s               [User: 156.004 s, System: 42.103 s]
  
 
 $ git status -s
@@ -92,15 +92,15 @@ $ rm -rf data/data
 
 $ hyperfine -r 1 'xvc file recheck data/data/'
 Benchmark 1: xvc file recheck data/data/
-  Time (abs ≡):         8.564 s               [User: 8.427 s, System: 2.598 s]
+  Time (abs ≡):         8.712 s               [User: 8.566 s, System: 2.491 s]
  
 
 $ rm -rf data/data
 
-$ hyperfine -r 1 'git checkout data/data ; for f in $(ls -1 data/data/*.dvc) ; dvc checkout "${f}"'
+$ hyperfine -r 1 --show-output 'git checkout data/data ; for f in $(ls -1 data/data/*.dvc) ; dvc checkout "${f}"'
 ? 1
-Benchmark 1: git checkout data/data ; dvc checkout data/data/*.dvc
-Error: Command terminated with non-zero exit code: 255. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
+Benchmark 1: git checkout data/data ; for f in $(ls -1 data/data/*.dvc) ; dvc checkout "${f}"
+Error: Command terminated with non-zero exit code: 2. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
 
 ```
 
