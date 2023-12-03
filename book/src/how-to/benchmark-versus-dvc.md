@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         49.7 ms               [User: 12.2 ms, System: 23.5 ms]
+  Time (abs ≡):         48.9 ms               [User: 11.8 ms, System: 23.1 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        302.5 ms               [User: 215.7 ms, System: 77.9 ms]
+  Time (abs ≡):        286.7 ms               [User: 202.8 ms, System: 74.8 ms]
  
 
 $ git status -s
@@ -72,18 +72,18 @@ Xvc commits the changed metafiles automatically unless otherwise specified in th
 
 ```console
 $ hyperfine -r 1 'xvc file track xvc-data/'
-Benchmark 1: xvc file track data/data/*.jpg
-  Time (abs ≡):        35.319 s               [User: 33.822 s, System: 11.484 s]
+Benchmark 1: xvc file track xvc-data/
+  Time (abs ≡):        280.4 ms               [User: 76.3 ms, System: 197.4 ms]
  
 
-$ hyperfine -r 1 'dvc add dvc-data/ ; git add dvc-data.dvc ; git commit -m "Added dvc-data.dvc to DVC"'
-Benchmark 1: dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"
-  Time (abs ≡):        226.229 s               [User: 158.582 s, System: 42.832 s]
- 
+$ hyperfine -r 1 --show-output 'dvc add dvc-data/ ; git add dvc-data.dvc ; git commit -m "Added dvc-data.dvc to DVC"'
+? 1
+Benchmark 1: dvc add dvc-data/ ; git add dvc-data.dvc ; git commit -m "Added dvc-data.dvc to DVC"
+Error: Command terminated with non-zero exit code: 1. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
 
 $ git status -s
 ?? chinese_mnist.zip
-?? data/chinese_mnist.csv
+?? data/
 
 ```
 
@@ -92,15 +92,22 @@ $ git status -s
 ```console
 $ rm -rf xvc-data
 
-$ hyperfine -r 1 "xvc file recheck xvc-data/
-Benchmark 1: xvc file recheck 'data/data/input_50_*'
-  Time (abs ≡):        283.4 ms               [User: 184.1 ms, System: 413.0 ms]
- 
+$ hyperfine -r 1 'xvc file recheck xvc-data/'
+? 2
+error: the following required arguments were not provided:
+  <command>...
+
+Usage: hyperfine --runs <NUM> <command>...
+
+For more information, try '--help'.
 
 $ rm -rf dvc-data/
 
-$ hyperfine -r 1 --show-output 'git checkout dvc-data ; dvc checkout dvc-data.dvc'
-Updated 15000 paths from the index
+$ hyperfine -r 1 --show-output 'dvc checkout dvc-data.dvc'
+? 1
+Benchmark 1: git checkout dvc-data ; dvc checkout dvc-data.dvc
+error: pathspec 'dvc-data' did not match any file(s) known to git
+ERROR: Did you mean `git checkout dvc-data.dvc`?: '[CWD]/dvc-data.dvc' does not exist
 Error: Command terminated with non-zero exit code: 255. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
 
 ```
