@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         49.2 ms               [User: 11.7 ms, System: 22.0 ms]
+  Time (abs ≡):         37.7 ms               [User: 11.8 ms, System: 18.5 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        400.9 ms               [User: 223.4 ms, System: 91.9 ms]
+  Time (abs ≡):        307.4 ms               [User: 215.4 ms, System: 84.1 ms]
  
 
 $ git status -s
@@ -69,12 +69,12 @@ $ tree -d
 ```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
-  Time (abs ≡):        33.616 s               [User: 32.237 s, System: 12.293 s]
+  Time (abs ≡):        32.004 s               [User: 30.874 s, System: 12.439 s]
  
 
 $ hyperfine -r 1 'dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"'
 Benchmark 1: dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"
-  Time (abs ≡):        225.416 s               [User: 161.236 s, System: 46.252 s]
+  Time (abs ≡):        215.390 s               [User: 157.571 s, System: 42.012 s]
  
 
 $ git status -s
@@ -192,7 +192,7 @@ zsh:1: no such file or directory: small-files/file-100.txt
 
 $ hyperfine -r 1 'xvc file track small-files/'
 Benchmark 1: xvc file track small-files/
-  Time (abs ≡):         4.883 s               [User: 4.235 s, System: 0.824 s]
+  Time (abs ≡):         4.766 s               [User: 4.203 s, System: 0.707 s]
  
 
 $ hyperfine -r 1 'dvc add small-files/'
