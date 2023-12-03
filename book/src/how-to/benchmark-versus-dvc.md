@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         62.3 ms               [User: 12.0 ms, System: 25.4 ms]
+  Time (abs ≡):         49.2 ms               [User: 11.7 ms, System: 22.0 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        519.0 ms               [User: 220.5 ms, System: 100.8 ms]
+  Time (abs ≡):        400.9 ms               [User: 223.4 ms, System: 91.9 ms]
  
 
 $ git status -s
@@ -69,12 +69,12 @@ $ tree -d
 ```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
-  Time (abs ≡):        34.541 s               [User: 33.265 s, System: 11.634 s]
+  Time (abs ≡):        33.616 s               [User: 32.237 s, System: 12.293 s]
  
 
 $ hyperfine -r 1 'dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"'
 Benchmark 1: dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"
-  Time (abs ≡):        215.560 s               [User: 155.848 s, System: 40.761 s]
+  Time (abs ≡):        225.416 s               [User: 161.236 s, System: 46.252 s]
  
 
 $ git status -s
@@ -87,12 +87,112 @@ $ git status -s
 
 ```console
 $ mkdir small-files
-$ zsh -cl 'for i in {1..100} ; echo data-${i} > small-files/file-${i}.txt'
+$ zsh -cl 'for i in {1..100} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
 ? 1
+zsh:1: no such file or directory: small-files/file-1.txt
+zsh:1: no such file or directory: small-files/file-2.txt
+zsh:1: no such file or directory: small-files/file-3.txt
+zsh:1: no such file or directory: small-files/file-4.txt
+zsh:1: no such file or directory: small-files/file-5.txt
+zsh:1: no such file or directory: small-files/file-6.txt
+zsh:1: no such file or directory: small-files/file-7.txt
+zsh:1: no such file or directory: small-files/file-8.txt
+zsh:1: no such file or directory: small-files/file-9.txt
+zsh:1: no such file or directory: small-files/file-10.txt
+zsh:1: no such file or directory: small-files/file-11.txt
+zsh:1: no such file or directory: small-files/file-12.txt
+zsh:1: no such file or directory: small-files/file-13.txt
+zsh:1: no such file or directory: small-files/file-14.txt
+zsh:1: no such file or directory: small-files/file-15.txt
+zsh:1: no such file or directory: small-files/file-16.txt
+zsh:1: no such file or directory: small-files/file-17.txt
+zsh:1: no such file or directory: small-files/file-18.txt
+zsh:1: no such file or directory: small-files/file-19.txt
+zsh:1: no such file or directory: small-files/file-20.txt
+zsh:1: no such file or directory: small-files/file-21.txt
+zsh:1: no such file or directory: small-files/file-22.txt
+zsh:1: no such file or directory: small-files/file-23.txt
+zsh:1: no such file or directory: small-files/file-24.txt
+zsh:1: no such file or directory: small-files/file-25.txt
+zsh:1: no such file or directory: small-files/file-26.txt
+zsh:1: no such file or directory: small-files/file-27.txt
+zsh:1: no such file or directory: small-files/file-28.txt
+zsh:1: no such file or directory: small-files/file-29.txt
+zsh:1: no such file or directory: small-files/file-30.txt
+zsh:1: no such file or directory: small-files/file-31.txt
+zsh:1: no such file or directory: small-files/file-32.txt
+zsh:1: no such file or directory: small-files/file-33.txt
+zsh:1: no such file or directory: small-files/file-34.txt
+zsh:1: no such file or directory: small-files/file-35.txt
+zsh:1: no such file or directory: small-files/file-36.txt
+zsh:1: no such file or directory: small-files/file-37.txt
+zsh:1: no such file or directory: small-files/file-38.txt
+zsh:1: no such file or directory: small-files/file-39.txt
+zsh:1: no such file or directory: small-files/file-40.txt
+zsh:1: no such file or directory: small-files/file-41.txt
+zsh:1: no such file or directory: small-files/file-42.txt
+zsh:1: no such file or directory: small-files/file-43.txt
+zsh:1: no such file or directory: small-files/file-44.txt
+zsh:1: no such file or directory: small-files/file-45.txt
+zsh:1: no such file or directory: small-files/file-46.txt
+zsh:1: no such file or directory: small-files/file-47.txt
+zsh:1: no such file or directory: small-files/file-48.txt
+zsh:1: no such file or directory: small-files/file-49.txt
+zsh:1: no such file or directory: small-files/file-50.txt
+zsh:1: no such file or directory: small-files/file-51.txt
+zsh:1: no such file or directory: small-files/file-52.txt
+zsh:1: no such file or directory: small-files/file-53.txt
+zsh:1: no such file or directory: small-files/file-54.txt
+zsh:1: no such file or directory: small-files/file-55.txt
+zsh:1: no such file or directory: small-files/file-56.txt
+zsh:1: no such file or directory: small-files/file-57.txt
+zsh:1: no such file or directory: small-files/file-58.txt
+zsh:1: no such file or directory: small-files/file-59.txt
+zsh:1: no such file or directory: small-files/file-60.txt
+zsh:1: no such file or directory: small-files/file-61.txt
+zsh:1: no such file or directory: small-files/file-62.txt
+zsh:1: no such file or directory: small-files/file-63.txt
+zsh:1: no such file or directory: small-files/file-64.txt
+zsh:1: no such file or directory: small-files/file-65.txt
+zsh:1: no such file or directory: small-files/file-66.txt
+zsh:1: no such file or directory: small-files/file-67.txt
+zsh:1: no such file or directory: small-files/file-68.txt
+zsh:1: no such file or directory: small-files/file-69.txt
+zsh:1: no such file or directory: small-files/file-70.txt
+zsh:1: no such file or directory: small-files/file-71.txt
+zsh:1: no such file or directory: small-files/file-72.txt
+zsh:1: no such file or directory: small-files/file-73.txt
+zsh:1: no such file or directory: small-files/file-74.txt
+zsh:1: no such file or directory: small-files/file-75.txt
+zsh:1: no such file or directory: small-files/file-76.txt
+zsh:1: no such file or directory: small-files/file-77.txt
+zsh:1: no such file or directory: small-files/file-78.txt
+zsh:1: no such file or directory: small-files/file-79.txt
+zsh:1: no such file or directory: small-files/file-80.txt
+zsh:1: no such file or directory: small-files/file-81.txt
+zsh:1: no such file or directory: small-files/file-82.txt
+zsh:1: no such file or directory: small-files/file-83.txt
+zsh:1: no such file or directory: small-files/file-84.txt
+zsh:1: no such file or directory: small-files/file-85.txt
+zsh:1: no such file or directory: small-files/file-86.txt
+zsh:1: no such file or directory: small-files/file-87.txt
+zsh:1: no such file or directory: small-files/file-88.txt
+zsh:1: no such file or directory: small-files/file-89.txt
+zsh:1: no such file or directory: small-files/file-90.txt
+zsh:1: no such file or directory: small-files/file-91.txt
+zsh:1: no such file or directory: small-files/file-92.txt
+zsh:1: no such file or directory: small-files/file-93.txt
+zsh:1: no such file or directory: small-files/file-94.txt
+zsh:1: no such file or directory: small-files/file-95.txt
+zsh:1: no such file or directory: small-files/file-96.txt
+zsh:1: no such file or directory: small-files/file-97.txt
+zsh:1: no such file or directory: small-files/file-98.txt
+zsh:1: no such file or directory: small-files/file-99.txt
+zsh:1: no such file or directory: small-files/file-100.txt
 
 $ hyperfine -r 1 'xvc file track small-files/'
 Benchmark 1: xvc file track small-files/
-  Time (abs ≡):         4.756 s               [User: 4.142 s, System: 0.709 s]
+  Time (abs ≡):         4.883 s               [User: 4.235 s, System: 0.824 s]
  
 
 $ hyperfine -r 1 'dvc add small-files/'
