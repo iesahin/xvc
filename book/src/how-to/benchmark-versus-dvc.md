@@ -66,6 +66,8 @@ $ tree -d
 
 ## 15K Small Files Performance
 
+Xvc commits the changed metafiles automatically unless otherwise specified in the options. In the DVC command below, we also commit `*.dvc` files.
+
 ```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
@@ -86,8 +88,7 @@ $ git status -s
 ## 1M Small Files Performance
 
 ```console
-$ mkdir small-files
-$ zsh -cl 'for i in {1..100} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > file-${i}.txt ; done'
+$ zsh -cl 'for i in {1..1000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > file-${i}.txt ; done'
 ? 1
 zsh:1: no such file or directory: small-files/file-1.txt
 zsh:1: no such file or directory: small-files/file-2.txt
