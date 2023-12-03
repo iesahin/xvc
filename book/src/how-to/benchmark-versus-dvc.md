@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         29.3 ms               [User: 10.9 ms, System: 16.3 ms]
+  Time (abs ≡):         30.0 ms               [User: 11.0 ms, System: 16.8 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        273.8 ms               [User: 197.6 ms, System: 67.8 ms]
+  Time (abs ≡):        274.5 ms               [User: 197.9 ms, System: 70.2 ms]
  
 
 $ git status -s
@@ -88,20 +88,20 @@ $ git status -s
 ## Directory with 1M Small Files Performance
 
 ```console
-$ zsh -cl 'mkdir small-files ; for i in {1..1000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
+$ zsh -cl 'mkdir small-files ; for i in {1..1000000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
 
 $ hyperfine -r 1 'xvc file track small-files/'
-Benchmark 1: xvc file track file-*.txt
-  Time (abs ≡):        338.2 ms               [User: 80.4 ms, System: 225.9 ms]
+Benchmark 1: xvc file track small-files/
+  Time (abs ≡):        465.7 ms               [User: 129.7 ms, System: 1146.0 ms]
  
 
 $ hyperfine -r 1 'dvc add small-files/ ; git add small-files.dvc ; git commit -m "Added small-files/ to DVC"'
-? 1
-Benchmark 1: dvc add file-*.txt ; git add file-*.dvc ; git commit -m "Added small-files/ to DVC"
-Error: Command terminated with non-zero exit code: 1. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
+Benchmark 1: dvc add small-files/ ; git add small-files.dvc ; git commit -m "Added small-files/ to DVC"
+  Time (abs ≡):         1.271 s               [User: 0.584 s, System: 0.512 s]
+ 
 
 $ git status -s
+ M .gitignore
 ?? chinese_mnist.zip
 ?? data/
-?? small-files/
 
