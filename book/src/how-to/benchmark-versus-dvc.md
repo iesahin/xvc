@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         47.5 ms               [User: 12.3 ms, System: 22.0 ms]
+  Time (abs ≡):         35.4 ms               [User: 11.5 ms, System: 20.2 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        519.4 ms               [User: 228.6 ms, System: 107.5 ms]
+  Time (abs ≡):        452.6 ms               [User: 205.8 ms, System: 108.2 ms]
  
 
 $ git status -s
@@ -71,12 +71,12 @@ Xvc commits the changed metafiles automatically unless otherwise specified in th
 ```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
-  Time (abs ≡):        33.247 s               [User: 31.723 s, System: 12.490 s]
+  Time (abs ≡):        31.061 s               [User: 30.104 s, System: 12.251 s]
  
 
 $ hyperfine -r 1 'dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"'
 Benchmark 1: dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"
-  Time (abs ≡):        216.667 s               [User: 156.188 s, System: 41.469 s]
+  Time (abs ≡):        211.110 s               [User: 149.914 s, System: 39.271 s]
  
 
 $ git status -s
@@ -92,12 +92,16 @@ $ rm -rf data/data
 
 $ hyperfine -r 1 'xvc file recheck data/data/'
 Benchmark 1: xvc file recheck data/data/
-  Time (abs ≡):         20.6 ms               [User: 8.3 ms, System: 11.7 ms]
+  Time (abs ≡):         8.564 s               [User: 8.427 s, System: 2.598 s]
  
 
 $ rm -rf data/data
 
-$ hyperfine -r 1 'git checkout data/data ; dvc checkout data/data/*.dvc'
+$ hyperfine -r 1 'git checkout data/data ; for f in $(ls -1 data/data/*.dvc) ; dvc checkout "${f}"'
+? 1
+Benchmark 1: git checkout data/data ; dvc checkout data/data/*.dvc
+Error: Command terminated with non-zero exit code: 255. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
+
 ```
 
 ## Directory with 100K Small Files 
