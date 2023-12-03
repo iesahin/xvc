@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         31.0 ms               [User: 11.2 ms, System: 17.1 ms]
+  Time (abs ≡):         40.8 ms               [User: 12.7 ms, System: 22.1 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        319.9 ms               [User: 212.4 ms, System: 78.9 ms]
+  Time (abs ≡):        317.8 ms               [User: 221.8 ms, System: 82.7 ms]
  
 
 $ git status -s
@@ -71,12 +71,12 @@ Xvc commits the changed metafiles automatically unless otherwise specified in th
 ```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
-  Time (abs ≡):        31.544 s               [User: 30.315 s, System: 12.136 s]
+  Time (abs ≡):        36.287 s               [User: 34.782 s, System: 11.398 s]
  
 
 $ hyperfine -r 1 'dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"'
 Benchmark 1: dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"
-  Time (abs ≡):        221.587 s               [User: 154.333 s, System: 42.062 s]
+  Time (abs ≡):        238.622 s               [User: 163.135 s, System: 46.205 s]
  
 
 $ git status -s
@@ -92,12 +92,12 @@ $ rm -rf data/data
 
 $ hyperfine -r 1 'xvc file recheck data/data/'
 Benchmark 1: xvc file recheck data/data/
-  Time (abs ≡):         8.948 s               [User: 8.761 s, System: 2.652 s]
+  Time (abs ≡):         8.996 s               [User: 8.785 s, System: 2.702 s]
  
 
 $ rm -rf data/data
 
-$ hyperfine -r 1 --show-output 'git checkout data/data ; for f in $(ls -1 data/data/*.dvc) ; dvc checkout "${f}"'
+$ hyperfine -r 1 --show-output 'git checkout data/data ; for f in $(ls -1 data/data/*.dvc) ; do dvc checkout "${f}" ; done'
 ? 1
 Benchmark 1: git checkout data/data ; for f in $(ls -1 data/data/*.dvc) ; dvc checkout "${f}"
 sh: -c: line 0: syntax error near unexpected token `dvc'
