@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         31.0 ms               [User: 11.3 ms, System: 17.5 ms]
+  Time (abs ≡):         77.3 ms               [User: 12.4 ms, System: 26.0 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        289.1 ms               [User: 207.5 ms, System: 75.6 ms]
+  Time (abs ≡):        518.0 ms               [User: 227.9 ms, System: 98.6 ms]
  
 
 $ git status -s
@@ -88,7 +88,7 @@ $ git status -s
 ## Directory with 100K Small Files 
 
 ```console
-$ zsh -cl 'mkdir small-files ; for i in {1..1000000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
+$ zsh -cl 'mkdir small-files ; for i in {1..100000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
 
 $ hyperfine -r 1 'xvc file track small-files/'
 ? interrupted
