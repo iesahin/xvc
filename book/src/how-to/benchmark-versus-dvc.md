@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         37.7 ms               [User: 11.8 ms, System: 18.5 ms]
+  Time (abs ≡):         52.0 ms               [User: 11.8 ms, System: 22.3 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        307.4 ms               [User: 215.4 ms, System: 84.1 ms]
+  Time (abs ≡):        368.4 ms               [User: 214.3 ms, System: 84.0 ms]
  
 
 $ git status -s
@@ -69,12 +69,12 @@ $ tree -d
 ```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
-  Time (abs ≡):        32.004 s               [User: 30.874 s, System: 12.439 s]
+  Time (abs ≡):        33.247 s               [User: 31.723 s, System: 12.490 s]
  
 
 $ hyperfine -r 1 'dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"'
 Benchmark 1: dvc add data/data/*.jpg ; git add data/data/*.dvc ; git commit -m "Added data/data/ to DVC"
-  Time (abs ≡):        215.390 s               [User: 157.571 s, System: 42.012 s]
+  Time (abs ≡):        216.667 s               [User: 156.188 s, System: 41.469 s]
  
 
 $ git status -s
@@ -87,7 +87,7 @@ $ git status -s
 
 ```console
 $ mkdir small-files
-$ zsh -cl 'for i in {1..100} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
+$ zsh -cl 'for i in {1..100} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > file-${i}.txt ; done'
 ? 1
 zsh:1: no such file or directory: small-files/file-1.txt
 zsh:1: no such file or directory: small-files/file-2.txt
@@ -192,7 +192,7 @@ zsh:1: no such file or directory: small-files/file-100.txt
 
 $ hyperfine -r 1 'xvc file track small-files/'
 Benchmark 1: xvc file track small-files/
-  Time (abs ≡):         4.766 s               [User: 4.203 s, System: 0.707 s]
+  Time (abs ≡):         4.914 s               [User: 4.218 s, System: 0.836 s]
  
 
 $ hyperfine -r 1 'dvc add small-files/'
