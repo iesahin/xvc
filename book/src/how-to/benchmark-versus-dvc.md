@@ -103,6 +103,8 @@ For more information, try '--help'.
 
 $ rm -rf dvc-data/
 
+$ ls 
+
 $ hyperfine -r 1 --show-output 'dvc checkout dvc-data.dvc'
 ? 1
 Benchmark 1: git checkout dvc-data ; dvc checkout dvc-data.dvc
