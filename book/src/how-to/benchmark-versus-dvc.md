@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         30.0 ms               [User: 11.0 ms, System: 16.8 ms]
+  Time (abs ≡):         31.0 ms               [User: 11.3 ms, System: 17.5 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        274.5 ms               [User: 197.9 ms, System: 70.2 ms]
+  Time (abs ≡):        289.1 ms               [User: 207.5 ms, System: 75.6 ms]
  
 
 $ git status -s
@@ -85,23 +85,21 @@ $ git status -s
 
 ```
 
-## Directory with 1M Small Files Performance
+## Directory with 100K Small Files 
 
 ```console
 $ zsh -cl 'mkdir small-files ; for i in {1..1000000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
 
 $ hyperfine -r 1 'xvc file track small-files/'
+? interrupted
 Benchmark 1: xvc file track small-files/
-  Time (abs ≡):        465.7 ms               [User: 129.7 ms, System: 1146.0 ms]
- 
 
 $ hyperfine -r 1 'dvc add small-files/ ; git add small-files.dvc ; git commit -m "Added small-files/ to DVC"'
+? interrupted
 Benchmark 1: dvc add small-files/ ; git add small-files.dvc ; git commit -m "Added small-files/ to DVC"
-  Time (abs ≡):         1.271 s               [User: 0.584 s, System: 0.512 s]
- 
 
 $ git status -s
- M .gitignore
 ?? chinese_mnist.zip
 ?? data/
+?? small-files/
 
