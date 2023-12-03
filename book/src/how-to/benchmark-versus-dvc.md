@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         60.2 ms               [User: 12.3 ms, System: 22.8 ms]
+  Time (abs ≡):         47.5 ms               [User: 12.3 ms, System: 22.0 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        566.8 ms               [User: 231.1 ms, System: 120.7 ms]
+  Time (abs ≡):        519.4 ms               [User: 228.6 ms, System: 107.5 ms]
  
 
 $ git status -s
@@ -68,7 +68,7 @@ $ tree -d
 
 Xvc commits the changed metafiles automatically unless otherwise specified in the options. In the DVC command below, we also commit `*.dvc` files.
 
-```console,ignore
+```console
 $ hyperfine -r 1 'xvc file track data/data/*.jpg'
 Benchmark 1: xvc file track data/data/*.jpg
   Time (abs ≡):        33.247 s               [User: 31.723 s, System: 12.490 s]
@@ -83,6 +83,21 @@ $ git status -s
 ?? chinese_mnist.zip
 ?? data/chinese_mnist.csv
 
+```
+
+## Checkout 15K files
+
+```console
+$ rm -rf data/data
+
+$ hyperfine -r 1 'xvc file recheck data/data/'
+Benchmark 1: xvc file recheck data/data/
+  Time (abs ≡):         20.6 ms               [User: 8.3 ms, System: 11.7 ms]
+ 
+
+$ rm -rf data/data
+
+$ hyperfine -r 1 'git checkout data/data ; dvc checkout data/data/*.dvc'
 ```
 
 ## Directory with 100K Small Files 
@@ -105,13 +120,3 @@ $ git status -s
 ?? data/
 ```
 
-## Checkout 15K files
-
-```console
-$ rm -rf data/data
-
-$ hyperfine -r 1 'xvc file recheck data/data/'
-
-$ rm -rf data/data
-
-$ hyperfine -r 1 'dvc checkout data/data'
