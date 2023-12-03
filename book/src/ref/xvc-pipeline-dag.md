@@ -44,20 +44,16 @@ $ xvc pipeline step dependency --step-name train --step preprocess
 ```
 
 ```console
-$ zsh -cl 'xvc pipeline dag | dot -Tsvg'
-digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=box;label="train";];n0[shape=box;label="preprocess";];n1->n0;}
-
+$ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline.svg'
 ```
-
+![pipeline-1](/images/xvc-pipeline-dag-pipeline-1.svg)
 When you add a dependency between two steps, the graph shows it as a node.
 
 ```console
 $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
-
-$ zsh -cl 'xvc pipeline dag | dot -Tsvg'
-digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=folder;label="data/*";];n0->n1;n2[shape=box;label="train";];n0[shape=box;label="preprocess";];n2->n0;}
-
 ```
+
+![pipeline-2](/images/xvc-pipeline-dag-pipeline-2.svg)
 
 You can use `--mermaid` option to get a [mermaid.js](https://mermaid.js.org) diagram.
 
