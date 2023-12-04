@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         30.0 ms               [User: 11.2 ms, System: 16.8 ms]
+  Time (abs ≡):         30.2 ms               [User: 11.1 ms, System: 17.0 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        279.6 ms               [User: 198.3 ms, System: 67.3 ms]
+  Time (abs ≡):        278.2 ms               [User: 202.7 ms, System: 68.8 ms]
  
 
 $ git status -s
@@ -58,10 +58,12 @@ $ zsh -cl 'cp -r data/data xvc-data'
 $ zsh -cl 'cp -r data/data dvc-data'
 $ tree -d
 .
-└── data
-    └── data
+├── data
+│   └── data
+├── dvc-data
+└── xvc-data
 
-3 directories
+5 directories
 
 ```
 
@@ -70,34 +72,43 @@ $ tree -d
 
 Xvc commits the changed metafiles automatically unless otherwise specified in the options. In the DVC command below, we also commit `*.dvc` files.
 
-```console
+```console,ignore
 $ hyperfine -r 1 'xvc file track xvc-data/'
 Benchmark 1: xvc file track xvc-data/
-  Time (abs ≡):        300.3 ms               [User: 78.9 ms, System: 206.4 ms]
+  Time (abs ≡):         3.655 s               [User: 0.931 s, System: 12.339 s]
  
 
 $ hyperfine -r 1 --show-output 'dvc add dvc-data/ '
-? 1
 Benchmark 1: dvc add dvc-data/ 
-ERROR: output 'dvc-data' does not exist: [Errno 2] No such file or directory: '[CWD]/dvc-data'
-Error: Command terminated with non-zero exit code: 1. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
+
+To track the changes with git, run:
+
+	git add .gitignore dvc-data.dvc
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+  Time (abs ≡):        13.027 s               [User: 4.740 s, System: 6.765 s]
+ 
 
 $ lsd -l
 
 $ git status -s
+ M .gitignore
 ?? chinese_mnist.zip
 ?? data/
+?? dvc-data.dvc
 
 ```
 
-## Checkout 15K files
+## Checkout a directory with 15K files
 
-```console
+```console,ignore
 $ rm -rf xvc-data
 
 $ hyperfine -r 1 'xvc file recheck xvc-data/'
 Benchmark 1: xvc file recheck xvc-data/
-  Time (abs ≡):         88.3 ms               [User: 20.2 ms, System: 67.2 ms]
+  Time (abs ≡):         2.378 s               [User: 0.438 s, System: 2.152 s]
  
 
 $ rm -rf dvc-data/
@@ -105,16 +116,30 @@ $ rm -rf dvc-data/
 $ ls 
 chinese_mnist.zip
 data
+dvc-data.dvc
+xvc-data
 
 $ hyperfine -r 1 --show-output 'dvc checkout dvc-data.dvc'
-? 1
 Benchmark 1: dvc checkout dvc-data.dvc
-ERROR: Did you mean `git checkout dvc-data.dvc`?: '[CWD]/dvc-data.dvc' does not exist
-Error: Command terminated with non-zero exit code: 255. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
+A       dvc-data/
+  Time (abs ≡):         4.102 s               [User: 1.399 s, System: 2.155 s]
+ 
 
 ```
 
-## Directory with 100K Small Files 
+## Large Files Performance
+
+```console
+$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
+$ hyperfine -r 1 'xvc file track xvc-large-file'
+
+$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
+$ hyperfine -r 1 --show-output 'dvc add dvc-large-file'
+```
+
+
+## 100K Small Files Performance
+
 
 ```console,ignore
 $ zsh -cl 'mkdir small-files ; for i in {1..100000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
