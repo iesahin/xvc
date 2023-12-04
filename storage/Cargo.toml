@@ -1,6 +1,6 @@
 [package]
 name = "xvc-storage"
-version = "0.6.4-alpha.2"
+version = "0.6.4-alpha.3"
 edition = "2021"
 description = "Xvc remote (and local) storage management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -17,11 +17,11 @@ crate-type = ["rlib"]
 
 
 [dependencies]
-xvc-logging = { version = "0.6.0", path = "../logging" }
-xvc-config = { version = "0.6.4-alpha.1", path = "../config" }
-xvc-core = { version = "0.6.4-alpha.0", path = "../core" }
-xvc-ecs = { version = "0.6.0", path = "../ecs" }
-xvc-walker = { version = "0.6.4-alpha.1", path = "../walker" }
+xvc-logging = { version = "^0.6", path = "../logging" }
+xvc-config = { version = "0.6.4-alpha.3", path = "../config" }
+xvc-core = { version = "0.6.4-alpha.3", path = "../core" }
+xvc-ecs = { version = "0.6.4-alpha.3", path = "../ecs" }
+xvc-walker = { version = "0.6.4-alpha.3", path = "../walker" }
 
 ## Cli and config
 clap = { version = "^4.4", features = ["derive"] }
@@ -76,7 +76,7 @@ lazy_static = "^1.4"
 uuid = { version = "^1.5", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.4", features = ["serde"] }
-itertools = "^0.11"
+itertools = "^0.12"
 derive_more = "^0.99"
 tempfile = "^3.8"
 
@@ -91,7 +91,6 @@ futures = { version = "^0.3", optional = true }
 # Cannot compile on Windows with vendored
 [target.'cfg(target_os = "linux")'.dependencies]
 openssl = { version = "^0.10", features = ["vendored"] }
-
 
 
 [features]

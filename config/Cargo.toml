@@ -1,6 +1,6 @@
 [package]
 name = "xvc-config"
-version = "0.6.4-alpha.1"
+version = "0.6.4-alpha.3"
 edition = "2021"
 description = "Xvc configuration management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -17,16 +17,15 @@ crate-type = ["rlib"]
 
 
 [dependencies]
-xvc-logging = {version = "0.6.0", path = "../logging" }
-xvc-walker = {version = "0.6.4-alpha.1", path = "../walker" }
-
+xvc-logging = { version = "^0.6", path = "../logging" }
+xvc-walker = { version = "0.6.4-alpha.3", path = "../walker" }
 
 
 ## Cli and config
 directories-next = "2.0"
 
 ## Serialization
-serde = { version = "^1.0", features=["derive"] }
+serde = { version = "^1.0", features = ["derive"] }
 serde_yaml = "^0.9"
 toml = "^0.8"
 
