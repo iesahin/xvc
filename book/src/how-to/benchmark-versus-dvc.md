@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         30.7 ms               [User: 11.0 ms, System: 17.5 ms]
+  Time (abs ≡):         69.6 ms               [User: 11.3 ms, System: 20.9 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        283.5 ms               [User: 201.9 ms, System: 72.6 ms]
+  Time (abs ≡):        465.6 ms               [User: 212.2 ms, System: 93.0 ms]
  
 
 $ git status -s
@@ -57,6 +57,12 @@ $ unzip -q chinese_mnist.zip
 $ cp -r data/data xvc-data
 $ cp -r data/data dvc-data
 $ tree -d
+.
+└── data
+    └── data
+
+3 directories
+
 ```
 
 
@@ -67,18 +73,16 @@ Xvc commits the changed metafiles automatically unless otherwise specified in th
 ```console
 $ hyperfine -r 1 'xvc file track xvc-data/'
 Benchmark 1: xvc file track xvc-data/
-  Time (abs ≡):        297.3 ms               [User: 77.5 ms, System: 219.1 ms]
+  Time (abs ≡):        266.3 ms               [User: 75.7 ms, System: 185.0 ms]
  
 
 $ hyperfine -r 1 --show-output 'dvc add dvc-data/ '
-
+? 1
+Benchmark 1: dvc add dvc-data/ 
+ERROR: output 'dvc-data' does not exist: [Errno 2] No such file or directory: '[CWD]/dvc-data'
+Error: Command terminated with non-zero exit code: 1. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
 
 $ lsd -l
-
-? 1
-
-nothing added to commit but untracked files present (use "git add" to track)
-Error: Command terminated with non-zero exit code: 1. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
 
 $ git status -s
 ?? chinese_mnist.zip
@@ -93,7 +97,7 @@ $ rm -rf xvc-data
 
 $ hyperfine -r 1 'xvc file recheck xvc-data/'
 Benchmark 1: xvc file recheck xvc-data/
-  Time (abs ≡):        103.5 ms               [User: 20.8 ms, System: 80.7 ms]
+  Time (abs ≡):         87.2 ms               [User: 20.1 ms, System: 66.7 ms]
  
 
 $ rm -rf dvc-data/
