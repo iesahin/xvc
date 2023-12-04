@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         69.6 ms               [User: 11.3 ms, System: 20.9 ms]
+  Time (abs ≡):         30.0 ms               [User: 11.2 ms, System: 16.8 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        465.6 ms               [User: 212.2 ms, System: 93.0 ms]
+  Time (abs ≡):        279.6 ms               [User: 198.3 ms, System: 67.3 ms]
  
 
 $ git status -s
@@ -54,8 +54,8 @@ $ git status -s
 
 ```console
 $ unzip -q chinese_mnist.zip
-$ cp -r data/data xvc-data
-$ cp -r data/data dvc-data
+$ zsh -cl 'cp -r data/data xvc-data'
+$ zsh -cl 'cp -r data/data dvc-data'
 $ tree -d
 .
 └── data
@@ -73,7 +73,7 @@ Xvc commits the changed metafiles automatically unless otherwise specified in th
 ```console
 $ hyperfine -r 1 'xvc file track xvc-data/'
 Benchmark 1: xvc file track xvc-data/
-  Time (abs ≡):        266.3 ms               [User: 75.7 ms, System: 185.0 ms]
+  Time (abs ≡):        300.3 ms               [User: 78.9 ms, System: 206.4 ms]
  
 
 $ hyperfine -r 1 --show-output 'dvc add dvc-data/ '
@@ -97,7 +97,7 @@ $ rm -rf xvc-data
 
 $ hyperfine -r 1 'xvc file recheck xvc-data/'
 Benchmark 1: xvc file recheck xvc-data/
-  Time (abs ≡):         87.2 ms               [User: 20.1 ms, System: 66.7 ms]
+  Time (abs ≡):         88.3 ms               [User: 20.2 ms, System: 67.2 ms]
  
 
 $ rm -rf dvc-data/
