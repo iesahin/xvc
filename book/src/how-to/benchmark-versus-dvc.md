@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         85.9 ms               [User: 15.0 ms, System: 30.3 ms]
+  Time (abs ≡):         47.8 ms               [User: 11.8 ms, System: 23.1 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        710.2 ms               [User: 296.5 ms, System: 136.7 ms]
+  Time (abs ≡):        340.2 ms               [User: 204.7 ms, System: 76.2 ms]
  
 
 $ git status -s
@@ -130,62 +130,67 @@ A       dvc-data/
 ## Large File Performance
 
 ```console
-$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=100'
+$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
 100+0 records in
 100+0 records out
-104857600 bytes transferred in 0.152314 secs (688430479 bytes/sec)
+104857600 bytes transferred in 0.130264 secs (804962231 bytes/sec)
 
 $ hyperfine -r 1 'xvc file track xvc-large-file'
 Benchmark 1: xvc file track xvc-large-file
-  Time (abs ≡):        901.0 ms               [User: 289.9 ms, System: 696.0 ms]
+  Time (abs ≡):        717.4 ms               [User: 255.1 ms, System: 582.8 ms]
  
 
-$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=100'
+$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
 100+0 records in
 100+0 records out
-104857600 bytes transferred in 0.149314 secs (702262346 bytes/sec)
+104857600 bytes transferred in 0.147036 secs (713142360 bytes/sec)
 
 $ hyperfine -r 1 --show-output 'dvc add dvc-large-file ; git add dvc-large-file.dvc .gitignore ; git commit -m "Added dvc-large-file to DVC"'
-? 2
-error: the following required arguments were not provided:
-  <command>...
+Benchmark 1: dvc add dvc-large-file ; git add dvc-large-file.dvc .gitignore ; git commit -m "Added dvc-large-file to DVC"
 
-Usage: hyperfine --runs <NUM> --show-output <command>...
+To track the changes with git, run:
 
-For more information, try '--help'.
+	git add dvc-large-file.dvc .gitignore
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+[main 80212a7] Added dvc-large-file to DVC
+ 2 files changed, 6 insertions(+)
+ create mode 100644 dvc-large-file.dvc
+  Time (abs ≡):        725.0 ms               [User: 491.3 ms, System: 124.1 ms]
+ 
 
 ```
 
 ## Commit/Carry-in Large Files
 
 ```console
-$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=100'
+$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
 100+0 records in
 100+0 records out
-104857600 bytes transferred in 0.176873 secs (592841191 bytes/sec)
+104857600 bytes transferred in 0.139201 secs (753281945 bytes/sec)
 
 $ hyperfine -r 1 'xvc file carry-in xvc-large-file'
 Benchmark 1: xvc file carry-in xvc-large-file
-  Time (abs ≡):        360.2 ms               [User: 113.2 ms, System: 240.9 ms]
+  Time (abs ≡):        330.5 ms               [User: 106.3 ms, System: 220.2 ms]
  
 
-$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=100'
+$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
 100+0 records in
 100+0 records out
-104857600 bytes transferred in 0.142863 secs (733973107 bytes/sec)
+104857600 bytes transferred in 0.125360 secs (836451819 bytes/sec)
 
-$ hyperfine -r 1 --show-output 'dvc commit dvc-large-file ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"'
+$ hyperfine -r 1 --show-output 'dvc commit ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"'
 ? 1
 Benchmark 1: dvc commit dvc-large-file ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"
-ERROR: failed to commit dvc-large-file - 'dvc-large-file' does not exist as an output or a stage name in 'dvc.yaml': 'dvc.yaml' does not exist
-fatal: pathspec 'dvc-large-file.dvc' did not match any files
+ERROR: failed to commit dvc-large-file - unable to commit changed stage: 'dvc-large-file.dvc'. Use `-f|--force` to force.
 On branch main
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
 	chinese_mnist.zip
 	data/
 	dvc-data/
-	dvc-large-file
 	xvc-data/
 
 nothing added to commit but untracked files present (use "git add" to track)
