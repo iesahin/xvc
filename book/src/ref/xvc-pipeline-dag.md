@@ -42,12 +42,17 @@ $ xvc pipeline step new --step-name train --command "echo 'train'"
 $ xvc pipeline step dependency --step-name train --step preprocess
 
 ```
+It's not very readable but you can supply the result directly to dot and get a more useful output.
 
 ```console
-$ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline.svg'
+$ xvc pipeline dag
 ```
+
+The output after `dot -Tsvg` is:
+
 ![pipeline-1](/images/xvc-pipeline-dag-pipeline-1.svg)
-When you add a dependency between two steps, the graph shows it as a node.
+
+When you add a dependency between two steps, the graph shows it as a node. For example, 
 
 ```console
 $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
