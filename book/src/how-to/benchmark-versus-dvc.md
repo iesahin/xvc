@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         47.8 ms               [User: 11.8 ms, System: 23.1 ms]
+  Time (abs ≡):         30.4 ms               [User: 11.0 ms, System: 17.3 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        340.2 ms               [User: 204.7 ms, System: 76.2 ms]
+  Time (abs ≡):        283.1 ms               [User: 205.9 ms, System: 70.3 ms]
  
 
 $ git status -s
@@ -131,19 +131,19 @@ A       dvc-data/
 
 ```console
 $ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
-100+0 records in
-100+0 records out
-104857600 bytes transferred in 0.130264 secs (804962231 bytes/sec)
+1000+0 records in
+1000+0 records out
+1048576000 bytes transferred in 1.384483 secs (757377303 bytes/sec)
 
 $ hyperfine -r 1 'xvc file track xvc-large-file'
 Benchmark 1: xvc file track xvc-large-file
-  Time (abs ≡):        717.4 ms               [User: 255.1 ms, System: 582.8 ms]
+  Time (abs ≡):         1.586 s               [User: 0.809 s, System: 0.871 s]
  
 
 $ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
-100+0 records in
-100+0 records out
-104857600 bytes transferred in 0.147036 secs (713142360 bytes/sec)
+1000+0 records in
+1000+0 records out
+1048576000 bytes transferred in 1.374251 secs (763016363 bytes/sec)
 
 $ hyperfine -r 1 --show-output 'dvc add dvc-large-file ; git add dvc-large-file.dvc .gitignore ; git commit -m "Added dvc-large-file to DVC"'
 Benchmark 1: dvc add dvc-large-file ; git add dvc-large-file.dvc .gitignore ; git commit -m "Added dvc-large-file to DVC"
@@ -155,10 +155,10 @@ To track the changes with git, run:
 To enable auto staging, run:
 
 	dvc config core.autostage true
-[main 80212a7] Added dvc-large-file to DVC
+[main 1627dca] Added dvc-large-file to DVC
  2 files changed, 6 insertions(+)
  create mode 100644 dvc-large-file.dvc
-  Time (abs ≡):        725.0 ms               [User: 491.3 ms, System: 124.1 ms]
+  Time (abs ≡):         2.146 s               [User: 1.900 s, System: 0.196 s]
  
 
 ```
@@ -167,24 +167,24 @@ To enable auto staging, run:
 
 ```console
 $ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
-100+0 records in
-100+0 records out
-104857600 bytes transferred in 0.139201 secs (753281945 bytes/sec)
+1000+0 records in
+1000+0 records out
+1048576000 bytes transferred in 1.354193 secs (774317989 bytes/sec)
 
 $ hyperfine -r 1 'xvc file carry-in xvc-large-file'
 Benchmark 1: xvc file carry-in xvc-large-file
-  Time (abs ≡):        330.5 ms               [User: 106.3 ms, System: 220.2 ms]
+  Time (abs ≡):         1.025 s               [User: 0.624 s, System: 0.393 s]
  
 
 $ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
-100+0 records in
-100+0 records out
-104857600 bytes transferred in 0.125360 secs (836451819 bytes/sec)
+1000+0 records in
+1000+0 records out
+1048576000 bytes transferred in 1.331211 secs (787685799 bytes/sec)
 
-$ hyperfine -r 1 --show-output 'dvc commit ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"'
+$ hyperfine -r 1 --show-output 'dvc add dvc-large-file ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"'
 ? 1
-Benchmark 1: dvc commit dvc-large-file ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"
-ERROR: failed to commit dvc-large-file - unable to commit changed stage: 'dvc-large-file.dvc'. Use `-f|--force` to force.
+Benchmark 1: dvc commit ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"
+ERROR: failed to commit - unable to commit changed stage: 'dvc-large-file.dvc'. Use `-f|--force` to force.
 On branch main
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
