@@ -82,7 +82,9 @@ tempfile = "^3.8"
 
 ## Networking & Async
 
-## Although we don't use openssl directly, we use its vendored version for cross compilation
+# Although we don't use openssl directly, we use its vendored version for cross compilation
+# Cannot compile on Windows with vendored
+[target.'cfg(target_os = "linux")'.dependencies]
 openssl = { version = "^0.10", features = ["vendored"] }
 
 tokio = { version = "^1.32", optional = true, features = ["rt-multi-thread"] }
