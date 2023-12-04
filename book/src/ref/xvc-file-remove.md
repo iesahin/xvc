@@ -282,8 +282,8 @@ $ xvc file list
 SS        [..] [..] 4a2e9d7c          data2.txt
 FC        1024 [..] 4a2e9d7c 4a2e9d7c data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         274 [..]          [..] .gitignore
-Total #: 4 Workspace Size:        1621 Cached Size:        1024
+FX        [..] [..]          [..] .gitignore
+Total #: 4 Workspace Size:        [..] Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt

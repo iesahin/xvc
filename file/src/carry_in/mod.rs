@@ -5,6 +5,7 @@
 //! the cache with changed files.
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use xvc_walker::PathSync;
 
 use std::collections::HashSet;
 use std::fs;
@@ -235,6 +236,8 @@ pub fn carry_in(
 
     let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
 
+    let path_sync = PathSync::new();
+
     watch!(ignore_writer);
     watch!(ignore_thread);
 
@@ -267,7 +270,7 @@ pub fn carry_in(
                 uwr!(fs::remove_file(&abs_cache_path), output_snd);
                 info!(output_snd, "[REMOVE] {abs_cache_path}");
                 uwr!(
-                    move_xvc_path_to_cache(xvc_root, xp, &cache_path),
+                    move_xvc_path_to_cache(xvc_root, xp, &cache_path, &path_sync),
                     output_snd
                 );
                 info!(output_snd, "[CARRY] {xp} -> {cache_path}");
@@ -275,8 +278,10 @@ pub fn carry_in(
                 info!(output_snd, "[EXISTS] {abs_cache_path} for {xp}");
             }
         } else {
+            watch!(&cache_path);
+            watch!(&xp);
             uwr!(
-                move_xvc_path_to_cache(xvc_root, xp, &cache_path),
+                move_xvc_path_to_cache(xvc_root, xp, &cache_path, &path_sync),
                 output_snd
             );
             info!(output_snd, "[CARRY] {xp} -> {cache_path}");
@@ -288,7 +293,6 @@ pub fn carry_in(
             info!(output_snd, "[REMOVE] {target_path}");
         }
         let recheck_method = uwo!(recheck_methods.get(xe).cloned(), output_snd);
-
         uwr!(
             recheck_from_cache(
                 output_snd,

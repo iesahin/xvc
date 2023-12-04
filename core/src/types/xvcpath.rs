@@ -157,6 +157,29 @@ impl XvcPath {
     pub fn join(&self, other: &XvcPath) -> Result<XvcPath> {
         Ok(XvcPath(self.0.join(&other.0)))
     }
+
+    /// Join only the file name portion of the other XvcPath
+    /// ```
+    /// use xvc_core::XvcPath;
+    /// use relative_path::RelativePathBuf;
+    ///
+    /// let path = XvcPath::from(RelativePathBuf::from("a/b/c"));
+    /// let other = XvcPath::from(RelativePathBuf::from("d/e/f"));
+    /// let joined = path.join_file_name(&other).unwrap();
+    /// assert_eq!(joined, XvcPath::from(RelativePathBuf::from("a/b/c/f")));
+    /// ```
+    pub fn join_file_name(&self, other: &XvcPath) -> Result<XvcPath> {
+        let other_name = other
+            .file_name()
+            .ok_or_else(|| anyhow::anyhow!("other path doesn't have a file name"))?;
+
+        Ok(XvcPath(self.0.join(other_name)))
+    }
+
+    /// Returns the file name of the path
+    pub fn file_name(&self) -> Option<&str> {
+        self.0.file_name()
+    }
 }
 
 /// Represents whether a file is a text file or not

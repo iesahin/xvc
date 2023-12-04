@@ -16,6 +16,7 @@
     - [How to Compile Xvc](./how-to/compile.md)
     - [Xvc with Git Branches](./how-to/git-branches.md)
     - [Turn off Git Integration](./how-to/turn-off-git-automation.md)
+    - [Create a Data Pipeline](./how-to/create-a-data-pipeline.md)
 
 - [Command Reference](./ref/xvc.md)
     - [`xvc init`](./ref/xvc-init.md)

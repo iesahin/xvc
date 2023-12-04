@@ -37,6 +37,15 @@ pub fn test_logging(level: LevelFilter) {
     setup_logging(Some(level), Some(level));
 }
 
+fn interleave_with_dash(s: &str, n: usize) -> String {
+    let chars: Vec<char> = s.chars().collect();
+    let chunks: Vec<String> = chars
+        .chunks(n)
+        .map(|chunk| chunk.iter().collect())
+        .collect();
+    chunks.join("-")
+}
+
 /// Generates a random name with `prefix` and a random number generated from `seed`.
 /// If `seed` is `None`, a random number `from_entropy` is used.
 pub fn random_dir_name(prefix: &str, seed: Option<u64>) -> String {
@@ -47,7 +56,7 @@ pub fn random_dir_name(prefix: &str, seed: Option<u64>) -> String {
     };
 
     let rand: u32 = rng.next_u32();
-    format!("{}-{}", prefix, rand)
+    format!("{}-{}", prefix, interleave_with_dash(&rand.to_string(), 3))
 }
 
 /// Return name of a random directory under $TMPDIR.

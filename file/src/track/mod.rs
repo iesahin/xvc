@@ -119,7 +119,7 @@ pub fn cmd_track(
     let current_dir = conf.current_dir()?;
     let targets = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
-    let requested_recheck_method = opts.recheck_method.unwrap_or_default();
+    let requested_recheck_method = opts.recheck_method;
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
 
@@ -150,7 +150,9 @@ pub fn cmd_track(
             .collect();
 
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
+    let default_recheck_method = RecheckMethod::from_conf(conf);
     let recheck_method_diff = diff_recheck_method(
+        default_recheck_method,
         &stored_recheck_method_store,
         requested_recheck_method,
         &changed_entities,
@@ -241,13 +243,30 @@ pub fn cmd_track(
             })
             .collect();
 
+        // Only the updated paths are carried in
+        // TODO: Allow --force option to carry-in all paths
         let xvc_paths_to_carry =
             current_xvc_path_store.subset(updated_content_digest_store.keys().cloned())?;
+
+        // Filter directories from carry_in / recheck
+        let xvc_paths_to_carry: HStore<XvcPath> = xvc_paths_to_carry
+            .into_iter()
+            .filter_map(|(xe, xp)| {
+                targets.get(&xp).and_then(|xmd| {
+                    if xmd.file_type == XvcFileType::File {
+                        Some((xe, xp))
+                    } else {
+                        None
+                    }
+                })
+            })
+            .collect();
+        watch!(xvc_paths_to_carry);
 
         let cache_paths = updated_content_digest_store
             .iter()
             .filter_map(|(xe, cd)| {
-                current_xvc_path_store
+                xvc_paths_to_carry
                     .get(xe)
                     .and_then(|xp| XvcCachePath::new(xp, cd).ok())
                     .map(|cp| (*xe, cp))

@@ -86,6 +86,9 @@ pub enum Error {
     },
     #[error("Xvc does not support content digest for symlink: {path}")]
     ContentDigestNotSupported { path: PathBuf },
+
+    #[error("Poisoned Locks: {t} {cause}")]
+    LockPoisonError { t: String, cause: String },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
@@ -95,6 +98,18 @@ where
     fn from(e: crossbeam_channel::SendError<T>) -> Self {
         Error::CrossbeamSendError {
             t: format!("{:#?}", e.0),
+            cause: e.to_string(),
+        }
+    }
+}
+
+impl<T> From<std::sync::PoisonError<T>> for Error
+where
+    T: std::fmt::Debug,
+{
+    fn from(e: std::sync::PoisonError<T>) -> Self {
+        Error::LockPoisonError {
+            t: format!("{:#?}", e),
             cause: e.to_string(),
         }
     }

@@ -39,74 +39,122 @@ This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if yo
 Rechecking is analogous to [git checkout](https://git-scm.com/docs/git-checkout).
 It copies or links a cached file to the workspace.
 
-Start by tracking a file.
+Let's create an example directory hierarchy as a showcase. 
+
+```console
+$ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 231123
+$ tree
+.
+├── dir-0001
+│   ├── file-0001.bin
+│   ├── file-0002.bin
+│   └── file-0003.bin
+└── dir-0002
+    ├── file-0001.bin
+    ├── file-0002.bin
+    └── file-0003.bin
+
+3 directories, 6 files
+
+```
+
+Start by tracking files. 
 
 ```console
 $ git init
 ...
 $ xvc init
 
-$ xvc file track data.txt
-
-$ lsd -l
-.rw-rw-rw- [..] data.txt
+$ xvc file track dir-*
 
 ```
 
 Once you added the file to the cache, you can delete the workspace copy.
 
 ```console
-$ rm data.txt
-$ ls -l
+$ rm dir-0001/file-0001.bin
+$ lsd -l dir-0001/file-*
 total[..]
+drwxr-xr-x [..] dir-0001
+drwxr-xr-x [..] dir-0002
 
 ```
 
 Then, recheck the file. By default, it makes a copy of the file.
 
 ```console
-$ xvc file recheck data.txt
+$ xvc file recheck dir-0001/file-0001.bin
 
 $ lsd -l
 .rw-rw-rw- [..] data.txt
 
 ```
 
-Xvc only updates the recheck method if the file is not changed.
+You can track and recheck complete directories
 
 ```console
-$ xvc file recheck data.txt --as symlink
+$ xvc file track dir-0002/
+$ rm -rf dir-0002/
+$ xvc -v file recheck dir-0002/
+$ ls -l dir-0002/
+total 24
+-rw-rw-rw-  1 [..] file-0001.bin
+-rw-rw-rw-  1 [..] file-0002.bin
+-rw-rw-rw-  1 [..] file-0003.bin
 
-$ ls -l data.txt
-l[..] data.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+```
+You can use glob patterns to recheck files.
+```console
+```console
+$ xvc file track 'dir-*'
+
+
+You can update the recheck method of a file. Otherwise it will be kept as same before.
+
+```console
+$ rm -rf dir-0002/
+$ xvc -v file recheck dir-0002/ --as symlink
+$ ls -l dir-0002/
+total 0
+lrwxr-xr-x  1 [..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x  1 [..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x  1 [..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
+
+$ rm -rf dir-0002/
+$ xvc -v file recheck dir-0002/ 
+
+$ ls -l dir-0002/
+total 0
+lrwxr-xr-x  1 [..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x  1 [..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x  1 [..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 ```
 
 Symlink and hardlinks are read-only.
-You can delete the symlink, and replace with an updated copy.
-(As `perl -i` does below.)
+You can recheck as copy to update.
 
 ```console
-$ perl -i -pe 's/a/ee/g' data.txt
+$ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
+? 1
+zsh:1: permission denied: dir-0002/file-0001.bin
 
-$ xvc file recheck data.txt --as copy
-[ERROR] data.txt has changed on disk. Either carry in, force, or delete the target to recheck. 
+$ xvc file recheck dir-0002/file-0001.bin --as copy
 
-$ rm data.txt
+$ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
 
 ```
+Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
 
 ```console
 $ xvc -vv file recheck data.txt --as hardlink
-[INFO] [HARDLINK] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data.txt
 
 $ ls -l
 total[..]
--r--r--r--[..] data.txt
+drwxr-xr-x [..] dir-0001
+drwxr-xr-x [..] dir-0002
 
 ```
-
-Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
 
 Reflinks are supported by Xvc, but the underlying file system should also support it.
 Otherwise it uses `copy`.
@@ -118,3 +166,5 @@ $ xvc file recheck data.txt --as reflink
 ```
 
 The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems.
+
+

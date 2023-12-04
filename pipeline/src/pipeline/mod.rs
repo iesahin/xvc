@@ -407,7 +407,6 @@ pub fn the_grand_pipeline_loop(
 
     watch!(step_states);
 
-    let _continue_running = true;
     let process_pool_size: usize = xvc_root
         .config()
         .get_int("pipeline.process_pool_size")?
@@ -591,7 +590,7 @@ fn step_state_bulletin(
     }
     loop {
         watch!(select);
-        if let Ok(index) = select.ready_timeout(Duration::from_millis(1000)) {
+        if let Ok(index) = select.ready_timeout(Duration::from_millis(10)) {
             let res = state_senders[index].1.recv()?;
             if let Some(state) = res {
                 let step_e = state_senders[index].0;
@@ -600,6 +599,7 @@ fn step_state_bulletin(
             }
         } else {
             if current_states.read()?.iter().all(|(_, s)| {
+                watch!(s);
                 matches!(
                     s,
                     XvcStepState::DoneByRunning(_)
@@ -815,6 +815,7 @@ fn update_pmp(
     };
 
     loop {
+        watch!(fs_receiver);
         select! {
             recv(fs_receiver) -> fs_event => match fs_event {
                 Ok(Some(fs_event)) => {

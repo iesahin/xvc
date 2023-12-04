@@ -252,8 +252,9 @@ fn dependency_graph_stmts(
 
     for (xe, step) in pipeline_steps.iter().sorted() {
         let step_identity = short_id(id_from_string(&step.name)?)?;
-        let step_deps = all_deps.children_of(xe)?;
-        let step_outs = all_outs.children_of(xe)?;
+        let step_deps: HStore<XvcDependency> =
+            all_deps.children_of(xe)?.into_iter().sorted().collect();
+        let step_outs: HStore<XvcOutput> = all_outs.children_of(xe)?.into_iter().sorted().collect();
 
         stmts = stmts.add_node(
             step_identity.clone(),
@@ -265,7 +266,8 @@ fn dependency_graph_stmts(
             let dep_identity = short_id(dep_identity(dep)?)?;
             stmts = stmts.add_node(dep_identity.clone(), None, Some(dep_node_attributes(dep)));
             stmts = stmts.add_edge(
-                Edge::head_node(step_identity.clone(), None).arrow_to_node(dep_identity, None),
+                Edge::head_node(dep_identity.clone(), None)
+                    .arrow_to_node(step_identity.clone(), None),
             );
         }
 

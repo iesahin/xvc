@@ -35,6 +35,11 @@ pub struct CopyCLI {
     #[arg(long)]
     pub no_recheck: bool,
 
+    /// When copying multiple files, by default whole path is copied to the destination. This
+    /// option sets the destination to be created with the file name only.
+    #[arg(long)]
+    pub name_only: bool,
+
     /// Source file, glob or directory within the workspace.
     ///
     /// If the source ends with a slash, it's considered a directory and all
@@ -175,6 +180,7 @@ pub fn get_copy_source_dest_store(
     source_xvc_paths: &HStore<XvcPath>,
     source_xvc_metadata: &HStore<XvcMetadata>,
     destination: &str,
+    name_only: bool,
     force: bool,
 ) -> Result<HStore<(XvcEntity, XvcPath)>> {
     // Create targets in the store
@@ -206,7 +212,11 @@ pub fn get_copy_source_dest_store(
         let mut source_dest_store = HStore::new();
 
         for (source_xe, source_path) in source_xvc_paths.iter() {
-            let dest_path = dir_path.join(source_path).unwrap();
+            let dest_path = if name_only {
+                dir_path.join_file_name(source_path)?
+            } else {
+                dir_path.join(source_path)?
+            };
 
             match stored_xvc_path_store.entities_for(&dest_path) {
                 Some(v) => {
@@ -335,6 +345,7 @@ pub fn cmd_copy(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: CopyCLI)
         &source_xvc_paths,
         &source_metadata,
         &opts.destination,
+        opts.name_only,
         opts.force,
     )?;
 
