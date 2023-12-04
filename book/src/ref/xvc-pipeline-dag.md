@@ -46,6 +46,8 @@ It's not very readable but you can supply the result directly to dot and get a m
 
 ```console
 $ xvc pipeline dag
+digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=box;label="train";];n0[shape=box;label="preprocess";];n0->n1;}
+
 ```
 
 The output after `dot -Tsvg` is:
