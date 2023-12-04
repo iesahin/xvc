@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         30.2 ms               [User: 11.1 ms, System: 17.0 ms]
+  Time (abs ≡):         29.9 ms               [User: 10.9 ms, System: 16.5 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        278.2 ms               [User: 202.7 ms, System: 68.8 ms]
+  Time (abs ≡):        295.3 ms               [User: 210.9 ms, System: 77.0 ms]
  
 
 $ git status -s
@@ -127,16 +127,48 @@ A       dvc-data/
 
 ```
 
-## Large Files Performance
+## Large File Performance
 
 ```console
-$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
-$ hyperfine -r 1 'xvc file track xvc-large-file'
+$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=100'
+1000+0 records in
+1000+0 records out
+1048576000 bytes transferred in 1.489914 secs (703782903 bytes/sec)
 
-$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
-$ hyperfine -r 1 --show-output 'dvc add dvc-large-file'
+$ hyperfine -r 1 'xvc file track xvc-large-file'
+Benchmark 1: xvc file track xvc-large-file
+  Time (abs ≡):         1.572 s               [User: 0.809 s, System: 0.816 s]
+ 
+
+$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=100'
+1000+0 records in
+1000+0 records out
+1048576000 bytes transferred in 1.409283 secs (744049279 bytes/sec)
+
+$ hyperfine -r 1 --show-output 'dvc add dvc-large-file ; git add dvc-large-file.dvc .gitignore ; git commit -m "Added dvc-large-file to DVC"
+Benchmark 1: dvc add dvc-large-file
+
+To track the changes with git, run:
+
+	git add dvc-large-file.dvc .gitignore
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+  Time (abs ≡):         2.144 s               [User: 1.901 s, System: 0.190 s]
+ 
+
 ```
 
+## Commit/Carry-in Large Files
+
+```console
+$ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=100'
+$ hyperfine -r 1 'xvc file carry-in xvc-large-file'
+
+$ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=100'
+$ hyperfine -r 1 --show-output 'dvc commit dvc-large-file ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"'
+```
 
 ## 100K Small Files Performance
 
