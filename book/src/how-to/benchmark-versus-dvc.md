@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         33.3 ms               [User: 11.6 ms, System: 18.7 ms]
+  Time (abs ≡):         34.4 ms               [User: 11.4 ms, System: 19.2 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        278.1 ms               [User: 198.6 ms, System: 71.8 ms]
+  Time (abs ≡):        276.8 ms               [User: 198.5 ms, System: 71.6 ms]
  
 
 $ git status -s
@@ -225,7 +225,7 @@ dir-0001
 Let's create 10 DVC stages to depend on these files:
 
 ```
-$ zsh -cl "for f in dir-0001/* ; do dvc -q stage add -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
+$ zsh -cl "for f in dir-0001/* ; do dvc stage add -q -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
 Added stage 'file-0001' in 'dvc.yaml'
 
 To track the changes with git, run:
