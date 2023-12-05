@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         30.4 ms               [User: 11.0 ms, System: 17.3 ms]
+  Time (abs ≡):         40.2 ms               [User: 11.3 ms, System: 18.6 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        283.1 ms               [User: 205.9 ms, System: 70.3 ms]
+  Time (abs ≡):        290.9 ms               [User: 205.7 ms, System: 72.8 ms]
  
 
 $ git status -s
@@ -129,21 +129,21 @@ A       dvc-data/
 
 ## Large File Performance
 
-```console
+```console,ignore
 $ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
 1000+0 records in
 1000+0 records out
-1048576000 bytes transferred in 1.384483 secs (757377303 bytes/sec)
+1048576000 bytes transferred in 1.669660 secs (628017680 bytes/sec)
 
 $ hyperfine -r 1 'xvc file track xvc-large-file'
 Benchmark 1: xvc file track xvc-large-file
-  Time (abs ≡):         1.586 s               [User: 0.809 s, System: 0.871 s]
+  Time (abs ≡):         1.499 s               [User: 0.816 s, System: 0.805 s]
  
 
 $ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
 1000+0 records in
 1000+0 records out
-1048576000 bytes transferred in 1.374251 secs (763016363 bytes/sec)
+1048576000 bytes transferred in 1.446919 secs (724695716 bytes/sec)
 
 $ hyperfine -r 1 --show-output 'dvc add dvc-large-file ; git add dvc-large-file.dvc .gitignore ; git commit -m "Added dvc-large-file to DVC"'
 Benchmark 1: dvc add dvc-large-file ; git add dvc-large-file.dvc .gitignore ; git commit -m "Added dvc-large-file to DVC"
@@ -155,67 +155,64 @@ To track the changes with git, run:
 To enable auto staging, run:
 
 	dvc config core.autostage true
-[main 1627dca] Added dvc-large-file to DVC
+[main 72fd199] Added dvc-large-file to DVC
  2 files changed, 6 insertions(+)
  create mode 100644 dvc-large-file.dvc
-  Time (abs ≡):         2.146 s               [User: 1.900 s, System: 0.196 s]
+  Time (abs ≡):         2.153 s               [User: 1.906 s, System: 0.203 s]
  
 
 ```
 
 ## Commit/Carry-in Large Files
 
-```console
+```console,ignore
 $ zsh -cl 'dd if=/dev/urandom of=xvc-large-file bs=1M count=1000'
 1000+0 records in
 1000+0 records out
-1048576000 bytes transferred in 1.354193 secs (774317989 bytes/sec)
+1048576000 bytes transferred in 1.550065 secs (676472277 bytes/sec)
 
 $ hyperfine -r 1 'xvc file carry-in xvc-large-file'
 Benchmark 1: xvc file carry-in xvc-large-file
-  Time (abs ≡):         1.025 s               [User: 0.624 s, System: 0.393 s]
+  Time (abs ≡):         1.024 s               [User: 0.629 s, System: 0.393 s]
  
 
 $ zsh -cl 'dd if=/dev/urandom of=dvc-large-file bs=1M count=1000'
 1000+0 records in
 1000+0 records out
-1048576000 bytes transferred in 1.331211 secs (787685799 bytes/sec)
+1048576000 bytes transferred in 1.550363 secs (676342250 bytes/sec)
 
 $ hyperfine -r 1 --show-output 'dvc add dvc-large-file ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"'
-? 1
-Benchmark 1: dvc commit ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"
-ERROR: failed to commit - unable to commit changed stage: 'dvc-large-file.dvc'. Use `-f|--force` to force.
-On branch main
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-	chinese_mnist.zip
-	data/
-	dvc-data/
-	xvc-data/
+Benchmark 1: dvc add dvc-large-file ; git add dvc-large-file.dvc ; git commit -m "Added dvc-large-file to DVC"
 
-nothing added to commit but untracked files present (use "git add" to track)
-Error: Command terminated with non-zero exit code: 1. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
+To track the changes with git, run:
 
-```
+	git add dvc-large-file.dvc
 
-## 100K Small Files Performance
+To enable auto staging, run:
 
-
-```console,ignore
-$ zsh -cl 'mkdir small-files ; for i in {1..100000} ; do echo "data-${RANDOM} ${RANDOM} ${RANDOM}" > small-files/file-${i}.txt ; done'
-
-$ hyperfine -r 1 'xvc file track small-files/'
-Benchmark 1: xvc file track small-files/
-  Time (abs ≡):        46.030 s               [User: 6.028 s, System: 90.737 s]
+	dvc config core.autostage true
+[main c74d783] Added dvc-large-file to DVC
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+  Time (abs ≡):         2.098 s               [User: 1.903 s, System: 0.189 s]
  
 
-$ hyperfine -r 1 'dvc add small-files/ ; git add small-files.dvc ; git commit -m "Added small-files/ to DVC"'
-? interrupted
-Benchmark 1: dvc add small-files/ ; git add small-files.dvc ; git commit -m "Added small-files/ to DVC"
-
-$ git status -s
- M .gitignore
-?? chinese_mnist.zip
-?? data/
 ```
 
+## Pipeline with 10 Steps
+
+Pipeline steps will depend on the following files. 
+
+```console
+
+$ xvc-test-helper create-directory-tree --directories 1 --files 10 
+
+$ tree dir-0001
+```
+
+Let's create 10 DVC stages to depend on these files:
+
+```
+$ zsh -cl "for f in dir-0001/* ; do dvc stage add -n {f:r:h} -d ${f} ; done"
+
+$ dvc stage list
+```
