@@ -246,3 +246,10 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 ```
+
+```console
+$ zsh -cl "for f in dir-0001/* ; do xvc pipeline step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
+
+$ hyperfine -r 1 "xvc pipeline run"
+```
+
