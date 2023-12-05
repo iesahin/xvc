@@ -225,7 +225,7 @@ dir-0001
 Let's create 10 DVC stages to depend on these files:
 
 ```
-$ zsh -cl "for f in dir-0001/* ; do dvc stage add -n {f:r:h} -d ${f} 'sha1sum $f'; done"
+$ zsh -cl "for f in dir-0001/* ; do dvc stage add -n {f:h:r} -d ${f} 'sha1sum $f'; done"
 ? 255
 ERROR: command is not specified
 ERROR: command is not specified
