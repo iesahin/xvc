@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         77.7 ms               [User: 11.2 ms, System: 21.2 ms]
+  Time (abs ≡):         33.3 ms               [User: 11.6 ms, System: 18.7 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        488.4 ms               [User: 208.7 ms, System: 93.9 ms]
+  Time (abs ≡):        278.1 ms               [User: 198.6 ms, System: 71.8 ms]
  
 
 $ git status -s
@@ -225,21 +225,108 @@ dir-0001
 Let's create 10 DVC stages to depend on these files:
 
 ```
-$ zsh -cl "for f in dir-0001/* ; do dvc stage add -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
-? 255
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
-ERROR: command is not specified
+$ zsh -cl "for f in dir-0001/* ; do dvc -q stage add -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
+Added stage 'file-0001' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0002' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0003' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0004' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0005' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0006' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0007' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0008' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0009' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
+Added stage 'file-0010' in 'dvc.yaml'
+
+To track the changes with git, run:
+
+	git add dvc.yaml
+
+To enable auto staging, run:
+
+	dvc config core.autostage true
 
 $ dvc stage list
-? 255
-ERROR: '[CWD]/dvc.yaml' does not exist
+file-0001  Depends on dir-0001/file-0001.bin
+file-0002  Depends on dir-0001/file-0002.bin
+file-0003  Depends on dir-0001/file-0003.bin
+file-0004  Depends on dir-0001/file-0004.bin
+file-0005  Depends on dir-0001/file-0005.bin
+file-0006  Depends on dir-0001/file-0006.bin
+file-0007  Depends on dir-0001/file-0007.bin
+file-0008  Depends on dir-0001/file-0008.bin
+file-0009  Depends on dir-0001/file-0009.bin
+file-0010  Depends on dir-0001/file-0010.bin
 
 ```
