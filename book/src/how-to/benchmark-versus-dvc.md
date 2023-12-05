@@ -203,7 +203,6 @@ To enable auto staging, run:
 Pipeline steps will depend on the following files. 
 
 ```console
-
 $ xvc-test-helper create-directory-tree --directories 1 --files 10 
 
 $ tree dir-0001
