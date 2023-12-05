@@ -19,20 +19,20 @@ name = "xvc_tests"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc = { version = "0.6.4-alpha.3", path = "../lib" }
-xvc-config = { version = "0.6.4-alpha.3", path = "../config" }
-xvc-core = { version = "0.6.4-alpha.3", path = "../core" }
+xvc = { version = "^0.6", path = "../lib" }
+xvc-config = { version = "^0.6", path = "../config" }
+xvc-core = { version = "^0.6", path = "../core" }
 xvc-logging = { version = "^0.6", path = "../logging" }
-xvc-ecs = { version = "0.6.4-alpha.3", path = "../ecs" }
-xvc-file = { version = "0.6.4-alpha.3", path = "../file" }
-xvc-pipeline = { version = "0.6.4-alpha.3", path = "../pipeline" }
-xvc-walker = { version = "0.6.4-alpha.3", path = "../walker" }
-xvc-storage = { version = "0.6.4-alpha.3", path = "../storage" }
+xvc-ecs = { version = "^0.6", path = "../ecs" }
+xvc-file = { version = "^0.6", path = "../file" }
+xvc-pipeline = { version = "^0.6", path = "../pipeline" }
+xvc-walker = { version = "^0.6", path = "../walker" }
+xvc-storage = { version = "^0.6", path = "../storage" }
 
 ## packages for testing
 clap = { version = "^4.4", features = ["derive"] }
 
-itertools = "^0.11"
+itertools = "^0.12"
 serde = { version = "^1.0", features = ["derive"] }
 serde_yaml = "^0.9"
 serde_json = "^1.0"
