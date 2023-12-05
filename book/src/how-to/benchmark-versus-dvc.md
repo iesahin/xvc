@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         40.2 ms               [User: 11.3 ms, System: 18.6 ms]
+  Time (abs ≡):         77.7 ms               [User: 11.2 ms, System: 21.2 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        290.9 ms               [User: 205.7 ms, System: 72.8 ms]
+  Time (abs ≡):        488.4 ms               [User: 208.7 ms, System: 93.9 ms]
  
 
 $ git status -s
@@ -206,12 +206,40 @@ Pipeline steps will depend on the following files.
 $ xvc-test-helper create-directory-tree --directories 1 --files 10 
 
 $ tree dir-0001
+dir-0001
+├── file-0001.bin
+├── file-0002.bin
+├── file-0003.bin
+├── file-0004.bin
+├── file-0005.bin
+├── file-0006.bin
+├── file-0007.bin
+├── file-0008.bin
+├── file-0009.bin
+└── file-0010.bin
+
+1 directory, 10 files
+
 ```
 
 Let's create 10 DVC stages to depend on these files:
 
 ```
 $ zsh -cl "for f in dir-0001/* ; do dvc stage add -n {f:r:h} -d ${f} ; done"
+? 255
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
+ERROR: command is not specified
 
 $ dvc stage list
+? 255
+ERROR: '[CWD]/dvc.yaml' does not exist
+
 ```
