@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         36.4 ms               [User: 11.3 ms, System: 17.4 ms]
+  Time (abs ≡):         36.5 ms               [User: 11.2 ms, System: 17.6 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        278.2 ms               [User: 199.5 ms, System: 71.5 ms]
+  Time (abs ≡):        277.0 ms               [User: 198.6 ms, System: 71.3 ms]
  
 
 $ git status -s
@@ -246,7 +246,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        621.5 ms               [User: 436.8 ms, System: 158.9 ms]
+  Time (abs ≡):        619.0 ms               [User: 435.3 ms, System: 157.7 ms]
  
 
 ```
@@ -254,17 +254,28 @@ Benchmark 1: dvc repro
 Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
+Benchmark 1: dvc repro
+  Time (mean ± σ):     431.6 ms ±   1.9 ms    [User: 326.8 ms, System: 98.9 ms]
+  Range (min … max):   429.3 ms … 433.3 ms    5 runs
+ 
+
 ```
 ```console
 $ zsh -cl "for f in dir-0001/* ; do xvc pipeline step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        320.7 ms               [User: 159.2 ms, System: 332.1 ms]
+  Time (abs ≡):        320.4 ms               [User: 160.2 ms, System: 330.4 ms]
  
 
 ```
 
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
+Benchmark 1: xvc pipeline run
+  Time (mean ± σ):     247.5 ms ±   4.3 ms    [User: 142.2 ms, System: 233.9 ms]
+  Range (min … max):   241.7 ms … 253.3 ms    5 runs
+ 
+
 ```
+
