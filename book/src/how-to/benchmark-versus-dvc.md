@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         36.5 ms               [User: 11.2 ms, System: 17.6 ms]
+  Time (abs ≡):         31.1 ms               [User: 11.1 ms, System: 17.6 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        277.0 ms               [User: 198.6 ms, System: 71.3 ms]
+  Time (abs ≡):        286.6 ms               [User: 203.0 ms, System: 74.8 ms]
  
 
 $ git status -s
@@ -246,7 +246,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        619.0 ms               [User: 435.3 ms, System: 157.7 ms]
+  Time (abs ≡):        656.8 ms               [User: 451.2 ms, System: 177.0 ms]
  
 
 ```
@@ -255,8 +255,8 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     431.6 ms ±   1.9 ms    [User: 326.8 ms, System: 98.9 ms]
-  Range (min … max):   429.3 ms … 433.3 ms    5 runs
+  Time (mean ± σ):     434.0 ms ±  10.2 ms    [User: 326.8 ms, System: 100.1 ms]
+  Range (min … max):   418.6 ms … 444.4 ms    5 runs
  
 
 ```
@@ -265,7 +265,7 @@ $ zsh -cl "for f in dir-0001/* ; do xvc pipeline step new -s ${f:r:t} --command 
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        320.4 ms               [User: 160.2 ms, System: 330.4 ms]
+  Time (abs ≡):        320.3 ms               [User: 168.3 ms, System: 356.7 ms]
  
 
 ```
@@ -273,8 +273,8 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     247.5 ms ±   4.3 ms    [User: 142.2 ms, System: 233.9 ms]
-  Range (min … max):   241.7 ms … 253.3 ms    5 runs
+  Time (mean ± σ):     253.1 ms ±   7.4 ms    [User: 142.8 ms, System: 243.5 ms]
+  Range (min … max):   242.3 ms … 259.9 ms    5 runs
  
 
 ```
