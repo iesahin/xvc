@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         31.1 ms               [User: 11.1 ms, System: 17.6 ms]
+  Time (abs ≡):        201.9 ms               [User: 12.5 ms, System: 22.3 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        286.6 ms               [User: 203.0 ms, System: 74.8 ms]
+  Time (abs ≡):        598.1 ms               [User: 216.3 ms, System: 96.5 ms]
  
 
 $ git status -s
@@ -203,9 +203,9 @@ To enable auto staging, run:
 Pipeline steps will depend on the following files. 
 
 ```console
-$ xvc-test-helper create-directory-tree --directories 1 --files 10 
+$ xvc-test-helper create-directory-tree --directories 1 --files 10  --root pipeline-10
 
-$ tree dir-0001
+$ tree pipeline-10
 dir-0001
 ├── file-0001.bin
 ├── file-0002.bin
@@ -225,7 +225,7 @@ dir-0001
 Let's create 10 DVC stages to depend on these files:
 
 ```
-$ zsh -cl "for f in dir-0001/* ; do dvc stage add -q -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
+$ zsh -cl "for f in pipeline-10/dir-0001/* ; do dvc stage add -q -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
 
 $ dvc stage list
 file-0001  Depends on dir-0001/file-0001.bin
@@ -246,7 +246,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        656.8 ms               [User: 451.2 ms, System: 177.0 ms]
+  Time (abs ≡):        675.2 ms               [User: 440.5 ms, System: 164.2 ms]
  
 
 ```
@@ -255,17 +255,17 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     434.0 ms ±  10.2 ms    [User: 326.8 ms, System: 100.1 ms]
-  Range (min … max):   418.6 ms … 444.4 ms    5 runs
+  Time (mean ± σ):     433.7 ms ±   6.5 ms    [User: 329.1 ms, System: 99.7 ms]
+  Range (min … max):   423.9 ms … 441.3 ms    5 runs
  
 
 ```
 ```console
-$ zsh -cl "for f in dir-0001/* ; do xvc pipeline step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
+$ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        320.3 ms               [User: 168.3 ms, System: 356.7 ms]
+  Time (abs ≡):        317.2 ms               [User: 167.2 ms, System: 333.9 ms]
  
 
 ```
@@ -273,9 +273,32 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     253.1 ms ±   7.4 ms    [User: 142.8 ms, System: 243.5 ms]
-  Range (min … max):   242.3 ms … 259.9 ms    5 runs
+  Time (mean ± σ):     245.4 ms ±   8.2 ms    [User: 143.8 ms, System: 225.9 ms]
+  Range (min … max):   236.1 ms … 258.6 ms    5 runs
  
 
 ```
 
+
+
+## Pipeline with 100 Steps
+
+Pipeline steps will depend on the following files. 
+
+```console
+$ xvc-test-helper create-directory-tree --directories 1 --files 100 --root pipeline-100
+
+$ tree pipeline-10
+
+$ zsh -cl "for f in pipeline-10/dir-0001/* ; do dvc stage add -q -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
+
+$ hyperfine -r 1 "dvc repro"
+
+
+$ hyperfine -M 5 "dvc repro"
+
+$ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
+
+$ hyperfine -M 5 "xvc pipeline run"
+
+```
