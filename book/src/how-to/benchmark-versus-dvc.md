@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):        230.9 ms               [User: 18.6 ms, System: 31.7 ms]
+  Time (abs ≡):         60.6 ms               [User: 11.6 ms, System: 24.2 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        523.0 ms               [User: 208.7 ms, System: 99.4 ms]
+  Time (abs ≡):        353.6 ms               [User: 209.8 ms, System: 82.1 ms]
  
 
 $ git status -s
@@ -247,7 +247,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        667.8 ms               [User: 437.4 ms, System: 161.9 ms]
+  Time (abs ≡):        617.9 ms               [User: 434.9 ms, System: 157.1 ms]
  
 
 ```
@@ -256,8 +256,8 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     436.4 ms ±   6.5 ms    [User: 328.9 ms, System: 100.2 ms]
-  Range (min … max):   431.0 ms … 447.2 ms    5 runs
+  Time (mean ± σ):     435.1 ms ±   4.4 ms    [User: 328.1 ms, System: 101.7 ms]
+  Range (min … max):   429.4 ms … 441.2 ms    5 runs
  
 
 ```
@@ -266,7 +266,7 @@ $ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        328.8 ms               [User: 167.1 ms, System: 359.6 ms]
+  Time (abs ≡):        327.5 ms               [User: 160.4 ms, System: 349.1 ms]
  
 
 ```
@@ -274,8 +274,8 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     250.2 ms ±   8.3 ms    [User: 142.4 ms, System: 237.3 ms]
-  Range (min … max):   243.6 ms … 263.7 ms    5 runs
+  Time (mean ± σ):     264.1 ms ±  11.0 ms    [User: 146.3 ms, System: 265.5 ms]
+  Range (min … max):   247.8 ms … 273.1 ms    5 runs
  
 
 ```
@@ -289,7 +289,7 @@ Pipeline steps will depend on the following files.
 ```console
 $ xvc-test-helper create-directory-tree --directories 1 --files 100 --root pipeline-100
 
-$ tree pipeline-100
+$ tree -d pipeline-100
 pipeline-100
 └── dir-0001
     ├── file-0001.bin
@@ -401,13 +401,13 @@ $ zsh -cl "for f in pipeline-100/dir-0001/* ; do dvc stage add -q -n s-${RANDOM}
 
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):         9.391 s               [User: 8.270 s, System: 0.932 s]
+  Time (abs ≡):         9.538 s               [User: 8.303 s, System: 0.947 s]
  
 
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     637.3 ms ±   8.3 ms    [User: 465.9 ms, System: 161.8 ms]
-  Range (min … max):   629.4 ms … 650.3 ms    5 runs
+  Time (mean ± σ):     716.9 ms ±  54.7 ms    [User: 503.0 ms, System: 184.3 ms]
+  Range (min … max):   653.8 ms … 785.8 ms    5 runs
  
 
 $ xvc pipeline new --name p100
@@ -612,8 +612,8 @@ $ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -n p100 step new -
 
 $ hyperfine -M 5 "xvc pipeline -n p100 run"
 Benchmark 1: xvc pipeline -n p100 run
-  Time (mean ± σ):       8.1 ms ±   0.2 ms    [User: 3.0 ms, System: 4.1 ms]
-  Range (min … max):     7.7 ms …   8.3 ms    5 runs
+  Time (mean ± σ):       8.7 ms ±   0.7 ms    [User: 3.0 ms, System: 4.8 ms]
+  Range (min … max):     7.8 ms …   9.6 ms    5 runs
  
 
 ```
