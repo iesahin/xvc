@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):        201.9 ms               [User: 12.5 ms, System: 22.3 ms]
+  Time (abs ≡):         49.9 ms               [User: 11.3 ms, System: 21.4 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        598.1 ms               [User: 216.3 ms, System: 96.5 ms]
+  Time (abs ≡):        343.7 ms               [User: 202.4 ms, System: 79.3 ms]
  
 
 $ git status -s
@@ -206,19 +206,20 @@ Pipeline steps will depend on the following files.
 $ xvc-test-helper create-directory-tree --directories 1 --files 10  --root pipeline-10
 
 $ tree pipeline-10
-dir-0001
-├── file-0001.bin
-├── file-0002.bin
-├── file-0003.bin
-├── file-0004.bin
-├── file-0005.bin
-├── file-0006.bin
-├── file-0007.bin
-├── file-0008.bin
-├── file-0009.bin
-└── file-0010.bin
+pipeline-10
+└── dir-0001
+    ├── file-0001.bin
+    ├── file-0002.bin
+    ├── file-0003.bin
+    ├── file-0004.bin
+    ├── file-0005.bin
+    ├── file-0006.bin
+    ├── file-0007.bin
+    ├── file-0008.bin
+    ├── file-0009.bin
+    └── file-0010.bin
 
-1 directory, 10 files
+2 directories, 10 files
 
 ```
 
@@ -228,16 +229,16 @@ Let's create 10 DVC stages to depend on these files:
 $ zsh -cl "for f in pipeline-10/dir-0001/* ; do dvc stage add -q -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
 
 $ dvc stage list
-file-0001  Depends on dir-0001/file-0001.bin
-file-0002  Depends on dir-0001/file-0002.bin
-file-0003  Depends on dir-0001/file-0003.bin
-file-0004  Depends on dir-0001/file-0004.bin
-file-0005  Depends on dir-0001/file-0005.bin
-file-0006  Depends on dir-0001/file-0006.bin
-file-0007  Depends on dir-0001/file-0007.bin
-file-0008  Depends on dir-0001/file-0008.bin
-file-0009  Depends on dir-0001/file-0009.bin
-file-0010  Depends on dir-0001/file-0010.bin
+file-0001  Depends on pipeline-10/dir-0001/file-0001.bin
+file-0002  Depends on pipeline-10/dir-0001/file-0002.bin
+file-0003  Depends on pipeline-10/dir-0001/file-0003.bin
+file-0004  Depends on pipeline-10/dir-0001/file-0004.bin
+file-0005  Depends on pipeline-10/dir-0001/file-0005.bin
+file-0006  Depends on pipeline-10/dir-0001/file-0006.bin
+file-0007  Depends on pipeline-10/dir-0001/file-0007.bin
+file-0008  Depends on pipeline-10/dir-0001/file-0008.bin
+file-0009  Depends on pipeline-10/dir-0001/file-0009.bin
+file-0010  Depends on pipeline-10/dir-0001/file-0010.bin
 
 ```
 
@@ -246,7 +247,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        675.2 ms               [User: 440.5 ms, System: 164.2 ms]
+  Time (abs ≡):        652.4 ms               [User: 432.8 ms, System: 157.2 ms]
  
 
 ```
@@ -255,8 +256,8 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     433.7 ms ±   6.5 ms    [User: 329.1 ms, System: 99.7 ms]
-  Range (min … max):   423.9 ms … 441.3 ms    5 runs
+  Time (mean ± σ):     432.3 ms ±   2.1 ms    [User: 327.9 ms, System: 99.3 ms]
+  Range (min … max):   428.8 ms … 434.3 ms    5 runs
  
 
 ```
@@ -265,7 +266,7 @@ $ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        317.2 ms               [User: 167.2 ms, System: 333.9 ms]
+  Time (abs ≡):        306.0 ms               [User: 157.8 ms, System: 340.9 ms]
  
 
 ```
@@ -273,8 +274,8 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     245.4 ms ±   8.2 ms    [User: 143.8 ms, System: 225.9 ms]
-  Range (min … max):   236.1 ms … 258.6 ms    5 runs
+  Time (mean ± σ):     246.0 ms ±   7.2 ms    [User: 139.0 ms, System: 235.1 ms]
+  Range (min … max):   240.2 ms … 257.5 ms    5 runs
  
 
 ```
@@ -288,17 +289,56 @@ Pipeline steps will depend on the following files.
 ```console
 $ xvc-test-helper create-directory-tree --directories 1 --files 100 --root pipeline-100
 
-$ tree pipeline-10
+$ tree pipeline-100
+pipeline-10
+└── dir-0001
+    ├── file-0001.bin
+    ├── file-0002.bin
+    ├── file-0003.bin
+    ├── file-0004.bin
+    ├── file-0005.bin
+    ├── file-0006.bin
+    ├── file-0007.bin
+    ├── file-0008.bin
+    ├── file-0009.bin
+    └── file-0010.bin
 
-$ zsh -cl "for f in pipeline-10/dir-0001/* ; do dvc stage add -q -n ${f:r:t} -d ${f} 'sha1sum $f'; done"
+2 directories, 10 files
+
+$ rm -f dvc.yaml
+
+$ zsh -cl "for f in pipeline-100/dir-0001/* ; do dvc stage add -q -n s-${RANDOM} -d ${f} 'sha1sum $f'; done"
+? 255
 
 $ hyperfine -r 1 "dvc repro"
-
+Benchmark 1: dvc repro
+  Time (abs ≡):        424.1 ms               [User: 321.0 ms, System: 98.7 ms]
+ 
 
 $ hyperfine -M 5 "dvc repro"
+Benchmark 1: dvc repro
+  Time (mean ± σ):     433.2 ms ±   6.5 ms    [User: 328.9 ms, System: 99.4 ms]
+  Range (min … max):   427.7 ms … 444.1 ms    5 runs
+ 
 
-$ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
+$ xvc pipeline new --name p100
 
-$ hyperfine -M 5 "xvc pipeline run"
+$ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -n p100 step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0001' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0002' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0003' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0004' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0005' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0006' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0007' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0008' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0009' already found in default
+[ERROR] Pipeline Error: [E2001] Step with name 'file-0010' already found in default
+
+$ hyperfine -M 5 "xvc pipeline -n p100 run"
+Benchmark 1: xvc pipeline run
+  Time (mean ± σ):     259.9 ms ±  25.2 ms    [User: 143.9 ms, System: 256.6 ms]
+  Range (min … max):   241.1 ms … 304.0 ms    5 runs
+ 
 
 ```
