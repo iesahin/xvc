@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         49.9 ms               [User: 11.3 ms, System: 21.4 ms]
+  Time (abs ≡):        230.9 ms               [User: 18.6 ms, System: 31.7 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        343.7 ms               [User: 202.4 ms, System: 79.3 ms]
+  Time (abs ≡):        523.0 ms               [User: 208.7 ms, System: 99.4 ms]
  
 
 $ git status -s
@@ -247,7 +247,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        652.4 ms               [User: 432.8 ms, System: 157.2 ms]
+  Time (abs ≡):        667.8 ms               [User: 437.4 ms, System: 161.9 ms]
  
 
 ```
@@ -256,8 +256,8 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     432.3 ms ±   2.1 ms    [User: 327.9 ms, System: 99.3 ms]
-  Range (min … max):   428.8 ms … 434.3 ms    5 runs
+  Time (mean ± σ):     436.4 ms ±   6.5 ms    [User: 328.9 ms, System: 100.2 ms]
+  Range (min … max):   431.0 ms … 447.2 ms    5 runs
  
 
 ```
@@ -266,7 +266,7 @@ $ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        306.0 ms               [User: 157.8 ms, System: 340.9 ms]
+  Time (abs ≡):        328.8 ms               [User: 167.1 ms, System: 359.6 ms]
  
 
 ```
@@ -274,8 +274,8 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     246.0 ms ±   7.2 ms    [User: 139.0 ms, System: 235.1 ms]
-  Range (min … max):   240.2 ms … 257.5 ms    5 runs
+  Time (mean ± σ):     250.2 ms ±   8.3 ms    [User: 142.4 ms, System: 237.3 ms]
+  Range (min … max):   243.6 ms … 263.7 ms    5 runs
  
 
 ```
@@ -290,7 +290,7 @@ Pipeline steps will depend on the following files.
 $ xvc-test-helper create-directory-tree --directories 1 --files 100 --root pipeline-100
 
 $ tree pipeline-100
-pipeline-10
+pipeline-100
 └── dir-0001
     ├── file-0001.bin
     ├── file-0002.bin
@@ -301,44 +301,319 @@ pipeline-10
     ├── file-0007.bin
     ├── file-0008.bin
     ├── file-0009.bin
-    └── file-0010.bin
+    ├── file-0010.bin
+    ├── file-0011.bin
+    ├── file-0012.bin
+    ├── file-0013.bin
+    ├── file-0014.bin
+    ├── file-0015.bin
+    ├── file-0016.bin
+    ├── file-0017.bin
+    ├── file-0018.bin
+    ├── file-0019.bin
+    ├── file-0020.bin
+    ├── file-0021.bin
+    ├── file-0022.bin
+    ├── file-0023.bin
+    ├── file-0024.bin
+    ├── file-0025.bin
+    ├── file-0026.bin
+    ├── file-0027.bin
+    ├── file-0028.bin
+    ├── file-0029.bin
+    ├── file-0030.bin
+    ├── file-0031.bin
+    ├── file-0032.bin
+    ├── file-0033.bin
+    ├── file-0034.bin
+    ├── file-0035.bin
+    ├── file-0036.bin
+    ├── file-0037.bin
+    ├── file-0038.bin
+    ├── file-0039.bin
+    ├── file-0040.bin
+    ├── file-0041.bin
+    ├── file-0042.bin
+    ├── file-0043.bin
+    ├── file-0044.bin
+    ├── file-0045.bin
+    ├── file-0046.bin
+    ├── file-0047.bin
+    ├── file-0048.bin
+    ├── file-0049.bin
+    ├── file-0050.bin
+    ├── file-0051.bin
+    ├── file-0052.bin
+    ├── file-0053.bin
+    ├── file-0054.bin
+    ├── file-0055.bin
+    ├── file-0056.bin
+    ├── file-0057.bin
+    ├── file-0058.bin
+    ├── file-0059.bin
+    ├── file-0060.bin
+    ├── file-0061.bin
+    ├── file-0062.bin
+    ├── file-0063.bin
+    ├── file-0064.bin
+    ├── file-0065.bin
+    ├── file-0066.bin
+    ├── file-0067.bin
+    ├── file-0068.bin
+    ├── file-0069.bin
+    ├── file-0070.bin
+    ├── file-0071.bin
+    ├── file-0072.bin
+    ├── file-0073.bin
+    ├── file-0074.bin
+    ├── file-0075.bin
+    ├── file-0076.bin
+    ├── file-0077.bin
+    ├── file-0078.bin
+    ├── file-0079.bin
+    ├── file-0080.bin
+    ├── file-0081.bin
+    ├── file-0082.bin
+    ├── file-0083.bin
+    ├── file-0084.bin
+    ├── file-0085.bin
+    ├── file-0086.bin
+    ├── file-0087.bin
+    ├── file-0088.bin
+    ├── file-0089.bin
+    ├── file-0090.bin
+    ├── file-0091.bin
+    ├── file-0092.bin
+    ├── file-0093.bin
+    ├── file-0094.bin
+    ├── file-0095.bin
+    ├── file-0096.bin
+    ├── file-0097.bin
+    ├── file-0098.bin
+    ├── file-0099.bin
+    └── file-0100.bin
 
-2 directories, 10 files
+2 directories, 100 files
 
 $ rm -f dvc.yaml
 
 $ zsh -cl "for f in pipeline-100/dir-0001/* ; do dvc stage add -q -n s-${RANDOM} -d ${f} 'sha1sum $f'; done"
-? 255
 
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        424.1 ms               [User: 321.0 ms, System: 98.7 ms]
+  Time (abs ≡):         9.391 s               [User: 8.270 s, System: 0.932 s]
  
 
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     433.2 ms ±   6.5 ms    [User: 328.9 ms, System: 99.4 ms]
-  Range (min … max):   427.7 ms … 444.1 ms    5 runs
+  Time (mean ± σ):     637.3 ms ±   8.3 ms    [User: 465.9 ms, System: 161.8 ms]
+  Range (min … max):   629.4 ms … 650.3 ms    5 runs
  
 
 $ xvc pipeline new --name p100
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline new [OPTIONS] --pipeline-name <PIPELINE_NAME>
+
+For more information, try '--help'.
 
 $ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -n p100 step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline step dependency -s ${f:r:t} --file ${f} ; done"
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0001' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0002' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0003' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0004' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0005' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0006' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0007' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0008' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0009' already found in default
-[ERROR] Pipeline Error: [E2001] Step with name 'file-0010' already found in default
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0011 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0012 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0013 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0014 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0015 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0016 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0017 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0018 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0019 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0020 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0021 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0022 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0023 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0024 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0025 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0026 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0027 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0028 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0029 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0030 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0031 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0032 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0033 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0034 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0035 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0036 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0037 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0038 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0039 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0040 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0041 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0042 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0043 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0044 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0045 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0046 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0047 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0048 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0049 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0050 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0051 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0052 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0053 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0054 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0055 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0056 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0057 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0058 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0059 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0060 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0061 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0062 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0063 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0064 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0065 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0066 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0067 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0068 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0069 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0070 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0071 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0072 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0073 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0074 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0075 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0076 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0077 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0078 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0079 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0080 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0081 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0082 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0083 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0084 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0085 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0086 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0087 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0088 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0089 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0090 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0091 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0092 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0093 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0094 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0095 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0096 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0097 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0098 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0099 not found in pipeline
+[ERROR] Pipeline Error: Pipeline p100 is not found
+[ERROR] Pipeline Error: Step file-0100 not found in pipeline
 
 $ hyperfine -M 5 "xvc pipeline -n p100 run"
-Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     259.9 ms ±  25.2 ms    [User: 143.9 ms, System: 256.6 ms]
-  Range (min … max):   241.1 ms … 304.0 ms    5 runs
+Benchmark 1: xvc pipeline -n p100 run
+  Time (mean ± σ):       8.1 ms ±   0.2 ms    [User: 3.0 ms, System: 4.1 ms]
+  Range (min … max):     7.7 ms …   8.3 ms    5 runs
  
 
 ```
