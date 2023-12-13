@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         60.6 ms               [User: 11.6 ms, System: 24.2 ms]
+  Time (abs ≡):         56.8 ms               [User: 11.5 ms, System: 23.5 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        353.6 ms               [User: 209.8 ms, System: 82.1 ms]
+  Time (abs ≡):        354.3 ms               [User: 209.1 ms, System: 81.8 ms]
  
 
 $ git status -s
@@ -247,7 +247,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        617.9 ms               [User: 434.9 ms, System: 157.1 ms]
+  Time (abs ≡):        620.4 ms               [User: 435.2 ms, System: 162.7 ms]
  
 
 ```
@@ -256,8 +256,8 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     435.1 ms ±   4.4 ms    [User: 328.1 ms, System: 101.7 ms]
-  Range (min … max):   429.4 ms … 441.2 ms    5 runs
+  Time (mean ± σ):     466.6 ms ±  27.3 ms    [User: 345.9 ms, System: 109.3 ms]
+  Range (min … max):   431.4 ms … 496.9 ms    5 runs
  
 
 ```
@@ -266,7 +266,7 @@ $ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        327.5 ms               [User: 160.4 ms, System: 349.1 ms]
+  Time (abs ≡):        337.8 ms               [User: 162.8 ms, System: 382.3 ms]
  
 
 ```
@@ -274,8 +274,8 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     264.1 ms ±  11.0 ms    [User: 146.3 ms, System: 265.5 ms]
-  Range (min … max):   247.8 ms … 273.1 ms    5 runs
+  Time (mean ± σ):     252.3 ms ±   5.6 ms    [User: 140.2 ms, System: 248.4 ms]
+  Range (min … max):   248.9 ms … 262.2 ms    5 runs
  
 
 ```
@@ -292,108 +292,8 @@ $ xvc-test-helper create-directory-tree --directories 1 --files 100 --root pipel
 $ tree -d pipeline-100
 pipeline-100
 └── dir-0001
-    ├── file-0001.bin
-    ├── file-0002.bin
-    ├── file-0003.bin
-    ├── file-0004.bin
-    ├── file-0005.bin
-    ├── file-0006.bin
-    ├── file-0007.bin
-    ├── file-0008.bin
-    ├── file-0009.bin
-    ├── file-0010.bin
-    ├── file-0011.bin
-    ├── file-0012.bin
-    ├── file-0013.bin
-    ├── file-0014.bin
-    ├── file-0015.bin
-    ├── file-0016.bin
-    ├── file-0017.bin
-    ├── file-0018.bin
-    ├── file-0019.bin
-    ├── file-0020.bin
-    ├── file-0021.bin
-    ├── file-0022.bin
-    ├── file-0023.bin
-    ├── file-0024.bin
-    ├── file-0025.bin
-    ├── file-0026.bin
-    ├── file-0027.bin
-    ├── file-0028.bin
-    ├── file-0029.bin
-    ├── file-0030.bin
-    ├── file-0031.bin
-    ├── file-0032.bin
-    ├── file-0033.bin
-    ├── file-0034.bin
-    ├── file-0035.bin
-    ├── file-0036.bin
-    ├── file-0037.bin
-    ├── file-0038.bin
-    ├── file-0039.bin
-    ├── file-0040.bin
-    ├── file-0041.bin
-    ├── file-0042.bin
-    ├── file-0043.bin
-    ├── file-0044.bin
-    ├── file-0045.bin
-    ├── file-0046.bin
-    ├── file-0047.bin
-    ├── file-0048.bin
-    ├── file-0049.bin
-    ├── file-0050.bin
-    ├── file-0051.bin
-    ├── file-0052.bin
-    ├── file-0053.bin
-    ├── file-0054.bin
-    ├── file-0055.bin
-    ├── file-0056.bin
-    ├── file-0057.bin
-    ├── file-0058.bin
-    ├── file-0059.bin
-    ├── file-0060.bin
-    ├── file-0061.bin
-    ├── file-0062.bin
-    ├── file-0063.bin
-    ├── file-0064.bin
-    ├── file-0065.bin
-    ├── file-0066.bin
-    ├── file-0067.bin
-    ├── file-0068.bin
-    ├── file-0069.bin
-    ├── file-0070.bin
-    ├── file-0071.bin
-    ├── file-0072.bin
-    ├── file-0073.bin
-    ├── file-0074.bin
-    ├── file-0075.bin
-    ├── file-0076.bin
-    ├── file-0077.bin
-    ├── file-0078.bin
-    ├── file-0079.bin
-    ├── file-0080.bin
-    ├── file-0081.bin
-    ├── file-0082.bin
-    ├── file-0083.bin
-    ├── file-0084.bin
-    ├── file-0085.bin
-    ├── file-0086.bin
-    ├── file-0087.bin
-    ├── file-0088.bin
-    ├── file-0089.bin
-    ├── file-0090.bin
-    ├── file-0091.bin
-    ├── file-0092.bin
-    ├── file-0093.bin
-    ├── file-0094.bin
-    ├── file-0095.bin
-    ├── file-0096.bin
-    ├── file-0097.bin
-    ├── file-0098.bin
-    ├── file-0099.bin
-    └── file-0100.bin
 
-2 directories, 100 files
+2 directories
 
 $ rm -f dvc.yaml
 
@@ -401,16 +301,16 @@ $ zsh -cl "for f in pipeline-100/dir-0001/* ; do dvc stage add -q -n s-${RANDOM}
 
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):         9.538 s               [User: 8.303 s, System: 0.947 s]
+  Time (abs ≡):         9.572 s               [User: 8.436 s, System: 0.926 s]
  
 
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     716.9 ms ±  54.7 ms    [User: 503.0 ms, System: 184.3 ms]
-  Range (min … max):   653.8 ms … 785.8 ms    5 runs
+  Time (mean ± σ):     634.5 ms ±   3.3 ms    [User: 465.5 ms, System: 162.3 ms]
+  Range (min … max):   630.3 ms … 639.4 ms    5 runs
  
 
-$ xvc pipeline new --name p100
+$ xvc pipeline new --pipeline-name p100
 ? 2
 error: unexpected argument '--name' found
 
@@ -612,8 +512,8 @@ $ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -n p100 step new -
 
 $ hyperfine -M 5 "xvc pipeline -n p100 run"
 Benchmark 1: xvc pipeline -n p100 run
-  Time (mean ± σ):       8.7 ms ±   0.7 ms    [User: 3.0 ms, System: 4.8 ms]
-  Range (min … max):     7.8 ms …   9.6 ms    5 runs
+  Time (mean ± σ):       7.7 ms ±   0.3 ms    [User: 3.0 ms, System: 4.1 ms]
+  Range (min … max):     7.3 ms …   8.0 ms    5 runs
  
 
 ```
