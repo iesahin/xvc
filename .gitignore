@@ -14,3 +14,4 @@ Cargo.lock
 
 # Use plain vim for large files and let it create swp
 *.swp
+flamegraph.svg

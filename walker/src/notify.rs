@@ -9,7 +9,7 @@ use crate::{
     error::{Error, Result},
     IgnoreRules, MatchResult,
 };
-use notify::{
+pub use notify::{
     Config, Event, EventHandler, PollWatcher, RecommendedWatcher, RecursiveMode, Watcher,
 };
 use std::fs::Metadata;
@@ -22,7 +22,7 @@ use log::{debug, warn};
 
 /// An walker-relevant event for changes in a directory.
 /// It packs newer [std::fs::Metadata] if there is.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum PathEvent {
     /// Emitted when a new `path` is created with `metadata`.
     Create {

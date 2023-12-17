@@ -4,7 +4,7 @@ use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{color, label, shape, Color, Shape};
 use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
 use xvc_config::FromConfigKey;
-use xvc_core::{all_paths_and_metadata, XvcPath, XvcRoot};
+use xvc_core::{XvcPath, XvcPathMetadataProvider, XvcRoot};
 use xvc_ecs::{HStore, R1NStore, XvcEntity};
 use xvc_logging::{output, watch, XvcOutputSender};
 
@@ -64,7 +64,7 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
 
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
-    let (pmm, _ignore_rules) = all_paths_and_metadata(xvc_root);
+    let pmp = XvcPathMetadataProvider::new(output_snd, xvc_root)?;
 
     let pipeline_len = pipeline_steps.len();
 
@@ -91,7 +91,7 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
     add_implicit_dependencies(
         output_snd,
         xvc_root,
-        &pmm,
+        &pmp,
         &pipeline_rundir,
         &all_deps,
         &all_outs,

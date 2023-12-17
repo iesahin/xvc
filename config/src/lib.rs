@@ -524,6 +524,7 @@ impl XvcConfig {
 
         if p.include_environment_config {
             let env_config = Self::env_map().unwrap();
+            watch!(env_config);
             match config.update_from_hash_map(env_config, XvcConfigOptionSource::Environment) {
                 Ok(conf) => config = conf,
                 Err(err) => {

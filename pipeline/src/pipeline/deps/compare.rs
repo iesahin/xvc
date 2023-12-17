@@ -269,7 +269,7 @@ fn thorough_compare_generic(record: &GenericDep) -> Result<Diff<GenericDep>> {
 
 /// Compares a dependency path with the actual metadata and content digest found on disk
 fn thorough_compare_file(cmp_params: &StepStateParams, record: &FileDep) -> Result<Diff<FileDep>> {
-    let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?)?;
+    let actual = FileDep::from_pmp(&record.path, cmp_params.pmp)?;
     let actual = actual.calculate_content_digest(
         cmp_params.xvc_root,
         cmp_params.algorithm,
@@ -289,7 +289,7 @@ fn thorough_compare_param(
     record: &ParamDep,
 ) -> Result<Diff<ParamDep>> {
     let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?
-        .update_metadata(cmp_params.pmm.read().as_ref()?)?
+        .update_metadata(cmp_params.pmp)?
         .update_value(cmp_params.xvc_root)?;
     Ok(ParamDep::diff_thorough(record, &actual))
 }
@@ -299,7 +299,7 @@ fn thorough_compare_line_items(
     record: &LineItemsDep,
 ) -> Result<Diff<LineItemsDep>> {
     let actual = LineItemsDep::new(record.path.clone(), record.begin, record.end)
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned())
+        .update_metadata(cmp_params.pmp.get(&record.path))
         .update_lines(cmp_params.xvc_root);
     Ok(LineItemsDep::diff(Some(record), Some(&actual)))
 }
@@ -309,11 +309,11 @@ fn thorough_compare_glob_items(
     cmp_params: &StepStateParams,
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
-    let actual = GlobItemsDep::from_pmm(
+    let actual = GlobItemsDep::from_pmp(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
         record.glob.clone(),
-        cmp_params.pmm.read().as_ref()?,
+        cmp_params.pmp,
     )?
     .update_changed_paths_digests(record, cmp_params.xvc_root, cmp_params.algorithm)?;
 
@@ -321,17 +321,14 @@ fn thorough_compare_glob_items(
 }
 
 fn thorough_compare_glob(cmp_params: &StepStateParams, record: &GlobDep) -> Result<Diff<GlobDep>> {
-    let actual = GlobDep::new(record.glob.clone())
-        .update_collection_digests(cmp_params.pmm.read().as_ref()?)?;
+    let actual = GlobDep::new(record.glob.clone()).update_collection_digests(cmp_params.pmp)?;
     match GlobDep::diff_superficial(record, &actual) {
         Diff::Different { record, actual } => {
-            let actual = actual
-                .update_content_digest(cmp_params.xvc_root, cmp_params.pmm.read().as_ref()?)?;
+            let actual = actual.update_content_digest(cmp_params.xvc_root, cmp_params.pmp)?;
             Ok(GlobDep::diff_thorough(&record, &actual))
         }
         Diff::RecordMissing { actual } => {
-            let actual = actual
-                .update_content_digest(cmp_params.xvc_root, cmp_params.pmm.read().as_ref()?)?;
+            let actual = actual.update_content_digest(cmp_params.xvc_root, cmp_params.pmp)?;
             Ok(GlobDep::diff_thorough(record, &actual))
         }
         diff => Ok(diff),
@@ -343,7 +340,7 @@ fn thorough_compare_regex(
     record: &RegexDep,
 ) -> Result<Diff<RegexDep>> {
     let actual = RegexDep::new(record.path.clone(), record.regex.clone())
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+        .update_metadata(cmp_params.pmp.get(&record.path));
     // Shortcircuit if the metadata is identical
     match RegexDep::diff_superficial(record, &actual) {
         Diff::Different { record, actual } => {
@@ -363,7 +360,7 @@ fn thorough_compare_regex_items(
     record: &RegexItemsDep,
 ) -> Result<Diff<RegexItemsDep>> {
     let actual = RegexItemsDep::new(record.path.clone(), record.regex.clone())
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+        .update_metadata(cmp_params.pmp.get(&record.path));
     // Shortcircuit if the metadata is identical
     match RegexItemsDep::diff_superficial(record, &actual) {
         Diff::Different { record, actual } => {
@@ -383,7 +380,7 @@ fn thorough_compare_lines(
     record: &LinesDep,
 ) -> Result<Diff<LinesDep>> {
     let actual = LinesDep::new(record.path.clone(), record.begin, record.end)
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+        .update_metadata(cmp_params.pmp.get(&record.path));
 
     // Shortcircuit if the metadata is identical
     match LinesDep::diff_superficial(record, &actual) {
@@ -471,7 +468,7 @@ fn superficial_compare_file(
     cmp_params: &StepStateParams,
     record: &FileDep,
 ) -> Result<Diff<FileDep>> {
-    let actual = FileDep::from_pmm(&record.path, cmp_params.pmm.read().as_ref()?)?;
+    let actual = FileDep::from_pmp(&record.path, cmp_params.pmp)?;
     watch!(actual);
     Ok(FileDep::diff_superficial(record, &actual))
 }
@@ -487,7 +484,7 @@ fn superficial_compare_param(
     record: &ParamDep,
 ) -> Result<Diff<ParamDep>> {
     let actual = ParamDep::new(&record.path, Some(record.format), record.key.clone())?
-        .update_metadata(cmp_params.pmm.read().as_ref()?)?;
+        .update_metadata(cmp_params.pmp)?;
     Ok(ParamDep::diff_superficial(record, &actual))
 }
 
@@ -496,7 +493,7 @@ fn superficial_compare_regex_items(
     record: &RegexItemsDep,
 ) -> Result<Diff<RegexItemsDep>> {
     let actual = RegexItemsDep::new(record.path.clone(), record.regex.clone())
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+        .update_metadata(cmp_params.pmp.get(&record.path));
     Ok(RegexItemsDep::diff_superficial(record, &actual))
 }
 
@@ -505,7 +502,7 @@ fn superficial_compare_line_items(
     record: &LineItemsDep,
 ) -> Result<Diff<LineItemsDep>> {
     let actual = LineItemsDep::new(record.path.clone(), record.begin, record.end)
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+        .update_metadata(cmp_params.pmp.get(&record.path));
     Ok(LineItemsDep::diff_superficial(record, &actual))
 }
 
@@ -514,11 +511,11 @@ fn superficial_compare_glob_items(
     cmp_params: &StepStateParams,
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
-    let actual = GlobItemsDep::from_pmm(
+    let actual = GlobItemsDep::from_pmp(
         cmp_params.xvc_root,
         cmp_params.pipeline_rundir,
         record.glob.clone(),
-        cmp_params.pmm.read().as_ref()?,
+        cmp_params.pmp,
     )?
     .update_changed_paths_digests(record, cmp_params.xvc_root, cmp_params.algorithm)?;
 
@@ -529,8 +526,7 @@ fn superficial_compare_glob(
     cmp_params: &StepStateParams,
     record: &GlobDep,
 ) -> Result<Diff<GlobDep>> {
-    let actual = GlobDep::new(record.glob.clone())
-        .update_collection_digests(cmp_params.pmm.read().as_ref()?)?;
+    let actual = GlobDep::new(record.glob.clone()).update_collection_digests(cmp_params.pmp)?;
     watch!(actual);
     Ok(GlobDep::diff_superficial(record, &actual))
 }
@@ -540,7 +536,7 @@ fn superficial_compare_regex(
     record: &RegexDep,
 ) -> Result<Diff<RegexDep>> {
     let actual = RegexDep::new(record.path.clone(), record.regex.clone())
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+        .update_metadata(cmp_params.pmp.get(&record.path));
     watch!(actual);
     let diff = RegexDep::diff_superficial(record, &actual);
     watch!(diff);
@@ -552,7 +548,7 @@ fn superficial_compare_lines(
     record: &LinesDep,
 ) -> Result<Diff<LinesDep>> {
     let actual = LinesDep::new(record.path.clone(), record.begin, record.end)
-        .update_metadata(cmp_params.pmm.read().as_ref()?.get(&record.path).cloned());
+        .update_metadata(cmp_params.pmp.get(&record.path));
 
     Ok(LinesDep::diff_superficial(record, &actual))
 }

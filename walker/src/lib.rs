@@ -10,14 +10,24 @@
 #![forbid(unsafe_code)]
 pub mod abspath;
 pub mod error;
+pub mod ignore_rules;
 pub mod notify;
 pub mod sync;
 
 pub use abspath::AbsolutePath;
+use crossbeam::queue::ArrayQueue;
+use crossbeam::queue::SegQueue;
 pub use error::{Error, Result};
-use itertools::Itertools;
+pub use ignore_rules::IgnoreRules;
+pub use notify::make_watcher;
 pub use std::hash::Hash;
+use std::sync::Arc;
 pub use sync::{PathSync, PathSyncSingleton};
+
+pub use notify::PathEvent;
+pub use notify::RecommendedWatcher;
+
+use itertools::Itertools;
 use xvc_logging::watch;
 
 use crossbeam_channel::Sender;
@@ -32,6 +42,8 @@ use std::{
 };
 
 use anyhow::{anyhow, Context};
+
+static MAX_THREADS_PARALLEL_WALK: usize = 8;
 
 /// Combine a path and its metadata in a single struct
 #[derive(Debug, Clone)]
@@ -209,166 +221,13 @@ impl WalkOptions {
     }
 }
 
-/// Complete set of ignore rules for a directory and its child directories.
-#[derive(Debug, Clone)]
-pub struct IgnoreRules {
-    /// The root of the ignore rules.
-    /// Typically this is the root directory of Git or Xvc repository.
-    root: PathBuf,
-    /// All patterns collected from ignore files or specified in code.
-    patterns: Vec<GlobPattern>,
-    /// Compiled [GlobSet] for whitelisted paths.
-    whitelist_set: GlobSet,
-    /// Compiled [GlobSet] for ignored paths.
-    ignore_set: GlobSet,
-}
-
-impl IgnoreRules {
-    /// An empty set of ignore rules that neither ignores nor whitelists any path.
-    pub fn empty(dir: &Path) -> Self {
-        IgnoreRules {
-            root: PathBuf::from(dir),
-            patterns: Vec::<GlobPattern>::new(),
-            ignore_set: GlobSet::empty(),
-            whitelist_set: GlobSet::empty(),
-        }
-    }
-
-    /// Compiles patterns as [Source::Global] and initializes the elements.
-    pub fn try_from_patterns(root: &Path, patterns: &str) -> Result<Self> {
-        let patterns = content_to_patterns(root, None, patterns)
-            .into_iter()
-            .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
-            .collect();
-        let empty = Self::empty(&PathBuf::from(root));
-
-        let initialized = empty.update(patterns)?;
-        Ok(initialized)
-    }
-
-    /// Consumes `self`, adds `new_patterns` to the list of patterns and recompiles ignore and
-    /// whitelist [GlobSet]s.
-    pub fn update(self, new_patterns: Vec<GlobPattern>) -> Result<Self> {
-        let patterns: Vec<GlobPattern> = self
-            .patterns
-            .into_iter()
-            .chain(new_patterns.iter().cloned())
-            .unique()
-            .collect();
-
-        let ignore_set = if new_patterns
-            .iter()
-            .any(|p| p.effect == PatternEffect::Ignore)
-        {
-            let all_ignore_patterns: Vec<Glob> = patterns
-                .iter()
-                .filter(|p| p.effect == PatternEffect::Ignore)
-                .map(|p| p.pattern.clone())
-                .collect();
-
-            build_globset(&all_ignore_patterns)?
-        } else {
-            self.ignore_set
-        };
-
-        let whitelist_set = if new_patterns
-            .iter()
-            .any(|p| p.effect == PatternEffect::Whitelist)
-        {
-            let all_whitelist_patterns: Vec<Glob> = patterns
-                .iter()
-                .filter(|p| p.effect == PatternEffect::Whitelist)
-                .map(|p| p.pattern.clone())
-                .collect();
-
-            build_globset(&all_whitelist_patterns)?
-        } else {
-            self.whitelist_set
-        };
-
-        Ok(IgnoreRules {
-            root: self.root,
-            patterns,
-            whitelist_set,
-            ignore_set,
-        })
-    }
-
-    /// Creates a new IgnoreRules object with the specified list of [GlobPattern]s.
-    /// It returns [Error::GlobError] if there are malformed globs in any of the files.
-    pub fn new(root: &Path, patterns: Vec<GlobPattern>) -> Result<Self> {
-        let patterns: Vec<GlobPattern> = patterns.into_iter().unique().collect();
-        let ignore_patterns: Vec<Glob> = patterns
-            .iter()
-            .filter(|p| p.effect == PatternEffect::Ignore)
-            .map(|p| p.pattern.clone())
-            .collect();
-
-        let ignore_set = build_globset(&ignore_patterns)?;
-
-        let whitelist_patterns: Vec<Glob> = patterns
-            .iter()
-            .filter(|p| p.effect == PatternEffect::Whitelist)
-            .map(|p| p.pattern.clone())
-            .collect();
-
-        let whitelist_set = build_globset(&whitelist_patterns)?;
-
-        Ok(IgnoreRules {
-            root: root.to_path_buf(),
-            patterns,
-            whitelist_set,
-            ignore_set,
-        })
-    }
-}
-
-/// Return all childs of a directory regardless of any ignore rules
-/// If there is an error to obtain the metadata, error is added to the element instead
-pub fn directory_list(dir: &Path) -> Result<Vec<Result<PathMetadata>>> {
-    let elements = dir
-        .read_dir()
-        .map_err(|e| anyhow!("Error reading directory: {:?}, {:?}", dir, e))?;
-    let mut child_paths = Vec::<Result<PathMetadata>>::new();
-
-    for entry in elements {
-        match entry {
-            Err(err) => child_paths.push(Err(Error::from(anyhow!(
-                "Error reading entry in dir {:?} {:?}",
-                dir,
-                err
-            )))),
-            Ok(entry) => match entry.metadata() {
-                Err(err) => child_paths.push(Err(Error::from(anyhow!(
-                    "Error getting metadata {:?} {}",
-                    entry,
-                    err
-                )))),
-                Ok(md) => {
-                    child_paths.push(Ok(PathMetadata {
-                        path: entry.path(),
-                        metadata: md.clone(),
-                    }));
-                }
-            },
-        }
-    }
-    Ok(child_paths)
-}
-
-/// Walk all child paths under `dir` and send non-ignored paths to `path_sender`.
-/// Newly found ignore rules are sent through `ignore_sender`.
-/// The ignore file name (`.xvcignore`, `.gitignore`, `.ignore`, ...) is set by `walk_options`.
-///
-/// It lists elements of a file, then creates a new crossbeam scope for each child directory and
-/// calls itself recursively. It may not be feasible for small directories to create threads.
-pub fn walk_parallel(
+fn walk_parallel_inner(
     ignore_rules: IgnoreRules,
     dir: &Path,
     walk_options: WalkOptions,
     path_sender: Sender<Result<PathMetadata>>,
     ignore_sender: Sender<Result<IgnoreRules>>,
-) -> Result<()> {
+) -> Result<Vec<PathMetadata>> {
     let child_paths: Vec<PathMetadata> = directory_list(dir)?
         .into_iter()
         .filter_map(|pm_res| match pm_res {
@@ -428,24 +287,69 @@ pub fn walk_parallel(
         }
     }
 
+    Ok(child_dirs)
+}
+
+/// Walk all child paths under `dir` and send non-ignored paths to `path_sender`.
+/// Newly found ignore rules are sent through `ignore_sender`.
+/// The ignore file name (`.xvcignore`, `.gitignore`, `.ignore`, ...) is set by `walk_options`.
+///
+/// It lists elements of a directory, then creates a new crossbeam scope for each child directory and
+/// calls itself recursively. It may not be feasible for small directories to create threads.
+pub fn walk_parallel(
+    ignore_rules: IgnoreRules,
+    dir: &Path,
+    walk_options: WalkOptions,
+    path_sender: Sender<Result<PathMetadata>>,
+    ignore_sender: Sender<Result<IgnoreRules>>,
+) -> Result<()> {
+    let dir_queue = Arc::new(SegQueue::<PathMetadata>::new());
+
+    let child_dirs = walk_parallel_inner(
+        ignore_rules.clone(),
+        dir,
+        walk_options.clone(),
+        path_sender.clone(),
+        ignore_sender.clone(),
+    )?;
+
+    child_dirs.into_iter().for_each(|pm| {
+        dir_queue.push(pm);
+    });
+
+    if dir_queue.is_empty() {
+        return Ok(());
+    }
     crossbeam::scope(|s| {
-        for child_dir in child_dirs {
-            let dwi = dir_with_ignores.clone();
-            let walk_options = walk_options.clone();
+        for thread_i in 0..MAX_THREADS_PARALLEL_WALK {
             let path_sender = path_sender.clone();
             let ignore_sender = ignore_sender.clone();
+            let walk_options = walk_options.clone();
+            let ignore_rules = ignore_rules.clone();
+            let dir_queue = dir_queue.clone();
+
             s.spawn(move |_| {
-                watch!(dwi);
-                watch!(walk_options);
                 watch!(path_sender);
                 watch!(ignore_sender);
-                walk_parallel(
-                    dwi,
-                    &child_dir.path,
-                    walk_options,
-                    path_sender,
-                    ignore_sender,
-                )
+                while let Some(pm) = dir_queue.pop() {
+                    let child_dirs = walk_parallel_inner(
+                        ignore_rules.clone(),
+                        &pm.path,
+                        walk_options.clone(),
+                        path_sender.clone(),
+                        ignore_sender.clone(),
+                    )
+                    .unwrap_or_else(|e| {
+                        path_sender
+                            .send(Err(e))
+                            .expect("Channel error in walk_parallel");
+                        Vec::<PathMetadata>::new()
+                    });
+                    for child_dir in child_dirs {
+                        dir_queue.push(child_dir);
+                    }
+                }
+                watch!("End of thread {}", thread_i);
             });
         }
     })
@@ -870,6 +774,39 @@ pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     } else {
         MatchResult::NoMatch
     }
+}
+
+/// Return all childs of a directory regardless of any ignore rules
+/// If there is an error to obtain the metadata, error is added to the element instead
+pub fn directory_list(dir: &Path) -> Result<Vec<Result<PathMetadata>>> {
+    let elements = dir
+        .read_dir()
+        .map_err(|e| anyhow!("Error reading directory: {:?}, {:?}", dir, e))?;
+    let mut child_paths = Vec::<Result<PathMetadata>>::new();
+
+    for entry in elements {
+        match entry {
+            Err(err) => child_paths.push(Err(Error::from(anyhow!(
+                "Error reading entry in dir {:?} {:?}",
+                dir,
+                err
+            )))),
+            Ok(entry) => match entry.metadata() {
+                Err(err) => child_paths.push(Err(Error::from(anyhow!(
+                    "Error getting metadata {:?} {}",
+                    entry,
+                    err
+                )))),
+                Ok(md) => {
+                    child_paths.push(Ok(PathMetadata {
+                        path: entry.path(),
+                        metadata: md.clone(),
+                    }));
+                }
+            },
+        }
+    }
+    Ok(child_paths)
 }
 
 #[cfg(test)]

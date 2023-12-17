@@ -215,6 +215,7 @@ pub fn git_auto_commit(
     Ok(())
 }
 
+/// TODO: Write docs
 pub fn git_auto_stage(
     output_snd: &XvcOutputSender,
     git_command: &str,

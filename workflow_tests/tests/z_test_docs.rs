@@ -193,7 +193,7 @@ fn z_doc_tests() -> Result<()> {
     trycmd::TestCases::new()
         // .register_bin("xvc", &path_to_xvc_bin)
         .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
-        .register_bin("git", which::which("git")?)
+        .register_bin("git", which::which("git"))
         .register_bin("echo", which::which("echo"))
         .register_bin("cat", which::which("cat"))
         .register_bin("ls", which::which("ls"))

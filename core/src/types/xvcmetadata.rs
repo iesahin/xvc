@@ -7,9 +7,7 @@ use std::{fs, io};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    XvcFileType, XvcMetadataDigest,
-};
+use crate::{XvcFileType, XvcMetadataDigest};
 use xvc_ecs::persist;
 
 use super::diff::Diffable;
@@ -47,6 +45,10 @@ impl XvcMetadata {
     /// Returns true if the file type is a XvcFileType::Directory
     pub fn is_dir(&self) -> bool {
         self.file_type == XvcFileType::Directory
+    }
+
+    pub fn is_missing(&self) -> bool {
+        self.file_type == XvcFileType::Missing
     }
 }
 

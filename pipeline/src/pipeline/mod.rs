@@ -14,6 +14,7 @@ use self::step::XvcStep;
 use anyhow::anyhow;
 
 use itertools::Itertools;
+use xvc_core::util::file::XvcPathMetadataProvider;
 use xvc_file::CHANNEL_CAPACITY;
 
 use crate::deps::compare::thorough_compare_dependency;
@@ -25,7 +26,7 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 use crossbeam_channel::{bounded, select, Receiver, Select, Sender};
 
 use xvc_logging::{debug, error, info, output, uwr, warn, watch, XvcOutputSender};
-use xvc_walker::notify::{make_watcher, PathEvent};
+use xvc_walker::notify::PathEvent;
 
 use petgraph::algo::toposort;
 use petgraph::data::Build;
@@ -43,8 +44,8 @@ use std::time::Duration;
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
 use xvc_core::{
-    all_paths_and_metadata, update_with_actual, Diff, HashAlgorithm, XvcFileType, XvcMetadata,
-    XvcPath, XvcPathMetadataMap, XvcRoot,
+    update_with_actual, Diff, HashAlgorithm, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap,
+    XvcRoot,
 };
 
 use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
@@ -125,7 +126,7 @@ pub fn add_explicit_dependencies(
 pub fn add_implicit_dependencies(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    pmm: &XvcPathMetadataMap,
+    pmp: &XvcPathMetadataProvider,
     pipeline_rundir: &XvcPath,
     all_deps: &R1NStore<XvcStep, XvcDependency>,
     all_outs: &R1NStore<XvcStep, XvcOutput>,
@@ -140,7 +141,7 @@ pub fn add_implicit_dependencies(
             .collect();
         for (_to_path_e, to_path) in to_paths.iter() {
             for (dep_e, dep) in
-                dependencies_to_path(xvc_root, pmm, pipeline_rundir, &all_deps.children, to_path)
+                dependencies_to_path(xvc_root, pmp, pipeline_rundir, &all_deps.children, to_path)
                     .iter()
             {
                 let (from_step_e, from_step) = all_deps.parent_of(dep_e)?;
@@ -192,7 +193,7 @@ struct RunConditions {
 pub struct StepStateParams<'a> {
     xvc_root: &'a XvcRoot,
     output_snd: &'a XvcOutputSender,
-    pmm: Arc<RwLock<XvcPathMetadataMap>>,
+    pmp: &'a XvcPathMetadataProvider,
     run_conditions: &'a RunConditions,
     pipeline_rundir: &'a XvcPath,
     terminate_timeout_processes: bool,
@@ -233,7 +234,7 @@ struct StepThreadParams<'a> {
     run_conditions: &'a RunConditions,
     terminate_on_timeout: bool,
     algorithm: HashAlgorithm,
-    current_pmm: Arc<RwLock<XvcPathMetadataMap>>,
+    pmp: &'a XvcPathMetadataProvider,
     process_pool_size: usize,
     recorded_dependencies: &'a R1NStore<XvcStep, XvcDependency>,
     recorded_outputs: &'a R1NStore<XvcStep, XvcOutput>,
@@ -294,8 +295,7 @@ pub fn the_grand_pipeline_loop(
 
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
-    let (mut pmm, ignore_rules) = all_paths_and_metadata(xvc_root);
-    let (_fs_watcher, fs_receiver) = make_watcher(ignore_rules)?;
+    let pmp = XvcPathMetadataProvider::new(output_snd, xvc_root)?;
 
     let pipeline_len = pipeline_steps.len();
     watch!(pipeline_len);
@@ -328,7 +328,7 @@ pub fn the_grand_pipeline_loop(
     add_implicit_dependencies(
         output_snd,
         xvc_root,
-        &pmm,
+        &pmp,
         &pipeline_rundir,
         &all_deps,
         &all_outs,
@@ -412,15 +412,12 @@ pub fn the_grand_pipeline_loop(
         .get_int("pipeline.process_pool_size")?
         .option
         .try_into()?;
-    let _log_channel_size = 1000;
     let default_step_timeout: u64 = 10000;
     let terminate_on_timeout = true;
     let _step_timeouts: HStore<Duration> = pipeline_steps
         .keys()
         .map(|step_e| (*step_e, Duration::from_secs(default_step_timeout)))
         .collect();
-
-    let current_pmm = Arc::new(RwLock::new(pmm.clone()));
 
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
@@ -462,15 +459,6 @@ pub fn the_grand_pipeline_loop(
     // We create these in reverse topological order.
     // Dependent steps block on dependency events, so we need to create them first.
     let done_successfully: Result<bool> = thread::scope(|s| {
-        let pmp_updater = s.spawn(|| {
-            update_pmp(
-                xvc_root,
-                fs_receiver,
-                &mut pmm,
-                kill_signal_receiver.clone(),
-            )
-        });
-
         let state_updater = s.spawn(|| {
             step_state_bulletin(
                 state_receivers.clone(),
@@ -496,7 +484,7 @@ pub fn the_grand_pipeline_loop(
                             step_timeout: &step_timeout,
                             run_conditions: &run_conditions[step_e],
                             terminate_on_timeout,
-                            current_pmm: current_pmm.clone(),
+                            pmp: &pmp,
                             output_snd: &output_snd,
                             step_commands: &step_commands,
                             steps: &pipeline_steps,
@@ -526,7 +514,6 @@ pub fn the_grand_pipeline_loop(
         kill_signal_sender.send(true)?;
         watch!("Before state updater");
         state_updater.join().unwrap().unwrap();
-        pmp_updater.join().unwrap().unwrap();
 
         // if all of the steps are done, we can end
         if step_states.read()?.iter().all(|(_, step_s)| {
@@ -654,7 +641,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
         run_conditions: params.run_conditions,
         xvc_root: params.xvc_root,
         pipeline_rundir: params.pipeline_rundir,
-        pmm: params.current_pmm,
+        pmp: params.pmp,
 
         all_steps: params.steps,
         recorded_dependencies: params.recorded_dependencies,
@@ -1265,7 +1252,7 @@ fn s_checking_missing_outputs<'a>(
 ) -> StateTransition<'a> {
     let run_conditions = params.run_conditions;
     let step_outs = params.step_outputs;
-    let _pmm = params.pmm.clone();
+    let _pmm = params.pmp.clone();
 
     if run_conditions.ignore_missing_outputs {
         return Ok((s.checked_outputs(), params));

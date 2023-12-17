@@ -8,7 +8,7 @@ use std::ffi::OsString;
 use std::{ffi::OsStr, fmt::Display, fs, path::Path};
 use toml::Value as TomlValue;
 use xvc_core::types::diff::Diffable;
-use xvc_core::{Diff, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot};
+use xvc_core::{Diff, XvcMetadata, XvcPath, XvcPathMetadataProvider, XvcRoot};
 use xvc_ecs::persist;
 use xvc_logging::watch;
 
@@ -52,9 +52,9 @@ impl ParamDep {
         })
     }
 
-    /// Update metada from the [XvcPathMetadataMap]
-    pub fn update_metadata(self, pmm: &XvcPathMetadataMap) -> Result<Self> {
-        let xvc_metadata = pmm.get(&self.path).cloned();
+    /// Update metada from the [XvcPathMetadataProvider]
+    pub fn update_metadata(self, pmp: &XvcPathMetadataProvider) -> Result<Self> {
+        let xvc_metadata = pmp.get(&self.path);
         Ok(Self {
             xvc_metadata,
             ..self

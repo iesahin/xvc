@@ -6,8 +6,8 @@ use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcPath, XvcPathMetadataMap,
-    XvcRoot,
+    ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcPath,
+    XvcPathMetadataProvider, XvcRoot,
 };
 use xvc_ecs::persist;
 
@@ -41,17 +41,18 @@ impl FileDep {
     }
 
     /// Create a file dependency with the given path and metadata obtained from [XvcPathMetadataMap]
-    pub fn from_pmm(path: &XvcPath, pmm: &XvcPathMetadataMap) -> Result<Self> {
-        let path = path.clone();
-        let xvc_metadata = pmm.get(&path).cloned();
-        if xvc_metadata.is_none() {
-            return Err(Error::PathNotFound {
-                path: OsString::from(path.as_str()),
-            });
+    pub fn from_pmp(path: &XvcPath, pmp: &XvcPathMetadataProvider) -> Result<Self> {
+        let xvc_metadata = pmp.get(path);
+        if let Some(xvc_metadata) = xvc_metadata {
+            if xvc_metadata.is_missing() {
+                return Err(Error::PathNotFound {
+                    path: OsString::from(path.as_str()),
+                });
+            }
         }
 
         Ok(FileDep {
-            path,
+            path: path.clone(),
             xvc_metadata,
             content_digest: None,
         })

@@ -15,9 +15,11 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 name = "xvc_walker"
 crate-type = ["rlib"]
 
+[profile.release]
+debug = true
 
 [dependencies]
-xvc-logging = {version = "0.6.0", path = "../logging"}
+xvc-logging = { version = "0.6.0", path = "../logging" }
 globset = "^0.4"
 
 ## Parallelization
@@ -27,6 +29,7 @@ crossbeam = "^0.8"
 ## File system
 notify = "6.1.1"
 
+dashmap = "^5.5"
 
 ## Logging and errors
 thiserror = "^1.0"

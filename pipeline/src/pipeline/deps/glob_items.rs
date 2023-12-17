@@ -4,7 +4,10 @@ use std::collections::{BTreeMap, HashMap};
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
-use xvc_core::{glob_paths, ContentDigest, HashAlgorithm, XvcMetadata, XvcPath, XvcRoot};
+use xvc_core::{
+    glob_paths, ContentDigest, HashAlgorithm, XvcMetadata, XvcPath, XvcPathMetadataProvider,
+    XvcRoot,
+};
 use xvc_ecs::persist;
 
 /// A path collection where each item is tracked separately.
@@ -36,14 +39,14 @@ impl GlobItemsDep {
 
     /// Create a new [GlobItemsDep] with the given glob pattern and fill the metadata map from the
     /// given pmm. The content digest map is empty.
-    pub fn from_pmm(
+    pub fn from_pmp(
         xvc_root: &XvcRoot,
         glob_root: &XvcPath,
         glob: String,
-        pmm: &HashMap<XvcPath, XvcMetadata>,
+        pmp: &XvcPathMetadataProvider,
     ) -> Result<GlobItemsDep> {
         let xvc_path_metadata_map =
-            glob_paths(xvc_root, pmm, glob_root, &glob).map(|paths| paths.into_iter().collect())?;
+            glob_paths(xvc_root, pmp, glob_root, &glob).map(|paths| paths.into_iter().collect())?;
         // We don't calculate the content digest map immediately, we only do that in through comparison
         Ok(GlobItemsDep {
             glob,
