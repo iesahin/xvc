@@ -166,9 +166,9 @@ impl XvcPathMetadataProvider {
     }
 
     fn update_with_glob(&self, glob: &str) -> Result<()> {
-        for paths in glob::glob(glob) {
-            for entry in paths {
-                if let Ok(entry) = entry {
+        for entry in glob::glob(glob)? {
+            match entry {
+                Ok(entry) => {
                     if matches!(
                         check_ignore(&self.ignore_rules, &entry),
                         MatchResult::Ignore
@@ -185,6 +185,9 @@ impl XvcPathMetadataProvider {
                                 .insert(xvc_path, entry.symlink_metadata().into());
                         }
                     }
+                }
+                Err(e) => {
+                    error!(self.output_sender, "Error while globbing: {:?}", e);
                 }
             }
         }

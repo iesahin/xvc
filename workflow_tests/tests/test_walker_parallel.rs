@@ -4,6 +4,7 @@ use std::{
 };
 
 use globset::Glob;
+use log::LevelFilter;
 use xvc_walker::*;
 
 use test_case::test_case;
@@ -72,6 +73,7 @@ fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern
 fn test_walk_parallel(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     watch!(ignore_src);
     watch!(ignore_content);
+    test_logging(LevelFilter::Trace);
     let root = create_directory_hierarchy(true).unwrap();
     let (path_sender, path_receiver) = crossbeam_channel::unbounded();
     let (ignore_sender, _ignore_receiver) = crossbeam_channel::unbounded();
