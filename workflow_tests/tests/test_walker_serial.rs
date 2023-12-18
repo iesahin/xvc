@@ -19,9 +19,9 @@ fn new_dir_with_ignores(
     initial_patterns: &str,
 ) -> Result<IgnoreRules> {
     let patterns = create_patterns(root, dir, initial_patterns);
-    let empty = IgnoreRules::empty(&PathBuf::from(root));
+    let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
     watch!(patterns);
-    let initialized = empty.update(patterns).unwrap();
+    initialized.update(patterns).unwrap();
     Ok(initialized)
 }
 
