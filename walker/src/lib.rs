@@ -449,7 +449,7 @@ pub fn walk_serial(
         Ok(())
     };
 
-    while let Some(dir) = dir_stack.lock()?.pop() {
+    while let Some(dir) = { dir_stack.lock()?.pop().clone() } {
         let dir = dir.clone();
         let child_paths = get_child_paths(&dir)?;
         update_ignore_rules(&child_paths)?;
