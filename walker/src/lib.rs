@@ -15,13 +15,13 @@ pub mod notify;
 pub mod sync;
 
 pub use abspath::AbsolutePath;
-use crossbeam::queue::ArrayQueue;
 use crossbeam::queue::SegQueue;
 pub use error::{Error, Result};
 pub use ignore_rules::IgnoreRules;
 pub use notify::make_watcher;
 pub use std::hash::Hash;
 use std::sync::Arc;
+use std::sync::RwLock;
 pub use sync::{PathSync, PathSyncSingleton};
 
 pub use notify::PathEvent;
@@ -120,7 +120,7 @@ where
     T: PartialEq + Hash,
 {
     /// The pattern type
-    pattern: T,
+    pub pattern: T,
     /// The original string that defines the pattern
     original: String,
     /// Where did we get this pattern?
@@ -222,11 +222,11 @@ impl WalkOptions {
 }
 
 fn walk_parallel_inner(
-    ignore_rules: IgnoreRules,
+    ignore_rules: Arc<RwLock<IgnoreRules>>,
     dir: &Path,
     walk_options: WalkOptions,
     path_sender: Sender<Result<PathMetadata>>,
-    ignore_sender: Sender<Result<IgnoreRules>>,
+    ignore_sender: Sender<Result<Arc<RwLock<IgnoreRules>>>>,
 ) -> Result<Vec<PathMetadata>> {
     let child_paths: Vec<PathMetadata> = directory_list(dir)?
         .into_iter()
@@ -250,10 +250,10 @@ fn walk_parallel_inner(
             let ignore_path = dir.join(&ignore_path_metadata.path);
             let new_patterns = clear_glob_errors(
                 &path_sender,
-                patterns_from_file(&ignore_rules.root, &ignore_path)?,
+                patterns_from_file(&ignore_rules.read()?.root, &ignore_path)?,
             );
             watch!(new_patterns);
-            let ignore_rules = ignore_rules.update(new_patterns)?;
+            ignore_rules.write()?.update(new_patterns)?;
             watch!(ignore_rules);
             ignore_sender.send(Ok(ignore_rules.clone()))?;
             ignore_rules
@@ -268,7 +268,7 @@ fn walk_parallel_inner(
     watch!(child_paths);
 
     for child_path in child_paths {
-        match check_ignore(&dir_with_ignores, child_path.path.as_ref()) {
+        match check_ignore(&(*dir_with_ignores.read()?), child_path.path.as_ref()) {
             MatchResult::NoMatch | MatchResult::Whitelist => {
                 watch!(child_path.path);
                 if child_path.metadata.is_dir() {
@@ -301,9 +301,11 @@ pub fn walk_parallel(
     dir: &Path,
     walk_options: WalkOptions,
     path_sender: Sender<Result<PathMetadata>>,
-    ignore_sender: Sender<Result<IgnoreRules>>,
+    ignore_sender: Sender<Result<Arc<RwLock<IgnoreRules>>>>,
 ) -> Result<()> {
     let dir_queue = Arc::new(SegQueue::<PathMetadata>::new());
+
+    let ignore_rules = Arc::new(RwLock::new(ignore_rules.clone()));
 
     let child_dirs = walk_parallel_inner(
         ignore_rules.clone(),
@@ -320,6 +322,7 @@ pub fn walk_parallel(
     if dir_queue.is_empty() {
         return Ok(());
     }
+
     crossbeam::scope(|s| {
         for thread_i in 0..MAX_THREADS_PARALLEL_WALK {
             let path_sender = path_sender.clone();
@@ -373,6 +376,8 @@ pub fn walk_serial(
     walk_options: &WalkOptions,
     res_paths: &mut Vec<Result<PathMetadata>>,
 ) -> Result<IgnoreRules> {
+    let mut ignore_rules = ignore_rules.clone();
+
     let child_paths: Vec<PathMetadata> = directory_list(dir)?
         .into_iter()
         .filter_map(|pm_res| match pm_res {
@@ -403,7 +408,8 @@ pub fn walk_serial(
                     })
                     .collect();
 
-            ignore_rules.update(new_patterns)?
+            ignore_rules.update(new_patterns)?;
+            ignore_rules
         } else {
             ignore_rules
         }
@@ -519,7 +525,7 @@ pub fn build_ignore_rules(
     }
 
     if let Some(new_patterns) = new_patterns {
-        ignore_rules = ignore_rules.update(new_patterns)?;
+        ignore_rules.update(new_patterns)?;
     }
 
     for child_dir in child_dirs {
@@ -576,7 +582,7 @@ fn transform_pattern_for_glob(pattern: Pattern<String>) -> Pattern<String> {
     }
 }
 
-fn build_globset(patterns: &[Glob]) -> Result<GlobSet> {
+fn build_globset(patterns: Vec<Glob>) -> Result<GlobSet> {
     let mut gs_builder = GlobSetBuilder::new();
 
     for p in patterns {
@@ -905,9 +911,9 @@ mod tests {
         initial_patterns: &str,
     ) -> Result<IgnoreRules> {
         let patterns = create_patterns(root, dir, initial_patterns);
-        let empty = IgnoreRules::empty(&PathBuf::from(root));
+        let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
 
-        let initialized = empty.update(patterns).unwrap();
+        initialized.update(patterns)?;
         Ok(initialized)
     }
 

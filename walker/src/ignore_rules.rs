@@ -41,58 +41,45 @@ impl IgnoreRules {
             .into_iter()
             .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
             .collect();
-        let empty = Self::empty(&PathBuf::from(root));
+        let mut initialized = Self::empty(&PathBuf::from(root));
 
-        let initialized = empty.update(patterns)?;
+        initialized.update(patterns)?;
         Ok(initialized)
     }
 
-    /// Consumes `self`, adds `new_patterns` to the list of patterns and recompiles ignore and
+    /// Adds `new_patterns` to the list of patterns and recompiles ignore and
     /// whitelist [GlobSet]s.
-    pub fn update(self, new_patterns: Vec<GlobPattern>) -> Result<Self> {
-        let patterns: Vec<GlobPattern> = self
-            .patterns
+    pub fn update(&mut self, new_patterns: Vec<GlobPattern>) -> Result<()> {
+        let (new_ignore_patterns, new_whitelist_patterns): (Vec<_>, Vec<_>) = new_patterns
             .into_iter()
-            .chain(new_patterns.iter().cloned())
-            .unique()
-            .collect();
+            .partition(|p| matches!(p.effect, PatternEffect::Ignore));
+        let (mut current_ignore_patterns, mut current_whitelist_patterns): (Vec<_>, Vec<_>) = self
+            .patterns
+            .clone()
+            .into_iter()
+            .partition(|p| matches!(p.effect, PatternEffect::Ignore));
 
-        let ignore_set = if new_patterns
-            .iter()
-            .any(|p| p.effect == PatternEffect::Ignore)
-        {
-            let all_ignore_patterns: Vec<Glob> = patterns
+        if !new_ignore_patterns.is_empty() {
+            current_ignore_patterns.extend(new_ignore_patterns);
+            let current_ignore_globs = current_ignore_patterns
                 .iter()
-                .filter(|p| p.effect == PatternEffect::Ignore)
+                .map(|p| p.pattern.clone())
+                .collect();
+            self.ignore_set = build_globset(current_ignore_globs)?
+        }
+
+        if !new_whitelist_patterns.is_empty() {
+            current_whitelist_patterns.extend(new_whitelist_patterns);
+
+            let current_whitelist_globs: Vec<Glob> = current_whitelist_patterns
+                .iter()
                 .map(|p| p.pattern.clone())
                 .collect();
 
-            build_globset(&all_ignore_patterns)?
-        } else {
-            self.ignore_set
-        };
+            self.whitelist_set = build_globset(current_whitelist_globs)?
+        }
 
-        let whitelist_set = if new_patterns
-            .iter()
-            .any(|p| p.effect == PatternEffect::Whitelist)
-        {
-            let all_whitelist_patterns: Vec<Glob> = patterns
-                .iter()
-                .filter(|p| p.effect == PatternEffect::Whitelist)
-                .map(|p| p.pattern.clone())
-                .collect();
-
-            build_globset(&all_whitelist_patterns)?
-        } else {
-            self.whitelist_set
-        };
-
-        Ok(IgnoreRules {
-            root: self.root,
-            patterns,
-            whitelist_set,
-            ignore_set,
-        })
+        Ok(())
     }
 
     /// Creates a new IgnoreRules object with the specified list of [GlobPattern]s.
@@ -105,7 +92,7 @@ impl IgnoreRules {
             .map(|p| p.pattern.clone())
             .collect();
 
-        let ignore_set = build_globset(&ignore_patterns)?;
+        let ignore_set = build_globset(ignore_patterns)?;
 
         let whitelist_patterns: Vec<Glob> = patterns
             .iter()
@@ -113,7 +100,7 @@ impl IgnoreRules {
             .map(|p| p.pattern.clone())
             .collect();
 
-        let whitelist_set = build_globset(&whitelist_patterns)?;
+        let whitelist_set = build_globset(whitelist_patterns)?;
 
         Ok(IgnoreRules {
             root: root.to_path_buf(),
