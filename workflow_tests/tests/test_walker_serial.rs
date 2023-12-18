@@ -74,7 +74,6 @@ fn create_directory_hierarchy(force: bool) -> Result<AbsolutePath> {
 fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     test_logging(log::LevelFilter::Trace);
     let root = create_directory_hierarchy(true).unwrap();
-    let mut res_paths = Vec::<xvc_walker::Result<PathMetadata>>::new();
     // We assume ignore_src is among the directories created
     fs::write(
         format!("{}/{ignore_src}.gitignore", root.to_string_lossy()),
@@ -86,22 +85,14 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
         ignore_filename: Some(".gitignore".to_string()),
         include_dirs: true,
     };
-    let ignore_rules = walk_serial(initial_rules, &root, &walk_options, &mut res_paths).unwrap();
-    watch!(ignore_rules);
-    let paths = res_paths
-        .iter()
-        .filter_map(|e| match e {
-            Ok(p) => Some(
-                p.path
-                    .strip_prefix(&root)
-                    .unwrap()
-                    .to_string_lossy()
-                    .to_string(),
-            ),
-            Err(_) => None,
-        })
-        .collect();
-    watch!(paths);
+    let (output_sender, output_receiver) = crossbeam_channel::unbounded();
+    let (res_paths, _ignore_rules) =
+        walk_serial(&output_sender, initial_rules, &root, &walk_options).unwrap();
+    assert!(output_receiver.is_empty());
+    watch!(res_paths);
     fs::remove_dir_all(&root).unwrap();
-    paths
+    res_paths
+        .iter()
+        .map(|pm| pm.path.to_string_lossy().to_string())
+        .collect()
 }

@@ -16,7 +16,7 @@ use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::XVCIGNORE_FILENAME;
 
 use xvc_walker::notify::{make_polling_watcher, PathEvent};
-use xvc_walker::{walk_serial, IgnoreRules, PathMetadata, Result as XvcWalkerResult, WalkOptions};
+use xvc_walker::{walk_serial, IgnoreRules, WalkOptions};
 
 #[test]
 fn test_notify() -> Result<()> {
@@ -33,10 +33,6 @@ fn test_notify() -> Result<()> {
     let (updated_paths_snd, _) = crossbeam_channel::unbounded();
     let (deleted_paths_snd, deleted_paths_rec) = crossbeam_channel::unbounded();
 
-    let mut initial_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
-
-    watch!(initial_paths.len());
-
     let files: Vec<ChildPath> = (1..10)
         .map(|n| temp_dir.child(format!("file-000{n}.bin")))
         .collect();
@@ -49,8 +45,12 @@ fn test_notify() -> Result<()> {
     });
     const MAX_ERROR_COUNT: usize = 10;
 
-    let all_rules = walk_serial(initial_rules, &temp_dir, &walk_options, &mut initial_paths)?;
+    let (output_sender, output_receiver) = crossbeam_channel::unbounded();
+
+    let (initial_paths, all_rules) =
+        walk_serial(&output_sender, initial_rules, &temp_dir, &walk_options)?;
     watch!(all_rules);
+    assert!(output_receiver.is_empty());
     let (watcher, receiver) = make_polling_watcher(all_rules)?;
     watch!(watcher);
     watch!(initial_paths.len());

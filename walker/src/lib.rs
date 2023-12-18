@@ -21,8 +21,12 @@ pub use ignore_rules::IgnoreRules;
 pub use notify::make_watcher;
 pub use std::hash::Hash;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::RwLock;
 pub use sync::{PathSync, PathSyncSingleton};
+use xvc_logging::debug;
+use xvc_logging::warn;
+use xvc_logging::XvcOutputSender;
 
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
@@ -31,7 +35,6 @@ use itertools::Itertools;
 use xvc_logging::watch;
 
 use crossbeam_channel::Sender;
-use log::warn;
 // use glob::{MatchOptions, Pattern, PatternError};
 pub use globset::{self, Glob, GlobSet, GlobSetBuilder};
 use std::{
@@ -371,84 +374,92 @@ pub fn walk_parallel(
 /// It collects all [`PathMetadata`] of the child paths.
 /// Filters paths with the rules found in child directories and the given `ignore_rules`.
 pub fn walk_serial(
+    output_snd: &XvcOutputSender,
     ignore_rules: IgnoreRules,
     dir: &Path,
     walk_options: &WalkOptions,
-    res_paths: &mut Vec<Result<PathMetadata>>,
-) -> Result<IgnoreRules> {
-    let mut ignore_rules = ignore_rules.clone();
+) -> Result<(Vec<PathMetadata>, IgnoreRules)> {
+    let ignore_filename = walk_options.ignore_filename.clone().map(OsString::from);
+    let ignore_rules = Arc::new(Mutex::new(ignore_rules.clone()));
+    let dir_stack = Arc::new(Mutex::new(Vec::<PathBuf>::new()));
+    let res_paths = Arc::new(Mutex::new(Vec::<PathMetadata>::new()));
 
-    let child_paths: Vec<PathMetadata> = directory_list(dir)?
-        .into_iter()
-        .filter_map(|pm_res| match pm_res {
-            Ok(pm) => Some(pm),
-            Err(e) => {
-                res_paths.push(Err(e));
-                None
+    dir_stack.lock()?.push(dir.to_path_buf());
+
+    let get_child_paths = |dir: &Path| -> Result<Vec<PathMetadata>> {
+        Ok(directory_list(dir)?
+            .into_iter()
+            .filter_map(|pm_res| match pm_res {
+                Ok(pm) => Some(pm),
+                Err(e) => {
+                    warn!(output_snd, "{}", e);
+                    None
+                }
+            })
+            .collect())
+    };
+
+    let update_ignore_rules = |child_paths: &Vec<PathMetadata>| -> Result<()> {
+        if let Some(ref ignore_filename) = &ignore_filename {
+            if let Some(ignore_path_metadata) = child_paths
+                .iter()
+                .find(|pm| pm.path.file_name() == Some(ignore_filename))
+            {
+                let ignore_path = dir.join(&ignore_path_metadata.path);
+                let new_patterns: Vec<GlobPattern> =
+                    patterns_from_file(&ignore_rules.lock()?.root, &ignore_path)?
+                        .into_iter()
+                        .filter_map(|res_p| match res_p.pattern {
+                            Ok(_) => Some(res_p.map(|p| p.unwrap())),
+                            Err(e) => {
+                                warn!(output_snd, "{}", e);
+                                None
+                            }
+                        })
+                        .collect();
+
+                ignore_rules.lock()?.update(new_patterns)?;
             }
-        })
-        .collect();
-
-    if let Some(ignore_filename) = walk_options.ignore_filename.clone() {
-        let ignore_filename = OsString::from(ignore_filename);
-        if let Some(ignore_path_metadata) = child_paths
-            .iter()
-            .find(|pm| pm.path.file_name() == Some(&ignore_filename))
-        {
-            let ignore_path = dir.join(&ignore_path_metadata.path);
-            let new_patterns: Vec<GlobPattern> =
-                patterns_from_file(&ignore_rules.root, &ignore_path)?
-                    .into_iter()
-                    .filter_map(|res_p| match res_p.pattern {
-                        Ok(_) => Some(res_p.map(|p| p.unwrap())),
-                        Err(e) => {
-                            res_paths.push(Err(e));
-                            None
-                        }
-                    })
-                    .collect();
-
-            ignore_rules.update(new_patterns)?;
         }
-    }
+        Ok(())
+    };
 
-    let mut child_dirs = Vec::<PathMetadata>::new();
-
-    for child_path in child_paths {
-        watch!(child_path.path);
-        let ignore_res = check_ignore(&ignore_rules, child_path.path.as_ref());
-        watch!(ignore_res);
-        match ignore_res {
-            MatchResult::NoMatch | MatchResult::Whitelist => {
-                if child_path.metadata.is_dir() {
-                    if walk_options.include_dirs {
-                        res_paths.push(Ok(child_path.clone()));
+    let filter_child_paths = |child_paths: &Vec<PathMetadata>| -> Result<()> {
+        for child_path in child_paths {
+            watch!(child_path.path);
+            let ignore_res = check_ignore(&(*ignore_rules.lock()?), child_path.path.as_ref());
+            watch!(ignore_res);
+            match ignore_res {
+                MatchResult::NoMatch | MatchResult::Whitelist => {
+                    if child_path.metadata.is_dir() {
+                        if walk_options.include_dirs {
+                            res_paths.lock()?.push(child_path.clone());
+                        }
+                        dir_stack.lock()?.push(child_path.path.clone());
+                    } else {
+                        res_paths.lock()?.push(child_path.clone());
                     }
-                    child_dirs.push(child_path);
-                } else {
-                    res_paths.push(Ok(child_path.clone()));
+                }
+                // We can return anyhow! error here to notice the user that the path is ignored
+                MatchResult::Ignore => {
+                    debug!(output_snd, "Ignored: {:?}", child_path.path);
                 }
             }
-            // We can return anyhow! error here to notice the user that the path is ignored
-            MatchResult::Ignore => {}
         }
+        Ok(())
+    };
+
+    while let Some(dir) = dir_stack.lock()?.pop() {
+        let dir = dir.clone();
+        let child_paths = get_child_paths(&dir)?;
+        update_ignore_rules(&child_paths)?;
+        filter_child_paths(&child_paths)?;
     }
 
-    let mut child_ignores = vec![ignore_rules.clone()];
+    let res_paths: Vec<PathMetadata> = res_paths.lock()?.clone();
+    let ignore_rules = ignore_rules.lock()?.clone();
 
-    for child_dir in child_dirs {
-        let child_ignore = walk_serial(
-            ignore_rules.clone(),
-            &child_dir.path,
-            walk_options,
-            res_paths,
-        )?;
-        child_ignores.push(child_ignore);
-    }
-
-    let merged = merge_ignores(&child_ignores)?;
-
-    Ok(merged)
+    Ok((res_paths, ignore_rules))
 }
 
 /// merge ignore rules in a single set of ignore rules.

@@ -15,10 +15,11 @@ use xvc::error::Result;
 #[test]
 fn test_walk() -> Result<()> {
     test_logging(LevelFilter::Trace);
+    let (output_sender, output_receiver) = crossbeam_channel::unbounded();
     let xvc_root = run_in_example_xvc(true)?;
     watch!(xvc_root);
 
-    let (pmp1, _) = walk_serial(&xvc_root, true)?;
+    let (pmp1, _) = walk_serial(&output_sender, &xvc_root, true)?;
 
     assert!(!pmp1.is_empty());
 
@@ -51,6 +52,8 @@ fn test_walk() -> Result<()> {
 
     assert!(diff1.is_empty());
     assert!(diff2.is_empty());
+
+    assert!(output_receiver.is_empty());
 
     for (p, m) in pmp1 {
         assert!(pmp2[&p] == m)

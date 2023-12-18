@@ -5,9 +5,10 @@ use crate::{XvcMetadata, XvcPathMetadataMap, CHANNEL_BOUND, XVCIGNORE_FILENAME};
 
 use crate::error::{Error, Result};
 use crossbeam_channel::{bounded, Sender};
-use log::warn;
+
 use std::sync::{Arc, RwLock};
 use std::thread;
+use xvc_logging::{warn, XvcOutputSender};
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
 use xvc_walker::{merge_ignores, Result as XvcWalkerResult};
 
@@ -34,6 +35,7 @@ pub const COMMON_IGNORE_PATTERNS: &str = ".xvc\n.git\n";
 /// - `IgnoreRules`: The rules that were produced while reading the directories.
 /// This is returned here to prevent a second traversal for ignores.
 pub fn walk_serial(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     include_dirs: bool,
 ) -> Result<(XvcPathMetadataMap, IgnoreRules)> {
@@ -43,28 +45,21 @@ pub fn walk_serial(
         ignore_filename: Some(XVCIGNORE_FILENAME.to_string()),
         include_dirs,
     };
-    let mut res_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
-    let ignore_rules =
-        xvc_walker::walk_serial(initial_rules, xvc_root, &walk_options, &mut res_paths)?;
+    let (res_paths, ignore_rules) =
+        xvc_walker::walk_serial(output_snd, initial_rules, xvc_root, &walk_options)?;
     let pmp: XvcPathMetadataMap = res_paths
         .iter()
-        .filter_map(|e| match e {
-            Ok(pm) => {
-                let md = XvcMetadata::from(&pm.metadata);
-                //
-                let rxp = XvcPath::new(xvc_root, xvc_root, &pm.path);
-                //
-                match rxp {
-                    Ok(xvc_path) => Some((xvc_path, md)),
-                    Err(e) => {
-                        e.warn();
-                        None
-                    }
+        .filter_map(|pm| {
+            let md = XvcMetadata::from(&pm.metadata);
+            //
+            let rxp = XvcPath::new(xvc_root, xvc_root, &pm.path);
+            //
+            match rxp {
+                Ok(xvc_path) => Some((xvc_path, md)),
+                Err(e) => {
+                    warn!(output_snd, "{:?}", e);
+                    None
                 }
-            }
-            Err(e) => {
-                warn!("{:?}", e);
-                None
             }
         })
         .collect();
