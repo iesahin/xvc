@@ -416,7 +416,10 @@ pub fn walk_serial(
 
     for child_path in child_paths {
         watch!(child_path.path);
-        match check_ignore(&ignore_rules, child_path.path.as_ref()) {
+        watch!(ignore_rules);
+        let ignore_res = check_ignore(&ignore_rules, child_path.path.as_ref());
+        watch!(ignore_res);
+        match ignore_res {
             MatchResult::NoMatch | MatchResult::Whitelist => {
                 if child_path.metadata.is_dir() {
                     if walk_options.include_dirs {
