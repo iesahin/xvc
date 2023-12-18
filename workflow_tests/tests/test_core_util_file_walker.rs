@@ -14,6 +14,7 @@ use xvc::error::Result;
 
 #[test]
 fn test_walk() -> Result<()> {
+    test_logging(LevelFilter::Trace);
     let xvc_root = run_in_example_xvc(true)?;
     watch!(xvc_root);
 
