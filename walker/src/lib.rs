@@ -389,7 +389,7 @@ pub fn walk_serial(
         })
         .collect();
 
-    let dir_with_ignores = if let Some(ignore_filename) = walk_options.ignore_filename.clone() {
+    if let Some(ignore_filename) = walk_options.ignore_filename.clone() {
         let ignore_filename = OsString::from(ignore_filename);
         if let Some(ignore_path_metadata) = child_paths
             .iter()
@@ -409,18 +409,14 @@ pub fn walk_serial(
                     .collect();
 
             ignore_rules.update(new_patterns)?;
-            ignore_rules
-        } else {
-            ignore_rules
         }
-    } else {
-        ignore_rules
-    };
+    }
 
     let mut child_dirs = Vec::<PathMetadata>::new();
 
     for child_path in child_paths {
-        match check_ignore(&dir_with_ignores, child_path.path.as_ref()) {
+        watch!(child_path.path);
+        match check_ignore(&ignore_rules, child_path.path.as_ref()) {
             MatchResult::NoMatch | MatchResult::Whitelist => {
                 if child_path.metadata.is_dir() {
                     if walk_options.include_dirs {
@@ -436,11 +432,11 @@ pub fn walk_serial(
         }
     }
 
-    let mut child_ignores = vec![dir_with_ignores.clone()];
+    let mut child_ignores = vec![ignore_rules.clone()];
 
     for child_dir in child_dirs {
         let child_ignore = walk_serial(
-            dir_with_ignores.clone(),
+            ignore_rules.clone(),
             &child_dir.path,
             walk_options,
             res_paths,
