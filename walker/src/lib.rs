@@ -416,7 +416,6 @@ pub fn walk_serial(
 
     for child_path in child_paths {
         watch!(child_path.path);
-        watch!(ignore_rules);
         let ignore_res = check_ignore(&ignore_rules, child_path.path.as_ref());
         watch!(ignore_res);
         match ignore_res {
