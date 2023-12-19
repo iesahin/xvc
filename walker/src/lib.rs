@@ -381,10 +381,10 @@ pub fn walk_serial(
 ) -> Result<(Vec<PathMetadata>, IgnoreRules)> {
     let ignore_filename = walk_options.ignore_filename.clone().map(OsString::from);
     let ignore_rules = Arc::new(Mutex::new(ignore_rules.clone()));
-    let dir_stack = Arc::new(Mutex::new(Vec::<PathBuf>::new()));
+    let dir_stack = crossbeam::queue::SegQueue::new();
     let res_paths = Arc::new(Mutex::new(Vec::<PathMetadata>::new()));
 
-    dir_stack.lock()?.push(dir.to_path_buf());
+    dir_stack.push(dir.to_path_buf());
 
     let get_child_paths = |dir: &Path| -> Result<Vec<PathMetadata>> {
         Ok(directory_list(dir)?
@@ -431,13 +431,20 @@ pub fn walk_serial(
             watch!(ignore_res);
             match ignore_res {
                 MatchResult::NoMatch | MatchResult::Whitelist => {
+                    watch!(child_path);
                     if child_path.metadata.is_dir() {
+                        watch!("here");
                         if walk_options.include_dirs {
+                            watch!("here2");
                             res_paths.lock()?.push(child_path.clone());
                         }
-                        dir_stack.lock()?.push(child_path.path.clone());
+                        watch!("here3");
+                        dir_stack.push(child_path.path.clone());
+                        watch!("here4");
                     } else {
+                        watch!("here5");
                         res_paths.lock()?.push(child_path.clone());
+                        watch!("here6");
                     }
                 }
                 // We can return anyhow! error here to notice the user that the path is ignored
@@ -445,13 +452,17 @@ pub fn walk_serial(
                     debug!(output_snd, "Ignored: {:?}", child_path.path);
                 }
             }
+            watch!(child_path);
         }
         Ok(())
     };
 
-    while let Some(dir) = { dir_stack.lock()?.pop().clone() } {
+    while let Some(dir) = { dir_stack.pop().clone() } {
+        watch!(dir);
         let dir = dir.clone();
+        watch!(dir);
         let child_paths = get_child_paths(&dir)?;
+        watch!(child_paths);
         update_ignore_rules(&child_paths)?;
         filter_child_paths(&child_paths)?;
     }
