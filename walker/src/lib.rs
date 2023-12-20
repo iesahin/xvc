@@ -768,10 +768,13 @@ fn build_pattern(source: Source, original: &str) -> Pattern<String> {
 /// Check whether `path` is whitelisted or ignored with `ignore_rules`
 pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     let is_abs = path.is_absolute();
+    watch!(is_abs);
     // strip_prefix eats the final slash, and ends_with behave differently than str, so we work
     // around here
     let path_str = path.to_string_lossy();
+    watch!(path_str);
     let final_slash = path_str.ends_with('/');
+    watch!(final_slash);
 
     let path = if is_abs {
         if final_slash {
@@ -793,6 +796,7 @@ pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
         path_str.to_string()
     };
 
+    watch!(path);
     if ignore_rules.whitelist_set.is_match(&path) {
         MatchResult::Whitelist
     } else if ignore_rules.ignore_set.is_match(&path) {
