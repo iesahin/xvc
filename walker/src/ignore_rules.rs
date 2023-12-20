@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 use globset::Glob;
 use globset::GlobSet;
 use itertools::Itertools;
+use xvc_logging::watch;
 
 use crate::build_globset;
 use crate::content_to_patterns;
@@ -50,6 +51,9 @@ impl IgnoreRules {
     /// Adds `new_patterns` to the list of patterns and recompiles ignore and
     /// whitelist [GlobSet]s.
     pub fn update(&mut self, new_patterns: Vec<GlobPattern>) -> Result<()> {
+        watch!("Before ignore rules update");
+        watch!(&self.ignore_set);
+        watch!(&self.whitelist_set);
         let (new_ignore_patterns, new_whitelist_patterns): (Vec<_>, Vec<_>) = new_patterns
             .into_iter()
             .partition(|p| matches!(p.effect, PatternEffect::Ignore));
@@ -78,6 +82,9 @@ impl IgnoreRules {
 
             self.whitelist_set = build_globset(current_whitelist_globs)?
         }
+        watch!("After ignore rules update");
+        watch!(&self.ignore_set);
+        watch!(&self.whitelist_set);
 
         Ok(())
     }
