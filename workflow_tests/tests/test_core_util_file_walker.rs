@@ -6,7 +6,7 @@ use xvc_core::{
     XvcPath,
 };
 
-use std::path::Path;
+use std::{path::Path, time::Duration};
 
 use xvc_logging::watch;
 
@@ -54,13 +54,14 @@ fn test_walk() -> Result<()> {
     assert!(diff2.is_empty());
 
     let mut output_lines = Vec::<String>::new();
-    while let Some(Some(l)) = output_receiver.iter().next() {
+    watch!(output_lines);
+    while let Ok(Some(l)) = output_receiver.recv_timeout(Duration::from_secs(1)) {
         output_lines.push(l.to_string());
     }
 
     let output = output_lines.into_iter().collect::<Vec<String>>().join("\n");
-
-    assert!(output.is_empty(), "{}", output);
+    watch!(output);
+    assert!(output.trim().is_empty(), "{}", output);
 
     for (p, m) in pmp1 {
         assert!(pmp2[&p] == m)
