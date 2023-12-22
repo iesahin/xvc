@@ -110,30 +110,26 @@ pub fn walk_parallel(
         pmm
     });
 
-    let ignore_collector = thread::spawn(move || {
-        let ignore_rules = IgnoreRules::empty(xvc_root);
+    let mut ignore_rules = IgnoreRules::empty(xvc_root);
+    let ignore_rules_thread = thread::spawn(move || {
         for ignore_rule in ignore_receiver {
             if let Ok(ignore_rule) = ignore_rule {
                 assert!(ignore_rules.root == ignore_rule.root);
-                ignore_rules.merge(ignore_rule);
+                ignore_rules.merge_with(&ignore_rule).unwrap();
             } else {
                 warn!("Error while collecting ignore rules");
             }
         }
-        ignores
+        ignore_rules
     });
 
     let pmm = pusher.join().map_err(|e| Error::FSWalkerError {
         error: format!("{:?}", e),
     })?;
 
-    let ignores = ignore_collector.join().map_err(|e| Error::FSWalkerError {
-        error: format!("{:?}", e),
-    })?;
+    let ignore_rules = ignore_rules_thread.join()?;
 
-    let merged = merge_ignores(&ignores)?;
-
-    Ok((pmm, merged))
+    Ok((pmm, ignore_rules))
 }
 
 /// Sends paths under `xvc_root`, ignoring `initial_patterns` and loading patterns from
