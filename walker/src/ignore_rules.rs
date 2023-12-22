@@ -11,7 +11,7 @@ use crate::content_to_patterns;
 use crate::GlobPattern;
 use crate::PatternEffect;
 use crate::Result;
-use crate::{build_globset, merge_pattern_lists};
+use crate::{build_globset, build_ignore_rules};
 
 /// Complete set of ignore rules for a directory and its child directories.
 #[derive(Debug, Clone)]
@@ -60,15 +60,51 @@ impl IgnoreRules {
     pub fn merge_with(&mut self, other: &IgnoreRules) -> Result<()> {
         assert_eq!(self.root, other.root);
 
-        let mut ignore_patterns = self.ignore_patterns.write()?;
-        let other_ignore_patterns = other.ignore_patterns.read()?;
+        {
+            let mut ignore_patterns = self.ignore_patterns.write()?;
+            let other_ignore_patterns = other.ignore_patterns.read()?;
 
-        *ignore_patterns = ignore_patterns
-            .iter()
-            .chain(other_ignore_patterns.iter())
-            .unique()
-            .cloned()
-            .collect();
+            *ignore_patterns = ignore_patterns
+                .iter()
+                .chain(other_ignore_patterns.iter())
+                .unique()
+                .cloned()
+                .collect();
+        }
+
+        {
+            let mut whitelist_patterns = self.whitelist_patterns.write()?;
+            let other_whitelist_patterns = other.whitelist_patterns.read()?;
+
+            *whitelist_patterns = whitelist_patterns
+                .iter()
+                .chain(other_whitelist_patterns.iter())
+                .unique()
+                .cloned()
+                .collect();
+        }
+
+        {
+            let ignore_globs = self
+                .ignore_patterns
+                .read()?
+                .iter()
+                .map(|g| g.pattern.clone())
+                .collect();
+            let ignore_set = build_globset(ignore_globs)?;
+            *self.ignore_set.write()? = ignore_set;
+        }
+
+        {
+            let whitelist_globs = self
+                .whitelist_patterns
+                .read()?
+                .iter()
+                .map(|g| g.pattern.clone())
+                .collect();
+            let whitelist_set = build_globset(whitelist_globs)?;
+            *self.whitelist_set.write()? = whitelist_set;
+        }
         Ok(())
     }
 

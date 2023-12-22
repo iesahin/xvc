@@ -474,17 +474,6 @@ pub fn walk_serial(
     Ok((res_paths, ignore_rules))
 }
 
-pub fn merge_pattern_lists(
-    patterns_1: Vec<GlobPattern>,
-    patterns_2: Vec<GlobPattern>,
-) -> Vec<GlobPattern> {
-    patterns_1
-        .into_iter()
-        .chain(patterns_2.into_iter())
-        .unique()
-        .collect()
-}
-
 /// Just build the ignore rules with the given directory
 pub fn build_ignore_rules(
     given: IgnoreRules,
