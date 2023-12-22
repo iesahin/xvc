@@ -7,6 +7,7 @@
 use crossbeam_channel::Sender;
 use log::LevelFilter;
 use std::env;
+use std::fmt::Display;
 use std::path::Path;
 use std::sync::Once;
 
@@ -313,5 +314,19 @@ impl From<&str> for XvcOutputLine {
 impl From<String> for XvcOutputLine {
     fn from(s: String) -> Self {
         Self::Output(s)
+    }
+}
+
+impl Display for XvcOutputLine {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self {
+            XvcOutputLine::Output(s) => writeln!(f, "{}", s),
+            XvcOutputLine::Info(s) => writeln!(f, "[INFO] {}", s),
+            XvcOutputLine::Debug(s) => writeln!(f, "[DEBUG] {}", s),
+            XvcOutputLine::Warn(s) => writeln!(f, "[WARN] {}", s),
+            XvcOutputLine::Error(s) => writeln!(f, "[ERROR] {}", s),
+            XvcOutputLine::Panic(s) => writeln!(f, "[PANIC] {}", s),
+            XvcOutputLine::Tick(n) => write!(f, "{}", ".".repeat(*n)),
+        }
     }
 }

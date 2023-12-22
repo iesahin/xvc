@@ -53,7 +53,14 @@ fn test_walk() -> Result<()> {
     assert!(diff1.is_empty());
     assert!(diff2.is_empty());
 
-    assert!(output_receiver.is_empty());
+    let mut output_lines = Vec::<String>::new();
+    while let Some(Some(l)) = output_receiver.iter().next() {
+        output_lines.push(l.to_string());
+    }
+
+    let output = output_lines.into_iter().collect::<Vec<String>>().join("\n");
+
+    assert!(output.is_empty(), "{}", output);
 
     for (p, m) in pmp1 {
         assert!(pmp2[&p] == m)
