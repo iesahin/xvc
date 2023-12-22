@@ -1,15 +1,17 @@
+use std::cell::RefCell;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, RwLock};
 
 use globset::Glob;
 use globset::GlobSet;
 use itertools::Itertools;
 use xvc_logging::watch;
 
-use crate::build_globset;
 use crate::content_to_patterns;
 use crate::GlobPattern;
 use crate::PatternEffect;
 use crate::Result;
+use crate::{build_globset, merge_pattern_lists};
 
 /// Complete set of ignore rules for a directory and its child directories.
 #[derive(Debug, Clone)]
@@ -17,12 +19,18 @@ pub struct IgnoreRules {
     /// The root of the ignore rules.
     /// Typically this is the root directory of Git or Xvc repository.
     pub root: PathBuf,
-    /// All patterns collected from ignore files or specified in code.
-    pub patterns: Vec<GlobPattern>,
+
+    /// All ignore patterns collected from ignore files or specified in code.
+    pub ignore_patterns: Arc<RwLock<Vec<GlobPattern>>>,
+
+    /// All whitelist patterns collected from ignore files or specified in code
+    pub whitelist_patterns: Arc<RwLock<Vec<GlobPattern>>>,
+
     /// Compiled [GlobSet] for whitelisted paths.
-    pub whitelist_set: GlobSet,
+    pub whitelist_set: Arc<RwLock<GlobSet>>,
+
     /// Compiled [GlobSet] for ignored paths.
-    pub ignore_set: GlobSet,
+    pub ignore_set: Arc<RwLock<GlobSet>>,
 }
 
 impl IgnoreRules {
@@ -30,9 +38,10 @@ impl IgnoreRules {
     pub fn empty(dir: &Path) -> Self {
         IgnoreRules {
             root: PathBuf::from(dir),
-            patterns: Vec::<GlobPattern>::new(),
-            ignore_set: GlobSet::empty(),
-            whitelist_set: GlobSet::empty(),
+            ignore_patterns: Arc::new(RwLock::new(Vec::<GlobPattern>::new())),
+            whitelist_patterns: Arc::new(RwLock::new(Vec::<GlobPattern>::new())),
+            ignore_set: Arc::new(RwLock::new(GlobSet::empty())),
+            whitelist_set: Arc::new(RwLock::new(GlobSet::empty())),
         }
     }
 
@@ -48,6 +57,21 @@ impl IgnoreRules {
         Ok(initialized)
     }
 
+    pub fn merge_with(&mut self, other: &IgnoreRules) -> Result<()> {
+        assert_eq!(self.root, other.root);
+
+        let mut ignore_patterns = self.ignore_patterns.write()?;
+        let other_ignore_patterns = other.ignore_patterns.read()?;
+
+        *ignore_patterns = ignore_patterns
+            .iter()
+            .chain(other_ignore_patterns.iter())
+            .unique()
+            .cloned()
+            .collect();
+        Ok(())
+    }
+
     /// Adds `new_patterns` to the list of patterns and recompiles ignore and
     /// whitelist [GlobSet]s.
     pub fn update(&mut self, new_patterns: Vec<GlobPattern>) -> Result<()> {
@@ -57,34 +81,38 @@ impl IgnoreRules {
         let (new_ignore_patterns, new_whitelist_patterns): (Vec<_>, Vec<_>) = new_patterns
             .into_iter()
             .partition(|p| matches!(p.effect, PatternEffect::Ignore));
-        let (mut current_ignore_patterns, mut current_whitelist_patterns): (Vec<_>, Vec<_>) = self
-            .patterns
-            .clone()
-            .into_iter()
-            .partition(|p| matches!(p.effect, PatternEffect::Ignore));
-
         if !new_ignore_patterns.is_empty() {
-            current_ignore_patterns.extend(new_ignore_patterns);
-            let current_ignore_globs = current_ignore_patterns
+            self.ignore_patterns.write()?.extend(new_ignore_patterns);
+            let ignore_globs = self
+                .ignore_patterns
+                .read()?
                 .iter()
-                .map(|p| p.pattern.clone())
-                .collect();
-            self.ignore_set = build_globset(current_ignore_globs)?
+                .map(|g| g.pattern.clone())
+                .collect::<Vec<Glob>>();
+            {
+                let mut ignore_set = self.ignore_set.write()?;
+                *ignore_set = build_globset(ignore_globs)?;
+            }
         }
 
         if !new_whitelist_patterns.is_empty() {
-            current_whitelist_patterns.extend(new_whitelist_patterns);
-
-            let current_whitelist_globs: Vec<Glob> = current_whitelist_patterns
+            self.whitelist_patterns
+                .write()?
+                .extend(new_whitelist_patterns);
+            let whitelist_globs = self
+                .ignore_patterns
+                .read()?
                 .iter()
-                .map(|p| p.pattern.clone())
-                .collect();
-
-            self.whitelist_set = build_globset(current_whitelist_globs)?
+                .map(|g| g.pattern.clone())
+                .collect::<Vec<Glob>>();
+            {
+                let mut whitelist_set = self.whitelist_set.write()?;
+                *whitelist_set = build_globset(whitelist_globs)?;
+            }
         }
         watch!("After ignore rules update");
-        watch!(&self.ignore_set);
-        watch!(&self.whitelist_set);
+        watch!(&self.ignore_set.read());
+        watch!(&self.whitelist_set.read());
 
         Ok(())
     }
@@ -93,27 +121,27 @@ impl IgnoreRules {
     /// It returns [Error::GlobError] if there are malformed globs in any of the files.
     pub fn new(root: &Path, patterns: Vec<GlobPattern>) -> Result<Self> {
         let patterns: Vec<GlobPattern> = patterns.into_iter().unique().collect();
-        let ignore_patterns: Vec<Glob> = patterns
+        let (ignore_patterns, whitelist_patterns): (Vec<_>, Vec<_>) = patterns
+            .into_iter()
+            .partition(|p| matches!(p.effect, PatternEffect::Ignore));
+
+        let ignore_globs: Vec<Glob> = ignore_patterns.iter().map(|p| p.pattern.clone()).collect();
+
+        let ignore_set = build_globset(ignore_globs)?;
+
+        let whitelist_globs: Vec<Glob> = whitelist_patterns
             .iter()
-            .filter(|p| p.effect == PatternEffect::Ignore)
             .map(|p| p.pattern.clone())
             .collect();
 
-        let ignore_set = build_globset(ignore_patterns)?;
-
-        let whitelist_patterns: Vec<Glob> = patterns
-            .iter()
-            .filter(|p| p.effect == PatternEffect::Whitelist)
-            .map(|p| p.pattern.clone())
-            .collect();
-
-        let whitelist_set = build_globset(whitelist_patterns)?;
+        let whitelist_set = build_globset(whitelist_globs)?;
 
         Ok(IgnoreRules {
             root: root.to_path_buf(),
-            patterns,
-            whitelist_set,
-            ignore_set,
+            ignore_patterns: Arc::new(RwLock::new(ignore_patterns)),
+            whitelist_patterns: Arc::new(RwLock::new(whitelist_patterns)),
+            whitelist_set: Arc::new(RwLock::new(whitelist_set)),
+            ignore_set: Arc::new(RwLock::new(ignore_set)),
         })
     }
 }

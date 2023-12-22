@@ -9,8 +9,8 @@ use crossbeam_channel::{bounded, Sender};
 use std::sync::{Arc, RwLock};
 use std::thread;
 use xvc_logging::{warn, XvcOutputSender};
+use xvc_walker::Result as XvcWalkerResult;
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
-use xvc_walker::{merge_ignores, Result as XvcWalkerResult};
 
 /// We ignore `.git` directories even we are not using `.git`
 pub const COMMON_IGNORE_PATTERNS: &str = ".xvc\n.git\n";
@@ -111,10 +111,11 @@ pub fn walk_parallel(
     });
 
     let ignore_collector = thread::spawn(move || {
-        let mut ignores = Vec::<IgnoreRules>::new();
+        let ignore_rules = IgnoreRules::empty(xvc_root);
         for ignore_rule in ignore_receiver {
-            if let Ok(ir) = ignore_rule {
-                ignores.push(ir);
+            if let Ok(ignore_rule) = ignore_rule {
+                assert!(ignore_rules.root == ignore_rule.root);
+                ignore_rules.merge(ignore_rule);
             } else {
                 warn!("Error while collecting ignore rules");
             }

@@ -401,6 +401,7 @@ pub fn walk_serial(
 
     let update_ignore_rules = |child_paths: &Vec<PathMetadata>| -> Result<()> {
         if let Some(ref ignore_filename) = &ignore_filename {
+            watch!(ignore_filename);
             if let Some(ignore_path_metadata) = child_paths
                 .iter()
                 .find(|pm| pm.path.file_name() == Some(ignore_filename))
@@ -473,31 +474,15 @@ pub fn walk_serial(
     Ok((res_paths, ignore_rules))
 }
 
-/// merge ignore rules in a single set of ignore rules.
-///
-/// - if the list is empty, it's an error.
-/// - the `root` of the result is the `root` of the first element.
-/// - it collects all rules in a single `Vec<GlobPattern>` and recompiles `whitelist` and `ignore`
-/// globsets.
-pub fn merge_ignores(ignore_rules: &Vec<IgnoreRules>) -> Result<IgnoreRules> {
-    if ignore_rules.is_empty() {
-        Err(Error::CannotMergeEmptyIgnoreRules)
-    } else if ignore_rules.len() == 1 {
-        Ok(ignore_rules[0].clone())
-    } else {
-        let merged = Vec::<GlobPattern>::new();
-        let root = ignore_rules[0].root.clone();
-        let patterns = ignore_rules
-            .iter()
-            .fold(merged, |mut merged, ir| {
-                merged.extend(ir.patterns.clone());
-                merged
-            })
-            .into_iter()
-            .unique()
-            .collect();
-        IgnoreRules::new(&root, patterns)
-    }
+pub fn merge_pattern_lists(
+    patterns_1: Vec<GlobPattern>,
+    patterns_2: Vec<GlobPattern>,
+) -> Vec<GlobPattern> {
+    patterns_1
+        .into_iter()
+        .chain(patterns_2.into_iter())
+        .unique()
+        .collect()
 }
 
 /// Just build the ignore rules with the given directory
@@ -797,9 +782,9 @@ pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     };
 
     watch!(path);
-    if ignore_rules.whitelist_set.is_match(&path) {
+    if ignore_rules.whitelist_set.read().unwrap().is_match(&path) {
         MatchResult::Whitelist
-    } else if ignore_rules.ignore_set.is_match(&path) {
+    } else if ignore_rules.ignore_set.read().unwrap().is_match(&path) {
         MatchResult::Ignore
     } else {
         MatchResult::NoMatch
