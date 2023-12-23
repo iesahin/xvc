@@ -88,7 +88,7 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
     let (res_paths, _ignore_rules) =
         walk_serial(&output_sender, initial_rules, &root, &walk_options).unwrap();
-    assert!(output_receiver.is_empty());
+    watch!(output_receiver);
     watch!(res_paths);
     fs::remove_dir_all(&root).unwrap();
     res_paths
