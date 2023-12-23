@@ -22,8 +22,8 @@ fn new_dir_with_ignores(
     let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
     watch!(patterns);
     initialized.update(patterns).unwrap();
-    watch!(initialized.ignore_patterns);
-    watch!(initialized.whitelist_patterns);
+    watch!(initialized.ignore_patterns.read().unwrap());
+    watch!(initialized.whitelist_patterns.read().unwrap());
     Ok(initialized)
 }
 
