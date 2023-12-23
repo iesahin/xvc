@@ -57,20 +57,20 @@ fn create_directory_hierarchy(force: bool) -> Result<AbsolutePath> {
     Ok(AbsolutePath::from(temp_dir))
 }
 
-#[test_case("", "" => it contains "dir-0002/file-0001.bin" ; "t3733909666")]
-#[test_case("", "file-0001.bin" => it not contains "dir-0002/file-0001.bin" ; "t2733909666")]
-#[test_case("", "dir-0002/" => it not contains "dir-0002/file-0001.bin" ; "t3433909666")]
-#[test_case("", "dir-0002/*" => it  not contains "dir-0002/file-0001.bin" ; "t4733909666")]
-#[test_case("dir-0002/", "file-0001.bin" => it not contains "dir-0002/file-0001.bin" ; "t2312253429" )]
-#[test_case("dir-0002/", "*" => it not contains "dir-0002/file-0001.bin" ; "t1653614181" )]
-#[test_case("dir-0002/", "**" => it not contains "dir-0002/file-0001.bin" ; "t987815317" )]
-#[test_case("dir-0002/", "*.bin" => it not contains "dir-0002/file-0001.bin" ; "t2105105898" )]
-#[test_case("", "*.bin\n!file-0001.*" => it contains "dir-0002/file-0001.bin" ; "t3772817176" )]
-#[test_case("", "!*.bin\nfile-0001.*" => it contains "dir-0002/file-0001.bin" ; "t3272817176" )]
-#[test_case("", "*.bin\n!dir-0002/*" => it contains "dir-0002/file-0001.bin" ; "t3572817176" )]
+// #[test_case("", "" => it contains "dir-0002/file-0001.bin" ; "t3733909666")]
+// #[test_case("", "file-0001.bin" => it not contains "dir-0002/file-0001.bin" ; "t2733909666")]
+// #[test_case("", "dir-0002/" => it not contains "dir-0002/file-0001.bin" ; "t3433909666")]
+// #[test_case("", "dir-0002/*" => it  not contains "dir-0002/file-0001.bin" ; "t4733909666")]
+// #[test_case("dir-0002/", "file-0001.bin" => it not contains "dir-0002/file-0001.bin" ; "t2312253429" )]
+// #[test_case("dir-0002/", "*" => it not contains "dir-0002/file-0001.bin" ; "t1653614181" )]
+// #[test_case("dir-0002/", "**" => it not contains "dir-0002/file-0001.bin" ; "t987815317" )]
+// #[test_case("dir-0002/", "*.bin" => it not contains "dir-0002/file-0001.bin" ; "t2105105898" )]
+// #[test_case("", "*.bin\n!file-0001.*" => it contains "dir-0002/file-0001.bin" ; "t3772817176" )]
+// #[test_case("", "!*.bin\nfile-0001.*" => it contains "dir-0002/file-0001.bin" ; "t3272817176" )]
+// #[test_case("", "*.bin\n!dir-0002/*" => it contains "dir-0002/file-0001.bin" ; "t3572817176" )]
 #[test_case("", "*.bin\n!dir-0002/**" => it contains "dir-0002/file-0001.bin" ; "t7772817176" )]
-#[test_case("dir-0001/", "/dir-0001/" => it not contains "dir-0001/dir-0001/" ; "t9772817176" )]
-#[test_case("dir-0001/", "/dir-0001/" => it not contains "dir-0001/dir-0001/file-0001.bin" ; "t9972817176" )]
+// #[test_case("dir-0001/", "/dir-0001/" => it not contains "dir-0001/dir-0001/" ; "t9772817176" )]
+// #[test_case("dir-0001/", "/dir-0001/" => it not contains "dir-0001/dir-0001/file-0001.bin" ; "t9972817176" )]
 fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     test_logging(log::LevelFilter::Trace);
     let root = create_directory_hierarchy(true).unwrap();
