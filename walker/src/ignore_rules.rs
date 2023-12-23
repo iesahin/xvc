@@ -60,7 +60,7 @@ impl IgnoreRules {
     /// Adds `new_patterns` to the list of patterns and recompiles ignore and
     /// whitelist [GlobSet]s.
     pub fn update(&mut self, new_patterns: Vec<GlobPattern>) -> Result<()> {
-        let (new_ignore_patterns, new_whitelist_patterns): (Vec<_>, Vec<_>) = new_patterns
+        let (new_ignore_patterns, new__whitelist_patterns): (Vec<_>, Vec<_>) = new_patterns
             .into_iter()
             .partition(|p| matches!(p.effect, PatternEffect::Ignore));
         self.update_ignore(&new_ignore_patterns)?;
