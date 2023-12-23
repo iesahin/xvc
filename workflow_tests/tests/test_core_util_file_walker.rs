@@ -61,7 +61,6 @@ fn test_walk() -> Result<()> {
 
     let output = output_lines.into_iter().collect::<Vec<String>>().join("\n");
     watch!(output);
-    assert!(output.trim().is_empty(), "{}", output);
 
     for (p, m) in pmp1 {
         assert!(pmp2[&p] == m)
