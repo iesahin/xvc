@@ -22,6 +22,8 @@ fn new_dir_with_ignores(
     let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
     watch!(patterns);
     initialized.update(patterns).unwrap();
+    watch!(initialized.ignore_patterns);
+    watch!(initialized.whitelist_patterns);
     Ok(initialized)
 }
 
@@ -81,6 +83,8 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     )
     .unwrap();
     let initial_rules = new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap();
+    watch!(initial_rules.ignore_patterns);
+    watch!(initial_rules.whitelist_patterns);
     let walk_options = WalkOptions {
         ignore_filename: Some(".gitignore".to_string()),
         include_dirs: true,
