@@ -57,28 +57,64 @@ impl IgnoreRules {
         Ok(initialized)
     }
 
+    /// Adds `new_patterns` to the list of patterns and recompiles ignore and
+    /// whitelist [GlobSet]s.
+    pub fn update(&mut self, new_patterns: Vec<GlobPattern>) -> Result<()> {
+        let (new_ignore_patterns, new_whitelist_patterns): (Vec<_>, Vec<_>) = new_patterns
+            .into_iter()
+            .partition(|p| matches!(p.effect, PatternEffect::Ignore));
+        self.update_ignore(&new_ignore_patterns)?;
+        self.update_whitelist(&new_whitelist_patterns)?;
+        Ok(())
+    }
+
+    /// Merge with other ignore rules, extending this one's patterns and rebuilding glob sets.
     pub fn merge_with(&mut self, other: &IgnoreRules) -> Result<()> {
         assert_eq!(self.root, other.root);
 
-        {
-            let mut ignore_patterns = self.ignore_patterns.write()?;
-            let other_ignore_patterns = other.ignore_patterns.read()?;
+        self.update_ignore(&other.ignore_patterns.read().unwrap())?;
+        self.update_whitelist(&other.whitelist_patterns.read().unwrap())?;
+        Ok(())
+    }
 
-            *ignore_patterns = ignore_patterns
+    fn update_whitelist(&mut self, new_whitelist_patterns: &Vec<GlobPattern>) -> Result<()> {
+        assert!(new_whitelist_patterns
+            .iter()
+            .all(|p| matches!(p.effect, PatternEffect::Whitelist)));
+        {
+            let mut whitelist_patterns = self.whitelist_patterns.write()?;
+
+            *whitelist_patterns = whitelist_patterns
                 .iter()
-                .chain(other_ignore_patterns.iter())
+                .chain(new_whitelist_patterns.iter())
                 .unique()
                 .cloned()
                 .collect();
         }
 
         {
-            let mut whitelist_patterns = self.whitelist_patterns.write()?;
-            let other_whitelist_patterns = other.whitelist_patterns.read()?;
-
-            *whitelist_patterns = whitelist_patterns
+            let whitelist_globs = self
+                .whitelist_patterns
+                .read()?
                 .iter()
-                .chain(other_whitelist_patterns.iter())
+                .map(|g| g.pattern.clone())
+                .collect();
+            let whitelist_set = build_globset(whitelist_globs)?;
+            *self.whitelist_set.write()? = whitelist_set;
+        }
+
+        Ok(())
+    }
+    fn update_ignore(&mut self, new_ignore_patterns: &Vec<GlobPattern>) -> Result<()> {
+        assert!(new_ignore_patterns
+            .iter()
+            .all(|p| matches!(p.effect, PatternEffect::Ignore)));
+        {
+            let mut ignore_patterns = self.ignore_patterns.write()?;
+
+            *ignore_patterns = ignore_patterns
+                .iter()
+                .chain(new_ignore_patterns.iter())
                 .unique()
                 .cloned()
                 .collect();
@@ -94,61 +130,6 @@ impl IgnoreRules {
             let ignore_set = build_globset(ignore_globs)?;
             *self.ignore_set.write()? = ignore_set;
         }
-
-        {
-            let whitelist_globs = self
-                .whitelist_patterns
-                .read()?
-                .iter()
-                .map(|g| g.pattern.clone())
-                .collect();
-            let whitelist_set = build_globset(whitelist_globs)?;
-            *self.whitelist_set.write()? = whitelist_set;
-        }
-        Ok(())
-    }
-
-    /// Adds `new_patterns` to the list of patterns and recompiles ignore and
-    /// whitelist [GlobSet]s.
-    pub fn update(&mut self, new_patterns: Vec<GlobPattern>) -> Result<()> {
-        watch!("Before ignore rules update");
-        watch!(&self.ignore_set);
-        watch!(&self.whitelist_set);
-        let (new_ignore_patterns, new_whitelist_patterns): (Vec<_>, Vec<_>) = new_patterns
-            .into_iter()
-            .partition(|p| matches!(p.effect, PatternEffect::Ignore));
-        if !new_ignore_patterns.is_empty() {
-            self.ignore_patterns.write()?.extend(new_ignore_patterns);
-            let ignore_globs = self
-                .ignore_patterns
-                .read()?
-                .iter()
-                .map(|g| g.pattern.clone())
-                .collect::<Vec<Glob>>();
-            {
-                let mut ignore_set = self.ignore_set.write()?;
-                *ignore_set = build_globset(ignore_globs)?;
-            }
-        }
-
-        if !new_whitelist_patterns.is_empty() {
-            self.whitelist_patterns
-                .write()?
-                .extend(new_whitelist_patterns);
-            let whitelist_globs = self
-                .ignore_patterns
-                .read()?
-                .iter()
-                .map(|g| g.pattern.clone())
-                .collect::<Vec<Glob>>();
-            {
-                let mut whitelist_set = self.whitelist_set.write()?;
-                *whitelist_set = build_globset(whitelist_globs)?;
-            }
-        }
-        watch!("After ignore rules update");
-        watch!(&self.ignore_set.read());
-        watch!(&self.whitelist_set.read());
 
         Ok(())
     }
