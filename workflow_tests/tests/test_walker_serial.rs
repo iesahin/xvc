@@ -95,12 +95,14 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     watch!(output_receiver);
     watch!(res_paths);
     fs::remove_dir_all(&root).unwrap();
-    res_paths
+    let out_paths = res_paths
         .iter()
         .map(|pm| {
             let p = pm.path.to_string_lossy().to_string();
 
             p.strip_prefix(&root.to_string()).unwrap_or(&p).to_owned()
         })
-        .collect()
+        .collect();
+    watch!(out_paths);
+    out_paths
 }
