@@ -190,6 +190,9 @@ format = "{{{{aft}}}}{{{{rrm}}}} {{{{asz}}}} {{{{ats}}}} {{{{rcd8}}}} {{{{acd8}}
 # none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
 sort = "name-desc"
 
+# Show dot files like .gitignore
+show_dot_files = false
+
 # Do not show a summary for as the final row for `xvc file list`.
 no_summary = false
 
