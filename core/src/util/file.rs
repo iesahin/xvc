@@ -25,7 +25,7 @@ use xvc_walker::{
 use crate::error::Error;
 use crate::error::Result;
 use crate::{XvcFileType, CHANNEL_BOUND, XVCIGNORE_FILENAME};
-use crossbeam_channel::{bounded, select, Receiver, Sender};
+use crossbeam_channel::{bounded, select, Receiver, RecvError, Sender};
 use xvc_walker::check_ignore;
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
@@ -104,8 +104,13 @@ impl XvcPathMetadataProvider {
                             return Ok(())
                         }
                         Err(e) => {
-                            error!("Error in fs_receiver: {:?}", e);
-                            return Err(anyhow::anyhow!("Error in fs_receiver: {:?}", e).into())
+                            // If the channel is disconnected, return Ok.
+                            if e == RecvError {
+                                return Ok(())
+                            } else {
+                                error!("Error in fs_receiver: {:?}", e);
+                                return Err(anyhow::anyhow!("Error in fs_receiver: {:?}", e).into())
+                            }
                         }
                     },
 
