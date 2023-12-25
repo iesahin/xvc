@@ -166,6 +166,14 @@ Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 ```
 
+By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag. 
+
+```console
+$ xvc file list --sort name-asc --show-dot-files
+```
+
+## Output Format
+
 With the default output format, the first two letters show the path type and
 recheck method, respectively.
 
