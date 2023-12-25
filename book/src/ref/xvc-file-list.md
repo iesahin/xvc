@@ -53,6 +53,11 @@ Options:
           
           The default option can be set with file.list.no_summary in the config file.
 
+  -a, --show-dot-files
+          Don't hide dot files
+          
+          If not supplied, hides dot files like .gitignore and .xvcignore
+
   -h, --help
           Print help (see a summary with '-h')
 
@@ -126,8 +131,6 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list --sort name-asc
-FX         107 [..]          ce9fcf30 .gitignore
-FX         141 [..]          3054b812 .xvcignore
 DX         224 [..]                   dir-0001
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
