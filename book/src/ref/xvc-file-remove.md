@@ -59,7 +59,7 @@ $ xvc file track 'd*.txt'
 $ xvc file list
 FC        [..] c85f3e81 c85f3e81 data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         191 [..]          a6ac896f .gitignore
+FX         191 [..]          29f806be .gitignore
 Total #: 3 Workspace Size:         351 Cached Size:          19
 
 
@@ -119,7 +119,7 @@ $ xvc file carry-in --force data.txt
 $ xvc file list
 FC         [..] c85f3e81 c85f3e81 data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         191 [..]          a6ac896f .gitignore
+FX         191 [..]          29f806be .gitignore
 Total #: 3 Workspace Size:         351 Cached Size:          19
 
 
@@ -158,7 +158,7 @@ $ tree .xvc/b3/
 $ xvc file list
 FC         [..] 6602cff6 6602cff6 data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         191 [..]          a6ac896f .gitignore
+FX         191 [..]          29f806be .gitignore
 Total #: 3 Workspace Size:         351 Cached Size:          19
 
 
@@ -282,7 +282,7 @@ $ xvc file list
 SS        [..] [..] 4a2e9d7c          data2.txt
 FC        1024 [..] 4a2e9d7c 4a2e9d7c data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         276 2023-12-25 07:08:26          c58cbdc0 .gitignore
+FX         276 [..]          ffc19dac .gitignore
 Total #: 4 Workspace Size:        1626 Cached Size:        1024
 
 
