@@ -169,7 +169,40 @@ Total #: 30 Workspace Size:       51195 Cached Size:           0
 By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag. 
 
 ```console
-$ xvc file list --sort name-asc --show-dot-files
+$ xvc --debug file list --sort name-asc --show-dot-files
+DX         224 2023-12-25 08:35:05                   dir-0001
+FX        2001 2023-12-25 08:35:05          1953f05d dir-0001/file-0001.bin
+FX        2002 2023-12-25 08:35:05          7e807161 dir-0001/file-0002.bin
+FX        2003 2023-12-25 08:35:05          d2432259 dir-0001/file-0003.bin
+FX        2004 2023-12-25 08:35:05          63535612 dir-0001/file-0004.bin
+FX        2005 2023-12-25 08:35:05          447933dc dir-0001/file-0005.bin
+DX         224 2023-12-25 08:35:05                   dir-0002
+FX        2001 2023-12-25 08:35:05          1953f05d dir-0002/file-0001.bin
+FX        2002 2023-12-25 08:35:05          7e807161 dir-0002/file-0002.bin
+FX        2003 2023-12-25 08:35:05          d2432259 dir-0002/file-0003.bin
+FX        2004 2023-12-25 08:35:05          63535612 dir-0002/file-0004.bin
+FX        2005 2023-12-25 08:35:05          447933dc dir-0002/file-0005.bin
+DX         224 2023-12-25 08:35:05                   dir-0003
+FX        2001 2023-12-25 08:35:05          1953f05d dir-0003/file-0001.bin
+FX        2002 2023-12-25 08:35:05          7e807161 dir-0003/file-0002.bin
+FX        2003 2023-12-25 08:35:05          d2432259 dir-0003/file-0003.bin
+FX        2004 2023-12-25 08:35:05          63535612 dir-0003/file-0004.bin
+FX        2005 2023-12-25 08:35:05          447933dc dir-0003/file-0005.bin
+DX         224 2023-12-25 08:35:05                   dir-0004
+FX        2001 2023-12-25 08:35:05          1953f05d dir-0004/file-0001.bin
+FX        2002 2023-12-25 08:35:05          7e807161 dir-0004/file-0002.bin
+FX        2003 2023-12-25 08:35:05          d2432259 dir-0004/file-0003.bin
+FX        2004 2023-12-25 08:35:05          63535612 dir-0004/file-0004.bin
+FX        2005 2023-12-25 08:35:05          447933dc dir-0004/file-0005.bin
+DX         224 2023-12-25 08:35:05                   dir-0005
+FX        2001 2023-12-25 08:35:05          1953f05d dir-0005/file-0001.bin
+FX        2002 2023-12-25 08:35:05          7e807161 dir-0005/file-0002.bin
+FX        2003 2023-12-25 08:35:05          d2432259 dir-0005/file-0003.bin
+FX        2004 2023-12-25 08:35:05          63535612 dir-0005/file-0004.bin
+FX        2005 2023-12-25 08:35:05          447933dc dir-0005/file-0005.bin
+Total #: 30 Workspace Size:       51195 Cached Size:           0
+
+
 ```
 
 ## Output Format

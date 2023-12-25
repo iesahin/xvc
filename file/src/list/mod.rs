@@ -539,7 +539,9 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
             .into_iter()
             .filter_map(|(path, md)| {
                 let path_str = path.to_string();
+                watch!(path_str);
                 if path_str.starts_with('.') || path_str.contains("./") {
+                    watch!("ignored");
                     None
                 } else {
                     Some((path, md))
