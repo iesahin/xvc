@@ -59,8 +59,8 @@ $ xvc file track 'd*.txt'
 $ xvc file list
 FC        [..] c85f3e81 c85f3e81 data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         190 [..]          [..] .gitignore
-Total #: 3 Workspace Size:         350 Cached Size:          19
+FX         191 [..]          a6ac896f .gitignore
+Total #: 3 Workspace Size:         351 Cached Size:          19
 
 
 $ tree .xvc/b3/
@@ -119,8 +119,8 @@ $ xvc file carry-in --force data.txt
 $ xvc file list
 FC         [..] c85f3e81 c85f3e81 data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         190 [..]          [..] .gitignore
-Total #: 3 Workspace Size:         350 Cached Size:          19
+FX         191 [..]          a6ac896f .gitignore
+Total #: 3 Workspace Size:         351 Cached Size:          19
 
 
 $ tree .xvc/b3/
@@ -158,8 +158,8 @@ $ tree .xvc/b3/
 $ xvc file list
 FC         [..] 6602cff6 6602cff6 data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         190 [..]          [..] .gitignore
-Total #: 3 Workspace Size:         350 Cached Size:          19
+FX         191 [..]          a6ac896f .gitignore
+Total #: 3 Workspace Size:         351 Cached Size:          19
 
 
 $ xvc file remove --from-cache --only-version c85-f3e data.txt
@@ -282,8 +282,8 @@ $ xvc file list
 SS        [..] [..] 4a2e9d7c          data2.txt
 FC        1024 [..] 4a2e9d7c 4a2e9d7c data.txt
 FX         141 [..]          3054b812 .xvcignore
-FX         274 [..]          [..] .gitignore
-Total #: 4 Workspace Size:        1621 Cached Size:        1024
+FX         276 2023-12-25 07:08:26          c58cbdc0 .gitignore
+Total #: 4 Workspace Size:        1626 Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt
