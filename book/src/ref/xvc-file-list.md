@@ -170,8 +170,8 @@ By default the command hides dotfiles. If you also want to show them, you can us
 
 ```console
 $ xvc file list --sort name-asc --show-dot-files
-FX         [..][..]          [..] .gitignore
-FX         [..][..]          [..] .xvcignore
+FX        [..] [..]          [..] .gitignore
+FX        [..] [..]          [..] .xvcignore
 DX         224 [..]                   dir-0001
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
