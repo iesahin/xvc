@@ -170,38 +170,38 @@ By default the command hides dotfiles. If you also want to show them, you can us
 
 ```console
 $ xvc file list --sort name-asc --show-dot-files
-FX         107 2023-12-25 08:44:13          ce9fcf30 .gitignore
-FX         141 2023-12-25 08:44:13          3054b812 .xvcignore
-DX         224 2023-12-25 08:44:12                   dir-0001
-FX        2001 2023-12-25 08:44:12          1953f05d dir-0001/file-0001.bin
-FX        2002 2023-12-25 08:44:12          7e807161 dir-0001/file-0002.bin
-FX        2003 2023-12-25 08:44:12          d2432259 dir-0001/file-0003.bin
-FX        2004 2023-12-25 08:44:12          63535612 dir-0001/file-0004.bin
-FX        2005 2023-12-25 08:44:12          447933dc dir-0001/file-0005.bin
-DX         224 2023-12-25 08:44:12                   dir-0002
-FX        2001 2023-12-25 08:44:12          1953f05d dir-0002/file-0001.bin
-FX        2002 2023-12-25 08:44:12          7e807161 dir-0002/file-0002.bin
-FX        2003 2023-12-25 08:44:12          d2432259 dir-0002/file-0003.bin
-FX        2004 2023-12-25 08:44:12          63535612 dir-0002/file-0004.bin
-FX        2005 2023-12-25 08:44:12          447933dc dir-0002/file-0005.bin
-DX         224 2023-12-25 08:44:12                   dir-0003
-FX        2001 2023-12-25 08:44:12          1953f05d dir-0003/file-0001.bin
-FX        2002 2023-12-25 08:44:12          7e807161 dir-0003/file-0002.bin
-FX        2003 2023-12-25 08:44:12          d2432259 dir-0003/file-0003.bin
-FX        2004 2023-12-25 08:44:12          63535612 dir-0003/file-0004.bin
-FX        2005 2023-12-25 08:44:12          447933dc dir-0003/file-0005.bin
-DX         224 2023-12-25 08:44:12                   dir-0004
-FX        2001 2023-12-25 08:44:12          1953f05d dir-0004/file-0001.bin
-FX        2002 2023-12-25 08:44:12          7e807161 dir-0004/file-0002.bin
-FX        2003 2023-12-25 08:44:12          d2432259 dir-0004/file-0003.bin
-FX        2004 2023-12-25 08:44:12          63535612 dir-0004/file-0004.bin
-FX        2005 2023-12-25 08:44:12          447933dc dir-0004/file-0005.bin
-DX         224 2023-12-25 08:44:12                   dir-0005
-FX        2001 2023-12-25 08:44:12          1953f05d dir-0005/file-0001.bin
-FX        2002 2023-12-25 08:44:12          7e807161 dir-0005/file-0002.bin
-FX        2003 2023-12-25 08:44:12          d2432259 dir-0005/file-0003.bin
-FX        2004 2023-12-25 08:44:12          63535612 dir-0005/file-0004.bin
-FX        2005 2023-12-25 08:44:12          447933dc dir-0005/file-0005.bin
+FX         [..][..]          ce9fcf30 .gitignore
+FX         [..][..]          3054b812 .xvcignore
+DX         224 [..]                   dir-0001
+FX        2001 [..]          1953f05d dir-0001/file-0001.bin
+FX        2002 [..]          7e807161 dir-0001/file-0002.bin
+FX        2003 [..]          d2432259 dir-0001/file-0003.bin
+FX        2004 [..]          63535612 dir-0001/file-0004.bin
+FX        2005 [..]          447933dc dir-0001/file-0005.bin
+DX         224 [..]                   dir-0002
+FX        2001 [..]          1953f05d dir-0002/file-0001.bin
+FX        2002 [..]          7e807161 dir-0002/file-0002.bin
+FX        2003 [..]          d2432259 dir-0002/file-0003.bin
+FX        2004 [..]          63535612 dir-0002/file-0004.bin
+FX        2005 [..]          447933dc dir-0002/file-0005.bin
+DX         224 [..]                   dir-0003
+FX        2001 [..]          1953f05d dir-0003/file-0001.bin
+FX        2002 [..]          7e807161 dir-0003/file-0002.bin
+FX        2003 [..]          d2432259 dir-0003/file-0003.bin
+FX        2004 [..]          63535612 dir-0003/file-0004.bin
+FX        2005 [..]          447933dc dir-0003/file-0005.bin
+DX         224 [..]                   dir-0004
+FX        2001 [..]          1953f05d dir-0004/file-0001.bin
+FX        2002 [..]          7e807161 dir-0004/file-0002.bin
+FX        2003 [..]          d2432259 dir-0004/file-0003.bin
+FX        2004 [..]          63535612 dir-0004/file-0004.bin
+FX        2005 [..]          447933dc dir-0004/file-0005.bin
+DX         224 [..]                   dir-0005
+FX        2001 [..]          1953f05d dir-0005/file-0001.bin
+FX        2002 [..]          7e807161 dir-0005/file-0002.bin
+FX        2003 [..]          d2432259 dir-0005/file-0003.bin
+FX        2004 [..]          63535612 dir-0005/file-0004.bin
+FX        2005 [..]          447933dc dir-0005/file-0005.bin
 Total #: 32 Workspace Size:       51443 Cached Size:           0
 
 
@@ -211,6 +211,38 @@ You can also hide the summary below the list to get only the list of files.
 
 ```console
 $ xvc file list  --sort name-asc --no-summary
+DX         224 [..]                   dir-0001
+FX        2001 [..]          1953f05d dir-0001/file-0001.bin
+FX        2002 [..]          7e807161 dir-0001/file-0002.bin
+FX        2003 [..]          d2432259 dir-0001/file-0003.bin
+FX        2004 [..]          63535612 dir-0001/file-0004.bin
+FX        2005 [..]          447933dc dir-0001/file-0005.bin
+DX         224 [..]                   dir-0002
+FX        2001 [..]          1953f05d dir-0002/file-0001.bin
+FX        2002 [..]          7e807161 dir-0002/file-0002.bin
+FX        2003 [..]          d2432259 dir-0002/file-0003.bin
+FX        2004 [..]          63535612 dir-0002/file-0004.bin
+FX        2005 [..]          447933dc dir-0002/file-0005.bin
+DX         224 [..]                   dir-0003
+FX        2001 [..]          1953f05d dir-0003/file-0001.bin
+FX        2002 [..]          7e807161 dir-0003/file-0002.bin
+FX        2003 [..]          d2432259 dir-0003/file-0003.bin
+FX        2004 [..]          63535612 dir-0003/file-0004.bin
+FX        2005 [..]          447933dc dir-0003/file-0005.bin
+DX         224 [..]                   dir-0004
+FX        2001 [..]          1953f05d dir-0004/file-0001.bin
+FX        2002 [..]          7e807161 dir-0004/file-0002.bin
+FX        2003 [..]          d2432259 dir-0004/file-0003.bin
+FX        2004 [..]          63535612 dir-0004/file-0004.bin
+FX        2005 [..]          447933dc dir-0004/file-0005.bin
+DX         224 [..]                   dir-0005
+FX        2001 [..]          1953f05d dir-0005/file-0001.bin
+FX        2002 [..]          7e807161 dir-0005/file-0002.bin
+FX        2003 [..]          d2432259 dir-0005/file-0003.bin
+FX        2004 [..]          63535612 dir-0005/file-0004.bin
+FX        2005 [..]          447933dc dir-0005/file-0005.bin
+
+
 ```
 
 ## Output Format
