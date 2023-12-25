@@ -161,7 +161,7 @@ FX        2002 [..]          7e807161 dir-0005/file-0002.bin
 FX        2003 [..]          d2432259 dir-0005/file-0003.bin
 FX        2004 [..]          63535612 dir-0005/file-0004.bin
 FX        2005 [..]          447933dc dir-0005/file-0005.bin
-Total #: 32 Workspace Size:       51443 Cached Size:           0
+Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 
 ```
