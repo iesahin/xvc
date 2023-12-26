@@ -135,6 +135,7 @@ impl XvcPathMetadataProvider {
 
     /// Returns the [XvcMetadata] for a given [XvcPath].
     pub fn get(&self, path: &XvcPath) -> Option<XvcMetadata> {
+        watch!(path);
         if !self.path_map.read().unwrap().contains_key(path) {
             uwr!(self.update_metadata(path), self.output_sender);
         }
@@ -158,19 +159,28 @@ impl XvcPathMetadataProvider {
     }
 
     fn update_metadata(&self, xvc_path: &XvcPath) -> Result<()> {
+        watch!(xvc_path);
         let path = xvc_path.to_absolute_path(&self.xvc_root);
+        watch!(path);
+        let md = path.symlink_metadata()?;
+        watch!(&md);
         self.path_map
             .write()
             .unwrap()
-            .insert(xvc_path.clone(), path.symlink_metadata().into());
+            .insert(xvc_path.clone(), md.into());
         Ok(())
     }
 
+    /// Stop updating the paths by killing the background thread
     pub fn stop(&self) -> Result<()> {
-        self.kill_switch_sender.send(true).map_err(|e| e.into())
+        watch!(self.background_thread);
+        self.kill_switch_sender.send(true).map_err(Error::from)?;
+        watch!(self.background_thread);
+        Ok(())
     }
 
     fn update_with_glob(&self, glob: &str) -> Result<()> {
+        watch!(glob);
         for entry in glob::glob(glob)? {
             match entry {
                 Ok(entry) => {
@@ -181,13 +191,13 @@ impl XvcPathMetadataProvider {
                         continue;
                     } else {
                         let xvc_path = XvcPath::new(&self.xvc_root, &self.xvc_root, &entry)?;
+                        watch!(xvc_path);
                         if self.path_map.read().unwrap().contains_key(&xvc_path) {
                             continue;
                         } else {
-                            self.path_map
-                                .write()
-                                .unwrap()
-                                .insert(xvc_path, entry.symlink_metadata().into());
+                            let md = entry.symlink_metadata()?;
+                            watch!(&md);
+                            self.path_map.write().unwrap().insert(xvc_path, md.into());
                         }
                     }
                 }
@@ -203,7 +213,9 @@ impl XvcPathMetadataProvider {
         self.update_with_glob(glob)?;
         let mut matches = XvcPathMetadataMap::new();
         for (p, md) in self.path_map.read().unwrap().iter() {
+            watch!(p);
             if glob::Pattern::new(glob)?.matches_path(&p.to_absolute_path(&self.xvc_root)) {
+                watch!("matched: {p}");
                 matches.insert(p.clone(), *md);
             }
         }
