@@ -62,7 +62,6 @@ impl XvcPathMetadataProvider {
         let xvc_root_clone = xvc_root.clone();
         let path_map_clone = path_map.clone();
         let output_sender = output_sender.clone();
-        let output_sender_clone = output_sender.clone();
         let event_receiver_clone = event_receiver.clone();
 
         let background_thread = Arc::new(Mutex::new(thread::spawn(move || {
@@ -124,6 +123,7 @@ impl XvcPathMetadataProvider {
                 }
             }
         })));
+        watch!(background_thread);
 
         Ok(Self {
             xvc_root,
