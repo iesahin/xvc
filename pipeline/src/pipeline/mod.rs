@@ -286,16 +286,24 @@ pub fn the_grand_pipeline_loop(
 ) -> Result<()> {
     let config = xvc_root.config();
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
+    watch!(pipeline_e);
 
     let pipeline_steps = xvc_root
         .load_r1nstore::<XvcPipeline, XvcStep>()?
         .children_of(&pipeline_e)?;
+    watch!(pipeline_steps);
 
     let consider_changed = xvc_root.load_store::<XvcStepInvalidate>()?;
+    watch!(consider_changed);
 
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
+    watch!(all_deps.parents.len());
+    watch!(all_deps.children.len());
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
+    watch!(all_outs.parents.len());
+    watch!(all_outs.children.len());
     let pmp = XvcPathMetadataProvider::new(output_snd, xvc_root)?;
+    watch!(&pmp);
 
     let pipeline_len = pipeline_steps.len();
     watch!(pipeline_len);
