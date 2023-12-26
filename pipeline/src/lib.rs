@@ -101,7 +101,6 @@ impl UpdateFromXvcConfig for PipelineCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let default_pipeline = XvcPipeline::from_conf(conf);
         let name = Some(self.pipeline_name.clone().unwrap_or(default_pipeline.name));
-        watch!(name);
         Ok(Box::new(Self {
             pipeline_name: name,
             subcommand: self.subcommand.clone(),

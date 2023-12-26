@@ -212,11 +212,13 @@ impl XvcPathMetadataProvider {
     }
 
     pub fn glob_paths(&self, glob: &str) -> Result<XvcPathMetadataMap> {
+        watch!(glob);
         self.update_with_glob(glob)?;
         let mut matches = XvcPathMetadataMap::new();
+        let pattern = glob::Pattern::new(glob)?;
         for (p, md) in self.path_map.read().unwrap().iter() {
             watch!(p);
-            if glob::Pattern::new(glob)?.matches_path(&p.to_absolute_path(&self.xvc_root)) {
+            if pattern.matches(p.as_str()) {
                 watch!("matched: {p}");
                 matches.insert(p.clone(), *md);
             }
