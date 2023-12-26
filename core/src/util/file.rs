@@ -24,6 +24,7 @@ use xvc_walker::{
 
 use crate::error::Error;
 use crate::error::Result;
+use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcFileType, CHANNEL_BOUND, XVCIGNORE_FILENAME};
 use crossbeam_channel::{bounded, select, Receiver, RecvError, Sender};
 use xvc_walker::check_ignore;
@@ -49,8 +50,9 @@ pub struct XvcPathMetadataProvider {
 impl XvcPathMetadataProvider {
     /// Create a new PathMetadataProvider
     pub fn new(output_sender: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<Self> {
-        let ignore_rules =
-            build_ignore_rules(IgnoreRules::empty(xvc_root), xvc_root, XVCIGNORE_FILENAME)?;
+        let initial_rules = IgnoreRules::try_from_patterns(xvc_root, COMMON_IGNORE_PATTERNS)?;
+        let ignore_rules = build_ignore_rules(initial_rules, xvc_root, XVCIGNORE_FILENAME)?;
+        watch!(ignore_rules);
         let path_map = Arc::new(RwLock::new(HashMap::new()));
 
         let (_watcher, event_receiver) = make_watcher(ignore_rules.clone())?;
