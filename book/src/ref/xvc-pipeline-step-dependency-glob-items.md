@@ -65,7 +65,7 @@ dir-0002/file-0003.bin
  
 [DONE] files-changed (echo "### Added Files:/n${XVC_GLOB_ADDED_ITEMS}/n### Removed Files:/n${XVC_GLOB_REMOVED_ITEMS}/n### Changed Files:/n${XVC_GLOB_CHANGED_ITEMS}")
 
-$ xvc --debug pipeline run
+$ xvc pipeline run
 [DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Error
 [DEBUG][logging/src/lib.rs::240] File logger enabled with level: Trace to "/var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T//xvc.log"
 [TRACE][core/src/types/xvcroot.rs::247] "."
@@ -74,20 +74,20 @@ $ xvc --debug pipeline run
 [DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1703621569033665",
-    "[CWD]/.xvc/ec/1703621569036208",
-    "[CWD]/.xvc/ec/1703621569226287",
-    "[CWD]/.xvc/ec/1703621569326541",
+    "[CWD]/.xvc/ec/1703621608861322",
+    "[CWD]/.xvc/ec/1703621608868619",
+    "[CWD]/.xvc/ec/1703621609068572",
+    "[CWD]/.xvc/ec/1703621609170228",
 ]
 [TRACE][pipeline/src/pipeline/mod.rs::289] pipeline_e: XvcEntity(
     1,
-    10394362838158298552,
+    4692517411004303680,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::294] pipeline_steps: HStore {
     map: {
         XvcEntity(
             2,
-            1816263282869468159,
+            17599493044647342817,
         ): XvcStep {
             name: "files-changed",
         },
@@ -97,14 +97,14 @@ $ xvc --debug pipeline run
     map: {
         XvcEntity(
             2,
-            1816263282869468159,
+            17599493044647342817,
         ): ByDependencies,
     },
     entity_index: {
         ByDependencies: [
             XvcEntity(
                 2,
-                1816263282869468159,
+                17599493044647342817,
             ),
         ],
     },
@@ -113,7 +113,7 @@ $ xvc --debug pipeline run
             Add {
                 entity: XvcEntity(
                     2,
-                    1816263282869468159,
+                    17599493044647342817,
                 ),
                 value: ByDependencies,
             },
@@ -423,14 +423,14 @@ $ xvc --debug pipeline run
     },
 }
 [TRACE][walker/src/notify.rs::170] watcher: FsEventWatcher {
-    paths: 0x0000600000b10090,
+    paths: 0x000060000012c180,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000600002e1c0f0,
+    event_handler: 0x000060000242c0f0,
     runloop: Some(
         (
-            0x00006000030040c0,
+            0x0000600003a200c0,
             JoinHandle { .. },
         ),
     ),
@@ -465,88 +465,109 @@ $ xvc --debug pipeline run
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "pipeline.default": String(
-                            "default",
-                        ),
-                        "file.carry-in.force": Boolean(
+                        "file.track.no_commit": Boolean(
                             false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "core.guid": String(
+                            "4b4f709e2c341253",
                         ),
                         "pipeline.process_pool_size": Integer(
                             4,
                         ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
+                        "file.track.no_parallel": Boolean(
                             false,
                         ),
                         "git.auto_stage": Boolean(
                             false,
                         ),
-                        "git.auto_commit": Boolean(
+                        "git.use_git": Boolean(
                             true,
+                        ),
+                        "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "pipeline.default": String(
+                            "default",
                         ),
                         "pipeline.default_params_file": String(
                             "params.yaml",
                         ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.list.no_summary": Boolean(
-                            false,
-                        ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "file.list.sort": String(
-                            "name-desc",
+                        "git.auto_commit": Boolean(
+                            true,
                         ),
-                        "cache.algorithm": String(
-                            "blake3",
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
                         ),
-                        "file.track.text_or_binary": String(
-                            "auto",
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
-                        "core.guid": String(
-                            "f0430a8dd1732403",
+                        "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.track.force": Boolean(
+                            false,
                         ),
                         "file.list.show_dot_files": Boolean(
                             false,
                         ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.command": String(
+                            "git",
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "file.track.no_commit": Boolean(
+                        "file.carry-in.no_parallel": Boolean(
                             false,
                         ),
-                        "file.list.show_dot_files": Boolean(
+                        "file.list.recursive": Boolean(
                             false,
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.default": String(
+                            "default",
+                        ),
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                         "pipeline.current_pipeline": String(
                             "default",
@@ -554,8 +575,23 @@ $ xvc --debug pipeline run
                         "git.auto_commit": Boolean(
                             true,
                         ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        "file.track.force": Boolean(
+                            false,
+                        ),
+                        "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "file.list.no_summary": Boolean(
+                            false,
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "file.track.no_parallel": Boolean(
+                            false,
                         ),
                         "pipeline.process_pool_size": Integer(
                             4,
@@ -563,50 +599,14 @@ $ xvc --debug pipeline run
                         "pipeline.default_params_file": String(
                             "params.yaml",
                         ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "file.list.no_summary": Boolean(
-                            false,
-                        ),
-                        "file.track.force": Boolean(
-                            false,
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "core.verbosity": String(
-                            "error",
+                        "file.list.sort": String(
+                            "name-desc",
                         ),
                         "core.guid": String(
-                            "9132eb1ac816d387",
+                            "0f6edff585032fcf",
                         ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "git.command": String(
-                            "git",
+                        "file.list.show_dot_files": Boolean(
+                            false,
                         ),
                     },
                 },
@@ -628,32 +628,20 @@ $ xvc --debug pipeline run
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "quiet",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "quiet",
                         ),
                     },
                 },
             ],
             the_config: {
-                "file.track.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.list.no_summary": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.carry-in.force": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
+                    value: String(
+                        "quiet",
                     ),
                 },
                 "pipeline.default_params_file": XvcConfigValue {
@@ -662,10 +650,10 @@ $ xvc --debug pipeline run
                         "params.yaml",
                     ),
                 },
-                "git.command": XvcConfigValue {
+                "file.list.recursive": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "git",
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "file.list.format": XvcConfigValue {
@@ -674,58 +662,10 @@ $ xvc --debug pipeline run
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                     ),
                 },
-                "git.use_git": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
-                "git.auto_stage": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "file.track.no_parallel": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "default",
-                    ),
-                },
-                "file.recheck.method": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "copy",
-                    ),
-                },
-                "file.list.sort": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "name-desc",
-                    ),
-                },
-                "git.auto_commit": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        true,
-                    ),
-                },
                 "pipeline.process_pool_size": XvcConfigValue {
                     source: Project,
                     value: Integer(
                         4,
-                    ),
-                },
-                "cache.algorithm": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "blake3",
                     ),
                 },
                 "pipeline.current_pipeline": XvcConfigValue {
@@ -734,16 +674,22 @@ $ xvc --debug pipeline run
                         "default",
                     ),
                 },
-                "file.carry-in.no_parallel": XvcConfigValue {
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "0f6edff585032fcf",
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.recursive": XvcConfigValue {
+                "file.list.sort": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        false,
+                    value: String(
+                        "name-desc",
                     ),
                 },
                 "file.list.show_dot_files": XvcConfigValue {
@@ -752,34 +698,10 @@ $ xvc --debug pipeline run
                         false,
                     ),
                 },
-                "core.guid": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "9132eb1ac816d387",
-                    ),
-                },
-                "file.track.text_or_binary": XvcConfigValue {
-                    source: Project,
-                    value: String(
-                        "auto",
-                    ),
-                },
-                "file.track.no_commit": XvcConfigValue {
+                "file.carry-in.no_parallel": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "quiet",
                     ),
                 },
                 "TRYCMD_DURATION": XvcConfigValue {
@@ -794,6 +716,84 @@ $ xvc --debug pipeline run
                         "pipeline",
                     ),
                 },
+                "file.track.text_or_binary": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "auto",
+                    ),
+                },
+                "git.auto_stage": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "file.recheck.method": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "copy",
+                    ),
+                },
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.use_git": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "file.track.no_parallel": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "git.command": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "git",
+                    ),
+                },
+                "pipeline.default": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "default",
+                    ),
+                },
+                "git.auto_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        true,
+                    ),
+                },
+                "file.list.no_summary": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
             },
             init_params: XvcConfigInitParams {
                 default_configuration: "
@@ -801,7 +801,7 @@ $ xvc --debug pipeline run
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"f0430a8dd1732403/"
+guid = /"4b4f709e2c341253/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -952,7 +952,7 @@ process_pool_size = 4
         ),
         entity_generator: XvcEntityGenerator {
             counter: 4,
-            random: 15270554167383768940,
+            random: 3421055316463804668,
             dirty: false,
         },
     },
@@ -1230,18 +1230,18 @@ process_pool_size = 4
 [TRACE][pipeline/src/pipeline/mod.rs::335] &dependency_graph: {
     XvcEntity(
         2,
-        1816263282869468159,
+        17599493044647342817,
     ): [],
 }
 [TRACE][pipeline/src/pipeline/mod.rs::347] &dependency_graph: {
     XvcEntity(
         2,
-        1816263282869468159,
+        17599493044647342817,
     ): [],
 }
 [INFO][pipeline/src/pipeline/mod.rs::351] Pipeline Graph:
 digraph {
-    0 [ label = "(2, 1816263282869468159)" ]
+    0 [ label = "(2, 17599493044647342817)" ]
 }
 
 
@@ -1250,7 +1250,7 @@ digraph {
         map: {
             XvcEntity(
                 2,
-                1816263282869468159,
+                17599493044647342817,
             ): Begin(
                 FromInit,
             ),
@@ -1263,14 +1263,14 @@ digraph {
     map: {
         XvcEntity(
             2,
-            1816263282869468159,
+            17599493044647342817,
         ): ScopedJoinHandle { .. },
     },
 }
 [TRACE][pipeline/src/pipeline/mod.rs::516] (step_e, &jh): (
     XvcEntity(
         2,
-        1816263282869468159,
+        17599493044647342817,
     ),
     ScopedJoinHandle { .. },
 )
@@ -1280,7 +1280,7 @@ digraph {
         map: {
             XvcEntity(
                 2,
-                1816263282869468159,
+                17599493044647342817,
             ): XvcStep {
                 name: "files-changed",
             },
@@ -1291,7 +1291,7 @@ digraph {
             }: [
                 XvcEntity(
                     2,
-                    1816263282869468159,
+                    17599493044647342817,
                 ),
             ],
         },
@@ -1300,7 +1300,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         2,
-                        1816263282869468159,
+                        17599493044647342817,
                     ),
                     value: XvcStep {
                         name: "files-changed",
@@ -1309,7 +1309,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         2,
-                        1816263282869468159,
+                        17599493044647342817,
                     ),
                     value: XvcStep {
                         name: "files-changed",
@@ -1325,7 +1325,7 @@ digraph {
         map: {
             XvcEntity(
                 3,
-                11319049037403028065,
+                10897416712701542016,
             ): GlobItems(
                 GlobItemsDep {
                     glob: "dir-*/*",
@@ -1339,8 +1339,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 179347038,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 14328761,
                                 },
                             ),
                         },
@@ -1353,8 +1353,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 179598704,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 14537177,
                                 },
                             ),
                         },
@@ -1367,8 +1367,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 179798828,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 15883632,
                                 },
                             ),
                         },
@@ -1381,8 +1381,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 180025828,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 16178256,
                                 },
                             ),
                         },
@@ -1395,8 +1395,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 180217327,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 16381589,
                                 },
                             ),
                         },
@@ -1409,8 +1409,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 181367491,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 17963085,
                                 },
                             ),
                         },
@@ -1680,8 +1680,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 179347038,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 14328761,
                                 },
                             ),
                         },
@@ -1694,8 +1694,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 179598704,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 14537177,
                                 },
                             ),
                         },
@@ -1708,8 +1708,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 179798828,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 15883632,
                                 },
                             ),
                         },
@@ -1722,8 +1722,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 180025828,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 16178256,
                                 },
                             ),
                         },
@@ -1736,8 +1736,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 180217327,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 16381589,
                                 },
                             ),
                         },
@@ -1750,8 +1750,8 @@ digraph {
                             ),
                             modified: Some(
                                 SystemTime {
-                                    tv_sec: 1703621569,
-                                    tv_nsec: 181367491,
+                                    tv_sec: 1703621609,
+                                    tv_nsec: 17963085,
                                 },
                             ),
                         },
@@ -2008,7 +2008,7 @@ digraph {
             ): [
                 XvcEntity(
                     3,
-                    11319049037403028065,
+                    10897416712701542016,
                 ),
             ],
         },
@@ -2017,7 +2017,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        11319049037403028065,
+                        10897416712701542016,
                     ),
                     value: GlobItems(
                         GlobItemsDep {
@@ -2030,7 +2030,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        11319049037403028065,
+                        10897416712701542016,
                     ),
                     value: GlobItems(
                         GlobItemsDep {
@@ -2045,8 +2045,8 @@ digraph {
                                     ),
                                     modified: Some(
                                         SystemTime {
-                                            tv_sec: 1703621569,
-                                            tv_nsec: 179347038,
+                                            tv_sec: 1703621609,
+                                            tv_nsec: 14328761,
                                         },
                                     ),
                                 },
@@ -2059,8 +2059,8 @@ digraph {
                                     ),
                                     modified: Some(
                                         SystemTime {
-                                            tv_sec: 1703621569,
-                                            tv_nsec: 179598704,
+                                            tv_sec: 1703621609,
+                                            tv_nsec: 14537177,
                                         },
                                     ),
                                 },
@@ -2073,8 +2073,8 @@ digraph {
                                     ),
                                     modified: Some(
                                         SystemTime {
-                                            tv_sec: 1703621569,
-                                            tv_nsec: 179798828,
+                                            tv_sec: 1703621609,
+                                            tv_nsec: 15883632,
                                         },
                                     ),
                                 },
@@ -2087,8 +2087,8 @@ digraph {
                                     ),
                                     modified: Some(
                                         SystemTime {
-                                            tv_sec: 1703621569,
-                                            tv_nsec: 180025828,
+                                            tv_sec: 1703621609,
+                                            tv_nsec: 16178256,
                                         },
                                     ),
                                 },
@@ -2101,8 +2101,8 @@ digraph {
                                     ),
                                     modified: Some(
                                         SystemTime {
-                                            tv_sec: 1703621569,
-                                            tv_nsec: 180217327,
+                                            tv_sec: 1703621609,
+                                            tv_nsec: 16381589,
                                         },
                                     ),
                                 },
@@ -2115,8 +2115,8 @@ digraph {
                                     ),
                                     modified: Some(
                                         SystemTime {
-                                            tv_sec: 1703621569,
-                                            tv_nsec: 181367491,
+                                            tv_sec: 1703621609,
+                                            tv_nsec: 17963085,
                                         },
                                     ),
                                 },
@@ -2382,11 +2382,11 @@ digraph {
         map: {
             XvcEntity(
                 3,
-                11319049037403028065,
+                10897416712701542016,
             ): ChildEntity(
                 XvcEntity(
                     2,
-                    1816263282869468159,
+                    17599493044647342817,
                 ),
                 PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                 PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -2396,14 +2396,14 @@ digraph {
             ChildEntity(
                 XvcEntity(
                     2,
-                    1816263282869468159,
+                    17599493044647342817,
                 ),
                 PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                 PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
             ): [
                 XvcEntity(
                     3,
-                    11319049037403028065,
+                    10897416712701542016,
                 ),
             ],
         },
@@ -2412,12 +2412,12 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        11319049037403028065,
+                        10897416712701542016,
                     ),
                     value: ChildEntity(
                         XvcEntity(
                             2,
-                            1816263282869468159,
+                            17599493044647342817,
                         ),
                         PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                         PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -2432,7 +2432,7 @@ digraph {
 }
 [TRACE][pipeline/src/pipeline/mod.rs::628] step_e: XvcEntity(
     2,
-    1816263282869468159,
+    17599493044647342817,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::568] dep_neighbors: Neighbors {
     iter: Iter(
@@ -2480,11 +2480,11 @@ digraph {
 [TRACE][pipeline/src/pipeline/mod.rs::666] &step_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::587] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::1067] parent_entity: XvcEntity(
     2,
-    1816263282869468159,
+    17599493044647342817,
 )
+[TRACE][pipeline/src/pipeline/mod.rs::587] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::587] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::587] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::587] select: Select { .. }
@@ -2492,7 +2492,7 @@ digraph {
     map: {
         XvcEntity(
             3,
-            11319049037403028065,
+            10897416712701542016,
         ): GlobItems(
             GlobItemsDep {
                 glob: "dir-*/*",
@@ -2506,8 +2506,8 @@ digraph {
                         ),
                         modified: Some(
                             SystemTime {
-                                tv_sec: 1703621569,
-                                tv_nsec: 179347038,
+                                tv_sec: 1703621609,
+                                tv_nsec: 14328761,
                             },
                         ),
                     },
@@ -2520,8 +2520,8 @@ digraph {
                         ),
                         modified: Some(
                             SystemTime {
-                                tv_sec: 1703621569,
-                                tv_nsec: 179598704,
+                                tv_sec: 1703621609,
+                                tv_nsec: 14537177,
                             },
                         ),
                     },
@@ -2534,8 +2534,8 @@ digraph {
                         ),
                         modified: Some(
                             SystemTime {
-                                tv_sec: 1703621569,
-                                tv_nsec: 179798828,
+                                tv_sec: 1703621609,
+                                tv_nsec: 15883632,
                             },
                         ),
                     },
@@ -2548,8 +2548,8 @@ digraph {
                         ),
                         modified: Some(
                             SystemTime {
-                                tv_sec: 1703621569,
-                                tv_nsec: 180025828,
+                                tv_sec: 1703621609,
+                                tv_nsec: 16178256,
                             },
                         ),
                     },
@@ -2562,8 +2562,8 @@ digraph {
                         ),
                         modified: Some(
                             SystemTime {
-                                tv_sec: 1703621569,
-                                tv_nsec: 180217327,
+                                tv_sec: 1703621609,
+                                tv_nsec: 16381589,
                             },
                         ),
                     },
@@ -2576,8 +2576,8 @@ digraph {
                         ),
                         modified: Some(
                             SystemTime {
-                                tv_sec: 1703621569,
-                                tv_nsec: 181367491,
+                                tv_sec: 1703621609,
+                                tv_nsec: 17963085,
                             },
                         ),
                     },
@@ -2847,8 +2847,8 @@ digraph {
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1703621569,
-                        tv_nsec: 179347038,
+                        tv_sec: 1703621609,
+                        tv_nsec: 14328761,
                     },
                 ),
             },
@@ -2861,8 +2861,8 @@ digraph {
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1703621569,
-                        tv_nsec: 179598704,
+                        tv_sec: 1703621609,
+                        tv_nsec: 14537177,
                     },
                 ),
             },
@@ -2875,8 +2875,8 @@ digraph {
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1703621569,
-                        tv_nsec: 179798828,
+                        tv_sec: 1703621609,
+                        tv_nsec: 15883632,
                     },
                 ),
             },
@@ -2889,8 +2889,8 @@ digraph {
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1703621569,
-                        tv_nsec: 180025828,
+                        tv_sec: 1703621609,
+                        tv_nsec: 16178256,
                     },
                 ),
             },
@@ -2903,8 +2903,8 @@ digraph {
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1703621569,
-                        tv_nsec: 180217327,
+                        tv_sec: 1703621609,
+                        tv_nsec: 16381589,
                     },
                 ),
             },
@@ -2917,8 +2917,8 @@ digraph {
                 ),
                 modified: Some(
                     SystemTime {
-                        tv_sec: 1703621569,
-                        tv_nsec: 181367491,
+                        tv_sec: 1703621609,
+                        tv_nsec: 17963085,
                     },
                 ),
             },
@@ -3205,20 +3205,20 @@ digraph {
     ),
     modified: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 179347038,
+            tv_sec: 1703621609,
+            tv_nsec: 14328761,
         },
     ),
     accessed: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 425611509,
+            tv_sec: 1703621609,
+            tv_nsec: 268510919,
         },
     ),
     created: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 179114830,
+            tv_sec: 1703621609,
+            tv_nsec: 14081095,
         },
     ),
     ..
@@ -3252,20 +3252,20 @@ digraph {
     ),
     modified: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 179598704,
+            tv_sec: 1703621609,
+            tv_nsec: 14537177,
         },
     ),
     accessed: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 425788092,
+            tv_sec: 1703621609,
+            tv_nsec: 268635794,
         },
     ),
     created: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 179384913,
+            tv_sec: 1703621609,
+            tv_nsec: 14371552,
         },
     ),
     ..
@@ -3299,20 +3299,20 @@ digraph {
     ),
     modified: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 179798828,
+            tv_sec: 1703621609,
+            tv_nsec: 15883632,
         },
     ),
     accessed: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 425898925,
+            tv_sec: 1703621609,
+            tv_nsec: 268745668,
         },
     ),
     created: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 179626537,
+            tv_sec: 1703621609,
+            tv_nsec: 14566635,
         },
     ),
     ..
@@ -3346,20 +3346,20 @@ digraph {
     ),
     modified: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 180025828,
+            tv_sec: 1703621609,
+            tv_nsec: 16178256,
         },
     ),
     accessed: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 425993049,
+            tv_sec: 1703621609,
+            tv_nsec: 268834960,
         },
     ),
     created: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 179858953,
+            tv_sec: 1703621609,
+            tv_nsec: 15998798,
         },
     ),
     ..
@@ -3393,20 +3393,20 @@ digraph {
     ),
     modified: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 180217327,
+            tv_sec: 1703621609,
+            tv_nsec: 16381589,
         },
     ),
     accessed: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 426084091,
+            tv_sec: 1703621609,
+            tv_nsec: 268919293,
         },
     ),
     created: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 180052703,
+            tv_sec: 1703621609,
+            tv_nsec: 16213131,
         },
     ),
     ..
@@ -3440,34 +3440,26 @@ digraph {
     ),
     modified: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 181367491,
+            tv_sec: 1703621609,
+            tv_nsec: 17963085,
         },
     ),
     accessed: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 426176299,
+            tv_sec: 1703621609,
+            tv_nsec: 269003209,
         },
     ),
     created: Ok(
         SystemTime {
-            tv_sec: 1703621569,
-            tv_nsec: 180242702,
+            tv_sec: 1703621609,
+            tv_nsec: 16413505,
         },
     ),
     ..
 }
 [TRACE][core/src/util/file.rs::220] p: XvcPath(
-    "dir-0002/file-0002.bin",
-)
-[TRACE][core/src/util/file.rs::222] "matched: {p}": "matched: {p}"
-[TRACE][core/src/util/file.rs::220] p: XvcPath(
     "dir-0001/file-0003.bin",
-)
-[TRACE][core/src/util/file.rs::222] "matched: {p}": "matched: {p}"
-[TRACE][core/src/util/file.rs::220] p: XvcPath(
-    "dir-0002/file-0003.bin",
 )
 [TRACE][core/src/util/file.rs::222] "matched: {p}": "matched: {p}"
 [TRACE][core/src/util/file.rs::220] p: XvcPath(
@@ -3482,6 +3474,14 @@ digraph {
     "dir-0002/file-0001.bin",
 )
 [TRACE][core/src/util/file.rs::222] "matched: {p}": "matched: {p}"
+[TRACE][core/src/util/file.rs::220] p: XvcPath(
+    "dir-0002/file-0002.bin",
+)
+[TRACE][core/src/util/file.rs::222] "matched: {p}": "matched: {p}"
+[TRACE][core/src/util/file.rs::220] p: XvcPath(
+    "dir-0002/file-0003.bin",
+)
+[TRACE][core/src/util/file.rs::222] "matched: {p}": "matched: {p}"
 [TRACE][core/src/types/diff.rs::295] record: Some(
     XvcMetadata {
         file_type: File,
@@ -3490,92 +3490,8 @@ digraph {
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 179347038,
-            },
-        ),
-    },
-)
-[TRACE][core/src/types/diff.rs::296] actual: Some(
-    XvcMetadata {
-        file_type: File,
-        size: Some(
-            2001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 179347038,
-            },
-        ),
-    },
-)
-[TRACE][core/src/types/diff.rs::295] record: Some(
-    XvcMetadata {
-        file_type: File,
-        size: Some(
-            2002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 179598704,
-            },
-        ),
-    },
-)
-[TRACE][core/src/types/diff.rs::296] actual: Some(
-    XvcMetadata {
-        file_type: File,
-        size: Some(
-            2002,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 179598704,
-            },
-        ),
-    },
-)
-[TRACE][core/src/types/diff.rs::295] record: Some(
-    XvcMetadata {
-        file_type: File,
-        size: Some(
-            2003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 179798828,
-            },
-        ),
-    },
-)
-[TRACE][core/src/types/diff.rs::296] actual: Some(
-    XvcMetadata {
-        file_type: File,
-        size: Some(
-            2003,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 179798828,
-            },
-        ),
-    },
-)
-[TRACE][core/src/types/diff.rs::295] record: Some(
-    XvcMetadata {
-        file_type: File,
-        size: Some(
-            2001,
-        ),
-        modified: Some(
-            SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 180025828,
+                tv_sec: 1703621609,
+                tv_nsec: 14328761,
             },
         ),
     },
@@ -3588,8 +3504,8 @@ digraph {
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 180025828,
+                tv_sec: 1703621609,
+                tv_nsec: 14328761,
             },
         ),
     },
@@ -3602,8 +3518,8 @@ digraph {
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 180217327,
+                tv_sec: 1703621609,
+                tv_nsec: 14537177,
             },
         ),
     },
@@ -3616,8 +3532,8 @@ digraph {
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 180217327,
+                tv_sec: 1703621609,
+                tv_nsec: 14537177,
             },
         ),
     },
@@ -3630,8 +3546,8 @@ digraph {
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 181367491,
+                tv_sec: 1703621609,
+                tv_nsec: 15883632,
             },
         ),
     },
@@ -3644,8 +3560,92 @@ digraph {
         ),
         modified: Some(
             SystemTime {
-                tv_sec: 1703621569,
-                tv_nsec: 181367491,
+                tv_sec: 1703621609,
+                tv_nsec: 15883632,
+            },
+        ),
+    },
+)
+[TRACE][core/src/types/diff.rs::295] record: Some(
+    XvcMetadata {
+        file_type: File,
+        size: Some(
+            2001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1703621609,
+                tv_nsec: 16178256,
+            },
+        ),
+    },
+)
+[TRACE][core/src/types/diff.rs::296] actual: Some(
+    XvcMetadata {
+        file_type: File,
+        size: Some(
+            2001,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1703621609,
+                tv_nsec: 16178256,
+            },
+        ),
+    },
+)
+[TRACE][core/src/types/diff.rs::295] record: Some(
+    XvcMetadata {
+        file_type: File,
+        size: Some(
+            2002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1703621609,
+                tv_nsec: 16381589,
+            },
+        ),
+    },
+)
+[TRACE][core/src/types/diff.rs::296] actual: Some(
+    XvcMetadata {
+        file_type: File,
+        size: Some(
+            2002,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1703621609,
+                tv_nsec: 16381589,
+            },
+        ),
+    },
+)
+[TRACE][core/src/types/diff.rs::295] record: Some(
+    XvcMetadata {
+        file_type: File,
+        size: Some(
+            2003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1703621609,
+                tv_nsec: 17963085,
+            },
+        ),
+    },
+)
+[TRACE][core/src/types/diff.rs::296] actual: Some(
+    XvcMetadata {
+        file_type: File,
+        size: Some(
+            2003,
+        ),
+        modified: Some(
+            SystemTime {
+                tv_sec: 1703621609,
+                tv_nsec: 17963085,
             },
         ),
     },
@@ -3654,7 +3654,7 @@ digraph {
     map: {
         XvcEntity(
             3,
-            11319049037403028065,
+            10897416712701542016,
         ): Identical,
     },
 }
@@ -3673,11 +3673,11 @@ digraph {
 )
 [TRACE][pipeline/src/pipeline/mod.rs::1016] params.step_dependencies: {}
 [TRACE][pipeline/src/pipeline/mod.rs::1054] changed: false
+[TRACE][pipeline/src/pipeline/mod.rs::587] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::776] step.name: "files-changed"
 [TRACE][pipeline/src/pipeline/mod.rs::777] &r_next_state: DoneWithoutRunning(
     FromDiffsHasNotChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::587] select: Select { .. }
 [TRACE][pipeline/src/pipeline/mod.rs::779] &step_state: DoneWithoutRunning(
     FromDiffsHasNotChanged,
 )
@@ -3694,7 +3694,7 @@ digraph {
         map: {
             XvcEntity(
                 2,
-                1816263282869468159,
+                17599493044647342817,
             ): DoneWithoutRunning(
                 FromDiffsHasNotChanged,
             ),
