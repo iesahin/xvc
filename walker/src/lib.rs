@@ -486,7 +486,9 @@ pub fn build_ignore_rules(
 
     let mut child_dirs = Vec::<PathBuf>::new();
     let ignore_fn = OsString::from(ignore_filename);
+    xvc_logging::watch!(ignore_fn);
     let ignore_root = given.root.clone();
+    xvc_logging::watch!(ignore_root);
     let mut ignore_rules = given;
     let mut new_patterns: Option<Vec<GlobPattern>> = None;
 
@@ -494,10 +496,12 @@ pub fn build_ignore_rules(
         match entry {
             Ok(entry) => {
                 if entry.path().is_dir() {
+                    xvc_logging::watch!(entry.path());
                     child_dirs.push(entry.path());
                 }
                 if entry.file_name() == ignore_fn && entry.path().exists() {
                     let ignore_path = entry.path();
+                    watch!(ignore_path);
                     new_patterns = Some(
                         patterns_from_file(&ignore_root, &ignore_path)?
                             .into_iter()
