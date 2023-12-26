@@ -57,9 +57,6 @@ $ xvc pipeline run
 ```console
 $ rm dir-0001/file-0001.bin
 
-$ xvc pipeline run
-[OUT] [files-changed] Files have changed.
- 
-[DONE] files-changed (echo 'Files have changed.')
+$ xvc --debug pipeline run
 
 ```
