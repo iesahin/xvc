@@ -23,7 +23,7 @@ $ dvc --version
 3.30.3
 
 $ xvc --version
-xvc 0.6.4-alpha.0
+xvc v0.6.4-alpha.0-292-g6e5d31a-modified
 
 ```
 
@@ -37,12 +37,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         46.6 ms               [User: 11.1 ms, System: 21.1 ms]
+  Time (abs ≡):         47.7 ms               [User: 11.7 ms, System: 22.1 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        357.1 ms               [User: 206.6 ms, System: 77.8 ms]
+  Time (abs ≡):        414.0 ms               [User: 220.7 ms, System: 89.1 ms]
  
 
 $ git status -s
@@ -247,7 +247,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        612.9 ms               [User: 435.4 ms, System: 158.1 ms]
+  Time (abs ≡):        607.6 ms               [User: 428.9 ms, System: 151.1 ms]
  
 
 ```
@@ -256,8 +256,8 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     438.1 ms ±   3.5 ms    [User: 332.6 ms, System: 101.0 ms]
-  Range (min … max):   434.2 ms … 442.4 ms    5 runs
+  Time (mean ± σ):     432.0 ms ±   9.5 ms    [User: 328.4 ms, System: 98.0 ms]
+  Range (min … max):   420.5 ms … 445.3 ms    5 runs
  
 
 ```
@@ -266,7 +266,7 @@ $ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        331.8 ms               [User: 164.6 ms, System: 339.9 ms]
+  Time (abs ≡):        219.3 ms               [User: 53.3 ms, System: 219.3 ms]
  
 
 ```
@@ -274,8 +274,8 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     248.9 ms ±  11.1 ms    [User: 141.2 ms, System: 229.0 ms]
-  Range (min … max):   239.1 ms … 267.4 ms    5 runs
+  Time (mean ± σ):     175.0 ms ±   4.9 ms    [User: 34.7 ms, System: 145.6 ms]
+  Range (min … max):   170.0 ms … 182.7 ms    5 runs
  
 
 ```
@@ -300,128 +300,130 @@ $ rm -f dvc.yaml
 $ zsh -cl "for f in pipeline-100/dir-0001/* ; do dvc stage add -q -n s-${RANDOM} -d ${f} 'sha1sum $f'; done"
 
 $ dvc stage list
-s-231    Depends on pipeline-100/dir-0001/file-0001.bin
-s-32491  Depends on pipeline-100/dir-0001/file-0002.bin
-s-1972   Depends on pipeline-100/dir-0001/file-0003.bin
-s-29985  Depends on pipeline-100/dir-0001/file-0004.bin
-s-19102  Depends on pipeline-100/dir-0001/file-0005.bin
-s-23539  Depends on pipeline-100/dir-0001/file-0006.bin
-s-23064  Depends on pipeline-100/dir-0001/file-0007.bin
-s-31382  Depends on pipeline-100/dir-0001/file-0008.bin
-s-9076   Depends on pipeline-100/dir-0001/file-0009.bin
-s-21135  Depends on pipeline-100/dir-0001/file-0010.bin
-s-16121  Depends on pipeline-100/dir-0001/file-0011.bin
-s-31916  Depends on pipeline-100/dir-0001/file-0012.bin
-s-4028   Depends on pipeline-100/dir-0001/file-0013.bin
-s-9594   Depends on pipeline-100/dir-0001/file-0014.bin
-s-28811  Depends on pipeline-100/dir-0001/file-0015.bin
-s-27852  Depends on pipeline-100/dir-0001/file-0016.bin
-s-19695  Depends on pipeline-100/dir-0001/file-0017.bin
-s-29909  Depends on pipeline-100/dir-0001/file-0018.bin
-s-21918  Depends on pipeline-100/dir-0001/file-0019.bin
-s-31068  Depends on pipeline-100/dir-0001/file-0020.bin
-s-18566  Depends on pipeline-100/dir-0001/file-0021.bin
-s-22828  Depends on pipeline-100/dir-0001/file-0022.bin
-s-28543  Depends on pipeline-100/dir-0001/file-0023.bin
-s-15455  Depends on pipeline-100/dir-0001/file-0024.bin
-s-15545  Depends on pipeline-100/dir-0001/file-0025.bin
-s-15704  Depends on pipeline-100/dir-0001/file-0026.bin
-s-6407   Depends on pipeline-100/dir-0001/file-0027.bin
-s-18926  Depends on pipeline-100/dir-0001/file-0028.bin
-s-26890  Depends on pipeline-100/dir-0001/file-0029.bin
-s-8834   Depends on pipeline-100/dir-0001/file-0030.bin
-s-10230  Depends on pipeline-100/dir-0001/file-0031.bin
-s-11916  Depends on pipeline-100/dir-0001/file-0032.bin
-s-3837   Depends on pipeline-100/dir-0001/file-0033.bin
-s-13731  Depends on pipeline-100/dir-0001/file-0034.bin
-s-1604   Depends on pipeline-100/dir-0001/file-0035.bin
-s-31959  Depends on pipeline-100/dir-0001/file-0036.bin
-s-17734  Depends on pipeline-100/dir-0001/file-0037.bin
-s-7739   Depends on pipeline-100/dir-0001/file-0038.bin
-s-18574  Depends on pipeline-100/dir-0001/file-0039.bin
-s-1801   Depends on pipeline-100/dir-0001/file-0040.bin
-s-27699  Depends on pipeline-100/dir-0001/file-0041.bin
-s-14085  Depends on pipeline-100/dir-0001/file-0042.bin
-s-26475  Depends on pipeline-100/dir-0001/file-0043.bin
-s-22997  Depends on pipeline-100/dir-0001/file-0044.bin
-s-28622  Depends on pipeline-100/dir-0001/file-0045.bin
-s-16423  Depends on pipeline-100/dir-0001/file-0046.bin
-s-30505  Depends on pipeline-100/dir-0001/file-0047.bin
-s-25438  Depends on pipeline-100/dir-0001/file-0048.bin
-s-15857  Depends on pipeline-100/dir-0001/file-0049.bin
-s-22923  Depends on pipeline-100/dir-0001/file-0050.bin
-s-19329  Depends on pipeline-100/dir-0001/file-0051.bin
-s-13605  Depends on pipeline-100/dir-0001/file-0052.bin
-s-11745  Depends on pipeline-100/dir-0001/file-0053.bin
-s-12120  Depends on pipeline-100/dir-0001/file-0054.bin
-s-26433  Depends on pipeline-100/dir-0001/file-0055.bin
-s-28779  Depends on pipeline-100/dir-0001/file-0056.bin
-s-15944  Depends on pipeline-100/dir-0001/file-0057.bin
-s-8587   Depends on pipeline-100/dir-0001/file-0058.bin
-s-18006  Depends on pipeline-100/dir-0001/file-0059.bin
-s-16856  Depends on pipeline-100/dir-0001/file-0060.bin
-s-22131  Depends on pipeline-100/dir-0001/file-0061.bin
-s-15756  Depends on pipeline-100/dir-0001/file-0062.bin
-s-25101  Depends on pipeline-100/dir-0001/file-0063.bin
-s-27597  Depends on pipeline-100/dir-0001/file-0064.bin
-s-28411  Depends on pipeline-100/dir-0001/file-0065.bin
-s-20738  Depends on pipeline-100/dir-0001/file-0066.bin
-s-31200  Depends on pipeline-100/dir-0001/file-0067.bin
-s-30323  Depends on pipeline-100/dir-0001/file-0068.bin
-s-13139  Depends on pipeline-100/dir-0001/file-0069.bin
-s-13676  Depends on pipeline-100/dir-0001/file-0070.bin
-s-20630  Depends on pipeline-100/dir-0001/file-0071.bin
-s-20260  Depends on pipeline-100/dir-0001/file-0072.bin
-s-18359  Depends on pipeline-100/dir-0001/file-0073.bin
-s-24303  Depends on pipeline-100/dir-0001/file-0074.bin
-s-19432  Depends on pipeline-100/dir-0001/file-0075.bin
-s-7599   Depends on pipeline-100/dir-0001/file-0076.bin
-s-28916  Depends on pipeline-100/dir-0001/file-0077.bin
-s-15317  Depends on pipeline-100/dir-0001/file-0078.bin
-s-9251   Depends on pipeline-100/dir-0001/file-0079.bin
-s-433    Depends on pipeline-100/dir-0001/file-0080.bin
-s-15536  Depends on pipeline-100/dir-0001/file-0081.bin
-s-20651  Depends on pipeline-100/dir-0001/file-0082.bin
-s-4728   Depends on pipeline-100/dir-0001/file-0083.bin
-s-12703  Depends on pipeline-100/dir-0001/file-0084.bin
-s-27215  Depends on pipeline-100/dir-0001/file-0085.bin
-s-28751  Depends on pipeline-100/dir-0001/file-0086.bin
-s-26165  Depends on pipeline-100/dir-0001/file-0087.bin
-s-16626  Depends on pipeline-100/dir-0001/file-0088.bin
-s-26040  Depends on pipeline-100/dir-0001/file-0089.bin
-s-20683  Depends on pipeline-100/dir-0001/file-0090.bin
-s-31430  Depends on pipeline-100/dir-0001/file-0091.bin
-s-4642   Depends on pipeline-100/dir-0001/file-0092.bin
-s-2124   Depends on pipeline-100/dir-0001/file-0093.bin
-s-18284  Depends on pipeline-100/dir-0001/file-0094.bin
-s-13539  Depends on pipeline-100/dir-0001/file-0095.bin
-s-11422  Depends on pipeline-100/dir-0001/file-0096.bin
-s-23895  Depends on pipeline-100/dir-0001/file-0097.bin
-s-11981  Depends on pipeline-100/dir-0001/file-0098.bin
-s-5684   Depends on pipeline-100/dir-0001/file-0099.bin
-s-13643  Depends on pipeline-100/dir-0001/file-0100.bin
+s-20039  Depends on pipeline-100/dir-0001/file-0001.bin
+s-12700  Depends on pipeline-100/dir-0001/file-0002.bin
+s-3480   Depends on pipeline-100/dir-0001/file-0003.bin
+s-30991  Depends on pipeline-100/dir-0001/file-0004.bin
+s-26591  Depends on pipeline-100/dir-0001/file-0005.bin
+s-28695  Depends on pipeline-100/dir-0001/file-0006.bin
+s-12644  Depends on pipeline-100/dir-0001/file-0007.bin
+s-21871  Depends on pipeline-100/dir-0001/file-0008.bin
+s-29529  Depends on pipeline-100/dir-0001/file-0009.bin
+s-31188  Depends on pipeline-100/dir-0001/file-0010.bin
+s-25018  Depends on pipeline-100/dir-0001/file-0011.bin
+s-9188   Depends on pipeline-100/dir-0001/file-0012.bin
+s-22985  Depends on pipeline-100/dir-0001/file-0013.bin
+s-14936  Depends on pipeline-100/dir-0001/file-0014.bin
+s-3942   Depends on pipeline-100/dir-0001/file-0015.bin
+s-9828   Depends on pipeline-100/dir-0001/file-0016.bin
+s-9574   Depends on pipeline-100/dir-0001/file-0017.bin
+s-24607  Depends on pipeline-100/dir-0001/file-0018.bin
+s-16708  Depends on pipeline-100/dir-0001/file-0019.bin
+s-28294  Depends on pipeline-100/dir-0001/file-0020.bin
+s-10183  Depends on pipeline-100/dir-0001/file-0021.bin
+s-8774   Depends on pipeline-100/dir-0001/file-0022.bin
+s-12816  Depends on pipeline-100/dir-0001/file-0023.bin
+s-31215  Depends on pipeline-100/dir-0001/file-0024.bin
+s-29325  Depends on pipeline-100/dir-0001/file-0025.bin
+s-13431  Depends on pipeline-100/dir-0001/file-0026.bin
+s-908    Depends on pipeline-100/dir-0001/file-0027.bin
+s-27799  Depends on pipeline-100/dir-0001/file-0028.bin
+s-25125  Depends on pipeline-100/dir-0001/file-0029.bin
+s-5472   Depends on pipeline-100/dir-0001/file-0030.bin
+s-30968  Depends on pipeline-100/dir-0001/file-0031.bin
+s-25630  Depends on pipeline-100/dir-0001/file-0032.bin
+s-226    Depends on pipeline-100/dir-0001/file-0033.bin
+s-3786   Depends on pipeline-100/dir-0001/file-0034.bin
+s-31078  Depends on pipeline-100/dir-0001/file-0035.bin
+s-11078  Depends on pipeline-100/dir-0001/file-0036.bin
+s-6829   Depends on pipeline-100/dir-0001/file-0037.bin
+s-402    Depends on pipeline-100/dir-0001/file-0038.bin
+s-7830   Depends on pipeline-100/dir-0001/file-0039.bin
+s-4694   Depends on pipeline-100/dir-0001/file-0040.bin
+s-3520   Depends on pipeline-100/dir-0001/file-0041.bin
+s-27514  Depends on pipeline-100/dir-0001/file-0042.bin
+s-11490  Depends on pipeline-100/dir-0001/file-0043.bin
+s-25594  Depends on pipeline-100/dir-0001/file-0044.bin
+s-18113  Depends on pipeline-100/dir-0001/file-0045.bin
+s-20981  Depends on pipeline-100/dir-0001/file-0046.bin
+s-13887  Depends on pipeline-100/dir-0001/file-0047.bin
+s-30432  Depends on pipeline-100/dir-0001/file-0048.bin
+s-31559  Depends on pipeline-100/dir-0001/file-0049.bin
+s-31147  Depends on pipeline-100/dir-0001/file-0050.bin
+s-24985  Depends on pipeline-100/dir-0001/file-0051.bin
+s-16877  Depends on pipeline-100/dir-0001/file-0052.bin
+s-19060  Depends on pipeline-100/dir-0001/file-0053.bin
+s-6659   Depends on pipeline-100/dir-0001/file-0054.bin
+s-22776  Depends on pipeline-100/dir-0001/file-0055.bin
+s-3338   Depends on pipeline-100/dir-0001/file-0056.bin
+s-15159  Depends on pipeline-100/dir-0001/file-0057.bin
+s-19950  Depends on pipeline-100/dir-0001/file-0058.bin
+s-32412  Depends on pipeline-100/dir-0001/file-0059.bin
+s-19511  Depends on pipeline-100/dir-0001/file-0060.bin
+s-21040  Depends on pipeline-100/dir-0001/file-0061.bin
+s-2423   Depends on pipeline-100/dir-0001/file-0062.bin
+s-29364  Depends on pipeline-100/dir-0001/file-0063.bin
+s-12970  Depends on pipeline-100/dir-0001/file-0064.bin
+s-28445  Depends on pipeline-100/dir-0001/file-0065.bin
+s-32122  Depends on pipeline-100/dir-0001/file-0066.bin
+s-30535  Depends on pipeline-100/dir-0001/file-0067.bin
+s-26628  Depends on pipeline-100/dir-0001/file-0068.bin
+s-409    Depends on pipeline-100/dir-0001/file-0069.bin
+s-3708   Depends on pipeline-100/dir-0001/file-0070.bin
+s-3627   Depends on pipeline-100/dir-0001/file-0071.bin
+s-19976  Depends on pipeline-100/dir-0001/file-0072.bin
+s-9392   Depends on pipeline-100/dir-0001/file-0073.bin
+s-10528  Depends on pipeline-100/dir-0001/file-0074.bin
+s-5781   Depends on pipeline-100/dir-0001/file-0075.bin
+s-20504  Depends on pipeline-100/dir-0001/file-0076.bin
+s-30516  Depends on pipeline-100/dir-0001/file-0077.bin
+s-13432  Depends on pipeline-100/dir-0001/file-0078.bin
+s-17719  Depends on pipeline-100/dir-0001/file-0079.bin
+s-17858  Depends on pipeline-100/dir-0001/file-0080.bin
+s-31537  Depends on pipeline-100/dir-0001/file-0081.bin
+s-1936   Depends on pipeline-100/dir-0001/file-0082.bin
+s-14279  Depends on pipeline-100/dir-0001/file-0083.bin
+s-7003   Depends on pipeline-100/dir-0001/file-0084.bin
+s-30232  Depends on pipeline-100/dir-0001/file-0085.bin
+s-24062  Depends on pipeline-100/dir-0001/file-0086.bin
+s-28368  Depends on pipeline-100/dir-0001/file-0087.bin
+s-8568   Depends on pipeline-100/dir-0001/file-0088.bin
+s-30150  Depends on pipeline-100/dir-0001/file-0089.bin
+s-10279  Depends on pipeline-100/dir-0001/file-0090.bin
+s-16721  Depends on pipeline-100/dir-0001/file-0091.bin
+s-14707  Depends on pipeline-100/dir-0001/file-0092.bin
+s-22216  Depends on pipeline-100/dir-0001/file-0093.bin
+s-9058   Depends on pipeline-100/dir-0001/file-0094.bin
+s-6758   Depends on pipeline-100/dir-0001/file-0095.bin
+s-13771  Depends on pipeline-100/dir-0001/file-0096.bin
+s-19625  Depends on pipeline-100/dir-0001/file-0097.bin
+s-11452  Depends on pipeline-100/dir-0001/file-0098.bin
+s-28897  Depends on pipeline-100/dir-0001/file-0099.bin
+s-30812  Depends on pipeline-100/dir-0001/file-0100.bin
 
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):         9.617 s               [User: 8.473 s, System: 0.927 s]
+  Time (abs ≡):         9.456 s               [User: 8.369 s, System: 0.915 s]
  
 
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     645.1 ms ±  10.5 ms    [User: 469.3 ms, System: 161.9 ms]
-  Range (min … max):   635.2 ms … 661.2 ms    5 runs
+  Time (mean ± σ):     630.9 ms ±   6.2 ms    [User: 462.6 ms, System: 159.1 ms]
+  Range (min … max):   621.2 ms … 637.6 ms    5 runs
  
 
 $ xvc pipeline new --pipeline-name p100
 
-$ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -n p100 step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline -n p100 step dependency -s ${f:r:t} --file ${f} ; done"
+$ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -p p100 step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline -p p100 step dependency -s ${f:r:t} --file ${f} ; done"
 
-$ hyperfine -r 1 "xvc pipeline -n p100 run"
-? interrupted
+$ hyperfine -r 1 --show-output "xvc pipeline -n p100 run" 
+? 1
 Benchmark 1: xvc pipeline -n p100 run
+Error: Command terminated with non-zero exit code: 2. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
 
 $ hyperfine -M 5 "xvc pipeline -n p100 run"
-? interrupted
+? 1
 Benchmark 1: xvc pipeline -n p100 run
+Error: Command terminated with non-zero exit code: 2. Use the '-i'/'--ignore-failure' option if you want to ignore this. Alternatively, use the '--show-output' option to debug what went wrong.
 
 ```
