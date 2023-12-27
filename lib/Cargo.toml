@@ -34,7 +34,7 @@ xvc-storage = { version = "0.6.4-alpha.0", path = "../storage" }
 
 
 ## Cli and config
-clap = { version = "^4.4", features = ["derive"] }
+clap = { version = "^4.4", features = ["derive", "cargo"] }
 directories-next = "2.0"
 
 ## Hashing
@@ -88,6 +88,7 @@ lazy_static = "^1.4"
 uuid = { version = "^1.5", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.4", features = ["serde"] }
+git-version = "^0.3"
 
 ## Mostly for testing
 assert_cmd = "^2.0"

@@ -7,6 +7,7 @@ use std::str::FromStr;
 
 use crate::init;
 
+use clap::crate_version;
 use clap::Parser;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -35,9 +36,16 @@ use xvc_walker::AbsolutePath;
 use crate::cli;
 use crate::error::{Error, Result};
 
+use git_version::git_version;
+const GIT_VERSION: &str = git_version!();
+
 /// Xvc CLI to manage data and ML pipelines
 #[derive(Debug, Parser)]
-#[command(rename_all = "kebab-case", author, version)]
+#[command(
+    rename_all = "kebab-case",
+    author,
+    version = GIT_VERSION
+)]
 pub struct XvcCLI {
     /// Output verbosity. Use multiple times to increase the output detail.
     #[arg(long = "verbose", short, action = clap::ArgAction::Count)]
