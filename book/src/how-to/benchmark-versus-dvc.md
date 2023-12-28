@@ -360,7 +360,6 @@ $ hyperfine -M 5 "dvc repro"
 
 
 ```console
-
 $ xvc pipeline new --pipeline-name p10000
 
 $ zsh -cl "for i in {1..10000} ; do xvc pipeline -p p10000 step new -s s-${i} --command 'ls' ; done"
