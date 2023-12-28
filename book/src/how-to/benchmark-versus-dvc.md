@@ -316,7 +316,6 @@ Benchmark 1: dvc repro
 Let's create 100 Xvc steps to depend on the same files. 
 
 ```console
-
 $ xvc pipeline new --pipeline-name p100
 
 $ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -p p100 step new -s ${f:r:t} --command 'sha1sum $f' ; xvc pipeline -p p100 step dependency -s ${f:r:t} --file ${f} ; done"
