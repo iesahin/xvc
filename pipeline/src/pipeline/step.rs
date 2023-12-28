@@ -1,5 +1,7 @@
 #![allow(clippy::enum_variant_names)]
 
+use derive_more::Display;
+
 use crate::error::{Error, Result};
 use crate::{
     cmd_step_dependency, cmd_step_new, cmd_step_output, cmd_step_show, cmd_step_update, XvcPipeline,
@@ -11,6 +13,7 @@ use xvc_core::XvcRoot;
 use xvc_ecs::{persist, XvcEntity};
 use xvc_logging::XvcOutputSender;
 
+use super::api::step_list::cmd_step_list;
 use super::XvcStepInvalidate;
 
 /// Step creation, dependency, output commands
@@ -26,6 +29,14 @@ pub struct StepCLI {
 #[derive(Debug, Clone, Parser)]
 #[command()]
 pub enum StepSubCommand {
+    /// List steps in a pipeline
+    #[command()]
+    List {
+        /// Show only the names, otherwise print commands as well.
+        #[arg(long)]
+        only_names: bool,
+    },
+
     /// Add a new step
     #[command()]
     New {
@@ -198,11 +209,16 @@ pub fn handle_step_cli(
     command: StepCLI,
 ) -> Result<()> {
     match command.subcommand {
+        StepSubCommand::List { only_names } => {
+            cmd_step_list(output_snd, xvc_root, pipeline_name, only_names)
+        }
+
         StepSubCommand::New {
             step_name,
             command,
             when: changed,
         } => cmd_step_new(xvc_root, pipeline_name, step_name, command, changed),
+
         StepSubCommand::Update {
             step_name,
             command,
@@ -224,7 +240,7 @@ pub fn handle_step_cli(
 }
 
 /// A step (stage) in a pipeline.
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Ord, PartialOrd)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize, Ord, PartialOrd, Display)]
 pub struct XvcStep {
     /// Name of the step
     pub name: String,
