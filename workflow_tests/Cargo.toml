@@ -66,6 +66,8 @@ test-generic-rsync = []
 
 
 [dev-dependencies]
+xvc-test-helper = { version = "0.6.0", path = "../test_helper" }
+
 proptest = "^1.3"
 test-case = "^3.2"
 globset = "^0.4"

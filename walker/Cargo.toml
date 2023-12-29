@@ -37,11 +37,11 @@ anyhow = "^1.0"
 log = "^0.4"
 
 ## Misc
-itertools = "^0.11"
+itertools = "^0.12"
 regex = "^1.10"
 
 [dev-dependencies]
-xvc-test-helper = { path = "../test_helper/" }
+xvc-test-helper = { path = "../test_helper/", version = "^0.6" }
 test-case = "^3.2"
 
 [package.metadata.cargo-udeps.ignore]

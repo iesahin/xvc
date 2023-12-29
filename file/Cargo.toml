@@ -93,5 +93,5 @@ parse-size = "^1.0"
 
 
 [dev-dependencies]
-xvc-test-helper = { path = "../test_helper/" }
+xvc-test-helper = { version = "^0.6", path = "../test_helper/" }
 shellfn = "^0.1"

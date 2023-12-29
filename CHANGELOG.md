@@ -12,6 +12,7 @@ tree, and subtasks are marked with indentation.
 - Refactored Pipelines API to expose more functionality
   - PR: <https://github.com/iesahin/xvc/pull/243>
   - Exposed Git operations in the API
+- Fixed `xvc pipeline step update` clobbering `--when` option
 
 - Added `xvc pipeline step list` command to list pipeline steps
 

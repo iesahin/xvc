@@ -60,6 +60,34 @@ fn link_to_docs() -> Result<()> {
 
     let book_dirs_and_filters = book_dirs_and_filters;
 
+    let mut book_dirs_and_filters = vec![];
+    if trycmd_tests.contains("intro") {
+        book_dirs_and_filters.push(("intro", r".*"));
+    }
+    if trycmd_tests.contains("start") {
+        book_dirs_and_filters.push(("start", r".*"));
+    }
+    if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
+        book_dirs_and_filters.push(("how-to", r".*"));
+    }
+
+    if trycmd_tests.contains("storage") {
+        book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+    }
+    if trycmd_tests.contains("file") {
+        book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+    }
+
+    if trycmd_tests.contains("pipeline") {
+        book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+    }
+
+    if trycmd_tests.contains("core") {
+        book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
+    }
+
+    let book_dirs_and_filters = book_dirs_and_filters;
+
     let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code

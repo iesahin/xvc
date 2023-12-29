@@ -42,6 +42,7 @@ $ xvc pipeline step new --step-name train --command "echo 'train'"
 $ xvc pipeline step dependency --step-name train --step preprocess
 
 ```
+It's not very readable but you can supply the result directly to dot and get a more useful output.
 
 ```console
 $ xvc pipeline dag
@@ -49,7 +50,11 @@ digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=box;label="train";];
 
 ```
 
-When you add a dependency between two steps, the graph shows it as a node.
+The output after `dot -Tsvg` is:
+
+![pipeline-1](/images/xvc-pipeline-dag-pipeline-1.svg)
+
+When you add a dependency between two steps, the graph shows it as a node. For example, 
 
 ```console
 $ xvc pipeline step dependency --step-name preprocess --glob 'data/*'
@@ -58,6 +63,8 @@ $ xvc pipeline dag
 digraph pipeline{n0[shape=box;label="preprocess";];n1[shape=folder;label="data/*";];n1->n0;n2[shape=box;label="train";];n0[shape=box;label="preprocess";];n0->n2;}
 
 ```
+
+![pipeline-2](/images/xvc-pipeline-dag-pipeline-2.svg)
 
 You can use `--mermaid` option to get a [mermaid.js](https://mermaid.js.org) diagram.
 
