@@ -38,8 +38,8 @@ $ xvc pipeline step new --step-name world --command "echo world" --when always
 
 ```console
 $ xvc pipeline step list
-hello: echo hello (by_dependencies)
 world: echo world (always)
+hello: echo hello (by_dependencies)
 
 ```
 

@@ -16,18 +16,17 @@ pub fn cmd_step_list(
 
     xvc_root
         .with_r1nstore(|rs: &R1NStore<XvcPipeline, XvcStep>| {
-            let steps: HStore<XvcStep> =
-                rs.children_of(&pipeline_e)?.into_iter().sorted().collect();
+            let steps: HStore<XvcStep> = rs.children_of(&pipeline_e)?;
 
             if names_only {
-                for (_, step) in steps {
+                for (_, step) in steps.into_iter().sorted() {
                     output!(output_snd, "{}", step);
                 }
             } else {
                 let bs_command = xvc_root.load_store::<XvcStepCommand>()?;
                 let bs_invalidate = xvc_root.load_store::<XvcStepInvalidate>()?;
 
-                for (step_e, step) in steps {
+                for (step_e, step) in steps.into_iter().sorted() {
                     let command = &bs_command[&step_e];
                     let invalidate = bs_invalidate.get(&step_e).cloned().unwrap_or_default();
                     output!(output_snd, "{}: {} ({})", step, command, invalidate);
