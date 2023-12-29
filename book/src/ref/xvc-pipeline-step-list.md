@@ -38,8 +38,8 @@ $ xvc pipeline step new --step-name world --command "echo world" --when always
 
 ```console
 $ xvc pipeline step list
-hello: echo hello (by_dependencies)
 world: echo world (always)
+hello: echo hello (by_dependencies)
 
 ```
 
@@ -48,7 +48,7 @@ It will list the commands and when they will run (always, never, by_dependencies
 
 ```console
 $ xvc pipeline step list --names-only
-hello
 world
+hello
 
 ```

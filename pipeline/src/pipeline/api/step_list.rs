@@ -1,8 +1,9 @@
 use crate::{
     error::Result, pipeline::XvcStepInvalidate, Error, XvcPipeline, XvcStep, XvcStepCommand,
 };
+use itertools::Itertools;
 use xvc_core::XvcRoot;
-use xvc_ecs::R1NStore;
+use xvc_ecs::{HStore, R1NStore};
 use xvc_logging::{output, XvcOutputSender};
 
 pub fn cmd_step_list(
@@ -15,7 +16,8 @@ pub fn cmd_step_list(
 
     xvc_root
         .with_r1nstore(|rs: &R1NStore<XvcPipeline, XvcStep>| {
-            let steps = rs.children_of(&pipeline_e)?;
+            let steps: HStore<XvcStep> =
+                rs.children_of(&pipeline_e)?.into_iter().sorted().collect();
 
             if names_only {
                 for (_, step) in steps {

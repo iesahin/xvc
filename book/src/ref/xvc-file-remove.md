@@ -275,7 +275,7 @@ $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
 SS        [..] [..] 4a2e9d7c          data2.txt
 FC        1024 [..] 4a2e9d7c 4a2e9d7c data.txt
-Total #: 2 Workspace Size:        1209 Cached Size:        1024
+Total #: 2 Workspace Size:        [..] Cached Size:        1024
 
 
 $ xvc file remove --from-cache data.txt
