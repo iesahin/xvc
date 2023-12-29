@@ -1,6 +1,6 @@
 [package]
 name = "xvc-pipeline"
-version = "0.6.5-alpha.0"
+version = "0.6.5-alpha.1"
 edition = "2021"
 description = "Xvc data pipeline management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -19,12 +19,12 @@ debug = true
 
 
 [dependencies]
-xvc-config = { version = "0.6.5-alpha.0", path = "../config" }
-xvc-core = { version = "0.6.5-alpha.0", path = "../core" }
-xvc-ecs = { version = "0.6.5-alpha.0", path = "../ecs" }
-xvc-logging = { version = "0.6.5-alpha.0", path = "../logging" }
-xvc-walker = { version = "0.6.5-alpha.0", path = "../walker" }
-xvc-file = { version = "0.6.5-alpha.0", path = "../file" }
+xvc-config = { version = "0.6.5-alpha.1", path = "../config" }
+xvc-core = { version = "0.6.5-alpha.1", path = "../core" }
+xvc-ecs = { version = "0.6.5-alpha.1", path = "../ecs" }
+xvc-logging = { version = "0.6.5-alpha.1", path = "../logging" }
+xvc-walker = { version = "0.6.5-alpha.1", path = "../walker" }
+xvc-file = { version = "0.6.5-alpha.1", path = "../file" }
 
 ## Cli and config
 clap = { version = "^4.4", features = ["derive"] }
@@ -85,12 +85,12 @@ chrono = "^0.4"
 strum = "0.25.0"
 strum_macros = "0.25.3"
 lazy_static = "^1.4"
-uuid = { version = "^1.5", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "^1.6", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
-url = { version = "^2.4", features = ["serde"] }
+url = { version = "^2.5", features = ["serde"] }
 itertools = "^0.12"
 derive_more = "^0.99"
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.5-alpha.0", path = "../test_helper/" }
-test-case = "^3.2"
+xvc-test-helper = { version = "0.6.5-alpha.1", path = "../test_helper/" }
+test-case = "^3.3"
