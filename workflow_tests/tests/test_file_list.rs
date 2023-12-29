@@ -56,7 +56,7 @@ fn test_file_list() -> Result<()> {
     };
 
     watch!("begin");
-    let list_all = x(&["list", "--format", "{{name}}"])?;
+    let list_all = x(&["list", "--format", "{{name}}", "--show-dot-files"])?;
 
     watch!(list_all);
 
@@ -65,6 +65,16 @@ fn test_file_list() -> Result<()> {
     // There must be 33 elements in total. 6 x 5: directories, 1 for .gitignore,
     // 1 for .xvcignore, another line for the summary.
     assert!(count_all == 33);
+
+    let list_no_dots = x(&["list", "--format", "{{name}}"])?;
+    let count_no_dots = list_no_dots.trim().lines().count();
+    // There must be 31 elements in total. 6 x 5: directories another line for the summary.
+    assert!(count_no_dots == 31);
+
+    let list_no_dots_no_summary = x(&["list", "--format", "{{name}}", "--no-summary"])?;
+    let count_no_dots_no_summary = list_no_dots_no_summary.trim().lines().count();
+    // There must be 31 elements in total. 6 x 5: directories another line for the summary.
+    assert!(count_no_dots_no_summary == 30);
 
     // test all sort options
 
