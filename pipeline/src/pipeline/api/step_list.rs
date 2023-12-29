@@ -9,7 +9,7 @@ pub fn cmd_step_list(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     pipeline_name: &str,
-    only_names: bool,
+    names_only: bool,
 ) -> Result<()> {
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, pipeline_name)?;
 
@@ -17,7 +17,7 @@ pub fn cmd_step_list(
         .with_r1nstore(|rs: &R1NStore<XvcPipeline, XvcStep>| {
             let steps = rs.children_of(&pipeline_e)?;
 
-            if only_names {
+            if names_only {
                 for (_, step) in steps {
                     output!(output_snd, "{}", step);
                 }

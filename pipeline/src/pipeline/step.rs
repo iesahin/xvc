@@ -34,7 +34,7 @@ pub enum StepSubCommand {
     List {
         /// Show only the names, otherwise print commands as well.
         #[arg(long)]
-        only_names: bool,
+        names_only: bool,
     },
 
     /// Add a new step
@@ -209,9 +209,9 @@ pub fn handle_step_cli(
     command: StepCLI,
 ) -> Result<()> {
     match command.subcommand {
-        StepSubCommand::List { only_names } => {
-            cmd_step_list(output_snd, xvc_root, pipeline_name, only_names)
-        }
+        StepSubCommand::List {
+            names_only: only_names,
+        } => cmd_step_list(output_snd, xvc_root, pipeline_name, only_names),
 
         StepSubCommand::New {
             step_name,
