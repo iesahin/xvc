@@ -48,7 +48,7 @@ It will list the commands and when they will run (always, never, by_dependencies
 
 ```console
 $ xvc pipeline step list --names-only
-world
 hello
+world
 
 ```
