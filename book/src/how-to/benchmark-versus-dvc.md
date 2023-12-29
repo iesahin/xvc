@@ -24,7 +24,7 @@ $ dvc --version
 3.30.3
 
 $ xvc --version
-xvc v0.6.4-alpha.0-297-g9ccb3fb-modified
+xvc v0.6.4-alpha.0-299-g084d356-modified
 
 ```
 
@@ -38,12 +38,12 @@ Initialized empty Git repository in [CWD]/.git/
 
 $ hyperfine -r 1 'xvc init'
 Benchmark 1: xvc init
-  Time (abs ≡):         34.8 ms               [User: 11.5 ms, System: 18.0 ms]
+  Time (abs ≡):         48.4 ms               [User: 11.6 ms, System: 21.4 ms]
  
 
 $ hyperfine -r 1 'dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"'
 Benchmark 1: dvc init ; git add .dvc/ .dvcignore ; git commit -m "Init DVC"
-  Time (abs ≡):        461.0 ms               [User: 210.3 ms, System: 92.9 ms]
+  Time (abs ≡):        356.4 ms               [User: 202.1 ms, System: 78.1 ms]
  
 
 $ git status -s
@@ -248,7 +248,7 @@ Run the DVC pipeline
 ```console
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        626.1 ms               [User: 439.6 ms, System: 159.1 ms]
+  Time (abs ≡):        612.6 ms               [User: 433.0 ms, System: 153.9 ms]
  
 
 ```
@@ -257,8 +257,8 @@ Running without changed the dependencies
 ```console
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     433.3 ms ±   5.8 ms    [User: 330.2 ms, System: 98.1 ms]
-  Range (min … max):   424.2 ms … 440.2 ms    5 runs
+  Time (mean ± σ):     429.6 ms ±   7.7 ms    [User: 326.9 ms, System: 97.9 ms]
+  Range (min … max):   419.1 ms … 439.4 ms    5 runs
  
 
 ```
@@ -267,7 +267,7 @@ $ zsh -cl "for f in pipeline-10/dir-0001/* ; do xvc pipeline step new -s ${f:r:t
 
 $ hyperfine -r 1 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (abs ≡):        230.9 ms               [User: 54.6 ms, System: 227.0 ms]
+  Time (abs ≡):        224.0 ms               [User: 53.6 ms, System: 221.1 ms]
  
 
 ```
@@ -275,8 +275,8 @@ Benchmark 1: xvc pipeline run
 ```console
 $ hyperfine -M 5 "xvc pipeline run"
 Benchmark 1: xvc pipeline run
-  Time (mean ± σ):     176.9 ms ±   2.6 ms    [User: 34.9 ms, System: 145.4 ms]
-  Range (min … max):   174.8 ms … 181.4 ms    5 runs
+  Time (mean ± σ):     170.5 ms ±   2.6 ms    [User: 34.2 ms, System: 139.6 ms]
+  Range (min … max):   167.9 ms … 173.5 ms    5 runs
  
 
 ```
@@ -302,13 +302,13 @@ $ zsh -cl "for f in pipeline-100/dir-0001/* ; do dvc stage add -q -n s-${RANDOM}
 
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):         9.566 s               [User: 8.466 s, System: 0.949 s]
+  Time (abs ≡):         9.728 s               [User: 8.516 s, System: 0.964 s]
  
 
 $ hyperfine -M 5 "dvc repro"
 Benchmark 1: dvc repro
-  Time (mean ± σ):     638.8 ms ±   2.4 ms    [User: 470.5 ms, System: 161.0 ms]
-  Range (min … max):   636.8 ms … 641.8 ms    5 runs
+  Time (mean ± σ):     636.8 ms ±   8.9 ms    [User: 469.9 ms, System: 162.1 ms]
+  Range (min … max):   623.0 ms … 644.6 ms    5 runs
  
 
 ```
@@ -322,15 +322,13 @@ $ zsh -cl "for f in pipeline-100/dir-0001/* ; do xvc pipeline -p p100 step new -
 
 $ hyperfine -r 1 --show-output "xvc pipeline -p p100 run" 
 Benchmark 1: xvc pipeline -p p100 run
-  Time (abs ≡):        206.6 ms               [User: 40.2 ms, System: 170.8 ms]
+  Time (abs ≡):        206.0 ms               [User: 40.6 ms, System: 167.0 ms]
  
 
 $ hyperfine -M 5 "xvc pipeline -p p100 run"
 Benchmark 1: xvc pipeline -p p100 run
-  Time (mean ± σ):     201.7 ms ±   3.1 ms    [User: 40.3 ms, System: 165.2 ms]
-  Range (min … max):   199.7 ms … 207.2 ms    5 runs
- 
-  Warning: The first benchmarking run for this command was significantly slower than the rest (207.2 ms). This could be caused by (filesystem) caches that were not filled until after the first run. You should consider using the '--warmup' option to fill those caches before the actual benchmark. Alternatively, use the '--prepare' option to clear the caches before each timing run.
+  Time (mean ± σ):     199.0 ms ±   2.9 ms    [User: 39.8 ms, System: 163.8 ms]
+  Range (min … max):   197.2 ms … 204.0 ms    5 runs
  
 
 ```
@@ -340,29 +338,31 @@ Note that the first run of the commands is drastically different. DVC runs all s
 ```
 $ hyperfine 'sha1sum pipeline-100/dir-0001/file-0001.bin'
 Benchmark 1: sha1sum pipeline-100/dir-0001/file-0001.bin
-  Time (mean ± σ):       1.2 ms ±   0.2 ms    [User: 0.4 ms, System: 0.5 ms]
-  Range (min … max):     0.9 ms …   2.3 ms    517 runs
+  Time (mean ± σ):       1.1 ms ±   0.2 ms    [User: 0.4 ms, System: 0.5 ms]
+  Range (min … max):     0.8 ms …   2.6 ms    490 runs
  
   Warning: Command took less than 5 ms to complete. Note that the results might be inaccurate because hyperfine can not calibrate the shell startup time much more precise than this limit. You can try to use the `-N`/`--shell=none` option to disable the shell completely.
+  Warning: The first benchmarking run for this command was significantly slower than the rest (2.6 ms). This could be caused by (filesystem) caches that were not filled until after the first run. You should consider using the '--warmup' option to fill those caches before the actual benchmark. Alternatively, use the '--prepare' option to clear the caches before each timing run.
  
 
 ```
 
-## Pipeline with 10000 Steps
+## Pipeline with 1000 Steps
 
 In this case we'll just measure the run times of 10000 `ls` commands. 
 
 ```console
 $ rm -f dvc.yaml
 
-$ zsh -cl "for i in {1..10000}; do dvc stage add -q -n s-${i} 'ls'; done"
+$ zsh -cl "for i in {1..1000}; do dvc stage add -q -n s-${i} 'ls'; done"
 ? interrupted
 
 $ zsh -cl 'dvc stage list | wc -l'
+    2137
 
 $ hyperfine -r 1 "dvc repro"
 Benchmark 1: dvc repro
-  Time (abs ≡):        125.487 s               [User: 118.673 s, System: 5.802 s]
+  Time (abs ≡):        1943.223 s               [User: 1870.897 s, System: 63.256 s]
  
 
 $ hyperfine -M 5 "dvc repro"
@@ -373,46 +373,23 @@ Benchmark 1: dvc repro
 
 
 ```console
-$ xvc pipeline new --pipeline-name p10000
+$ xvc pipeline new --pipeline-name p1000
 
-$ zsh -cl "for i in {1..10000} ; do xvc --skip-git pipeline -p p10000 step new -s s-${i} --command 'ls' ; done"
+$ zsh -cl "for i in {1..1000} ; do xvc --skip-git pipeline -p p1000 step new -s s-${i} --command 'ls' ; done"
 ? interrupted
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
-Auto packing the repository in background for optimum performance.
-See "git help gc" for manual housekeeping.
 
-$ hyperfine -r 1 --show-output "xvc pipeline -p p10000 run" 
+$ zsh -cl 'xvc pipeline step list --names-only | wc -l'
+$ hyperfine -r 1 --show-output "xvc pipeline -p p1000 run" 
 Benchmark 1: xvc pipeline -p p10000 run
-  Time (abs ≡):        548.9 ms               [User: 96.2 ms, System: 484.6 ms]
+Auto packing the repository in background for optimum performance.
+See "git help gc" for manual housekeeping.
+  Time (abs ≡):        14.114 s               [User: 0.846 s, System: 11.966 s]
  
 
-$ hyperfine -M 5 "xvc pipeline -p p10000 run"
+$ hyperfine -M 5 "xvc pipeline -p p1000 run"
 Benchmark 1: xvc pipeline -p p10000 run
-  Time (mean ± σ):     494.4 ms ±  25.1 ms    [User: 94.6 ms, System: 455.3 ms]
-  Range (min … max):   475.4 ms … 538.2 ms    5 runs
+  Time (mean ± σ):      1.591 s ±  0.086 s    [User: 0.298 s, System: 1.489 s]
+  Range (min … max):    1.480 s …  1.699 s    5 runs
  
 
 ```
