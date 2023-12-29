@@ -197,9 +197,12 @@ impl XvcPathMetadataProvider {
                         if self.path_map.read().unwrap().contains_key(&xvc_path) {
                             continue;
                         } else {
-                            let md = entry.symlink_metadata()?;
+                            let md = entry.symlink_metadata();
                             watch!(&md);
-                            self.path_map.write().unwrap().insert(xvc_path, md.into());
+                            self.path_map
+                                .write()
+                                .unwrap()
+                                .insert(xvc_path, XvcMetadata::from(md));
                         }
                     }
                 }
