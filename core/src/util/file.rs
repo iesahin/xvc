@@ -164,12 +164,12 @@ impl XvcPathMetadataProvider {
         watch!(xvc_path);
         let path = xvc_path.to_absolute_path(&self.xvc_root);
         watch!(path);
-        let md = path.symlink_metadata()?;
+        let md = path.symlink_metadata();
         watch!(&md);
         self.path_map
             .write()
             .unwrap()
-            .insert(xvc_path.clone(), md.into());
+            .insert(xvc_path.clone(), XvcMetadata::from(md));
         Ok(())
     }
 
