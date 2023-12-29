@@ -1,6 +1,6 @@
 [package]
 name = "xvc-walker"
-version = "0.6.3"
+version = "0.6.5-alpha.0"
 edition = "2021"
 description = "Xvc parallel file system walker with ignore features"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -19,7 +19,7 @@ crate-type = ["rlib"]
 debug = true
 
 [dependencies]
-xvc-logging = { version = "0.6.0", path = "../logging" }
+xvc-logging = { version = "0.6.5-alpha.0", path = "../logging" }
 globset = "^0.4"
 
 ## Parallelization
