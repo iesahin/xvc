@@ -8,15 +8,13 @@ List the steps and their commands in a pipeline
 
 ```console
 $ xvc pipeline step list --help
-Add a new step
+List steps in a pipeline
 
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+Usage: xvc pipeline step list [OPTIONS]
 
 Options:
-  -s, --step-name <STEP_NAME>  Name of the new step
-  -c, --command <COMMAND>      Step command to run
-      --when <WHEN>            When to run the command. One of always, never, by_dependencies (default). This is used to freeze or invalidate a step manually
-  -h, --help                   Print help
+      --names-only  Show only the names, otherwise print commands as well
+  -h, --help        Print help
 
 ```
 
@@ -40,6 +38,8 @@ $ xvc pipeline step new --step-name world --command "echo world" --when always
 
 ```console
 $ xvc pipeline step list
+hello: echo hello (by_dependencies)
+world: echo world (always)
 
 ```
 
@@ -48,4 +48,7 @@ It will list the commands and when they will run (always, never, by_dependencies
 
 ```console
 $ xvc pipeline step list --names-only
+hello
+world
+
 ```
