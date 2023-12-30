@@ -82,7 +82,7 @@ fn test_pipeline_dag() -> Result<()> {
     xsd(
         "count_training_files",
         "--lines",
-        "training-files.txt:1:1000000",
+        "training-files.txt::1-1000000",
     )?;
     xsof("count_training_files", "num-training-files.txt")?;
 
