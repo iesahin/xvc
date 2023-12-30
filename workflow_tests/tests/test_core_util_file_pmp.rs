@@ -27,11 +27,16 @@ fn test_pmp() -> Result<()> {
     create_directory_tree(&xvc_root, n_dirs, n_files, 10, None)?;
 
     let pmp = XvcPathMetadataProvider::new(&output_sender, &xvc_root)?;
+    let initial_path_map = pmp.current_path_metadata_map_clone()?;
 
     // Test skip list
     for skipped in [".dvc", ".xvc", ".git"] {
         let xp = XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new(skipped))?;
-        assert!(!pmp.path_present(&xp), "Result Contains {:?}", xp)
+        assert!(
+            !initial_path_map.contains_key(&xp),
+            "Result Contains {:?}",
+            xp
+        )
     }
 
     // Test create / update / delete in the background
