@@ -18,14 +18,14 @@ steps:
     invalidate: Always
     dependencies: []
     outputs: []
-  - version: 1
-    name: step1
-    command: touch abc.txt
-    invalidate: ByDependencies
-    dependencies: []
-    outputs:
-      - File:
-          path: abc.txt
+# - version: 1
+#   name: step1
+#   command: touch abc.txt
+#   invalidate: ByDependencies
+#   dependencies: []
+#   outputs:
+#     - File:
+#         path: abc.txt
   - version: 1
     name: step_dep
     command: touch step_dep.txt
