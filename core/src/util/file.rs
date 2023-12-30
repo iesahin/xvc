@@ -1,4 +1,4 @@
-//! Core file operations
+//! Core file operationscorefil
 use cached::proc_macro::cached;
 use cached::UnboundCache;
 use glob::Pattern as GlobPattern;
@@ -227,6 +227,13 @@ impl XvcPathMetadataProvider {
             }
         }
         Ok(matches)
+    }
+}
+
+impl Drop for XvcPathMetadataProvider {
+    /// Stop the background thread when quit
+    fn drop(&mut self) {
+        self.stop().unwrap();
     }
 }
 
