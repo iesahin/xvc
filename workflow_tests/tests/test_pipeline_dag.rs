@@ -3,8 +3,10 @@ mod common;
 use std::{fs, path::Path};
 
 use common::*;
+use log::LevelFilter;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
+use xvc_logging::setup_logging;
 
 const PIPELINE_YAML: &str = r#"
 ---
@@ -18,14 +20,14 @@ steps:
     invalidate: Always
     dependencies: []
     outputs: []
-# - version: 1
-#   name: step1
-#   command: touch abc.txt
-#   invalidate: ByDependencies
-#   dependencies: []
-#   outputs:
-#     - File:
-#         path: abc.txt
+  - version: 1
+    name: step1
+    command: touch abc.txt
+    invalidate: ByDependencies
+    dependencies: []
+    outputs:
+      - File:
+          path: abc.txt
   - version: 1
     name: step_dep
     command: touch step_dep.txt
@@ -96,6 +98,7 @@ steps:
 
 #[test]
 fn test_pipeline_dag() -> Result<()> {
+    test_logging(LevelFilter::Trace);
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
