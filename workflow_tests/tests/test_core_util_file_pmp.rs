@@ -4,7 +4,7 @@ use fs_extra::dir::create;
 use log::LevelFilter;
 use xvc_core::{
     util::xvcignore::{walk_parallel, walk_serial},
-    XvcPath, XvcPathMetadataProvider,
+    XvcMetadata, XvcPath, XvcPathMetadataProvider,
 };
 
 use std::{fs::remove_file, path::Path, time::Duration};
@@ -45,17 +45,19 @@ fn test_pmp() -> Result<()> {
     let xpath1 = XvcPath::new(&xvc_root, &xvc_root, &path1)?;
     let orig_size = 100;
     generate_random_file(&path1, orig_size, None);
-    let md1 = pmp.get(&xpath1);
-    assert!(md1.is_some());
-    assert!(md1.unwrap().is_file());
-    assert!(md1.unwrap().size == Some(orig_size as u64));
+    let xmd1 = pmp.get(&xpath1);
+    assert!(xmd1.is_some());
+    assert!(xmd1.unwrap().is_file());
+    assert!(xmd1.unwrap().size == Some(orig_size as u64));
 
     let new_size = 200;
     generate_random_file(&path1, new_size, None);
-    let md1 = pmp.get(&xpath1);
-    assert!(md1.is_some());
-    assert!(md1.unwrap().is_file());
-    assert!(md1.unwrap().size == Some(new_size as u64), "{:?}", md1);
+    let xmd1 = pmp.get(&xpath1);
+    assert!(xmd1.is_some());
+    assert!(xmd1.unwrap().is_file());
+    let xmd1_real = XvcMetadata::from(path1.symlink_metadata());
+    watch!(xmd1_real);
+    assert!(xmd1.unwrap().size == Some(new_size as u64), "{:?}", xmd1);
 
     remove_file(&path1)?;
 
