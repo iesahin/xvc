@@ -14,7 +14,7 @@ use self::step::XvcStep;
 use anyhow::anyhow;
 
 use itertools::Itertools;
-use xvc_core::util::file::XvcPathMetadataProvider;
+use xvc_core::XvcPathMetadataProvider;
 use xvc_file::CHANNEL_CAPACITY;
 
 use crate::deps::compare::thorough_compare_dependency;

@@ -1,10 +1,12 @@
 //! Various utility functions
 pub mod file;
 pub mod git;
+pub mod pmp;
 pub mod serde;
 pub mod store;
 pub mod xvcignore;
 
+use std::collections::HashMap;
 use std::fmt::Display;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
@@ -16,7 +18,10 @@ use glob::glob;
 use xvc_logging::watch;
 
 use crate::error::{Error, Result};
-use crate::CHANNEL_BOUND;
+use crate::{XvcMetadata, XvcPath, CHANNEL_BOUND};
+
+/// A hashmap to store [XvcMetadata] for [XvcPath]
+pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;
 
 /// Expands the given glob `targets` to paths under `current_dir`.
 /// It uses [glob::glob] to travers and expand the paths.

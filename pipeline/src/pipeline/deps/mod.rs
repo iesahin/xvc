@@ -16,7 +16,7 @@ use itertools::Itertools;
 pub use param::*;
 
 use serde::{Deserialize, Serialize};
-use xvc_core::util::file::XvcPathMetadataProvider;
+use xvc_core::XvcPathMetadataProvider;
 
 use crate::error::{Error, Result};
 use xvc_config::XvcConfig;

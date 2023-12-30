@@ -43,10 +43,10 @@ pub use xvc_walker as walker;
 pub use error::Error;
 pub use error::Result;
 
-pub use util::file::{
-    all_paths_and_metadata, dir_includes, glob_includes, glob_paths, XvcPathMetadataMap,
-    XvcPathMetadataProvider,
-};
+pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_paths};
+
+pub use util::pmp::XvcPathMetadataProvider;
+pub use util::XvcPathMetadataMap;
 
 /// Channel size for [crossbeam_channel::bounded] used across the library.
 /// TODO: This can be configurable for smaller/larger RAM sizes.

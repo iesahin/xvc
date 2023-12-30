@@ -5,7 +5,7 @@ use crate::XvcEntity;
 use anyhow::anyhow;
 
 use xvc_core::types::diff::Diffable;
-use xvc_core::util::file::XvcPathMetadataMap;
+use xvc_core::XvcPathMetadataMap;
 
 use xvc_core::{Diff, HashAlgorithm, TextOrBinary, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, Storable};
