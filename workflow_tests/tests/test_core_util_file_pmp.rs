@@ -55,7 +55,7 @@ fn test_pmp() -> Result<()> {
     let md1 = pmp.get(&xpath1);
     assert!(md1.is_some());
     assert!(md1.unwrap().is_file());
-    assert!(md1.unwrap().size == Some(new_size as u64));
+    assert!(md1.unwrap().size == Some(new_size as u64), "{:?}", md1);
 
     remove_file(&path1)?;
 
