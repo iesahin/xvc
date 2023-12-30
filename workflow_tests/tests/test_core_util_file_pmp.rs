@@ -7,7 +7,7 @@ use xvc_core::{
     XvcMetadata, XvcPath, XvcPathMetadataProvider,
 };
 
-use std::{fs::remove_file, path::Path, time::Duration};
+use std::{fs::remove_file, path::Path, thread::sleep, time::Duration};
 
 use xvc_logging::watch;
 
@@ -52,11 +52,12 @@ fn test_pmp() -> Result<()> {
 
     let new_size = 200;
     generate_random_file(&path1, new_size, None);
+    let xmd1_real = XvcMetadata::from(path1.symlink_metadata());
+    watch!(xmd1_real);
+    sleep(Duration::from_millis(100));
     let xmd1 = pmp.get(&xpath1);
     assert!(xmd1.is_some());
     assert!(xmd1.unwrap().is_file());
-    let xmd1_real = XvcMetadata::from(path1.symlink_metadata());
-    watch!(xmd1_real);
     assert!(xmd1.unwrap().size == Some(new_size as u64), "{:?}", xmd1);
 
     remove_file(&path1)?;
