@@ -79,6 +79,7 @@ impl XvcPathMetadataProvider {
                 PathEvent::Update { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
+                    watch!((&xvc_path, &xvc_md));
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
