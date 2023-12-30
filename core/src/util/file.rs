@@ -41,7 +41,7 @@ pub struct XvcPathMetadataProvider {
     /// The root directory to start walking from
     xvc_root: XvcRoot,
     path_map: Arc<RwLock<XvcPathMetadataMap>>,
-    kill_switch_sender: Sender<bool>,
+    kill_signal_sender: Arc<Sender<bool>>,
     background_thread: Arc<Mutex<JoinHandle<Result<()>>>>,
     output_sender: XvcOutputSender,
     ignore_rules: IgnoreRules,
@@ -128,7 +128,7 @@ impl XvcPathMetadataProvider {
         Ok(Self {
             xvc_root,
             path_map,
-            kill_switch_sender: kill_signal_sender,
+            kill_signal_sender: Arc::new(kill_signal_sender),
             background_thread,
             output_sender,
             ignore_rules,
@@ -176,7 +176,10 @@ impl XvcPathMetadataProvider {
     /// Stop updating the paths by killing the background thread
     pub fn stop(&self) -> Result<()> {
         watch!(self.background_thread);
-        self.kill_switch_sender.send(true).map_err(Error::from)?;
+        self.kill_signal_sender
+            .clone()
+            .send(true)
+            .map_err(Error::from)?;
         watch!(self.background_thread);
         Ok(())
     }
