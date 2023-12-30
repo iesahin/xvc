@@ -237,7 +237,8 @@ impl XvcPathMetadataProvider {
 impl Drop for XvcPathMetadataProvider {
     /// Stop the background thread when quit
     fn drop(&mut self) {
-        self.stop().unwrap();
+        // Ignore if the channel is closed
+        let _ = self.stop();
     }
 }
 
