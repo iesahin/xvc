@@ -46,7 +46,7 @@ impl GlobItemsDep {
         pmp: &XvcPathMetadataProvider,
     ) -> Result<GlobItemsDep> {
         let xvc_path_metadata_map =
-            glob_paths(xvc_root, pmp, glob_root, &glob).map(|paths| paths.into_iter().collect())?;
+            glob_paths(pmp, glob_root, &glob).map(|paths| paths.into_iter().collect())?;
         // We don't calculate the content digest map immediately, we only do that in through comparison
         Ok(GlobItemsDep {
             glob,

@@ -207,7 +207,7 @@ pub fn dependency_paths(
             .iter()
             .map(|(xp, xmd)| (xp.clone(), *xmd))
             .collect(),
-        XvcDependency::Glob(dep) => glob_paths(xvc_root, pmp, pipeline_rundir, &dep.glob).unwrap(),
+        XvcDependency::Glob(dep) => glob_paths(pmp, pipeline_rundir, &dep.glob).unwrap(),
         XvcDependency::UrlDigest(_) => empty,
         XvcDependency::Param(dep) => make_map(&dep.path),
         XvcDependency::RegexItems(dep) => make_map(&dep.path),

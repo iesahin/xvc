@@ -286,7 +286,7 @@ pub fn recheck_from_cache(
     recheck_method: RecheckMethod,
     ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<()> {
-    if let Some(parent) = xvc_path.parents().get(0) {
+    if let Some(parent) = xvc_path.parents().first() {
         watch!(parent);
         let parent_dir = parent.to_absolute_path(xvc_root);
         watch!(parent_dir);

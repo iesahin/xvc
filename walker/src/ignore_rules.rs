@@ -1,17 +1,10 @@
-use std::cell::RefCell;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 
-use globset::Glob;
 use globset::GlobSet;
 use itertools::Itertools;
-use xvc_logging::watch;
 
-use crate::content_to_patterns;
-use crate::GlobPattern;
-use crate::PatternEffect;
-use crate::Result;
-use crate::{build_globset, build_ignore_rules};
+use crate::{build_globset, content_to_patterns, GlobPattern, PatternEffect, Result};
 
 /// Complete set of ignore rules for a directory and its child directories.
 #[derive(Debug, Clone)]
@@ -105,7 +98,7 @@ impl IgnoreRules {
 
         Ok(())
     }
-    fn update_ignore(&mut self, new_ignore_patterns: &Vec<GlobPattern>) -> Result<()> {
+    fn update_ignore(&mut self, new_ignore_patterns: &[GlobPattern]) -> Result<()> {
         assert!(new_ignore_patterns
             .iter()
             .all(|p| matches!(p.effect, PatternEffect::Ignore)));

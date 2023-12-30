@@ -117,7 +117,7 @@ where
     pub fn entity_by_right(&self, right_element: &U) -> Option<XvcEntity> {
         match self.right.entities_for(right_element) {
             None => None,
-            Some(vec_e) => vec_e.get(0).copied(),
+            Some(vec_e) => vec_e.first().copied(),
         }
     }
 

@@ -781,59 +781,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     }
 }
 
-fn update_pmp(
-    xvc_root: &XvcRoot,
-    fs_receiver: Receiver<Option<PathEvent>>,
-    pmm: &mut XvcPathMetadataMap,
-    kill_signal_receiver: Receiver<bool>,
-) -> Result<()> {
-    let mut handle_fs_event = |fs_event| match fs_event {
-        PathEvent::Create { path, metadata } => {
-            let xvc_path = XvcPath::new(xvc_root, xvc_root, &path).unwrap();
-            let xvc_md = XvcMetadata::from(metadata);
-            pmm.insert(xvc_path, xvc_md);
-        }
-        PathEvent::Update { path, metadata } => {
-            let xvc_path = XvcPath::new(xvc_root, xvc_root, &path).unwrap();
-            let xvc_md = XvcMetadata::from(metadata);
-            pmm.insert(xvc_path, xvc_md);
-        }
-        PathEvent::Delete { path } => {
-            let xvc_path = XvcPath::new(xvc_root, xvc_root, &path).unwrap();
-            let xvc_md = XvcMetadata {
-                file_type: XvcFileType::Missing,
-                size: None,
-                modified: None,
-            };
-            pmm.insert(xvc_path, xvc_md);
-        }
-    };
-
-    loop {
-        watch!(fs_receiver);
-        select! {
-            recv(fs_receiver) -> fs_event => match fs_event {
-                Ok(Some(fs_event)) => {
-                    handle_fs_event(fs_event);
-                }
-                Ok(None) => {
-                    return Ok(())
-                }
-                Err(e) => {
-                    error!("Error in fs_receiver: {:?}", e);
-                    return Err(anyhow!("Error in fs_receiver: {:?}", e).into())
-                }
-            },
-
-            recv(kill_signal_receiver) -> kill_signal => {
-                if let Ok(true) = kill_signal {
-                    return Ok(())
-                }
-            },
-        }
-    }
-}
-
 fn s_begin_f_init<'a>(s: &BeginState, params: StepStateParams<'a>) -> StateTransition<'a> {
     if params.run_conditions.never {
         Ok((s.run_never(), params)) // s_no_need_to_run_f_run_never

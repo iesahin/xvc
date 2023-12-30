@@ -214,6 +214,7 @@ impl XvcPathMetadataProvider {
         Ok(())
     }
 
+    /// Return all paths from the disk specified with glob
     pub fn glob_paths(&self, glob: &str) -> Result<XvcPathMetadataMap> {
         watch!(glob);
         self.update_with_glob(glob)?;
@@ -301,12 +302,6 @@ pub fn compiled_glob(pipeline_rundir: &Path, glob: &str) -> Result<glob::Pattern
         .map_err(|source| Error::GlobPatternError { source })
 }
 
-/// Returns a compiled [Regex] from `path`.
-#[cached(result = true)]
-pub fn compiled_regex(pat: String) -> Result<Regex> {
-    Regex::new(&pat).map_err(|source| Error::RegexError { source })
-}
-
 /// Returns all _non-ignored_ paths described with `glob` under `root_dir`
 #[cached(
     type = "UnboundCache<String, XvcPathMetadataMap>",
@@ -315,7 +310,6 @@ pub fn compiled_regex(pat: String) -> Result<Regex> {
     result = true
 )]
 pub fn glob_paths(
-    xvc_root: &XvcRoot,
     pmp: &XvcPathMetadataProvider,
     root_dir: &XvcPath,
     glob: &str,

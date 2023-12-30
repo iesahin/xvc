@@ -688,7 +688,7 @@ mod tests {
     use crate::error::Result;
     use log::LevelFilter;
     use toml::Value as TomlValue;
-    use xvc_logging::{setup_logging, watch};
+    use xvc_logging::setup_logging;
 
     pub fn test_logging(level: LevelFilter) {
         setup_logging(Some(level), Some(LevelFilter::Trace));

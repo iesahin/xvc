@@ -308,7 +308,7 @@ where
     /// Returns the first entity matched with [Self::entities_for]
     pub fn entity_by_value(&self, value: &T) -> Option<XvcEntity> {
         match self.entities_for(value) {
-            Some(vec_e) => vec_e.get(0).copied(),
+            Some(vec_e) => vec_e.first().copied(),
             None => None,
         }
     }
