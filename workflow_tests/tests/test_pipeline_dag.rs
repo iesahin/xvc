@@ -26,27 +26,27 @@ steps:
     invalidate: ByDependencies
     dependencies: []
     outputs:
-      - File:
+      - !File:
           path: abc.txt
   - version: 1
     name: step_dep
     command: touch step_dep.txt
     invalidate: ByDependencies
     dependencies:
-      - Step:
+      - !Step:
           name: step1
     outputs:
-      - File:
+      - !File:
           path: step_dep.txt
   - version: 1
     name: txt_files
     command: find . -name '*.py' > src-files.txt
     invalidate: ByDependencies
     dependencies:
-      - Glob:
+      - !Glob:
           glob: "*/*.py"
     outputs:
-      - File:
+      - !File:
           path: src-files.txt
   - version: 1
     name: training-files
