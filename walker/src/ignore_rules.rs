@@ -133,32 +133,4 @@ impl IgnoreRules {
 
         Ok(())
     }
-
-    /// Creates a new IgnoreRules object with the specified list of [GlobPattern]s.
-    /// It returns [Error::GlobError] if there are malformed globs in any of the files.
-    pub fn new(root: &Path, patterns: Vec<GlobPattern>) -> Result<Self> {
-        let patterns: Vec<GlobPattern> = patterns.into_iter().unique().collect();
-        let (ignore_patterns, whitelist_patterns): (Vec<_>, Vec<_>) = patterns
-            .into_iter()
-            .partition(|p| matches!(p.effect, PatternEffect::Ignore));
-
-        let ignore_globs: Vec<Glob> = ignore_patterns.iter().map(|p| p.pattern.clone()).collect();
-
-        let ignore_set = build_globset(ignore_globs)?;
-
-        let whitelist_globs: Vec<Glob> = whitelist_patterns
-            .iter()
-            .map(|p| p.pattern.clone())
-            .collect();
-
-        let whitelist_set = build_globset(whitelist_globs)?;
-
-        Ok(IgnoreRules {
-            root: root.to_path_buf(),
-            ignore_patterns: Arc::new(RwLock::new(ignore_patterns)),
-            whitelist_patterns: Arc::new(RwLock::new(whitelist_patterns)),
-            whitelist_set: Arc::new(RwLock::new(whitelist_set)),
-            ignore_set: Arc::new(RwLock::new(ignore_set)),
-        })
-    }
 }

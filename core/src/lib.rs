@@ -44,8 +44,8 @@ pub use error::Error;
 pub use error::Result;
 
 pub use util::file::{
-    all_paths_and_metadata, dir_includes, filter_paths_by_directory, glob_includes, glob_paths,
-    XvcPathMetadataMap, XvcPathMetadataProvider,
+    all_paths_and_metadata, dir_includes, glob_includes, glob_paths, XvcPathMetadataMap,
+    XvcPathMetadataProvider,
 };
 
 /// Channel size for [crossbeam_channel::bounded] used across the library.

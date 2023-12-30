@@ -307,24 +307,6 @@ pub fn compiled_regex(pat: String) -> Result<Regex> {
     Regex::new(&pat).map_err(|source| Error::RegexError { source })
 }
 
-/// Returns a subset of `pmm` ([XvcPathMetadataMap]) that are child paths of `directory`.
-pub fn filter_paths_by_directory(
-    pmm: &XvcPathMetadataMap,
-    directory: &XvcPath,
-) -> XvcPathMetadataMap {
-    let paths = pmm
-        .iter()
-        .filter_map(|(p, md)| {
-            if p.starts_with(directory) {
-                Some((p.clone(), *md))
-            } else {
-                None
-            }
-        })
-        .collect::<XvcPathMetadataMap>();
-    paths
-}
-
 /// Returns all _non-ignored_ paths described with `glob` under `root_dir`
 #[cached(
     type = "UnboundCache<String, XvcPathMetadataMap>",
