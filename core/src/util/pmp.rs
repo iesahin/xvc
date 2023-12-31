@@ -86,31 +86,34 @@ impl XvcPathMetadataProvider {
 
             loop {
                 watch!("updater ticks");
-                let selection = sel.select();
-                let index = selection.index();
-                if index == fs_event {
-                    match fs_receiver.recv() {
-                        Ok(Some(fs_event)) => {
-                            let pmm = path_map.clone();
-                            handle_fs_event(fs_event, pmm);
-                        }
-                        Ok(None) => return Ok(()),
-                        Err(e) => {
-                            // If the channel is disconnected, return Ok.
-                            if e == RecvError {
-                                return Ok(());
-                            } else {
-                                error!("Error in fs_receiver: {:?}", e);
-                                return Err(anyhow::anyhow!("Error in fs_receiver: {:?}", e).into());
+                if let Ok(selection) = sel.select_timeout(Duration::from_millis(100)) {
+                    let index = selection.index();
+                    if index == fs_event {
+                        match fs_receiver.recv() {
+                            Ok(Some(fs_event)) => {
+                                let pmm = path_map.clone();
+                                handle_fs_event(fs_event, pmm);
+                            }
+                            Ok(None) => return Ok(()),
+                            Err(e) => {
+                                // If the channel is disconnected, return Ok.
+                                if e == RecvError {
+                                    return Ok(());
+                                } else {
+                                    error!("Error in fs_receiver: {:?}", e);
+                                    return Err(
+                                        anyhow::anyhow!("Error in fs_receiver: {:?}", e).into()
+                                    );
+                                }
                             }
                         }
+                        continue;
                     }
-                    continue;
+                    if index == kill_signal_event {
+                        return Ok(());
+                    }
+                    return Err((anyhow::anyhow!("Unknown selection index: {}", index)).into());
                 }
-                if index == kill_signal_event {
-                    return Ok(());
-                }
-                return Err((anyhow::anyhow!("Unknown selection index: {}", index)).into());
             }
         })));
         watch!(background_thread);
