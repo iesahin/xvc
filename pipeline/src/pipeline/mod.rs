@@ -23,7 +23,7 @@ use crate::error::{Error, Result};
 use crate::pipeline::command::CommandProcess;
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
-use crossbeam_channel::{bounded, select, Receiver, Select, Sender};
+use crossbeam_channel::{bounded, Receiver, Select, Sender};
 
 use xvc_logging::{debug, error, info, output, uwr, warn, watch, XvcOutputSender};
 use xvc_walker::notify::PathEvent;
