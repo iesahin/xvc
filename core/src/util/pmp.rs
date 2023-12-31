@@ -1,8 +1,6 @@
 //! Core file operationscorefil
 
 use std::collections::HashMap;
-use std::io::Read;
-use std::ops::Index;
 
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, JoinHandle};
@@ -96,7 +94,7 @@ impl XvcPathMetadataProvider {
                     let index = selection.index();
                     watch!(index);
                     if index == fs_event_index {
-                        let fs_event = fs_receiver.recv();
+                        let fs_event = selection.recv(&fs_receiver);
                         watch!(fs_event);
                         match fs_event {
                             Ok(Some(fs_event)) => {
@@ -118,6 +116,7 @@ impl XvcPathMetadataProvider {
                         }
                         continue;
                     } else if index == kill_signal_index {
+                        let _ = selection.recv(&kill_signal_receiver);
                         return Ok(());
                     } else {
                         return Err((anyhow::anyhow!("Unknown selection index: {}", index)).into());
