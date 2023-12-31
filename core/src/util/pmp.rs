@@ -89,7 +89,7 @@ impl XvcPathMetadataProvider {
                 watch!("updater ticks");
                 if let Ok(selection) = sel.select_timeout(Duration::from_millis(10)) {
                     let index = selection.index();
-                    watch(index);
+                    watch!(index);
                     if index == fs_event {
                         match fs_receiver.recv() {
                             Ok(Some(fs_event)) => {
