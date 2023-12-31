@@ -6,6 +6,7 @@ use std::ops::Index;
 
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, JoinHandle};
+use std::time::Duration;
 use xvc_logging::{error, uwr, watch, XvcOutputSender};
 use xvc_walker::{build_ignore_rules, make_watcher, IgnoreRules, MatchResult, PathEvent};
 
