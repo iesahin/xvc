@@ -70,7 +70,7 @@ impl IgnoreRules {
         Ok(())
     }
 
-    fn update_whitelist(&mut self, new_whitelist_patterns: &Vec<GlobPattern>) -> Result<()> {
+    fn update_whitelist(&mut self, new_whitelist_patterns: &[GlobPattern]) -> Result<()> {
         assert!(new_whitelist_patterns
             .iter()
             .all(|p| matches!(p.effect, PatternEffect::Whitelist)));

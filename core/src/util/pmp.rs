@@ -54,6 +54,7 @@ impl XvcPathMetadataProvider {
             let fs_receiver = event_receiver_clone;
             let xvc_root = xvc_root_clone;
 
+            watch!("updater ticks");
             let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
@@ -219,6 +220,8 @@ impl XvcPathMetadataProvider {
         Ok(matches)
     }
 
+    /// Return a snapshot of the current path metadata map.
+    /// This is a clone of the internal map and is not updated. Intended to be used in testing.
     pub fn current_path_metadata_map_clone(&self) -> Result<XvcPathMetadataMap> {
         Ok(self.path_map.read()?.clone())
     }
