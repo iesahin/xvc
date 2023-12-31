@@ -82,16 +82,20 @@ impl XvcPathMetadataProvider {
             };
 
             let mut sel = Select::new();
-            let fs_event = sel.recv(&fs_receiver);
-            let kill_signal_event = sel.recv(&kill_signal_receiver);
+            let fs_event_index = sel.recv(&fs_receiver);
+            watch!(fs_event_index);
+            let kill_signal_index = sel.recv(&kill_signal_receiver);
+            watch!(kill_signal_index);
 
             loop {
                 watch!("updater ticks");
                 if let Ok(selection) = sel.select_timeout(Duration::from_millis(10)) {
                     let index = selection.index();
                     watch!(index);
-                    if index == fs_event {
-                        match fs_receiver.recv() {
+                    if index == fs_event_index {
+                        let fs_event = fs_receiver.recv();
+                        watch!(fs_event);
+                        match fs_event {
                             Ok(Some(fs_event)) => {
                                 let pmm = path_map.clone();
                                 handle_fs_event(fs_event, pmm);
@@ -110,11 +114,11 @@ impl XvcPathMetadataProvider {
                             }
                         }
                         continue;
-                    }
-                    if index == kill_signal_event {
+                    } else if index == kill_signal_index {
                         return Ok(());
+                    } else {
+                        return Err((anyhow::anyhow!("Unknown selection index: {}", index)).into());
                     }
-                    return Err((anyhow::anyhow!("Unknown selection index: {}", index)).into());
                 }
             }
         })));
