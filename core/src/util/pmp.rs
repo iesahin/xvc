@@ -13,7 +13,7 @@ use crate::error::Error;
 use crate::error::Result;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcFileType, XVCIGNORE_FILENAME};
-use crossbeam_channel::{bounded, select, RecvError, Sender};
+use crossbeam_channel::{bounded, select, RecvError, Select, Sender};
 use xvc_walker::check_ignore;
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
@@ -80,34 +80,37 @@ impl XvcPathMetadataProvider {
                 }
             };
 
+            let mut sel = Select::new();
+            let fs_event = sel.recv(&fs_receiver);
+            let kill_signal_event = sel.recv(&kill_signal_receiver);
+
             loop {
                 watch!("updater ticks");
-                select! {
-                    recv(fs_receiver) -> fs_event => match fs_event {
+                let selection = sel.select();
+                let index = selection.index();
+                if index == fs_event {
+                    match fs_receiver.recv() {
                         Ok(Some(fs_event)) => {
                             let pmm = path_map.clone();
                             handle_fs_event(fs_event, pmm);
                         }
-                        Ok(None) => {
-                            return Ok(())
-                        }
+                        Ok(None) => return Ok(()),
                         Err(e) => {
                             // If the channel is disconnected, return Ok.
                             if e == RecvError {
-                                return Ok(())
+                                return Ok(());
                             } else {
                                 error!("Error in fs_receiver: {:?}", e);
-                                return Err(anyhow::anyhow!("Error in fs_receiver: {:?}", e).into())
+                                return Err(anyhow::anyhow!("Error in fs_receiver: {:?}", e).into());
                             }
                         }
-                    },
-
-                    recv(kill_signal_receiver) -> kill_signal => {
-                        if let Ok(true) = kill_signal {
-                            return Ok(());
-                        }
-                    },
+                    }
+                    continue;
                 }
+                if index == kill_signal_event {
+                    return Ok(());
+                }
+                return Err((anyhow::anyhow!("Unknown selection index: {}", index)).into());
             }
         })));
         watch!(background_thread);
