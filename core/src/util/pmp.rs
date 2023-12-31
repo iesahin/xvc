@@ -60,14 +60,14 @@ impl XvcPathMetadataProvider {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
-                    watch!("Creating {xvc_path} with {xvc_md}");
+                    watch!("Creating {} with {}", xvc_path, xvc_md);
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
                 PathEvent::Update { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
-                    watch!("Updating {xvc_path} with {xvc_md}");
+                    watch!("Updating {} with {}", xvc_path, xvc_md);
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
@@ -78,7 +78,7 @@ impl XvcPathMetadataProvider {
                         size: None,
                         modified: None,
                     };
-                    watch!("Deleting {xvc_path}");
+                    watch!("Deleting {}", xvc_path);
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
@@ -231,7 +231,7 @@ impl XvcPathMetadataProvider {
         for (p, md) in self.path_map.read().unwrap().iter() {
             watch!(p);
             if pattern.matches(p.as_str()) {
-                watch!("matched: {p}");
+                watch!("matched", p);
                 matches.insert(p.clone(), *md);
             }
         }
