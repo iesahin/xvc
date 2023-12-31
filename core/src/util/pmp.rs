@@ -60,13 +60,14 @@ impl XvcPathMetadataProvider {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
+                    watch!("Creating {xvc_path} with {xvc_md}");
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
                 PathEvent::Update { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
-                    watch!((&xvc_path, &xvc_md));
+                    watch!("Updating {xvc_path} with {xvc_md}");
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
@@ -77,6 +78,7 @@ impl XvcPathMetadataProvider {
                         size: None,
                         modified: None,
                     };
+                    watch!("Deleting {xvc_path}");
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
@@ -89,8 +91,8 @@ impl XvcPathMetadataProvider {
             watch!(kill_signal_index);
 
             loop {
-                watch!("updater ticks");
-                if let Ok(selection) = sel.select_timeout(Duration::from_millis(10)) {
+                watch!("pmp background updater ticks");
+                if let Ok(selection) = sel.select_timeout(Duration::from_millis(100)) {
                     let index = selection.index();
                     watch!(index);
                     if index == fs_event_index {
@@ -144,7 +146,9 @@ impl XvcPathMetadataProvider {
         }
         let pm = self.path_map.clone();
         let pm = uwr!(pm.read(), self.output_sender);
-        pm.get(path).cloned()
+        let md = pm.get(path).cloned();
+        watch!(&md);
+        md
     }
 
     /// Returns true if the path is present in the repository.
