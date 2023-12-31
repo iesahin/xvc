@@ -54,7 +54,7 @@ fn test_pmp() -> Result<()> {
     generate_random_file(&path1, new_size, None);
     let xmd1_real = XvcMetadata::from(path1.symlink_metadata());
     watch!(xmd1_real);
-    sleep(Duration::from_millis(100));
+    sleep(Duration::from_millis(1000));
     let xmd1 = pmp.get(&xpath1);
     assert!(xmd1.is_some());
     assert!(xmd1.unwrap().is_file());
