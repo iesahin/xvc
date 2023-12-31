@@ -41,7 +41,7 @@ impl XvcPathMetadataProvider {
         watch!(ignore_rules);
         let path_map = Arc::new(RwLock::new(HashMap::new()));
 
-        let (_watcher, event_receiver) = make_watcher(ignore_rules.clone())?;
+        let (watcher, event_receiver) = make_watcher(ignore_rules.clone())?;
         let (kill_signal_sender, kill_signal_receiver) = bounded(1);
 
         let xvc_root = xvc_root.clone();
@@ -54,6 +54,9 @@ impl XvcPathMetadataProvider {
             let path_map = path_map_clone;
             let fs_receiver = event_receiver_clone;
             let xvc_root = xvc_root_clone;
+            // This is not used but to keep the watcher within the thread lifetime
+            let watcher = watcher;
+            watch!(watcher);
 
             let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
                 PathEvent::Create { path, metadata } => {
