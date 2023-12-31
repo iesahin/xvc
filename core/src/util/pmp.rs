@@ -232,7 +232,9 @@ impl XvcPathMetadataProvider {
             watch!(p);
             if pattern.matches(p.as_str()) {
                 watch!("matched", p);
-                matches.insert(p.clone(), *md);
+                if !md.is_missing() {
+                    matches.insert(p.clone(), *md);
+                }
             }
         }
         Ok(matches)
