@@ -40,7 +40,7 @@ fn test_pmp() -> Result<()> {
     }
 
     // Test create / update / delete in the background
-    let fn1 = "file1.bin";
+    let fn1 = "file1.ext";
     let path1 = xvc_root.absolute_path().join(fn1);
     let xpath1 = XvcPath::new(&xvc_root, &xvc_root, &path1)?;
     let orig_size = 100;
