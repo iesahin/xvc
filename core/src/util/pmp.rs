@@ -54,7 +54,6 @@ impl XvcPathMetadataProvider {
             let fs_receiver = event_receiver_clone;
             let xvc_root = xvc_root_clone;
 
-            watch!("updater ticks");
             let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
@@ -82,6 +81,7 @@ impl XvcPathMetadataProvider {
             };
 
             loop {
+                watch!("updater ticks");
                 select! {
                     recv(fs_receiver) -> fs_event => match fs_event {
                         Ok(Some(fs_event)) => {
