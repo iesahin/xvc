@@ -66,6 +66,7 @@ fn test_pmp() -> Result<()> {
     assert!(!pmp.path_present(&xpath1));
 
     let glob_paths = pmp.glob_paths("**/*.bin")?;
+    watch!(glob_paths);
     assert!(glob_paths.len() == n_dirs * n_files);
 
     remove_file(Path::new("dir-0001/file-0001.bin"))?;
