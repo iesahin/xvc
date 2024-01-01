@@ -16,6 +16,7 @@
   - [Xvc with Git Branches](./how-to/git-branches.md)
   - [Turn off Git Integration](./how-to/turn-off-git-automation.md)
   - [Create a Data Pipeline](./how-to/create-a-data-pipeline.md)
+  - [Track 1 Million Files](./how-to/track-1-million-files.md)
 
 - [Command Reference](./ref/xvc.md)
     - [`xvc init`](./ref/xvc-init.md)
