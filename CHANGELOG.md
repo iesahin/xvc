@@ -5,6 +5,8 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+## 0.6.5 (2024-01-01)
+
 - Add benchmarks between Xvc and DVC 
   - Add how-to/benchmark-versus-dvc.md
   - Add regex filtering for how-to documents to trycmd test docs
