@@ -1,6 +1,6 @@
 [package]
 name = "xvc"
-version = "0.6.5-alpha.2"
+version = "0.6.5-beta.0"
 edition = "2021"
 description = "An MLOps tool to manage data files and pipelines on top of Git"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -23,14 +23,14 @@ path = "src/main.rs"
 debug = true
 
 [dependencies]
-xvc-config = { version = "0.6.5-alpha.2", path = "../config" }
-xvc-core = { version = "0.6.5-alpha.2", path = "../core" }
-xvc-logging = { version = "0.6.5-alpha.2", path = "../logging" }
-xvc-ecs = { version = "0.6.5-alpha.2", path = "../ecs" }
-xvc-file = { version = "0.6.5-alpha.2", path = "../file" }
-xvc-pipeline = { version = "0.6.5-alpha.2", path = "../pipeline" }
-xvc-walker = { version = "0.6.5-alpha.2", path = "../walker" }
-xvc-storage = { version = "0.6.5-alpha.2", path = "../storage" }
+xvc-config = { version = "0.6.5-beta.0", path = "../config" }
+xvc-core = { version = "0.6.5-beta.0", path = "../core" }
+xvc-logging = { version = "0.6.5-beta.0", path = "../logging" }
+xvc-ecs = { version = "0.6.5-beta.0", path = "../ecs" }
+xvc-file = { version = "0.6.5-beta.0", path = "../file" }
+xvc-pipeline = { version = "0.6.5-beta.0", path = "../pipeline" }
+xvc-walker = { version = "0.6.5-beta.0", path = "../walker" }
+xvc-storage = { version = "0.6.5-beta.0", path = "../storage" }
 
 
 ## Cli and config
@@ -113,4 +113,4 @@ jwalk = "^0.8"
 proptest = "^1.4"
 shellfn = "^0.1"
 test-case = "^3.3"
-xvc-test-helper = { version = "0.6.5-alpha.2", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.5-beta.0", path = "../test_helper/" }
