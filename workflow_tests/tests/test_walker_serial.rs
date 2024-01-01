@@ -19,9 +19,11 @@ fn new_dir_with_ignores(
     initial_patterns: &str,
 ) -> Result<IgnoreRules> {
     let patterns = create_patterns(root, dir, initial_patterns);
-    let empty = IgnoreRules::empty(&PathBuf::from(root));
+    let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
     watch!(patterns);
-    let initialized = empty.update(patterns).unwrap();
+    initialized.update(patterns).unwrap();
+    watch!(initialized.ignore_patterns.read().unwrap());
+    watch!(initialized.whitelist_patterns.read().unwrap());
     Ok(initialized)
 }
 
@@ -57,24 +59,23 @@ fn create_directory_hierarchy(force: bool) -> Result<AbsolutePath> {
     Ok(AbsolutePath::from(temp_dir))
 }
 
-#[test_case("", "" => it contains "dir-0002/file-0001.bin" ; "t3733909666")]
-#[test_case("", "file-0001.bin" => it not contains "dir-0002/file-0001.bin" ; "t2733909666")]
-#[test_case("", "dir-0002/" => it not contains "dir-0002/file-0001.bin" ; "t3433909666")]
-#[test_case("", "dir-0002/*" => it  not contains "dir-0002/file-0001.bin" ; "t4733909666")]
-#[test_case("dir-0002/", "file-0001.bin" => it not contains "dir-0002/file-0001.bin" ; "t2312253429" )]
-#[test_case("dir-0002/", "*" => it not contains "dir-0002/file-0001.bin" ; "t1653614181" )]
-#[test_case("dir-0002/", "**" => it not contains "dir-0002/file-0001.bin" ; "t987815317" )]
-#[test_case("dir-0002/", "*.bin" => it not contains "dir-0002/file-0001.bin" ; "t2105105898" )]
-#[test_case("", "*.bin\n!file-0001.*" => it contains "dir-0002/file-0001.bin" ; "t3772817176" )]
-#[test_case("", "!*.bin\nfile-0001.*" => it contains "dir-0002/file-0001.bin" ; "t3272817176" )]
-#[test_case("", "*.bin\n!dir-0002/*" => it contains "dir-0002/file-0001.bin" ; "t3572817176" )]
-#[test_case("", "*.bin\n!dir-0002/**" => it contains "dir-0002/file-0001.bin" ; "t7772817176" )]
-#[test_case("dir-0001/", "/dir-0001/" => it not contains "dir-0001/dir-0001/" ; "t9772817176" )]
-#[test_case("dir-0001/", "/dir-0001/" => it not contains "dir-0001/dir-0001/file-0001.bin" ; "t9972817176" )]
+#[test_case("", "" => it contains "/dir-0002/file-0001.bin" ; "t3733909666")]
+#[test_case("", "file-0001.bin" => it not contains "/dir-0002/file-0001.bin" ; "t2733909666")]
+#[test_case("", "dir-0002/" => it not contains "/dir-0002/file-0001.bin" ; "t3433909666")]
+#[test_case("", "dir-0002/*" => it  not contains "/dir-0002/file-0001.bin" ; "t4733909666")]
+#[test_case("dir-0002/", "file-0001.bin" => it not contains "/dir-0002/file-0001.bin" ; "t2312253429" )]
+#[test_case("dir-0002/", "*" => it not contains "/dir-0002/file-0001.bin" ; "t1653614181" )]
+#[test_case("dir-0002/", "**" => it not contains "/dir-0002/file-0001.bin" ; "t987815317" )]
+#[test_case("dir-0002/", "*.bin" => it not contains "/dir-0002/file-0001.bin" ; "t2105105898" )]
+#[test_case("", "*.bin\n!file-0001.*" => it contains "/dir-0002/file-0001.bin" ; "t3772817176" )]
+#[test_case("", "!*.bin\nfile-0001.*" => it contains "/dir-0002/file-0001.bin" ; "t3272817176" )]
+#[test_case("", "*.bin\n!dir-0002/*" => it contains "/dir-0002/file-0001.bin" ; "t3572817176" )]
+#[test_case("", "*.bin\n!dir-0002/**" => it contains "/dir-0002/file-0001.bin" ; "t7772817176" )]
+#[test_case("dir-0001/", "/dir-0001/" => it not contains "/dir-0001/dir-0001/" ; "t9772817176" )]
+#[test_case("dir-0001/", "/dir-0001/" => it not contains "/dir-0001/dir-0001/file-0001.bin" ; "t9972817176" )]
 fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     test_logging(log::LevelFilter::Trace);
     let root = create_directory_hierarchy(true).unwrap();
-    let mut res_paths = Vec::<xvc_walker::Result<PathMetadata>>::new();
     // We assume ignore_src is among the directories created
     fs::write(
         format!("{}/{ignore_src}.gitignore", root.to_string_lossy()),
@@ -86,22 +87,22 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
         ignore_filename: Some(".gitignore".to_string()),
         include_dirs: true,
     };
-    let ignore_rules = walk_serial(initial_rules, &root, &walk_options, &mut res_paths).unwrap();
-    watch!(ignore_rules);
-    let paths = res_paths
+    let (output_sender, output_receiver) = crossbeam_channel::unbounded();
+    let (res_paths, ignore_rules) =
+        walk_serial(&output_sender, initial_rules, &root, &walk_options).unwrap();
+    watch!(ignore_rules.ignore_patterns.read().unwrap());
+    watch!(ignore_rules.whitelist_patterns.read().unwrap());
+    watch!(output_receiver);
+    watch!(res_paths);
+    fs::remove_dir_all(&root).unwrap();
+    let out_paths = res_paths
         .iter()
-        .filter_map(|e| match e {
-            Ok(p) => Some(
-                p.path
-                    .strip_prefix(&root)
-                    .unwrap()
-                    .to_string_lossy()
-                    .to_string(),
-            ),
-            Err(_) => None,
+        .map(|pm| {
+            let p = pm.path.to_string_lossy().to_string();
+
+            p.strip_prefix(&root.to_string()).unwrap_or(&p).to_owned()
         })
         .collect();
-    watch!(paths);
-    fs::remove_dir_all(&root).unwrap();
-    paths
+    watch!(out_paths);
+    out_paths
 }

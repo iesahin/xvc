@@ -16,4 +16,6 @@ resolver = "2"
 
 [workspace.metadata.workspaces]
 no_individual_tags = true
-independent = false
+
+[profile.release]
+debug = true

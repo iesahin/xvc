@@ -533,14 +533,11 @@ impl XvcConfig {
         }
 
         if let Some(cli_config) = p.command_line_config {
-            watch!(cli_config);
             let map: HashMap<String, TomlValue> = Self::parse_key_value_vector(cli_config)
                 .into_iter()
                 .collect();
-            watch!(map);
             match config.update_from_hash_map(map, XvcConfigOptionSource::CommandLine) {
                 Ok(conf) => {
-                    watch!(conf);
                     config = conf;
                 }
                 Err(err) => {
@@ -579,7 +576,6 @@ impl XvcConfig {
     /// Set with `core.verbosity` option.
     pub fn verbosity(&self) -> XvcVerbosity {
         let verbosity_str = self.get_str("core.verbosity");
-        watch!(verbosity_str);
         let verbosity_str = match verbosity_str {
             Ok(opt) => opt.option,
             Err(err) => {
@@ -692,7 +688,7 @@ mod tests {
     use crate::error::Result;
     use log::LevelFilter;
     use toml::Value as TomlValue;
-    use xvc_logging::{setup_logging, watch};
+    use xvc_logging::setup_logging;
 
     pub fn test_logging(level: LevelFilter) {
         setup_logging(Some(level), Some(LevelFilter::Trace));
@@ -713,7 +709,6 @@ mod tests {
         .parse::<TomlValue>()?;
 
         let table_hm = toml_value_to_hashmap("".to_owned(), table_value);
-        watch!(table_hm);
         assert!(table_hm.get("core.foo") == Some(&TomlValue::String("bar".to_string())));
         Ok(())
     }

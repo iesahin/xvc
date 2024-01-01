@@ -32,6 +32,41 @@ fn link_to_docs() -> Result<()> {
     if trycmd_tests.contains("start") {
         book_dirs_and_filters.push(("start", r".*"));
     }
+
+    let howto_regex;
+    if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
+        if let Ok(regex) = std::env::var("XVC_TRYCMD_HOWTO_REGEX") {
+            howto_regex = format!(".*{regex}.*");
+            book_dirs_and_filters.push(("how-to", &howto_regex));
+        } else {
+            book_dirs_and_filters.push(("how-to", r".*"));
+        }
+    }
+
+    if trycmd_tests.contains("storage") {
+        book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+    }
+    if trycmd_tests.contains("file") {
+        book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+    }
+
+    if trycmd_tests.contains("pipeline") {
+        book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+    }
+
+    if trycmd_tests.contains("core") {
+        book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
+    }
+
+    let book_dirs_and_filters = book_dirs_and_filters;
+
+    let mut book_dirs_and_filters = vec![];
+    if trycmd_tests.contains("intro") {
+        book_dirs_and_filters.push(("intro", r".*"));
+    }
+    if trycmd_tests.contains("start") {
+        book_dirs_and_filters.push(("start", r".*"));
+    }
     if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
         book_dirs_and_filters.push(("how-to", r".*"));
     }
@@ -186,7 +221,7 @@ fn z_doc_tests() -> Result<()> {
     trycmd::TestCases::new()
         // .register_bin("xvc", &path_to_xvc_bin)
         .register_bin("xvc-test-helper", &path_to_xvc_test_helper)
-        .register_bin("git", which::which("git")?)
+        .register_bin("git", which::which("git"))
         .register_bin("echo", which::which("echo"))
         .register_bin("cat", which::which("cat"))
         .register_bin("ls", which::which("ls"))
@@ -196,6 +231,9 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("zsh", which::which("zsh"))
         .register_bin("dot", which::which("dot"))
         .register_bin("unzip", which::which("unzip"))
+        .register_bin("python3", which::which("python3"))
+        .register_bin("dvc", which::which("dvc"))
+        .register_bin("hyperfine", which::which("hyperfine"))
         .case("docs/*/*.md")
         .timeout(timeout)
         // We skip this for the time being.

@@ -3,12 +3,14 @@ use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 
 use crate::{XvcMetadata, XvcPathMetadataMap, CHANNEL_BOUND, XVCIGNORE_FILENAME};
 
-use crate::error::{Error as XvcError, Result as XvcResult};
+use crate::error::{Error, Result};
 use crossbeam_channel::{bounded, Sender};
-use log::warn;
+
+use std::sync::{Arc, RwLock};
 use std::thread;
+use xvc_logging::{warn, XvcOutputSender};
+use xvc_walker::Result as XvcWalkerResult;
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
-use xvc_walker::{merge_ignores, Result as XvcWalkerResult};
 
 /// We ignore `.git` directories even we are not using `.git`
 pub const COMMON_IGNORE_PATTERNS: &str = ".xvc\n.git\n";
@@ -33,37 +35,31 @@ pub const COMMON_IGNORE_PATTERNS: &str = ".xvc\n.git\n";
 /// - `IgnoreRules`: The rules that were produced while reading the directories.
 /// This is returned here to prevent a second traversal for ignores.
 pub fn walk_serial(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     include_dirs: bool,
-) -> XvcResult<(XvcPathMetadataMap, IgnoreRules)> {
+) -> Result<(XvcPathMetadataMap, IgnoreRules)> {
     // We assume ignore_src is among the directories created
     let initial_rules = IgnoreRules::try_from_patterns(xvc_root, COMMON_IGNORE_PATTERNS)?;
     let walk_options = WalkOptions {
         ignore_filename: Some(XVCIGNORE_FILENAME.to_string()),
         include_dirs,
     };
-    let mut res_paths = Vec::<XvcWalkerResult<PathMetadata>>::new();
-    let ignore_rules =
-        xvc_walker::walk_serial(initial_rules, xvc_root, &walk_options, &mut res_paths)?;
+    let (res_paths, ignore_rules) =
+        xvc_walker::walk_serial(output_snd, initial_rules, xvc_root, &walk_options)?;
     let pmp: XvcPathMetadataMap = res_paths
         .iter()
-        .filter_map(|e| match e {
-            Ok(pm) => {
-                let md = XvcMetadata::from(&pm.metadata);
-                //
-                let rxp = XvcPath::new(xvc_root, xvc_root, &pm.path);
-                //
-                match rxp {
-                    Ok(xvc_path) => Some((xvc_path, md)),
-                    Err(e) => {
-                        e.warn();
-                        None
-                    }
+        .filter_map(|pm| {
+            let md = XvcMetadata::from(&pm.metadata);
+            //
+            let rxp = XvcPath::new(xvc_root, xvc_root, &pm.path);
+            //
+            match rxp {
+                Ok(xvc_path) => Some((xvc_path, md)),
+                Err(e) => {
+                    warn!(output_snd, "{:?}", e);
+                    None
                 }
-            }
-            Err(e) => {
-                warn!("{:?}", e);
-                None
             }
         })
         .collect();
@@ -93,9 +89,9 @@ pub fn walk_serial(
 pub fn walk_parallel(
     xvc_root: &XvcRoot,
     include_dirs: bool,
-) -> XvcResult<(XvcPathMetadataMap, IgnoreRules)> {
+) -> Result<(XvcPathMetadataMap, IgnoreRules)> {
     let (sender, receiver) = bounded::<(XvcPath, XvcMetadata)>(CHANNEL_BOUND);
-    let (ignore_sender, ignore_receiver) = bounded::<IgnoreRules>(CHANNEL_BOUND);
+    let (ignore_sender, ignore_receiver) = bounded::<Result<IgnoreRules>>(CHANNEL_BOUND);
 
     walk_channel(
         xvc_root,
@@ -114,27 +110,26 @@ pub fn walk_parallel(
         pmm
     });
 
-    let ignore_collector = thread::spawn(move || {
-        let mut ignores = Vec::<IgnoreRules>::new();
+    let mut ignore_rules = IgnoreRules::empty(xvc_root);
+    let ignore_rules_thread = thread::spawn(move || {
         for ignore_rule in ignore_receiver {
-            ignores.push(ignore_rule);
+            if let Ok(ignore_rule) = ignore_rule {
+                assert!(ignore_rules.root == ignore_rule.root);
+                ignore_rules.merge_with(&ignore_rule).unwrap();
+            } else {
+                warn!("Error while collecting ignore rules");
+            }
         }
-        ignores
+        ignore_rules
     });
 
-    let pmm = pusher.join().map_err(|e| XvcError::FSWalkerError {
+    let pmm = pusher.join().map_err(|e| Error::FSWalkerError {
         error: format!("{:?}", e),
     })?;
 
-    let ignores = ignore_collector
-        .join()
-        .map_err(|e| XvcError::FSWalkerError {
-            error: format!("{:?}", e),
-        })?;
+    let ignore_rules = ignore_rules_thread.join()?;
 
-    let merged = merge_ignores(&ignores)?;
-
-    Ok((pmm, merged))
+    Ok((pmm, ignore_rules))
 }
 
 /// Sends paths under `xvc_root`, ignoring `initial_patterns` and loading patterns from
@@ -171,15 +166,16 @@ pub fn walk_channel(
     ignore_filename: Option<String>,
     include_dirs: bool,
     xpm_upstream: Sender<(XvcPath, XvcMetadata)>,
-    ignore_upstream: Sender<IgnoreRules>,
-) -> XvcResult<()> {
+    ignore_upstream: Sender<Result<IgnoreRules>>,
+) -> Result<()> {
     let initial_rules = IgnoreRules::try_from_patterns(xvc_root, initial_patterns)?;
     let walk_options = WalkOptions {
         ignore_filename,
         include_dirs,
     };
     let (path_sender, path_receiver) = bounded::<XvcWalkerResult<PathMetadata>>(CHANNEL_BOUND);
-    let (ignore_sender, ignore_receiver) = bounded::<XvcWalkerResult<IgnoreRules>>(CHANNEL_BOUND);
+    let (ignore_sender, ignore_receiver) =
+        bounded::<XvcWalkerResult<Arc<RwLock<IgnoreRules>>>>(CHANNEL_BOUND);
 
     xvc_walker::walk_parallel(
         initial_rules,
@@ -220,10 +216,14 @@ pub fn walk_channel(
             for ignore_rule in ignore_receiver {
                 match ignore_rule {
                     Ok(ir) => {
-                        ignore_upstream
-                            .send(ir)
-                            .map_err(|e| {
-                                XvcError::from(e).warn();
+                        ir.read()
+                            .map(|ir| {
+                                ignore_upstream
+                                    .send(Ok(ir.clone()))
+                                    .map_err(|e| {
+                                        Error::from(e).warn();
+                                    })
+                                    .unwrap_or_default();
                             })
                             .unwrap_or_default();
                     }
@@ -234,6 +234,6 @@ pub fn walk_channel(
             }
         });
     })
-    .map_err(XvcError::from)?;
+    .map_err(Error::from)?;
     Ok(())
 }

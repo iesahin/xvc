@@ -5,12 +5,23 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
-## 0.6.4 (2023-12-05)
+- Add benchmarks between Xvc and DVC 
+  - Add how-to/benchmark-versus-dvc.md
+  - Add regex filtering for how-to documents to trycmd test docs
 
 - Refactored Pipelines API to expose more functionality
   - PR: <https://github.com/iesahin/xvc/pull/243>
   - Exposed Git operations in the API
 - Fixed `xvc pipeline step update` clobbering `--when` option
+
+- Added `xvc pipeline step list` command to list pipeline steps
+
+- Updated file related operations not to list all files
+  - Added `XvcPathMetadataProvider` to `xvc-walker` to cache file system metadata
+- Added git revision to the version stringZ
+- `xvc file list` doesn't list files starting with `.` now. 
+  - Added `--show-dot-files` to list them. 
+- Fixed `--recheck-method` to be reset to default if not specified
 
 ## 0.6.3 (2023-11-02)
 

@@ -16,6 +16,7 @@ use itertools::Itertools;
 pub use param::*;
 
 use serde::{Deserialize, Serialize};
+use xvc_core::XvcPathMetadataProvider;
 
 use crate::error::{Error, Result};
 use xvc_config::XvcConfig;
@@ -139,7 +140,7 @@ impl XvcDependency {
 
 pub fn dependencies_to_path(
     xvc_root: &XvcRoot,
-    pmm: &XvcPathMetadataMap,
+    pmp: &XvcPathMetadataProvider,
     pipeline_rundir: &XvcPath,
     all_deps: &XvcStore<XvcDependency>,
     to_path: &XvcPath,
@@ -148,7 +149,7 @@ pub fn dependencies_to_path(
     for (dep_e, dep) in all_deps.iter() {
         let has_path = match dep {
             XvcDependency::Glob(dep) => {
-                glob_includes(xvc_root, pmm, pipeline_rundir, dep.glob.as_str(), to_path)
+                glob_includes(xvc_root, pmp, pipeline_rundir, dep.glob.as_str(), to_path)
                     .unwrap_or_else(|e| {
                         e.warn();
                         false
@@ -176,15 +177,15 @@ pub fn dependencies_to_path(
 /// Returns the local paths associated with a dependency. Some dependency types (Pipeline, Step, URL) don't have local paths.
 pub fn dependency_paths(
     xvc_root: &XvcRoot,
-    pmm: &XvcPathMetadataMap,
+    pmp: &XvcPathMetadataProvider,
     pipeline_rundir: &XvcPath,
     dep: &XvcDependency,
 ) -> XvcPathMetadataMap {
     let make_map = |xp: &XvcPath| {
         let mut result_map = XvcPathMetadataMap::with_capacity(1);
-        match pmm.get(xp) {
+        match pmp.get(xp) {
             Some(md) => {
-                result_map.insert(xp.clone(), *md);
+                result_map.insert(xp.clone(), md);
             }
             None => {
                 Error::PathNotFound {
@@ -206,7 +207,7 @@ pub fn dependency_paths(
             .iter()
             .map(|(xp, xmd)| (xp.clone(), *xmd))
             .collect(),
-        XvcDependency::Glob(dep) => glob_paths(xvc_root, pmm, pipeline_rundir, &dep.glob).unwrap(),
+        XvcDependency::Glob(dep) => glob_paths(pmp, pipeline_rundir, &dep.glob).unwrap(),
         XvcDependency::UrlDigest(_) => empty,
         XvcDependency::Param(dep) => make_map(&dep.path),
         XvcDependency::RegexItems(dep) => make_map(&dep.path),

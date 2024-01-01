@@ -3,109 +3,89 @@ mod common;
 use std::{fs, path::Path};
 
 use common::*;
+use log::LevelFilter;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 
-const PIPELINE_YAML: &str = r#"
----
-version: 1
-name: default
-workdir: ""
-steps:
-  - version: 1
-    name: hello
-    command: echo "hello xvc!"
-    invalidate: Always
-    dependencies: []
-    outputs: []
-  - version: 1
-    name: step1
-    command: touch abc.txt
-    invalidate: ByDependencies
-    dependencies: []
-    outputs:
-      - File:
-          path: abc.txt
-  - version: 1
-    name: step_dep
-    command: touch step_dep.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Step:
-          name: step1
-    outputs:
-      - File:
-          path: step_dep.txt
-  - version: 1
-    name: txt_files
-    command: find . -name '*.py' > src-files.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Glob:
-          glob: "*/*.py"
-    outputs:
-      - File:
-          path: src-files.txt
-  - version: 1
-    name: training-files
-    command: find data/images/train -name '*.png' > training-files.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Directory:
-          path: data/images/train
-    outputs:
-      - File:
-          path: training-files.txt
-  - version: 1
-    name: glob_dep
-    command: touch glob_dep.json
-    invalidate: ByDependencies
-    dependencies:
-      - Glob:
-          glob: "*.txt"
-#      - Directory:
-#         path: data
-#     - Param:
-#         format: YAML
-#         path: params.yaml
-#         key: model.conv_units
-#     - Regex:
-#         path: requirements.txt
-#         regex: ^tensorflow
-    outputs:
-      - Metric:
-          path: glob_dep.json
-          format: JSON
-#     - File:
-#         path: def.txt
-#     - Image:
-#         path: plots/confusion.png
-  - version: 1
-    name: count_training_files
-    command: wc -l training-files.txt > num-training-files.txt
-    invalidate: ByDependencies
-    dependencies:
-      - Lines:
-          path: training-files.txt
-          begin: 1
-          end: 1000000
-    outputs:
-      - File:
-          path: num-training-files.txt
-"#;
-
 #[test]
 fn test_pipeline_dag() -> Result<()> {
+    test_logging(LevelFilter::Trace);
     let xvc_root = run_in_example_xvc(true)?;
     let x = |cmd: &[&str]| -> Result<String> {
         let mut c = vec!["pipeline"];
         c.extend(cmd);
         common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Warn)
     };
+    let xsn = |name: &str, command: &str| -> Result<String> {
+        x(&["step", "new", "--step-name", name, "--command", command])
+    };
+    let xsd = |name: &str, dep_type: &str, dep: &str| -> Result<String> {
+        x(&["step", "dependency", "--step-name", name, dep_type, dep])
+    };
+    let xsof = |name: &str, file: &str| -> Result<String> {
+        x(&["step", "output", "--step-name", name, "--output-file", file])
+    };
+    let xsoi = |name: &str, file: &str| -> Result<String> {
+        x(&[
+            "step",
+            "output",
+            "--step-name",
+            name,
+            "--output-image",
+            file,
+        ])
+    };
+    let xsom = |name: &str, file: &str| -> Result<String> {
+        x(&[
+            "step",
+            "output",
+            "--step-name",
+            name,
+            "--output-metric",
+            file,
+        ])
+    };
 
-    let yaml_filename = "pipeline.yaml";
-    fs::write(Path::new(yaml_filename), PIPELINE_YAML)?;
-    x(&["import", "--overwrite", "--file", yaml_filename])?;
+    xsn("hello", "echo \"hello xvc!\"")?;
+
+    xsn("step1", "touch abc.txt")?;
+    xsof("step1", "abc.txt")?;
+
+    xsn("step_dep", "touch step_dep.txt")?;
+    xsd("step_dep", "--step", "step1")?;
+    xsof("step_dep", "step_dep.txt")?;
+
+    xsn("txt_files", "find . -name '*.py' > src-files.txt")?;
+    xsd("txt_files", "--glob", "*/*.py")?;
+    xsof("txt_files", "src-files.txt")?;
+
+    xsn(
+        "training-files",
+        "find data/images/train -name '*.png' > training-files.txt",
+    )?;
+    xsd("training-files", "--glob", "data/images/train/*")?;
+    xsof("training-files", "training-files.txt")?;
+
+    xsn("glob_dep", "touch glob_dep.json")?;
+    xsd("glob_dep", "--glob", "*.txt")?;
+    xsd("glob_dep", "--glob-items", "data/*")?;
+    xsd("glob_dep", "--param", "params.yaml:model.conv_units")?;
+    xsd("glob_dep", "--regex", "requirements.txt:^tensorflow")?;
+    xsom("glob_dep", "glob_dep.json")?;
+    xsof("glob_dep", "def.txt")?;
+    xsoi("glob_dep", "plots/confusion.png")?;
+
+    xsn(
+        "count_training_files",
+        "wc -l training-files.txt > num-training-files.txt",
+    )?;
+    xsd(
+        "count_training_files",
+        "--lines",
+        "training-files.txt::1-1000000",
+    )?;
+    xsof("count_training_files", "num-training-files.txt")?;
+
     x(&["dag", "--file", "dag.out"])?;
 
     clean_up(&xvc_root)

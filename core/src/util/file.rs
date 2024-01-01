@@ -1,32 +1,39 @@
-//! Core file operations
+//! Core file operationscorefil
 use cached::proc_macro::cached;
 use cached::UnboundCache;
 use glob::Pattern as GlobPattern;
-use regex::Regex;
 
 use std::collections::HashMap;
 use std::fs::{self, Metadata};
 use std::io::{self, Read};
+use std::ops::Index;
 #[cfg(unix)]
 use std::os::unix::fs as unix_fs;
 #[cfg(windows)]
 use std::os::windows::fs as windows_fs;
 
 use std::path::{Path, PathBuf};
-use xvc_logging::watch;
-use xvc_walker::{IgnoreRules, PathMetadata, WalkOptions};
+use std::sync::{Arc, Mutex, RwLock, RwLockWriteGuard};
+use std::thread::{self, JoinHandle};
+use xvc_logging::{error, uwo, uwr, watch, XvcOutputLine, XvcOutputSender};
+use xvc_walker::{
+    build_ignore_rules, make_watcher, IgnoreRules, MatchResult, PathEvent, PathMetadata,
+    RecommendedWatcher, WalkOptions,
+};
 
-use crate::error::Error as XvcError;
-use crate::error::Result as XvcResult;
-use crate::CHANNEL_BOUND;
-use crossbeam_channel::{bounded, Receiver, Sender};
+use crate::error::Error;
+use crate::error::Result;
+use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
+use crate::{XvcFileType, CHANNEL_BOUND, XVCIGNORE_FILENAME};
+use crossbeam_channel::{bounded, select, Receiver, RecvError, Sender};
+use xvc_walker::check_ignore;
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 use crate::XvcMetadata;
 
+use super::pmp::XvcPathMetadataProvider;
 use super::xvcignore::walk_parallel;
-/// A hashmap to store [XvcMetadata] for [XvcPath]
-pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;
+use super::XvcPathMetadataMap;
 
 /// A parallel directory walker.
 /// It starts from `start_dir` and sends [PathMetadata] by traversing all child directories.
@@ -35,10 +42,7 @@ pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;
 ///     This function doesn't ignore any files under `start_dir`.
 ///     It doesn't check any ignore files.
 ///     It even returns `.git` and `.xvc` directory contents.
-pub fn path_metadata_channel(
-    sender: Sender<XvcResult<PathMetadata>>,
-    start_dir: &Path,
-) -> XvcResult<()> {
+pub fn path_metadata_channel(sender: Sender<Result<PathMetadata>>, start_dir: &Path) -> Result<()> {
     let initial_rules = IgnoreRules::empty(start_dir);
     let walk_options = WalkOptions {
         ignore_filename: None,
@@ -63,9 +67,9 @@ pub fn path_metadata_channel(
 /// Clears errors in `receiver` by ignoring them.
 /// TODO: `sender` can be of `Sender<PathMetadata>`
 pub fn pipe_filter_path_errors(
-    receiver: Receiver<XvcResult<PathMetadata>>,
+    receiver: Receiver<Result<PathMetadata>>,
     sender: Sender<(PathBuf, Metadata)>,
-) -> XvcResult<()> {
+) -> Result<()> {
     while let Ok(Ok(pm)) = receiver.try_recv() {
         let _ = sender.send((pm.path, pm.metadata));
     }
@@ -90,33 +94,9 @@ pub fn all_paths_and_metadata(xvc_root: &XvcRoot) -> (XvcPathMetadataMap, Ignore
     convert = r#"{ format!("{:?}{}", pipeline_rundir, glob) }"#,
     result = true
 )]
-pub fn compiled_glob(pipeline_rundir: &Path, glob: &str) -> XvcResult<glob::Pattern> {
+pub fn compiled_glob(pipeline_rundir: &Path, glob: &str) -> Result<glob::Pattern> {
     GlobPattern::new(&pipeline_rundir.join(glob).to_string_lossy())
-        .map_err(|source| XvcError::GlobPatternError { source })
-}
-
-/// Returns a compiled [Regex] from `path`.
-#[cached(result = true)]
-pub fn compiled_regex(pat: String) -> XvcResult<Regex> {
-    Regex::new(&pat).map_err(|source| XvcError::RegexError { source })
-}
-
-/// Returns a subset of `pmm` ([XvcPathMetadataMap]) that are child paths of `directory`.
-pub fn filter_paths_by_directory(
-    pmm: &XvcPathMetadataMap,
-    directory: &XvcPath,
-) -> XvcPathMetadataMap {
-    let paths = pmm
-        .iter()
-        .filter_map(|(p, md)| {
-            if p.starts_with(directory) {
-                Some((p.clone(), *md))
-            } else {
-                None
-            }
-        })
-        .collect::<XvcPathMetadataMap>();
-    paths
+        .map_err(|source| Error::GlobPatternError { source })
 }
 
 /// Returns all _non-ignored_ paths described with `glob` under `root_dir`
@@ -127,33 +107,13 @@ pub fn filter_paths_by_directory(
     result = true
 )]
 pub fn glob_paths(
-    xvc_root: &XvcRoot,
-    pmm: &XvcPathMetadataMap,
+    pmp: &XvcPathMetadataProvider,
     root_dir: &XvcPath,
     glob: &str,
-) -> XvcResult<XvcPathMetadataMap> {
-    glob_paths_nocache(xvc_root, pmm, root_dir, glob)
-}
-
-/// Returns a subset of `pmm`.
-/// Paths are under `root_dir` and defined by `glob`.
-/// `xvc_root` is required to convert [XvcPath] elements to absolute paths.
-pub fn glob_paths_nocache(
-    xvc_root: &XvcRoot,
-    pmm: &XvcPathMetadataMap,
-    root_dir: &XvcPath,
-    glob: &str,
-) -> XvcResult<XvcPathMetadataMap> {
-    let abs_root_dir = root_dir.to_absolute_path(xvc_root);
-    let g = compiled_glob(&abs_root_dir, glob)?;
-    let mut matches = XvcPathMetadataMap::new();
-    for (p, md) in pmm.iter() {
-        if g.matches_path(&p.to_absolute_path(xvc_root)) {
-            matches.insert(p.clone(), *md);
-        }
-    }
-    watch!(&matches);
-    Ok(matches)
+) -> Result<XvcPathMetadataMap> {
+    let full_glob = format!("{}{}", root_dir, glob);
+    watch!(full_glob);
+    pmp.glob_paths(&full_glob)
 }
 
 /// Checks whether `glob` includes `path`.
@@ -169,12 +129,12 @@ pub fn glob_paths_nocache(
 )]
 pub fn glob_includes(
     xvc_root: &XvcRoot,
-    pmm: &XvcPathMetadataMap,
+    pmp: &XvcPathMetadataProvider,
     pipeline_rundir: &XvcPath,
     glob: &str,
     path: &XvcPath,
-) -> XvcResult<bool> {
-    if pmm.contains_key(path) {
+) -> Result<bool> {
+    if pmp.path_present(path) {
         let abs_pipeline_rundir = pipeline_rundir.to_absolute_path(xvc_root);
         let g = compiled_glob(&abs_pipeline_rundir, glob)?;
         Ok(g.matches_path(&path.to_absolute_path(xvc_root)))
@@ -190,11 +150,7 @@ pub fn glob_includes(
     convert = r#"{ format!("{:?}##{:?}", directory, path) }"#,
     result = true
 )]
-pub fn dir_includes(
-    pmm: &XvcPathMetadataMap,
-    directory: &XvcPath,
-    path: &XvcPath,
-) -> XvcResult<bool> {
+pub fn dir_includes(pmm: &XvcPathMetadataMap, directory: &XvcPath, path: &XvcPath) -> Result<bool> {
     if pmm.contains_key(path) {
         // Makes a prefix comparison to see whether dir includes the path
         let rel_path = path.relative_pathbuf();
@@ -208,7 +164,7 @@ pub fn dir_includes(
 /// Checks whether a file in `path` is a text file by loading the first 8000
 /// bytes (or whole file) and checks if it contains 0 (NUL).
 /// The technique is used also by Git.
-pub fn is_text_file(path: &Path) -> XvcResult<bool> {
+pub fn is_text_file(path: &Path) -> Result<bool> {
     const BLOCK_SIZE: usize = 8000;
     let mut buffer = [0; BLOCK_SIZE];
     let mut file = fs::File::open(path)?;

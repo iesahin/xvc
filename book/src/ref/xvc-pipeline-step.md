@@ -9,6 +9,7 @@ Step creation, dependency, output commands
 Usage: xvc pipeline step <COMMAND>
 
 Commands:
+  list        List steps in a pipeline
   new         Add a new step
   update      Update step options
   dependency  Add a dependency to a step

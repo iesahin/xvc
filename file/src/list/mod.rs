@@ -468,6 +468,13 @@ pub struct ListCLI {
     /// The default option can be set with file.list.no_summary in the config file.
     #[arg(long)]
     no_summary: bool,
+
+    /// Don't hide dot files
+    ///
+    /// If not supplied, hides dot files like .gitignore and .xvcignore
+    #[arg(long, short = 'a')]
+    show_dot_files: bool,
+
     /// Files/directories to list.
     ///
     /// If not supplied, lists all files under the current directory.
@@ -480,11 +487,17 @@ impl UpdateFromXvcConfig for ListCLI {
         self,
         conf: &xvc_config::XvcConfig,
     ) -> xvc_config::error::Result<Box<Self>> {
+        let no_summary = self.no_summary || conf.get_bool("file.list.no_summary")?.option;
+        let show_dot_files =
+            self.show_dot_files || conf.get_bool("file.list.show_dot_files")?.option;
+
         let format = self.format.unwrap_or_else(|| ListFormat::from_conf(conf));
         let sort_criteria = self
             .sort
             .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
         Ok(Box::new(Self {
+            no_summary,
+            show_dot_files,
             format: Some(format),
             sort: Some(sort_criteria),
             ..self
@@ -518,7 +531,23 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
 
     let current_dir = conf.current_dir()?;
 
-    let from_disk = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
+    let all_from_disk = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
+    let from_disk = if opts.show_dot_files {
+        all_from_disk
+    } else {
+        all_from_disk
+            .into_iter()
+            .filter_map(|(path, md)| {
+                let path_str = path.to_string();
+                if path_str.starts_with('.') || path_str.contains("./") {
+                    None
+                } else {
+                    Some((path, md))
+                }
+            })
+            .collect()
+    };
+
     watch!(from_disk);
     let from_store = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
     watch!(from_store);

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
     ContentDigest, Diff, HashAlgorithm, PathCollectionDigest, TextOrBinary, XvcDigest,
-    XvcPathMetadataMap, XvcRoot,
+    XvcPathMetadataProvider, XvcRoot,
 };
 use xvc_ecs::persist;
 use xvc_logging::watch;
@@ -69,12 +69,9 @@ impl GlobDep {
     }
 
     /// Collects the paths in the glob from `pmm`, sorts and hashes the list to update the xvc_paths_digest
-    pub fn update_collection_digests(self, pmm: &XvcPathMetadataMap) -> Result<Self> {
-        let compiled_glob = glob::Pattern::new(&self.glob)?;
-        let paths = pmm
-            .iter()
-            .filter(|(xp, _)| compiled_glob.matches(xp.as_str()))
-            .sorted();
+    pub fn update_collection_digests(self, pmp: &XvcPathMetadataProvider) -> Result<Self> {
+        let pmm = pmp.glob_paths(&self.glob)?;
+        let paths = pmm.iter().sorted();
 
         let xvc_paths_digest = Some(PathCollectionDigest::new(
             paths.clone(),
@@ -103,13 +100,10 @@ impl GlobDep {
     pub fn update_content_digest(
         self,
         xvc_root: &XvcRoot,
-        pmm: &XvcPathMetadataMap,
+        pmp: &XvcPathMetadataProvider,
     ) -> Result<Self> {
-        let compiled_glob = glob::Pattern::new(&self.glob)?;
-        let paths = pmm
-            .iter()
-            .filter(|(xp, _)| compiled_glob.matches(xp.as_str()))
-            .sorted();
+        let pmm = pmp.glob_paths(&self.glob)?;
+        let paths = pmm.iter().sorted();
 
         let content_digest_bytes = paths
             .map(|(xp, _)| {

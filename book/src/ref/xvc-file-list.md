@@ -53,6 +53,11 @@ Options:
           
           The default option can be set with file.list.no_summary in the config file.
 
+  -a, --show-dot-files
+          Don't hide dot files
+          
+          If not supplied, hides dot files like .gitignore and .xvcignore
+
   -h, --help
           Print help (see a summary with '-h')
 
@@ -126,8 +131,47 @@ Now it lists all files and directories.
 
 ```console
 $ xvc file list --sort name-asc
-FX         107 [..]          ce9fcf30 .gitignore
-FX         141 [..]          3054b812 .xvcignore
+DX         224 [..]                   dir-0001
+FX        2001 [..]          1953f05d dir-0001/file-0001.bin
+FX        2002 [..]          7e807161 dir-0001/file-0002.bin
+FX        2003 [..]          d2432259 dir-0001/file-0003.bin
+FX        2004 [..]          63535612 dir-0001/file-0004.bin
+FX        2005 [..]          447933dc dir-0001/file-0005.bin
+DX         224 [..]                   dir-0002
+FX        2001 [..]          1953f05d dir-0002/file-0001.bin
+FX        2002 [..]          7e807161 dir-0002/file-0002.bin
+FX        2003 [..]          d2432259 dir-0002/file-0003.bin
+FX        2004 [..]          63535612 dir-0002/file-0004.bin
+FX        2005 [..]          447933dc dir-0002/file-0005.bin
+DX         224 [..]                   dir-0003
+FX        2001 [..]          1953f05d dir-0003/file-0001.bin
+FX        2002 [..]          7e807161 dir-0003/file-0002.bin
+FX        2003 [..]          d2432259 dir-0003/file-0003.bin
+FX        2004 [..]          63535612 dir-0003/file-0004.bin
+FX        2005 [..]          447933dc dir-0003/file-0005.bin
+DX         224 [..]                   dir-0004
+FX        2001 [..]          1953f05d dir-0004/file-0001.bin
+FX        2002 [..]          7e807161 dir-0004/file-0002.bin
+FX        2003 [..]          d2432259 dir-0004/file-0003.bin
+FX        2004 [..]          63535612 dir-0004/file-0004.bin
+FX        2005 [..]          447933dc dir-0004/file-0005.bin
+DX         224 [..]                   dir-0005
+FX        2001 [..]          1953f05d dir-0005/file-0001.bin
+FX        2002 [..]          7e807161 dir-0005/file-0002.bin
+FX        2003 [..]          d2432259 dir-0005/file-0003.bin
+FX        2004 [..]          63535612 dir-0005/file-0004.bin
+FX        2005 [..]          447933dc dir-0005/file-0005.bin
+Total #: 30 Workspace Size:       51195 Cached Size:           0
+
+
+```
+
+By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag. 
+
+```console
+$ xvc file list --sort name-asc --show-dot-files
+FX        [..] [..]          [..] .gitignore
+FX        [..] [..]          [..] .xvcignore
 DX         224 [..]                   dir-0001
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
@@ -162,6 +206,46 @@ Total #: 32 Workspace Size:       51443 Cached Size:           0
 
 
 ```
+
+You can also hide the summary below the list to get only the list of files. 
+
+```console
+$ xvc file list  --sort name-asc --no-summary
+DX         224 [..]                   dir-0001
+FX        2001 [..]          1953f05d dir-0001/file-0001.bin
+FX        2002 [..]          7e807161 dir-0001/file-0002.bin
+FX        2003 [..]          d2432259 dir-0001/file-0003.bin
+FX        2004 [..]          63535612 dir-0001/file-0004.bin
+FX        2005 [..]          447933dc dir-0001/file-0005.bin
+DX         224 [..]                   dir-0002
+FX        2001 [..]          1953f05d dir-0002/file-0001.bin
+FX        2002 [..]          7e807161 dir-0002/file-0002.bin
+FX        2003 [..]          d2432259 dir-0002/file-0003.bin
+FX        2004 [..]          63535612 dir-0002/file-0004.bin
+FX        2005 [..]          447933dc dir-0002/file-0005.bin
+DX         224 [..]                   dir-0003
+FX        2001 [..]          1953f05d dir-0003/file-0001.bin
+FX        2002 [..]          7e807161 dir-0003/file-0002.bin
+FX        2003 [..]          d2432259 dir-0003/file-0003.bin
+FX        2004 [..]          63535612 dir-0003/file-0004.bin
+FX        2005 [..]          447933dc dir-0003/file-0005.bin
+DX         224 [..]                   dir-0004
+FX        2001 [..]          1953f05d dir-0004/file-0001.bin
+FX        2002 [..]          7e807161 dir-0004/file-0002.bin
+FX        2003 [..]          d2432259 dir-0004/file-0003.bin
+FX        2004 [..]          63535612 dir-0004/file-0004.bin
+FX        2005 [..]          447933dc dir-0004/file-0005.bin
+DX         224 [..]                   dir-0005
+FX        2001 [..]          1953f05d dir-0005/file-0001.bin
+FX        2002 [..]          7e807161 dir-0005/file-0002.bin
+FX        2003 [..]          d2432259 dir-0005/file-0003.bin
+FX        2004 [..]          63535612 dir-0005/file-0004.bin
+FX        2005 [..]          447933dc dir-0005/file-0005.bin
+
+
+```
+
+## Output Format
 
 With the default output format, the first two letters show the path type and
 recheck method, respectively.

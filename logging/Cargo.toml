@@ -1,6 +1,6 @@
 [package]
 name = "xvc-logging"
-version = "0.6.4"
+version = "0.6.5-alpha.2"
 edition = "2021"
 description = "Logging crate for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -15,6 +15,9 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 name = "xvc_logging"
 crate-type = ["rlib"]
 
+
+[profile.release]
+debug = true
 
 [dependencies]
 

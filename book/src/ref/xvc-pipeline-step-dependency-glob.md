@@ -53,6 +53,7 @@ $ xvc pipeline run
 $ xvc pipeline run
 
 ```
+When a file is removed from the files described by the glob, the step is invalidated.
 
 ```console
 $ rm dir-0001/file-0001.bin

@@ -43,10 +43,10 @@ pub use xvc_walker as walker;
 pub use error::Error;
 pub use error::Result;
 
-pub use util::file::{
-    all_paths_and_metadata, dir_includes, filter_paths_by_directory, glob_includes, glob_paths,
-    XvcPathMetadataMap,
-};
+pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_paths};
+
+pub use util::pmp::XvcPathMetadataProvider;
+pub use util::XvcPathMetadataMap;
 
 /// Channel size for [crossbeam_channel::bounded] used across the library.
 /// TODO: This can be configurable for smaller/larger RAM sizes.
@@ -189,6 +189,9 @@ format = "{{{{aft}}}}{{{{rrm}}}} {{{{asz}}}} {{{{ats}}}} {{{{rcd8}}}} {{{{acd8}}
 # Valid values are
 # none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
 sort = "name-desc"
+
+# Show dot files like .gitignore
+show_dot_files = false
 
 # Do not show a summary for as the final row for `xvc file list`.
 no_summary = false
