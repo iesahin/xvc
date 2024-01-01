@@ -21,16 +21,12 @@ There are many similar tools for managing large files on Git, managing machine l
 
 Similar tools for file management on Git are the following:
 
+- `dvc`: See [Xvc for DVC Users](./start/from-dvc.md) and [Benchmarks against DVC](./how-to/benchmarks-versus-dvc.md) documents for a detailed comparison. 
 - `git-annex`: One of the earliest and most successful projects to manage large files on Git. It supports a large number
   of remote storage types, as well as adding other utilities as backends, similar to [`xvc storage new
   generic`](xvc-book/ref/xvc-storage-new-generic.md). It features an assistant aimed to make it easier for common use
   cases. It uses SHA-256 as the single digest option and uses symlinks as a [recheck method][recheck-method] It doesn't have data
   pipeline features.
 - `git-lfs`: It uses Git internals to track binary files. It requires server support for remote storages and allows only Git remotes to be used for binary file storage. Uses the same digest function Git uses. (By default, SHA-1). Uses `.gitattributes` mechanism to track certain files by default. It doesn't have data pipeline features.
-- `dvc`: Uses YAML files _in the working directory_ to track file content. It uses MD5 sums. It can use different
-  [recheck method][recheck-method] for all the files in the repository. It has experiments tracking features, data pipelines, and a
-  [SaaS GUI.](https://studio.iterative.ai)
-
-I have done some preliminary benchmarks to measure _time to add_ files. I added 70.000 files with a single command. `xvc file track` (0.3.1) finished in 19 seconds, `git lfs track '*.png' ; git add 'data/images/**/*.png'` in 56 seconds, `dvc add data/images` in 80 seconds and `git-annex add data/images` in around 11 minutes. Note that these measurements are affected by output behavior and commands may gain some speed by turning off the default terminal output. Some finer benchmarks may be provided in the future, when Xvc is optimized.
 
 [recheck-method]: ./concepts/recheck.md

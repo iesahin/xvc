@@ -13,7 +13,7 @@ We'll test the tools in the following scenarios:
 - Checking in and out large files: We'll create 100 large files using `xvc-test-helper` and repeat the above tests.
 - Running small pipelines: We'll create a pipeline with 10 steps to run simple commands.
 - Running medium sized pipelines: We'll create a pipeline with 100 steps to run simple commands.
-- Running large pipelines: We'll create a pipeline with 10000 steps to run simple commands. 
+- Running large pipelines: We'll create a pipeline with 1000 steps to run simple commands. 
 
 ## Setup
 
