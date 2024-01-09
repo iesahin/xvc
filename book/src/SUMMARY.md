@@ -9,7 +9,7 @@
   - [Xvc for Machine Learning](./start/ml.md)
   - [Xvc for Software Development](./start/development.md)
   - [Xvc for DVC Users](./start/from-dvc.md)
-    - [Benchmark between Xvc and DVC](./how-to/benchmarks-versus-dvc.md)
+    - [Benchmark between Xvc and DVC](./how-to/benchmark-versus-dvc.md)
 
 - [User's Guide](./how-to/index.md)
   - [How to Compile Xvc](./how-to/compile.md)
