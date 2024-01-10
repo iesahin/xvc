@@ -90,6 +90,10 @@ flowchart TD
 When we remove a step, all its dependencies and outputs are removed as well.
 ```console
 $ xvc -vv pipeline step remove --step-name from
+[INFO] Removing dep: File
+[INFO] Removing step dep Step from xvc
+[INFO] Removing output: File
+
 ```
 
 ```console
@@ -99,13 +103,6 @@ world: echo world >> world.txt (by_dependencies)
 xvc: echo xvc >> xvc.txt (by_dependencies)
 
 $ xvc pipeline dag --format mermaid
-[DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Debug
-[DEBUG][core/src/types/xvcroot.rs::253] XVC DIR: "[CWD]"
-[DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
-[DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.14/src/lib.rs::453] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
-[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.14/src/lib.rs::453] built glob set; 0 literals, 3 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
-[INFO] Found explicit dependency: XvcStep { name: "world" } -> Step(StepDep { name: "hello" })
 flowchart TD
     n0["hello"]
     n1["hello.txt"] --> n0
@@ -115,9 +112,6 @@ flowchart TD
     n4["xvc"]
     n5["xvc.txt"] --> n4
 
-[DEBUG] Using Git: /opt/homebrew/bin/git
-[DEBUG] No files to commit
-[DEBUG] Command completed successfully.
 
 ```
 
