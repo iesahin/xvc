@@ -89,7 +89,6 @@ $ xvc pipeline step remove --step-name from
 ```
 
 ```console
-
 $ xvc pipeline step list
 $ xvc --debug pipeline dag --format mermaid
 [ERROR] Pipeline Error: Step from not found in pipeline
