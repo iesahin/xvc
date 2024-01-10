@@ -36,7 +36,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
 };
-use xvc_logging::{debug, watch};
+use xvc_logging::debug;
 use xvc_walker::AbsolutePath;
 
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};

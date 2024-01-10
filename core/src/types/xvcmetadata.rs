@@ -47,6 +47,7 @@ impl XvcMetadata {
         self.file_type == XvcFileType::Directory
     }
 
+    /// Returns true if the file doesn't exist
     pub fn is_missing(&self) -> bool {
         self.file_type == XvcFileType::Missing
     }

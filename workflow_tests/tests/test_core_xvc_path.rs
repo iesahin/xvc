@@ -5,6 +5,7 @@ use common::*;
 
 use proptest::prelude::*;
 use xvc_core::XvcPath;
+use xvc_test_helper::test_logging;
 
 #[test]
 fn test_xvc_path_naming() -> xvc::Result<()> {

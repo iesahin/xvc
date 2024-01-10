@@ -31,7 +31,6 @@ use xvc_logging::XvcOutputSender;
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
 
-use itertools::Itertools;
 use xvc_logging::watch;
 
 use crossbeam_channel::Sender;

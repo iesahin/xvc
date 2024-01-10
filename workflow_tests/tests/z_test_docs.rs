@@ -58,8 +58,6 @@ fn link_to_docs() -> Result<()> {
         book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
     }
 
-    let book_dirs_and_filters = book_dirs_and_filters;
-
     let mut book_dirs_and_filters = vec![];
     if trycmd_tests.contains("intro") {
         book_dirs_and_filters.push(("intro", r".*"));

@@ -1,6 +1,7 @@
 mod common;
 use common::*;
 use xvc_config::XvcVerbosity;
+use xvc_test_helper::test_logging;
 use xvc_walker::AbsolutePath;
 
 use xvc_logging::watch;

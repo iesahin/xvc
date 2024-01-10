@@ -1,11 +1,7 @@
 mod common;
 use common::*;
-use fs_extra::dir::create;
 use log::LevelFilter;
-use xvc_core::{
-    util::xvcignore::{walk_parallel, walk_serial},
-    XvcMetadata, XvcPath, XvcPathMetadataProvider,
-};
+use xvc_core::{XvcMetadata, XvcPath, XvcPathMetadataProvider};
 
 use std::{fs::remove_file, path::Path, thread::sleep, time::Duration};
 
@@ -16,7 +12,7 @@ use xvc::error::Result;
 #[test]
 fn test_pmp() -> Result<()> {
     test_logging(LevelFilter::Trace);
-    let (output_sender, output_receiver) = crossbeam_channel::unbounded();
+    let (output_sender, _) = crossbeam_channel::unbounded();
     let xvc_root = run_in_temp_xvc_dir()?;
     watch!(xvc_root);
 

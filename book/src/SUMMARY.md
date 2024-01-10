@@ -42,6 +42,7 @@
         - [`output`](./ref/xvc-pipeline-step-output.md)
         - [`show`](./ref/xvc-pipeline-step-show.md)
         - [`update`](./ref/xvc-pipeline-step-update.md)
+        - [`remove`](./ref/xvc-pipeline-step-remove.md)
       - [`xvc pipeline run`](./ref/xvc-pipeline-run.md)
       - [`xvc pipeline delete`](./ref/xvc-pipeline-delete.md)
       - [`xvc pipeline export`](./ref/xvc-pipeline-export.md)
