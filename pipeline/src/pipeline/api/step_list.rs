@@ -17,6 +17,7 @@ pub fn cmd_step_list(
     xvc_root
         .with_r1nstore(|rs: &R1NStore<XvcPipeline, XvcStep>| {
             let steps: HStore<XvcStep> = rs.children_of(&pipeline_e)?;
+            watch!(steps);
 
             if names_only {
                 for (_, step) in steps.into_iter().sorted() {

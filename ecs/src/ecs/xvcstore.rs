@@ -227,19 +227,6 @@ where
         self.current.to_dir(dir)
     }
 
-    // fn from_file(path: &Path) -> Result<Self> {
-    //     let previous = EventLog::<T>::from_file(path)?;
-    //     let map = Self::build_map(&previous);
-    //     let entity_index = Self::build_index(&map);
-    //
-    //     Ok(Self {
-    //         map,
-    //         entity_index,
-    //         previous,
-    //         current: EventLog::new(),
-    //     })
-    // }
-
     /// Return the number of elements
     pub fn len(&self) -> usize {
         self.map.len()
