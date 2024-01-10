@@ -94,10 +94,14 @@ impl Display for XvcDependency {
             XvcDependency::GlobItems(dep) => write!(f, "glob-items({})", dep.glob),
             XvcDependency::Glob(dep) => write!(f, "glob({})", dep.glob),
             XvcDependency::RegexItems(dep) => write!(f, "regex-items({})", dep.path),
-            XvcDependency::Regex(dep) => write!(f, "regex({})", dep.path),
-            XvcDependency::Param(dep) => write!(f, "param({})", dep.path),
-            XvcDependency::LineItems(dep) => write!(f, "line-items({})", dep.path),
-            XvcDependency::Lines(dep) => write!(f, "lines({})", dep.path),
+            XvcDependency::Regex(dep) => write!(f, "regex({}:/{})", dep.path, dep.regex),
+            XvcDependency::Param(dep) => write!(f, "param({}::{})", dep.path, dep.key),
+            XvcDependency::LineItems(dep) => {
+                write!(f, "line-items({}::{}-{})", dep.path, dep.begin, dep.end)
+            }
+            XvcDependency::Lines(dep) => {
+                write!(f, "lines({}::{}-{})", dep.path, dep.begin, dep.end)
+            }
             XvcDependency::UrlDigest(dep) => write!(f, "url-digest({})", dep.url),
         }
     }
