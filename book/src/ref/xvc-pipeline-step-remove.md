@@ -91,8 +91,9 @@ When we remove a step, all its dependencies and outputs are removed as well.
 ```console
 $ xvc -vv pipeline step remove --step-name from
 [INFO] Removing dep: file(world.txt)
-[INFO] Removing step dep step(from) from xvc
+[INFO] Removing dep step(from) from xvc
 [INFO] Removing output: File
+[INFO] Removing step: from
 
 ```
 
