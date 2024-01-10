@@ -89,7 +89,7 @@ flowchart TD
 
 When we remove a step, all its dependencies and outputs are removed as well.
 ```console
-$ xvc pipeline step remove --step-name from
+$ xvc -vv pipeline step remove --step-name from
 
 ```
 
@@ -99,7 +99,7 @@ hello: echo hello >> hello.txt (by_dependencies)
 world: echo world >> world.txt (by_dependencies)
 xvc: echo xvc >> xvc.txt (by_dependencies)
 
-$ xvc -vv pipeline dag --format mermaid
+$ xvc pipeline dag --format mermaid
 [DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Debug
 [DEBUG][core/src/types/xvcroot.rs::253] XVC DIR: "[CWD]"
 [DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
