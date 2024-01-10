@@ -14,6 +14,7 @@ use xvc_ecs::{persist, XvcEntity};
 use xvc_logging::XvcOutputSender;
 
 use super::api::step_list::cmd_step_list;
+use super::api::step_remove::cmd_step_remove;
 use super::XvcStepInvalidate;
 
 /// Step creation, dependency, output commands
@@ -52,6 +53,14 @@ pub enum StepSubCommand {
         /// This is used to freeze or invalidate a step manually.
         #[arg(long)]
         when: Option<XvcStepInvalidate>,
+    },
+
+    /// Remove a step from a pipeline
+    #[command()]
+    Remove {
+        /// Name of the step to remove
+        #[arg(long, short)]
+        step_name: String,
     },
 
     /// Update a step's command or when options.
@@ -218,6 +227,10 @@ pub fn handle_step_cli(
             command,
             when: changed,
         } => cmd_step_new(xvc_root, pipeline_name, step_name, command, changed),
+
+        StepSubCommand::Remove { step_name } => {
+            cmd_step_remove(output_snd, xvc_root, pipeline_name, step_name)
+        }
 
         StepSubCommand::Update {
             step_name,

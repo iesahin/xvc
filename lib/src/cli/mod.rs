@@ -34,7 +34,7 @@ use crate::cli;
 use crate::error::{Error, Result};
 
 use git_version::git_version;
-const GIT_VERSION: &str = git_version!();
+const GIT_VERSION: &str = git_version!(prefix = "git:", cargo_prefix = "");
 
 /// Xvc CLI to manage data and ML pipelines
 #[derive(Debug, Parser)]
