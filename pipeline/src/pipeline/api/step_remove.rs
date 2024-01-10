@@ -36,10 +36,7 @@ pub fn cmd_step_remove(
                 let deps = rs.children_of(pipeline_step_e)?;
                 for (dep_e, dep) in deps.iter() {
                     if matches!(dep, XvcDependency::Step ( dep ) if dep.name == step.name) {
-                        info!(
-                            output_snd,
-                            "Removing step dep {} from {}", dep, pipeline_step
-                        );
+                        info!(output_snd, "Removing dep {} from {}", dep, pipeline_step);
                         rs.remove_child(*dep_e)?;
                     }
                 }
@@ -69,13 +66,9 @@ pub fn cmd_step_remove(
         Ok(())
     })?;
 
-    xvc_root.with_store_mut(|bs: &mut XvcStore<XvcStep>| {
-        bs.remove(step_e);
-        Ok(())
-    })?;
-
     xvc_root.with_r1nstore_mut::<XvcPipeline, XvcStep>(
         |rs: &mut R1NStore<XvcPipeline, XvcStep>| {
+            info!(output_snd, "Removing step: {}", step);
             rs.remove_child(step_e)?;
             Ok(())
         },
