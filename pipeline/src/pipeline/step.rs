@@ -84,7 +84,7 @@ pub enum StepSubCommand {
     #[command()]
     Dependency {
         /// Name of the step to add the dependency to
-        #[arg(long, short)]
+        #[arg(long, short, aliases = &["for", "to"])]
         step_name: String,
 
         /// Add a generic command output as a dependency. Can be used multiple times.
