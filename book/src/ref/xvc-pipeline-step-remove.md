@@ -90,7 +90,6 @@ flowchart TD
 When we remove a step, all its dependencies and outputs are removed as well.
 ```console
 $ xvc -vv pipeline step remove --step-name from
-
 ```
 
 ```console
