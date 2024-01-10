@@ -99,7 +99,7 @@ hello: echo hello >> hello.txt (by_dependencies)
 world: echo world >> world.txt (by_dependencies)
 xvc: echo xvc >> xvc.txt (by_dependencies)
 
-$ xvc --debug pipeline dag --format mermaid
+$ xvc -vvv pipeline dag --format mermaid
 [DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Error
 [DEBUG][logging/src/lib.rs::240] File logger enabled with level: Trace to "/var/folders/tk/3vn311ps4kqdhgykj3jg_p8r0000gn/T//xvc.log"
 [TRACE][core/src/types/xvcroot.rs::247] "."
@@ -108,39 +108,39 @@ $ xvc --debug pipeline dag --format mermaid
 [DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1704906736339810",
-    "[CWD]/.xvc/ec/1704906736342425",
-    "[CWD]/.xvc/ec/1704906736415315",
-    "[CWD]/.xvc/ec/1704906736476829",
-    "[CWD]/.xvc/ec/1704906736562187",
-    "[CWD]/.xvc/ec/1704906736624383",
-    "[CWD]/.xvc/ec/1704906736687615",
-    "[CWD]/.xvc/ec/1704906736755034",
-    "[CWD]/.xvc/ec/1704906736817891",
-    "[CWD]/.xvc/ec/1704906736906350",
-    "[CWD]/.xvc/ec/1704906737031433",
-    "[CWD]/.xvc/ec/1704906737216492",
-    "[CWD]/.xvc/ec/1704906737302290",
+    "[CWD]/.xvc/ec/1704908070484353",
+    "[CWD]/.xvc/ec/1704908070489059",
+    "[CWD]/.xvc/ec/1704908070556672",
+    "[CWD]/.xvc/ec/1704908070632051",
+    "[CWD]/.xvc/ec/1704908070779695",
+    "[CWD]/.xvc/ec/1704908070858423",
+    "[CWD]/.xvc/ec/1704908070934624",
+    "[CWD]/.xvc/ec/1704908071053088",
+    "[CWD]/.xvc/ec/1704908071226746",
+    "[CWD]/.xvc/ec/1704908071320947",
+    "[CWD]/.xvc/ec/1704908071422626",
+    "[CWD]/.xvc/ec/1704908071505427",
+    "[CWD]/.xvc/ec/1704908071595425",
 ]
 [TRACE][pipeline/src/pipeline/api/dag.rs::65] pipeline_steps: HStore {
     map: {
         XvcEntity(
-            2,
-            11479334083186159447,
-        ): XvcStep {
-            name: "hello",
-        },
-        XvcEntity(
             3,
-            7080184962241922409,
+            17709525648495250000,
         ): XvcStep {
             name: "world",
         },
         XvcEntity(
             5,
-            10370877785626600979,
+            11911495236914863175,
         ): XvcStep {
             name: "xvc",
+        },
+        XvcEntity(
+            2,
+            7818672908942248127,
+        ): XvcStep {
+            name: "hello",
         },
     },
 }
@@ -815,14 +815,14 @@ $ xvc --debug pipeline dag --format mermaid
     },
 }
 [TRACE][walker/src/notify.rs::170] watcher: FsEventWatcher {
-    paths: 0x00006000018100f0,
+    paths: 0x0000600002b48120,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000600003d08010,
+    event_handler: 0x0000600000e48010,
     runloop: Some(
         (
-            0x00006000023100c0,
+            0x00006000010440c0,
             JoinHandle { .. },
         ),
     ),
@@ -835,15 +835,37 @@ $ xvc --debug pipeline dag --format mermaid
     poisoned: false,
     ..
 }
+[TRACE][pipeline/src/pipeline/api/dag.rs::86] pipeline_steps: HStore {
+    map: {
+        XvcEntity(
+            3,
+            17709525648495250000,
+        ): XvcStep {
+            name: "world",
+        },
+        XvcEntity(
+            5,
+            11911495236914863175,
+        ): XvcStep {
+            name: "xvc",
+        },
+        XvcEntity(
+            2,
+            7818672908942248127,
+        ): XvcStep {
+            name: "hello",
+        },
+    },
+}
 [TRACE][core/src/util/pmp.rs::57] watcher: FsEventWatcher {
-    paths: 0x00006000018100f0,
+    paths: 0x0000600002b48120,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000600003d08010,
+    event_handler: 0x0000600000e48010,
     runloop: Some(
         (
-            0x00006000023100c0,
+            0x00006000010440c0,
             JoinHandle { .. },
         ),
     ),
@@ -851,31 +873,44 @@ $ xvc --debug pipeline dag --format mermaid
         "[CWD]": true,
     },
 }
+[TRACE][pipeline/src/pipeline/api/dag.rs::104] dependency_graph: {
+    XvcEntity(
+        3,
+        17709525648495250000,
+    ): [
+        (
+            XvcEntity(
+                2,
+                7818672908942248127,
+            ),
+            Outgoing,
+        ),
+    ],
+    XvcEntity(
+        2,
+        7818672908942248127,
+    ): [
+        (
+            XvcEntity(
+                3,
+                17709525648495250000,
+            ),
+            Incoming,
+        ),
+    ],
+}
 [TRACE][core/src/util/pmp.rs::89] fs_event_index: 0
 [TRACE][core/src/util/pmp.rs::91] kill_signal_index: 1
-[TRACE][pipeline/src/pipeline/api/dag.rs::86] pipeline_steps: HStore {
-    map: {
-        XvcEntity(
-            2,
-            11479334083186159447,
-        ): XvcStep {
-            name: "hello",
-        },
-        XvcEntity(
-            3,
-            7080184962241922409,
-        ): XvcStep {
-            name: "world",
-        },
-        XvcEntity(
-            5,
-            10370877785626600979,
-        ): XvcStep {
-            name: "xvc",
-        },
-    },
-}
 [TRACE][core/src/util/pmp.rs::94] "pmp background updater ticks": "pmp background updater ticks"
+flowchart TD
+    n0["hello"]
+    n1["hello.txt"] --> n0
+    n2["world"]
+    n0["hello"] --> n2
+    n3["world.txt"] --> n2
+    n4["xvc"]
+    n5["xvc.txt"] --> n4
+
 [TRACE][core/src/util/pmp.rs::183] self.background_thread: Mutex {
     data: JoinHandle { .. },
     poisoned: false,
@@ -887,7 +922,26 @@ $ xvc --debug pipeline dag --format mermaid
     ..
 }
 [TRACE][core/src/util/pmp.rs::97] index: 1
-[ERROR] Pipeline Error: Step from not found in pipeline
+[TRACE][lib/src/cli/mod.rs::385] "Before handle_git_automation": "Before handle_git_automation"
+[TRACE][lib/src/cli/mod.rs::388] &cli_opts.command_string: "/Users/iex/github.com/iesahin/xvc/target/debug/xvc --debug pipeline dag --format mermaid"
+[TRACE][lib/src/git.rs::28] args: [
+    "-C",
+    "[CWD]",
+    "diff",
+    "--name-only",
+    "--cached",
+]
+[TRACE][lib/src/git.rs::58] git_diff_staged_out: ""
+[TRACE][lib/src/git.rs::28] args: [
+    "-C",
+    "[CWD]",
+    "add",
+    "--verbose",
+    "[CWD]/.xvc",
+    "*.gitignore",
+    "*.xvcignore",
+]
+[TRACE][lib/src/git.rs::176] git_add_output: ""
 
 ```
 
