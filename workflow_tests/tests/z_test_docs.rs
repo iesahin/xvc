@@ -43,6 +43,8 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
         watch!(book_dirs_and_filters);
     }
 
+    watch!(book_dirs_and_filters);
+
     if trycmd_tests.contains("storage") {
         book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage.*".to_owned()));
     }
@@ -80,6 +82,8 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
     if trycmd_tests.contains("core") {
         book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
     }
+
+    watch!(book_dirs_and_filters);
 
     book_dirs_and_filters
 }
