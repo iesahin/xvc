@@ -35,6 +35,7 @@ fn link_to_docs() -> Result<()> {
 
     let howto_regex;
     if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
+        watch!(std::env::var("XVC_TRYCMD_HOWTO_REGEX"));
         if let Ok(regex) = std::env::var("XVC_TRYCMD_HOWTO_REGEX") {
             howto_regex = format!(r".*{}.*", regex);
             watch!(howto_regex);
@@ -65,9 +66,6 @@ fn link_to_docs() -> Result<()> {
     }
     if trycmd_tests.contains("start") {
         book_dirs_and_filters.push(("start", r".*"));
-    }
-    if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
-        book_dirs_and_filters.push(("how-to", r".*"));
     }
 
     if trycmd_tests.contains("storage") {
@@ -110,6 +108,8 @@ fn link_to_docs() -> Result<()> {
             }
         }
     });
+
+    watch!(book_dirs_and_filters);
 
     for (dir, filter_regex) in book_dirs_and_filters {
         let test_collection_dir = test_collections_dir.join(dir);
