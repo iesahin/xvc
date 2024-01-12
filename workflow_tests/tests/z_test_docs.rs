@@ -15,10 +15,7 @@ use fs_extra::{self, dir::CopyOptions};
 
 const DOC_TEST_DIR: &str = "docs/";
 
-fn link_to_docs() -> Result<()> {
-    test_logging(log::LevelFilter::Trace);
-    let book_base = Path::new("../book/src/");
-
+fn book_dirs_and_filters() -> Vec<(String, String)> {
     let trycmd_tests = if let Ok(trycmd_tests) = std::env::var("XVC_TRYCMD_TESTS") {
         trycmd_tests.to_lowercase()
     } else {
@@ -26,11 +23,12 @@ fn link_to_docs() -> Result<()> {
     };
 
     let mut book_dirs_and_filters = vec![];
+
     if trycmd_tests.contains("intro") {
-        book_dirs_and_filters.push(("intro", r".*"));
+        book_dirs_and_filters.push(("intro".to_owned(), r".*".to_owned()));
     }
     if trycmd_tests.contains("start") {
-        book_dirs_and_filters.push(("start", r".*"));
+        book_dirs_and_filters.push(("start".to_owned(), r".*".to_owned()));
     }
 
     let mut howto_regex = ".*".to_owned();
@@ -40,46 +38,55 @@ fn link_to_docs() -> Result<()> {
             howto_regex.push_str(&regex);
             howto_regex.push_str(".*");
         }
-        book_dirs_and_filters.push(("how-to", &howto_regex));
+        watch!(howto_regex);
+        book_dirs_and_filters.push(("how-to".to_owned(), howto_regex));
+        watch!(book_dirs_and_filters);
     }
 
     if trycmd_tests.contains("storage") {
-        book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage.*".to_owned()));
     }
     if trycmd_tests.contains("file") {
-        book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-file.*".to_owned()));
     }
 
     if trycmd_tests.contains("pipeline") {
-        book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-pipeline.*".to_owned()));
     }
 
     if trycmd_tests.contains("core") {
-        book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
+        book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
     }
 
     let mut book_dirs_and_filters = vec![];
     if trycmd_tests.contains("intro") {
-        book_dirs_and_filters.push(("intro", r".*"));
+        book_dirs_and_filters.push(("intro".to_owned(), r".*".to_owned()));
     }
     if trycmd_tests.contains("start") {
-        book_dirs_and_filters.push(("start", r".*"));
+        book_dirs_and_filters.push(("start".to_owned(), r".*".to_owned()));
     }
 
     if trycmd_tests.contains("storage") {
-        book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage.*".to_owned()));
     }
     if trycmd_tests.contains("file") {
-        book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-file.*".to_owned()));
     }
 
     if trycmd_tests.contains("pipeline") {
-        book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-pipeline.*".to_owned()));
     }
 
     if trycmd_tests.contains("core") {
-        book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
+        book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
     }
+
+    book_dirs_and_filters
+}
+
+fn link_to_docs() -> Result<()> {
+    test_logging(log::LevelFilter::Trace);
+    let book_base = Path::new("../book/src/");
 
     let template_dir_root = Path::new("templates");
 
@@ -107,11 +114,14 @@ fn link_to_docs() -> Result<()> {
         }
     });
 
+    let book_dirs_and_filters = book_dirs_and_filters();
+
     watch!(book_dirs_and_filters);
 
     for (dir, filter_regex) in book_dirs_and_filters {
+        let dir = &dir.as_str();
         let test_collection_dir = test_collections_dir.join(dir);
-        let name_filter = Regex::new(filter_regex).unwrap();
+        let name_filter = Regex::new(&filter_regex).unwrap();
 
         let book_dir = book_base.join(dir);
         assert!(book_dir.exists(), "{:?} doesn't exist", &book_dir);
