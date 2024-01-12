@@ -125,7 +125,7 @@ fn link_to_docs() -> Result<()> {
                     let file_name = f.file_name().to_string_lossy();
                     watch!(file_name);
                     if f.metadata().unwrap().is_file() && name_filter.is_match(&file_name) {
-                        watch!("{:?} matched {:?}", name_filter, file_name);
+                        watch!((&name_filter, "matched", &file_name));
                         Some(f.path())
                     } else {
                         None
