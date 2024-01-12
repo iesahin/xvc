@@ -38,12 +38,8 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
             howto_regex.push_str(&regex);
             howto_regex.push_str(".*");
         }
-        watch!(howto_regex);
         book_dirs_and_filters.push(("how-to".to_owned(), howto_regex));
-        watch!(book_dirs_and_filters);
     }
-
-    watch!(book_dirs_and_filters);
 
     if trycmd_tests.contains("storage") {
         book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage.*".to_owned()));
@@ -60,7 +56,6 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
         book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
     }
 
-    let mut book_dirs_and_filters = vec![];
     if trycmd_tests.contains("intro") {
         book_dirs_and_filters.push(("intro".to_owned(), r".*".to_owned()));
     }
@@ -82,8 +77,6 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
     if trycmd_tests.contains("core") {
         book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
     }
-
-    watch!(book_dirs_and_filters);
 
     book_dirs_and_filters
 }
