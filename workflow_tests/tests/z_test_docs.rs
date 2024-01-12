@@ -36,7 +36,8 @@ fn link_to_docs() -> Result<()> {
     let howto_regex;
     if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
         if let Ok(regex) = std::env::var("XVC_TRYCMD_HOWTO_REGEX") {
-            howto_regex = format!(".*{regex}.*");
+            howto_regex = format!(".*{}.*", regex);
+            watch!(howto_regex);
             book_dirs_and_filters.push(("how-to", &howto_regex));
         } else {
             book_dirs_and_filters.push(("how-to", r".*"));
