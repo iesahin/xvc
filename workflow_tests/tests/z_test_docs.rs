@@ -36,7 +36,7 @@ fn link_to_docs() -> Result<()> {
     let howto_regex;
     if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
         if let Ok(regex) = std::env::var("XVC_TRYCMD_HOWTO_REGEX") {
-            howto_regex = format!(".*{}.*", regex);
+            howto_regex = format!(r".*{}.*", regex);
             watch!(howto_regex);
             book_dirs_and_filters.push(("how-to", &howto_regex));
         } else {
@@ -85,8 +85,6 @@ fn link_to_docs() -> Result<()> {
         book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
     }
 
-    let book_dirs_and_filters = book_dirs_and_filters;
-
     let template_dir_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
@@ -124,9 +122,10 @@ fn link_to_docs() -> Result<()> {
             .filter_map(|f| {
                 watch!(f);
                 if let Ok(f) = f {
-                    if f.metadata().unwrap().is_file()
-                        && name_filter.is_match(f.file_name().to_string_lossy().as_ref())
-                    {
+                    let file_name = f.file_name().to_string_lossy();
+                    watch!(file_name);
+                    if f.metadata().unwrap().is_file() && name_filter.is_match(&file_name) {
+                        watch!("{:?} matched {:?}", name_filter, file_name);
                         Some(f.path())
                     } else {
                         None
