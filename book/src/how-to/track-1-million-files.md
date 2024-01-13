@@ -13,12 +13,16 @@ $ xvc init --no-git
 Let's create a million files in 100 directories. 
 
 ```console
-$ zsh -cl 'for i in {1..100}; do mkdir -p dir-$i; for j in {1..10000} ; do dd if=/dev/urandom of=dir-$i/file-$i.bin bs=1024 count=1 ; done ; done'
+$ zsh -cl 'for i in {1..100}; do mkdir -p dir-$i; for j in {1..10000} ; do dd if=/dev/urandom of=dir-$i/file-$i.bin bs=1024 count=1 > /dev/null ; done ; done'
 ```
 
 Let's measure tracking performance:
 
 ```console
 $ hyperfine -r 1 'xvc file track .'
+Benchmark 1: xvc file track .
+  Time (abs ≡):        176.2 ms               [User: 17.3 ms, System: 74.0 ms]
+ 
+
 ```
 
