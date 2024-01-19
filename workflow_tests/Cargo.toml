@@ -48,7 +48,7 @@ rand = "^0.8"
 which = "^5.0"
 
 [features]
-default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
+default = ["s3", "minio", "r2", "gcs", "digital-ocean"]
 s3 = ["xvc-storage/s3"]
 minio = ["xvc-storage/minio"]
 r2 = ["xvc-storage/r2"]
