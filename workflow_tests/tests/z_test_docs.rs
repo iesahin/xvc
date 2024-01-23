@@ -90,46 +90,159 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
 
 fn link_to_docs() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
-    let book_base = Path::new("../book/src/");
+    let test_doc_source_root = Path::new("../book/src/");
 
-    let template_dir_root = Path::new("templates");
+    let test_doc_working_dir_templates_root = Path::new("templates");
 
     // This is a directory that we create to keep testing artifacts outside the code
     // It has the same structure with the docs, but for each doc.md file, a doc.in/ and doc.out/
     // directory is created and these are linked from the running directory.
-    let test_collections_dir = random_temp_dir(Some("xvc-trycmd"));
+    let temporary_test_root = random_temp_dir(Some("xvc-trycmd"));
 
     println!(
         "Documentation Test Directory: {}",
-        test_collections_dir.to_string_lossy()
+        temporary_test_root.to_string_lossy()
     );
 
-    fs::create_dir_all(&test_collections_dir)?;
+    fs::create_dir_all(&temporary_test_root)?;
 
-    //Remove all symlinks to create new ones
-    let doc_dir = Path::new(DOC_TEST_DIR);
-    watch!(doc_dir);
-    jwalk::WalkDir::new(doc_dir).into_iter().for_each(|f| {
-        watch!(f);
-        if let Ok(f) = f {
-            if f.metadata().unwrap().is_symlink() {
-                fs::remove_file(f.path()).unwrap();
-            }
-        }
-    });
+    let test_doc_dir = Path::new(DOC_TEST_DIR);
+    remove_all_symlinks_under(test_doc_dir)?;
 
     let book_dirs_and_filters = book_dirs_and_filters();
 
     watch!(book_dirs_and_filters);
 
-    for (dir, filter_regex) in book_dirs_and_filters {
-        let dir = &dir.as_str();
-        let test_collection_dir = test_collections_dir.join(dir);
+    for (doc_section_dir_name, filter_regex) in book_dirs_and_filters {
+        // ref, intro, start, how-to
+        let doc_section_dir = temporary_test_root.join(&doc_section_dir_name);
+        if !doc_section_dir.exists() {
+            fs::create_dir_all(&doc_section_dir)?;
+        }
+
         let name_filter = Regex::new(&filter_regex).unwrap();
 
-        let book_dir = book_base.join(dir);
+        let test_doc_source_paths =
+            filter_paths_under(test_doc_source_root, &doc_section_dir_name, name_filter);
+
+        let book_dir = test_doc_source_root.join(&doc_section_dir_name);
         assert!(book_dir.exists(), "{:?} doesn't exist", &book_dir);
-        let book_paths: Vec<PathBuf> = jwalk::WalkDir::new(book_base.join(dir))
+
+        for test_doc_source_path in test_doc_source_paths {
+            let test_doc_source_filename =
+                make_document_link(test_doc_source_path, test_doc_dir, &doc_section_dir_name)?;
+
+            let stem = test_doc_source_filename
+                .file_stem()
+                .unwrap()
+                .to_string_lossy()
+                .to_string();
+
+            make_template_input_dir(
+                &stem,
+                test_doc_working_dir_templates_root,
+                &doc_section_dir,
+                test_doc_dir,
+            )?;
+
+            make_template_output_dir(
+                &stem,
+                test_doc_working_dir_templates_root,
+                &doc_section_dir,
+                test_doc_dir,
+            )?;
+        }
+    }
+
+    Ok(())
+}
+
+fn make_template_output_dir(
+    stem: &str,
+    test_doc_working_dir_templates_root: &Path,
+    doc_section_dir: &PathBuf,
+    test_doc_dir: &Path,
+) -> Result<()> {
+    let out_dir_name = format!("{stem}.out");
+    let output_template_dir = test_doc_working_dir_templates_root.join(&out_dir_name);
+    if output_template_dir.exists() {
+        let out_dir = doc_section_dir.join(&out_dir_name);
+        let out_dir_symlink = test_doc_dir.join(doc_section_dir).join(&out_dir_name);
+        if out_dir_symlink.is_symlink() {
+            fs::remove_file(&out_dir_symlink)?;
+        }
+        watch!(&out_dir);
+        watch!(&out_dir_symlink);
+        make_symlink(&out_dir, &out_dir_symlink)?;
+        watch!(&out_dir);
+    }
+    Ok(())
+}
+
+fn make_template_input_dir(
+    stem: &str,
+    test_doc_working_dir_templates_root: &Path,
+    doc_section_dir: &PathBuf,
+    test_doc_dir: &Path,
+) -> Result<()> {
+    let template_dir_name = format!("{stem}.in");
+    watch!(template_dir_name);
+    let target_template_dir = doc_section_dir.join(&template_dir_name);
+    watch!(target_template_dir);
+    let cwd = env::current_dir()?;
+    watch!(cwd);
+    let input_template_dir = cwd.join(test_doc_working_dir_templates_root.join(&template_dir_name));
+    watch!(input_template_dir);
+    if input_template_dir.exists() {
+        watch!(input_template_dir);
+        watch!(target_template_dir);
+        watch!(doc_section_dir);
+        fs_extra::dir::copy(
+            &input_template_dir,
+            doc_section_dir,
+            &CopyOptions::default(),
+        )
+        .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
+    } else {
+        watch!((&input_template_dir, "doesn't exist"));
+        fs::create_dir(&target_template_dir)?;
+    }
+    let in_dir_symlink = test_doc_dir
+        .join(doc_section_dir.clone())
+        .join(&template_dir_name);
+    if in_dir_symlink.is_symlink() {
+        fs::remove_file(&in_dir_symlink)?;
+    }
+    make_symlink(&target_template_dir, &in_dir_symlink)?;
+    Ok(())
+}
+
+fn make_document_link(
+    test_doc_source_path: PathBuf,
+    test_doc_dir: &Path,
+    doc_section_dir_name: &String,
+) -> Result<PathBuf> {
+    watch!(test_doc_source_path);
+    let test_doc_source_filename: PathBuf = test_doc_source_path.file_name().unwrap().into();
+    watch!(test_doc_source_filename);
+    let test_doc_symlink = test_doc_dir
+        .join(doc_section_dir_name.clone())
+        .join(&test_doc_source_filename);
+    watch!(test_doc_symlink);
+    let test_doc_symlink_orig = Path::new("../..").join(test_doc_source_path);
+    watch!(&test_doc_symlink_orig);
+    watch!(test_doc_symlink.exists());
+    make_symlink(&test_doc_symlink_orig, &test_doc_symlink)?;
+    Ok(test_doc_source_filename)
+}
+
+fn filter_paths_under(
+    test_doc_source_root: &Path,
+    doc_section_dir_name: &String,
+    name_filter: Regex,
+) -> Vec<PathBuf> {
+    let test_doc_source_paths: Vec<PathBuf> =
+        jwalk::WalkDir::new(test_doc_source_root.join(doc_section_dir_name))
             .into_iter()
             .filter_map(|f| {
                 watch!(f);
@@ -147,58 +260,20 @@ fn link_to_docs() -> Result<()> {
                 }
             })
             .collect();
+    test_doc_source_paths
+}
 
-        watch!(test_collection_dir);
-        fs::create_dir_all(&test_collection_dir)?;
-        for p in book_paths {
-            let basename: PathBuf = p.file_name().unwrap().into();
-            let symlink_path = doc_dir.join(dir).join(&basename);
-
-            watch!(symlink_path);
-            make_symlink(Path::new("../..").join(p), &symlink_path)?;
-
-            // If we have a template input directory in `templates/`, we copy it.
-            // Otherwise create a new blank directory as cwd.
-            let stem = basename.file_stem().unwrap().to_string_lossy();
-            let in_dir_name = format!("{stem}.in");
-            let in_dir = test_collection_dir.join(&in_dir_name);
-            let cwd = env::current_dir()?;
-            let input_template_dir = cwd.join(template_dir_root.join(&in_dir_name));
-            if input_template_dir.exists() {
-                println!("Copying template dir: {input_template_dir:?} to {in_dir:?}");
-                fs_extra::dir::copy(
-                    &input_template_dir,
-                    &test_collection_dir,
-                    &CopyOptions::default(),
-                )
-                .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
-            } else {
-                fs::create_dir(&in_dir)?;
-            }
-
-            // Link to the directory TMPDIR we just created above.
-            // This is to renew test input for each run.
-            let in_dir_symlink = doc_dir.join(dir).join(&in_dir_name);
-            if in_dir_symlink.is_symlink() {
-                fs::remove_file(&in_dir_symlink)?;
-            }
-            make_symlink(&in_dir, &in_dir_symlink)?;
-
-            // Create output dir if only template dir exists
-            let out_dir_name = format!("{stem}.out");
-            let output_template_dir = template_dir_root.join(&out_dir_name);
-            if output_template_dir.exists() {
-                let out_dir = test_collection_dir.join(&out_dir_name);
-                let out_dir_symlink = doc_dir.join(dir).join(&out_dir_name);
-                if out_dir_symlink.is_symlink() {
-                    fs::remove_file(&out_dir_symlink)?;
-                }
-                make_symlink(&out_dir, &out_dir_symlink)?;
-                watch!(&out_dir);
+fn remove_all_symlinks_under(dir: &Path) -> Result<()> {
+    //Remove all symlinks to create new ones
+    jwalk::WalkDir::new(dir).into_iter().for_each(|f| {
+        watch!(f);
+        if let Ok(f) = f {
+            let path = f.path();
+            if path.is_symlink() {
+                fs::remove_file(&path).unwrap();
             }
         }
-    }
-
+    });
     Ok(())
 }
 
