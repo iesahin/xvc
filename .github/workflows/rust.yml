@@ -27,7 +27,7 @@ jobs:
           #   rust: beta
           - build: nightly
             rust: nightly
-            test-args: --features test-s3.test-minio,test-gcs,test-r2,test-rsync,test-generic-rsync  --no-fail-fast
+            test-args: --features test-s3,test-minio,test-gcs,test-r2,test-rsync,test-generic-rsync  --no-fail-fast
             ## for submitters other than me, I'll add another job here.
             # test-args: --no-fail-fast
             # test-args: --all-features
