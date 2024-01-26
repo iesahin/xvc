@@ -458,24 +458,10 @@ Xvc is licensed under the [GNU GPL 3.0 License](https://github.com/iesahin/xvc/b
 
 ## 🌦️ Future and Maintenance
 
-This is mostly a one-man project and users may consider the [bus factor](https://en.wikipedia.org/wiki/Bus_factor) before spending time on it.
-
 I'm using Xvc daily and I'm happy with it. Tracking all my files with Git via arbitrary servers and cloud providers is
 something I always need. I'm happy to improve and maintain it as long as I use it.
 
-Also, I'm applying my technical/architectural ideas to see their effectiveness
-and I have more ideas to implement. I don't expect to be bored from this soon.
-
-I'm in a phase of my life where material success doesn't entice me.
-I have a daily routine that I love, which includes spending 1-2 hours to Xvc.
-That probably won't change much even if I earn a billion dollars.
-I don't want to convert Xvc to a business.
-I may create paid apps that use Xvc as a library if I think they will be useful but these will probably be separate projects.
-In my opinion, trying to monetize FOSS prematurely deteriorates it more than other factors.
-
-Xvc is like a _runnable CV_ for me. It signals _I built this and I can built similar software for you._ This is
-another motivation for me to keep it alive. I hate updating my [vita](https://emresahin.net/cv/), and instead of
-updating it, I prefer to show my work.
+Given that I'm working on this for the last two years for pure technical bliss, you can expect me to work on it more. 
 
 ## ⚠️ Disclaimer
 
