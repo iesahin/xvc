@@ -174,9 +174,9 @@ fn output_dir_path(doc_source_path: &Path) -> PathBuf {
 }
 
 fn make_markdown_link(doc_source_path: &Path, docs_target_dir: &Path) -> Result<PathBuf> {
-    let link = docs_target_dir.join(&markdown_link_name(&doc_source_path));
+    let link = docs_target_dir.join(&markdown_link_name(doc_source_path));
     watch!(&link);
-    make_symlink(&doc_source_path, &link)?;
+    make_symlink(doc_source_path, &link)?;
     Ok(link)
 }
 
@@ -185,11 +185,12 @@ fn make_input_dir_link(
     docs_target_dir: &Path,
     templates_root: &Path,
 ) -> Result<PathBuf> {
-    let source = templates_root.join(&input_dir_name(doc_source_path));
+    let source = templates_root.join(input_dir_name(doc_source_path));
+    watch!(&source);
     if !source.exists() {
         fs::create_dir_all(&source)?;
     }
-    make_symlink(&docs_target_dir, &source)?;
+    make_symlink(docs_target_dir, &source)?;
     Ok(source)
 }
 
@@ -198,11 +199,12 @@ fn make_output_dir_link(
     docs_target_dir: &Path,
     templates_root: &Path,
 ) -> Result<PathBuf> {
-    let source = templates_root.join(&output_dir_path(doc_source_path));
+    let source = templates_root.join(output_dir_path(doc_source_path));
+    watch!(source);
     if !source.exists() {
         fs::create_dir_all(&source)?;
     }
-    make_symlink(&docs_target_dir, &source)?;
+    make_symlink(docs_target_dir, &source)?;
     Ok(source)
 }
 
