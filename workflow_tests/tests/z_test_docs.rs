@@ -173,6 +173,10 @@ fn make_markdown_link(doc_source_path: &Path, docs_target_dir: &Path) -> Result<
     watch!(&target);
     let source = Path::new("..").join(doc_source_path);
     watch!(&source);
+    if target.exists() {
+        info!("Removing existing symlink: {}", target.display());
+        fs::remove_file(&target)?;
+    }
     make_symlink(&source, &target)?;
     Ok(target)
 }
