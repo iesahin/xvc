@@ -185,12 +185,15 @@ fn make_input_dir_link(
     docs_target_dir: &Path,
     templates_root: &Path,
 ) -> Result<PathBuf> {
-    let source = templates_root.join(input_dir_name(doc_source_path));
+    let dirname = input_dir_name(doc_source_path);
+    let source = templates_root.join(&dirname);
     watch!(&source);
     if !source.exists() {
         fs::create_dir_all(&source)?;
     }
-    make_symlink(docs_target_dir, &source)?;
+    let target = docs_target_dir.join(&dirname);
+    watch!(&target);
+    make_symlink(&target, &source)?;
     Ok(source)
 }
 
@@ -199,10 +202,17 @@ fn make_output_dir_link(
     docs_target_dir: &Path,
     templates_root: &Path,
 ) -> Result<PathBuf> {
-    let source = templates_root.join(output_dir_path(doc_source_path));
+    let dirname = output_dir_path(doc_source_path);
+    watch!(&dirname);
+    let source = templates_root.join(&dirname);
     watch!(source);
     if !source.exists() {
         fs::create_dir_all(&source)?;
+    }
+    let target = docs_target_dir.join(&dirname);
+    watch!(target);
+    if target.exists() {
+        fs::remove_dir_all(&target)?;
     }
     make_symlink(docs_target_dir, &source)?;
     Ok(source)
