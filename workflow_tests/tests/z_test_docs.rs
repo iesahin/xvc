@@ -82,7 +82,10 @@ fn link_to_docs() -> Result<()> {
     fs_extra::dir::copy(
         Path::new(TEMPLATE_DIR),
         &templates_target_root,
-        &CopyOptions::new(),
+        &CopyOptions {
+            overwrite: true,
+            ..Default::default()
+        },
     )
     .map_err(|e| anyhow::format_err!("Directory Error: {}", e))?;
 
