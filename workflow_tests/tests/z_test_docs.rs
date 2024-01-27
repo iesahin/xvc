@@ -217,6 +217,8 @@ fn make_template_input_dir(
         .join(doc_section_dir_name)
         .join(&template_dir_name);
     watch!(&in_dir_symlink);
+    watch!(in_dir_symlink.exists());
+    watch!(in_dir_symlink.is_symlink());
     if in_dir_symlink.is_symlink() {
         watch!(("deleting", &in_dir_symlink));
         fs::remove_file(&in_dir_symlink)?;
