@@ -78,6 +78,7 @@ fn link_to_docs() -> Result<()> {
 
     watch!(TEMPLATE_DIR);
     watch!(templates_target_root);
+    watch!(Path::new(TEMPLATE_DIR).exists());
 
     fs_extra::dir::copy(
         Path::new(TEMPLATE_DIR),
