@@ -141,14 +141,14 @@ fn link_to_docs() -> Result<()> {
             make_template_input_dir(
                 &stem,
                 test_doc_working_dir_templates_root,
-                &doc_section_dir,
+                &doc_section_dir_name,
                 test_doc_dir,
             )?;
 
             make_template_output_dir(
                 &stem,
                 test_doc_working_dir_templates_root,
-                &doc_section_dir,
+                &doc_section_dir_name,
                 test_doc_dir,
             )?;
         }
@@ -160,14 +160,16 @@ fn link_to_docs() -> Result<()> {
 fn make_template_output_dir(
     stem: &str,
     test_doc_working_dir_templates_root: &Path,
-    doc_section_dir: &PathBuf,
+    doc_section_dir_name: &str,
     test_doc_dir: &Path,
 ) -> Result<()> {
     let out_dir_name = format!("{stem}.out");
+    watch!(out_dir_name);
     let output_template_dir = test_doc_working_dir_templates_root.join(&out_dir_name);
+    watch!(output_template_dir);
     if output_template_dir.exists() {
-        let out_dir = doc_section_dir.join(&out_dir_name);
-        let out_dir_symlink = test_doc_dir.join(doc_section_dir).join(&out_dir_name);
+        let out_dir = test_doc_dir.join(doc_section_dir_name).join(&out_dir_name);
+        let out_dir_symlink = test_doc_dir.join(doc_section_dir_name).join(&out_dir_name);
         if out_dir_symlink.is_symlink() {
             fs::remove_file(&out_dir_symlink)?;
         }
@@ -182,12 +184,14 @@ fn make_template_output_dir(
 fn make_template_input_dir(
     stem: &str,
     test_doc_working_dir_templates_root: &Path,
-    doc_section_dir: &PathBuf,
+    doc_section_dir_name: &str,
     test_doc_dir: &Path,
 ) -> Result<()> {
     let template_dir_name = format!("{stem}.in");
     watch!(template_dir_name);
-    let target_template_dir = doc_section_dir.join(&template_dir_name);
+    let target_template_dir = test_doc_dir
+        .join(doc_section_dir_name)
+        .join(&template_dir_name);
     watch!(target_template_dir);
     let cwd = env::current_dir()?;
     watch!(cwd);
@@ -196,7 +200,8 @@ fn make_template_input_dir(
     if input_template_dir.exists() {
         watch!(input_template_dir);
         watch!(target_template_dir);
-        watch!(doc_section_dir);
+        watch!(doc_section_dir_name);
+        let doc_section_dir = test_doc_dir.join(doc_section_dir_name);
         fs_extra::dir::copy(
             &input_template_dir,
             doc_section_dir,
@@ -205,15 +210,18 @@ fn make_template_input_dir(
         .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
     } else {
         watch!((&input_template_dir, "doesn't exist"));
-        fs::create_dir(&target_template_dir)?;
+        fs::create_dir_all(&target_template_dir)?;
     }
     watch!(&test_doc_dir);
     let in_dir_symlink = test_doc_dir
-        .join(doc_section_dir.clone())
+        .join(doc_section_dir_name)
         .join(&template_dir_name);
+    watch!(&in_dir_symlink);
     if in_dir_symlink.is_symlink() {
+        watch!(("deleting", &in_dir_symlink));
         fs::remove_file(&in_dir_symlink)?;
     }
+    watch!(("Creating", &in_dir_symlink));
     make_symlink(&target_template_dir, &in_dir_symlink)?;
     Ok(())
 }
@@ -221,13 +229,13 @@ fn make_template_input_dir(
 fn make_document_link(
     test_doc_source_path: PathBuf,
     test_doc_dir: &Path,
-    doc_section_dir_name: &String,
+    doc_section_dir_name: &str,
 ) -> Result<PathBuf> {
     watch!(test_doc_source_path);
     let test_doc_source_filename: PathBuf = test_doc_source_path.file_name().unwrap().into();
     watch!(test_doc_source_filename);
     let test_doc_symlink = test_doc_dir
-        .join(doc_section_dir_name.clone())
+        .join(doc_section_dir_name)
         .join(&test_doc_source_filename);
     watch!(test_doc_symlink);
     let test_doc_symlink_orig = Path::new("../..").join(test_doc_source_path);
@@ -239,7 +247,7 @@ fn make_document_link(
 
 fn filter_paths_under(
     test_doc_source_root: &Path,
-    doc_section_dir_name: &String,
+    doc_section_dir_name: &str,
     name_filter: Regex,
 ) -> Vec<PathBuf> {
     let test_doc_source_paths: Vec<PathBuf> =
