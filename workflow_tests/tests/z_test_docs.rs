@@ -193,7 +193,7 @@ fn make_input_dir_link(
     }
     let target = docs_target_dir.join(&dirname);
     watch!(&target);
-    make_symlink(&target, &source)?;
+    make_symlink(&source, &target)?;
     Ok(source)
 }
 
@@ -214,7 +214,7 @@ fn make_output_dir_link(
     if target.exists() {
         fs::remove_dir_all(&target)?;
     }
-    make_symlink(&target, &source)?;
+    make_symlink(&source, &target)?;
     Ok(source)
 }
 
