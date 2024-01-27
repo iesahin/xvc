@@ -10,7 +10,7 @@ use itertools::join;
 use regex::Regex;
 
 use xvc::error::Result;
-use xvc_logging::watch;
+use xvc_logging::{info, watch};
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
@@ -45,9 +45,6 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
         book_dirs_and_filters.push(("how-to".to_owned(), howto_regex));
     }
 
-    if trycmd_tests.contains("storage") {
-        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage.*".to_owned()));
-    }
     if trycmd_tests.contains("file") {
         book_dirs_and_filters.push(("ref".to_owned(), r"xvc-file.*".to_owned()));
     }
@@ -58,13 +55,6 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
 
     if trycmd_tests.contains("core") {
         book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
-    }
-
-    if trycmd_tests.contains("intro") {
-        book_dirs_and_filters.push(("intro".to_owned(), r".*".to_owned()));
-    }
-    if trycmd_tests.contains("start") {
-        book_dirs_and_filters.push(("start".to_owned(), r".*".to_owned()));
     }
 
     if trycmd_tests.contains("storage") {
@@ -77,18 +67,6 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
             book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage-.*".to_owned()));
         }
     }
-    if trycmd_tests.contains("file") {
-        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-file.*".to_owned()));
-    }
-
-    if trycmd_tests.contains("pipeline") {
-        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-pipeline.*".to_owned()));
-    }
-
-    if trycmd_tests.contains("core") {
-        book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
-    }
-
     book_dirs_and_filters
 }
 
@@ -174,10 +152,6 @@ fn make_markdown_link(doc_source_path: &Path, docs_target_dir: &Path) -> Result<
     watch!(&target);
     let source = Path::new("..").join(doc_source_path);
     watch!(&source);
-    if target.exists() {
-        info!("Removing existing symlink: {}", target.display());
-        fs::remove_file(&target)?;
-    }
     make_symlink(&source, &target)?;
     Ok(target)
 }
@@ -212,10 +186,6 @@ fn make_output_dir_link(
         fs::create_dir_all(&source)?;
     }
     let target = docs_target_dir.join(&dirname);
-    watch!(target);
-    if target.exists() {
-        fs::remove_dir_all(&target)?;
-    }
     make_symlink(&source, &target)?;
     Ok(source)
 }
