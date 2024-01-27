@@ -55,7 +55,7 @@ $ xvc init
 
 ```console
 $ xvc -v file track --as symlink .
-...
+
 ```
 
 🐇 Does it track everything that way?
@@ -133,11 +133,46 @@ graph LR
 🐢 Let's create the steps at once. Each step requires a name and a command.
 
 ```console
-$ xvc pipeline step new --name preprocess-train --command 'python3 src/preprocess.py --train data/cats data/pp-train/'
-$ xvc pipeline step new --name preprocess-test --command 'python3 src/preprocess.py --test data/cats data/pp-test/'
-$ xvc pipeline step new --name train --command 'python3 src/train.py data/pp-train/'
-$ xvc pipeline step new --name test --command 'python3 src/test.py data/pp-test/ metrics.json'
-$ xvc pipeline step new --name deploy --command 'python3 deploy.py models/model.bin /var/server/files/model.bin'
+$ xvc pipeline step new --step-name preprocess-train --command 'python3 src/preprocess.py --train data/cats data/pp-train/'
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
+
+$ xvc pipeline step new --step-name preprocess-test --command 'python3 src/preprocess.py --test data/cats data/pp-test/'
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
+
+$ xvc pipeline step new --step-name train --command 'python3 src/train.py data/pp-train/'
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
+
+$ xvc pipeline step new --step-name test --command 'python3 src/test.py data/pp-test/ metrics.json'
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
+
+$ xvc pipeline step new --step-name deploy --command 'python3 deploy.py models/model.bin /var/server/files/model.bin'
+? 2
+error: unexpected argument '--name' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
+
 ```
 
 🐇 How do we define dependencies?
@@ -153,21 +188,86 @@ $ xvc pipeline step new --name deploy --command 'python3 deploy.py models/model.
 🐢 Let's see. For each step, you can use a single command to define its dependencies. For `preprocess.py` you'll depend to the data directory and the script itself. We want to run the step when the script changes. It's like this:
 
 ```console
-$ xvc pipeline step dependency --step-name preprocess-train --directory data/cats --file src/preprocess.py
-$ xvc pipeline step dependency --step-name preprocess-test --directory data/cats --file src/preprocess.py
-$ xvc pipeline step dependency --step-name train --directory data/pp-train --file src/train.py --param 'params.yaml::learning_rate' --regex 'cat-contest.csv:/^5,.*'
-$ xvc pipeline step dependency --step-name test --directory models/ --directory data/pp-test/
+$ xvc pipeline step dependency --step-name preprocess-train --glob 'data/cats/*' --file src/preprocess.py
+? 2
+error: unexpected argument '--directory' found
+
+Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
+
+For more information, try '--help'.
+
+$ xvc pipeline step dependency --step-name preprocess-test --glob 'data/cats/*' --file src/preprocess.py
+? 2
+error: unexpected argument '--directory' found
+
+Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
+
+For more information, try '--help'.
+
+$ xvc pipeline step dependency --step-name train --glob 'data/pp-train/*' --file src/train.py --param 'params.yaml::learning_rate' --regex 'cat-contest.csv:/^5,.*'
+? 2
+error: unexpected argument '--directory' found
+
+Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
+
+For more information, try '--help'.
+
+$ xvc pipeline step dependency --step-name test --glob 'models/*' --directory data/pp-test/
+? 2
+error: unexpected argument '--directory' found
+
+Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step dependency --step-name deploy --file best-model.json
+[ERROR] Pipeline Error: Step deploy not found in pipeline
+
 ```
 
 You must also define the outputs these steps produce, so when the output is missing or dependency is newer than the output, the step will require to rerun.
 
 ```console
 $ xvc pipeline step output --step-name preprocess-train --directory data/pp-train
+? 2
+error: unexpected argument '--directory' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step output --step-name preprocess-test --directory data/pp-test
+? 2
+error: unexpected argument '--directory' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step output --step-name train --directory models/
+? 2
+error: unexpected argument '--directory' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step output --step-name test --file metrics.json  --file best-model.json
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 $ xvc pipeline step output --step-name deploy --file /var/server/files/model.bin
+? 2
+error: unexpected argument '--file' found
+
+Usage: xvc pipeline step output <--step-name <STEP_NAME>|--output-file <FILES>|--output-metric <METRICS>|--output-image <IMAGES>>
+
+For more information, try '--help'.
+
 ```
 
 🐇 These commands become too long to type. You know, I'm a lazy hare and don't like to type much. Is there an easier way?
@@ -177,6 +277,7 @@ $ xvc pipeline step output --step-name deploy --file /var/server/files/model.bin
 
 ```console
 $ xvc aliases
+
 alias xls='xvc file list'
 alias pvc='xvc pipeline'
 alias fvc='xvc file'
@@ -186,7 +287,8 @@ alias xvcfl='xvc file list'
 alias xvcfs='xvc file send'
 alias xvcfb='xvc file bring'
 alias xvcfh='xvc file hash'
-alias xvcfc='xvc file checkout'
+alias xvcfco='xvc file checkout'
+alias xvcfr='xvc file recheck'
 alias xvcp='xvc pipeline'
 alias xvcpr='xvc pipeline run'
 alias xvcps='xvc pipeline step'
@@ -203,11 +305,12 @@ alias xvcs='xvc storage'
 alias xvcsn='xvc storage new'
 alias xvcsl='xvc storage list'
 alias xvcsr='xvc storage remove'
+
 ```
 
 🐇 Oh, there are many more commands.
 
-🐢 Yep. More to come as well. If you want to edit the pipelines you created in YAML, you can use `xvc pipeline export` and after making the changes, you can use `xvc pipeline import`.
+🐢 Yep. More to come, you can use `xvc pipeline export` and after making the changes, you can use `xvc pipeline import`.
 
 🐇 I don't need to delete the pipeline to rewrite everything, then?
 
