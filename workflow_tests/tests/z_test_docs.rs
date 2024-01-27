@@ -214,7 +214,7 @@ fn make_output_dir_link(
     if target.exists() {
         fs::remove_dir_all(&target)?;
     }
-    make_symlink(docs_target_dir, &source)?;
+    make_symlink(&target, &source)?;
     Ok(source)
 }
 
