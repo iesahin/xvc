@@ -96,6 +96,11 @@ fn link_to_docs() -> Result<()> {
 
     let templates_target_root = random_temp_dir(Some("xvc-trycmd"));
 
+    watch!(TEMPLATE_DIR);
+    watch!(templates_target_root);
+
+    fs::create_dir(&templates_target_root)?;
+
     fs_extra::dir::copy(
         Path::new(TEMPLATE_DIR),
         &templates_target_root,
