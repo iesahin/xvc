@@ -111,7 +111,6 @@ fn link_to_docs() -> Result<()> {
     let docs_target_root = Path::new(DOCS_TARGET_DIR);
     watch!(docs_target_root);
     remove_all_symlinks_under(docs_target_root)?;
-    exit(99);
     let book_dirs_and_filters = book_dirs_and_filters();
 
     watch!(book_dirs_and_filters);
