@@ -276,7 +276,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("python3", which::which("python3"))
         .register_bin("dvc", which::which("dvc"))
         .register_bin("hyperfine", which::which("hyperfine"))
-        .case("docs/*/*.md")
+        .case("docs/*.md")
         .timeout(timeout)
         // We skip this for the time being.
         .skip("docs/start/ml.md");
