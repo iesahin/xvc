@@ -142,7 +142,13 @@ fn link_to_docs() -> Result<()> {
 }
 fn markdown_link_name(doc_source_path: &Path) -> PathBuf {
     watch!(doc_source_path);
-    doc_source_path.to_string_lossy().replace('/', "-").into()
+    doc_source_path
+        .to_string_lossy()
+        .strip_prefix(DOCS_SOURCE_DIR)
+        .unwrap_or(&doc_source_path.to_string_lossy())
+        .to_owned()
+        .replace('/', "-")
+        .into()
 }
 
 fn input_dir_name(doc_source_path: &Path) -> PathBuf {
