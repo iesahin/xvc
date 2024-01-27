@@ -84,7 +84,7 @@ fn link_to_docs() -> Result<()> {
         Path::new(TEMPLATE_DIR),
         &templates_target_root,
         &CopyOptions {
-            overwrite: true,
+            copy_inside: true,
             ..Default::default()
         },
     )
