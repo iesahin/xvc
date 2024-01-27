@@ -141,6 +141,7 @@ fn link_to_docs() -> Result<()> {
     Ok(())
 }
 fn markdown_link_name(doc_source_path: &Path) -> PathBuf {
+    watch!(doc_source_path);
     doc_source_path.to_string_lossy().replace('/', "-").into()
 }
 
