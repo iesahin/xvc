@@ -185,8 +185,6 @@ fn make_output_dir_link(
         let target = docs_target_dir.join(&dirname);
         make_symlink(&source, &target)?;
     }
-    let target = docs_target_dir.join(&dirname);
-    make_symlink(&source, &target)?;
     Ok(source)
 }
 
