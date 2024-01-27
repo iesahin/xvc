@@ -1,10 +1,12 @@
 use std::{
     fs,
     path::{Path, PathBuf},
+    process::exit,
 };
 
 use anyhow::anyhow;
 
+use itertools::join;
 use regex::Regex;
 
 use xvc::error::Result;
@@ -13,7 +15,7 @@ use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
 
-const DOCS_SOURCE_DIR: &str = "../../book/src/";
+const DOCS_SOURCE_DIR: &str = "../book/src/";
 const DOCS_TARGET_DIR: &str = "docs/";
 const TEMPLATE_DIR: &str = "templates/";
 
@@ -118,23 +120,16 @@ fn link_to_docs() -> Result<()> {
     for (doc_section_dir_name, filter_regex) in book_dirs_and_filters {
         let name_filter = Regex::new(&filter_regex).unwrap();
 
-        let test_doc_source_paths =
+        let doc_source_paths =
             filter_paths_under(docs_source_root, &doc_section_dir_name, name_filter);
 
-        for test_doc_source_path in test_doc_source_paths {
-            make_markdown_link(&test_doc_source_path, docs_target_root)?;
+        for doc_source_path in doc_source_paths {
+            watch!(doc_source_path);
+            make_markdown_link(&doc_source_path, docs_target_root)?;
 
-            make_input_dir_link(
-                &test_doc_source_path,
-                docs_target_root,
-                &templates_target_root,
-            )?;
+            make_input_dir_link(&doc_source_path, docs_target_root, &templates_target_root)?;
 
-            make_output_dir_link(
-                &test_doc_source_path,
-                docs_target_root,
-                &templates_target_root,
-            )?;
+            make_output_dir_link(&doc_source_path, docs_target_root, &templates_target_root)?;
         }
     }
 
@@ -267,6 +262,7 @@ fn z_doc_tests() -> Result<()> {
     use std::time::Duration;
 
     link_to_docs()?;
+    watch!("Linking done");
 
     let xvc_th = escargot::CargoBuild::new()
         .bin("xvc-test-helper")
@@ -276,7 +272,10 @@ fn z_doc_tests() -> Result<()> {
         .run()
         .map_err(|e| anyhow!("Failed to build xvc-test-helper: {e:?}"))?;
 
+    watch!("Built xvc-test-helper");
+
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
+    watch!(path_to_xvc_test_helper);
     assert!(path_to_xvc_test_helper.exists());
 
     let timeout = if let Ok(secs) = std::env::var("XVC_TRYCMD_DURATION") {
