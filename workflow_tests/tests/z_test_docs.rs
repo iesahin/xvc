@@ -94,7 +94,6 @@ fn link_to_docs() -> Result<()> {
     let book_dirs_and_filters = book_dirs_and_filters();
 
     watch!(book_dirs_and_filters);
-    exit(99);
 
     for (doc_section_dir_name, filter_regex) in book_dirs_and_filters {
         let name_filter = Regex::new(&filter_regex).unwrap();
