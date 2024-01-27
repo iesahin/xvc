@@ -132,10 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target:
-          [
-            x86_64-unknown-linux-gnu
-          ]
+        target: [x86_64-unknown-linux-gnu]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -176,10 +173,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        target:
-          [
-            x86_64-pc-windows-gnu
-          ]
+        target: [x86_64-pc-windows-gnu]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -219,10 +213,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        target:
-          [
-            x86_64-apple-darwin
-          ]
+        target: [x86_64-apple-darwin]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
