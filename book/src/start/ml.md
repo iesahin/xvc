@@ -134,44 +134,14 @@ graph LR
 
 ```console
 $ xvc pipeline step new --step-name preprocess-train --command 'python3 src/preprocess.py --train data/cats data/pp-train/'
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc pipeline step new --step-name preprocess-test --command 'python3 src/preprocess.py --test data/cats data/pp-test/'
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc pipeline step new --step-name train --command 'python3 src/train.py data/pp-train/'
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc pipeline step new --step-name test --command 'python3 src/test.py data/pp-test/ metrics.json'
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
 
 $ xvc pipeline step new --step-name deploy --command 'python3 deploy.py models/model.bin /var/server/files/model.bin'
-? 2
-error: unexpected argument '--name' found
-
-Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
-
-For more information, try '--help'.
 
 ```
 
@@ -189,28 +159,10 @@ For more information, try '--help'.
 
 ```console
 $ xvc pipeline step dependency --step-name preprocess-train --glob 'data/cats/*' --file src/preprocess.py
-? 2
-error: unexpected argument '--directory' found
-
-Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name preprocess-test --glob 'data/cats/*' --file src/preprocess.py
-? 2
-error: unexpected argument '--directory' found
-
-Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name train --glob 'data/pp-train/*' --file src/train.py --param 'params.yaml::learning_rate' --regex 'cat-contest.csv:/^5,.*'
-? 2
-error: unexpected argument '--directory' found
-
-Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
-
-For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name test --glob 'models/*' --directory data/pp-test/
 ? 2
@@ -221,7 +173,6 @@ Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS
 For more information, try '--help'.
 
 $ xvc pipeline step dependency --step-name deploy --file best-model.json
-[ERROR] Pipeline Error: Step deploy not found in pipeline
 
 ```
 
