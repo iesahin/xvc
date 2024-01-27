@@ -181,8 +181,9 @@ fn make_output_dir_link(
     watch!(&dirname);
     let source = templates_root.join(&dirname);
     watch!(source);
-    if !source.exists() {
-        fs::create_dir_all(&source)?;
+    if source.exists() {
+        let target = docs_target_dir.join(&dirname);
+        make_symlink(&source, &target)?;
     }
     let target = docs_target_dir.join(&dirname);
     make_symlink(&source, &target)?;
