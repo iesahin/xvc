@@ -109,6 +109,7 @@ fn link_to_docs() -> Result<()> {
     .map_err(|e| anyhow::format_err!("Directory Error: {}", e))?;
 
     let docs_target_root = Path::new(DOCS_TARGET_DIR);
+    watch!(docs_target_root);
     remove_all_symlinks_under(docs_target_root)?;
 
     let book_dirs_and_filters = book_dirs_and_filters();
