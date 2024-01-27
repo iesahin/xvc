@@ -207,6 +207,7 @@ fn make_template_input_dir(
         watch!((&input_template_dir, "doesn't exist"));
         fs::create_dir(&target_template_dir)?;
     }
+    watch!(&test_doc_dir);
     let in_dir_symlink = test_doc_dir
         .join(doc_section_dir.clone())
         .join(&template_dir_name);
