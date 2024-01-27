@@ -174,6 +174,7 @@ fn output_dir_path(doc_source_path: &Path) -> PathBuf {
 }
 
 fn make_markdown_link(doc_source_path: &Path, docs_target_dir: &Path) -> Result<PathBuf> {
+    watch!(doc_source_path);
     let link = docs_target_dir.join(&markdown_link_name(doc_source_path));
     watch!(&link);
     make_symlink(doc_source_path, &link)?;
