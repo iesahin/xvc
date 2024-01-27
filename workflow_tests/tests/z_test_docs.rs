@@ -13,7 +13,7 @@ use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
 
-const DOCS_SOURCE_DIR: &str = "../book/src/";
+const DOCS_SOURCE_DIR: &str = "../../book/src/";
 const DOCS_TARGET_DIR: &str = "docs/";
 const TEMPLATE_DIR: &str = "templates/";
 
