@@ -61,7 +61,7 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
         if let Ok(storages) = std::env::var("XVC_TRYCMD_STORAGE_TESTS") {
             let storage_elements = storages.split(',').collect::<Vec<_>>();
             storage_elements.iter().for_each(|s| {
-                book_dirs_and_filters.push(("ref".to_owned(), format!("xvc-storage-{}.*", s)));
+                book_dirs_and_filters.push(("ref".to_owned(), format!("xvc-storage-.*-{}.*", s)));
             })
         } else {
             book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage-.*".to_owned()));
