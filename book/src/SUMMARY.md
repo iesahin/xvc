@@ -54,6 +54,7 @@
       - [`xvc storage new`](./ref/xvc-storage-new.md)
         - [`local`](./ref/xvc-storage-new-local.md)
         - [`generic`](./ref/xvc-storage-new-generic.md)
+        - [`rsync`](./ref/xvc-storage-new-rsync.md)
         - [`s3`](./ref/xvc-storage-new-s3.md)
         - [`gcs`](./ref/xvc-storage-new-gcs.md)
         - [`minio`](./ref/xvc-storage-new-minio.md)
