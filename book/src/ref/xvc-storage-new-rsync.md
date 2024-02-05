@@ -70,12 +70,6 @@ You can define a storage bucket as storage and begin to use it.
 
 ```console
 $ xvc storage new rsync --name backup --host one.emresult.com --storage-dir /tmp/xvc-backup/
-? 2
-error: unexpected argument '--bucket-name' found
-
-Usage: xvc storage new rsync <--name <NAME>|--host <HOST>|--port <PORT>|--user <USER>|--storage-dir <STORAGE_DIR>>
-
-For more information, try '--help'.
 
 ```
 
@@ -83,14 +77,6 @@ Send files to this storage.
 
 ```console
 $ xvc file send dir-0001 --to backup
-? 101
-thread '<unnamed>' panicked at storage/src/storage/mod.rs:491:9:
-Cannot find remote backup
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at lib/src/cli/mod.rs:267:52:
-[PANIC] Cannot find remote backup [storage/src/storage/mod.rs::491]
-thread 'main' panicked at lib/src/cli/mod.rs:410:37:
-called `Result::unwrap()` on an `Err` value: Any { .. }
 
 ```
 
@@ -119,20 +105,14 @@ Then get back them from the storage.
 
 ```console
 $ xvc file bring --from backup dir-0001
-? 101
-thread '<unnamed>' panicked at storage/src/storage/mod.rs:491:9:
-Cannot find remote backup
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at lib/src/cli/mod.rs:267:52:
-[PANIC] Cannot find remote backup [storage/src/storage/mod.rs::491]
-thread 'main' panicked at lib/src/cli/mod.rs:410:37:
-called `Result::unwrap()` on an `Err` value: Any { .. }
 
 $ tree dir-0001
-? 2
-dir-0001  [error opening dir]
+dir-0001
+├── file-0001.bin
+├── file-0002.bin
+└── file-0003.bin
 
-0 directories, 0 files
+1 directory, 3 files
 
 ```
 
@@ -140,13 +120,5 @@ If you want to remove a file and all of its versions from a storage, you can use
 
 ```console
 $ xvc file remove --from-storage backup dir-0001/
-? 101
-thread '<unnamed>' panicked at storage/src/storage/mod.rs:491:9:
-Cannot find remote backup
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at lib/src/cli/mod.rs:267:52:
-[PANIC] Cannot find remote backup [storage/src/storage/mod.rs::491]
-thread 'main' panicked at lib/src/cli/mod.rs:410:37:
-called `Result::unwrap()` on an `Err` value: Any { .. }
 
 ```
