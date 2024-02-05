@@ -800,7 +800,7 @@ pub fn directory_list(dir: &Path) -> Result<Vec<Result<PathMetadata>>> {
             )))),
             Ok(entry) => match entry.metadata() {
                 Err(err) => child_paths.push(Err(Error::from(anyhow!(
-                    "Error getting metadata {:?} {}",
+                    "Error getting metadata {:?} {:?}",
                     entry,
                     err
                 )))),
