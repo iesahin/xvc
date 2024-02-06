@@ -45,16 +45,16 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
         book_dirs_and_filters.push(("how-to".to_owned(), howto_regex));
     }
 
+    if trycmd_tests.contains("core") {
+        book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
+    }
+
     if trycmd_tests.contains("file") {
         book_dirs_and_filters.push(("ref".to_owned(), r"xvc-file.*".to_owned()));
     }
 
     if trycmd_tests.contains("pipeline") {
         book_dirs_and_filters.push(("ref".to_owned(), r"xvc-pipeline.*".to_owned()));
-    }
-
-    if trycmd_tests.contains("core") {
-        book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
     }
 
     if trycmd_tests.contains("storage") {
@@ -149,10 +149,16 @@ fn output_dir_path(doc_source_path: &Path) -> PathBuf {
 }
 
 fn make_markdown_link(doc_source_path: &Path, docs_target_dir: &Path) -> Result<PathBuf> {
-    let target = docs_target_dir.join(&markdown_link_name(doc_source_path));
+    let target = docs_target_dir.join(markdown_link_name(doc_source_path));
     watch!(&target);
     let source = Path::new("..").join(doc_source_path);
     watch!(&source);
+    if target.exists() && target.read_link().unwrap() == source {
+        fs::remove_file(&target).unwrap_or_else(|e| {
+            info!("Failed to remove file: {}", e);
+            exit(1);
+        });
+    }
     make_symlink(&source, &target)?;
     Ok(target)
 }
