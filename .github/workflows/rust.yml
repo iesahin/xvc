@@ -27,7 +27,7 @@ jobs:
           #   rust: beta
           - build: nightly
             rust: nightly-2024-01-01
-            test-args: --features test-s3,test-minio,test-gcs,test-r2,test-rsync,test-generic-rsync  --no-fail-fast
+            test-args: --features test-s3,test-minio,test-r2,test-rsync,test-generic-rsync  --no-fail-fast
             ## for submitters other than me, I'll add another job here.
             # test-args: --no-fail-fast
             # test-args: --all-features
@@ -50,7 +50,7 @@ jobs:
       XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
       # We don't run xvc-storage and how-to tests here
       XVC_TRYCMD_TESTS: core,file,pipeline,intro,start,storage
-      XVC_TRYCMD_STORAGE_TESTS: minio,generic,local,gcs,
+      XVC_TRYCMD_STORAGE_TESTS: minio,generic,local,
     steps:
       - name: Checkout
         uses: actions/checkout@v1

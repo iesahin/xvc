@@ -6,7 +6,6 @@ use std::{
 
 use anyhow::anyhow;
 
-use itertools::join;
 use regex::Regex;
 
 use xvc::error::Result;
