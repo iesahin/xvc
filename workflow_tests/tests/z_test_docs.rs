@@ -197,11 +197,15 @@ fn make_output_dir_link(
     watch!(source);
     if !source.exists() {
         let target = docs_target_dir.join(&dirname);
-        if target.exists() && target.read_link().unwrap() == source {
-            fs::remove_file(&target).unwrap_or_else(|e| {
-                info!("Failed to remove file: {}", e);
-                exit(1);
-            });
+        watch!(target.exists());
+        if target.exists() {
+            watch!(target.read_link().unwrap());
+            if target.read_link().unwrap() == source {
+                fs::remove_file(&target).unwrap_or_else(|e| {
+                    info!("Failed to remove file: {}", e);
+                    exit(1);
+                });
+            }
         }
         make_symlink(&source, target)?;
     }
