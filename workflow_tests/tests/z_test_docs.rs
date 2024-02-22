@@ -9,7 +9,7 @@ use anyhow::anyhow;
 use regex::Regex;
 
 use xvc::error::Result;
-use xvc_logging::{info, watch};
+use xvc_logging::{info, warn, watch};
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
@@ -206,7 +206,15 @@ fn make_output_dir_link(
                 });
             }
         }
-        make_symlink(&source, target)?;
+        match make_symlink(&source, &target) {
+            Ok(_) => (),
+            Err(e) => {
+                warn!(
+                    "Failed to create symlink: source: {:?} target: {:?} error: {}",
+                    &source, &target, e
+                );
+            }
+        }
     }
     Ok(source)
 }
