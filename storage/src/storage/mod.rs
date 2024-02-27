@@ -21,7 +21,7 @@ use std::{fmt::Display, str::FromStr};
 use derive_more::Display;
 pub use event::{
     XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageInitEvent, XvcStorageListEvent,
-    XvcStorageReceiveEvent, XvcStorageSendEvent,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcShareEvent, 
 };
 
 pub use local::XvcLocalStorage;
@@ -182,6 +182,15 @@ pub trait XvcStorageOperations {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent>;
+
+    /// Used to share files from S3 compatible storages with a signed URL. 
+    fn share(
+        &self, 
+        output: &XvcOutputSender,
+        xvc_root: &XvcRoot,
+        path: &XvcCachePath,
+        period: Interval
+       ) -> Result<XvcStorageShareEvent>;
 }
 
 impl XvcStorageOperations for XvcStorage {
@@ -331,6 +340,32 @@ impl XvcStorageOperations for XvcStorage {
             XvcStorage::Wasabi(r) => r.delete(output, xvc_root, paths),
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(r) => r.delete(output, xvc_root, paths),
+        }
+    }
+
+fn share(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &XvcRoot,
+        path: &XvcCachePath,
+        period: &Interval,
+    ) -> Result<XvcStorageDeleteEvent> {
+        match self {
+            XvcStorage::Local(_) | 
+            XvcStorage::Generic(_)| 
+            XvcStorage::Rsync(_) => Err(Error::RemoteDoesNotSupportSharing) ,
+            #[cfg(feature = "s3")]
+            XvcStorage::S3(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "minio")]
+            XvcStorage::Minio(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "r2")]
+            XvcStorage::R2(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "gcs")]
+            XvcStorage::Gcs(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "wasabi")]
+            XvcStorage::Wasabi(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "digital-ocean")]
+            XvcStorage::DigitalOcean(r) => r.share(output, xvc_root, path, period),
         }
     }
 }
