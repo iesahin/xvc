@@ -21,6 +21,7 @@ pub mod remove;
 pub mod send;
 pub mod track;
 pub mod untrack;
+pub mod share;
 
 pub use bring::cmd_bring;
 pub use carry_in::cmd_carry_in;
@@ -96,6 +97,8 @@ pub enum XvcFileSubCommand {
     Remove(RemoveCLI),
     /// Untrack (delete) files from Xvc and possibly storages
     Untrack(UntrackCLI),
+    /// Share a file from S3 compatible storage for a limited time
+    Share(ShareCLI),
 }
 
 /// Operations on data files
