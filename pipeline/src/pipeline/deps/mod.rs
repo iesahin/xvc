@@ -12,6 +12,8 @@ pub mod regex_items;
 pub mod step;
 pub mod url;
 
+use std::fmt::{Display, Formatter};
+
 use itertools::Itertools;
 pub use param::*;
 
@@ -42,9 +44,7 @@ pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
 /// Represents variety of dependencies Xvc supports.
 /// This is to unify all dependencies without dynamic dispatch and having
 /// compile time errors when we miss something about dependencies.
-#[derive(
-    Debug, strum_macros::Display, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize,
-)]
+#[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum XvcDependency {
     /// Explicitly defined step depenedencies
     Step(StepDep),
@@ -84,6 +84,28 @@ pub enum XvcDependency {
 }
 
 persist!(XvcDependency, "xvc-dependency");
+
+impl Display for XvcDependency {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            XvcDependency::Step(dep) => write!(f, "step({})", dep.name),
+            XvcDependency::Generic(dep) => write!(f, "generic({})", dep.generic_command),
+            XvcDependency::File(dep) => write!(f, "file({})", dep.path),
+            XvcDependency::GlobItems(dep) => write!(f, "glob-items({})", dep.glob),
+            XvcDependency::Glob(dep) => write!(f, "glob({})", dep.glob),
+            XvcDependency::RegexItems(dep) => write!(f, "regex-items({})", dep.path),
+            XvcDependency::Regex(dep) => write!(f, "regex({}:/{})", dep.path, dep.regex),
+            XvcDependency::Param(dep) => write!(f, "param({}::{})", dep.path, dep.key),
+            XvcDependency::LineItems(dep) => {
+                write!(f, "line-items({}::{}-{})", dep.path, dep.begin, dep.end)
+            }
+            XvcDependency::Lines(dep) => {
+                write!(f, "lines({}::{}-{})", dep.path, dep.begin, dep.end)
+            }
+            XvcDependency::UrlDigest(dep) => write!(f, "url-digest({})", dep.url),
+        }
+    }
+}
 
 impl XvcDependency {
     /// Returns the path of the dependency if it has a single path.

@@ -1,7 +1,5 @@
 mod common;
 
-use std::{fs, path::Path};
-
 use common::*;
 use log::LevelFilter;
 use xvc::error::Result;

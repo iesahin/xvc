@@ -26,7 +26,6 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 use crossbeam_channel::{bounded, Receiver, Select, Sender};
 
 use xvc_logging::{debug, error, info, output, uwr, warn, watch, XvcOutputSender};
-use xvc_walker::notify::PathEvent;
 
 use petgraph::algo::toposort;
 use petgraph::data::Build;
@@ -43,10 +42,7 @@ use std::thread::{self, sleep, ScopedJoinHandle};
 use std::time::Duration;
 use strum_macros::{Display, EnumString};
 use xvc_config::FromConfigKey;
-use xvc_core::{
-    update_with_actual, Diff, HashAlgorithm, XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap,
-    XvcRoot,
-};
+use xvc_core::{update_with_actual, Diff, HashAlgorithm, XvcPath, XvcRoot};
 
 use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
 
@@ -1207,7 +1203,6 @@ fn s_checking_missing_outputs<'a>(
 ) -> StateTransition<'a> {
     let run_conditions = params.run_conditions;
     let step_outs = params.step_outputs;
-    let _pmm = params.pmp.clone();
 
     if run_conditions.ignore_missing_outputs {
         return Ok((s.checked_outputs(), params));

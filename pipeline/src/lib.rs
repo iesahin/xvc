@@ -32,7 +32,7 @@ use std::io::BufRead;
 use std::str::FromStr;
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 use xvc_ecs::XvcStore;
-use xvc_logging::{watch, XvcOutputSender};
+use xvc_logging::XvcOutputSender;
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;

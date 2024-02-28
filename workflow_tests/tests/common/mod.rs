@@ -14,6 +14,7 @@ use xvc_logging::{output, watch};
 
 use xvc::error::{Error, Result};
 
+#[allow(unused_imports)]
 pub use xvc_test_helper::{
     create_directory_tree, generate_random_file, generate_random_text_file, random_dir_name,
     random_temp_dir, run_in_temp_dir, run_in_temp_git_dir, test_logging,

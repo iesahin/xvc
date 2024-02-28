@@ -62,6 +62,8 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
         .load_r1nstore::<XvcPipeline, XvcStep>()?
         .children_of(&pipeline_e)?;
 
+    watch!(pipeline_steps);
+
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
     let pmp = XvcPathMetadataProvider::new(output_snd, xvc_root)?;

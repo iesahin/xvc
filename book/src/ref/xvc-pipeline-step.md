@@ -11,6 +11,7 @@ Usage: xvc pipeline step <COMMAND>
 Commands:
   list        List steps in a pipeline
   new         Add a new step
+  remove      Remove a step from a pipeline
   update      Update step options
   dependency  Add a dependency to a step
   output      Add an output to a step

@@ -1,6 +1,7 @@
 use std::{
-    env, fs,
+    fs,
     path::{Path, PathBuf},
+    process::exit,
 };
 
 use anyhow::anyhow;
@@ -8,17 +9,16 @@ use anyhow::anyhow;
 use regex::Regex;
 
 use xvc::error::Result;
-use xvc_logging::watch;
+use xvc_logging::{info, warn, watch};
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
 
-const DOC_TEST_DIR: &str = "docs/";
+const DOCS_SOURCE_DIR: &str = "../book/src/";
+const DOCS_TARGET_DIR: &str = "docs/";
+const TEMPLATE_DIR: &str = "templates/";
 
-fn link_to_docs() -> Result<()> {
-    test_logging(log::LevelFilter::Trace);
-    let book_base = Path::new("../book/src/");
-
+fn book_dirs_and_filters() -> Vec<(String, String)> {
     let trycmd_tests = if let Ok(trycmd_tests) = std::env::var("XVC_TRYCMD_TESTS") {
         trycmd_tests.to_lowercase()
     } else {
@@ -26,108 +26,214 @@ fn link_to_docs() -> Result<()> {
     };
 
     let mut book_dirs_and_filters = vec![];
+
     if trycmd_tests.contains("intro") {
-        book_dirs_and_filters.push(("intro", r".*"));
+        book_dirs_and_filters.push(("intro".to_owned(), r".*".to_owned()));
     }
     if trycmd_tests.contains("start") {
-        book_dirs_and_filters.push(("start", r".*"));
+        book_dirs_and_filters.push(("start".to_owned(), r".*".to_owned()));
     }
 
-    let howto_regex;
+    let mut howto_regex = ".*".to_owned();
     if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
+        watch!(std::env::var("XVC_TRYCMD_HOWTO_REGEX"));
         if let Ok(regex) = std::env::var("XVC_TRYCMD_HOWTO_REGEX") {
-            howto_regex = format!(".*{regex}.*");
-            book_dirs_and_filters.push(("how-to", &howto_regex));
+            howto_regex.push_str(&regex);
+            howto_regex.push_str(".*");
+        }
+        book_dirs_and_filters.push(("how-to".to_owned(), howto_regex));
+    }
+
+    if trycmd_tests.contains("core") {
+        book_dirs_and_filters.push(("ref".to_owned(), r"^xvc-[^psf].*".to_owned()))
+    }
+
+    if trycmd_tests.contains("file") {
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-file.*".to_owned()));
+    }
+
+    if trycmd_tests.contains("pipeline") {
+        book_dirs_and_filters.push(("ref".to_owned(), r"xvc-pipeline.*".to_owned()));
+    }
+
+    if trycmd_tests.contains("storage") {
+        if let Ok(storages) = std::env::var("XVC_TRYCMD_STORAGE_TESTS") {
+            let storage_elements = storages.split(',').collect::<Vec<_>>();
+            storage_elements.iter().for_each(|s| {
+                book_dirs_and_filters.push(("ref".to_owned(), format!("xvc-storage.*{}.*", s)));
+            })
         } else {
-            book_dirs_and_filters.push(("how-to", r".*"));
+            book_dirs_and_filters.push(("ref".to_owned(), r"xvc-storage-.*".to_owned()));
+        }
+    }
+    book_dirs_and_filters
+}
+
+fn link_to_docs() -> Result<()> {
+    test_logging(log::LevelFilter::Trace);
+    let docs_source_root = Path::new(DOCS_SOURCE_DIR);
+
+    let templates_target_root = random_temp_dir(Some("xvc-trycmd"));
+
+    watch!(TEMPLATE_DIR);
+    watch!(templates_target_root);
+    watch!(Path::new(TEMPLATE_DIR).exists());
+
+    fs_extra::dir::copy(
+        Path::new(TEMPLATE_DIR),
+        &templates_target_root,
+        &CopyOptions {
+            copy_inside: true,
+            ..Default::default()
+        },
+    )
+    .map_err(|e| anyhow::format_err!("Directory Error: {}", e))?;
+
+    let docs_target_root = Path::new(DOCS_TARGET_DIR);
+    watch!(docs_target_root);
+    remove_all_symlinks_under(docs_target_root)?;
+    let book_dirs_and_filters = book_dirs_and_filters();
+
+    watch!(book_dirs_and_filters);
+
+    for (doc_section_dir_name, filter_regex) in book_dirs_and_filters {
+        let name_filter = Regex::new(&filter_regex).unwrap();
+
+        let doc_source_paths =
+            filter_paths_under(docs_source_root, &doc_section_dir_name, name_filter);
+
+        for doc_source_path in doc_source_paths {
+            watch!(doc_source_path);
+            make_markdown_link(&doc_source_path, docs_target_root)?;
+
+            make_input_dir_link(&doc_source_path, docs_target_root, &templates_target_root)?;
+
+            make_output_dir_link(&doc_source_path, docs_target_root, &templates_target_root)?;
         }
     }
 
-    if trycmd_tests.contains("storage") {
-        book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
+    Ok(())
+}
+fn markdown_link_name(doc_source_path: &Path) -> PathBuf {
+    watch!(doc_source_path);
+    doc_source_path
+        .to_string_lossy()
+        .strip_prefix(DOCS_SOURCE_DIR)
+        .unwrap_or(&doc_source_path.to_string_lossy())
+        .to_owned()
+        .replace('/', "-")
+        .into()
+}
+
+fn input_dir_name(doc_source_path: &Path) -> PathBuf {
+    markdown_link_name(doc_source_path)
+        .file_stem()
+        .map(|s| {
+            let mut s = s.to_string_lossy().to_string();
+            s.push_str(".in");
+            PathBuf::from(s)
+        })
+        .unwrap()
+}
+
+fn output_dir_path(doc_source_path: &Path) -> PathBuf {
+    markdown_link_name(doc_source_path)
+        .file_stem()
+        .map(|s| {
+            let mut s = s.to_string_lossy().to_string();
+            s.push_str(".out");
+            PathBuf::from(s)
+        })
+        .unwrap()
+}
+
+fn make_markdown_link(doc_source_path: &Path, docs_target_dir: &Path) -> Result<PathBuf> {
+    let target = docs_target_dir.join(markdown_link_name(doc_source_path));
+    watch!(&target);
+    let source = Path::new("..").join(doc_source_path);
+    watch!(&source);
+    if target.exists() && target.read_link().unwrap() == source {
+        fs::remove_file(&target).unwrap_or_else(|e| {
+            info!("Failed to remove file: {}", e);
+            exit(1);
+        });
     }
-    if trycmd_tests.contains("file") {
-        book_dirs_and_filters.push(("ref", r"xvc-file.*"));
+    make_symlink(&source, &target)?;
+    Ok(target)
+}
+
+fn make_input_dir_link(
+    doc_source_path: &Path,
+    docs_target_dir: &Path,
+    templates_root: &Path,
+) -> Result<PathBuf> {
+    let dirname = input_dir_name(doc_source_path);
+    let source = templates_root.join(&dirname);
+    watch!(&source);
+    if !source.exists() {
+        fs::create_dir_all(&source)?;
     }
-
-    if trycmd_tests.contains("pipeline") {
-        book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
+    let target = docs_target_dir.join(&dirname);
+    watch!(&target);
+    if target.exists() && target.read_link().unwrap() == source {
+        fs::remove_file(&target).unwrap_or_else(|e| {
+            info!("Failed to remove file: {}", e);
+            exit(1);
+        });
     }
+    make_symlink(&source, &target)?;
+    Ok(source)
+}
 
-    if trycmd_tests.contains("core") {
-        book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
-    }
-
-    let book_dirs_and_filters = book_dirs_and_filters;
-
-    let mut book_dirs_and_filters = vec![];
-    if trycmd_tests.contains("intro") {
-        book_dirs_and_filters.push(("intro", r".*"));
-    }
-    if trycmd_tests.contains("start") {
-        book_dirs_and_filters.push(("start", r".*"));
-    }
-    if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
-        book_dirs_and_filters.push(("how-to", r".*"));
-    }
-
-    if trycmd_tests.contains("storage") {
-        book_dirs_and_filters.push(("ref", r"xvc-storage.*"));
-    }
-    if trycmd_tests.contains("file") {
-        book_dirs_and_filters.push(("ref", r"xvc-file.*"));
-    }
-
-    if trycmd_tests.contains("pipeline") {
-        book_dirs_and_filters.push(("ref", r"xvc-pipeline.*"));
-    }
-
-    if trycmd_tests.contains("core") {
-        book_dirs_and_filters.push(("ref", r"^xvc-[^psf].*"))
-    }
-
-    let book_dirs_and_filters = book_dirs_and_filters;
-
-    let template_dir_root = Path::new("templates");
-
-    // This is a directory that we create to keep testing artifacts outside the code
-    // It has the same structure with the docs, but for each doc.md file, a doc.in/ and doc.out/
-    // directory is created and these are linked from the running directory.
-    let test_collections_dir = random_temp_dir(Some("xvc-trycmd"));
-
-    println!(
-        "Documentation Test Directory: {}",
-        test_collections_dir.to_string_lossy()
-    );
-
-    fs::create_dir_all(&test_collections_dir)?;
-
-    //Remove all symlinks to create new ones
-    let doc_dir = Path::new(DOC_TEST_DIR);
-    watch!(doc_dir);
-    jwalk::WalkDir::new(doc_dir).into_iter().for_each(|f| {
-        watch!(f);
-        if let Ok(f) = f {
-            if f.metadata().unwrap().is_symlink() {
-                fs::remove_file(f.path()).unwrap();
+fn make_output_dir_link(
+    doc_source_path: &Path,
+    docs_target_dir: &Path,
+    templates_root: &Path,
+) -> Result<PathBuf> {
+    let dirname = output_dir_path(doc_source_path);
+    watch!(&dirname);
+    let source = templates_root.join(&dirname);
+    watch!(source);
+    if !source.exists() {
+        let target = docs_target_dir.join(&dirname);
+        watch!(target.exists());
+        if target.exists() {
+            watch!(target.read_link().unwrap());
+            if target.read_link().unwrap() == source {
+                fs::remove_file(&target).unwrap_or_else(|e| {
+                    info!("Failed to remove file: {}", e);
+                    exit(1);
+                });
             }
         }
-    });
+        match make_symlink(&source, &target) {
+            Ok(_) => (),
+            Err(e) => {
+                warn!(
+                    "Failed to create symlink: source: {:?} target: {:?} error: {}",
+                    &source, &target, e
+                );
+            }
+        }
+    }
+    Ok(source)
+}
 
-    for (dir, filter_regex) in book_dirs_and_filters {
-        let test_collection_dir = test_collections_dir.join(dir);
-        let name_filter = Regex::new(filter_regex).unwrap();
-
-        let book_dir = book_base.join(dir);
-        assert!(book_dir.exists(), "{:?} doesn't exist", &book_dir);
-        let book_paths: Vec<PathBuf> = jwalk::WalkDir::new(book_base.join(dir))
+fn filter_paths_under(
+    test_doc_source_root: &Path,
+    doc_section_dir_name: &str,
+    name_filter: Regex,
+) -> Vec<PathBuf> {
+    let test_doc_source_paths: Vec<PathBuf> =
+        jwalk::WalkDir::new(test_doc_source_root.join(doc_section_dir_name))
             .into_iter()
             .filter_map(|f| {
                 watch!(f);
                 if let Ok(f) = f {
-                    if f.metadata().unwrap().is_file()
-                        && name_filter.is_match(f.file_name().to_string_lossy().as_ref())
-                    {
+                    let file_name = f.file_name().to_string_lossy();
+                    watch!(file_name);
+                    if f.metadata().unwrap().is_file() && name_filter.is_match(&file_name) {
+                        watch!((&name_filter, "matched", &file_name));
                         Some(f.path())
                     } else {
                         None
@@ -137,58 +243,20 @@ fn link_to_docs() -> Result<()> {
                 }
             })
             .collect();
+    test_doc_source_paths
+}
 
-        watch!(test_collection_dir);
-        fs::create_dir_all(&test_collection_dir)?;
-        for p in book_paths {
-            let basename: PathBuf = p.file_name().unwrap().into();
-            let symlink_path = doc_dir.join(dir).join(&basename);
-
-            watch!(symlink_path);
-            make_symlink(Path::new("../..").join(p), &symlink_path)?;
-
-            // If we have a template input directory in `templates/`, we copy it.
-            // Otherwise create a new blank directory as cwd.
-            let stem = basename.file_stem().unwrap().to_string_lossy();
-            let in_dir_name = format!("{stem}.in");
-            let in_dir = test_collection_dir.join(&in_dir_name);
-            let cwd = env::current_dir()?;
-            let input_template_dir = cwd.join(template_dir_root.join(&in_dir_name));
-            if input_template_dir.exists() {
-                println!("Copying template dir: {input_template_dir:?} to {in_dir:?}");
-                fs_extra::dir::copy(
-                    &input_template_dir,
-                    &test_collection_dir,
-                    &CopyOptions::default(),
-                )
-                .map_err(|e| anyhow!("FS Extra Error: {e:?}"))?;
-            } else {
-                fs::create_dir(&in_dir)?;
-            }
-
-            // Link to the directory TMPDIR we just created above.
-            // This is to renew test input for each run.
-            let in_dir_symlink = doc_dir.join(dir).join(&in_dir_name);
-            if in_dir_symlink.is_symlink() {
-                fs::remove_file(&in_dir_symlink)?;
-            }
-            make_symlink(&in_dir, &in_dir_symlink)?;
-
-            // Create output dir if only template dir exists
-            let out_dir_name = format!("{stem}.out");
-            let output_template_dir = template_dir_root.join(&out_dir_name);
-            if output_template_dir.exists() {
-                let out_dir = test_collection_dir.join(&out_dir_name);
-                let out_dir_symlink = doc_dir.join(dir).join(&out_dir_name);
-                if out_dir_symlink.is_symlink() {
-                    fs::remove_file(&out_dir_symlink)?;
-                }
-                make_symlink(&out_dir, &out_dir_symlink)?;
-                watch!(&out_dir);
+fn remove_all_symlinks_under(dir: &Path) -> Result<()> {
+    //Remove all symlinks to create new ones
+    jwalk::WalkDir::new(dir).into_iter().for_each(|f| {
+        watch!(f);
+        if let Ok(f) = f {
+            let path = f.path();
+            if path.is_symlink() {
+                fs::remove_file(&path).unwrap();
             }
         }
-    }
-
+    });
     Ok(())
 }
 
@@ -198,6 +266,7 @@ fn z_doc_tests() -> Result<()> {
     use std::time::Duration;
 
     link_to_docs()?;
+    watch!("Linking done");
 
     let xvc_th = escargot::CargoBuild::new()
         .bin("xvc-test-helper")
@@ -207,7 +276,10 @@ fn z_doc_tests() -> Result<()> {
         .run()
         .map_err(|e| anyhow!("Failed to build xvc-test-helper: {e:?}"))?;
 
+    watch!("Built xvc-test-helper");
+
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
+    watch!(path_to_xvc_test_helper);
     assert!(path_to_xvc_test_helper.exists());
 
     let timeout = if let Ok(secs) = std::env::var("XVC_TRYCMD_DURATION") {
@@ -234,7 +306,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("python3", which::which("python3"))
         .register_bin("dvc", which::which("dvc"))
         .register_bin("hyperfine", which::which("hyperfine"))
-        .case("docs/*/*.md")
+        .case("docs/*.md")
         .timeout(timeout)
         // We skip this for the time being.
         .skip("docs/start/ml.md");

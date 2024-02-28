@@ -1,9 +1,9 @@
 mod common;
+use common::*;
 use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::*;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;

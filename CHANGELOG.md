@@ -5,6 +5,12 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+## 0.6.6 (2024-01-12)
+
+- Added `xvc pipeline step remove` command
+- Added `to` and `for` as aliases to `--step-name` option in `xvc pipeline step dependency`
+- Added custom Display implementation for dependency types
+
 ## 0.6.5 (2024-01-01)
 
 - Add benchmarks between Xvc and DVC 

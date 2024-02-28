@@ -1,19 +1,18 @@
-mod common;
-
 use std::{fs, path::Path};
 
 use xvc::core::util::*;
+use xvc_test_helper::{generate_random_file, generate_random_text_file, run_in_temp_dir};
 
 #[test]
 fn test_is_text_file() {
     // setup::logging(LevelFilter::Trace);
     use file::is_text_file;
-    let repo_dir = common::run_in_temp_dir();
+    let repo_dir = run_in_temp_dir();
 
     for i in 1..10 {
         let bin_fn = format!("test-{}.bin", i);
         let bin_p = Path::new(&bin_fn);
-        common::generate_random_file(bin_p, 100000, None);
+        generate_random_file(bin_p, 100000, None);
         assert!(
             !is_text_file(bin_p).unwrap(),
             "{:?} seems text file incorrectly",
@@ -21,7 +20,7 @@ fn test_is_text_file() {
         );
         let text_fn = format!("test-{}.txt", i);
         let text_p = Path::new(&text_fn);
-        common::generate_random_text_file(text_p, 100);
+        generate_random_text_file(text_p, 100);
         assert!(
             is_text_file(text_p).unwrap(),
             "{:?} seems binary file incorrectly",

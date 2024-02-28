@@ -11,7 +11,9 @@ use std::path::Path;
 
 /// Wrapper around XvcEntity that represents a parent-child relationship.
 ///
-/// It represents a parent-child (1-N) relationship between T and U types.
+/// The key for the XvcStore that keeps the relatinship is the child entity, as there are many
+/// children for a parent. XvcStore doesn't allow duplicate keys so XvcStore<ChildEntity<T, U>> is
+/// a 1-N relationship between T and U. There are many T (children) for a U (parent).
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct ChildEntity<T: Storable, U: Storable>(XvcEntity, PhantomData<T>, PhantomData<U>);
 
@@ -58,6 +60,7 @@ where
     /// Keeps the child type
     pub children: XvcStore<U>,
     /// Keeps the relationships between child entities and parent entities
+    /// The key for the child_parents is the child entity, as there are many children for a parent.
     pub child_parents: XvcStore<ChildEntity<U, T>>,
 }
 
@@ -121,6 +124,13 @@ where
                 Ok((p_e, v))
             }
         }
+    }
+
+    /// Remove the child entity from child-parent store and children store
+    pub fn remove_child(&mut self, child_entity: XvcEntity) -> Result<()> {
+        self.child_parents.remove(child_entity);
+        self.children.remove(child_entity);
+        Ok(())
     }
 }
 

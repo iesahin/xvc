@@ -7,6 +7,7 @@ use xvc_logging::{debug, watch, XvcOutputSender};
 
 use crate::{Error, Result};
 
+/// Find the absolute path to the git executable to run
 pub fn get_absolute_git_command(git_command: &str) -> Result<String> {
     let git_cmd_path = PathBuf::from(git_command);
     let git_cmd = if git_cmd_path.is_absolute() {
@@ -18,6 +19,7 @@ pub fn get_absolute_git_command(git_command: &str) -> Result<String> {
     Ok(git_cmd)
 }
 
+/// Run a git command with a specific git binary
 pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -> Result<String> {
     let mut args = vec!["-C", xvc_directory];
     args.extend(args_str_vec);
@@ -43,6 +45,7 @@ pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -
     }
 }
 
+/// Stash user's staged files to avoid committing them before auto-commit
 pub fn stash_user_staged_files(
     output_snd: &XvcOutputSender,
     git_command: &str,
@@ -70,6 +73,7 @@ pub fn stash_user_staged_files(
     Ok(git_diff_staged_out)
 }
 
+/// Unstash user's staged files after auto-commit
 pub fn unstash_user_staged_files(
     output_snd: &XvcOutputSender,
     git_command: &str,
@@ -83,6 +87,7 @@ pub fn unstash_user_staged_files(
     Ok(())
 }
 
+/// Checkout a git branch or tag before running an Xvc command
 pub fn git_checkout_ref(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -141,6 +146,7 @@ pub fn handle_git_automation(
     Ok(())
 }
 
+/// Commit `.xvc` directory after Xvc operations
 pub fn git_auto_commit(
     output_snd: &XvcOutputSender,
     git_command: &str,
@@ -215,6 +221,7 @@ pub fn git_auto_commit(
     Ok(())
 }
 
+/// runs `git add .xvc *.gitignore *.xvcignore` to stage the files after Xvc operations
 pub fn git_auto_stage(
     output_snd: &XvcOutputSender,
     git_command: &str,

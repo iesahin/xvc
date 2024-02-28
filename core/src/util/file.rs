@@ -3,33 +3,23 @@ use cached::proc_macro::cached;
 use cached::UnboundCache;
 use glob::Pattern as GlobPattern;
 
-use std::collections::HashMap;
 use std::fs::{self, Metadata};
 use std::io::{self, Read};
-use std::ops::Index;
 #[cfg(unix)]
 use std::os::unix::fs as unix_fs;
 #[cfg(windows)]
 use std::os::windows::fs as windows_fs;
 
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex, RwLock, RwLockWriteGuard};
-use std::thread::{self, JoinHandle};
-use xvc_logging::{error, uwo, uwr, watch, XvcOutputLine, XvcOutputSender};
-use xvc_walker::{
-    build_ignore_rules, make_watcher, IgnoreRules, MatchResult, PathEvent, PathMetadata,
-    RecommendedWatcher, WalkOptions,
-};
+use xvc_logging::watch;
+use xvc_walker::{IgnoreRules, PathMetadata, WalkOptions};
 
 use crate::error::Error;
 use crate::error::Result;
-use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
-use crate::{XvcFileType, CHANNEL_BOUND, XVCIGNORE_FILENAME};
-use crossbeam_channel::{bounded, select, Receiver, RecvError, Sender};
-use xvc_walker::check_ignore;
+use crate::CHANNEL_BOUND;
+use crossbeam_channel::{bounded, Receiver, Sender};
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
-use crate::XvcMetadata;
 
 use super::pmp::XvcPathMetadataProvider;
 use super::xvcignore::walk_parallel;

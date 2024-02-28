@@ -1,3 +1,4 @@
+//! Ignore patterns for a directory and its child directories.
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 

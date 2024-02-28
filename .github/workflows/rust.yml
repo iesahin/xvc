@@ -26,8 +26,8 @@ jobs:
           # - build: beta
           #   rust: beta
           - build: nightly
-            rust: nightly
-            test-args: --all-features --no-fail-fast
+            rust: nightly-2024-01-01
+            test-args: --features test-s3,test-minio,test-r2,test-rsync,test-generic-rsync  --no-fail-fast
             ## for submitters other than me, I'll add another job here.
             # test-args: --no-fail-fast
             # test-args: --all-features
@@ -38,8 +38,8 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       DIGITAL_OCEAN_ACCESS_KEY_ID: ${{ secrets.DIGITAL_OCEAN_ACCESS_KEY_ID }}
       DIGITAL_OCEAN_SECRET_ACCESS_KEY: ${{ secrets.DIGITAL_OCEAN_SECRET_ACCESS_KEY }}
-      WASABI_ACCESS_KEY_ID: ${{ secrets.WASABI_ACCESS_KEY_ID }}
-      WASABI_SECRET_ACCESS_KEY: ${{ secrets.WASABI_SECRET_ACCESS_KEY }}
+      # WASABI_ACCESS_KEY_ID: ${{ secrets.WASABI_ACCESS_KEY_ID }}
+      # WASABI_SECRET_ACCESS_KEY: ${{ secrets.WASABI_SECRET_ACCESS_KEY }}
       GCS_ACCESS_KEY_ID: ${{ secrets.GCS_ACCESS_KEY_ID }}
       GCS_SECRET_ACCESS_KEY: ${{ secrets.GCS_SECRET_ACCESS_KEY }}
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
@@ -49,7 +49,8 @@ jobs:
       MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
       XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
       # We don't run xvc-storage and how-to tests here
-      XVC_TRYCMD_TESTS: core,file,pipeline,intro,start
+      XVC_TRYCMD_TESTS: core,file,pipeline,intro,start,storage
+      XVC_TRYCMD_STORAGE_TESTS: minio,generic,local,
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -131,10 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target:
-          [
-            x86_64-unknown-linux-gnu
-          ]
+        target: [x86_64-unknown-linux-gnu]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -175,10 +173,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        target:
-          [
-            x86_64-pc-windows-gnu
-          ]
+        target: [x86_64-pc-windows-gnu]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -218,10 +213,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        target:
-          [
-            x86_64-apple-darwin
-          ]
+        target: [x86_64-apple-darwin]
     steps:
       - name: Checkout
         uses: actions/checkout@v1

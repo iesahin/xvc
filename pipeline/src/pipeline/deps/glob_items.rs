@@ -1,5 +1,5 @@
 //! A path collection where each item is tracked separately.
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
@@ -40,7 +40,7 @@ impl GlobItemsDep {
     /// Create a new [GlobItemsDep] with the given glob pattern and fill the metadata map from the
     /// given pmm. The content digest map is empty.
     pub fn from_pmp(
-        xvc_root: &XvcRoot,
+        _xvc_root: &XvcRoot,
         glob_root: &XvcPath,
         glob: String,
         pmp: &XvcPathMetadataProvider,

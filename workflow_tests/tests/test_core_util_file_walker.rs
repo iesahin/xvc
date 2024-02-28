@@ -5,6 +5,7 @@ use xvc_core::{
     util::xvcignore::{walk_parallel, walk_serial},
     XvcPath,
 };
+use xvc_test_helper::test_logging;
 
 use std::{path::Path, time::Duration};
 

@@ -31,7 +31,6 @@ use xvc_logging::XvcOutputSender;
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
 
-use itertools::Itertools;
 use xvc_logging::watch;
 
 use crossbeam_channel::Sender;
@@ -801,7 +800,7 @@ pub fn directory_list(dir: &Path) -> Result<Vec<Result<PathMetadata>>> {
             )))),
             Ok(entry) => match entry.metadata() {
                 Err(err) => child_paths.push(Err(Error::from(anyhow!(
-                    "Error getting metadata {:?} {}",
+                    "Error getting metadata {:?} {:?}",
                     entry,
                     err
                 )))),

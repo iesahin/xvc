@@ -12,7 +12,7 @@ use crate::error::Error;
 use crate::error::Result;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcFileType, XVCIGNORE_FILENAME};
-use crossbeam_channel::{bounded, select, RecvError, Select, Sender};
+use crossbeam_channel::{bounded, RecvError, Select, Sender};
 use xvc_walker::check_ignore;
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
@@ -20,6 +20,8 @@ use crate::XvcMetadata;
 
 use super::XvcPathMetadataMap;
 
+/// A cached path metadata provider.
+/// It starts from `xvc_root` and caches [XvcMetadata] when the paths are requested.
 #[derive(Debug)]
 pub struct XvcPathMetadataProvider {
     /// The root directory to start walking from

@@ -12,7 +12,7 @@ Usage: xvc storage new <COMMAND>
 Commands:
   local          Add a new local storage
   generic        Add a new generic storage
-  rsync          Add a new rsync storages
+  rsync          Add a new rsync storage
   s3             Add a new S3 storage
   minio          Add a new Minio storage
   digital-ocean  Add a new Digital Ocean storage
