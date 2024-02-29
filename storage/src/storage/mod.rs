@@ -1,4 +1,7 @@
 //! Cloud storage implementations for xvc.
+#[cfg(feature = "async")]
+pub mod async_common;
+pub mod common;
 #[cfg(feature = "digital-ocean")]
 pub mod digital_ocean;
 pub mod event;
@@ -16,12 +19,12 @@ pub mod s3;
 #[cfg(feature = "wasabi")]
 pub mod wasabi;
 
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, str::FromStr, time::Duration};
 
 use derive_more::Display;
 pub use event::{
-    XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageInitEvent, XvcStorageListEvent,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcShareEvent, 
+    XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageExpiringShareEvent, XvcStorageInitEvent,
+    XvcStorageListEvent, XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
 pub use local::XvcLocalStorage;
@@ -183,14 +186,14 @@ pub trait XvcStorageOperations {
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent>;
 
-    /// Used to share files from S3 compatible storages with a signed URL. 
+    /// Used to share files from S3 compatible storages with a signed URL.
     fn share(
-        &self, 
+        &self,
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         path: &XvcCachePath,
-        period: Interval
-       ) -> Result<XvcStorageShareEvent>;
+        period: Duration,
+    ) -> Result<XvcStorageExpiringShareEvent>;
 }
 
 impl XvcStorageOperations for XvcStorage {
@@ -343,17 +346,17 @@ impl XvcStorageOperations for XvcStorage {
         }
     }
 
-fn share(
+    fn share(
         &self,
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
         path: &XvcCachePath,
-        period: &Interval,
-    ) -> Result<XvcStorageDeleteEvent> {
+        period: Duration,
+    ) -> Result<XvcStorageExpiringShareEvent> {
         match self {
-            XvcStorage::Local(_) | 
-            XvcStorage::Generic(_)| 
-            XvcStorage::Rsync(_) => Err(Error::RemoteDoesNotSupportSharing) ,
+            XvcStorage::Local(_) | XvcStorage::Generic(_) | XvcStorage::Rsync(_) => {
+                Err(Error::RemoteDoesNotSupportSignedUrls)
+            }
             #[cfg(feature = "s3")]
             XvcStorage::S3(r) => r.share(output, xvc_root, path, period),
             #[cfg(feature = "minio")]
@@ -524,8 +527,9 @@ pub fn get_storage_record(
 
     if remote_store.is_empty() {
         panic!(output_snd, "Cannot find remote {}", identifier);
-    } else if remote_store.len() > 1 {
-        panic!(output_snd, "Ambigious remote identifier: {}", identifier);
+    }
+    if remote_store.len() > 1 {
+        panic!(output_snd, "Ambiguous remote identifier: {}", identifier);
     }
 
     let (_, remote) =

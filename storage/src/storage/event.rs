@@ -46,6 +46,18 @@ pub struct XvcStorageDeleteEvent {
     /// Elements deleted from the storage.
     pub paths: Vec<XvcStoragePath>,
 }
+/// The share event when a file is shared via signed URL
+#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
+pub struct XvcStorageExpiringShareEvent {
+    /// The GUID of the storage
+    pub guid: XvcStorageGuid,
+    /// Elements shared
+    pub path: XvcStoragePath,
+    /// The signed URL
+    pub signed_url: String,
+    /// The expiration date of the signed URL
+    pub expiration_seconds: u64,
+}
 
 /// Collected storage events.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]

@@ -96,6 +96,9 @@ pub enum Error {
         #[from]
         source: std::env::VarError,
     },
+
+    #[error("This remote type does not support file sharing with signed URLs")]
+    RemoteDoesNotSupportSignedUrls,
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

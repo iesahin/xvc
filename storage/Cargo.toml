@@ -98,12 +98,13 @@ openssl = { version = "^0.10", features = ["vendored"] }
 
 [features]
 default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean"]
-s3 = ["dep:rust-s3", "dep:futures", "dep:tokio"]
-minio = ["dep:rust-s3", "dep:futures", "dep:tokio"]
-gcs = ["dep:rust-s3", "dep:futures", "dep:tokio"]
-wasabi = ["dep:rust-s3", "dep:futures", "dep:tokio"]
-r2 = ["dep:rust-s3", "dep:futures", "dep:tokio"]
-digital-ocean = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+async = ["dep:rust-s3", "dep:futures", "dep:tokio"]
+s3 = ["async"]
+minio = ["async"]
+gcs = ["async"]
+wasabi = ["async"]
+r2 = ["async"]
+digital-ocean = ["async"]
 
 
 [dev-dependencies]

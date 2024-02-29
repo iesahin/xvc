@@ -5,6 +5,8 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+- Added `xvc file share` command to share files from S3 signed URLs
+
 ## 0.6.6 (2024-01-12)
 
 - Added `xvc pipeline step remove` command
@@ -13,7 +15,8 @@ tree, and subtasks are marked with indentation.
 
 ## 0.6.5 (2024-01-01)
 
-- Add benchmarks between Xvc and DVC 
+- Add benchmarks between Xvc and DVC
+
   - Add how-to/benchmark-versus-dvc.md
   - Add regex filtering for how-to documents to trycmd test docs
 
@@ -27,8 +30,8 @@ tree, and subtasks are marked with indentation.
 - Updated file related operations not to list all files
   - Added `XvcPathMetadataProvider` to `xvc-walker` to cache file system metadata
 - Added git revision to the version stringZ
-- `xvc file list` doesn't list files starting with `.` now. 
-  - Added `--show-dot-files` to list them. 
+- `xvc file list` doesn't list files starting with `.` now.
+  - Added `--show-dot-files` to list them.
 - Fixed `--recheck-method` to be reset to default if not specified
 
 ## 0.6.3 (2023-11-02)
@@ -56,7 +59,6 @@ tree, and subtasks are marked with indentation.
   - Dependency and outputs are shown with different shapes according to their types in Graphviz format
   - Simplify DAG creation for both dot and mermaid formats
 
-
 ## 0.6.0 (2023-08-28)
 
 - Major overhaul in pipelines
@@ -73,9 +75,11 @@ tree, and subtasks are marked with indentation.
   - PR: <https://github.com/iesahin/xvc/pull/222>
   - Issue: <https://github.com/iesahin/xvc/issue/221>
 - Add `xvc pipeline new` reference examples.
+
   - Remove `--set-default` option from the command.
 
 - Added reference examples for `xvc storage new ...` commands.
+
   - PR: <https://github.com/iesahin/xvc/pull/222>
   - Issue: <https://github.com/iesahin/xvc/issue/221>
 
@@ -325,5 +329,5 @@ tree, and subtasks are marked with indentation.
   - Fix `xvc storage local` tests ✅
     - Cache operations from storages should be done on temp dir and _move to cache_ must be used for all
       - This is to keep permission operations correct
-      - I did this in the trait  ✅
+      - I did this in the trait ✅
       - Modified all receive functions to return a temp dir ✅

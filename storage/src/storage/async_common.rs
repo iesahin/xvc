@@ -1,144 +1,31 @@
-//! Digital Ocean Spaces remote storage implementation.
-use anyhow::anyhow;
-use futures::StreamExt;
-use std::str::FromStr;
-use std::time::Duration;
-use std::{env, fs};
-use tokio::io::AsyncWriteExt;
+use s3::Bucket;
+use xvc_logging::error;
+use xvc_logging::watch;
+use xvc_logging::XvcOutputSender;
 
-use regex::Regex;
-use s3::creds::Credentials;
-use s3::{Bucket, Region};
-use serde::{Deserialize, Serialize};
-use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, watch, XvcOutputSender};
-
-use crate::storage::common::build_remote_path;
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
-use crate::{Error, Result, XvcStorage, XvcStorageEvent};
-use crate::{XvcStorageGuid, XvcStorageOperations};
+use crate::Error;
+use crate::Result;
+use crate::XvcStorageGuid;
+use crate::XvcStorageOperations;
 
-use super::{
-    XvcStorageDeleteEvent, XvcStorageExpiringShareEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir
-};
+use super::XvcStorageInitEvent;
 
-/// Configure a new Digital Ocean Spaces remote.
-///
-/// `bucket_name`, `region` and `remote_prefix` sets a URL for the storage
-/// location.
-///
-/// This creates a [XvcDigitalOceanStorage], calls its
-/// [init][XvcDigitalOceanStorage::init] function to create/update guid, and
-/// saves [XvcStorageInitEvent] and [XvcStorage] in ECS.
-pub fn cmd_new_digital_ocean(
-    _input: std::io::StdinLock,
-    output_snd: &XvcOutputSender,
-    xvc_root: &XvcRoot,
-    name: String,
-    bucket_name: String,
-    region: String,
-    remote_prefix: String,
-) -> Result<()> {
-    let remote = XvcDigitalOceanStorage {
-        guid: XvcStorageGuid::new(),
-        name,
-        region,
-        bucket_name,
-        remote_prefix,
-    };
-    watch!(remote);
+pub trait XvcS3StorageOperations {
+    type Storage: XvcStorageOperations;
 
-    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
-    watch!(init_event);
-
-    xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
-        let store_e = xvc_root.new_entity();
-        let event_e = xvc_root.new_entity();
-        store.insert(
-            store_e,
-            XvcStorage::DigitalOcean(remote.clone()),
-            event_e,
-            XvcStorageEvent::Init(init_event.clone()),
-        );
-        Ok(())
-    })?;
-
-    Ok(())
-}
-
-/// A Digital Ocean Spaces remote.
-#[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
-pub struct XvcDigitalOceanStorage {
-    /// The GUID of the remote.
-    pub guid: XvcStorageGuid,
-    /// The name of the remote.
-    pub name: String,
-    /// The region of the remote.
-    pub region: String,
-    /// The bucket name of the remote.
-    pub bucket_name: String,
-    /// The remote prefix of the remote.
-    pub remote_prefix: String,
-}
-
-impl XvcDigitalOceanStorage {
-    fn remote_specific_credentials(&self) -> Result<Credentials> {
-        Credentials::new(
-            Some(&env::var(format!(
-                "XVC_STORAGE_ACCESS_KEY_ID_{}",
-                self.name
-            ))?),
-            Some(&env::var(format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
-            None,
-            None,
-            None,
-        )
-        .map_err(|e| e.into())
-    }
-
-    fn storage_type_credentials(&self) -> Result<Credentials> {
-        Credentials::new(
-            Some(&env::var("DIGITAL_OCEAN_ACCESS_KEY_ID").unwrap()),
-            Some(&env::var("DIGITAL_OCEAN_SECRET_ACCESS_KEY").unwrap()),
-            None,
-            None,
-            None,
-        )
-        .map_err(|e| e.into())
-    }
-
-    fn credentials(&self) -> Result<Credentials> {
-        match self.remote_specific_credentials() {
-            Ok(c) => Ok(c),
-            Err(e1) => match self.storage_type_credentials() {
-                Ok(c) => Ok(c),
-                Err(e2) => Err(anyhow!(
-                    "None of the required environment variables found for credentials: {}\n{}\n",
-                    e1,
-                    e2
-                )),
-            },
-        }
-        .map_err(|e| e.into())
-    }
-
-    fn get_bucket(&self) -> Result<Bucket> {
-        // We'll just put guid file to endpoint/bucket/prefix/XVC_GUID_FILENAME
-        let credentials = self.credentials()?;
-        let region: Region = self.region.parse().expect("Cannot parse region name");
-        let bucket = Bucket::new(&self.bucket_name, region, credentials)?;
-        Ok(bucket)
-    }
+    fn remote_prefix(&self) -> &str;
+    fn guid(&self) -> &XvcStorageGuid;
+    fn get_bucket(&self) -> Result<Bucket>;
 
     async fn a_init(
-        &self,
+        &Self::Storage,
         output_snd: &XvcOutputSender,
         _xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, XvcDigitalOceanStorage)> {
+    ) -> Result<(XvcStorageInitEvent, Self::Storage)> {
         let bucket = self.get_bucket()?;
-        let guid = self.guid.clone();
-        let guid_str = self.guid.to_string();
+        let guid = self.guid().clone();
+        let guid_str = self.guid().to_string();
         let guid_bytes = guid_str.as_bytes();
 
         watch!(bucket);
@@ -147,7 +34,7 @@ impl XvcDigitalOceanStorage {
 
         let res_response = bucket
             .put_object(
-                format!("{}/{}", self.remote_prefix, XVC_STORAGE_GUID_FILENAME),
+                format!("{}/{}", self.remote_prefix(), XVC_STORAGE_GUID_FILENAME),
                 guid_bytes,
             )
             .await;
@@ -337,82 +224,4 @@ impl XvcDigitalOceanStorage {
             paths: deleted_paths,
         })
     }
-}
-
-impl XvcStorageOperations for XvcDigitalOceanStorage {
-    fn init(
-        self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()?;
-        watch!(rt);
-        rt.block_on(self.a_init(output, xvc_root))
-    }
-
-    /// List the bucket contents that start with `self.remote_prefix`
-    fn list(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-    ) -> crate::Result<super::XvcStorageListEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_list(output, xvc_root))
-    }
-
-    fn send(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-        force: bool,
-    ) -> crate::Result<super::XvcStorageSendEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_send(output, xvc_root, paths, force))
-    }
-
-    fn receive(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-        force: bool,
-    ) -> crate::Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_receive(output, xvc_root, paths, force))
-    }
-
-    fn delete(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-    ) -> crate::Result<super::XvcStorageDeleteEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_delete(output, xvc_root, paths))
-    }
-
-    fn share(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        path: &XvcCachePath,
-        period: Duration,
-    ) -> Result<XvcStorageExpiringShareEvent> \{
-        todo!()
-    \}
 }
