@@ -1,5 +1,15 @@
+use std::fs;
+use std::str::FromStr;
+
+use futures::StreamExt;
+use regex::Regex;
+use s3::creds::Credentials;
 use s3::Bucket;
+use s3::Region;
+use tokio::io::AsyncWriteExt;
+use xvc_core::XvcCachePath;
 use xvc_logging::error;
+use xvc_logging::info;
 use xvc_logging::watch;
 use xvc_logging::XvcOutputSender;
 
@@ -9,20 +19,24 @@ use crate::Result;
 use crate::XvcStorageGuid;
 use crate::XvcStorageOperations;
 
+use super::XvcStorageDeleteEvent;
 use super::XvcStorageInitEvent;
+use super::XvcStorageListEvent;
+use super::XvcStoragePath;
+use super::XvcStorageReceiveEvent;
+use super::XvcStorageSendEvent;
+use super::XvcStorageTempDir;
 
 pub trait XvcS3StorageOperations {
-    type Storage: XvcStorageOperations;
-
     fn remote_prefix(&self) -> &str;
     fn guid(&self) -> &XvcStorageGuid;
     fn get_bucket(&self) -> Result<Bucket>;
+    fn credentials(&self) -> Result<Credentials>;
+    fn bucket_name(&self) -> &str;
+    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath;
+    fn region(&self) -> &str;
 
-    async fn a_init(
-        &Self::Storage,
-        output_snd: &XvcOutputSender,
-        _xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self::Storage)> {
+    async fn a_init(&self, output_snd: &XvcOutputSender) -> Result<(XvcStorageInitEvent, &Self)> {
         let bucket = self.get_bucket()?;
         let guid = self.guid().clone();
         let guid_str = self.guid().to_string();
@@ -40,7 +54,7 @@ pub trait XvcS3StorageOperations {
             .await;
 
         match res_response {
-            Ok(_) => Ok((XvcStorageInitEvent { guid }, self.clone())),
+            Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
             Err(err) => {
                 error!(output_snd, "{}", err);
                 Err(Error::S3Error { source: err })
@@ -54,14 +68,14 @@ pub trait XvcS3StorageOperations {
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let credentials = self.credentials()?;
-        let region = Region::from_str(&self.region).unwrap_or("us-east-1".parse().unwrap());
-        let bucket = Bucket::new(&self.bucket_name, region, credentials)?;
+        let region = Region::from_str(&self.region()).unwrap_or("us-east-1".parse().unwrap());
+        let bucket = Bucket::new(&self.bucket_name(), region, credentials)?;
         let xvc_guid = xvc_root.config().guid().unwrap();
-        let prefix = self.remote_prefix.clone();
+        let prefix = self.remote_prefix().clone();
 
         let res_list = bucket
             .list(
-                format!("{}/{}", self.remote_prefix, xvc_guid),
+                format!("{}/{}", self.remote_prefix(), xvc_guid),
                 Some("/".to_string()),
             )
             .await;
@@ -89,7 +103,7 @@ pub trait XvcS3StorageOperations {
                     .collect();
 
                 Ok(XvcStorageListEvent {
-                    guid: self.guid.clone(),
+                    guid: self.guid().clone(),
                     paths,
                 })
             }
@@ -108,17 +122,13 @@ pub trait XvcS3StorageOperations {
         paths: &[xvc_core::XvcCachePath],
         _force: bool,
     ) -> crate::Result<super::XvcStorageSendEvent> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
         let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         let bucket = self.get_bucket()?;
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = build_remote_path(&self.remote_prefix, &repo_guid, cache_path);
+            let remote_path = self.build_remote_path(cache_path);
             let abs_cache_path = cache_path.to_absolute_path(xvc_root);
             watch!(abs_cache_path);
 
@@ -142,7 +152,7 @@ pub trait XvcS3StorageOperations {
         }
 
         Ok(XvcStorageSendEvent {
-            guid: self.guid.clone(),
+            guid: self.guid().clone(),
             paths: copied_paths,
         })
     }
@@ -150,14 +160,9 @@ pub trait XvcS3StorageOperations {
     async fn a_receive(
         &self,
         output_snd: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
         let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         let bucket = self.get_bucket()?;
@@ -165,7 +170,7 @@ pub trait XvcS3StorageOperations {
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = build_remote_path(&self.remote_prefix, &repo_guid, cache_path);
+            let remote_path = self.build_remote_path(cache_path);
             let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             fs::create_dir_all(&abs_cache_dir)?;
             let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
@@ -191,7 +196,7 @@ pub trait XvcS3StorageOperations {
         Ok((
             temp_dir,
             XvcStorageReceiveEvent {
-                guid: self.guid.clone(),
+                guid: self.guid().clone(),
                 paths: copied_paths,
             },
         ))
@@ -200,28 +205,82 @@ pub trait XvcS3StorageOperations {
     async fn a_delete(
         &self,
         output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
         let mut deleted_paths = Vec::<XvcStoragePath>::new();
 
         let bucket = self.get_bucket()?;
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = build_remote_path(&self.remote_prefix, &repo_guid, cache_path);
+            let remote_path = self.build_remote_path(cache_path);
             bucket.delete_object(remote_path.as_str()).await?;
             info!(output, "[DELETE] {}", remote_path.as_str());
             deleted_paths.push(remote_path);
         }
 
         Ok(XvcStorageDeleteEvent {
-            guid: self.guid.clone(),
+            guid: self.guid().clone(),
             paths: deleted_paths,
         })
     }
+}
+
+impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
+    fn init(
+        self,
+        output: &XvcOutputSender,
+        xvc_root: &xvc_core::XvcRoot,
+    ) -> Result<(XvcStorageInitEvent, Self)>
+    where
+        Self: Sized {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()?;
+        watch!(rt);
+        rt.block_on(self.a_init(output, xvc_root))
+    }
+
+    fn list(&self, output: &XvcOutputSender, xvc_root: &xvc_core::XvcRoot) -> Result<XvcStorageListEvent> \{
+        todo!()
+    \}
+
+    fn send(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &xvc_core::XvcRoot,
+        paths: &[XvcCachePath],
+        force: bool,
+    ) -> Result<XvcStorageSendEvent> \{
+        todo!()
+    \}
+
+    fn receive(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &xvc_core::XvcRoot,
+        paths: &[XvcCachePath],
+        force: bool,
+    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> \{
+        todo!()
+    \}
+
+    fn delete(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &xvc_core::XvcRoot,
+        paths: &[XvcCachePath],
+    ) -> Result<XvcStorageDeleteEvent> \{
+        todo!()
+    \}
+
+    fn share(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &xvc_core::XvcRoot,
+        path: &XvcCachePath,
+        period: std::time::Duration,
+    ) -> Result<super::XvcStorageExpiringShareEvent> \{
+        todo!()
+    \}
 }

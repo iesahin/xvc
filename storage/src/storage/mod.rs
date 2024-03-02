@@ -152,11 +152,7 @@ impl Display for XvcStorage {
 pub trait XvcStorageOperations {
     /// The init operation is creates a directory with the "short guid" of the Xvc repository and
     /// adds a .xvc-guid file with the guid of the storage.
-    fn init(
-        self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)>
+    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
     where
         Self: Sized;
 
@@ -198,10 +194,10 @@ pub trait XvcStorageOperations {
 
 impl XvcStorageOperations for XvcStorage {
     fn init(
-        self,
+        &mut self,
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)> {
+    ) -> Result<XvcStorageInitEvent> {
         match self {
             XvcStorage::Local(r) => {
                 let (e, r) = r.init(output, xvc_root)?;
