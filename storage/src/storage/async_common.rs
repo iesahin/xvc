@@ -8,12 +8,12 @@ use s3::Bucket;
 use s3::Region;
 use tokio::io::AsyncWriteExt;
 use xvc_core::XvcCachePath;
+use xvc_core::XvcRoot;
 use xvc_logging::error;
 use xvc_logging::info;
 use xvc_logging::watch;
 use xvc_logging::XvcOutputSender;
 
-use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::Error;
 use crate::Result;
 use crate::XvcStorageGuid;
@@ -26,6 +26,7 @@ use super::XvcStoragePath;
 use super::XvcStorageReceiveEvent;
 use super::XvcStorageSendEvent;
 use super::XvcStorageTempDir;
+use super::XVC_STORAGE_GUID_FILENAME;
 
 pub trait XvcS3StorageOperations {
     fn remote_prefix(&self) -> &str;
@@ -33,31 +34,43 @@ pub trait XvcS3StorageOperations {
     fn get_bucket(&self) -> Result<Bucket>;
     fn credentials(&self) -> Result<Credentials>;
     fn bucket_name(&self) -> &str;
-    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath;
-    fn region(&self) -> &str;
+    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+        XvcStoragePath::from(format!(
+            "{}/{}/{}",
+            self.remote_prefix(),
+            self.guid(),
+            cache_path
+        ))
+    }
 
-    async fn a_init(&self, output_snd: &XvcOutputSender) -> Result<(XvcStorageInitEvent, &Self)> {
-        let bucket = self.get_bucket()?;
-        let guid = self.guid().clone();
+    fn region(&self) -> &str;
+    async fn write_remote_guid(&self) -> Result<()> {
         let guid_str = self.guid().to_string();
         let guid_bytes = guid_str.as_bytes();
-
-        watch!(bucket);
-        watch!(guid);
-        watch!(guid_str);
-
-        let res_response = bucket
+        let bucket = self.get_bucket()?;
+        let response = bucket
             .put_object(
                 format!("{}/{}", self.remote_prefix(), XVC_STORAGE_GUID_FILENAME),
                 guid_bytes,
             )
             .await;
 
+        match response {
+            Ok(_) => Ok(()),
+            Err(err) => Err(Error::S3Error { source: err }),
+        }
+    }
+
+    async fn a_init(&mut self, output_snd: &XvcOutputSender) -> Result<XvcStorageInitEvent> {
+        let res_response = self.write_remote_guid().await;
+
+        let guid = self.guid().clone();
+
         match res_response {
-            Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
+            Ok(_) => Ok(XvcStorageInitEvent { guid }),
             Err(err) => {
                 error!(output_snd, "{}", err);
-                Err(Error::S3Error { source: err })
+                Err(err)
             }
         }
     }
@@ -227,52 +240,69 @@ pub trait XvcS3StorageOperations {
 }
 
 impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
-    fn init(
-        self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)>
+    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
     where
-        Self: Sized {
+        Self: Sized,
+    {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;
         watch!(rt);
-        rt.block_on(self.a_init(output, xvc_root))
+        rt.block_on(self.a_init(output))
     }
 
-    fn list(&self, output: &XvcOutputSender, xvc_root: &xvc_core::XvcRoot) -> Result<XvcStorageListEvent> \{
-        todo!()
-    \}
+    fn list(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &xvc_core::XvcRoot,
+    ) -> crate::Result<super::XvcStorageListEvent> {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(self.a_list(output, xvc_root))
+    }
 
     fn send(
         &self,
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
-        paths: &[XvcCachePath],
+        paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> Result<XvcStorageSendEvent> \{
-        todo!()
-    \}
+    ) -> crate::Result<super::XvcStorageSendEvent> {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(self.a_send(output, xvc_root, paths, force))
+    }
 
     fn receive(
         &self,
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
-        paths: &[XvcCachePath],
+        paths: &[xvc_core::XvcCachePath],
         force: bool,
-    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> \{
-        todo!()
-    \}
+    ) -> crate::Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(self.a_receive(output, paths, force))
+    }
 
     fn delete(
         &self,
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
-        paths: &[XvcCachePath],
-    ) -> Result<XvcStorageDeleteEvent> \{
-        todo!()
-    \}
+        paths: &[xvc_core::XvcCachePath],
+    ) -> crate::Result<super::XvcStorageDeleteEvent> {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(self.a_delete(output, paths))
+    }
 
     fn share(
         &self,
@@ -280,7 +310,11 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         xvc_root: &xvc_core::XvcRoot,
         path: &XvcCachePath,
         period: std::time::Duration,
-    ) -> Result<super::XvcStorageExpiringShareEvent> \{
-        todo!()
-    \}
+    ) -> Result<super::XvcStorageExpiringShareEvent> {
+        let rt = tokio::runtime::Builder::new_multi_thread()
+            .enable_all()
+            .build()
+            .unwrap();
+        rt.block_on(self.a_share(output, path, duration))
+    }
 }
