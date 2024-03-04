@@ -9,7 +9,7 @@ use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{error, info, warn, watch, XvcOutputSender};
 
-use crate::{Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,

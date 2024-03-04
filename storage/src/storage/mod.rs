@@ -351,7 +351,7 @@ impl XvcStorageOperations for XvcStorage {
     ) -> Result<XvcStorageExpiringShareEvent> {
         match self {
             XvcStorage::Local(_) | XvcStorage::Generic(_) | XvcStorage::Rsync(_) => {
-                Err(Error::RemoteDoesNotSupportSignedUrls)
+                Err(Error::StorageDoesNotSupportSignedUrls)
             }
             #[cfg(feature = "s3")]
             XvcStorage::S3(r) => r.share(output, xvc_root, path, period),
