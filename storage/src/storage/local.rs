@@ -26,12 +26,12 @@ pub fn cmd_storage_new_local(
     path: PathBuf,
     name: String,
 ) -> Result<()> {
-    let remote = XvcLocalStorage {
+    let mut remote = XvcLocalStorage {
         guid: XvcStorageGuid::new(),
         name,
         path,
     };
-    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
+    let init_event = remote.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();

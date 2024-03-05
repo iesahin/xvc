@@ -17,6 +17,8 @@ use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 use anyhow::anyhow;
 
+use super::async_common::XvcS3StorageOperations;
+use super::minio::XvcMinioStorage;
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
     XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
@@ -107,6 +109,30 @@ impl XvcR2Storage {
         )
         .map_err(|e| e.into())
     }
+}
+
+impl XvcS3StorageOperations for XvcR2Storage {
+    fn remote_prefix(&self) -> &str {
+        &self.remote_prefix
+    }
+
+    fn guid(&self) -> &XvcStorageGuid {
+        &self.guid
+    }
+    fn bucket_name(&self) -> &str {
+        self.bucket_name.as_str()
+    }
+    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+        XvcStoragePath::from(format!(
+            "{}/{}/{}",
+            self.remote_prefix, self.repo_guid, cache_path
+        ))
+    }
+
+    /// This doesn't apply to R2
+    fn region(&self) -> &str {
+        self.account_id.as_str()
+    }
 
     fn credentials(&self) -> Result<Credentials> {
         match self.remote_specific_credentials() {
@@ -131,36 +157,6 @@ impl XvcR2Storage {
         };
         let bucket = Bucket::new(&self.bucket_name, region, credentials)?;
         Ok(bucket)
-    }
-
-    async fn a_init(
-        self,
-        output_snd: &XvcOutputSender,
-        _xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)> {
-        let bucket = self.get_bucket()?;
-        let guid = self.guid.clone();
-        let guid_str = self.guid.to_string();
-        let guid_bytes = guid_str.as_bytes();
-
-        watch!(bucket);
-        watch!(guid);
-        watch!(guid_str);
-
-        let res_response = bucket
-            .put_object(
-                format!("{}/{}", self.remote_prefix, XVC_STORAGE_GUID_FILENAME),
-                guid_bytes,
-            )
-            .await;
-
-        match res_response {
-            Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
-            Err(err) => {
-                error!(output_snd, "{}", err);
-                Err(Error::S3Error { source: err })
-            }
-        }
     }
 
     async fn a_list(
@@ -212,205 +208,5 @@ impl XvcR2Storage {
                 Err(Error::S3Error { source: err })
             }
         }
-    }
-
-    fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
-        XvcStoragePath::from(format!(
-            "{}/{}/{}",
-            self.remote_prefix, repo_guid, cache_path
-        ))
-    }
-
-    async fn a_send(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-        _force: bool,
-    ) -> crate::Result<super::XvcStorageSendEvent> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-        let mut copied_paths = Vec::<XvcStoragePath>::new();
-
-        let bucket = self.get_bucket()?;
-
-        for cache_path in paths {
-            watch!(cache_path);
-            let remote_path = self.build_remote_path(&repo_guid, cache_path);
-            let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-            watch!(abs_cache_path);
-
-            let mut path = tokio::fs::File::open(&abs_cache_path).await?;
-            watch!(path);
-
-            let res_response = bucket
-                .put_object_stream(&mut path, remote_path.as_str())
-                .await;
-
-            match res_response {
-                Ok(_) => {
-                    info!(output, "{} -> {}", abs_cache_path, remote_path.as_str());
-                    copied_paths.push(remote_path);
-                    watch!(copied_paths.len());
-                }
-                Err(err) => {
-                    error!(output, "{}", err);
-                }
-            }
-        }
-
-        Ok(XvcStorageSendEvent {
-            guid: self.guid.clone(),
-            paths: copied_paths,
-        })
-    }
-
-    async fn a_receive(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-        _force: bool,
-    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-        let mut copied_paths = Vec::<XvcStoragePath>::new();
-
-        let bucket = self.get_bucket()?;
-        let temp_dir = XvcStorageTempDir::new()?;
-
-        for cache_path in paths {
-            watch!(cache_path);
-            let remote_path = self.build_remote_path(&repo_guid, cache_path);
-            let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
-            fs::create_dir_all(&abs_cache_dir)?;
-            let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
-            watch!(abs_cache_path);
-
-            let response_data_stream = bucket.get_object_stream(remote_path.as_str()).await;
-
-            match response_data_stream {
-                Ok(mut response) => {
-                    info!(output, "{} -> {}", remote_path.as_str(), abs_cache_path);
-                    let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
-                    while let Some(chunk) = response.bytes().next().await {
-                        async_cache_path.write_all(&chunk).await?;
-                    }
-                    copied_paths.push(remote_path);
-                    watch!(copied_paths.len());
-                }
-                Err(err) => {
-                    error!(output, "{}", err);
-                }
-            }
-        }
-
-        Ok((
-            temp_dir,
-            XvcStorageReceiveEvent {
-                guid: self.guid.clone(),
-                paths: copied_paths,
-            },
-        ))
-    }
-
-    async fn a_delete(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[XvcCachePath],
-    ) -> Result<XvcStorageDeleteEvent> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-        let mut deleted_paths = Vec::<XvcStoragePath>::new();
-
-        let bucket = self.get_bucket()?;
-
-        for cache_path in paths {
-            watch!(cache_path);
-            let remote_path = self.build_remote_path(&repo_guid, cache_path);
-            bucket.delete_object(remote_path.as_str()).await?;
-            info!(output, "[DELETE] {}", remote_path.as_str());
-            deleted_paths.push(remote_path);
-        }
-
-        Ok(XvcStorageDeleteEvent {
-            guid: self.guid.clone(),
-            paths: deleted_paths,
-        })
-    }
-}
-
-impl XvcStorageOperations for XvcR2Storage {
-    fn init(
-        self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()?;
-        watch!(rt);
-        rt.block_on(self.a_init(output, xvc_root))
-    }
-
-    /// List the bucket contents that start with `self.remote_prefix`
-    fn list(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-    ) -> crate::Result<super::XvcStorageListEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_list(output, xvc_root))
-    }
-
-    fn send(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-        force: bool,
-    ) -> crate::Result<super::XvcStorageSendEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_send(output, xvc_root, paths, force))
-    }
-
-    fn receive(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-        force: bool,
-    ) -> crate::Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_receive(output, xvc_root, paths, force))
-    }
-
-    fn delete(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
-        paths: &[xvc_core::XvcCachePath],
-    ) -> crate::Result<super::XvcStorageDeleteEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_delete(output, xvc_root, paths))
     }
 }
