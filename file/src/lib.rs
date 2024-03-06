@@ -19,9 +19,9 @@ pub mod mv;
 pub mod recheck;
 pub mod remove;
 pub mod send;
+pub mod share;
 pub mod track;
 pub mod untrack;
-pub mod share;
 
 pub use bring::cmd_bring;
 pub use carry_in::cmd_carry_in;
@@ -32,10 +32,12 @@ pub use mv::cmd_move;
 pub use recheck::cmd_recheck;
 pub use remove::cmd_remove;
 pub use send::cmd_send;
+use share::ShareCLI;
 pub use track::cmd_track;
 pub use untrack::cmd_untrack;
 
 use crate::error::{Error, Result};
+use crate::share::cmd_share;
 use clap::Subcommand;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -218,6 +220,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Remove(opts) => cmd_remove(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Share(opts) => cmd_share(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

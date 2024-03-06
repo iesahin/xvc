@@ -116,8 +116,8 @@ impl XvcS3Storage {
 }
 
 impl XvcS3StorageOperations for XvcS3Storage {
-    fn remote_prefix(&self) -> &str {
-        self.storage_prefix.as_str()
+    fn remote_prefix(&self) -> String {
+        self.storage_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
@@ -147,8 +147,8 @@ impl XvcS3StorageOperations for XvcS3Storage {
         .map_err(|e| e.into())
     }
 
-    fn bucket_name(&self) -> &str {
-        self.bucket_name.as_str()
+    fn bucket_name(&self) -> String {
+        self.bucket_name.clone()
     }
 
     async fn write_remote_guid(&self) -> Result<()> {
@@ -178,7 +178,7 @@ impl XvcS3StorageOperations for XvcS3Storage {
         ))
     }
 
-    fn region(&self) -> &str {
-        self.region().to_string().as_str()
+    fn region(&self) -> String {
+        self.region.clone()
     }
 }

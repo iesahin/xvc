@@ -1,29 +1,20 @@
 //! Minio remote storage implementation.
-use std::str::FromStr;
-use std::{env, fs};
+use std::env;
 
 use anyhow::anyhow;
 
-use futures::StreamExt;
-use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use tokio;
-use tokio::io::AsyncWriteExt;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, watch, XvcOutputSender};
+use xvc_logging::{watch, XvcOutputSender};
 
-use crate::storage::XvcStorageReceiveEvent;
-use crate::{Error, Result, XvcStorage, XvcStorageEvent};
+use crate::{Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::async_common::XvcS3StorageOperations;
-use super::{
-    XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageSendEvent, XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
-};
+use super::XvcStoragePath;
 
 /// Configure a new Minio remote storage.
 ///
@@ -45,7 +36,7 @@ pub fn cmd_new_minio(
     region: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcMinioStorage {
+    let mut remote = XvcMinioStorage {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -55,7 +46,7 @@ pub fn cmd_new_minio(
     };
     watch!(remote);
 
-    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
+    let init_event = remote.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -118,8 +109,8 @@ impl XvcMinioStorage {
 }
 
 impl XvcS3StorageOperations for XvcMinioStorage {
-    fn remote_prefix(&self) -> &str {
-        self.remote_prefix.as_str()
+    fn remote_prefix(&self) -> String {
+        self.remote_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
@@ -152,19 +143,21 @@ impl XvcS3StorageOperations for XvcMinioStorage {
         .map_err(|e| e.into())
     }
 
-    fn bucket_name(&self) -> &str {
-        self.bucket_name.as_str()
+    fn bucket_name(&self) -> String {
+        self.bucket_name.clone()
     }
 
-    fn build_remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
+    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
-            self.remote_prefix, repo_guid, cache_path
+            self.remote_prefix,
+            self.guid(),
+            cache_path
         ))
     }
 
-    fn region(&self) -> &str {
-        self.region.as_str()
+    fn region(&self) -> String {
+        self.region.clone()
     }
 
     // async fn a_init(

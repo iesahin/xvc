@@ -85,7 +85,7 @@ impl XvcStorageOperations for XvcLocalStorage {
                 already_available_guid
             );
 
-            self.guid = already_available_guid;
+            self.guid = already_available_guid.clone();
 
             return Ok(XvcStorageInitEvent {
                 guid: already_available_guid,
@@ -223,10 +223,10 @@ impl XvcStorageOperations for XvcLocalStorage {
 
     fn share(
         &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        path: &XvcCachePath,
-        period: std::time::Duration,
+        _output: &XvcOutputSender,
+        _xvc_root: &XvcRoot,
+        _path: &XvcCachePath,
+        _period: std::time::Duration,
     ) -> Result<super::XvcStorageExpiringShareEvent> {
         Err(Error::StorageDoesNotSupportSignedUrls)
     }

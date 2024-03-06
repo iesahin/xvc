@@ -102,8 +102,8 @@ impl XvcGcsStorage {
 }
 
 impl XvcS3StorageOperations for XvcGcsStorage {
-    fn remote_prefix(&self) -> &str {
-        self.remote_prefix.as_str()
+    fn remote_prefix(&self) -> String {
+        self.remote_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
@@ -120,12 +120,12 @@ impl XvcS3StorageOperations for XvcGcsStorage {
         Ok(bucket)
     }
 
-    fn bucket_name(&self) -> &str {
-        self.bucket_name.as_str()
+    fn bucket_name(&self) -> String {
+        self.bucket_name.clone()
     }
 
-    fn region(&self) -> &str {
-        self.region.as_str()
+    fn region(&self) -> String {
+        self.region.clone()
     }
 
     fn credentials(&self) -> Result<Credentials> {

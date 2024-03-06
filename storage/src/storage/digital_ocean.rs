@@ -101,8 +101,8 @@ impl XvcDigitalOceanStorage {
 }
 
 impl XvcS3StorageOperations for XvcDigitalOceanStorage {
-    fn remote_prefix(&self) -> &str {
-        self.remote_prefix.as_str()
+    fn remote_prefix(&self) -> String {
+        self.remote_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
@@ -132,11 +132,11 @@ impl XvcS3StorageOperations for XvcDigitalOceanStorage {
         Ok(bucket)
     }
 
-    fn bucket_name(&self) -> &str {
-        &self.bucket_name
+    fn bucket_name(&self) -> String {
+        self.bucket_name.clone()
     }
 
-    fn region(&self) -> &str {
-        self.region.as_str()
+    fn region(&self) -> String {
+        self.region.clone()
     }
 }

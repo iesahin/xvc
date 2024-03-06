@@ -1,28 +1,20 @@
 //! Wasabi storage implementation.
-use std::str::FromStr;
-use std::{env, fs};
+use std::env;
 
-use futures::StreamExt;
-use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use tokio::io::AsyncWriteExt;
 use xvc_core::XvcCachePath;
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, watch, XvcOutputSender};
+use xvc_logging::{watch, XvcOutputSender};
 
-use crate::storage::XVC_STORAGE_GUID_FILENAME;
-use crate::{Error, Result, XvcStorage, XvcStorageEvent};
+use crate::{Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use anyhow::anyhow;
 
 use super::async_common::XvcS3StorageOperations;
-use super::{
-    XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
-};
+use super::XvcStoragePath;
 
 /// Configure a new Wasabi storage remote.
 ///
@@ -126,19 +118,19 @@ impl XvcWasabiStorage {
 }
 
 impl XvcS3StorageOperations for XvcWasabiStorage {
-    fn remote_prefix(&self) -> &str {
-        self.storage_prefix.as_str()
+    fn remote_prefix(&self) -> String {
+        self.storage_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
         &self.guid
     }
-    fn bucket_name(&self) -> &str {
-        self.bucket_name.as_str()
+    fn bucket_name(&self) -> String {
+        self.bucket_name.clone()
     }
 
-    fn region(&self) -> &str {
-        self.endpoint.as_str()
+    fn region(&self) -> String {
+        self.endpoint.clone()
     }
 
     fn get_bucket(&self) -> Result<Bucket> {

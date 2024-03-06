@@ -7,7 +7,7 @@ use super::{XvcStorageGuid, XvcStoragePath};
 /// The init event of a storage when the directory for is created and .xvc-guid file is written.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcStorageInitEvent {
-    /// THe GUID written to the .xvc-guid file
+    /// The GUID written to the .xvc-guid file
     pub guid: XvcStorageGuid,
 }
 
@@ -56,7 +56,7 @@ pub struct XvcStorageExpiringShareEvent {
     /// The signed URL
     pub signed_url: String,
     /// The expiration date of the signed URL
-    pub expiration_seconds: u64,
+    pub expiration_seconds: u32,
 }
 
 /// Collected storage events.
@@ -72,5 +72,7 @@ pub enum XvcStorageEvent {
     Receive(XvcStorageReceiveEvent),
     /// The delete event when files are deleted from the storage.
     Delete(XvcStorageDeleteEvent),
+    /// The share event when a file is shared via signed URL
+    Share(XvcStorageExpiringShareEvent),
 }
 persist!(XvcStorageEvent, "storage-event");

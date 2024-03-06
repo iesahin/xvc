@@ -1,28 +1,21 @@
 //! Cloudflare R2 remote storage implementation.
+use std::env;
 use std::str::FromStr;
-use std::{env, fs};
 
-use futures::StreamExt;
 use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use tokio::io::AsyncWriteExt;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, watch, XvcOutputSender};
+use xvc_logging::{error, watch, XvcOutputSender};
 
-use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 use anyhow::anyhow;
 
 use super::async_common::XvcS3StorageOperations;
-use super::minio::XvcMinioStorage;
-use super::{
-    XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
-};
+use super::{XvcStorageListEvent, XvcStoragePath};
 
 /// Configure a new Cloudflare R2 remote storage.
 ///
@@ -41,7 +34,7 @@ pub fn cmd_new_r2(
     bucket_name: String,
     remote_prefix: String,
 ) -> Result<()> {
-    let remote = XvcR2Storage {
+    let mut remote = XvcR2Storage {
         guid: XvcStorageGuid::new(),
         name,
         account_id,
@@ -51,7 +44,7 @@ pub fn cmd_new_r2(
 
     watch!(remote);
 
-    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
+    let init_event = remote.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -112,26 +105,28 @@ impl XvcR2Storage {
 }
 
 impl XvcS3StorageOperations for XvcR2Storage {
-    fn remote_prefix(&self) -> &str {
-        &self.remote_prefix
+    fn remote_prefix(&self) -> String {
+        self.remote_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
         &self.guid
     }
-    fn bucket_name(&self) -> &str {
-        self.bucket_name.as_str()
+    fn bucket_name(&self) -> String {
+        self.bucket_name.clone()
     }
     fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
-            self.remote_prefix, self.repo_guid, cache_path
+            self.remote_prefix,
+            self.guid(),
+            cache_path
         ))
     }
 
     /// This doesn't apply to R2
-    fn region(&self) -> &str {
-        self.account_id.as_str()
+    fn region(&self) -> String {
+        self.account_id.clone()
     }
 
     fn credentials(&self) -> Result<Credentials> {

@@ -20,6 +20,7 @@ use crate::XvcStorageGuid;
 use crate::XvcStorageOperations;
 
 use super::XvcStorageDeleteEvent;
+use super::XvcStorageExpiringShareEvent;
 use super::XvcStorageInitEvent;
 use super::XvcStorageListEvent;
 use super::XvcStoragePath;
@@ -29,11 +30,11 @@ use super::XvcStorageTempDir;
 use super::XVC_STORAGE_GUID_FILENAME;
 
 pub trait XvcS3StorageOperations {
-    fn remote_prefix(&self) -> &str;
+    fn remote_prefix(&self) -> String;
     fn guid(&self) -> &XvcStorageGuid;
     fn get_bucket(&self) -> Result<Bucket>;
     fn credentials(&self) -> Result<Credentials>;
-    fn bucket_name(&self) -> &str;
+    fn bucket_name(&self) -> String;
     fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
@@ -43,7 +44,7 @@ pub trait XvcS3StorageOperations {
         ))
     }
 
-    fn region(&self) -> &str;
+    fn region(&self) -> String;
     async fn write_remote_guid(&self) -> Result<()> {
         let guid_str = self.guid().to_string();
         let guid_bytes = guid_str.as_bytes();
@@ -237,6 +238,33 @@ pub trait XvcS3StorageOperations {
             paths: deleted_paths,
         })
     }
+
+    async fn a_share(
+        &self,
+        output: &XvcOutputSender,
+        path: &XvcCachePath,
+        duration: std::time::Duration,
+    ) -> Result<XvcStorageExpiringShareEvent> {
+        let bucket = self.get_bucket()?;
+        // These are optional
+        // let mut custom_queries = HashMap::new();
+        // custom_queries.insert(
+        //    "response-content-disposition".into(),
+        //    "attachment; filename=\"test.png\"".into(),
+        // );
+        //
+
+        let expiration_seconds = duration.as_secs() as u32;
+        let path = self.build_remote_path(path);
+        let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None)?;
+        info!(output, "[SHARED] {}", path.as_str());
+        Ok(super::XvcStorageExpiringShareEvent {
+            guid: self.guid().clone(),
+            signed_url,
+            expiration_seconds,
+            path,
+        })
+    }
 }
 
 impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
@@ -309,8 +337,8 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
         path: &XvcCachePath,
-        period: std::time::Duration,
-    ) -> Result<super::XvcStorageExpiringShareEvent> {
+        duration: std::time::Duration,
+    ) -> Result<XvcStorageExpiringShareEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()

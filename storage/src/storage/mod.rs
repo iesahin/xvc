@@ -199,21 +199,21 @@ impl XvcStorageOperations for XvcStorage {
         xvc_root: &XvcRoot,
     ) -> Result<XvcStorageInitEvent> {
         match self {
-            XvcStorage::Local(mut r) => r.init(output, xvc_root),
-            XvcStorage::Generic(mut r) => r.init(output, xvc_root),
-            XvcStorage::Rsync(mut r) => r.init(output, xvc_root),
+            XvcStorage::Local(ref mut r) => r.init(output, xvc_root),
+            XvcStorage::Generic(ref mut r) => r.init(output, xvc_root),
+            XvcStorage::Rsync(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "s3")]
-            XvcStorage::S3(mut r) => r.init(output, xvc_root),
+            XvcStorage::S3(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "minio")]
-            XvcStorage::Minio(mut r) => r.init(output, xvc_root),
+            XvcStorage::Minio(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "r2")]
-            XvcStorage::R2(mut r) => r.init(output, xvc_root),
+            XvcStorage::R2(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(mut r) => r.init(output, xvc_root),
+            XvcStorage::Gcs(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(mut r) => r.init(output, xvc_root),
+            XvcStorage::Wasabi(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(mut r) => r.init(output, xvc_root),
+            XvcStorage::DigitalOcean(ref mut r) => r.init(output, xvc_root),
         }
     }
 
