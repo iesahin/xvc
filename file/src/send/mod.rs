@@ -7,6 +7,8 @@ use crate::Result;
 
 use clap::Parser;
 
+use humantime;
+
 use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{error, watch, XvcOutputSender};

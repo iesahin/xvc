@@ -1,10 +1,12 @@
 use std::path::PathBuf;
 
-use crate::Result;
+use crate::{common::load_targets_from_store, error, Result};
 use clap::{command, Parser};
-use xvc_core::XvcRoot;
-use xvc_logging::XvcOutputSender;
-use xvc_storage::StorageIdentifier;
+use humantime;
+use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
+use xvc_ecs::{HStore, XvcStore};
+use xvc_logging::{uwo, watch, XvcOutputSender};
+use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 
 /// Share (uploaded and tracked) files from an S3 compatible storage
 ///
@@ -21,7 +23,49 @@ pub struct ShareCLI {
     duration: String,
     /// File to send/push/upload to storage
     #[arg()]
-    target: PathBuf,
+    target: String,
 }
 
-pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCLI) -> Result<()> {}
+pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCLI) -> Result<()> {
+    // TODO: TIDY UP these implementation to reuse code in other places
+    let remote = get_storage_record(output_snd, xvc_root, &opts.remote)?;
+    watch!(remote);
+    let current_dir = xvc_root.config().current_dir()?;
+    let targets = load_targets_from_store(xvc_root, current_dir, &Some(vec![opts.target]))?;
+    watch!(targets);
+
+    let target_file_xvc_metadata = xvc_root
+        .load_store::<XvcMetadata>()?
+        .subset(targets.keys().copied())?
+        .filter(|_, xmd| xmd.file_type == XvcFileType::File)
+        .cloned();
+
+    let target_files = targets.subset(target_file_xvc_metadata.keys().copied())?;
+
+    if target_files.is_empty() {
+        return Err(error::Error::NoFilesToShare);
+    }
+
+    if target_files.len() > 1 {
+        return Err(error::Error::MultipleFilesToShare);
+    }
+
+    let (target_file_e, target_file) = target_files.iter().next().unwrap();
+
+    let content_digest_store: XvcStore<ContentDigest> = xvc_root.load_store()?;
+
+    let target_content_digest = uwo!(content_digest_store.get(target_file_e), output_snd);
+
+    watch!(target_content_digest);
+
+    let cache_path = XvcCachePath::new(target_file, target_content_digest)?;
+
+    watch!(cache_path);
+
+    let duration = humantime::parse_duration(&opts.duration)?;
+
+    watch!(duration);
+
+    remote.share(output_snd, xvc_root, &cache_path, duration)?;
+    Ok(())
+}

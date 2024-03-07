@@ -89,6 +89,12 @@ pub enum Error {
 
     #[error("Poisoned Locks: {t} {cause}")]
     LockPoisonError { t: String, cause: String },
+
+    #[error("Multiple files found to share")]
+    MultipleFilesToShare,
+
+    #[error("No files found to share")]
+    NoFilesToShare,
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

@@ -71,6 +71,7 @@ fern = { version = "^0.6", features = ["colored"] }
 paste = "1.0"
 
 ## Misc
+humantime = "^2.1"
 subprocess = "^0.2"
 regex = "^1.10"
 strum = "0.25.0"
