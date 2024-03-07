@@ -95,6 +95,12 @@ pub enum Error {
 
     #[error("No files found to share")]
     NoFilesToShare,
+
+    #[error("Error parsing the duration")]
+    DurationError {
+        #[from]
+        source: humantime::DurationError,
+    },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
