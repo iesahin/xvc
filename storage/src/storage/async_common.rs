@@ -258,6 +258,7 @@ pub trait XvcS3StorageOperations {
         let path = self.build_remote_path(path);
         let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None)?;
         info!(output, "[SHARED] {}", path.as_str());
+        output!(output, "{}", signed_url);
         Ok(super::XvcStorageExpiringShareEvent {
             guid: self.guid().clone(),
             signed_url,

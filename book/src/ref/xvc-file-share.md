@@ -65,26 +65,18 @@ Now you can share the files. It will create a URL for you to share that file.
 
 ```console
 $ xvc file share --remote backup dir-0001/file-0001.bin
-? 2
-error: the following required arguments were not provided:
-  --remote <REMOTE>
-
-Usage: xvc file share --remote <REMOTE> <TARGET>
-
-For more information, try '--help'.
 
 ```
 
 Note that the default period is 24 hours. You can set another period with `--duration`.
 
 ```console
-$ xvc file share --duration 1h dir-0001/file-0002.bin
+$ xvc file share --duration 1h --remote backup dir-0001/file-0002.bin
 ? 2
-error: unexpected argument '--period' found
+error: the following required arguments were not provided:
+  --remote <REMOTE>
 
-  tip: to pass '--period' as a value, use '-- --period'
-
-Usage: xvc file share [OPTIONS] --remote <REMOTE> <TARGET>
+Usage: xvc file share --remote <REMOTE> --duration <DURATION> <TARGET>
 
 For more information, try '--help'.
 
@@ -93,13 +85,12 @@ For more information, try '--help'.
 You can get another URL for a shared file with a different period.
 
 ```console
-$ xvc file share --duration 1m dir-0001/file-0002.bin
+$ xvc file share --duration 1m --remote backup dir-0001/file-0002.bin
 ? 2
-error: unexpected argument '--period' found
+error: the following required arguments were not provided:
+  --remote <REMOTE>
 
-  tip: to pass '--period' as a value, use '-- --period'
-
-Usage: xvc file share [OPTIONS] --remote <REMOTE> <TARGET>
+Usage: xvc file share --remote <REMOTE> --duration <DURATION> <TARGET>
 
 For more information, try '--help'.
 
