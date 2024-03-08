@@ -4,6 +4,17 @@
 
 ```console
 $ xvc file share --help
+Share a file from S3 compatible storage for a limited time
+
+Usage: xvc file share [OPTIONS] --remote <REMOTE> <TARGET>
+
+Arguments:
+  <TARGET>  File to send/push/upload to storage
+
+Options:
+  -r, --remote <REMOTE>      Storage name or guid to send the files
+  -d, --duration <DURATION>  Period to send the files to. You can use s, m, h, d, w suffixes [default: 24h]
+  -h, --help                 Print help
 
 ```
 
@@ -13,6 +24,7 @@ This command requires an Xvc repository to share files from S3 and compatible st
 
 ```console
 $ git init
+Initialized empty Git repository in [CWD]/.git/
 
 $ xvc init
 
@@ -43,23 +55,56 @@ $ xvc storage new s3 --name backup --bucket-name xvc-test --region eu-central-1 
 
 ```
 
-Now you can share the files. It will first send the file if not found, and will create a URL for you to share that file.
+You must first send files to the remote storage.
 
 ```console
-$ xvc file share dir-0001/file-0001.bin
+$ xvc file send --remote backup dir-0001/
+```
+
+Now you can share the files. It will create a URL for you to share that file.
+
+```console
+$ xvc file share --remote backup dir-0001/file-0001.bin
+? 2
+error: the following required arguments were not provided:
+  --remote <REMOTE>
+
+Usage: xvc file share --remote <REMOTE> <TARGET>
+
+For more information, try '--help'.
 
 ```
 
-Note that the default period is 24 hours. You can set another period with `--period`.
+Note that the default period is 24 hours. You can set another period with `--duration`.
 
 ```console
-$ xvc file share --period 1h dir-0001/file-0002.bin
+$ xvc file share --duration 1h dir-0001/file-0002.bin
+? 2
+error: unexpected argument '--period' found
+
+  tip: to pass '--period' as a value, use '-- --period'
+
+Usage: xvc file share [OPTIONS] --remote <REMOTE> <TARGET>
+
+For more information, try '--help'.
+
 ```
 
 You can get another URL for a shared file with a different period.
 
 ```console
-$ xvc file share --period 1m dir-0001/file-0002.bin
+$ xvc file share --duration 1m dir-0001/file-0002.bin
+? 2
+error: unexpected argument '--period' found
+
+  tip: to pass '--period' as a value, use '-- --period'
+
+Usage: xvc file share [OPTIONS] --remote <REMOTE> <TARGET>
+
+For more information, try '--help'.
+
 ```
 
-Note that `m` suffix refers to minute, not month. The suffixes for the command are selected to be unambiguous.
+See [humantime duration parsing
+documentation](https://docs.rs/humantime/latest/humantime/fn.parse_duration.html)
+for duration expressions.
