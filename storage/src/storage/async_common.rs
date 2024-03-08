@@ -12,6 +12,7 @@ use xvc_core::XvcRoot;
 use xvc_logging::error;
 use xvc_logging::info;
 use xvc_logging::watch;
+use xvc_logging::output;
 use xvc_logging::XvcOutputSender;
 
 use crate::Error;
