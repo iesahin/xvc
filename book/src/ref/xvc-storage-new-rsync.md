@@ -21,7 +21,7 @@ Usage: xvc storage new rsync [OPTIONS] --name <NAME> --host <HOST> --storage-dir
 Options:
   -n, --name <NAME>
           Name of the storage.
-
+          
           Recommended to keep this name unique to refer easily.
 
       --host <HOST>

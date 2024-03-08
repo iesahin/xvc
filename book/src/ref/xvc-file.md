@@ -21,6 +21,7 @@ Commands:
   bring     Bring (download, pull, fetch) files from external storages
   remove    Remove files from Xvc and possibly storages
   untrack   Untrack (delete) files from Xvc and possibly storages
+  share     Share a file from S3 compatible storage for a limited time
   help      Print this message or the help of the given subcommand(s)
 
 Options:
