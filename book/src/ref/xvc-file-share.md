@@ -65,7 +65,7 @@ Now you can share the files. It will create a URL for you to share that file. (H
 
 ```console
 $ zsh -cl 'xvc file share --remote backup dir-0001/file-0001.bin | cut -c -50'
-https://xvc-test.s3.
+https://xvc-test.s3.eu-central-1.amazonaws.com/xvc
 
 ```
 
@@ -73,7 +73,7 @@ Note that the default period is 24 hours. You can set another period with `--dur
 
 ```console
 $ zsh -cl 'xvc file share --duration 1h --remote backup dir-0001/file-0002.bin | cut -c -50'
-.
+https://xvc-test.s3.eu-central-1.amazonaws.com/xvc
 
 ```
 
@@ -81,7 +81,7 @@ You can get another URL for a shared file with a different period.
 
 ```console
 $ zsh -cl 'xvc file share --duration 1m --remote backup dir-0001/file-0002.bin | cut -c -50'
-.
+https://xvc-test.s3.eu-central-1.amazonaws.com/xvc
 
 ```
 
