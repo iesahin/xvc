@@ -1,6 +1,6 @@
 [package]
 name = "xvc-ecs"
-version = "0.6.6"
+version = "0.6.7"
 edition = "2021"
 description = "Entity-Component System for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -19,7 +19,7 @@ crate-type = ["rlib"]
 debug = true
 
 [dependencies]
-xvc-logging = { version = "0.6.6", path = "../logging" }
+xvc-logging = { version = "0.6.7", path = "../logging" }
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }

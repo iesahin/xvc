@@ -5,6 +5,8 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+## 0.6.7 (2024-03-18)
+
 - Added `xvc file share` command to share files from S3 signed URLs
 
 ## 0.6.6 (2024-01-12)
