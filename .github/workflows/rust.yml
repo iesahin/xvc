@@ -96,7 +96,7 @@ jobs:
           RUSTFLAGS: "-A dead_code"
 
       - name: Add xvc to PATH
-        run: echo 'PATH=$PATH:$GITHUB_WORKSPACE/target/debug/' >> $HOME/.profile
+        run: echo 'PATH=$PATH:$GITHUB_WORKSPACE/xvc/target/debug/' >> $HOME/.profile
 
       - name: Test
         if: matrix.coverage
