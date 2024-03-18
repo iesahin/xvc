@@ -98,6 +98,9 @@ jobs:
       - name: Add xvc to PATH
         run: echo 'PATH=$PATH:$GITHUB_WORKSPACE/xvc/target/debug/' >> $HOME/.profile
 
+      - name: Check if xvc is in PATH
+        run: xvc --help
+
       - name: Test
         if: matrix.coverage
         uses: actions-rs/cargo@v1
