@@ -99,10 +99,12 @@ jobs:
         run: export PATH="$PATH:$GITHUB_WORKSPACE/xvc/target/debug/"
 
       - name: Print contents of $GITHUB_WORKSPACE
-        run: ls $GITHUB_WORKSPACE/*
+        run: tree $GITHUB_WORKSPACE
 
       - name: Check if xvc is in PATH
         run: echo $PATH && xvc --help
+        env:
+          PATH: "$PATH:$GITHUB_WORKSPACE/target/debug/"
 
       - name: Test
         if: matrix.coverage
@@ -111,6 +113,7 @@ jobs:
           command: test
           args: ${{ matrix.test-args }}
         env:
+          PATH: "$PATH:$GITHUB_WORKSPACE/target/debug/"
           CARGO_INCREMENTAL: "0"
           # To debug the output when commands fail
           TRYCMD: "dump"
