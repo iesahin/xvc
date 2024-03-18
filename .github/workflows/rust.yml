@@ -96,10 +96,10 @@ jobs:
           RUSTFLAGS: "-A dead_code"
 
       - name: Add xvc to PATH
-        run: export PATH=$PATH:$GITHUB_WORKSPACE/xvc/target/debug/
+        run: export PATH="$PATH:$GITHUB_WORKSPACE/xvc/target/debug/"
 
       - name: Print contents of $GITHUB_WORKSPACE
-        run: ls $GITHUB_WORKSPACE
+        run: ls $GITHUB_WORKSPACE/*
 
       - name: Check if xvc is in PATH
         run: echo $PATH && xvc --help
