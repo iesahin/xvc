@@ -32,7 +32,7 @@ pub fn cmd_new_rsync(
     user: Option<String>,
     storage_dir: String,
 ) -> Result<()> {
-    let storage = XvcRsyncStorage {
+    let mut storage = XvcRsyncStorage {
         guid: XvcStorageGuid::new(),
         name,
         host,
@@ -43,7 +43,7 @@ pub fn cmd_new_rsync(
 
     watch!(storage);
 
-    let (init_event, storage) = storage.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -245,10 +245,10 @@ impl XvcRsyncStorage {
 impl XvcStorageOperations for XvcRsyncStorage {
     /// Initialize the repository by copying guid file to remote storage directory.
     fn init(
-        self,
+        &mut self,
         output: &XvcOutputSender,
         _xvc_root: &XvcRoot,
-    ) -> Result<(super::XvcStorageInitEvent, Self)> {
+    ) -> Result<super::XvcStorageInitEvent> {
         // "--init",
         // "ssh {URL} 'mkdir -p {STORAGE_DIR}' ; rsync -av {LOCAL_GUID_FILE_PATH} {URL}:{STORAGE_GUID_FILE_PATH}",
         //
@@ -282,12 +282,9 @@ impl XvcStorageOperations for XvcRsyncStorage {
 
         fs::remove_file(&local_guid_path)?;
 
-        Ok((
-            XvcStorageInitEvent {
-                guid: self.guid.clone(),
-            },
-            self,
-        ))
+        Ok(XvcStorageInitEvent {
+            guid: self.guid.clone(),
+        })
     }
 
     /// Lists all files in the remote directory that match to regex:
@@ -471,5 +468,15 @@ impl XvcStorageOperations for XvcRsyncStorage {
             guid: self.guid.clone(),
             paths: storage_paths,
         })
+    }
+
+    fn share(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &XvcRoot,
+        path: &XvcCachePath,
+        period: std::time::Duration,
+    ) -> Result<super::XvcStorageExpiringShareEvent> {
+        Err(Error::StorageDoesNotSupportSignedUrls)
     }
 }

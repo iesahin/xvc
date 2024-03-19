@@ -95,6 +95,15 @@ jobs:
         env:
           RUSTFLAGS: "-A dead_code"
 
+      - name: Add xvc to PATH
+        run: echo "${GITHUB_WORKSPACE}/target/debug" >> $GITHUB_PATH
+
+      - name: Print contents of $GITHUB_WORKSPACE
+        run: tree $GITHUB_WORKSPACE
+
+      - name: Check if xvc is in PATH
+        run: tree $GITHUB_WORKSPACE && xvc --help
+
       - name: Test
         if: matrix.coverage
         uses: actions-rs/cargo@v1

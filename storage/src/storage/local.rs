@@ -16,7 +16,7 @@ use super::{
     XvcStorageOperations, XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent,
     XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
 };
-use crate::{Result, XvcStorage, XvcStorageEvent};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 
 /// Entry point for `xvc storage new local` command
 pub fn cmd_storage_new_local(
@@ -26,12 +26,12 @@ pub fn cmd_storage_new_local(
     path: PathBuf,
     name: String,
 ) -> Result<()> {
-    let remote = XvcLocalStorage {
+    let mut remote = XvcLocalStorage {
         guid: XvcStorageGuid::new(),
         name,
         path,
     };
-    let (init_event, remote) = remote.init(output_snd, xvc_root)?;
+    let init_event = remote.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -67,10 +67,10 @@ impl XvcLocalStorage {
 
 impl XvcStorageOperations for XvcLocalStorage {
     fn init(
-        self,
+        &mut self,
         output: &XvcOutputSender,
         _xvc_root: &XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)> {
+    ) -> Result<XvcStorageInitEvent> {
         let guid_filename = self.path.join(XVC_STORAGE_GUID_FILENAME);
         // If guid filename exists, we can report a reinit and exit.
         watch!(guid_filename);
@@ -85,16 +85,11 @@ impl XvcStorageOperations for XvcLocalStorage {
                 already_available_guid
             );
 
-            let new_self = XvcLocalStorage {
-                guid: already_available_guid.clone(),
-                ..self
-            };
-            return Ok((
-                XvcStorageInitEvent {
-                    guid: already_available_guid,
-                },
-                new_self,
-            ));
+            self.guid = already_available_guid.clone();
+
+            return Ok(XvcStorageInitEvent {
+                guid: already_available_guid,
+            });
         }
 
         if !self.path.exists() {
@@ -109,12 +104,9 @@ impl XvcStorageOperations for XvcLocalStorage {
             self.guid
         );
 
-        Ok((
-            XvcStorageInitEvent {
-                guid: self.guid.clone(),
-            },
-            self,
-        ))
+        Ok(XvcStorageInitEvent {
+            guid: self.guid.clone(),
+        })
     }
 
     fn list(&self, _output: &XvcOutputSender, _xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
@@ -227,5 +219,15 @@ impl XvcStorageOperations for XvcLocalStorage {
             guid: self.guid.clone(),
             paths: deleted_paths,
         })
+    }
+
+    fn share(
+        &self,
+        _output: &XvcOutputSender,
+        _xvc_root: &XvcRoot,
+        _path: &XvcCachePath,
+        _period: std::time::Duration,
+    ) -> Result<super::XvcStorageExpiringShareEvent> {
+        Err(Error::StorageDoesNotSupportSignedUrls)
     }
 }

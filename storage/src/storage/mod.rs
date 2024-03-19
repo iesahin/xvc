@@ -1,4 +1,7 @@
 //! Cloud storage implementations for xvc.
+#[cfg(feature = "async")]
+pub mod async_common;
+pub mod common;
 #[cfg(feature = "digital-ocean")]
 pub mod digital_ocean;
 pub mod event;
@@ -16,12 +19,12 @@ pub mod s3;
 #[cfg(feature = "wasabi")]
 pub mod wasabi;
 
-use std::{fmt::Display, str::FromStr};
+use std::{fmt::Display, str::FromStr, time::Duration};
 
 use derive_more::Display;
 pub use event::{
-    XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageInitEvent, XvcStorageListEvent,
-    XvcStorageReceiveEvent, XvcStorageSendEvent,
+    XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageExpiringShareEvent, XvcStorageInitEvent,
+    XvcStorageListEvent, XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
 pub use local::XvcLocalStorage;
@@ -149,11 +152,7 @@ impl Display for XvcStorage {
 pub trait XvcStorageOperations {
     /// The init operation is creates a directory with the "short guid" of the Xvc repository and
     /// adds a .xvc-guid file with the guid of the storage.
-    fn init(
-        self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)>
+    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
     where
         Self: Sized;
 
@@ -182,57 +181,39 @@ pub trait XvcStorageOperations {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent>;
+
+    /// Used to share files from S3 compatible storages with a signed URL.
+    fn share(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &XvcRoot,
+        path: &XvcCachePath,
+        period: Duration,
+    ) -> Result<XvcStorageExpiringShareEvent>;
 }
 
 impl XvcStorageOperations for XvcStorage {
     fn init(
-        self,
+        &mut self,
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
-    ) -> Result<(XvcStorageInitEvent, Self)> {
+    ) -> Result<XvcStorageInitEvent> {
         match self {
-            XvcStorage::Local(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::Local(r)))
-            }
-            XvcStorage::Generic(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::Generic(r)))
-            }
-            XvcStorage::Rsync(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::Rsync(r)))
-            }
+            XvcStorage::Local(ref mut r) => r.init(output, xvc_root),
+            XvcStorage::Generic(ref mut r) => r.init(output, xvc_root),
+            XvcStorage::Rsync(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "s3")]
-            XvcStorage::S3(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::S3(r)))
-            }
+            XvcStorage::S3(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "minio")]
-            XvcStorage::Minio(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::Minio(r)))
-            }
+            XvcStorage::Minio(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::R2(r)))
-            }
+            XvcStorage::R2(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::Gcs(r)))
-            }
+            XvcStorage::Gcs(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::Wasabi(r)))
-            }
+            XvcStorage::Wasabi(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => {
-                let (e, r) = r.init(output, xvc_root)?;
-                Ok((e, XvcStorage::DigitalOcean(r)))
-            }
+            XvcStorage::DigitalOcean(ref mut r) => r.init(output, xvc_root),
         }
     }
 
@@ -331,6 +312,32 @@ impl XvcStorageOperations for XvcStorage {
             XvcStorage::Wasabi(r) => r.delete(output, xvc_root, paths),
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(r) => r.delete(output, xvc_root, paths),
+        }
+    }
+
+    fn share(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &XvcRoot,
+        path: &XvcCachePath,
+        period: Duration,
+    ) -> Result<XvcStorageExpiringShareEvent> {
+        match self {
+            XvcStorage::Local(_) | XvcStorage::Generic(_) | XvcStorage::Rsync(_) => {
+                Err(Error::StorageDoesNotSupportSignedUrls)
+            }
+            #[cfg(feature = "s3")]
+            XvcStorage::S3(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "minio")]
+            XvcStorage::Minio(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "r2")]
+            XvcStorage::R2(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "gcs")]
+            XvcStorage::Gcs(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "wasabi")]
+            XvcStorage::Wasabi(r) => r.share(output, xvc_root, path, period),
+            #[cfg(feature = "digital-ocean")]
+            XvcStorage::DigitalOcean(r) => r.share(output, xvc_root, path, period),
         }
     }
 }
@@ -489,8 +496,9 @@ pub fn get_storage_record(
 
     if remote_store.is_empty() {
         panic!(output_snd, "Cannot find remote {}", identifier);
-    } else if remote_store.len() > 1 {
-        panic!(output_snd, "Ambigious remote identifier: {}", identifier);
+    }
+    if remote_store.len() > 1 {
+        panic!(output_snd, "Ambiguous remote identifier: {}", identifier);
     }
 
     let (_, remote) =

@@ -96,6 +96,9 @@ pub enum Error {
         #[from]
         source: std::env::VarError,
     },
+
+    #[error("This storage type does not support file sharing with signed URLs")]
+    StorageDoesNotSupportSignedUrls,
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

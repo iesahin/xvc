@@ -19,6 +19,7 @@ pub mod mv;
 pub mod recheck;
 pub mod remove;
 pub mod send;
+pub mod share;
 pub mod track;
 pub mod untrack;
 
@@ -31,10 +32,12 @@ pub use mv::cmd_move;
 pub use recheck::cmd_recheck;
 pub use remove::cmd_remove;
 pub use send::cmd_send;
+use share::ShareCLI;
 pub use track::cmd_track;
 pub use untrack::cmd_untrack;
 
 use crate::error::{Error, Result};
+use crate::share::cmd_share;
 use clap::Subcommand;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -96,6 +99,8 @@ pub enum XvcFileSubCommand {
     Remove(RemoveCLI),
     /// Untrack (delete) files from Xvc and possibly storages
     Untrack(UntrackCLI),
+    /// Share a file from S3 compatible storage for a limited time
+    Share(ShareCLI),
 }
 
 /// Operations on data files
@@ -215,6 +220,11 @@ pub fn run(
             opts,
         ),
         XvcFileSubCommand::Remove(opts) => cmd_remove(
+            output_snd,
+            xvc_root.ok_or(Error::RequiresXvcRepository)?,
+            opts,
+        ),
+        XvcFileSubCommand::Share(opts) => cmd_share(
             output_snd,
             xvc_root.ok_or(Error::RequiresXvcRepository)?,
             opts,

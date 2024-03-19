@@ -9,7 +9,7 @@ use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
 use xvc_logging::{error, info, warn, watch, XvcOutputSender};
 
-use crate::{Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
     XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
@@ -34,7 +34,7 @@ pub fn cmd_storage_new_generic(
     upload_command: String,
     delete_command: String,
 ) -> Result<()> {
-    let storage = XvcGenericStorage {
+    let mut storage = XvcGenericStorage {
         guid: XvcStorageGuid::new(),
         name,
         url,
@@ -49,7 +49,7 @@ pub fn cmd_storage_new_generic(
 
     watch!(storage);
 
-    let (init_event, storage) = storage.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
@@ -302,10 +302,10 @@ impl XvcStorageOperations for XvcGenericStorage {
     /// The command should have {LOCAL_GUID_FILE_PATH}  and {STORAGE_GUID_FILE_PATH} fields to
     /// upload the guid file.
     fn init(
-        self,
+        &mut self,
         output: &XvcOutputSender,
         _xvc_root: &XvcRoot,
-    ) -> Result<(super::XvcStorageInitEvent, Self)> {
+    ) -> Result<super::XvcStorageInitEvent> {
         let mut address_map = self.address_map();
         watch!(address_map);
         let local_guid_path = env::temp_dir().join(self.guid.to_string());
@@ -340,12 +340,9 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         fs::remove_file(&local_guid_path)?;
 
-        Ok((
-            XvcStorageInitEvent {
-                guid: self.guid.clone(),
-            },
-            self,
-        ))
+        Ok(XvcStorageInitEvent {
+            guid: self.guid.clone(),
+        })
     }
 
     /// ⚠️  The output of the command should list all files.
@@ -444,5 +441,15 @@ impl XvcStorageOperations for XvcGenericStorage {
             guid: self.guid.clone(),
             paths: storage_paths,
         })
+    }
+
+    fn share(
+        &self,
+        output: &XvcOutputSender,
+        xvc_root: &XvcRoot,
+        path: &XvcCachePath,
+        period: std::time::Duration,
+    ) -> Result<super::XvcStorageExpiringShareEvent> {
+        Err(Error::StorageDoesNotSupportSignedUrls)
     }
 }
