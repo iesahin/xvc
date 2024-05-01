@@ -1,4 +1,4 @@
-//! Main CLI interface for XVC
+//! Main CLI interface for Xvc
 use std::env::ArgsOs;
 
 use std::ffi::OsString;

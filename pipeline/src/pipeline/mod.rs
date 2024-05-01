@@ -240,7 +240,7 @@ struct StepThreadParams<'a> {
     output_diffs: Arc<RwLock<HStore<Diff<XvcOutput>>>>,
 }
 
-/// # XVC Pipeline Dependency Graph Rules
+/// # Xvc Pipeline Dependency Graph Rules
 ///
 /// The dependency graph shows which steps of the pipeline depends on other
 /// steps. The dependency steps are set to run before the dependent steps.

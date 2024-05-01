@@ -71,36 +71,7 @@ impl Deref for XvcRootInner {
 /// [XvcRoot::find_root] and uses it as the root.
 pub fn load_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
     match XvcRootInner::find_root(path) {
-        Ok(absolute_path) => {
-            let xvc_dir = absolute_path.join(XvcRootInner::XVC_DIR);
-            let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
-            let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
-            let config_opts = XvcConfigInitParams {
-                project_config_path: Some(project_config_path.clone()),
-                local_config_path: Some(local_config_path.clone()),
-                default_configuration: config_opts.default_configuration,
-                current_dir: config_opts.current_dir,
-                include_system_config: config_opts.include_system_config,
-                include_user_config: config_opts.include_user_config,
-                include_environment_config: config_opts.include_environment_config,
-                command_line_config: config_opts.command_line_config,
-            };
-            let config = XvcConfig::new(config_opts)?;
-            let entity_generator =
-                xvc_ecs::load_generator(&xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH))?;
-
-            let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
-            let xvc_root = Arc::new(XvcRootInner {
-                xvc_dir,
-                store_dir,
-                local_config_path,
-                project_config_path,
-                absolute_path,
-                config,
-                entity_generator,
-            });
-            Ok(xvc_root)
-        }
+        Ok(absolute_path) => Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?)),
         Err(e) => Err(e),
     }
 }
@@ -170,6 +141,38 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<Xv
 }
 
 impl XvcRootInner {
+    /// Create a new XvcRootInner object by reading the configuration from `absolute_path/.xvc/` or
+    /// other locations. `config_opts` can determine which configuration files to read
+    pub fn new(absolute_path: AbsolutePath, config_opts: XvcConfigInitParams) -> Result<Self> {
+        let xvc_dir = absolute_path.join(XvcRootInner::XVC_DIR);
+        let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
+        let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
+        let config_opts = XvcConfigInitParams {
+            project_config_path: Some(project_config_path.clone()),
+            local_config_path: Some(local_config_path.clone()),
+            default_configuration: config_opts.default_configuration,
+            current_dir: config_opts.current_dir,
+            include_system_config: config_opts.include_system_config,
+            include_user_config: config_opts.include_user_config,
+            include_environment_config: config_opts.include_environment_config,
+            command_line_config: config_opts.command_line_config,
+        };
+        let config = XvcConfig::new(config_opts)?;
+        let entity_generator =
+            xvc_ecs::load_generator(&xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH))?;
+
+        let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
+        Ok(Self {
+            xvc_dir,
+            store_dir,
+            local_config_path,
+            project_config_path,
+            absolute_path,
+            config,
+            entity_generator,
+        })
+    }
+
     /// Join `path` to the repository root and return the absolute path of the
     /// given path.
     ///

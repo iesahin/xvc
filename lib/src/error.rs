@@ -99,12 +99,12 @@ pub enum Error {
         #[from]
         source: io::Error,
     },
-    #[error("Path is not in XVC Repository: {path:?}")]
+    #[error("Path is not in Xvc Repository: {path:?}")]
     PathNotInXvcRepository { path: OsString },
     #[error("Path has no parent: {path:?}")]
     PathHasNoParent { path: OsString },
-    #[error("This directory already belongs to an XVC repository {path:?}")]
-    DirectoryContainsXVCAlready { path: OsString },
+    #[error("This directory already belongs to an Xvc repository {path:?}")]
+    DirectoryContainsXvcAlready { path: OsString },
     #[error("This directory is not in a Git Repository {path:?}")]
     PathNotInGitRepository { path: OsString },
     #[error("Cannot Parse Integer: {source:?}")]

@@ -152,7 +152,7 @@ pub fn run_in_example_xvc(with_git: bool) -> Result<XvcRoot> {
     }
 }
 
-/// Create a temporary XVC directory that's also Git repository
+/// Create a temporary Xvc directory that's also Git repository
 pub fn run_in_temp_xvc_dir() -> Result<XvcRoot> {
     let the_dir = run_in_temp_git_dir();
     watch!(&the_dir);

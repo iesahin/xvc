@@ -45,9 +45,9 @@ pub enum Error {
 
     #[error("File System Walk Error: {error}")]
     FSWalkerError { error: String },
-    #[error("Cannot find XVC Root: {path}")]
+    #[error("Cannot find Xvc Root: {path}")]
     CannotFindXvcRoot { path: PathBuf },
-    #[error("Cannot nest XVC repositories: {path}")]
+    #[error("Cannot nest Xvc repositories: {path}")]
     CannotNestXvcRepositories { path: PathBuf },
     #[error("Regex Error: {source}")]
     RegexError {

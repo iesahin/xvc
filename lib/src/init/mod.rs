@@ -14,7 +14,7 @@ use xvc_logging::watch;
 use xvc_pipeline;
 use xvc_walker::AbsolutePath;
 
-/// Initialize an XVC repository
+/// Initialize an Xvc repository
 #[derive(Debug, Clone, Parser)]
 #[command(author, version)]
 pub struct InitCLI {
@@ -59,7 +59,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
                 );
                 fs::remove_dir_all(xvc_root.xvc_dir())?;
             } else {
-                return Err(Error::DirectoryContainsXVCAlready {
+                return Err(Error::DirectoryContainsXvcAlready {
                     path: xvc_root.absolute_path().as_os_str().to_os_string(),
                 });
             }

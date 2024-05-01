@@ -1,6 +1,6 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
-//! The main dispatching functions for the entire XVC CLI
+//! The main dispatching functions for the entire Xvc CLI
 pub mod cli;
 pub mod error;
 pub mod git;
