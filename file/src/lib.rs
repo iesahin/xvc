@@ -276,7 +276,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
         default_configuration: default_project_config(true),
     };
 
-    let xvc_root = match load_xvc_root(Path::new(&cli_opts.workdir), xvc_config_params) {
+    let xvc_root = match load_xvc_root(xvc_config_params) {
         Ok(r) => Some(r),
         Err(e) => {
             e.info();

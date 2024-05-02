@@ -16,7 +16,6 @@ use std::io;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
-use std::path::Path;
 use xvc_config::{XvcConfigInitParams, XvcVerbosity};
 use xvc_core::aliases;
 use xvc_core::check_ignore;
@@ -233,7 +232,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         default_configuration: default_project_config(true),
     };
 
-    let xvc_root_opt = match load_xvc_root(Path::new(&cli_opts.workdir), xvc_config_params) {
+    let xvc_root_opt = match load_xvc_root(xvc_config_params) {
         Ok(r) => Some(r),
         Err(e) => {
             e.debug();

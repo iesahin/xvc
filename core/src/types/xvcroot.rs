@@ -69,7 +69,9 @@ impl Deref for XvcRootInner {
 /// The path is not required to be the root of the repository.
 /// This function searches for the root of the repository using
 /// [XvcRoot::find_root] and uses it as the root.
-pub fn load_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
+pub fn load_xvc_root(config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
+    let path = config_opts.current_dir.as_ref();
+
     match XvcRootInner::find_root(path) {
         Ok(absolute_path) => Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?)),
         Err(e) => Err(e),
@@ -132,7 +134,7 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<Xv
                         .open(gitignore_path)?;
                     writeln!(out, "{}", GITIGNORE_INITIAL_CONTENT)?;
                 }
-                load_xvc_root(&abs_path, project_config_opts)
+                load_xvc_root(project_config_opts)
             } else {
                 Err(e)
             }
