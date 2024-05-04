@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
+use xvc_logging::watch;
 use xvc_logging::{debug, trace};
 use xvc_walker::AbsolutePath;
 
@@ -71,6 +72,8 @@ impl Deref for XvcRootInner {
 /// [XvcRoot::find_root] and uses it as the root.
 pub fn load_xvc_root(config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
     let path = config_opts.current_dir.as_ref();
+
+    watch!(path);
 
     match XvcRootInner::find_root(path) {
         Ok(absolute_path) => Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?)),
@@ -249,20 +252,19 @@ impl XvcRootInner {
     /// Finds the root of the xvc repository by looking for the .xvc directory
     /// in parents of a given path.
     pub fn find_root(path: &Path) -> Result<AbsolutePath> {
-        trace!("{:?}", path);
-        let mut pb = PathBuf::from(path)
+        watch!(path);
+        let abs_path = PathBuf::from(path)
             .canonicalize()
             .expect("Cannot canonicalize the path. Possible symlink loop.");
-        loop {
-            if pb.join(XVC_DIR).is_dir() {
-                debug!("XVC DIR: {:?}", pb);
-                return Ok(pb.into());
-            } else if pb.parent().is_none() {
-                return Err(Error::CannotFindXvcRoot { path: path.into() });
-            } else {
-                pb.pop();
+
+        for parent in abs_path.ancestors() {
+            watch!(parent);
+            if parent.join(XVC_DIR).is_dir() {
+                watch!("XVC DIR: {:?}", parent);
+                return Ok(parent.into());
             }
         }
+        Err(Error::CannotFindXvcRoot { path: path.into() })
     }
 }
 
