@@ -14,6 +14,8 @@ use crossbeam_channel::bounded;
 use log::LevelFilter;
 use std::io;
 use xvc_core::types::xvcroot::load_xvc_root;
+use xvc_core::types::xvcroot::XvcRootInner;
+use xvc_core::XvcRoot;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
 use xvc_config::{XvcConfigInitParams, XvcVerbosity};
@@ -179,66 +181,20 @@ pub fn run(args: &[&str]) -> Result<()> {
     dispatch(cli_options)
 }
 
-/// Dispatch commands to respective functions in the API
-///
-/// It sets output verbosity with [XvcCLI::verbosity].
-/// Determines configuration sources by filling [XvcConfigInitParams].
-/// Tries to create an XvcRoot to determine whether we're inside one.
-/// Creates two threads: One for running the API function, one for getting strings from output
-/// channel.
-///
-/// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
-/// It doesn't recreate the whole configuration and this prevents errors regarding multiple
-/// initializations.
-pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
-    let verbosity = if cli_opts.quiet {
-        XvcVerbosity::Quiet
-    } else {
-        match cli_opts.verbosity {
-            0 => XvcVerbosity::Default,
-            1 => XvcVerbosity::Warn,
-            2 => XvcVerbosity::Info,
-            3 => XvcVerbosity::Debug,
-            _ => XvcVerbosity::Trace,
-        }
-    };
-
-    let term_log_level = match verbosity {
-        XvcVerbosity::Quiet => LevelFilter::Off,
-        XvcVerbosity::Default => LevelFilter::Error,
-        XvcVerbosity::Warn => LevelFilter::Warn,
-        XvcVerbosity::Info => LevelFilter::Info,
-        XvcVerbosity::Debug => LevelFilter::Debug,
-        XvcVerbosity::Trace => LevelFilter::Trace,
-    };
-
-    setup_logging(
-        Some(term_log_level),
-        if cli_opts.debug {
-            Some(LevelFilter::Trace)
-        } else {
-            None
-        },
+pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: Option<XvcRoot>) -> Result<()> {
+    // XvcRoot should be kept per repository and shouldn't change directory across runs
+    assert!(
+        xvc_root_opt.as_ref().is_none()
+            || xvc_root_opt
+                .as_ref()
+                .map(
+                    |xvc_root| XvcRootInner::find_root(&cli_opts.workdir).unwrap()
+                        == *xvc_root.absolute_path()
+                )
+                .unwrap()
     );
 
-    let xvc_config_params = XvcConfigInitParams {
-        current_dir: AbsolutePath::from(&cli_opts.workdir),
-        include_system_config: !cli_opts.no_system_config,
-        include_user_config: !cli_opts.no_user_config,
-        project_config_path: None,
-        local_config_path: None,
-        include_environment_config: !cli_opts.no_env_config,
-        command_line_config: Some(cli_opts.consolidate_config_options()),
-        default_configuration: default_project_config(true),
-    };
-
-    let xvc_root_opt = match load_xvc_root(xvc_config_params) {
-        Ok(r) => Some(r),
-        Err(e) => {
-            e.debug();
-            None
-        }
-    };
+    let term_log_level = get_term_log_level(get_verbosity(&cli_opts));
 
     thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
@@ -416,4 +372,83 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
     .unwrap();
 
     Ok(())
+}
+
+/// Dispatch commands to respective functions in the API
+///
+/// It sets output verbosity with [XvcCLI::verbosity].
+/// Determines configuration sources by filling [XvcConfigInitParams].
+/// Tries to create an XvcRoot to determine whether we're inside one.
+/// Creates two threads: One for running the API function, one for getting strings from output
+/// channel.
+///
+/// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
+/// It doesn't recreate the whole configuration and this prevents errors regarding multiple
+/// initializations.
+pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
+    let verbosity = get_verbosity(&cli_opts);
+
+    let term_log_level = get_term_log_level(verbosity);
+
+    setup_logging(
+        Some(term_log_level),
+        if cli_opts.debug {
+            Some(LevelFilter::Trace)
+        } else {
+            None
+        },
+    );
+
+    let xvc_config_params = get_xvc_config_params(&cli_opts);
+
+    let xvc_root_opt = match load_xvc_root(xvc_config_params) {
+        Ok(r) => Some(r),
+        Err(e) => {
+            e.debug();
+            None
+        }
+    };
+
+    dispatch_with_root(cli_opts, xvc_root_opt)
+}
+
+fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigInitParams {
+    let xvc_config_params = XvcConfigInitParams {
+        current_dir: AbsolutePath::from(&cli_opts.workdir),
+        include_system_config: !cli_opts.no_system_config,
+        include_user_config: !cli_opts.no_user_config,
+        project_config_path: None,
+        local_config_path: None,
+        include_environment_config: !cli_opts.no_env_config,
+        command_line_config: Some(cli_opts.consolidate_config_options()),
+        default_configuration: default_project_config(true),
+    };
+    xvc_config_params
+}
+
+fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
+    let term_log_level = match verbosity {
+        XvcVerbosity::Quiet => LevelFilter::Off,
+        XvcVerbosity::Default => LevelFilter::Error,
+        XvcVerbosity::Warn => LevelFilter::Warn,
+        XvcVerbosity::Info => LevelFilter::Info,
+        XvcVerbosity::Debug => LevelFilter::Debug,
+        XvcVerbosity::Trace => LevelFilter::Trace,
+    };
+    term_log_level
+}
+
+fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
+    let verbosity = if cli_opts.quiet {
+        XvcVerbosity::Quiet
+    } else {
+        match cli_opts.verbosity {
+            0 => XvcVerbosity::Default,
+            1 => XvcVerbosity::Warn,
+            2 => XvcVerbosity::Info,
+            3 => XvcVerbosity::Debug,
+            _ => XvcVerbosity::Trace,
+        }
+    };
+    verbosity
 }
