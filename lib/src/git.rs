@@ -111,7 +111,7 @@ pub fn git_checkout_ref(
 /// record the last entity counter before commit.
 pub fn handle_git_automation(
     output_snd: &XvcOutputSender,
-    xvc_root: XvcRoot,
+    xvc_root: &XvcRoot,
     to_branch: Option<&str>,
     xvc_cmd: &str,
 ) -> Result<()> {

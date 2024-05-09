@@ -176,12 +176,12 @@ pub enum XvcSubCommand {
 }
 
 /// Runs the supplied xvc command.
-pub fn run(args: &[&str]) -> Result<()> {
+pub fn run(args: &[&str]) -> Result<Option<XvcRoot>> {
     let cli_options = cli::XvcCLI::from_str_slice(args)?;
     dispatch(cli_options)
 }
 
-pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: Option<XvcRoot>) -> Result<()> {
+pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &Option<XvcRoot>) -> Result<()> {
     // XvcRoot should be kept per repository and shouldn't change directory across runs
     assert!(
         xvc_root_opt.as_ref().is_none()
@@ -279,7 +279,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: Option<XvcRoot>) 
                     if use_git {
                         handle_git_automation(
                             &output_snd,
-                            xvc_root,
+                            &xvc_root,
                             cli_opts.to_branch.as_deref(),
                             &cli_opts.command_string,
                         )?;
@@ -385,7 +385,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: Option<XvcRoot>) 
 /// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
 /// It doesn't recreate the whole configuration and this prevents errors regarding multiple
 /// initializations.
-pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
+pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<Option<XvcRoot>> {
     let verbosity = get_verbosity(&cli_opts);
 
     let term_log_level = get_term_log_level(verbosity);
@@ -409,7 +409,9 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
         }
     };
 
-    dispatch_with_root(cli_opts, xvc_root_opt)
+    dispatch_with_root(cli_opts, &xvc_root_opt)?;
+
+    Ok(xvc_root_opt)
 }
 
 fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigInitParams {
