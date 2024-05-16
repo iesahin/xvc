@@ -24,6 +24,10 @@ pub use xvc_config::XvcConfigOptionSource;
 
 pub use xvc_core::AbsolutePath;
 
+pub use xvc_core::XvcRoot;
+/// Commands usually receive an optional xvc_root object for the repository
+pub type XvcRootOpt = Option<XvcRoot>;
+
 pub use xvc_file::BringCLI as XvcFileBringCLI;
 pub use xvc_file::CarryInCLI as XvcFileCarryInCLI;
 pub use xvc_file::CopyCLI as XvcFileCopyCLI;

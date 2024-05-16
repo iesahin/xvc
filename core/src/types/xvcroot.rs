@@ -10,8 +10,6 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
-use xvc_logging::watch;
-use xvc_logging::{debug, trace};
 use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcConfigInitParams};
@@ -278,16 +276,22 @@ impl XvcRootInner {
         }
         Err(Error::CannotFindXvcRoot { path: path.into() })
     }
-}
 
-impl Drop for XvcRootInner {
-    /// Saves the entity_generator before dropping
-    fn drop(&mut self) {
+
+    /// Record the entity generator to the disk
+    pub fn record(&self) {
         match self.entity_generator.save(&self.entity_generator_path()) {
             Ok(_) => (),
             Err(e) => {
                 e.warn();
             }
         }
+    }
+}
+
+impl Drop for XvcRootInner {
+    /// Saves the entity_generator before dropping
+    fn drop(&mut self) {
+        self.record()
     }
 }

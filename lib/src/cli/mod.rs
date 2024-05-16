@@ -3,10 +3,12 @@ use std::env::ArgsOs;
 
 use std::ffi::OsString;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use crate::git_checkout_ref;
 use crate::handle_git_automation;
 use crate::init;
+use crate::XvcRootOpt;
 
 use clap::Parser;
 use crossbeam::thread;
@@ -125,6 +127,17 @@ impl XvcCLI {
         })
     }
 
+    /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
+    /// [XvcCLI::command_string].
+    pub fn from_string_slice(args: &[String]) -> Result<XvcCLI> {
+        let command_string = args.join(" ");
+        let parsed = Self::parse_from(args);
+        Ok(Self {
+            command_string,
+            ..parsed
+        })
+    }
+
     /// Parse the command line from the result of [`std::env::args_os`].
     /// This updates [XvcCLI::command_string] with the command line.
     pub fn from_args_os(args_os: ArgsOs) -> Result<XvcCLI> {
@@ -155,6 +168,22 @@ impl XvcCLI {
     }
 }
 
+// Implement FromStr for XvcCLI 
+
+impl FromStr for XvcCLI {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        let command_string = s.to_owned();
+        let args: Vec<String> = s.split(' ').map(|a| a.trim().to_owned()).collect();
+        let parsed = Self::parse_from(args);
+        Ok(Self {
+            command_string,
+            ..parsed
+        })
+    }
+}
+
 /// Xvc subcommands
 #[derive(Debug, Parser)]
 #[command(rename_all = "kebab-case")]
@@ -176,12 +205,13 @@ pub enum XvcSubCommand {
 }
 
 /// Runs the supplied xvc command.
-pub fn run(args: &[&str]) -> Result<Option<XvcRoot>> {
+pub fn run(args: &[&str]) -> Result<XvcRootOpt> {
     let cli_options = cli::XvcCLI::from_str_slice(args)?;
     dispatch(cli_options)
 }
 
-pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &Option<XvcRoot>) -> Result<()> {
+pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &XvcRootOpt) -> Result<XvcRootOpt> {
+
     // XvcRoot should be kept per repository and shouldn't change directory across runs
     assert!(
         xvc_root_opt.as_ref().is_none()
@@ -195,6 +225,8 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &Option<XvcRoot>)
     );
 
     let term_log_level = get_term_log_level(get_verbosity(&cli_opts));
+
+    let xvc_root_opt = xvc_root_opt.clone();
 
     thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
@@ -271,76 +303,84 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &Option<XvcRoot>)
                 );
             }
         }
-        let command_thread = s.spawn(move |_| -> Result<()> {
-            match cli_opts.command {
+        let xvc_root_opt_res = s.spawn(move |_| -> Result<XvcRootOpt> {
+            let xvc_root_opt = match cli_opts.command {
                 XvcSubCommand::Init(opts) => {
-                    let use_git = !opts.no_git;
                     let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
-                    if use_git {
-                        handle_git_automation(
-                            &output_snd,
-                            &xvc_root,
-                            cli_opts.to_branch.as_deref(),
-                            &cli_opts.command_string,
-                        )?;
-                    }
-                    Result::Ok(())
+                    Some(xvc_root)
                 }
 
-                XvcSubCommand::Aliases(opts) => Ok(aliases::run(&output_snd, opts)?),
+                XvcSubCommand::Aliases(opts) => { 
+                    aliases::run(&output_snd, opts)?;
+                    xvc_root_opt
+                },
 
                 // following commands can only be run inside a repository
-                XvcSubCommand::Root(opts) => Ok(root::run(
+                XvcSubCommand::Root(opts) => { root::run(
                     &output_snd,
                     xvc_root_opt
                         .as_ref()
                         .ok_or_else(|| Error::RequiresXvcRepository)?,
                     opts,
-                )?),
+                )?;
+                xvc_root_opt
+                },
+
 
                 XvcSubCommand::File(opts) => {
-                    Ok(file::run(&output_snd, xvc_root_opt.as_ref(), opts)?)
+                    file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
+                    xvc_root_opt
                 }
 
                 XvcSubCommand::Pipeline(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
-                    Ok(pipeline::cmd_pipeline(
+                    pipeline::cmd_pipeline(
                         input,
                         &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
-                    )?)
+                    )?;
+
+                    xvc_root_opt
+
                 }
 
                 XvcSubCommand::CheckIgnore(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
 
-                    Ok(check_ignore::cmd_check_ignore(
+                    check_ignore::cmd_check_ignore(
                         input,
                         &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
-                    )?)
+                    )?;
+
+                    xvc_root_opt
+
                 }
 
                 XvcSubCommand::Storage(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
-                    Ok(storage::cmd_storage(
+                    storage::cmd_storage(
                         input,
                         &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
-                    )?)
+                    )?;
+
+                    xvc_root_opt
                 }
-            }?;
+
+            };
 
             watch!("Before handle_git_automation");
+
             match xvc_root_opt {
-                Some(xvc_root) => {
-                    watch!(&cli_opts.command_string);
+                Some(ref xvc_root) => {
+                    xvc_root.record();
                     if cli_opts.skip_git {
                         debug!(output_snd, "Skipping Git operations");
                     } else {
@@ -359,10 +399,10 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &Option<XvcRoot>)
                     );
                 }
             }
-            Ok(())
+            Ok(xvc_root_opt)
         });
 
-        match command_thread.join().unwrap() {
+        match xvc_root_opt_res.join().unwrap() {
             Ok(_) => debug!(output_snd_clone, "Command completed successfully."),
             Err(e) => error!(output_snd_clone, "{}", e),
         }
@@ -371,7 +411,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &Option<XvcRoot>)
     })
     .unwrap();
 
-    Ok(())
+    Ok(xvc_root_opt)
 }
 
 /// Dispatch commands to respective functions in the API
@@ -385,7 +425,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &Option<XvcRoot>)
 /// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
 /// It doesn't recreate the whole configuration and this prevents errors regarding multiple
 /// initializations.
-pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<Option<XvcRoot>> {
+pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
     let verbosity = get_verbosity(&cli_opts);
 
     let term_log_level = get_term_log_level(verbosity);

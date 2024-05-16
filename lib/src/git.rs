@@ -125,9 +125,6 @@ pub fn handle_git_automation(
     let xvc_dir = xvc_root.xvc_dir().clone();
     let xvc_dir_str = xvc_dir.to_str().unwrap();
 
-    // we drop here to record the final state
-    drop(xvc_root);
-
     if use_git {
         if auto_commit {
             git_auto_commit(

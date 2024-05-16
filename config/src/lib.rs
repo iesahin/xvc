@@ -196,8 +196,6 @@ pub struct XvcConfigInitParams {
 pub struct XvcConfig {
     /// Current directory. It can be set with xvc -C option
     pub current_dir: XvcConfigOption<AbsolutePath>,
-    // /// The root if the command is happen to be run in Xvc directory
-    // pub xvc_root: XvcConfigOption<Option<XvcRoot>>,
     /// Configuration values for each level
     pub config_maps: Vec<XvcConfigMap>,
     /// The current configuration map, updated cascadingly
