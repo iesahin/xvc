@@ -9,5 +9,6 @@ use xvc::error::Result;
 ///
 fn main() -> Result<()> {
     let cli_opts = xvc::cli::XvcCLI::from_args_os(std::env::args_os())?;
-    xvc::cli::dispatch(cli_opts)
+    xvc::cli::dispatch(cli_opts)?;
+    Ok(())
 }

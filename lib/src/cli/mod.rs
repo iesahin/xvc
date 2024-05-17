@@ -210,7 +210,7 @@ pub fn run(args: &[&str]) -> Result<XvcRootOpt> {
     dispatch(cli_options)
 }
 
-pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &XvcRootOpt) -> Result<XvcRootOpt> {
+pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Result<XvcRootOpt> {
 
     // XvcRoot should be kept per repository and shouldn't change directory across runs
     assert!(
@@ -226,9 +226,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &XvcRootOpt) -> R
 
     let term_log_level = get_term_log_level(get_verbosity(&cli_opts));
 
-    let xvc_root_opt = xvc_root_opt.clone();
-
-    thread::scope(move |s| {
+    let xvc_root_opt = thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
 
         let output_snd_clone = output_snd.clone();
@@ -402,16 +400,21 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: &XvcRootOpt) -> R
             Ok(xvc_root_opt)
         });
 
-        match xvc_root_opt_res.join().unwrap() {
+        let xvc_root_opt = xvc_root_opt_res.join().unwrap();
+        match &xvc_root_opt {
             Ok(_) => debug!(output_snd_clone, "Command completed successfully."),
             Err(e) => error!(output_snd_clone, "{}", e),
         }
         output_snd_clone.send(None).unwrap();
         output_thread.join().unwrap();
+
+        xvc_root_opt
     })
     .unwrap();
 
-    Ok(xvc_root_opt)
+    xvc_root_opt
+
+
 }
 
 /// Dispatch commands to respective functions in the API
@@ -449,9 +452,8 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
         }
     };
 
-    dispatch_with_root(cli_opts, &xvc_root_opt)?;
+    dispatch_with_root(cli_opts, xvc_root_opt)
 
-    Ok(xvc_root_opt)
 }
 
 fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigInitParams {
