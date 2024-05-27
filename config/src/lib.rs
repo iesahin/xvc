@@ -171,10 +171,12 @@ pub struct XvcConfigInitParams {
     /// If `true`, it's read from [USER_CONFIG_DIRS].
     pub include_user_config: bool,
     /// Where should we load the project's (public) configuration?
-    /// If `None`, it's ignored.
+    /// It's loaded in [XvcRootInner::new]
+    /// TODO: Add a option to ignore this
     pub project_config_path: Option<AbsolutePath>,
     /// Where should we load the project's (private) configuration?
-    /// If `None`, it's ignored.
+    /// It's loaded in [XvcRootInner::new]
+    /// TODO: Add a option to ignore this
     pub local_config_path: Option<AbsolutePath>,
     /// Should we include configuration from the environment.
     /// If `true`, look for all variables in the form
