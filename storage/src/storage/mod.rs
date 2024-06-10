@@ -32,7 +32,7 @@ pub use local::XvcLocalStorage;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{panic, watch, XvcOutputSender};
+use xvc_logging::{error, panic, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
@@ -495,10 +495,10 @@ pub fn get_storage_record(
     });
 
     if remote_store.is_empty() {
-        panic!(output_snd, "Cannot find remote {}", identifier);
+        error!(output_snd, "Cannot find remote {}", identifier);
     }
     if remote_store.len() > 1 {
-        panic!(output_snd, "Ambiguous remote identifier: {}", identifier);
+        error!(output_snd, "Ambiguous remote identifier: {}", identifier);
     }
 
     let (_, remote) =
