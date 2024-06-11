@@ -125,12 +125,10 @@ pub enum StorageNewSubCommand {
         storage_dir: Option<String>,
     },
 
-    /// Add a new rsync storage
+    /// Add a new rsync storages
     ///
-    /// Uses rsync in separate processes to communicate with the server.
-    ///
+    /// Uses rsync in separate processes to communicate.
     /// This can be used when you already have an SSH/Rsync connection.
-    ///
     /// It doesn't prompt for any passwords. The connection must be set up with ssh keys beforehand.
     #[command()]
     Rsync {

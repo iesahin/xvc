@@ -73,7 +73,7 @@ pub enum XvcStorage {
     #[cfg(feature = "digital-ocean")]
     DigitalOcean(digital_ocean::XvcDigitalOceanStorage),
 }
-persist!(XvcStorage, "remote");
+persist!(XvcStorage, "storage");
 
 impl Display for XvcStorage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -111,7 +111,7 @@ impl Display for XvcStorage {
             XvcStorage::S3(s3r) => write!(
                 f,
                 "S3:      {}\t{}\t{}.{}/{}",
-                s3r.name, s3r.guid, s3r.region, s3r.bucket_name, s3r.storage_prefix
+                e3r.name, s3r.guid, s3r.region, s3r.bucket_name, s3r.storage_prefix
             ),
             #[cfg(feature = "minio")]
             XvcStorage::Minio(mr) => write!(
@@ -148,7 +148,7 @@ impl Display for XvcStorage {
 }
 
 /// All storages implement this trait. xvc storage new   and xvc file send / bring / remove
-/// commands use this trait to communicate with the remotes.
+/// commands use this trait to communicate with the storages.
 pub trait XvcStorageOperations {
     /// The init operation is creates a directory with the "short guid" of the Xvc repository and
     /// adds a .xvc-guid file with the guid of the storage.
@@ -375,7 +375,7 @@ impl XvcStorageTempDir {
 /// It uses [RelativePathBuf] internally.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize, Display)]
 pub struct XvcStoragePath(RelativePathBuf);
-persist!(XvcStoragePath, "remote-path");
+persist!(XvcStoragePath, "storage-path");
 
 impl From<String> for XvcStoragePath {
     fn from(p: String) -> Self {
@@ -397,7 +397,7 @@ impl AsRef<RelativePath> for XvcStoragePath {
 }
 
 impl XvcStoragePath {
-    /// The remote path of a cache path is like {guid}/{cache-path}
+    /// The storage path of a cache path is like {guid}/{cache-path}
     /// ⚠️  The separator between {guid} and {cache-path} is always /
     pub fn new(xvc_root: &XvcRoot, local: &XvcCachePath) -> Self {
         let guid = xvc_root.config().guid().unwrap();

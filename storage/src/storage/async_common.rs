@@ -31,11 +31,13 @@ use super::XvcStorageTempDir;
 use super::XVC_STORAGE_GUID_FILENAME;
 
 pub trait XvcS3StorageOperations {
+    // FIXME: Rename to storage_prefix
     fn remote_prefix(&self) -> String;
     fn guid(&self) -> &XvcStorageGuid;
     fn get_bucket(&self) -> Result<Bucket>;
     fn credentials(&self) -> Result<Credentials>;
     fn bucket_name(&self) -> String;
+    // FIXME: Rename to build_storage_path
     fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
@@ -46,6 +48,7 @@ pub trait XvcS3StorageOperations {
     }
 
     fn region(&self) -> String;
+    // FIXME: Rename to storage guid
     async fn write_remote_guid(&self) -> Result<()> {
         let guid_str = self.guid().to_string();
         let guid_bytes = guid_str.as_bytes();
