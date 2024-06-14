@@ -61,7 +61,7 @@ pub enum Error {
     NoRepositoryGuidFound,
 
     #[error("Cannot find remote with identifier: {identifier}")]
-    CannotFindRemoteWithIdentifier { identifier: StorageIdentifier },
+    CannotFindStorageWithIdentifier { identifier: StorageIdentifier },
 
     #[error("Process Exec Error: {source}")]
     ProcessExecError {

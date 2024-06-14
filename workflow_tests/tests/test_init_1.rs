@@ -8,7 +8,7 @@ use xvc::init::InitCLI;
 use xvc::error::Result;
 
 #[test]
-fn test_remote_add() -> Result<()> {
+fn test_storage_add() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let _the_dir = common::run_in_temp_dir();
     let xvc_root = xvc::init::run(

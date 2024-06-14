@@ -78,7 +78,7 @@ pub enum StorageNewSubCommand {
     /// Add a new generic storage.
     ///
     /// ⚠️ Please note that this is an advanced method to configure storages.
-    /// You may damage your repository and local and remote files with incorrect configurations.
+    /// You may damage your repository and local and storage files with incorrect configurations.
     ///
     /// Please see https://docs.xvc.dev/ref/xvc-storage-new-generic.html for examples and make
     /// necessary backups.

@@ -19,7 +19,7 @@ use super::XvcStoragePath;
 
 /// Configure a new Amazon Web Services S3 remote storage.
 ///
-/// `bucket_name`, `region` and `remote_prefix` sets a URL for the storage
+/// `bucket_name`, `region` and `storage_prefix` sets a URL for the storage
 /// location.
 ///
 /// This creates a [XvcS3Storage], calls its
@@ -33,7 +33,7 @@ pub fn cmd_new_s3(
     bucket_name: String,
     storage_prefix: String,
 ) -> Result<()> {
-    let mut remote = XvcS3Storage {
+    let mut storage = XvcS3Storage {
         guid: XvcStorageGuid::new(),
         name,
         region,
@@ -41,9 +41,9 @@ pub fn cmd_new_s3(
         storage_prefix,
     };
 
-    watch!(remote);
+    watch!(storage);
 
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -51,7 +51,7 @@ pub fn cmd_new_s3(
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::S3(remote.clone()),
+            XvcStorage::S3(storage.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -70,7 +70,7 @@ pub struct XvcS3Storage {
     /// `bucket_name.region.s3.amazonaws.com/storage_prefix/.xvc-guid` to identify the
     /// remote location.
     pub guid: XvcStorageGuid,
-    /// Name of the remote to be used in commands.
+    /// Name of the remote storage to be used in commands.
     ///
     /// It doesn't have to be unique, though in practice setting unique names is
     /// preferred.
@@ -89,7 +89,7 @@ pub struct XvcS3Storage {
 }
 
 impl XvcS3Storage {
-    fn remote_specific_credentials(&self) -> Result<Credentials> {
+    fn storage_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
@@ -116,7 +116,7 @@ impl XvcS3Storage {
 }
 
 impl XvcS3StorageOperations for XvcS3Storage {
-    fn remote_prefix(&self) -> String {
+    fn storage_prefix(&self) -> String {
         self.storage_prefix.clone()
     }
 
@@ -133,7 +133,7 @@ impl XvcS3StorageOperations for XvcS3Storage {
     }
 
     fn credentials(&self) -> Result<Credentials> {
-        match self.remote_specific_credentials() {
+        match self.storage_specific_credentials() {
             Ok(c) => Ok(c),
             Err(e1) => match self.storage_type_credentials() {
                 Ok(c) => Ok(c),
@@ -151,13 +151,13 @@ impl XvcS3StorageOperations for XvcS3Storage {
         self.bucket_name.clone()
     }
 
-    async fn write_remote_guid(&self) -> Result<()> {
+    async fn write_storage_guid(&self) -> Result<()> {
         let guid_str = self.guid().to_string();
         let guid_bytes = guid_str.as_bytes();
         let bucket = self.get_bucket()?;
         let response = bucket
             .put_object(
-                format!("{}/{}", self.remote_prefix(), XVC_STORAGE_GUID_FILENAME),
+                format!("{}/{}", self.storage_prefix(), XVC_STORAGE_GUID_FILENAME),
                 guid_bytes,
             )
             .await;
@@ -168,11 +168,11 @@ impl XvcS3StorageOperations for XvcS3Storage {
         }
     }
 
-    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+    fn build_storage_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}/{}",
             self.bucket_name(),
-            self.remote_prefix(),
+            self.storage_prefix(),
             self.guid(),
             cache_path
         ))

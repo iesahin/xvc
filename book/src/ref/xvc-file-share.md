@@ -6,13 +6,13 @@
 $ xvc file share --help
 Share a file from S3 compatible storage for a limited time
 
-Usage: xvc file share [OPTIONS] --remote <REMOTE> <TARGET>
+Usage: xvc file share [OPTIONS] --storage <REMOTE> <TARGET>
 
 Arguments:
   <TARGET>  File to send/push/upload to storage
 
 Options:
-  -r, --remote <REMOTE>      Storage name or guid to send the files
+  -r, --storage <REMOTE>      Storage name or guid to send the files
   -d, --duration <DURATION>  Period to send the files to. You can use s, m, h, d, w suffixes [default: 24h]
   -h, --help                 Print help
 
