@@ -276,7 +276,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
         info!(
             output,
             "Initialized:\n{}\n{}\n",
-            torage_guid_path,
+            storage_guid_path,
             rsync_result.stdout_str()
         );
 
