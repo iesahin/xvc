@@ -31,31 +31,28 @@ use super::XvcStorageTempDir;
 use super::XVC_STORAGE_GUID_FILENAME;
 
 pub trait XvcS3StorageOperations {
-    // FIXME: Rename to storage_prefix
-    fn remote_prefix(&self) -> String;
+    fn storage_prefix(&self) -> String;
     fn guid(&self) -> &XvcStorageGuid;
     fn get_bucket(&self) -> Result<Bucket>;
     fn credentials(&self) -> Result<Credentials>;
     fn bucket_name(&self) -> String;
-    // FIXME: Rename to build_storage_path
-    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+    fn build_storage_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
-            self.remote_prefix(),
+            self.storage_prefix(),
             self.guid(),
             cache_path
         ))
     }
 
     fn region(&self) -> String;
-    // FIXME: Rename to storage guid
-    async fn write_remote_guid(&self) -> Result<()> {
+    async fn write_storage_guid(&self) -> Result<()> {
         let guid_str = self.guid().to_string();
         let guid_bytes = guid_str.as_bytes();
         let bucket = self.get_bucket()?;
         let response = bucket
             .put_object(
-                format!("{}/{}", self.remote_prefix(), XVC_STORAGE_GUID_FILENAME),
+                format!("{}/{}", self.storage_prefix(), XVC_STORAGE_GUID_FILENAME),
                 guid_bytes,
             )
             .await;
@@ -67,7 +64,7 @@ pub trait XvcS3StorageOperations {
     }
 
     async fn a_init(&mut self, output_snd: &XvcOutputSender) -> Result<XvcStorageInitEvent> {
-        let res_response = self.write_remote_guid().await;
+        let res_response = self.write_storage_guid().await;
 
         let guid = self.guid().clone();
 
@@ -89,11 +86,11 @@ pub trait XvcS3StorageOperations {
         let region = Region::from_str(&self.region()).unwrap_or("us-east-1".parse().unwrap());
         let bucket = Bucket::new(&self.bucket_name(), region, credentials)?;
         let xvc_guid = xvc_root.config().guid().unwrap();
-        let prefix = self.remote_prefix().clone();
+        let prefix = self.storage_prefix().clone();
 
         let res_list = bucket
             .list(
-                format!("{}/{}", self.remote_prefix(), xvc_guid),
+                format!("{}/{}", self.storage_prefix(), xvc_guid),
                 Some("/".to_string()),
             )
             .await;
@@ -146,7 +143,7 @@ pub trait XvcS3StorageOperations {
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = self.build_remote_path(cache_path);
+            let storage_path = self.build_storage_path(cache_path);
             let abs_cache_path = cache_path.to_absolute_path(xvc_root);
             watch!(abs_cache_path);
 
@@ -154,13 +151,13 @@ pub trait XvcS3StorageOperations {
             watch!(path);
 
             let res_response = bucket
-                .put_object_stream(&mut path, remote_path.as_str())
+                .put_object_stream(&mut path, storage_path.as_str())
                 .await;
 
             match res_response {
                 Ok(_) => {
-                    info!(output_snd, "{} -> {}", abs_cache_path, remote_path.as_str());
-                    copied_paths.push(remote_path);
+                    info!(output_snd, "{} -> {}", abs_cache_path, storage_path.as_str());
+                    copied_paths.push(storage_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
@@ -188,21 +185,21 @@ pub trait XvcS3StorageOperations {
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = self.build_remote_path(cache_path);
+            let storage_path = self.build_storage_path(cache_path);
             let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             fs::create_dir_all(&abs_cache_dir)?;
             let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
             watch!(abs_cache_path);
-            let response_data_stream = bucket.get_object_stream(remote_path.as_str()).await;
+            let response_data_stream = bucket.get_object_stream(storage_path.as_str()).await;
 
             match response_data_stream {
                 Ok(mut response) => {
-                    info!(output_snd, "{} -> {}", remote_path.as_str(), abs_cache_path);
+                    info!(output_snd, "{} -> {}", storage_path.as_str(), abs_cache_path);
                     let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
                     while let Some(chunk) = response.bytes().next().await {
                         async_cache_path.write_all(&chunk).await?;
                     }
-                    copied_paths.push(remote_path);
+                    copied_paths.push(storage_path);
                     watch!(copied_paths.len());
                 }
                 Err(err) => {
@@ -231,10 +228,10 @@ pub trait XvcS3StorageOperations {
 
         for cache_path in paths {
             watch!(cache_path);
-            let remote_path = self.build_remote_path(cache_path);
-            bucket.delete_object(remote_path.as_str()).await?;
-            info!(output, "[DELETE] {}", remote_path.as_str());
-            deleted_paths.push(remote_path);
+            let storage_path = self.build_storage_path(cache_path);
+            bucket.delete_object(storage_path.as_str()).await?;
+            info!(output, "[DELETE] {}", storage_path.as_str());
+            deleted_paths.push(storage_path);
         }
 
         Ok(XvcStorageDeleteEvent {
@@ -259,7 +256,7 @@ pub trait XvcS3StorageOperations {
         //
 
         let expiration_seconds = duration.as_secs() as u32;
-        let path = self.build_remote_path(path);
+        let path = self.build_storage_path(path);
         let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None)?;
         info!(output, "[SHARED] {}", path.as_str());
         output!(output, "{}", signed_url);

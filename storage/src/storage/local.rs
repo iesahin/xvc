@@ -26,19 +26,19 @@ pub fn cmd_storage_new_local(
     path: PathBuf,
     name: String,
 ) -> Result<()> {
-    let mut remote = XvcLocalStorage {
+    let mut storage = XvcLocalStorage {
         guid: XvcStorageGuid::new(),
         name,
         path,
     };
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::Local(remote.clone()),
+            XvcStorage::Local(storage.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -60,7 +60,7 @@ pub struct XvcLocalStorage {
 }
 
 impl XvcLocalStorage {
-    fn remote_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
+    fn storage_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!("{}/{}", repo_guid, cache_path))
     }
 }
@@ -99,7 +99,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         fs::write(guid_filename, format!("{}", self.guid))?;
         info!(
             output,
-            "Created local remote directory {} with guid: {}",
+            "Created local storage directory {} with guid: {}",
             self.path.to_string_lossy(),
             self.guid
         );
@@ -127,24 +127,24 @@ impl XvcStorageOperations for XvcLocalStorage {
         let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         for cache_path in paths {
-            let remote_path = self.remote_path(&repo_guid, cache_path);
-            let abs_remote_path = remote_path.as_ref().to_logical_path(&self.path);
-            if force && abs_remote_path.exists() {
-                fs::remove_file(abs_remote_path.clone())?;
+            let storage_path = self.storage_path(&repo_guid, cache_path);
+            let abs_storage_path = storage_path.as_ref().to_logical_path(&self.path);
+            if force && abs_storage_path.exists() {
+                fs::remove_file(abs_storage_path.clone())?;
             } else {
-                info!(output, "[SKIPPED] {}", remote_path)
+                info!(output, "[SKIPPED] {}", storage_path)
             }
             let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-            let abs_remote_dir = abs_remote_path.parent().unwrap();
-            fs::create_dir_all(abs_remote_dir)?;
-            fs::copy(&abs_cache_path, &abs_remote_path)?;
-            copied_paths.push(remote_path);
+            let abs_storage_dir = abs_storage_path.parent().unwrap();
+            fs::create_dir_all(abs_storage_dir)?;
+            fs::copy(&abs_cache_path, &abs_storage_path)?;
+            copied_paths.push(storage_path);
             watch!(copied_paths.len());
             info!(
                 output,
                 "{} -> {}",
                 abs_cache_path,
-                abs_remote_path.to_string_lossy()
+                abs_storage_path.to_string_lossy()
             );
         }
 
@@ -169,19 +169,19 @@ impl XvcStorageOperations for XvcLocalStorage {
         let temp_dir = XvcStorageTempDir::new()?;
 
         for cache_path in paths {
-            let remote_path = self.remote_path(&repo_guid, cache_path);
-            let abs_remote_path = remote_path.as_ref().to_logical_path(&self.path);
+            let storage_path = self.storage_path(&repo_guid, cache_path);
+            let abs_storage_path = storage_path.as_ref().to_logical_path(&self.path);
             let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
             let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             fs::create_dir_all(&abs_cache_dir)?;
-            fs::copy(&abs_remote_path, &abs_cache_path)?;
+            fs::copy(&abs_storage_path, &abs_cache_path)?;
             watch!(abs_cache_path.exists());
-            copied_paths.push(remote_path);
+            copied_paths.push(storage_path);
             watch!(copied_paths.len());
             info!(
                 output,
                 "{} -> {}",
-                abs_remote_path.to_string_lossy(),
+                abs_storage_path.to_string_lossy(),
                 abs_cache_path
             );
         }
@@ -208,11 +208,11 @@ impl XvcStorageOperations for XvcLocalStorage {
         let mut deleted_paths = Vec::<XvcStoragePath>::new();
 
         for cache_path in paths {
-            let remote_path = self.remote_path(&repo_guid, cache_path);
-            let abs_remote_path = remote_path.as_ref().to_logical_path(&self.path);
-            fs::remove_file(&abs_remote_path)?;
-            info!(output, "[DELETE] {}", abs_remote_path.to_string_lossy());
-            deleted_paths.push(remote_path);
+            let storage_path = self.storage_path(&repo_guid, cache_path);
+            let abs_storage_path = storage_path.as_ref().to_logical_path(&self.path);
+            fs::remove_file(&abs_storage_path)?;
+            info!(output, "[DELETE] {}", abs_storage_path.to_string_lossy());
+            deleted_paths.push(storage_path);
         }
 
         Ok(XvcStorageDeleteEvent {

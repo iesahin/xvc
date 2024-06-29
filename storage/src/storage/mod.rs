@@ -32,7 +32,7 @@ pub use local::XvcLocalStorage;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{panic, watch, XvcOutputSender};
+use xvc_logging::{error, panic, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
@@ -117,19 +117,19 @@ impl Display for XvcStorage {
             XvcStorage::Minio(mr) => write!(
                 f,
                 "Minio:   {}\t{}\t{}.{}/{}",
-                mr.name, mr.guid, mr.endpoint, mr.bucket_name, mr.remote_prefix
+                mr.name, mr.guid, mr.endpoint, mr.bucket_name, mr.storage_prefix
             ),
             #[cfg(feature = "r2")]
             XvcStorage::R2(r2r) => write!(
                 f,
                 "R2:      {}\t{}\t{} {}/{}",
-                r2r.name, r2r.guid, r2r.account_id, r2r.bucket_name, r2r.remote_prefix
+                r2r.name, r2r.guid, r2r.account_id, r2r.bucket_name, r2r.storage_prefix
             ),
             #[cfg(feature = "gcs")]
             XvcStorage::Gcs(gcsr) => write!(
                 f,
                 "GCS:     {}\t{}\t{}.{}/{}",
-                gcsr.name, gcsr.guid, gcsr.region, gcsr.bucket_name, gcsr.remote_prefix
+                gcsr.name, gcsr.guid, gcsr.region, gcsr.bucket_name, gcsr.storage_prefix
             ),
             #[cfg(feature = "wasabi")]
             XvcStorage::Wasabi(wr) => write!(
@@ -141,7 +141,7 @@ impl Display for XvcStorage {
             XvcStorage::DigitalOcean(dor) => write!(
                 f,
                 "DO:      {}\t{}\t{}.{}/{}",
-                dor.name, dor.guid, dor.region, dor.bucket_name, dor.remote_prefix
+                dor.name, dor.guid, dor.region, dor.bucket_name, dor.storage_prefix
             ),
         }
     }
@@ -457,7 +457,7 @@ pub fn get_storage_record(
     identifier: &StorageIdentifier,
 ) -> Result<XvcStorage> {
     let store: XvcStore<XvcStorage> = xvc_root.load_store()?;
-    let remote_store = store.filter(|_, r| match identifier {
+    let storage_store = store.filter(|_, r| match identifier {
         StorageIdentifier::Name(ref n) => match r {
             XvcStorage::Local(r) => r.name == *n,
             XvcStorage::Generic(r) => r.name == *n,
@@ -494,18 +494,18 @@ pub fn get_storage_record(
         },
     });
 
-    if remote_store.is_empty() {
-        panic!(output_snd, "Cannot find remote {}", identifier);
+    if storage_store.is_empty() {
+        error!(output_snd, "Cannot find remote {}", identifier);
     }
-    if remote_store.len() > 1 {
-        panic!(output_snd, "Ambiguous remote identifier: {}", identifier);
+    if storage_store.len() > 1 {
+        error!(output_snd, "Ambiguous remote identifier: {} Please use Storage GUID.", identifier);
     }
 
-    let (_, remote) =
-        remote_store
+    let (_, storage) =
+        storage_store
             .first()
-            .ok_or_else(|| Error::CannotFindRemoteWithIdentifier {
+            .ok_or_else(|| Error::CannotFindStorageWithIdentifier {
                 identifier: identifier.clone(),
             })?;
-    Ok(remote.clone())
+    Ok(storage.clone())
 }

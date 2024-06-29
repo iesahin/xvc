@@ -74,13 +74,13 @@ $ xvc file track my-models/ --as copy
 Configure a cloud storage to share the files you added.
 
 ```shell
-$ xvc storage new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
+$ xvc storage new s3 --name my-storage --region us-east-1 --bucket-name my-xvc-remote
 ```
 
 You can send the files to this storage.
 
 ```shell
-$ xvc file send --to my-remote
+$ xvc file send --to my-storage
 ```
 
 When you (or someone else) want to access these files later, you can clone the Git repository and get the files from the
@@ -91,7 +91,7 @@ $ git clone https://example.com/my-machine-learning-project
 Cloning into 'my-machine-learning-project'...
 
 $ cd my-machine-learning-project
-$ xvc file bring my-data/ --from my-remote
+$ xvc file bring my-data/ --from my-storage
 
 ```
 

@@ -127,7 +127,6 @@ struct ListRow {
 }
 
 impl ListRow {
-    ///
     fn new(path_prefix: &Path, path_match: PathMatch) -> Result<Self> {
         let actual_file_type =
             String::from(if let Some(actual_metadata) = path_match.actual_metadata {

@@ -252,7 +252,7 @@ fn test_storage_new_s3() -> Result<()> {
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
 
-    // Set remote specific passwords and remove AWS ones
+    // Set storage specific passwords and remove AWS ones
     env::set_var("XVC_STORAGE_ACCESS_KEY_ID_s3-storage", access_key);
     env::set_var("XVC_STORAGE_SECRET_KEY_s3-storage", secret_key);
 

@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
+use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcConfigInitParams};
@@ -71,15 +72,12 @@ impl Deref for XvcRootInner {
 pub fn load_xvc_root(config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
     let path = config_opts.current_dir.as_ref();
 
-    dbg!(path);
-
     match XvcRootInner::find_root(path) {
         Ok(absolute_path) => {
-            dbg!(&absolute_path);
             Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?))
         }
         Err(e) => {
-            dbg!(&e);
+            watch!(&e);
             Err(e)
         }
     }
@@ -154,11 +152,8 @@ impl XvcRootInner {
     /// other locations. `config_opts` can determine which configuration files to read
     pub fn new(absolute_path: AbsolutePath, config_opts: XvcConfigInitParams) -> Result<Self> {
         let xvc_dir = absolute_path.join(XvcRootInner::XVC_DIR);
-        dbg!(&xvc_dir);
         let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
-        dbg!(&local_config_path);
         let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
-        dbg!(&project_config_path);
         let config_opts = XvcConfigInitParams {
             project_config_path: Some(project_config_path.clone()),
             local_config_path: Some(local_config_path.clone()),
@@ -259,18 +254,15 @@ impl XvcRootInner {
     /// Finds the root of the xvc repository by looking for the .xvc directory
     /// in parents of a given path.
     pub fn find_root(path: &Path) -> Result<AbsolutePath> {
-        dbg!(path);
         let abs_path = PathBuf::from(path)
             .canonicalize()
             .expect("Cannot canonicalize the path. Possible symlink loop.");
-        dbg!(&abs_path);
 
         for parent in abs_path.ancestors() {
-            dbg!(parent);
             let xvc_candidate = parent.join(XVC_DIR);
-            dbg!(&xvc_candidate);
+            watch!(xvc_candidate);
             if parent.join(XVC_DIR).is_dir() {
-                dbg!("XVC DIR: {:?}", parent);
+                watch!(parent);
                 return Ok(parent.into());
             }
         }

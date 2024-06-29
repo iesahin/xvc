@@ -16,7 +16,7 @@ use anyhow::anyhow;
 use super::async_common::XvcS3StorageOperations;
 use super::XvcStoragePath;
 
-/// Configure a new Wasabi storage remote.
+/// Configure a new Wasabi remote storage.
 ///
 /// `bucket_name`, `endpoint` and `storage_prefix` sets a URL for the storage
 /// location.
@@ -32,7 +32,7 @@ pub(crate) fn cmd_new_wasabi(
     endpoint: String,
     storage_prefix: String,
 ) -> Result<()> {
-    let mut remote = XvcWasabiStorage {
+    let mut storage = XvcWasabiStorage {
         guid: XvcStorageGuid::new(),
         name,
         endpoint,
@@ -40,9 +40,9 @@ pub(crate) fn cmd_new_wasabi(
         storage_prefix,
     };
 
-    watch!(remote);
+    watch!(storage);
 
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -50,7 +50,7 @@ pub(crate) fn cmd_new_wasabi(
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::Wasabi(remote.clone()),
+            XvcStorage::Wasabi(storage.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -91,7 +91,7 @@ pub struct XvcWasabiStorage {
 }
 
 impl XvcWasabiStorage {
-    fn remote_specific_credentials(&self) -> Result<Credentials> {
+    fn storage_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
@@ -118,7 +118,7 @@ impl XvcWasabiStorage {
 }
 
 impl XvcS3StorageOperations for XvcWasabiStorage {
-    fn remote_prefix(&self) -> String {
+    fn storage_prefix(&self) -> String {
         self.storage_prefix.clone()
     }
 
@@ -147,7 +147,7 @@ impl XvcS3StorageOperations for XvcWasabiStorage {
     }
 
     fn credentials(&self) -> Result<Credentials> {
-        match self.remote_specific_credentials() {
+        match self.storage_specific_credentials() {
             Ok(c) => Ok(c),
             Err(e1) => match self.storage_type_credentials() {
                 Ok(c) => Ok(c),
@@ -161,7 +161,7 @@ impl XvcS3StorageOperations for XvcWasabiStorage {
         .map_err(|e| e.into())
     }
 
-    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+    fn build_storage_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
             self.storage_prefix,

@@ -7,8 +7,6 @@ use crate::Result;
 
 use clap::Parser;
 
-use humantime;
-
 use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{error, watch, XvcOutputSender};
@@ -25,7 +23,7 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 pub struct SendCLI {
     /// Storage name or guid to send the files
     #[arg(long, short, alias = "to")]
-    remote: StorageIdentifier,
+    storage: StorageIdentifier,
     /// Force even if the files are already present in the storage
     #[arg(long)]
     force: bool,
@@ -36,7 +34,7 @@ pub struct SendCLI {
 
 /// Send a targets in `opts.targets` in `xvc_root`  to `opt.remote`
 pub fn cmd_send(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: SendCLI) -> Result<()> {
-    let remote = get_storage_record(output_snd, xvc_root, &opts.remote)?;
+    let remote = get_storage_record(output_snd, xvc_root, &opts.storage)?;
     watch!(remote);
     let current_dir = xvc_root.config().current_dir()?;
     let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
