@@ -5,7 +5,7 @@ use log::{info, warn};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use xvc_config::XvcConfigInitParams;
+use xvc_config::XvcConfigParams;
 use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
@@ -84,7 +84,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         }
     }
     let default_configuration = default_project_config(!opts.no_git);
-    let config_opts = XvcConfigInitParams {
+    let config_opts = XvcConfigParams {
         default_configuration,
         current_dir: AbsolutePath::from(&path),
         include_system_config: true,

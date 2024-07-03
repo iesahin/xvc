@@ -13,7 +13,7 @@ use xvc_ecs::{XvcEntity, XvcEntityGenerator};
 use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
-use xvc_config::{XvcConfig, XvcConfigInitParams};
+use xvc_config::{XvcConfig, XvcConfigParams};
 
 use crate::error::{Error, Result};
 use crate::GITIGNORE_INITIAL_CONTENT;
@@ -69,7 +69,7 @@ impl Deref for XvcRootInner {
 /// The path is not required to be the root of the repository.
 /// This function searches for the root of the repository using
 /// [XvcRoot::find_root] and uses it as the root.
-pub fn load_xvc_root(config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
+pub fn load_xvc_root(config_opts: XvcConfigParams) -> Result<XvcRoot> {
     let path = config_opts.current_dir.as_ref();
 
     match XvcRootInner::find_root(path) {
@@ -85,7 +85,7 @@ pub fn load_xvc_root(config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
 
 /// Creates a new .xvc dir in `path` and initializes a directory.
 /// *Warning:* This should only be used in `xvc init`, not in other commands.
-pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<XvcRoot> {
+pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoot> {
     match XvcRootInner::find_root(path) {
         Ok(abs_path) => Err(Error::CannotNestXvcRepositories {
             path: abs_path.to_path_buf(),
@@ -104,7 +104,7 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<Xv
                     "# Please add your local config here. This file is .gitignored",
                 )?;
 
-                let project_config_opts = XvcConfigInitParams {
+                let project_config_opts = XvcConfigParams {
                     default_configuration: config_opts.default_configuration,
                     current_dir: config_opts.current_dir,
                     include_system_config: config_opts.include_system_config,
@@ -150,11 +150,11 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigInitParams) -> Result<Xv
 impl XvcRootInner {
     /// Create a new XvcRootInner object by reading the configuration from `absolute_path/.xvc/` or
     /// other locations. `config_opts` can determine which configuration files to read
-    pub fn new(absolute_path: AbsolutePath, config_opts: XvcConfigInitParams) -> Result<Self> {
+    pub fn new(absolute_path: AbsolutePath, config_opts: XvcConfigParams) -> Result<Self> {
         let xvc_dir = absolute_path.join(XvcRootInner::XVC_DIR);
         let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
         let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
-        let config_opts = XvcConfigInitParams {
+        let config_opts = XvcConfigParams {
             project_config_path: Some(project_config_path.clone()),
             local_config_path: Some(local_config_path.clone()),
             default_configuration: config_opts.default_configuration,

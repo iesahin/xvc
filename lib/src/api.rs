@@ -19,7 +19,7 @@ pub use xvc_logging::warn;
 pub use xvc_logging::watch;
 
 pub use xvc_config::XvcConfig;
-pub use xvc_config::XvcConfigInitParams;
+pub use xvc_config::XvcConfigParams;
 pub use xvc_config::XvcConfigOptionSource;
 
 pub use xvc_core::AbsolutePath;

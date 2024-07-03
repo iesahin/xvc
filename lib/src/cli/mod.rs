@@ -20,7 +20,7 @@ use xvc_core::types::xvcroot::XvcRootInner;
 use xvc_core::XvcRoot;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
-use xvc_config::{XvcConfigInitParams, XvcVerbosity};
+use xvc_config::{XvcConfigParams, XvcVerbosity};
 use xvc_core::aliases;
 use xvc_core::check_ignore;
 use xvc_core::default_project_config;
@@ -456,8 +456,8 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
 
 }
 
-fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigInitParams {
-    let xvc_config_params = XvcConfigInitParams {
+fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
+    let xvc_config_params = XvcConfigParams {
         current_dir: AbsolutePath::from(&cli_opts.workdir),
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,
