@@ -25,7 +25,7 @@ use xvc_core::XvcRoot;
 use xvc_logging::{output, XvcOutputSender};
 
 /// Storage (on the cloud) management commands
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(name = "storage", about = "")]
 pub struct StorageCLI {
     /// Subcommand for storage management

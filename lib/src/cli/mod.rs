@@ -185,7 +185,7 @@ impl FromStr for XvcCLI {
 }
 
 /// Xvc subcommands
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(rename_all = "kebab-case")]
 pub enum XvcSubCommand {
     /// File and directory management commands
