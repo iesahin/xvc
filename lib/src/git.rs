@@ -170,7 +170,7 @@ pub fn git_auto_commit(
         &[
             "add",
             "--verbose",
-            &xvc_dir_str,
+            xvc_dir_str,
             "*.gitignore",
             "*.xvcignore",
         ],
