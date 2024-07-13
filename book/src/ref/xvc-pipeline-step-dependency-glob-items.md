@@ -7,7 +7,7 @@ Unline glob dependency, glob items dependency keeps track of the individual file
 command run with the list of files from a glob and you want to track added and removed files, use this. Otherwise if
 your command for all the files in a glob and don't need to track which files have changed, use the glob dependency.
 
-This one injects `${XVC_GLOB_ADDED_ITEMS}`, `${XVC_GLOB_REMOVED_ITEMS}`, `${XVC_GLOB_CHANGED_ITEMS}` and `${XVC_GLOB_ALL_ITEMS}` to the command
+This one injects `${XVC_ADDED_GLOB_ITEMS}`, `${XVC_REMOVED_GLOB_ITEMS}`, `${XVC_CHANGED_GLOB_ITEMS}` and `${XVC_ALL_GLOB_ITEMS}` to the command
 environment.
 
 This command works only in Xvc repositories.
@@ -41,7 +41,7 @@ $ tree
 Add a step to list the added files.
 
 ```console
-$ xvc pipeline step new --step-name files-changed --command 'echo "### Added Files:\n${XVC_GLOB_ADDED_ITEMS}\n### Removed Files:\n${XVC_GLOB_REMOVED_ITEMS}\n### Changed Files:\n${XVC_GLOB_CHANGED_ITEMS}"'
+$ xvc pipeline step new --step-name files-changed --command 'echo "### Added Files:\n${XVC_ADDED_GLOB_ITEMS}\n### Removed Files:\n${XVC_REMOVED_GLOB_ITEMS}\n### Changed Files:\n${XVC_CHANGED_GLOB_ITEMS}"'
 
 $ xvc pipeline step dependency --step-name files-changed --glob-items 'dir-*/*'
 
@@ -63,7 +63,7 @@ dir-0002/file-0003.bin
 ### Changed Files:
 
  
-[DONE] files-changed (echo "### Added Files:/n${XVC_GLOB_ADDED_ITEMS}/n### Removed Files:/n${XVC_GLOB_REMOVED_ITEMS}/n### Changed Files:/n${XVC_GLOB_CHANGED_ITEMS}")
+[DONE] files-changed (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
 
 $ xvc pipeline run
 
@@ -82,7 +82,7 @@ dir-0001/file-0001.bin
 ### Changed Files:
 
  
-[DONE] files-changed (echo "### Added Files:/n${XVC_GLOB_ADDED_ITEMS}/n### Removed Files:/n${XVC_GLOB_REMOVED_ITEMS}/n### Changed Files:/n${XVC_GLOB_CHANGED_ITEMS}")
+[DONE] files-changed (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
 
 ```
 
@@ -99,6 +99,6 @@ $ xvc pipeline run
 ### Changed Files:
 dir-0001/file-0002.bin
  
-[DONE] files-changed (echo "### Added Files:/n${XVC_GLOB_ADDED_ITEMS}/n### Removed Files:/n${XVC_GLOB_REMOVED_ITEMS}/n### Changed Files:/n${XVC_GLOB_CHANGED_ITEMS}")
+[DONE] files-changed (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
 
 ```

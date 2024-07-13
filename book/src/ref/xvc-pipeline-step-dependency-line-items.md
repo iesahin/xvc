@@ -5,8 +5,8 @@ You can make your steps to depend on lines of text files. The lines are defined 
 When the text in those lines change, the step is invalidated.
 
 Unlike line dependencies, this dependency type keeps track of the lines in the
-file. You can use `${XVC_LINE_ALL_ITEMS}`, `${XVC_LINE_ADDED_ITEMS}`, and
-`${XVC_LINE_REMOVED_ITEMS}` environment variables in the command. Please be
+file. You can use `${XVC_ALL_LINE_ITEMS}`, `${XVC_ADDED_LINE_ITEMS}`, and
+`${XVC_REMOVED_LINE_ITEMS}` environment variables in the command. Please be
 aware that for large set of lines, this dependency can take up considerable
 space to keep track of all lines and if you don't need to keep track of changed
 lines, you can use `--lines` dependency.
@@ -49,7 +49,7 @@ $ cat people.csv
 Let's a step to show the first 10 lines of the file:
 
 ```console
-$ xvc pipeline step new --step-name print-top-10 --command 'echo "Added Lines:\n ${XVC_LINE_ADDED_ITEMS}\nRemoved Lines:\n${XVC_LINE_REMOVED_ITEMS}"'
+$ xvc pipeline step new --step-name print-top-10 --command 'echo "Added Lines:\n ${XVC_ADDED_LINE_ITEMS}\nRemoved Lines:\n${XVC_REMOVED_LINE_ITEMS}"'
 
 ```
 
@@ -77,7 +77,7 @@ $ xvc pipeline run
 Removed Lines:
 
  
-[DONE] print-top-10 (echo "Added Lines:/n ${XVC_LINE_ADDED_ITEMS}/nRemoved Lines:/n${XVC_LINE_REMOVED_ITEMS}")
+[DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
 
 ``````
 
@@ -104,7 +104,7 @@ $ xvc pipeline run
 Removed Lines:
 "Hank",       "M",   30,       71,      158
  
-[DONE] print-top-10 (echo "Added Lines:/n ${XVC_LINE_ADDED_ITEMS}/nRemoved Lines:/n${XVC_LINE_REMOVED_ITEMS}")
+[DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
 
 ```
 

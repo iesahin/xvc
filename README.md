@@ -149,12 +149,12 @@ and [other steps](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dep
 Suppose you're only interested in the IQ scores of those with _Dr._ in front of their names and how they differ from the rest in the dataset we created. Let's create a regex search dependency to the data file that will show all _doctors_ IQ scores.
 
 ```console
-$ xvc pipeline step new --step-name dr-iq --command 'echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv '
+$ xvc pipeline step new --step-name dr-iq --command 'echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv '
 $ xvc pipeline step dependency --step-name dr-iq --regex-items 'random_names_iq_scores.csv:/^Dr\..*'
 ```
 
-The first line specifies a command, when run writes `${XVC_REGEX_ADDED_ITEMS}` environment variable to `dr-iq-scores.csv` file.
-The second line specifies the dependency which will also populate the `$[XVC_REGEX_ADDED_ITEMS]` environment variable in the command.
+The first line specifies a command, when run writes `${XVC_ADDED_REGEX_ITEMS}` environment variable to `dr-iq-scores.csv` file.
+The second line specifies the dependency which will also populate the `$[XVC_ADDED_REGEX_ITEMS]` environment variable in the command.
 
 Some dependency types like [regex items],
 [line items] and [glob items] inject environment variables in the commands they are a dependency.
@@ -164,7 +164,7 @@ When you run the pipeline again, a file named `dr-iq-scores.csv` will be created
 
 ```console
 $ xvc pipeline run
-[DONE] dr-iq (echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv )
+[DONE] dr-iq (echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv )
 
 $ cat dr-iq-scores.csv
 Dr. Brian Shaffer,122
@@ -181,7 +181,7 @@ We are using this feature to get lines starting with `Dr.` from the file and wri
 $ zsh -cl 'echo "Dr. Albert Einstein,144" >> random_names_iq_scores.csv'
 
 $ xvc pipeline run
-[DONE] dr-iq (echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv )
+[DONE] dr-iq (echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv )
 
 $ cat dr-iq-scores.csv
 Dr. Brian Shaffer,122
@@ -292,7 +292,7 @@ $ cat my-pipeline.json
       "outputs": []
     },
     {
-      "command": "echo /"${XVC_REGEX_ADDED_ITEMS}/" >> dr-iq-scores.csv ",
+      "command": "echo /"${XVC_ADDED_REGEX_ITEMS}/" >> dr-iq-scores.csv ",
       "dependencies": [
         {
           "RegexItems": {

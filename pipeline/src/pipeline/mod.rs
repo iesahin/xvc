@@ -1257,19 +1257,19 @@ fn update_command_environment(
         if let Some(items) = actual.items() {
             match actual {
                 XvcDependency::GlobItems(_) => {
-                    update_env("XVC_GLOB_ADDED_ITEMS", &items)?;
-                    update_env("XVC_GLOB_REMOVED_ITEMS", &[])?;
-                    update_env("XVC_GLOB_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_GLOB_ITEMS", &items)?;
+                    update_env("XVC_REMOVED_GLOB_ITEMS", &[])?;
+                    update_env("XVC_ALL_GLOB_ITEMS", &items)
                 }
                 XvcDependency::RegexItems(_) => {
-                    update_env("XVC_REGEX_ADDED_ITEMS", &items)?;
-                    update_env("XVC_REGEX_REMOVED_ITEMS", &[])?;
-                    update_env("XVC_REGEX_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_REGEX_ITEMS", &items)?;
+                    update_env("XVC_REMOVED_REGEX_ITEMS", &[])?;
+                    update_env("XVC_ALL_REGEX_ITEMS", &items)
                 }
                 XvcDependency::LineItems(_) => {
-                    update_env("XVC_LINE_ADDED_ITEMS", &items)?;
-                    update_env("XVC_LINE_REMOVED_ITEMS", &[])?;
-                    update_env("XVC_LINE_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_ITEMS", &items)?;
+                    update_env("XVC_REMOVED_LINE_ITEMS", &[])?;
+                    update_env("XVC_ALL_LINE_ITEMS", &items)
                 }
                 _ => Ok(()),
             }
@@ -1282,19 +1282,19 @@ fn update_command_environment(
         if let Some(items) = record.items() {
             match record {
                 XvcDependency::GlobItems(_dep) => {
-                    update_env("XVC_GLOB_ADDED_ITEMS", &[])?;
-                    update_env("XVC_GLOB_REMOVED_ITEMS", &items)?;
-                    update_env("XVC_GLOB_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_GLOB_ITEMS", &[])?;
+                    update_env("XVC_REMOVED_GLOB_ITEMS", &items)?;
+                    update_env("XVC_ALL_GLOB_ITEMS", &items)
                 }
                 XvcDependency::RegexItems(_dep) => {
-                    update_env("XVC_REGEX_ADDED_ITEMS", &[])?;
-                    update_env("XVC_REGEX_REMOVED_ITEMS", &items)?;
-                    update_env("XVC_REGEX_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_REGEX_ITEMS", &[])?;
+                    update_env("XVC_REMOVED_REGEX_ITEMS", &items)?;
+                    update_env("XVC_ALL_REGEX_ITEMS", &items)
                 }
                 XvcDependency::LineItems(_dep) => {
-                    update_env("XVC_LINE_ADDED_ITEMS", &[])?;
-                    update_env("XVC_LINE_REMOVED_ITEMS", &items)?;
-                    update_env("XVC_LINE_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_LINE_ITEMS", &[])?;
+                    update_env("XVC_REMOVED_LINE_ITEMS", &items)?;
+                    update_env("XVC_ALL_LINE_ITEMS", &items)
                 }
                 _ => Ok(()),
             }
@@ -1340,22 +1340,22 @@ fn update_command_environment(
                                     }
                                 }
                             }
-                            update_env("XVC_GLOB_CHANGED_ITEMS", &changed_items)?;
+                            update_env("XVC_CHANGED_GLOB_ITEMS", &changed_items)?;
                         }
 
-                        update_env("XVC_GLOB_ADDED_ITEMS", &added_items)?;
-                        update_env("XVC_GLOB_REMOVED_ITEMS", &removed_items)?;
-                        update_env("XVC_GLOB_ALL_ITEMS", &all_items)
+                        update_env("XVC_ADDED_GLOB_ITEMS", &added_items)?;
+                        update_env("XVC_REMOVED_GLOB_ITEMS", &removed_items)?;
+                        update_env("XVC_ALL_GLOB_ITEMS", &all_items)
                     }
                     XvcDependency::RegexItems(_dep) => {
-                        update_env("XVC_REGEX_ADDED_ITEMS", &added_items)?;
-                        update_env("XVC_REGEX_REMOVED_ITEMS", &removed_items)?;
-                        update_env("XVC_REGEX_ALL_ITEMS", &all_items)
+                        update_env("XVC_ADDED_REGEX_ITEMS", &added_items)?;
+                        update_env("XVC_REMOVED_REGEX_ITEMS", &removed_items)?;
+                        update_env("XVC_ALL_REGEX_ITEMS", &all_items)
                     }
                     XvcDependency::LineItems(_dep) => {
-                        update_env("XVC_LINE_ADDED_ITEMS", &added_items)?;
-                        update_env("XVC_LINE_REMOVED_ITEMS", &removed_items)?;
-                        update_env("XVC_LINE_ALL_ITEMS", &all_items)
+                        update_env("XVC_ADDED_LINE_ITEMS", &added_items)?;
+                        update_env("XVC_REMOVED_LINE_ITEMS", &removed_items)?;
+                        update_env("XVC_ALL_LINE_ITEMS", &all_items)
                     }
                     _ => Ok(()),
                 }
@@ -1371,19 +1371,19 @@ fn update_command_environment(
         if let Some(items) = dep.items() {
             match dep {
                 XvcDependency::GlobItems(_) => {
-                    update_env("XVC_GLOB_ADDED_ITEMS", &[])?;
-                    update_env("XVC_GLOB_REMOVED_ITEMS", &[])?;
-                    update_env("XVC_GLOB_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_GLOB_ITEMS", &[])?;
+                    update_env("XVC_REMOVED_GLOB_ITEMS", &[])?;
+                    update_env("XVC_ALL_GLOB_ITEMS", &items)
                 }
                 XvcDependency::RegexItems(_) => {
-                    update_env("XVC_REGEX_ADDED_ITEMS", &[])?;
-                    update_env("XVC_REGEX_REMOVED_ITEMS", &[])?;
-                    update_env("XVC_REGEX_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_REGEX_ITEMS", &[])?;
+                    update_env("XVC_REMOVED_REGEX_ITEMS", &[])?;
+                    update_env("XVC_ALL_REGEX_ITEMS", &items)
                 }
                 XvcDependency::LineItems(_) => {
-                    update_env("XVC_LINE_ADDED_ITEMS", &[])?;
-                    update_env("XVC_LINE_REMOVED_ITEMS", &[])?;
-                    update_env("XVC_LINE_ALL_ITEMS", &items)
+                    update_env("XVC_ADDED_LINE_ITEMS", &[])?;
+                    update_env("XVC_REMOVED_LINE_ITEMS", &[])?;
+                    update_env("XVC_ALL_LINE_ITEMS", &items)
                 }
                 _ => Ok(()),
             }
