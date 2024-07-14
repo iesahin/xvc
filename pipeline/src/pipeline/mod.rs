@@ -1488,7 +1488,7 @@ fn s_running_f_wait_process<'a>(
 
                 Some(exit_code) => match exit_code {
             ExitStatus::Exited(0) => {
-                output!(params.output_snd, "[DONE] {} ({})", step.name, step_command);
+                output!(params.output_snd, "[DONE] {} ({})\n", step.name, step_command);
                 return_state = Some(s.process_completed_successfully());
             }
             ,
