@@ -119,7 +119,7 @@ impl CommandProcess {
                 stdout.read_to_string(&mut out)?;
                 if !out.is_empty() {
                     self.stdout_sender
-                        .send(format!("[OUT] [{}] {} ", self.step.name, out))
+                        .send(format!("[OUT] [{}] {}", self.step.name, out))
                         .ok();
                 }
             }
