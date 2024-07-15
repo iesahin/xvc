@@ -25,7 +25,7 @@ use xvc_core::XvcRoot;
 use xvc_logging::{output, XvcOutputSender};
 
 /// Storage (on the cloud) management commands
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(name = "storage", about = "")]
 pub struct StorageCLI {
     /// Subcommand for storage management
@@ -78,7 +78,7 @@ pub enum StorageNewSubCommand {
     /// Add a new generic storage.
     ///
     /// ⚠️ Please note that this is an advanced method to configure storages.
-    /// You may damage your repository and local and remote files with incorrect configurations.
+    /// You may damage your repository and local and storage files with incorrect configurations.
     ///
     /// Please see https://docs.xvc.dev/ref/xvc-storage-new-generic.html for examples and make
     /// necessary backups.
@@ -125,12 +125,10 @@ pub enum StorageNewSubCommand {
         storage_dir: Option<String>,
     },
 
-    /// Add a new rsync storage
+    /// Add a new rsync storages
     ///
-    /// Uses rsync in separate processes to communicate with the server.
-    ///
+    /// Uses rsync in separate processes to communicate.
     /// This can be used when you already have an SSH/Rsync connection.
-    ///
     /// It doesn't prompt for any passwords. The connection must be set up with ssh keys beforehand.
     #[command()]
     Rsync {

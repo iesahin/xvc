@@ -111,7 +111,7 @@ pub fn git_checkout_ref(
 /// record the last entity counter before commit.
 pub fn handle_git_automation(
     output_snd: &XvcOutputSender,
-    xvc_root: XvcRoot,
+    xvc_root: &XvcRoot,
     to_branch: Option<&str>,
     xvc_cmd: &str,
 ) -> Result<()> {
@@ -124,9 +124,6 @@ pub fn handle_git_automation(
     let git_command = get_absolute_git_command(&git_command_str)?;
     let xvc_dir = xvc_root.xvc_dir().clone();
     let xvc_dir_str = xvc_dir.to_str().unwrap();
-
-    // we drop here to record the final state
-    drop(xvc_root);
 
     if use_git {
         if auto_commit {
@@ -173,7 +170,7 @@ pub fn git_auto_commit(
         &[
             "add",
             "--verbose",
-            &xvc_dir_str,
+            xvc_dir_str,
             "*.gitignore",
             "*.xvcignore",
         ],

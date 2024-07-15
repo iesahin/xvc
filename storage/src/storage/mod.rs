@@ -32,7 +32,7 @@ pub use local::XvcLocalStorage;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{panic, watch, XvcOutputSender};
+use xvc_logging::{error, panic, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};
@@ -73,7 +73,7 @@ pub enum XvcStorage {
     #[cfg(feature = "digital-ocean")]
     DigitalOcean(digital_ocean::XvcDigitalOceanStorage),
 }
-persist!(XvcStorage, "remote");
+persist!(XvcStorage, "storage");
 
 impl Display for XvcStorage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -108,28 +108,28 @@ impl Display for XvcStorage {
             ),
 
             #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => write!(
+            XvcStorage::S3(r) => write!(
                 f,
                 "S3:      {}\t{}\t{}.{}/{}",
-                s3r.name, s3r.guid, s3r.region, s3r.bucket_name, s3r.storage_prefix
+                r.name, r.guid, r.region, r.bucket_name, r.storage_prefix
             ),
             #[cfg(feature = "minio")]
             XvcStorage::Minio(mr) => write!(
                 f,
                 "Minio:   {}\t{}\t{}.{}/{}",
-                mr.name, mr.guid, mr.endpoint, mr.bucket_name, mr.remote_prefix
+                mr.name, mr.guid, mr.endpoint, mr.bucket_name, mr.storage_prefix
             ),
             #[cfg(feature = "r2")]
             XvcStorage::R2(r2r) => write!(
                 f,
                 "R2:      {}\t{}\t{} {}/{}",
-                r2r.name, r2r.guid, r2r.account_id, r2r.bucket_name, r2r.remote_prefix
+                r2r.name, r2r.guid, r2r.account_id, r2r.bucket_name, r2r.storage_prefix
             ),
             #[cfg(feature = "gcs")]
             XvcStorage::Gcs(gcsr) => write!(
                 f,
                 "GCS:     {}\t{}\t{}.{}/{}",
-                gcsr.name, gcsr.guid, gcsr.region, gcsr.bucket_name, gcsr.remote_prefix
+                gcsr.name, gcsr.guid, gcsr.region, gcsr.bucket_name, gcsr.storage_prefix
             ),
             #[cfg(feature = "wasabi")]
             XvcStorage::Wasabi(wr) => write!(
@@ -141,14 +141,14 @@ impl Display for XvcStorage {
             XvcStorage::DigitalOcean(dor) => write!(
                 f,
                 "DO:      {}\t{}\t{}.{}/{}",
-                dor.name, dor.guid, dor.region, dor.bucket_name, dor.remote_prefix
+                dor.name, dor.guid, dor.region, dor.bucket_name, dor.storage_prefix
             ),
         }
     }
 }
 
 /// All storages implement this trait. xvc storage new   and xvc file send / bring / remove
-/// commands use this trait to communicate with the remotes.
+/// commands use this trait to communicate with the storages.
 pub trait XvcStorageOperations {
     /// The init operation is creates a directory with the "short guid" of the Xvc repository and
     /// adds a .xvc-guid file with the guid of the storage.
@@ -375,7 +375,7 @@ impl XvcStorageTempDir {
 /// It uses [RelativePathBuf] internally.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize, Display)]
 pub struct XvcStoragePath(RelativePathBuf);
-persist!(XvcStoragePath, "remote-path");
+persist!(XvcStoragePath, "storage-path");
 
 impl From<String> for XvcStoragePath {
     fn from(p: String) -> Self {
@@ -397,7 +397,7 @@ impl AsRef<RelativePath> for XvcStoragePath {
 }
 
 impl XvcStoragePath {
-    /// The remote path of a cache path is like {guid}/{cache-path}
+    /// The storage path of a cache path is like {guid}/{cache-path}
     /// ⚠️  The separator between {guid} and {cache-path} is always /
     pub fn new(xvc_root: &XvcRoot, local: &XvcCachePath) -> Self {
         let guid = xvc_root.config().guid().unwrap();
@@ -457,7 +457,7 @@ pub fn get_storage_record(
     identifier: &StorageIdentifier,
 ) -> Result<XvcStorage> {
     let store: XvcStore<XvcStorage> = xvc_root.load_store()?;
-    let remote_store = store.filter(|_, r| match identifier {
+    let storage_store = store.filter(|_, r| match identifier {
         StorageIdentifier::Name(ref n) => match r {
             XvcStorage::Local(r) => r.name == *n,
             XvcStorage::Generic(r) => r.name == *n,
@@ -494,18 +494,18 @@ pub fn get_storage_record(
         },
     });
 
-    if remote_store.is_empty() {
-        panic!(output_snd, "Cannot find remote {}", identifier);
+    if storage_store.is_empty() {
+        error!(output_snd, "Cannot find remote {}", identifier);
     }
-    if remote_store.len() > 1 {
-        panic!(output_snd, "Ambiguous remote identifier: {}", identifier);
+    if storage_store.len() > 1 {
+        error!(output_snd, "Ambiguous remote identifier: {} Please use Storage GUID.", identifier);
     }
 
-    let (_, remote) =
-        remote_store
+    let (_, storage) =
+        storage_store
             .first()
-            .ok_or_else(|| Error::CannotFindRemoteWithIdentifier {
+            .ok_or_else(|| Error::CannotFindStorageWithIdentifier {
                 identifier: identifier.clone(),
             })?;
-    Ok(remote.clone())
+    Ok(storage.clone())
 }

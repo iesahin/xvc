@@ -119,7 +119,7 @@ impl CommandProcess {
                 stdout.read_to_string(&mut out)?;
                 if !out.is_empty() {
                     self.stdout_sender
-                        .send(format!("[OUT] [{}] {} ", self.step.name, out))
+                        .send(format!("[OUT] [{}] {}", self.step.name, out))
                         .ok();
                 }
             }
@@ -129,7 +129,7 @@ impl CommandProcess {
                 stderr.read_to_string(&mut err)?;
                 if !err.is_empty() {
                     self.stderr_sender
-                        .send(format!("[ERR] [{}] {} ", self.step.name, err))
+                        .send(format!("[ERR] [{}] {}", self.step.name, err))
                         .ok();
                 }
             }

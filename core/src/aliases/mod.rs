@@ -4,7 +4,7 @@ use clap::Parser;
 
 use xvc_logging::{output, XvcOutputSender};
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(name = "aliases")]
 /// Print aliases in the common format to be added to `.zsh_aliases`, `.bash_aliases` or
 /// `.profile`.

@@ -4,7 +4,7 @@ You can specify a regular expression matched against the lines from a file as a 
 the matched results changed.
 
 Unlike regex dependencies, regex item dependencies keep track of the matched items. You can access them with
-`${XVC_REGEX_ALL_ITEMS}`, `${XVC_REGEX_ADDED_ITEMS}`, and `${XVC_REGEX_REMOVED_ITEMS}` environment variables.
+`${XVC_ALL_REGEX_ITEMS}`, `${XVC_ADDED_REGEX_ITEMS}`, and `${XVC_REMOVED_REGEX_ITEMS}` environment variables.
 
 This command works only in Xvc repositories.
 
@@ -44,8 +44,8 @@ $ cat people.csv
 Now, let's add steps to the pipeline to count males and females in the file:
 
 ```console
-$ xvc pipeline step new --step-name new-males --command 'echo "New Males:\n ${XVC_REGEX_ADDED_ITEMS}"'
-$ xvc pipeline step new --step-name new-females --command 'echo "New Females:\n ${XVC_REGEX_ADDED_ITEMS}"'
+$ xvc pipeline step new --step-name new-males --command 'echo "New Males:\n ${XVC_ADDED_REGEX_ITEMS}"'
+$ xvc pipeline step new --step-name new-females --command 'echo "New Females:\n ${XVC_ADDED_REGEX_ITEMS}"'
 $ xvc pipeline step dependency --step-name new-females --step new-males
 ```
 
@@ -77,7 +77,7 @@ $ xvc pipeline run
 "Omar",       "M",   38,       70,      145
 "Quin",       "M",   29,       71,      176
  
-[DONE] new-males (echo "New Males:/n ${XVC_REGEX_ADDED_ITEMS}")
+[DONE] new-males (echo "New Males:/n ${XVC_ADDED_REGEX_ITEMS}")
 [OUT] [new-females] New Females:
  "Elly",       "F",   30,       66,      124
 "Fran",       "F",   33,       66,      115
@@ -87,7 +87,7 @@ $ xvc pipeline run
 "Page",       "F",   31,       67,      135
 "Ruth",       "F",   28,       65,      131
  
-[DONE] new-females (echo "New Females:/n ${XVC_REGEX_ADDED_ITEMS}")
+[DONE] new-females (echo "New Females:/n ${XVC_ADDED_REGEX_ITEMS}")
 
 ``````
 
@@ -130,6 +130,6 @@ $ xvc pipeline run
 [OUT] [new-females] New Females:
  "Asude",      "F",   12,       55,      110
  
-[DONE] new-females (echo "New Females:/n ${XVC_REGEX_ADDED_ITEMS}")
+[DONE] new-females (echo "New Females:/n ${XVC_ADDED_REGEX_ITEMS}")
 
 ```

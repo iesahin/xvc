@@ -5,7 +5,7 @@ use log::{info, warn};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use xvc_config::XvcConfigInitParams;
+use xvc_config::XvcConfigParams;
 use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
@@ -14,7 +14,7 @@ use xvc_logging::watch;
 use xvc_pipeline;
 use xvc_walker::AbsolutePath;
 
-/// Initialize an XVC repository
+/// Initialize an Xvc repository
 #[derive(Debug, Clone, Parser)]
 #[command(author, version)]
 pub struct InitCLI {
@@ -59,7 +59,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
                 );
                 fs::remove_dir_all(xvc_root.xvc_dir())?;
             } else {
-                return Err(Error::DirectoryContainsXVCAlready {
+                return Err(Error::DirectoryContainsXvcAlready {
                     path: xvc_root.absolute_path().as_os_str().to_os_string(),
                 });
             }
@@ -84,7 +84,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         }
     }
     let default_configuration = default_project_config(!opts.no_git);
-    let config_opts = XvcConfigInitParams {
+    let config_opts = XvcConfigParams {
         default_configuration,
         current_dir: AbsolutePath::from(&path),
         include_system_config: true,

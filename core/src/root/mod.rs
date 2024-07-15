@@ -6,9 +6,9 @@ use clap::Parser;
 use relative_path::RelativePath;
 use xvc_logging::{output, watch, XvcOutputSender};
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(name = "root")]
-/// Get the XVC root directory for the current project
+/// Get the Xvc root directory for the current project
 pub struct RootCLI {
     #[arg(long)]
     /// Show absolute path instead of relative

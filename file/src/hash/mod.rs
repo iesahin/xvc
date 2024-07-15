@@ -7,7 +7,7 @@ use clap::Parser;
 use crossbeam_channel::unbounded;
 use log::warn;
 use std::{env, path::PathBuf};
-use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigInitParams};
+use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigParams};
 use xvc_core::ContentDigest;
 use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
@@ -63,7 +63,7 @@ pub fn cmd_hash(
 ) -> Result<()> {
     let conf = match xvc_root {
         Some(xvc_root) => xvc_root.config().clone(),
-        None => XvcConfig::new(XvcConfigInitParams {
+        None => XvcConfig::new(XvcConfigParams {
             default_configuration: xvc_core::default_project_config(false),
             current_dir: AbsolutePath::from(env::current_dir()?),
             include_system_config: true,

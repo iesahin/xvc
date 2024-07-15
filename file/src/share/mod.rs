@@ -17,7 +17,7 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 pub struct ShareCLI {
     /// Storage name or guid to send the files
     #[arg(long, short, alias = "from")]
-    remote: StorageIdentifier,
+    storage: StorageIdentifier,
     /// Period to send the files to. You can use s, m, h, d, w suffixes.
     #[arg(long, short, default_value = "24h")]
     duration: String,
@@ -28,8 +28,8 @@ pub struct ShareCLI {
 
 pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCLI) -> Result<()> {
     // TODO: TIDY UP these implementation to reuse code in other places
-    let remote = get_storage_record(output_snd, xvc_root, &opts.remote)?;
-    watch!(remote);
+    let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
+    watch!(storage);
     let current_dir = xvc_root.config().current_dir()?;
     let targets = load_targets_from_store(xvc_root, current_dir, &Some(vec![opts.target]))?;
     watch!(targets);
@@ -66,6 +66,6 @@ pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCL
 
     watch!(duration);
 
-    remote.share(output_snd, xvc_root, &cache_path, duration)?;
+    storage.share(output_snd, xvc_root, &cache_path, duration)?;
     Ok(())
 }

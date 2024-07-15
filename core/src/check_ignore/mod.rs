@@ -80,7 +80,7 @@ pub fn cmd_check_ignore<R: BufRead>(
         ignore_filename: Some(opts.ignore_filename.clone()),
         include_dirs: true,
     };
-    let initial_rules = IgnoreRules::try_from_patterns(xvc_root, COMMON_IGNORE_PATTERNS)?;
+    let initial_rules = IgnoreRules::try_from_patterns(&xvc_root, COMMON_IGNORE_PATTERNS)?;
     let ignore_rules = build_ignore_rules(
         initial_rules,
         current_dir,

@@ -52,7 +52,7 @@ use crate::pipeline::XvcStepInvalidate;
 pub use crate::pipeline::api::run::RunCLI;
 
 /// Pipeline management commands
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(name = "pipeline")]
 pub struct PipelineCLI {
     /// Name of the pipeline this command applies to

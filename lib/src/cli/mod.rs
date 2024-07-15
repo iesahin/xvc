@@ -1,12 +1,14 @@
-//! Main CLI interface for XVC
+//! Main CLI interface for Xvc
 use std::env::ArgsOs;
 
 use std::ffi::OsString;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use crate::git_checkout_ref;
 use crate::handle_git_automation;
 use crate::init;
+use crate::XvcRootOpt;
 
 use clap::Parser;
 use crossbeam::thread;
@@ -14,10 +16,11 @@ use crossbeam_channel::bounded;
 use log::LevelFilter;
 use std::io;
 use xvc_core::types::xvcroot::load_xvc_root;
+use xvc_core::types::xvcroot::XvcRootInner;
+use xvc_core::XvcRoot;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
-use std::path::Path;
-use xvc_config::{XvcConfigInitParams, XvcVerbosity};
+use xvc_config::{XvcConfigParams, XvcVerbosity};
 use xvc_core::aliases;
 use xvc_core::check_ignore;
 use xvc_core::default_project_config;
@@ -124,6 +127,17 @@ impl XvcCLI {
         })
     }
 
+    /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
+    /// [XvcCLI::command_string].
+    pub fn from_string_slice(args: &[String]) -> Result<XvcCLI> {
+        let command_string = args.join(" ");
+        let parsed = Self::parse_from(args);
+        Ok(Self {
+            command_string,
+            ..parsed
+        })
+    }
+
     /// Parse the command line from the result of [`std::env::args_os`].
     /// This updates [XvcCLI::command_string] with the command line.
     pub fn from_args_os(args_os: ArgsOs) -> Result<XvcCLI> {
@@ -154,8 +168,24 @@ impl XvcCLI {
     }
 }
 
+// Implement FromStr for XvcCLI 
+
+impl FromStr for XvcCLI {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        let command_string = s.to_owned();
+        let args: Vec<String> = s.split(' ').map(|a| a.trim().to_owned()).collect();
+        let parsed = Self::parse_from(args);
+        Ok(Self {
+            command_string,
+            ..parsed
+        })
+    }
+}
+
 /// Xvc subcommands
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(rename_all = "kebab-case")]
 pub enum XvcSubCommand {
     /// File and directory management commands
@@ -175,73 +205,28 @@ pub enum XvcSubCommand {
 }
 
 /// Runs the supplied xvc command.
-pub fn run(args: &[&str]) -> Result<()> {
+pub fn run(args: &[&str]) -> Result<XvcRootOpt> {
     let cli_options = cli::XvcCLI::from_str_slice(args)?;
     dispatch(cli_options)
 }
 
-/// Dispatch commands to respective functions in the API
-///
-/// It sets output verbosity with [XvcCLI::verbosity].
-/// Determines configuration sources by filling [XvcConfigInitParams].
-/// Tries to create an XvcRoot to determine whether we're inside one.
-/// Creates two threads: One for running the API function, one for getting strings from output
-/// channel.
-///
-/// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
-/// It doesn't recreate the whole configuration and this prevents errors regarding multiple
-/// initializations.
-pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
-    let verbosity = if cli_opts.quiet {
-        XvcVerbosity::Quiet
-    } else {
-        match cli_opts.verbosity {
-            0 => XvcVerbosity::Default,
-            1 => XvcVerbosity::Warn,
-            2 => XvcVerbosity::Info,
-            3 => XvcVerbosity::Debug,
-            _ => XvcVerbosity::Trace,
-        }
-    };
+pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Result<XvcRootOpt> {
 
-    let term_log_level = match verbosity {
-        XvcVerbosity::Quiet => LevelFilter::Off,
-        XvcVerbosity::Default => LevelFilter::Error,
-        XvcVerbosity::Warn => LevelFilter::Warn,
-        XvcVerbosity::Info => LevelFilter::Info,
-        XvcVerbosity::Debug => LevelFilter::Debug,
-        XvcVerbosity::Trace => LevelFilter::Trace,
-    };
-
-    setup_logging(
-        Some(term_log_level),
-        if cli_opts.debug {
-            Some(LevelFilter::Trace)
-        } else {
-            None
-        },
+    // XvcRoot should be kept per repository and shouldn't change directory across runs
+    assert!(
+        xvc_root_opt.as_ref().is_none()
+            || xvc_root_opt
+                .as_ref()
+                .map(
+                    |xvc_root| XvcRootInner::find_root(&cli_opts.workdir).unwrap()
+                        == *xvc_root.absolute_path()
+                )
+                .unwrap()
     );
 
-    let xvc_config_params = XvcConfigInitParams {
-        current_dir: AbsolutePath::from(&cli_opts.workdir),
-        include_system_config: !cli_opts.no_system_config,
-        include_user_config: !cli_opts.no_user_config,
-        project_config_path: None,
-        local_config_path: None,
-        include_environment_config: !cli_opts.no_env_config,
-        command_line_config: Some(cli_opts.consolidate_config_options()),
-        default_configuration: default_project_config(true),
-    };
+    let term_log_level = get_term_log_level(get_verbosity(&cli_opts));
 
-    let xvc_root_opt = match load_xvc_root(Path::new(&cli_opts.workdir), xvc_config_params) {
-        Ok(r) => Some(r),
-        Err(e) => {
-            e.debug();
-            None
-        }
-    };
-
-    thread::scope(move |s| {
+    let xvc_root_opt = thread::scope(move |s| {
         let (output_snd, output_rec) = bounded::<Option<XvcOutputLine>>(CHANNEL_BOUND);
 
         let output_snd_clone = output_snd.clone();
@@ -316,76 +301,84 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                 );
             }
         }
-        let command_thread = s.spawn(move |_| -> Result<()> {
-            match cli_opts.command {
+        let xvc_root_opt_res = s.spawn(move |_| -> Result<XvcRootOpt> {
+            let xvc_root_opt = match cli_opts.command {
                 XvcSubCommand::Init(opts) => {
-                    let use_git = !opts.no_git;
                     let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
-                    if use_git {
-                        handle_git_automation(
-                            &output_snd,
-                            xvc_root,
-                            cli_opts.to_branch.as_deref(),
-                            &cli_opts.command_string,
-                        )?;
-                    }
-                    Result::Ok(())
+                    Some(xvc_root)
                 }
 
-                XvcSubCommand::Aliases(opts) => Ok(aliases::run(&output_snd, opts)?),
+                XvcSubCommand::Aliases(opts) => { 
+                    aliases::run(&output_snd, opts)?;
+                    xvc_root_opt
+                },
 
                 // following commands can only be run inside a repository
-                XvcSubCommand::Root(opts) => Ok(root::run(
+                XvcSubCommand::Root(opts) => { root::run(
                     &output_snd,
                     xvc_root_opt
                         .as_ref()
                         .ok_or_else(|| Error::RequiresXvcRepository)?,
                     opts,
-                )?),
+                )?;
+                xvc_root_opt
+                },
+
 
                 XvcSubCommand::File(opts) => {
-                    Ok(file::run(&output_snd, xvc_root_opt.as_ref(), opts)?)
+                    file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
+                    xvc_root_opt
                 }
 
                 XvcSubCommand::Pipeline(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
-                    Ok(pipeline::cmd_pipeline(
+                    pipeline::cmd_pipeline(
                         input,
                         &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
-                    )?)
+                    )?;
+
+                    xvc_root_opt
+
                 }
 
                 XvcSubCommand::CheckIgnore(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
 
-                    Ok(check_ignore::cmd_check_ignore(
+                    check_ignore::cmd_check_ignore(
                         input,
                         &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
-                    )?)
+                    )?;
+
+                    xvc_root_opt
+
                 }
 
                 XvcSubCommand::Storage(opts) => {
                     let stdin = io::stdin();
                     let input = stdin.lock();
-                    Ok(storage::cmd_storage(
+                    storage::cmd_storage(
                         input,
                         &output_snd,
                         xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                         opts,
-                    )?)
+                    )?;
+
+                    xvc_root_opt
                 }
-            }?;
+
+            };
 
             watch!("Before handle_git_automation");
+
             match xvc_root_opt {
-                Some(xvc_root) => {
-                    watch!(&cli_opts.command_string);
+                Some(ref xvc_root) => {
+                    xvc_root.record();
                     if cli_opts.skip_git {
                         debug!(output_snd, "Skipping Git operations");
                     } else {
@@ -404,17 +397,102 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<()> {
                     );
                 }
             }
-            Ok(())
+            Ok(xvc_root_opt)
         });
 
-        match command_thread.join().unwrap() {
+        let xvc_root_opt = xvc_root_opt_res.join().unwrap();
+        match &xvc_root_opt {
             Ok(_) => debug!(output_snd_clone, "Command completed successfully."),
             Err(e) => error!(output_snd_clone, "{}", e),
         }
         output_snd_clone.send(None).unwrap();
         output_thread.join().unwrap();
+
+        xvc_root_opt
     })
     .unwrap();
 
-    Ok(())
+    xvc_root_opt
+
+
+}
+
+/// Dispatch commands to respective functions in the API
+///
+/// It sets output verbosity with [XvcCLI::verbosity].
+/// Determines configuration sources by filling [XvcConfigInitParams].
+/// Tries to create an XvcRoot to determine whether we're inside one.
+/// Creates two threads: One for running the API function, one for getting strings from output
+/// channel.
+///
+/// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
+/// It doesn't recreate the whole configuration and this prevents errors regarding multiple
+/// initializations.
+pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
+    let verbosity = get_verbosity(&cli_opts);
+
+    let term_log_level = get_term_log_level(verbosity);
+
+    setup_logging(
+        Some(term_log_level),
+        if cli_opts.debug {
+            Some(LevelFilter::Trace)
+        } else {
+            None
+        },
+    );
+
+    let xvc_config_params = get_xvc_config_params(&cli_opts);
+
+    let xvc_root_opt = match load_xvc_root(xvc_config_params) {
+        Ok(r) => Some(r),
+        Err(e) => {
+            e.debug();
+            None
+        }
+    };
+
+    dispatch_with_root(cli_opts, xvc_root_opt)
+
+}
+
+fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
+    let xvc_config_params = XvcConfigParams {
+        current_dir: AbsolutePath::from(&cli_opts.workdir),
+        include_system_config: !cli_opts.no_system_config,
+        include_user_config: !cli_opts.no_user_config,
+        project_config_path: None,
+        local_config_path: None,
+        include_environment_config: !cli_opts.no_env_config,
+        command_line_config: Some(cli_opts.consolidate_config_options()),
+        default_configuration: default_project_config(true),
+    };
+    xvc_config_params
+}
+
+fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
+    let term_log_level = match verbosity {
+        XvcVerbosity::Quiet => LevelFilter::Off,
+        XvcVerbosity::Default => LevelFilter::Error,
+        XvcVerbosity::Warn => LevelFilter::Warn,
+        XvcVerbosity::Info => LevelFilter::Info,
+        XvcVerbosity::Debug => LevelFilter::Debug,
+        XvcVerbosity::Trace => LevelFilter::Trace,
+    };
+    term_log_level
+}
+
+fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
+    let verbosity = if cli_opts.quiet {
+        XvcVerbosity::Quiet
+    } else {
+        match cli_opts.verbosity {
+            0 => XvcVerbosity::Default,
+            1 => XvcVerbosity::Warn,
+            2 => XvcVerbosity::Info,
+            3 => XvcVerbosity::Debug,
+            _ => XvcVerbosity::Trace,
+        }
+    };
+    verbosity
 }

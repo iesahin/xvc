@@ -35,6 +35,14 @@ $ cargo install xvc
 
 [installed]: https://www.rust-lang.org/tools/install
 
+If you want to use Xvc with Python console and Jupyter notebooks, you can also install it with `pip`:
+
+```shell
+$ pip install xvc
+```
+
+Note that pip installation doesn't make `xvc` available as a shell command. Please see [xvc.py](https://github.com/iesahin/xvc.py) for usage details.
+
 ## 🏃🏾 Quicktart
 
 Xvc seamlessly monitors your files and directories on top of Git. To commence, execute the following command within the repository:
@@ -54,7 +62,7 @@ Include your data files and directories for tracking:
 $ xvc file track my-data/ --as symlink
 ```
 
-This command calculates content hashes for data (using BLAKE-3, by default) and logs them. The changes are committed to Git, and the files are copied to content-addressed directories within `.xvc/b3`. Additionally, read-only symbolic links to these directories are created. 
+This command calculates content hashes for data (using BLAKE-3, by default) and logs them. The changes are committed to Git, and the files are copied to content-addressed directories within `.xvc/b3`. Additionally, read-only symbolic links to these directories are created.
 
 You can specify different [recheck (checkout) methods](https://docs.xvc.dev/ref/xvc-file-recheck/) for files and directories, depending on your use case.
 If you need to track model files that change frequently, you can set recheck method `--as copy` (the default).
@@ -66,13 +74,13 @@ $ xvc file track my-models/ --as copy
 Configure a cloud storage to share the files you added.
 
 ```shell
-$ xvc storage new s3 --name my-remote --region us-east-1 --bucket-name my-xvc-remote
+$ xvc storage new s3 --name my-storage --region us-east-1 --bucket-name my-xvc-remote
 ```
 
 You can send the files to this storage.
 
 ```shell
-$ xvc file send --to my-remote
+$ xvc file send --to my-storage
 ```
 
 When you (or someone else) want to access these files later, you can clone the Git repository and get the files from the
@@ -83,7 +91,7 @@ $ git clone https://example.com/my-machine-learning-project
 Cloning into 'my-machine-learning-project'...
 
 $ cd my-machine-learning-project
-$ xvc file bring my-data/ --from my-remote
+$ xvc file bring my-data/ --from my-storage
 
 ```
 
@@ -103,15 +111,15 @@ The script uses the Faker library and this library must be available where you r
 $ xvc pipeline step new --step-name install-deps --command 'python3 -m pip install --quiet --user -r requirements.txt'
 ```
 
-We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run. 
+We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run.
 
 ```console
 $ xvc pipeline step dependency --step-name install-deps --file requirements.txt
 ```
 
-Xvc allows to create dependencies between pipeline steps. Dependent steps wait for dependencies to finish successfully. 
+Xvc allows to create dependencies between pipeline steps. Dependent steps wait for dependencies to finish successfully.
 
-Now we create a step to run the script and make `install-deps` step a dependency of it. 
+Now we create a step to run the script and make `install-deps` step a dependency of it.
 
 ```console
 $ xvc pipeline step new --step-name generate-data --command 'python3 generate_data.py'
@@ -124,40 +132,39 @@ After you define the pipeline, you can run it by:
 $ xvc pipeline run
 [DONE] install-deps (python3 -m pip install --quiet --user -r requirements.txt)
 [OUT] [generate-data] CSV file generated successfully.
- 
+
 [DONE] generate-data (python3 generate_data.py)
 
 ```
 
-Xvc allows many kinds of dependnecies, like [files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependencies), 
-[groups of files and directories defined by globs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-dependencies), 
-[regular expression searches in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-dependencies), 
-[line ranges in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-dependencies), 
+Xvc allows many kinds of dependnecies, like [files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependencies),
+[groups of files and directories defined by globs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-dependencies),
+[regular expression searches in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-dependencies),
+[line ranges in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-dependencies),
 [hyper-parameters defined in YAML, JSON or TOML files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#hyper-parameter-dependencies)
 [HTTP URLs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#url-dependencies),
-[shell command outputs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic-command-dependencies), 
-and [other steps](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dependencies). 
+[shell command outputs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic-command-dependencies),
+and [other steps](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dependencies).
 
 Suppose you're only interested in the IQ scores of those with _Dr._ in front of their names and how they differ from the rest in the dataset we created. Let's create a regex search dependency to the data file that will show all _doctors_ IQ scores.
 
 ```console
-$ xvc pipeline step new --step-name dr-iq --command 'echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv '
+$ xvc pipeline step new --step-name dr-iq --command 'echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv '
 $ xvc pipeline step dependency --step-name dr-iq --regex-items 'random_names_iq_scores.csv:/^Dr\..*'
 ```
 
-The first line specifies a command, when run writes `${XVC_REGEX_ADDED_ITEMS}` environment variable to `dr-iq-scores.csv` file. 
-The second line specifies the dependency which will also populate the `$[XVC_REGEX_ADDED_ITEMS]` environment variable in the command. 
+The first line specifies a command, when run writes `${XVC_ADDED_REGEX_ITEMS}` environment variable to `dr-iq-scores.csv` file.
+The second line specifies the dependency which will also populate the `$[XVC_ADDED_REGEX_ITEMS]` environment variable in the command.
 
-Some dependency types like [regex items], 
+Some dependency types like [regex items],
 [line items] and [glob items] inject environment variables in the commands they are a dependency.
-For example, if you have two million files specified with a glob, but want to run a script only on the added files after the last run, you can use these environment variables. 
-
+For example, if you have two million files specified with a glob, but want to run a script only on the added files after the last run, you can use these environment variables.
 
 When you run the pipeline again, a file named `dr-iq-scores.csv` will be created. Note that, as `requirements.txt` didn't change `install-deps` step and its dependent `generate-data` steps didn't run.
 
 ```console
 $ xvc pipeline run
-[DONE] dr-iq (echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv )
+[DONE] dr-iq (echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv )
 
 $ cat dr-iq-scores.csv
 Dr. Brian Shaffer,122
@@ -166,7 +173,7 @@ Dr. Mallory Payne MD,70
 Dr. Sherry Leonard,93
 Dr. Susan Swanson,81
 
-````
+```
 
 We are using this feature to get lines starting with `Dr.` from the file and write them to another file. When the file changes, e.g. another record matching the dependency regex added to the `random_names_iq_scores.csv` file, it will also be added to `dr-iq-scores.csv` file.
 
@@ -174,7 +181,7 @@ We are using this feature to get lines starting with `Dr.` from the file and wri
 $ zsh -cl 'echo "Dr. Albert Einstein,144" >> random_names_iq_scores.csv'
 
 $ xvc pipeline run
-[DONE] dr-iq (echo "${XVC_REGEX_ADDED_ITEMS}" >> dr-iq-scores.csv )
+[DONE] dr-iq (echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv )
 
 $ cat dr-iq-scores.csv
 Dr. Brian Shaffer,122
@@ -285,7 +292,7 @@ $ cat my-pipeline.json
       "outputs": []
     },
     {
-      "command": "echo /"${XVC_REGEX_ADDED_ITEMS}/" >> dr-iq-scores.csv ",
+      "command": "echo /"${XVC_ADDED_REGEX_ITEMS}/" >> dr-iq-scores.csv ",
       "dependencies": [
         {
           "RegexItems": {
@@ -347,8 +354,7 @@ You can edit the file to change commands, add new dependencies, etc. and import 
 $ xvc pipeline import --file my-pipeline.json --overwrite
 ```
 
-Lastly, if you noticed that the commands are long to type, there is an `xvc aliases` command that prints a set of aliases for commands. You can source the output in your `.zshrc` or `.bashrc`, and use the following commands instead, e.g., `xvc pipelines run` becomes `pvc run`. 
-
+Lastly, if you noticed that the commands are long to type, there is an `xvc aliases` command that prints a set of aliases for commands. You can source the output in your `.zshrc` or `.bashrc`, and use the following commands instead, e.g., `xvc pipelines run` becomes `pvc run`.
 
 ```console
 $ xvc aliases
@@ -450,7 +456,7 @@ And, biggest thanks to Rust designers, developers and contributors. Although I c
 - Star this repo. I feel very happy for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks.
 - Use xvc. Tell me how it works for you, read the [documentation](https://docs.xvc.dev), [report bugs](https://github.com/iesahin/xvc/issues), [discuss features](https://github.com/iesahin/xvc/discussions).
 - Please note that, I don't accept large code PRs. Please open an issue to discuss your idea and write/modify a
-  reference page before sending a PR. I'm happy to discuss and help you to implement your idea. Also, it may require a copyright transfer to me, as there may be cases which I provide the code in other licenses. 
+  reference page before sending a PR. I'm happy to discuss and help you to implement your idea. Also, it may require a copyright transfer to me, as there may be cases which I provide the code in other licenses.
 
 ## 📜 License
 
@@ -461,7 +467,7 @@ Xvc is licensed under the [GNU GPL 3.0 License](https://github.com/iesahin/xvc/b
 I'm using Xvc daily and I'm happy with it. Tracking all my files with Git via arbitrary servers and cloud providers is
 something I always need. I'm happy to improve and maintain it as long as I use it.
 
-Given that I'm working on this for the last two years for pure technical bliss, you can expect me to work on it more. 
+Given that I'm working on this for the last two years for pure technical bliss, you can expect me to work on it more.
 
 ## ⚠️ Disclaimer
 

@@ -1,6 +1,6 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
-//! The main dispatching functions for the entire XVC CLI
+//! The main dispatching functions for the entire Xvc CLI
 pub mod cli;
 pub mod error;
 pub mod git;
@@ -11,7 +11,7 @@ pub mod api;
 pub use api::*;
 
 /// Adds `xvc` as the first elements to `args` and calls [cli::dispatch] after parsing them.
-pub fn dispatch(args: Vec<&str>) -> Result<()> {
+pub fn dispatch(args: Vec<&str>) -> Result<XvcRootOpt> {
     let args_with_binary_name = if !args.is_empty() && args[0] != "xvc" {
         vec!["xvc"].into_iter().chain(args).collect()
     } else {

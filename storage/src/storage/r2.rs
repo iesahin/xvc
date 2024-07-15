@@ -19,7 +19,7 @@ use super::{XvcStorageListEvent, XvcStoragePath};
 
 /// Configure a new Cloudflare R2 remote storage.
 ///
-/// `account_id`, `bucket_name`, and `remote_prefix` sets a URL for the
+/// `account_id`, `bucket_name`, and `storage_prefix` sets a URL for the
 /// storage location.
 ///
 /// This creates a [XvcR2Storage], calls its
@@ -32,19 +32,19 @@ pub fn cmd_new_r2(
     name: String,
     account_id: String,
     bucket_name: String,
-    remote_prefix: String,
+    storage_prefix: String,
 ) -> Result<()> {
-    let mut remote = XvcR2Storage {
+    let mut storage = XvcR2Storage {
         guid: XvcStorageGuid::new(),
         name,
         account_id,
         bucket_name,
-        remote_prefix,
+        storage_prefix,
     };
 
-    watch!(remote);
+    watch!(storage);
 
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -52,7 +52,7 @@ pub fn cmd_new_r2(
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::R2(remote.clone()),
+            XvcStorage::R2(storage.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -73,12 +73,12 @@ pub struct XvcR2Storage {
     pub account_id: String,
     /// Bucket name of the R2 storage
     pub bucket_name: String,
-    /// Remote prefix in the bucket
-    pub remote_prefix: String,
+    /// Remote path prefix in the bucket
+    pub storage_prefix: String,
 }
 
 impl XvcR2Storage {
-    fn remote_specific_credentials(&self) -> Result<Credentials> {
+    fn storage_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
@@ -105,8 +105,8 @@ impl XvcR2Storage {
 }
 
 impl XvcS3StorageOperations for XvcR2Storage {
-    fn remote_prefix(&self) -> String {
-        self.remote_prefix.clone()
+    fn storage_prefix(&self) -> String {
+        self.storage_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
@@ -115,10 +115,10 @@ impl XvcS3StorageOperations for XvcR2Storage {
     fn bucket_name(&self) -> String {
         self.bucket_name.clone()
     }
-    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+    fn build_storage_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
-            self.remote_prefix,
+            self.storage_prefix,
             self.guid(),
             cache_path
         ))
@@ -130,7 +130,7 @@ impl XvcS3StorageOperations for XvcR2Storage {
     }
 
     fn credentials(&self) -> Result<Credentials> {
-        match self.remote_specific_credentials() {
+        match self.storage_specific_credentials() {
             Ok(c) => Ok(c),
             Err(e1) => match self.storage_type_credentials() {
                 Ok(c) => Ok(c),
@@ -161,11 +161,11 @@ impl XvcS3StorageOperations for XvcR2Storage {
     ) -> Result<XvcStorageListEvent> {
         let bucket = self.get_bucket()?;
         let xvc_guid = xvc_root.config().guid().unwrap();
-        let prefix = self.remote_prefix.clone();
+        let prefix = self.storage_prefix.clone();
 
         let res_list = bucket
             .list(
-                format!("{}/{}", self.remote_prefix, xvc_guid),
+                format!("{}/{}", self.storage_prefix, xvc_guid),
                 Some("/".to_string()),
             )
             .await;

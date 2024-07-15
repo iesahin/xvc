@@ -155,7 +155,7 @@ pub struct XvcConfigMap {
 ///
 /// It's possible to ignore certain sources by supplying `None` to their values here.
 #[derive(Debug, Clone)]
-pub struct XvcConfigInitParams {
+pub struct XvcConfigParams {
     /// The default configuration for the project.
     /// It should contain all default values as a TOML document.
     /// Xvc produces this in [xvc_core::default_configuration].
@@ -171,10 +171,12 @@ pub struct XvcConfigInitParams {
     /// If `true`, it's read from [USER_CONFIG_DIRS].
     pub include_user_config: bool,
     /// Where should we load the project's (public) configuration?
-    /// If `None`, it's ignored.
+    /// It's loaded in [XvcRootInner::new]
+    /// TODO: Add a option to ignore this
     pub project_config_path: Option<AbsolutePath>,
     /// Where should we load the project's (private) configuration?
-    /// If `None`, it's ignored.
+    /// It's loaded in [XvcRootInner::new]
+    /// TODO: Add a option to ignore this
     pub local_config_path: Option<AbsolutePath>,
     /// Should we include configuration from the environment.
     /// If `true`, look for all variables in the form
@@ -196,14 +198,12 @@ pub struct XvcConfigInitParams {
 pub struct XvcConfig {
     /// Current directory. It can be set with xvc -C option
     pub current_dir: XvcConfigOption<AbsolutePath>,
-    // /// The root if the command is happen to be run in XVC directory
-    // pub xvc_root: XvcConfigOption<Option<XvcRoot>>,
     /// Configuration values for each level
     pub config_maps: Vec<XvcConfigMap>,
     /// The current configuration map, updated cascadingly
     pub the_config: HashMap<String, XvcConfigValue>,
     /// The init params used to create this config
-    pub init_params: XvcConfigInitParams,
+    pub init_params: XvcConfigParams,
 }
 
 impl fmt::Display for XvcConfig {
@@ -225,7 +225,7 @@ impl XvcConfig {
     /// Loads the default configuration from `p`.
     ///
     /// The configuration must be a valid TOML document.
-    fn default_conf(p: &XvcConfigInitParams) -> Self {
+    fn default_conf(p: &XvcConfigParams) -> Self {
         let default_conf = p
             .default_configuration
             .parse::<TomlValue>()
@@ -482,7 +482,7 @@ impl XvcConfig {
     /// Loads all config files
     /// Overrides all options with the given key=value style options in the
     /// command line
-    pub fn new(p: XvcConfigInitParams) -> Result<XvcConfig> {
+    pub fn new(p: XvcConfigParams) -> Result<XvcConfig> {
         let mut config = XvcConfig::default_conf(&p);
 
         config.current_dir = XvcConfigOption {

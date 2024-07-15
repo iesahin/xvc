@@ -18,7 +18,7 @@ use super::XvcStoragePath;
 
 /// Configure a new Minio remote storage.
 ///
-/// `endpoint`, `bucket_name`, `region` and `remote_prefix` sets a URL for the
+/// `endpoint`, `bucket_name`, `region` and `storage_prefix` sets a URL for the
 /// storage location.
 ///
 /// This creates a [XvcMinioStorage], calls its
@@ -34,19 +34,19 @@ pub fn cmd_new_minio(
     endpoint: String,
     bucket_name: String,
     region: String,
-    remote_prefix: String,
+    storage_prefix: String,
 ) -> Result<()> {
-    let mut remote = XvcMinioStorage {
+    let mut storage = XvcMinioStorage {
         guid: XvcStorageGuid::new(),
         name,
         region,
         bucket_name,
-        remote_prefix,
+        storage_prefix,
         endpoint,
     };
-    watch!(remote);
+    watch!(storage);
 
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -54,7 +54,7 @@ pub fn cmd_new_minio(
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::Minio(remote.clone()),
+            XvcStorage::Minio(storage.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -76,13 +76,13 @@ pub struct XvcMinioStorage {
     /// Bucket name of the storage
     pub bucket_name: String,
     /// Prefix of the storage within the bucket_name
-    pub remote_prefix: String,
+    pub storage_prefix: String,
     /// Full endpoint of the storage
     pub endpoint: String,
 }
 
 impl XvcMinioStorage {
-    fn remote_specific_credentials(&self) -> Result<Credentials> {
+    fn storage_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
@@ -109,8 +109,8 @@ impl XvcMinioStorage {
 }
 
 impl XvcS3StorageOperations for XvcMinioStorage {
-    fn remote_prefix(&self) -> String {
-        self.remote_prefix.clone()
+    fn storage_prefix(&self) -> String {
+        self.storage_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
@@ -129,7 +129,7 @@ impl XvcS3StorageOperations for XvcMinioStorage {
     }
 
     fn credentials(&self) -> Result<Credentials> {
-        match self.remote_specific_credentials() {
+        match self.storage_specific_credentials() {
             Ok(c) => Ok(c),
             Err(e1) => match self.storage_type_credentials() {
                 Ok(c) => Ok(c),
@@ -147,10 +147,10 @@ impl XvcS3StorageOperations for XvcMinioStorage {
         self.bucket_name.clone()
     }
 
-    fn build_remote_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+    fn build_storage_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
-            self.remote_prefix,
+            self.storage_prefix,
             self.guid(),
             cache_path
         ))
@@ -159,223 +159,4 @@ impl XvcS3StorageOperations for XvcMinioStorage {
     fn region(&self) -> String {
         self.region.clone()
     }
-
-    // async fn a_init(
-    //     self,
-    //     output: &XvcOutputSender,
-    //     _xvc_root: &xvc_core::XvcRoot,
-    // ) -> Result<(XvcStorageInitEvent, Self)> {
-    //     let bucket = self.get_bucket()?;
-    //     let guid = self.guid.clone();
-    //     let guid_str = self.guid.to_string();
-    //     let guid_bytes = guid_str.as_bytes();
-    //
-    //     watch!(bucket);
-    //     watch!(guid);
-    //     watch!(guid_str);
-    //
-    //     let res_response = bucket
-    //         .put_object(
-    //             format!("{}/{}", self.remote_prefix, XVC_STORAGE_GUID_FILENAME),
-    //             guid_bytes,
-    //         )
-    //         .await;
-    //
-    //     match res_response {
-    //         Ok(_) => Ok((XvcStorageInitEvent { guid }, self)),
-    //         Err(err) => {
-    //             error!(output, "{}", err);
-    //             Err(Error::S3Error { source: err })
-    //         }
-    //     }
-    // }
-    //
-    // async fn a_list(
-    //     &self,
-    //     output: &XvcOutputSender,
-    //     xvc_root: &xvc_core::XvcRoot,
-    // ) -> Result<XvcStorageListEvent> {
-    //     let credentials = self.credentials()?;
-    //     let region = Region::from_str(&self.region).unwrap_or("us-east-1".parse().unwrap());
-    //     let bucket = Bucket::new(&self.bucket_name, region, credentials)?;
-    //     let _guid = self.guid.clone();
-    //     let guid_str = self.guid.to_string();
-    //     let _guid_bytes = guid_str.as_bytes();
-    //     let xvc_guid = xvc_root.config().guid().unwrap();
-    //     let prefix = self.remote_prefix.clone();
-    //
-    //     let res_list = bucket
-    //         .list(
-    //             format!("{}/{}", self.remote_prefix, xvc_guid),
-    //             Some("/".to_string()),
-    //         )
-    //         .await;
-    //
-    //     match res_list {
-    //         Ok(list_all) => {
-    //             // select only the matching elements
-    //             let re = Regex::new(&format!(
-    //                 "{prefix}/{xvc_guid}/{cp}/{d3}/{d3}/{d58}/0\\..*$",
-    //                 cp = r#"[a-zA-Z][0-9]"#,
-    //                 d3 = r#"[0-9A-Fa-f]{3}"#,
-    //                 d58 = r#"[0-9A-Fa-f]{58}"#
-    //             ))
-    //             .unwrap();
-    //
-    //             let paths = list_all
-    //                 .iter()
-    //                 .filter_map(|e| {
-    //                     if re.is_match(e.name.as_ref()) {
-    //                         Some(XvcStoragePath::from_str(&e.name).unwrap())
-    //                     } else {
-    //                         None
-    //                     }
-    //                 })
-    //                 .collect();
-    //
-    //             Ok(XvcStorageListEvent {
-    //                 guid: self.guid.clone(),
-    //                 paths,
-    //             })
-    //         }
-    //
-    //         Err(err) => {
-    //             error!(output, "{}", err);
-    //             Err(Error::S3Error { source: err })
-    //         }
-    //     }
-    // } \{
-    //     todo!()
-    // \}
-    //
-    // async fn a_send(
-    //     &self,
-    //     output: &XvcOutputSender,
-    //     xvc_root: &xvc_core::XvcRoot,
-    //     paths: &[xvc_core::XvcCachePath],
-    //     _force: bool,
-    // ) -> crate::Result<super::XvcStorageSendEvent> {
-    //     let repo_guid = xvc_root
-    //         .config()
-    //         .guid()
-    //         .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-    //     let mut copied_paths = Vec::<XvcStoragePath>::new();
-    //
-    //     let bucket = self.get_bucket()?;
-    //
-    //     for cache_path in paths {
-    //         watch!(cache_path);
-    //         let remote_path = self.build_remote_path(&repo_guid, cache_path);
-    //         let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-    //         watch!(abs_cache_path);
-    //
-    //         let mut path = tokio::fs::File::open(&abs_cache_path).await?;
-    //         watch!(path);
-    //
-    //         let res_response = bucket
-    //             .put_object_stream(&mut path, remote_path.as_str())
-    //             .await;
-    //
-    //         match res_response {
-    //             Ok(_) => {
-    //                 info!(output, "{} -> {}", abs_cache_path, remote_path.as_str());
-    //                 copied_paths.push(remote_path);
-    //                 watch!(copied_paths.len());
-    //             }
-    //             Err(err) => {
-    //                 error!(output, "{}", err);
-    //             }
-    //         }
-    //     }
-    //
-    //     Ok(XvcStorageSendEvent {
-    //         guid: self.guid.clone(),
-    //         paths: copied_paths,
-    //     })
-    // } \{
-    //     todo!()
-    // \}
-    //
-    // async fn a_receive(
-    //     &self,
-    //     output: &XvcOutputSender,
-    //     xvc_root: &xvc_core::XvcRoot,
-    //     paths: &[xvc_core::XvcCachePath],
-    //     _force: bool,
-    // ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-    //     let repo_guid = xvc_root
-    //         .config()
-    //         .guid()
-    //         .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-    //     let mut copied_paths = Vec::<XvcStoragePath>::new();
-    //
-    //     let bucket = self.get_bucket()?;
-    //     let temp_dir = XvcStorageTempDir::new()?;
-    //
-    //     for cache_path in paths {
-    //         watch!(cache_path);
-    //         let remote_path = self.build_remote_path(&repo_guid, cache_path);
-    //         let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
-    //         fs::create_dir_all(&abs_cache_dir)?;
-    //         let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
-    //         watch!(abs_cache_path);
-    //
-    //         let response_data_stream = bucket.get_object_stream(remote_path.as_str()).await;
-    //
-    //         match response_data_stream {
-    //             Ok(mut response) => {
-    //                 info!(output, "{} -> {}", remote_path.as_str(), abs_cache_path);
-    //                 let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
-    //                 while let Some(chunk) = response.bytes().next().await {
-    //                     async_cache_path.write_all(&chunk).await?;
-    //                 }
-    //                 copied_paths.push(remote_path);
-    //                 watch!(copied_paths.len());
-    //             }
-    //             Err(err) => {
-    //                 error!(output, "{}", err);
-    //             }
-    //         }
-    //     }
-    //
-    //     Ok((
-    //         temp_dir,
-    //         XvcStorageReceiveEvent {
-    //             guid: self.guid.clone(),
-    //             paths: copied_paths,
-    //         },
-    //     ))
-    // } \{
-    //     todo!()
-    // \}
-    //
-    // async fn a_delete(
-    //     &self,
-    //     output: &XvcOutputSender,
-    //     xvc_root: &xvc_core::XvcRoot,
-    //     paths: &[XvcCachePath],
-    // ) -> Result<XvcStorageDeleteEvent> {
-    //     let repo_guid = xvc_root
-    //         .config()
-    //         .guid()
-    //         .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
-    //     let mut deleted_paths = Vec::<XvcStoragePath>::new();
-    //
-    //     let bucket = self.get_bucket()?;
-    //
-    //     for cache_path in paths {
-    //         watch!(cache_path);
-    //         let remote_path = self.build_remote_path(&repo_guid, cache_path);
-    //         bucket.delete_object(remote_path.as_str()).await?;
-    //         info!(output, "[DELETE] {}", remote_path.as_str());
-    //         deleted_paths.push(remote_path);
-    //     }
-    //
-    //     Ok(XvcStorageDeleteEvent {
-    //         guid: self.guid.clone(),
-    //         paths: deleted_paths,
-    //     })
-    // } \{
-    //     todo!()
-    // \}
 }

@@ -60,7 +60,7 @@ pub fn cmd_new_rsync(
     Ok(())
 }
 
-/// Specifies an Rsync remote
+/// Specifies an Rsync remote storage
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcRsyncStorage {
     /// The GUID of the storage
@@ -237,8 +237,8 @@ impl XvcRsyncStorage {
         xvc_guid: &str,
         cache_path: &XvcCachePath,
     ) -> Result<CaptureData> {
-        let remote_dir = self.ssh_cache_dir(xvc_guid, cache_path);
-        self.ssh_cmd(ssh_executable, &format!("mkdir -p '{}'", remote_dir))
+        let storage_dir = self.ssh_cache_dir(xvc_guid, cache_path);
+        self.ssh_cmd(ssh_executable, &format!("mkdir -p '{}'", storage_dir))
     }
 }
 
@@ -265,18 +265,18 @@ impl XvcStorageOperations for XvcRsyncStorage {
         fs::write(&local_guid_path, format!("{}", self.guid))?;
         watch!(local_guid_path);
 
-        let remote_guid_path = self.rsync_path_url(XVC_STORAGE_GUID_FILENAME);
+        let storage_guid_path = self.rsync_path_url(XVC_STORAGE_GUID_FILENAME);
 
-        watch!(remote_guid_path);
+        watch!(storage_guid_path);
 
         let rsync_result =
-            self.rsync_copy_to_storage(&rsync_executable, &local_guid_path, &remote_guid_path)?;
+            self.rsync_copy_to_storage(&rsync_executable, &local_guid_path, &storage_guid_path)?;
         watch!(rsync_result);
 
         info!(
             output,
             "Initialized:\n{}\n{}\n",
-            remote_guid_path,
+            storage_guid_path,
             rsync_result.stdout_str()
         );
 
@@ -343,11 +343,11 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
             let local_path = cache_path.to_absolute_path(xvc_root);
-            let remote_url = self.rsync_cache_url(&xvc_guid, cache_path);
-            let _remote_dir_res = self.create_storage_dir(&ssh_executable, &xvc_guid, cache_path);
+            let storage_url = self.rsync_cache_url(&xvc_guid, cache_path);
+            uwr!(self.create_storage_dir(&ssh_executable, &xvc_guid, cache_path), output);
             // TODO: Handle possible error.
             let cmd_output =
-                self.rsync_copy_to_storage(&rsync_executable, &local_path, &remote_url);
+                self.rsync_copy_to_storage(&rsync_executable, &local_path, &storage_url);
 
             match cmd_output {
                 Ok(cmd_output) => {

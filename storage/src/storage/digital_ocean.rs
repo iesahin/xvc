@@ -14,9 +14,9 @@ use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::async_common::XvcS3StorageOperations;
 
-/// Configure a new Digital Ocean Spaces remote.
+/// Configure a new Digital Ocean Spaces storage.
 ///
-/// `bucket_name`, `region` and `remote_prefix` sets a URL for the storage
+/// `bucket_name`, `region` and `storage_prefix` sets a URL for the storage
 /// location.
 ///
 /// This creates a [XvcDigitalOceanStorage], calls its
@@ -29,18 +29,18 @@ pub fn cmd_new_digital_ocean(
     name: String,
     bucket_name: String,
     region: String,
-    remote_prefix: String,
+    storage_prefix: String,
 ) -> Result<()> {
-    let mut remote = XvcDigitalOceanStorage {
+    let mut storage = XvcDigitalOceanStorage {
         guid: XvcStorageGuid::new(),
         name,
         region,
         bucket_name,
-        remote_prefix,
+        storage_prefix,
     };
-    watch!(remote);
+    watch!(storage);
 
-    let init_event = remote.init(output_snd, xvc_root)?;
+    let init_event = storage.init(output_snd, xvc_root)?;
     watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -48,7 +48,7 @@ pub fn cmd_new_digital_ocean(
         let event_e = xvc_root.new_entity();
         store.insert(
             store_e,
-            XvcStorage::DigitalOcean(remote.clone()),
+            XvcStorage::DigitalOcean(storage.clone()),
             event_e,
             XvcStorageEvent::Init(init_event.clone()),
         );
@@ -58,23 +58,23 @@ pub fn cmd_new_digital_ocean(
     Ok(())
 }
 
-/// A Digital Ocean Spaces remote.
+/// A Digital Ocean Spaces storage.
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub struct XvcDigitalOceanStorage {
-    /// The GUID of the remote.
+    /// The GUID of the storage.
     pub guid: XvcStorageGuid,
-    /// The name of the remote.
+    /// The name of the storage.
     pub name: String,
-    /// The region of the remote.
+    /// The region of the storage.
     pub region: String,
-    /// The bucket name of the remote.
+    /// The bucket name of the storage.
     pub bucket_name: String,
-    /// The remote prefix of the remote.
-    pub remote_prefix: String,
+    /// The path prefix of the storage.
+    pub storage_prefix: String,
 }
 
 impl XvcDigitalOceanStorage {
-    fn remote_specific_credentials(&self) -> Result<Credentials> {
+    fn storage_specific_credentials(&self) -> Result<Credentials> {
         Credentials::new(
             Some(&env::var(format!(
                 "XVC_STORAGE_ACCESS_KEY_ID_{}",
@@ -101,8 +101,8 @@ impl XvcDigitalOceanStorage {
 }
 
 impl XvcS3StorageOperations for XvcDigitalOceanStorage {
-    fn remote_prefix(&self) -> String {
-        self.remote_prefix.clone()
+    fn storage_prefix(&self) -> String {
+        self.storage_prefix.clone()
     }
 
     fn guid(&self) -> &XvcStorageGuid {
@@ -110,7 +110,7 @@ impl XvcS3StorageOperations for XvcDigitalOceanStorage {
     }
 
     fn credentials(&self) -> Result<Credentials> {
-        match self.remote_specific_credentials() {
+        match self.storage_specific_credentials() {
             Ok(c) => Ok(c),
             Err(e1) => match self.storage_type_credentials() {
                 Ok(c) => Ok(c),
