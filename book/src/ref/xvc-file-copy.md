@@ -126,8 +126,11 @@ If the source files you specify are changed, Xvc cancels the copy operation. Ple
 $ perl -i -pe 's/a/ee/g' data.txt
 
 $ xvc file copy data.txt data5.txt
+? 1
 [ERROR] File Error: Sources have changed, please carry-in or recheck following files before copying:
 data.txt
+Error: FileError { source: AnyhowError { source: Sources have changed, please carry-in or recheck following files before copying:
+data.txt } }
 
 ```
 
