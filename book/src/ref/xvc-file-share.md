@@ -6,13 +6,13 @@
 $ xvc file share --help
 Share a file from S3 compatible storage for a limited time
 
-Usage: xvc file share [OPTIONS] --storage <REMOTE> <TARGET>
+Usage: xvc file share [OPTIONS] --storage <STORAGE> <TARGET>
 
 Arguments:
   <TARGET>  File to send/push/upload to storage
 
 Options:
-  -r, --storage <REMOTE>      Storage name or guid to send the files
+  -s, --storage <STORAGE>    Storage name or guid to send the files
   -d, --duration <DURATION>  Period to send the files to. You can use s, m, h, d, w suffixes [default: 24h]
   -h, --help                 Print help
 
@@ -58,30 +58,27 @@ $ xvc storage new s3 --name backup --bucket-name xvc-test --region eu-central-1 
 You must first send files to the remote storage.
 
 ```console
-$ xvc file send --remote backup dir-0001/
+$ xvc file send --storage backup dir-0001/
 ```
 
 Now you can share the files. It will create a URL for you to share that file. (Here we use cut to make the command repeatable)
 
 ```console
-$ zsh -cl 'xvc file share --remote backup dir-0001/file-0001.bin | cut -c -50'
-https://xvc-test.s3.eu-central-1.amazonaws.com/xvc
+$ zsh -cl 'xvc file share --storage backup dir-0001/file-0001.bin | cut -c -50'
 
 ```
 
 Note that the default period is 24 hours. You can set another period with `--duration`.
 
 ```console
-$ zsh -cl 'xvc file share --duration 1h --remote backup dir-0001/file-0002.bin | cut -c -50'
-https://xvc-test.s3.eu-central-1.amazonaws.com/xvc
+$ zsh -cl 'xvc file share --duration 1h --storage backup dir-0001/file-0002.bin | cut -c -50'
 
 ```
 
 You can get another URL for a shared file with a different period.
 
 ```console
-$ zsh -cl 'xvc file share --duration 1m --remote backup dir-0001/file-0002.bin | cut -c -50'
-https://xvc-test.s3.eu-central-1.amazonaws.com/xvc
+$ zsh -cl 'xvc file share --duration 1m --storage backup dir-0001/file-0002.bin | cut -c -50'
 
 ```
 

@@ -113,7 +113,9 @@ a repository yet, it reports an error.
 
 ```console
 $ xvc file list
+? 1
 [ERROR] File Error: [E2004] Requires xvc repository.
+Error: FileError { source: RequiresXvcRepository }
 
 ```
 
