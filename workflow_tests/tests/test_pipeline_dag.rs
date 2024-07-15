@@ -69,7 +69,7 @@ fn test_pipeline_dag() -> Result<()> {
     xsd("glob_dep", "--glob-items", "data/*")?;
     xsd("glob_dep", "--param", "params.yaml:model.conv_units")?;
     // FIXME: There is an error here regarding regex format
-    xsd("glob_dep", "--regex", "requirements.txt:^tensorflow")?;
+    xsd("glob_dep", "--regex", "requirements.txt:/^tensorflow")?;
     xsom("glob_dep", "glob_dep.json")?;
     xsof("glob_dep", "def.txt")?;
     xsoi("glob_dep", "plots/confusion.png")?;
