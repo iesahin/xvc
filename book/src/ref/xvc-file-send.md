@@ -6,14 +6,14 @@
 $ xvc file send --help
 Send (push, upload) files to external storages
 
-Usage: xvc file send [OPTIONS] --remote <REMOTE> [TARGETS]...
+Usage: xvc file send [OPTIONS] --storage <STORAGE> [TARGETS]...
 
 Arguments:
   [TARGETS]...  Targets to send/push/upload to storage
 
 Options:
-  -r, --storage <REMOTE>  Storage name or guid to send the files
-      --force            Force even if the files are already present in the storage
-  -h, --help             Print help
+  -s, --storage <STORAGE>  Storage name or guid to send the files
+      --force              Force even if the files are already present in the storage
+  -h, --help               Print help
 
 ```

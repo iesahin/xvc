@@ -56,8 +56,9 @@ When you run the pipeline initially, the steps are run.
 ```console
 $ xvc pipeline run
 [OUT] [count-females] 7
- 
+
 [DONE] count-females (grep -c '"F",' people.csv)
+
 
 ``````
 
@@ -98,7 +99,8 @@ $ cat people.csv
 
 $ xvc pipeline run
 [OUT] [count-females] 8
- 
+
 [DONE] count-females (grep -c '"F",' people.csv)
+
 
 ```

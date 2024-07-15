@@ -24,11 +24,13 @@ When run, the dependency will be run first and the step will be run after.
 ```console
 $ xvc pipeline run
 [OUT] [hello] hello
- 
+
 [DONE] hello (echo hello)
+
 [OUT] [world] world
- 
+
 [DONE] world (echo world)
+
 
 ```
 
@@ -46,7 +48,8 @@ If you want to run the dependent always, you can set it to run always explicitly
 $ xvc pipeline step update --step-name world --when always
 $ xvc pipeline run
 [OUT] [world] world
- 
+
 [DONE] world (echo world)
+
 
 ```

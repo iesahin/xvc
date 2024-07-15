@@ -76,8 +76,9 @@ $ xvc pipeline run
 "Neil",       "M",   36,       75,      160
 "Omar",       "M",   38,       70,      145
 "Quin",       "M",   29,       71,      176
- 
+
 [DONE] new-males (echo "New Males:/n ${XVC_ADDED_REGEX_ITEMS}")
+
 [OUT] [new-females] New Females:
  "Elly",       "F",   30,       66,      124
 "Fran",       "F",   33,       66,      115
@@ -86,8 +87,9 @@ $ xvc pipeline run
 "Myra",       "F",   23,       62,       98
 "Page",       "F",   31,       67,      135
 "Ruth",       "F",   28,       65,      131
- 
+
 [DONE] new-females (echo "New Females:/n ${XVC_ADDED_REGEX_ITEMS}")
+
 
 ``````
 
@@ -129,7 +131,8 @@ $ cat people.csv
 $ xvc pipeline run
 [OUT] [new-females] New Females:
  "Asude",      "F",   12,       55,      110
- 
+
 [DONE] new-females (echo "New Females:/n ${XVC_ADDED_REGEX_ITEMS}")
+
 
 ```

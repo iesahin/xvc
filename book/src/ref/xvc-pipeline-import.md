@@ -240,7 +240,9 @@ If you don't supply the `--overwrite` option, Xvc will report an error and quit.
 
 ```console
 $ xvc pipeline import --file pipeline.yaml
+? 1
 [ERROR] Pipeline Error: Pipeline default already found
+Error: PipelineError { source: PipelineAlreadyFound { name: "default" } }
 
 ```
 

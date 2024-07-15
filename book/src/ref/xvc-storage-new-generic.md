@@ -11,7 +11,7 @@ It allows to keep tracked files in any kind of service that can be used command 
 $ xvc storage new generic --help
 Add a new generic storage.
 
-⚠️ Please note that this is an advanced method to configure storages. You may damage your repository and local and remote files with incorrect configurations.
+⚠️ Please note that this is an advanced method to configure storages. You may damage your repository and local and storage files with incorrect configurations.
 
 Please see https://docs.xvc.dev/ref/xvc-storage-new-generic.html for examples and make necessary backups.
 
