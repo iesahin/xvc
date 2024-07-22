@@ -47,7 +47,7 @@ rmp-serde = "1.1.2"
 toml = "^0.8"
 
 ## Caching
-cached = "^0.46"
+cached = "^0.53"
 
 ## Parallelization
 rayon = "^1.8"
@@ -68,7 +68,7 @@ anyhow = "^1.0"
 fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
 
 ## sqlite
-## TODO: Add feature flags for sqlite when bundli
+## TODO: Add feature flags for sqlite when bundling needed
 rusqlite = "^0.32"
 
 ## Networking
@@ -87,13 +87,13 @@ subprocess = "^0.2"
 sad_machine = "^1.0"
 regex = "^1.10"
 chrono = "^0.4"
-strum = "0.25.0"
-strum_macros = "0.25.3"
+strum = "^0.26"
+strum_macros = "^0.26"
 lazy_static = "^1.4"
 uuid = { version = "^1.6", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
-itertools = "^0.12"
+itertools = "^0.13"
 derive_more = "^0.99"
 
 [dev-dependencies]
