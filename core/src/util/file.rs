@@ -1,7 +1,5 @@
 //! Core file operationscorefil
 use cached::proc_macro::cached;
-use cached::UnboundCache;
-use glob::Pattern as GlobPattern;
 
 use std::fs::{self, Metadata};
 use std::io::{self, Read};
@@ -14,7 +12,6 @@ use std::path::{Path, PathBuf};
 use xvc_logging::watch;
 use xvc_walker::{IgnoreRules, PathMetadata, WalkOptions};
 
-use crate::error::Error;
 use crate::error::Result;
 use crate::CHANNEL_BOUND;
 use crossbeam_channel::{bounded, Receiver, Sender};
@@ -79,7 +76,7 @@ pub fn all_paths_and_metadata(xvc_root: &XvcRoot) -> (XvcPathMetadataMap, Ignore
 
 /// Returns a compiled [glob::Pattern] by prepending it with `pipeline_rundir`.
 #[cached(
-    type = "UnboundCache<String, glob::Pattern>",
+    ty = "UnboundCache<String, glob::Pattern>",
     create = "{ UnboundCache::new() }",
     convert = r#"{ format!("{:?}{}", pipeline_rundir, glob) }"#,
     result = true
@@ -91,7 +88,7 @@ pub fn compiled_glob(pipeline_rundir: &Path, glob: &str) -> Result<glob::Pattern
 
 /// Returns all _non-ignored_ paths described with `glob` under `root_dir`
 #[cached(
-    type = "UnboundCache<String, XvcPathMetadataMap>",
+    ty = "UnboundCache<String, XvcPathMetadataMap>",
     create = "{ UnboundCache::new() }",
     convert = r#"{ format!("{}{}", root_dir, glob) }"#,
     result = true
@@ -112,7 +109,7 @@ pub fn glob_paths(
 /// WARNING: Assumes xvc_ignore doesn't change during the run.
 ///          It caches the results by pipeline_rundir, glob and path as keys.
 #[cached(
-    type = "UnboundCache<String, bool>",
+    ty = "UnboundCache<String, bool>",
     create = "{ UnboundCache::new() }",
     convert = r#"{ format!("{:?}##{}##{:?}", pipeline_rundir, glob, path) }"#,
     result = true
@@ -135,7 +132,7 @@ pub fn glob_includes(
 
 /// Checks whether path is under directory by checking first if it's in the `pmm` keys
 #[cached(
-    type = "UnboundCache<String, bool>",
+    ty = "UnboundCache<String, bool>",
     create = "{ UnboundCache::new() }",
     convert = r#"{ format!("{:?}##{:?}", directory, path) }"#,
     result = true
