@@ -1,6 +1,6 @@
 [package]
 name = "xvc-core"
-version = "0.6.8"
+version = "0.6.9-alpha.0"
 edition = "2021"
 description = "Xvc core for common elements for all commands"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -19,10 +19,10 @@ crate-type = ["rlib"]
 debug = true
 
 [dependencies]
-xvc-config = { version = "0.6.8", path = "../config" }
-xvc-logging = { version = "0.6.8", path = "../logging" }
-xvc-ecs = { version = "0.6.8", path = "../ecs" }
-xvc-walker = { version = "0.6.8", path = "../walker" }
+xvc-config = { version = "0.6.9-alpha.0", path = "../config" }
+xvc-logging = { version = "0.6.9-alpha.0", path = "../logging" }
+xvc-ecs = { version = "0.6.9-alpha.0", path = "../ecs" }
+xvc-walker = { version = "0.6.9-alpha.0", path = "../walker" }
 
 ## Cli and config
 clap = { version = "^4.4", features = ["derive"] }
@@ -82,6 +82,6 @@ derive_more = "^0.99"
 itertools = "^0.13"
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.8", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.9-alpha.0", path = "../test_helper/" }
 proptest = "^1.4"
 test-case = "^3.3"
