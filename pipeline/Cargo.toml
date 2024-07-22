@@ -34,9 +34,9 @@ directories-next = "2.0"
 seahash = "^4.1"
 byteorder = "^1.5"
 blake3 = "^1.5"
-blake2 = "0.10.6"
-sha2 = "0.10.8"
-sha3 = "0.10.8"
+blake2 = "^0.10"
+sha2 = "^0.10"
+sha3 = "^0.10"
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }
@@ -63,8 +63,13 @@ glob = "^0.3"
 thiserror = "^1.0"
 log = "^0.4"
 anyhow = "^1.0"
-### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
+
+## meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
 fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+
+## sqlite
+## TODO: Add feature flags for sqlite when bundli
+rusqlite = "^0.32"
 
 ## Networking
 reqwest = { version = "^0.11", features = ["blocking", "json", "gzip"] }
