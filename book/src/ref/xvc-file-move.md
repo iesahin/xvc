@@ -11,22 +11,22 @@ Usage: xvc file move [OPTIONS] <SOURCE> <DESTINATION>
 Arguments:
   <SOURCE>
           Source file, glob or directory within the workspace.
-
+          
           If the source ends with a slash, it's considered a directory and all files in that directory are copied.
-
+          
           If there are multiple source files, the destination must be a directory.
 
   <DESTINATION>
           Location we move file(s) to within the workspace.
-
+          
           If this ends with a slash, it's considered a directory and created if it doesn't exist.
-
+          
           If the number of source files is more than one, the destination must be a directory.
 
 Options:
       --recheck-method <RECHECK_METHOD>
           How the destination should be rechecked: One of copy, symlink, hardlink, reflink.
-
+          
           Note: Reflink uses copy if the underlying file system doesn't support it.
 
       --no-recheck
