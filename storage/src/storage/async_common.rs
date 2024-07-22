@@ -257,7 +257,7 @@ pub trait XvcS3StorageOperations {
 
         let expiration_seconds = duration.as_secs() as u32;
         let path = self.build_storage_path(path);
-        let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None)?;
+        let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None).await?;
         info!(output, "[SHARED] {}", path.as_str());
         output!(output, "{}", signed_url);
         Ok(super::XvcStorageExpiringShareEvent {
