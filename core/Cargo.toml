@@ -72,14 +72,14 @@ paste = "1.0"
 
 ## Misc
 regex = "^1.10"
-strum = "0.25.0"
-strum_macros = "0.25.3"
+strum = "^0.26"
+strum_macros = "^0.26"
 lazy_static = "^1.4"
 uuid = { version = "^1.6", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
-cached = "^0.46"
+cached = "^0.53"
 derive_more = "^0.99"
-itertools = "^0.12"
+itertools = "^0.13"
 
 [dev-dependencies]
 xvc-test-helper = { version = "0.6.8", path = "../test_helper/" }

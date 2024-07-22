@@ -29,7 +29,7 @@ crossbeam = "^0.8"
 ## File system
 notify = "6.1.1"
 
-dashmap = "^5.5"
+dashmap = "^6"
 
 ## Logging and errors
 thiserror = "^1.0"
@@ -37,7 +37,7 @@ anyhow = "^1.0"
 log = "^0.4"
 
 ## Misc
-itertools = "^0.12"
+itertools = "^0.13"
 regex = "^1.10"
 
 [dev-dependencies]

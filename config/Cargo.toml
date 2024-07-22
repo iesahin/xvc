@@ -47,6 +47,6 @@ fern = { version = "^0.6", features = ["colored"] }
 
 ## Misc
 regex = "^1.10"
-strum = "0.25.0"
-strum_macros = "0.25.3"
+strum = "^0.26"
+strum_macros = "^0.26"
 lazy_static = "^1.4"

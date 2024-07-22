@@ -57,7 +57,7 @@ walkdir = "^2.4"
 relative-path = { version = "^1.9", features = ["serde"] }
 path-absolutize = "^3.1"
 glob = "^0.3"
-which = "^4.4"
+which = "^6.0"
 
 ## Logging and errors
 thiserror = "^1.0"
@@ -74,13 +74,13 @@ paste = "1.0"
 humantime = "^2.1"
 subprocess = "^0.2"
 regex = "^1.10"
-strum = "0.25.0"
-strum_macros = "0.25.3"
-lazy_static = "^1.4"
+strum = "^0.26"
+strum_macros = "^0.26"
+lazy_static = "^1.5"
 uuid = { version = "^1.6", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
-itertools = "^0.12"
+itertools = "^0.13"
 derive_more = "^0.99"
 tempfile = "^3.9"
 
@@ -88,7 +88,7 @@ tempfile = "^3.9"
 
 
 tokio = { version = "^1.35", optional = true, features = ["rt-multi-thread"] }
-rust-s3 = { version = "^0.33", optional = true }
+rust-s3 = { version = "^0.34", optional = true }
 futures = { version = "^0.3", optional = true }
 
 # Although we don't use openssl directly, we use its vendored version for cross compilation
