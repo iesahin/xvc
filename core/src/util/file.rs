@@ -1,5 +1,6 @@
 //! Core file operationscorefil
 use cached::proc_macro::cached;
+use cached::UnboundCache;
 
 use std::fs::{self, Metadata};
 use std::io::{self, Read};
