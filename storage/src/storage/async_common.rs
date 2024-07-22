@@ -197,7 +197,7 @@ pub trait XvcS3StorageOperations {
                     info!(output_snd, "{} -> {}", storage_path.as_str(), abs_cache_path);
                     let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
                     while let Some(chunk) = response.bytes().next().await {
-                        async_cache_path.write_all(&chunk).await?;
+                        async_cache_path.write_all(&chunk?).await?;
                     }
                     copied_paths.push(storage_path);
                     watch!(copied_paths.len());
