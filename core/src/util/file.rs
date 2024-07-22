@@ -1,6 +1,7 @@
 //! Core file operationscorefil
 use cached::proc_macro::cached;
 use cached::UnboundCache;
+use glob::Pattern as GlobPattern;
 
 use std::fs::{self, Metadata};
 use std::io::{self, Read};
@@ -13,6 +14,7 @@ use std::path::{Path, PathBuf};
 use xvc_logging::watch;
 use xvc_walker::{IgnoreRules, PathMetadata, WalkOptions};
 
+use crate::error::Error;
 use crate::error::Result;
 use crate::CHANNEL_BOUND;
 use crossbeam_channel::{bounded, Receiver, Sender};
