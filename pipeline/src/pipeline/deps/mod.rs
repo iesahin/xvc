@@ -11,6 +11,7 @@ pub mod regex;
 pub mod regex_items;
 pub mod step;
 pub mod url;
+pub mod sqlite_query;
 
 use std::fmt::{Display, Formatter};
 
@@ -68,8 +69,13 @@ pub enum XvcDependency {
     LineItems(LineItemsDep),
     /// A dependenci to a set of lines defined by a range. Doesn't keep track of individual lines.
     Lines(LinesDep),
+    
     /// A dependency to a URL's content
     UrlDigest(UrlDigestDep),
+
+    /// A dependency to an SQLite Query, that invalidates when the query results change
+    SqliteQueryDigest(SqliteQueryDigest),
+
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
     // TODO: DatabaseQuery { database, query } to specify the result of queries
