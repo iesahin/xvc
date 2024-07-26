@@ -179,6 +179,13 @@ pub enum StepSubCommand {
             aliases = &["line"],
         )]
         lines: Option<Vec<String>>,
+
+        #[arg(
+            long = "sqlite-query",
+            aliases = &["sqlite_query", "sqlite_query_digest", "sqlite-query-digest"],
+            num_args = 2,
+        )]
+        sqlite_query: Option<Vec<String>>,
     },
 
     /// Add an output to a step

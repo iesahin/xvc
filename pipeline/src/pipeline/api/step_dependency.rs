@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 
-use crate::deps::{LinesDep, RegexDep};
+use crate::deps::{sqlite_query, LinesDep, RegexDep};
 use crate::error::{Error, Result};
 use crate::pipeline::deps::file::FileDep;
 use crate::pipeline::deps::generic::GenericDep;
@@ -47,6 +47,7 @@ pub fn cmd_step_dependency(
         regexes,
         line_items,
         lines,
+        sqlite_query,
     } = cmd_opts
     {
         XvcDependencyList::new(output_snd, xvc_root, pipeline_name, &step_name)?
@@ -61,6 +62,7 @@ pub fn cmd_step_dependency(
             .lines(lines)?
             .line_items(line_items)?
             .urls(urls)?
+            .sqlite_query(sqlite_query)?
             .record()
     } else {
         Err(anyhow::anyhow!("This method is only for StepSubCommand::Dependency").into())
@@ -378,6 +380,20 @@ impl<'a> XvcDependencyList<'a> {
                 deps.push(XvcDependency::LineItems(lines_dep));
             });
         }
+        Ok(self)
+    }
+
+    pub fn sqlite_query(&mut self, sqlite_query: Option<Vec<(String, String)>>) -> Result<&mut Self> {
+
+        if let Some(sqlite_query) = sqlite_query {
+            let mut deps = self.deps.borrow_mut();
+            for (path, query) in sqlite_query {
+                let pathbuf = PathBuf::from(path);
+                let path = XvcPath::new(self.xvc_root, self.current_dir, &pathbuf)?;
+                let sqlite_query = sqlite_query::SqliteQueryDep::new(path, query);
+                deps.push(XvcDependency::SqliteQueryDigest(sqlite_query));
+            }
+         }
         Ok(self)
     }
     /// Records dependencies the store, as childs of `self.step`.
