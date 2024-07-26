@@ -55,19 +55,30 @@ EOF
 Now, we'll add a step to the pipeline to calculate the average age of these people.
 
 ```console
-$ xvc pipeline step new --step-name average-age --command 'sqlite3 people.db "SELECT AVG(Age) FROM People"'
+$ xvc pipeline step new --step-name average-age --command 'sqlite3 people.db "SELECT AVG(Age) FROM People;"'
 ```
 
 Let's run the step without a dependency first.
 
 ```console
 $ xvc pipeline run
+[ERROR] Step average-age finished UNSUCCESSFULLY with command sqlite3 people.db "SELECT AVG(Age) FROM People"
+
 ```
 
 Now, we'll add a dependency to this step and it will only run the step when the results of that query changes.
 
 ```console
-$ xvc pipeline step dependency --step-name average-age --sqlite 'people.db "SELECT count(*) FROM People"'
+$ xvc pipeline step dependency --step-name average-age --sqlite-query people.db "SELECT count(*) FROM People;"'
+? 2
+error: unexpected argument '--sqlite' found
+
+  tip: a similar argument exists: '--sqlite_query'
+
+Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>|--sqlite-query <SQLITE_FILE> <SQLITE_QUERY>>
+
+For more information, try '--help'.
+
 ```
 
 ```note
@@ -78,6 +89,7 @@ So, when the number of people in the table changes, the step will run. Initially
 
 ```console
 $ xvc pipeline run
+[ERROR] Step average-age finished UNSUCCESSFULLY with command sqlite3 people.db "SELECT AVG(Age) FROM People"
 
 ```
 
@@ -85,6 +97,7 @@ But it won't run the step a second time, as the table didn't change.
 
 ```console
 $ xvc pipeline run
+[ERROR] Step average-age finished UNSUCCESSFULLY with command sqlite3 people.db "SELECT AVG(Age) FROM People"
 
 ```
 
@@ -98,6 +111,7 @@ This time, the step will run again as the result from dependency query (`SELECT 
 
 ```console
 $ xvc pipeline run
+[ERROR] Step average-age finished UNSUCCESSFULLY with command sqlite3 people.db "SELECT AVG(Age) FROM People"
 
 ```
 
