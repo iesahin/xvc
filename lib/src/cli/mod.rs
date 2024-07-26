@@ -17,7 +17,6 @@ use log::LevelFilter;
 use std::io;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::types::xvcroot::XvcRootInner;
-use xvc_core::XvcRoot;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
 use xvc_config::{XvcConfigParams, XvcVerbosity};
@@ -457,7 +456,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
 }
 
 fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
-    let xvc_config_params = XvcConfigParams {
+    XvcConfigParams {
         current_dir: AbsolutePath::from(&cli_opts.workdir),
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,
@@ -466,8 +465,7 @@ fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
         include_environment_config: !cli_opts.no_env_config,
         command_line_config: Some(cli_opts.consolidate_config_options()),
         default_configuration: default_project_config(true),
-    };
-    xvc_config_params
+    }
 }
 
 fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
