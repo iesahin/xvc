@@ -61,7 +61,7 @@ Let's run the step without a dependency first.
 $ xvc -vv pipeline run
 [INFO][pipeline/src/pipeline/mod.rs::347] Pipeline Graph:
 digraph {
-    0 [ label = "(2, 9818981151839479067)" ]
+    0 [ label = "(2, 12770542937637433432)" ]
 }
 
 
