@@ -49,7 +49,7 @@ $ cat people.csv
 Let's a step to show the first 10 lines of the file:
 
 ```console
-$ xvc pipeline step new --step-name print-top-10 --command 'echo "Added Lines:\n ${XVC_ADDED_LINE_ITEMS}\nRemoved Lines:\n${XVC_REMOVED_LINE_ITEMS}"'
+$ xvc pipeline step new --step-name print-top-10 --command 'env'
 
 ```
 
@@ -65,19 +65,12 @@ When you run the pipeline initially, the step is run.
 ```console
 $ xvc pipeline run
 [OUT] [print-top-10] Added Lines:
- "Alex",       "M",   41,       74,      170
-"Bert",       "M",   42,       68,      166
-"Carl",       "M",   32,       70,      155
-"Dave",       "M",   39,       72,      167
-"Elly",       "F",   30,       66,      124
-"Fran",       "F",   33,       66,      115
-"Gwen",       "F",   26,       64,      121
-"Hank",       "M",   30,       71,      158
-"Ivan",       "M",   53,       72,      175
+
 Removed Lines:
 
 
 [DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
+
 
 ```
 
@@ -105,5 +98,6 @@ Removed Lines:
 "Hank",       "M",   30,       71,      158
 
 [DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
+
 
 ```
