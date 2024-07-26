@@ -383,16 +383,16 @@ impl<'a> XvcDependencyList<'a> {
         Ok(self)
     }
 
-    pub fn sqlite_query(&mut self, sqlite_query: Option<Vec<(String, String)>>) -> Result<&mut Self> {
+    pub fn sqlite_query(&mut self, sqlite_query: Option<Vec<String>>) -> Result<&mut Self> {
 
         if let Some(sqlite_query) = sqlite_query {
             let mut deps = self.deps.borrow_mut();
-            for (path, query) in sqlite_query {
-                let pathbuf = PathBuf::from(path);
-                let path = XvcPath::new(self.xvc_root, self.current_dir, &pathbuf)?;
-                let sqlite_query = sqlite_query::SqliteQueryDep::new(path, query);
-                deps.push(XvcDependency::SqliteQueryDigest(sqlite_query));
-            }
+            let path = sqlite_query[0].clone();
+            let query = sqlite_query[1].clone();
+            let pathbuf = PathBuf::from(path);
+            let xvc_path = XvcPath::new(self.xvc_root, self.current_dir, &pathbuf)?;
+            let sqlite_query = sqlite_query::SqliteQueryDep::new(xvc_path, query);
+            deps.push(XvcDependency::SqliteQueryDigest(sqlite_query));
          }
         Ok(self)
     }
