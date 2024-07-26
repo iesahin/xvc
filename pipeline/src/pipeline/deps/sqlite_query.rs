@@ -1,3 +1,6 @@
+//! Implements dependencies on sqlite databases. [SqliteQueryDep] is a dependency that runs a query
+//! and checks whether the result of that query has changed. It doesn't run the query if the
+//! metadata of the database file hasn't changed. 
 use serde::{Deserialize, Serialize};
 use crate::XvcDependency;
 use rusqlite::{Connection, OpenFlags};

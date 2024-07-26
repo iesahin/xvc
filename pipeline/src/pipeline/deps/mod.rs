@@ -36,6 +36,7 @@ pub use self::regex::RegexDep;
 pub use self::regex_items::RegexItemsDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
+pub use self::sqlite_query::SqliteQueryDep;
 
 /// Return default name for the params file from the config
 pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
@@ -74,7 +75,7 @@ pub enum XvcDependency {
     UrlDigest(UrlDigestDep),
 
     /// A dependency to an SQLite Query, that invalidates when the query results change
-    SqliteQueryDigest(SqliteQueryDigest),
+    SqliteQueryDigest(SqliteQueryDep),
 
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
@@ -109,6 +110,7 @@ impl Display for XvcDependency {
                 write!(f, "lines({}::{}-{})", dep.path, dep.begin, dep.end)
             }
             XvcDependency::UrlDigest(dep) => write!(f, "url-digest({})", dep.url),
+            XvcDependency::SqliteQueryDigest(dep) => write!(f, "sqlite({}:\"{}\")", dep.path, dep.query)
         }
     }
 }
@@ -123,6 +125,7 @@ impl XvcDependency {
             XvcDependency::Param(dep) => Some(dep.path.clone()),
             XvcDependency::LineItems(dep) => Some(dep.path.clone()),
             XvcDependency::Lines(dep) => Some(dep.path.clone()),
+            XvcDependency::SqliteQueryDigest(dep) => Some(dep.path.clone()),
             XvcDependency::Step(_) => None,
             XvcDependency::Generic(_) => None,
             XvcDependency::GlobItems(_) => None,
@@ -153,6 +156,7 @@ impl XvcDependency {
             | XvcDependency::Regex(_)
             | XvcDependency::Param(_)
             | XvcDependency::Lines(_)
+            | XvcDependency::SqliteQueryDigest(_)
             | XvcDependency::UrlDigest(_) => None,
         }
     }
@@ -190,6 +194,7 @@ pub fn dependencies_to_path(
             XvcDependency::Param(dep) => dep.path == *to_path,
             XvcDependency::LineItems(dep) => dep.path == *to_path,
             XvcDependency::Lines(dep) => dep.path == *to_path,
+            XvcDependency::SqliteQueryDigest(dep) => dep.path == *to_path,
             XvcDependency::Generic(_) | XvcDependency::Step(_) | XvcDependency::UrlDigest(_) => {
                 false
             }
@@ -242,5 +247,6 @@ pub fn dependency_paths(
         XvcDependency::LineItems(dep) => make_map(&dep.path),
         XvcDependency::Regex(dep) => make_map(&dep.path),
         XvcDependency::Lines(dep) => make_map(&dep.path),
+        XvcDependency::SqliteQueryDigest(dep) => make_map(&dep.path),
     }
 }
