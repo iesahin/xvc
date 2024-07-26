@@ -76,17 +76,17 @@ $ xvc pipeline run
 "Ivan",       "M",   53,       72,      175
 Removed Lines:
 
- 
+
 [DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
 
-``````
+```
 
 When you run the pipeline again, the step is not run because the specified lines didn't change.
 
 ```console
 $ xvc pipeline run
 
-``````
+```
 
 When you change a line from the file, the step is invalidated.
 
@@ -103,8 +103,7 @@ $ xvc pipeline run
  "Ferzan",       "M",   30,       71,      158
 Removed Lines:
 "Hank",       "M",   30,       71,      158
- 
+
 [DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
 
 ```
-
