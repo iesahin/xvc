@@ -73,18 +73,22 @@ $ xvc pipeline step dependency --step-name average-age --sqlite-query people.db 
 
 ```
 
-```note
+```admonition note
 The dependency query is run everytime the pipeline runs. It's expected to be lightweight to avoid performance issues.
 ```
 
 So, when the number of people in the table changes, the step will run. Initially it doesn't keep track of the query results, so it will run again.
 
 ```console
-$ xvc pipeline run
-thread '<unnamed>' panicked at pipeline/src/pipeline/deps/compare.rs:474:50:
-not yet implemented
+$ xvc -vvvv pipeline run
+? interrupted
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1081:32:
+SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-[ERROR] Error in step thread: Any { .. }
+thread '<unnamed>' panicked at lib/src/cli/mod.rs:251:52:
+[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1081]
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:514:17:
+called `Result::unwrap()` on an `Err` value: "SendError(..)"
 
 ```
 
@@ -92,10 +96,14 @@ But it won't run the step a second time, as the table didn't change.
 
 ```console
 $ xvc pipeline run
-thread '<unnamed>' panicked at pipeline/src/pipeline/deps/compare.rs:474:50:
-not yet implemented
+? interrupted
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1081:32:
+SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-[ERROR] Error in step thread: Any { .. }
+thread '<unnamed>' panicked at lib/src/cli/mod.rs:251:52:
+[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1081]
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:514:17:
+called `Result::unwrap()` on an `Err` value: "SendError(..)"
 
 ```
 
@@ -109,10 +117,14 @@ This time, the step will run again as the result from dependency query (`SELECT 
 
 ```console
 $ xvc pipeline run
-thread '<unnamed>' panicked at pipeline/src/pipeline/deps/compare.rs:474:50:
-not yet implemented
+? interrupted
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1081:32:
+thread '<unnamed>' panicked at lib/src/cli/mod.rs:251SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-[ERROR] Error in step thread: Any { .. }
+:52:
+[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1081]
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:514:17:
+called `Result::unwrap()` on an `Err` value: "SendError(..)"
 
 ```
 
