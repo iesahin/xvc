@@ -49,7 +49,13 @@ $ cat people.csv
 Let's a step to show the first 10 lines of the file:
 
 ```console
-$ xvc pipeline step new --step-name print-top-10 --command 'env' echo "Added Lines:\n ${XVC_ADDED_LINE_ITEMS}\nRemoved Lines:\n${XVC_REMOVED_LINE_ITEMS}"'
+$ xvc pipeline step new --step-name print-top-10 --command 'echo "Added Lines:\n ${XVC_ADDED_LINE_ITEMS}\nRemoved Lines:\n${XVC_REMOVED_LINE_ITEMS}"'
+? 2
+error: unexpected argument 'echo' found
+
+Usage: xvc pipeline step new [OPTIONS] --step-name <STEP_NAME> --command <COMMAND>
+
+For more information, try '--help'.
 
 ```
 
@@ -57,6 +63,9 @@ The command is run only when those lines change.
 
 ```console
 $ xvc pipeline step dependency --step-name print-top-10 --line-items 'people.csv::1-10'
+? 1
+[ERROR] Pipeline Error: Step print-top-10 not found in pipeline
+Error: PipelineError { source: StepNotFoundInPipeline { step: "print-top-10" } }
 
 ```
 
@@ -64,13 +73,6 @@ When you run the pipeline initially, the step is run.
 
 ```console
 $ xvc pipeline run
-[OUT] [print-top-10] Added Lines:
-
-Removed Lines:
-
-
-[DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
-
 
 ```
 
@@ -92,12 +94,5 @@ Now, when you run the pipeline, it will print the changed line, with its new and
 
 ```
 $ xvc pipeline run
-[OUT] [print-top-10] Added Lines:
- "Ferzan",       "M",   30,       71,      158
-Removed Lines:
-"Hank",       "M",   30,       71,      158
-
-[DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
-
 
 ```
