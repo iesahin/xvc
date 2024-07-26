@@ -49,7 +49,7 @@ $ cat people.csv
 Let's a step to show the first 10 lines of the file:
 
 ```console
-$ xvc pipeline step new --step-name print-top-10 --command 'env'
+$ xvc pipeline step new --step-name print-top-10 --command 'env' echo "Added Lines:\n ${XVC_ADDED_LINE_ITEMS}\nRemoved Lines:\n${XVC_REMOVED_LINE_ITEMS}"'
 
 ```
 
