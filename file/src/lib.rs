@@ -45,7 +45,6 @@ use crossbeam_channel::bounded;
 use log::{debug, error, info, warn, LevelFilter};
 use std::io;
 use std::io::Write;
-use std::path::Path;
 use std::path::PathBuf;
 use xvc_config::XvcConfigParams;
 use xvc_config::XvcVerbosity;

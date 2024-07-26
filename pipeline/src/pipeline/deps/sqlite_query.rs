@@ -55,8 +55,7 @@ impl SqliteQueryDep {
     }
 
     /// Update the digest of the file by reading the file and collecting all lines that match the regex
-    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Result<Self> {
-        let path = self.path.to_absolute_path(xvc_root);
+    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Result<Self> { let path = self.path.to_absolute_path(xvc_root);
         let flags = OpenFlags::SQLITE_OPEN_READ_ONLY;
         let sqlite = Connection::open_with_flags(path, flags)?;
         let mut prepared = sqlite.prepare(&self.query)?;
