@@ -1267,7 +1267,7 @@ fn update_command_environment(
                     update_env("XVC_ALL_REGEX_ITEMS", &items)
                 }
                 XvcDependency::LineItems(_) => {
-                    update_env("XVC_ADDED_ITEMS", &items)?;
+                    update_env("XVC_ADDED_LINE_ITEMS", &items)?;
                     update_env("XVC_REMOVED_LINE_ITEMS", &[])?;
                     update_env("XVC_ALL_LINE_ITEMS", &items)
                 }
