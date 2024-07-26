@@ -131,7 +131,7 @@ If you want to make this connection with symbolic links, you can specify it with
 ```console
 $ xvc file track --recheck-method symlink dir-0003/file-0001.bin
 $ ls -l dir-0003/file-0001.bin
-lrwxr-xr-x@ [..] dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+lrwxr-xr-x[..] dir-0003/file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
 
 ```
 
@@ -142,9 +142,9 @@ $ xvc file track --recheck-method hardlink dir-0003/file-0002.bin
 $ xvc file track --recheck-method reflink dir-0003/file-0003.bin
 $ ls -l dir-0003/
 total 16
-lrwxr-xr-x@ [..] file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
--r--r--r--@ [..] file-0002.bin
--r--r--r--@ [..] file-0003.bin
+l[..] file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+-[..] file-0002.bin
+-[..] file-0003.bin
 
 ```
 
@@ -167,9 +167,9 @@ cache.
 $ xvc file track --no-commit --recheck-method symlink dir-0004/
 $ ls -l dir-0004/
 total 24
--rw-r--r--@ [..] file-0001.bin
--rw-r--r--@ [..] file-0002.bin
--rw-r--r--@ [..] file-0003.bin
+-rw-r--r--[..] file-0001.bin
+-rw-r--r--[..] file-0002.bin
+-rw-r--r--[..] file-0003.bin
 
 $ xvc file list dir-0004/
 FS        [..] ab361981 ab361981 dir-0004/file-0003.bin
@@ -189,9 +189,9 @@ $ xvc file carry-in --force dir-0004/
 
 $ ls -l dir-0004/
 total 0
-lrwxr-xr-x@ [..] file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
-lrwxr-xr-x@ [..] file-0002.bin -> [CWD]/.xvc/b3/493/eeb/6525ea5e94e1e760371108e4a525c696c773a774a4818e941fd6d1af79/0.bin
-lrwxr-xr-x@ [..] file-0003.bin -> [CWD]/.xvc/b3/ab3/619/814cae0456a5a291e4d5c8d339a8389630e476f9f9e8d3a09accc919f0/0.bin
+lrwxr-xr-x[..] file-0001.bin -> [CWD]/.xvc/b3/e51/7d6/b9a3617fdcd96bd128142a39f1eca26ed77a338d2b93ba4921a0116c70/0.bin
+lrwxr-xr-x[..] file-0002.bin -> [CWD]/.xvc/b3/493/eeb/6525ea5e94e1e760371108e4a525c696c773a774a4818e941fd6d1af79/0.bin
+lrwxr-xr-x[..] file-0003.bin -> [CWD]/.xvc/b3/ab3/619/814cae0456a5a291e4d5c8d339a8389630e476f9f9e8d3a09accc919f0/0.bin
 
 ```
 
