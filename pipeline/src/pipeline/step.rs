@@ -185,6 +185,7 @@ pub enum StepSubCommand {
             long = "sqlite-query",
             aliases = &["sqlite_query", "sqlite_query_digest", "sqlite-query-digest"],
             num_args = 2,
+            value_names = &["SQLITE_FILE", "SQLITE_QUERY"],
         )]
         sqlite_query: Option<Vec<String>>,
     },
