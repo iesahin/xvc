@@ -58,18 +58,19 @@ $ xvc pipeline step new --step-name average-age --command "sqlite3 people.db 'SE
 Let's run the step without a dependency first.
 
 ```console
-$ xvc -vv pipeline run
+$ xvc pipeline run
 [INFO][pipeline/src/pipeline/mod.rs::347] Pipeline Graph:
 digraph {
-    0 [ label = "(2, 12770542937637433432)" ]
+    0 [ label = "(2, 579168168868227462)" ]
 }
 
 
 [INFO] No dependency steps for step average-age
 [INFO] [average-age] Dependencies has changed
-[WARN] [ERR] [average-age] Error: in prepare, no such table: People
+[OUT] [average-age] 34.6666666666667
 
-[ERROR] Step average-age finished UNSUCCESSFULLY with command sqlite3 people.db 'SELECT AVG(Age) FROM People;'
+[DONE] average-age (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
+
 
 ```
 
