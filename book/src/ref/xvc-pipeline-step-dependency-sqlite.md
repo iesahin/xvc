@@ -19,7 +19,6 @@ Let's create an SQLite database and populate a table:
 ```console
 $ sqlite3 people.db <<EOF
 
--- Create the table
 CREATE TABLE People (
     Name TEXT,
     Sex TEXT,
@@ -28,7 +27,6 @@ CREATE TABLE People (
     Weight_lbs INTEGER
 );
 
--- Insert the data
 INSERT INTO People (Name, Sex, Age, Height_in, Weight_lbs) VALUES
 ('Alex', 'M', 41, 74, 170),
 ('Bert', 'M', 42, 68, 166),
@@ -56,20 +54,6 @@ Now, we'll add a step to the pipeline to calculate the average age of these peop
 
 ```console
 $ xvc pipeline step new --step-name average-age --command 'sqlite3 people.db "SELECT AVG(Age) FROM People;"'
-[DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Debug
-[DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
-[DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
-[DEBUG] Using Git: /opt/homebrew/bin/git
-[DEBUG] Committing .xvc/ to git: [main d67183e] Xvc auto-commit after '/Users/iex/github.com/iesahin/xvc/target/debug/xvc -vvv pipeline step new --step-name average-age --command sqlite3 people.db "SELECT AVG(Age) FROM People;"'
- 6 files changed, 6 insertions(+)
- create mode 100644 .xvc/ec/1722021403030243
- create mode 100644 .xvc/store/xvc-step-command-store/1722021403029764.json
- create mode 100644 .xvc/store/xvc-step-invalidate-store/1722021403029598.json
- create mode 100644 .xvc/store/xvc-step-store/1722021403029432.json
- create mode 100644 .xvc/store/xvc-step-store/1722021403030038.json
- create mode 100644 .xvc/store/xvc-step-xvc-pipeline-r1n-store/1722021403030134.json
-
-[DEBUG] Command completed successfully.
 
 ```
 
@@ -77,7 +61,26 @@ Let's run the step without a dependency first.
 
 ```console
 $ xvc -vvv pipeline run
+[DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Debug
+[DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
+[DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.14/src/lib.rs::453] built glob set; 0 literals, 2 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
+[DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.14/src/lib.rs::453] built glob set; 0 literals, 3 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
+[INFO][pipeline/src/pipeline/mod.rs::347] Pipeline Graph:
+digraph {
+    0 [ label = "(2, 11731315531321152522)" ]
+}
+
+
+[INFO] No dependency steps for step average-age
+[INFO] [average-age] Dependencies has changed
+[DEBUG] Step average-age with command sqlite3 people.db "SELECT AVG(Age) FROM People;" is still running
+[WARN] [ERR] [average-age] Error: in prepare, no such table: People
+
 [ERROR] Step average-age finished UNSUCCESSFULLY with command sqlite3 people.db "SELECT AVG(Age) FROM People;"
+[DEBUG] Using Git: /opt/homebrew/bin/git
+[DEBUG] No files to commit
+[DEBUG] Command completed successfully.
 
 ```
 
