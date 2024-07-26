@@ -471,7 +471,7 @@ pub fn superficial_compare_dependency(
         XvcDependency::Glob(dep) => diff_of_dep(superficial_compare_glob(cmp_params, dep)?),
         XvcDependency::Regex(dep) => diff_of_dep(superficial_compare_regex(cmp_params, dep)?),
         XvcDependency::Lines(dep) => diff_of_dep(superficial_compare_lines(cmp_params, dep)?),
-        XvcDependency::SqliteQueryDigest(dep) => todo!(),
+        XvcDependency::SqliteQueryDigest(dep) => diff_of_dep(superficial_compare_query_digest(cmp_params, dep)?),
     };
 
     Ok(diff)

@@ -59,14 +59,6 @@ Let's run the step without a dependency first.
 
 ```console
 $ xvc pipeline run
-[INFO][pipeline/src/pipeline/mod.rs::347] Pipeline Graph:
-digraph {
-    0 [ label = "(2, 579168168868227462)" ]
-}
-
-
-[INFO] No dependency steps for step average-age
-[INFO] [average-age] Dependencies has changed
 [OUT] [average-age] 34.6666666666667
 
 [DONE] average-age (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
