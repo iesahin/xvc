@@ -60,7 +60,7 @@ $ xvc pipeline step new --step-name average-age --command 'sqlite3 people.db "SE
 Let's run the step without a dependency first.
 
 ```console
-$ xvc -vvv pipeline run
+$ xvc -vvvv pipeline run
 [DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Debug
 [DEBUG][config/src/error.rs::72] Config source for level "system" not found at "/Users/iex/Library/Application Support/com.emresult.xvc"
 [DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
@@ -68,7 +68,7 @@ $ xvc -vvv pipeline run
 [DEBUG][/Users/iex/.cargo/registry/src/index.crates.io-6f17d22bba15001f/globset-0.4.14/src/lib.rs::453] built glob set; 0 literals, 3 basenames, 0 extensions, 0 prefixes, 0 suffixes, 0 required extensions, 0 regexes
 [INFO][pipeline/src/pipeline/mod.rs::347] Pipeline Graph:
 digraph {
-    0 [ label = "(2, 11731315531321152522)" ]
+    0 [ label = "(2, 10877507082850142078)" ]
 }
 
 
