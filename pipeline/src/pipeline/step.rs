@@ -181,6 +181,11 @@ pub enum StepSubCommand {
         )]
         lines: Option<Vec<String>>,
 
+        /// Add a sqlite query dependency to the step with the file and the query. Can be used
+        /// once. 
+        ///
+        /// The step is invalidated when the query run and the result is different from previous
+        /// runs, e.g. when an aggregate changed or a new row added to a table. 
         #[arg(
             long = "sqlite-query",
             aliases = &["sqlite_query", "sqlite_query_digest", "sqlite-query-digest"],
