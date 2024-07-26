@@ -581,7 +581,9 @@ fn superficial_compare_query_digest(
     cmp_params: &StepStateParams,
     record: &SqliteQueryDep,
 ) -> Result<Diff<SqliteQueryDep>> {
-    let actual = SqliteQueryDep::new(record.path.clone(), record.query.clone());
+    let actual = SqliteQueryDep::new(record.path.clone(), record.query.clone())
+        .update_metadata(cmp_params.pmp.get(&record.path));
+
 
     Ok(SqliteQueryDep::diff_superficial(record, &actual))
 }
