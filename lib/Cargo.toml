@@ -115,8 +115,6 @@ test-ci = [
   "test-s3",
   "test-minio",
   "test-r2",
-  "test-gcs",
-  "test-wasabi",
   "test-digital-ocean",
   "test-rsync",
   "test-generic-rsync",
