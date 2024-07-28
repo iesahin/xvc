@@ -105,7 +105,7 @@ gcs = ["xvc-storage/gcs"]
 wasabi = ["xvc-storage/wasabi"]
 digital-ocean = ["xvc-storage/digital-ocean"]
 bundled-sqlite = ["xvc-pipeline/bundled-sqlite"]
-reflink = ["xvc-file/reflink", "xvc-core/reflink"]
+reflink = ["xvc-file/reflink"]
 
 
 [dev-dependencies]
