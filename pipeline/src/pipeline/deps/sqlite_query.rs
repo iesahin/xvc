@@ -2,6 +2,7 @@
 //! and checks whether the result of that query has changed. It doesn't run the query if the
 //! metadata of the database file hasn't changed. 
 use serde::{Deserialize, Serialize};
+use xvc_logging::watch;
 use crate::XvcDependency;
 use rusqlite::{Connection, OpenFlags};
 use fallible_iterator::FallibleIterator;
@@ -67,6 +68,7 @@ impl SqliteQueryDep {
                 // TODO: Add salting with the repo id here?
                 let mut els = String::new();
                 while let Ok(col) = row.get_ref(i) {
+                    watch!(col);
                     els.push_str(col.as_str()?);
                     i += 1;
                 }
