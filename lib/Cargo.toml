@@ -97,7 +97,7 @@ predicates = "^3.0"
 
 
 [features]
-default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
+default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean", "reflink"]
 s3 = ["xvc-storage/s3"]
 minio = ["xvc-storage/minio"]
 r2 = ["xvc-storage/r2"]
@@ -105,6 +105,7 @@ gcs = ["xvc-storage/gcs"]
 wasabi = ["xvc-storage/wasabi"]
 digital-ocean = ["xvc-storage/digital-ocean"]
 bundled-sqlite = ["xvc-pipeline/bundled-sqlite"]
+reflink = ["xvc-file/reflink"]
 
 
 [dev-dependencies]
