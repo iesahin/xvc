@@ -306,6 +306,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("python3", which::which("python3"))
         .register_bin("dvc", which::which("dvc"))
         .register_bin("hyperfine", which::which("hyperfine"))
+        .register_bin("sqlite3", which::which("sqlite3"))
         .case("docs/*.md")
         .timeout(timeout)
         // We skip this for the time being.
