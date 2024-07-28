@@ -471,19 +471,18 @@ fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
 }
 
 fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
-    let term_log_level = match verbosity {
+    match verbosity {
         XvcVerbosity::Quiet => LevelFilter::Off,
         XvcVerbosity::Default => LevelFilter::Error,
         XvcVerbosity::Warn => LevelFilter::Warn,
         XvcVerbosity::Info => LevelFilter::Info,
         XvcVerbosity::Debug => LevelFilter::Debug,
         XvcVerbosity::Trace => LevelFilter::Trace,
-    };
-    term_log_level
+    }
 }
 
 fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
-    let verbosity = if cli_opts.quiet {
+    if cli_opts.quiet {
         XvcVerbosity::Quiet
     } else {
         match cli_opts.verbosity {
@@ -493,6 +492,5 @@ fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
             3 => XvcVerbosity::Debug,
             _ => XvcVerbosity::Trace,
         }
-    };
-    verbosity
+    }
 }

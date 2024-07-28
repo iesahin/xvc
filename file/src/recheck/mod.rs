@@ -145,12 +145,12 @@ pub fn cmd_recheck(
         watch!(content_digest_diff.get(xe));
         if content_digest_diff.contains_key(xe)
             && matches!(
-                content_digest_diff[&xe],
+                content_digest_diff[xe],
                 Diff::<ContentDigest>::Different { .. }
             )
         {
             let output_snd = output_snd.clone();
-            let xp = &stored_xvc_path_store[&xe];
+            let xp = &stored_xvc_path_store[xe];
             error!(
                 output_snd,
                 "{} has changed on disk. Either carry in, force, or delete the target to recheck. ",

@@ -4,7 +4,7 @@ use crate::{common::load_targets_from_store, error, Result};
 use clap::{command, Parser};
 use humantime;
 use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
-use xvc_ecs::{XvcStore};
+use xvc_ecs::XvcStore;
 use xvc_logging::{uwo, watch, XvcOutputSender};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 
@@ -26,6 +26,8 @@ pub struct ShareCLI {
     target: String,
 }
 
+/// Handler function for `xvc share` command. Runs the command with `opts` within `xvc_root` and
+/// sends output to `output_snd`.
 pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCLI) -> Result<()> {
     // TODO: TIDY UP these implementation to reuse code in other places
     let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
