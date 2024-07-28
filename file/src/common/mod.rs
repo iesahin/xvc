@@ -337,6 +337,7 @@ pub fn recheck_from_cache(
             make_symlink(&cache_path, &path)?;
             info!(output_snd, "[SYMLINK] {} -> {}", cache_path, path);
         }
+        #[cfg(feature="reflink")]
         RecheckMethod::Reflink => {
             match reflink::reflink_or_copy(&cache_path, &path) {
                 Ok(None) => {

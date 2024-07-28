@@ -1,5 +1,4 @@
 //!  Share files from S3 compatible storages for a limited time
-use std::path::PathBuf;
 
 use crate::{common::load_targets_from_store, error, Result};
 use clap::{command, Parser};

@@ -40,7 +40,8 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 pub struct RecheckCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
-    /// Note: Reflink uses copy if the underlying file system doesn't support it.
+    /// Note: Reflink support requires "reflink" feature to be enabled and uses copy if the
+    /// underlying file system doesn't support it.
     #[arg(long, alias = "as")]
     pub recheck_method: Option<RecheckMethod>,
 
