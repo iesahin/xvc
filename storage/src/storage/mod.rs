@@ -1,7 +1,6 @@
 //! Cloud storage implementations for xvc.
 #[cfg(feature = "async")]
 pub mod async_common;
-pub mod common;
 #[cfg(feature = "digital-ocean")]
 pub mod digital_ocean;
 pub mod event;
@@ -32,7 +31,7 @@ pub use local::XvcLocalStorage;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{error, panic, watch, XvcOutputSender};
+use xvc_logging::{error, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, StorageIdentifier};

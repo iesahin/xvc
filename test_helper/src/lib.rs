@@ -129,6 +129,7 @@ pub fn temp_git_dir() -> PathBuf {
 pub fn generate_random_file(filename: &Path, size: usize, seed: Option<u64>) {
     let f = OpenOptions::new()
         .create(true)
+        .truncate(true)
         .write(true)
         .open(filename)
         .unwrap();

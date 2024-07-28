@@ -29,6 +29,8 @@ pub struct StepCLI {
 /// Step management subcommands
 #[derive(Debug, Clone, Parser)]
 #[command()]
+// This is just a command description and used once
+#[allow(clippy::large_enum_variant)]
 pub enum StepSubCommand {
     /// List steps in a pipeline
     #[command()]

@@ -1,3 +1,4 @@
+//! Home for async operations for S3 compatible storage services. 
 use std::fs;
 use std::str::FromStr;
 
@@ -358,7 +359,8 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
     fn share(
         &self,
         output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
+        //  FIXME: Do we need xvc_root here?
+        _xvc_root: &xvc_core::XvcRoot,
         path: &XvcCachePath,
         duration: std::time::Duration,
     ) -> Result<XvcStorageExpiringShareEvent> {

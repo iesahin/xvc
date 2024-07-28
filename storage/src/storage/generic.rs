@@ -445,10 +445,10 @@ impl XvcStorageOperations for XvcGenericStorage {
 
     fn share(
         &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        path: &XvcCachePath,
-        period: std::time::Duration,
+        _output: &XvcOutputSender,
+        _xvc_root: &XvcRoot,
+        _path: &XvcCachePath,
+        _period: std::time::Duration,
     ) -> Result<super::XvcStorageExpiringShareEvent> {
         Err(Error::StorageDoesNotSupportSignedUrls)
     }
