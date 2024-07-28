@@ -170,7 +170,7 @@ fn test_storage_new_r2() -> Result<()> {
         "--storage-prefix",
         &storage_prefix,
         "--account-id",
-        &account_id,
+        account_id,
     ])?;
 
     watch!(out);

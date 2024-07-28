@@ -165,7 +165,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         "--storage-prefix",
         &storage_prefix,
         "--region",
-        &region,
+        region,
     ])?;
 
     watch!(out);
