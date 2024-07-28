@@ -15,10 +15,6 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 name = "xvc_core"
 crate-type = ["rlib"]
 
-[features]
-default = ["reflink"]
-reflink = []
-
 [profile.release]
 debug = false
 

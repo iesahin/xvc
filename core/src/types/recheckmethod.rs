@@ -66,7 +66,6 @@ pub enum RecheckMethod {
     /// If the symbolic link in the workspace is deleted, the cached content is not
     /// affected.
     Symlink,
-    #[cfg(feature="reflink")]
     /// Make a reflink to the cached file in the working directory.
     /// Reflinks are similar to symlinks, but they are copied when the file is to be written.
     /// Currently reflinks are supported by Btrfs, CIFS, NFS 4.2, OCFS2, overlayfs, and XFS.
