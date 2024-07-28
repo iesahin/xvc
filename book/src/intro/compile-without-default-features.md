@@ -28,7 +28,7 @@ Note that when you supply `--no-default-features`, all other default features
 like `s3` etc are also turned off. You'll have to specify which [features] you
 want in the features list. Otherwise Xvc cannot connect to your storages.
 
-```
+```bash
 cargo build --no-default-features --features "reflink,s3" --release
 [..]
     Finished `release` profile [optimized + debuginfo] target(s) in 56.40s

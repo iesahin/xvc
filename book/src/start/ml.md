@@ -168,7 +168,7 @@ $ xvc pipeline step dependency --step-name test --glob 'models/*' --directory da
 ? 2
 error: unexpected argument '--directory' found
 
-Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>>
+Usage: xvc pipeline step dependency <--step-name <STEP_NAME>|--generic <GENERICS>|--url <URLS>|--file <FILES>|--step <STEPS>|--glob_items <GLOB_ITEMS>|--glob <GLOBS>|--param <PARAMS>|--regex_items <REGEX_ITEMS>|--regex <REGEXES>|--line_items <LINE_ITEMS>|--lines <LINES>|--sqlite-query <SQLITE_FILE> <SQLITE_QUERY>>
 
 For more information, try '--help'.
 
