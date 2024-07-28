@@ -81,7 +81,7 @@ So, when the number of people in the table changes, the step will run. Initially
 
 ```console
 $ xvc -vvvv pipeline run
-? 101
+? interrupted
 [DEBUG][logging/src/lib.rs::237] Terminal logger enabled with level: Trace
 [TRACE][core/src/types/xvcroot.rs::263] xvc_candidate: "[CWD]/.xvc"
 [TRACE][core/src/types/xvcroot.rs::265] parent: "[CWD]"
@@ -89,22 +89,22 @@ $ xvc -vvvv pipeline run
 [DEBUG][config/src/error.rs::72] Config source for level "global" not found at "/Users/iex/Library/Application Support/xvc"
 [TRACE][ecs/src/ecs/mod.rs::229] dir: "[CWD]/.xvc/ec"
 [TRACE][ecs/src/ecs/mod.rs::239] files: [
-    "[CWD]/.xvc/ec/1722026597763090",
-    "[CWD]/.xvc/ec/1722026597766408",
-    "[CWD]/.xvc/ec/1722026597840236",
-    "[CWD]/.xvc/ec/1722026598025010",
+    "[CWD]/.xvc/ec/1722170724738869",
+    "[CWD]/.xvc/ec/1722170724741681",
+    "[CWD]/.xvc/ec/1722170724810551",
+    "[CWD]/.xvc/ec/1722170724986226",
 ]
 [TRACE][core/src/types/xvcroot.rs::263] xvc_candidate: "[CWD]/.xvc"
 [TRACE][core/src/types/xvcroot.rs::265] parent: "[CWD]"
 [TRACE][pipeline/src/pipeline/mod.rs::285] pipeline_e: XvcEntity(
     1,
-    4733698130976263725,
+    13031353410878765396,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::290] pipeline_steps: HStore {
     map: {
         XvcEntity(
             2,
-            17595501963111217905,
+            3920065547014771711,
         ): XvcStep {
             name: "average-age",
         },
@@ -114,14 +114,14 @@ $ xvc -vvvv pipeline run
     map: {
         XvcEntity(
             2,
-            17595501963111217905,
+            3920065547014771711,
         ): ByDependencies,
     },
     entity_index: {
         ByDependencies: [
             XvcEntity(
                 2,
-                17595501963111217905,
+                3920065547014771711,
             ),
         ],
     },
@@ -130,7 +130,7 @@ $ xvc -vvvv pipeline run
             Add {
                 entity: XvcEntity(
                     2,
-                    17595501963111217905,
+                    3920065547014771711,
                 ),
                 value: ByDependencies,
             },
@@ -815,14 +815,14 @@ $ xvc -vvvv pipeline run
     },
 }
 [TRACE][walker/src/notify.rs::170] watcher: FsEventWatcher {
-    paths: 0x0000600000d70120,
+    paths: 0x000060000137c000,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000600002870010,
+    event_handler: 0x0000600003660010,
     runloop: Some(
         (
-            0x00006000036740c0,
+            0x000060000286c0c0,
             JoinHandle { .. },
         ),
     ),
@@ -836,14 +836,14 @@ $ xvc -vvvv pipeline run
     ..
 }
 [TRACE][core/src/util/pmp.rs::59] watcher: FsEventWatcher {
-    paths: 0x0000600000d70120,
+    paths: 0x000060000137c000,
     since_when: 18446744073709551615,
     latency: 0.0,
     flags: 18,
-    event_handler: 0x0000600002870010,
+    event_handler: 0x0000600003660010,
     runloop: Some(
         (
-            0x00006000036740c0,
+            0x000060000286c0c0,
             JoinHandle { .. },
         ),
     ),
@@ -876,148 +876,148 @@ $ xvc -vvvv pipeline run
                 XvcConfigMap {
                     source: Default,
                     map: {
-                        "pipeline.default": String(
-                            "default",
+                        "pipeline.process_pool_size": Integer(
+                            4,
                         ),
                         "git.command": String(
                             "git",
                         ),
-                        "file.track.text_or_binary": String(
-                            "auto",
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
                         ),
                         "core.verbosity": String(
                             "error",
                         ),
-                        "core.guid": String(
-                            "2563bb26e79eff77",
-                        ),
-                        "file.list.show_dot_files": Boolean(
-                            false,
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.list.no_summary": Boolean(
-                            false,
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "pipeline.process_pool_size": Integer(
-                            4,
-                        ),
                         "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.force": Boolean(
                             false,
                         ),
                         "file.track.force": Boolean(
                             false,
                         ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
+                        "pipeline.default": String(
+                            "default",
+                        ),
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
                         ),
                         "git.auto_stage": Boolean(
                             false,
                         ),
-                        "file.list.recursive": Boolean(
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.show_dot_files": Boolean(
+                            false,
+                        ),
+                        "core.guid": String(
+                            "6dd0d3b5a9776de4",
+                        ),
+                        "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "file.list.no_summary": Boolean(
                             false,
                         ),
                         "file.list.format": String(
                             "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                         ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
                         "cache.algorithm": String(
                             "blake3",
                         ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
+                        "file.track.text_or_binary": String(
+                            "auto",
                         ),
                     },
                 },
                 XvcConfigMap {
                     source: Project,
                     map: {
-                        "core.verbosity": String(
-                            "error",
-                        ),
-                        "git.auto_commit": Boolean(
-                            true,
-                        ),
-                        "git.use_git": Boolean(
-                            true,
-                        ),
-                        "file.track.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.recheck.method": String(
-                            "copy",
-                        ),
-                        "pipeline.default_params_file": String(
-                            "params.yaml",
-                        ),
-                        "git.auto_stage": Boolean(
-                            false,
-                        ),
-                        "file.track.no_commit": Boolean(
-                            false,
-                        ),
-                        "file.list.recursive": Boolean(
-                            false,
-                        ),
-                        "pipeline.default": String(
-                            "default",
-                        ),
-                        "file.list.format": String(
-                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
-                        ),
-                        "file.list.show_dot_files": Boolean(
-                            false,
-                        ),
-                        "file.track.text_or_binary": String(
-                            "auto",
-                        ),
-                        "cache.algorithm": String(
-                            "blake3",
-                        ),
-                        "file.list.sort": String(
-                            "name-desc",
-                        ),
-                        "core.guid": String(
-                            "fff3d263419bb95f",
-                        ),
-                        "pipeline.current_pipeline": String(
-                            "default",
-                        ),
-                        "file.carry-in.no_parallel": Boolean(
-                            false,
-                        ),
-                        "file.carry-in.force": Boolean(
-                            false,
-                        ),
-                        "git.command": String(
-                            "git",
-                        ),
                         "file.list.no_summary": Boolean(
                             false,
                         ),
                         "pipeline.process_pool_size": Integer(
                             4,
                         ),
+                        "pipeline.default_params_file": String(
+                            "params.yaml",
+                        ),
+                        "file.track.text_or_binary": String(
+                            "auto",
+                        ),
+                        "file.list.show_dot_files": Boolean(
+                            false,
+                        ),
+                        "git.auto_commit": Boolean(
+                            true,
+                        ),
+                        "file.list.recursive": Boolean(
+                            false,
+                        ),
+                        "file.recheck.method": String(
+                            "copy",
+                        ),
+                        "file.track.no_commit": Boolean(
+                            false,
+                        ),
+                        "pipeline.current_pipeline": String(
+                            "default",
+                        ),
+                        "file.list.format": String(
+                            "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
+                        ),
+                        "git.command": String(
+                            "git",
+                        ),
+                        "file.carry-in.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.track.no_parallel": Boolean(
+                            false,
+                        ),
+                        "file.carry-in.force": Boolean(
+                            false,
+                        ),
+                        "core.verbosity": String(
+                            "error",
+                        ),
+                        "file.list.sort": String(
+                            "name-desc",
+                        ),
+                        "core.guid": String(
+                            "6142ae8952816bc7",
+                        ),
+                        "cache.algorithm": String(
+                            "blake3",
+                        ),
                         "file.track.force": Boolean(
                             false,
+                        ),
+                        "git.use_git": Boolean(
+                            true,
+                        ),
+                        "git.auto_stage": Boolean(
+                            false,
+                        ),
+                        "pipeline.default": String(
+                            "default",
                         ),
                     },
                 },
@@ -1036,32 +1036,32 @@ $ xvc -vvvv pipeline run
                 XvcConfigMap {
                     source: CommandLine,
                     map: {
-                        "core.verbosity": String(
-                            "debug",
-                        ),
                         "core.quiet": Boolean(
                             false,
+                        ),
+                        "core.verbosity": String(
+                            "debug",
                         ),
                     },
                 },
             ],
             the_config: {
-                "pipeline.current_pipeline": XvcConfigValue {
-                    source: Project,
+                "TRYCMD_TESTS": XvcConfigValue {
+                    source: Environment,
                     value: String(
-                        "default",
+                        "storage,file,pipeline,core",
                     ),
                 },
-                "file.track.force": XvcConfigValue {
+                "file.list.recursive": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "cache.algorithm": XvcConfigValue {
+                "file.list.no_summary": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "blake3",
+                    value: Boolean(
+                        false,
                     ),
                 },
                 "git.use_git": XvcConfigValue {
@@ -1070,31 +1070,37 @@ $ xvc -vvvv pipeline run
                         true,
                     ),
                 },
+                "core.guid": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "6142ae8952816bc7",
+                    ),
+                },
                 "file.recheck.method": XvcConfigValue {
                     source: Project,
                     value: String(
                         "copy",
                     ),
                 },
-                "file.track.text_or_binary": XvcConfigValue {
+                "pipeline.default": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "auto",
+                        "default",
                     ),
                 },
-                "core.guid": XvcConfigValue {
+                "pipeline.process_pool_size": XvcConfigValue {
                     source: Project,
-                    value: String(
-                        "fff3d263419bb95f",
+                    value: Integer(
+                        4,
                     ),
                 },
-                "pipeline.default_params_file": XvcConfigValue {
-                    source: Project,
+                "core.verbosity": XvcConfigValue {
+                    source: CommandLine,
                     value: String(
-                        "params.yaml",
+                        "debug",
                     ),
                 },
-                "file.carry-in.force": XvcConfigValue {
+                "file.list.show_dot_files": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -1106,10 +1112,10 @@ $ xvc -vvvv pipeline run
                         "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}",
                     ),
                 },
-                "git.auto_stage": XvcConfigValue {
+                "file.track.text_or_binary": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        false,
+                    value: String(
+                        "auto",
                     ),
                 },
                 "git.command": XvcConfigValue {
@@ -1118,14 +1124,8 @@ $ xvc -vvvv pipeline run
                         "git",
                     ),
                 },
-                "file.list.recursive": XvcConfigValue {
+                "file.track.no_parallel": XvcConfigValue {
                     source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "core.quiet": XvcConfigValue {
-                    source: CommandLine,
                     value: Boolean(
                         false,
                     ),
@@ -1136,10 +1136,10 @@ $ xvc -vvvv pipeline run
                         false,
                     ),
                 },
-                "TRYCMD_TESTS": XvcConfigValue {
-                    source: Environment,
+                "pipeline.current_pipeline": XvcConfigValue {
+                    source: Project,
                     value: String(
-                        "storage,file,pipeline,core",
+                        "default",
                     ),
                 },
                 "git.auto_commit": XvcConfigValue {
@@ -1148,49 +1148,49 @@ $ xvc -vvvv pipeline run
                         true,
                     ),
                 },
+                "file.carry-in.force": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "cache.algorithm": XvcConfigValue {
+                    source: Project,
+                    value: String(
+                        "blake3",
+                    ),
+                },
+                "core.quiet": XvcConfigValue {
+                    source: CommandLine,
+                    value: Boolean(
+                        false,
+                    ),
+                },
                 "file.list.sort": XvcConfigValue {
                     source: Project,
                     value: String(
                         "name-desc",
                     ),
                 },
-                "file.track.no_parallel": XvcConfigValue {
+                "git.auto_stage": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
                     ),
                 },
-                "file.list.show_dot_files": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.default": XvcConfigValue {
+                "pipeline.default_params_file": XvcConfigValue {
                     source: Project,
                     value: String(
-                        "default",
-                    ),
-                },
-                "core.verbosity": XvcConfigValue {
-                    source: CommandLine,
-                    value: String(
-                        "debug",
-                    ),
-                },
-                "file.list.no_summary": XvcConfigValue {
-                    source: Project,
-                    value: Boolean(
-                        false,
-                    ),
-                },
-                "pipeline.process_pool_size": XvcConfigValue {
-                    source: Project,
-                    value: Integer(
-                        4,
+                        "params.yaml",
                     ),
                 },
                 "file.track.no_commit": XvcConfigValue {
+                    source: Project,
+                    value: Boolean(
+                        false,
+                    ),
+                },
+                "file.track.force": XvcConfigValue {
                     source: Project,
                     value: Boolean(
                         false,
@@ -1203,7 +1203,7 @@ $ xvc -vvvv pipeline run
 # The repository id. Please do not delete or change it.
 # This is used to identify the repository and generate paths in storages.
 # In the future it may be used to in other ways.
-guid = /"2563bb26e79eff77/"
+guid = /"6dd0d3b5a9776de4/"
 # Default verbosity level.
 # One of /"error/", /"warn/", /"info/"
 verbosity = /"error/"
@@ -1354,7 +1354,7 @@ process_pool_size = 4
         ),
         entity_generator: XvcEntityGenerator {
             counter: 4,
-            random: 2745833803509197134,
+            random: 16503095231746129767,
             dirty: false,
         },
     },
@@ -2021,18 +2021,18 @@ process_pool_size = 4
 [TRACE][pipeline/src/pipeline/mod.rs::331] &dependency_graph: {
     XvcEntity(
         2,
-        17595501963111217905,
+        3920065547014771711,
     ): [],
 }
 [TRACE][pipeline/src/pipeline/mod.rs::343] &dependency_graph: {
     XvcEntity(
         2,
-        17595501963111217905,
+        3920065547014771711,
     ): [],
 }
 [INFO][pipeline/src/pipeline/mod.rs::347] Pipeline Graph:
 digraph {
-    0 [ label = "(2, 17595501963111217905)" ]
+    0 [ label = "(2, 3920065547014771711)" ]
 }
 
 
@@ -2041,7 +2041,7 @@ digraph {
         map: {
             XvcEntity(
                 2,
-                17595501963111217905,
+                3920065547014771711,
             ): Begin(
                 FromInit,
             ),
@@ -2054,24 +2054,23 @@ digraph {
     map: {
         XvcEntity(
             2,
-            17595501963111217905,
+            3920065547014771711,
         ): ScopedJoinHandle { .. },
     },
 }
 [TRACE][pipeline/src/pipeline/mod.rs::512] (step_e, &jh): (
     XvcEntity(
         2,
-        17595501963111217905,
+        3920065547014771711,
     ),
     ScopedJoinHandle { .. },
 )
-[TRACE][pipeline/src/pipeline/mod.rs::583] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::623] params.recorded_dependencies: R1NStore {
+[TRACE][pipeline/src/pipeline/mod.rs::621] params.recorded_dependencies: R1NStore {
     parents: XvcStore {
         map: {
             XvcEntity(
                 2,
-                17595501963111217905,
+                3920065547014771711,
             ): XvcStep {
                 name: "average-age",
             },
@@ -2082,7 +2081,7 @@ digraph {
             }: [
                 XvcEntity(
                     2,
-                    17595501963111217905,
+                    3920065547014771711,
                 ),
             ],
         },
@@ -2091,7 +2090,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         2,
-                        17595501963111217905,
+                        3920065547014771711,
                     ),
                     value: XvcStep {
                         name: "average-age",
@@ -2100,7 +2099,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         2,
-                        17595501963111217905,
+                        3920065547014771711,
                     ),
                     value: XvcStep {
                         name: "average-age",
@@ -2116,7 +2115,7 @@ digraph {
         map: {
             XvcEntity(
                 3,
-                15601036540397786949,
+                324224710907113891,
             ): SqliteQueryDigest(
                 SqliteQueryDep {
                     path: XvcPath(
@@ -2141,7 +2140,7 @@ digraph {
             ): [
                 XvcEntity(
                     3,
-                    15601036540397786949,
+                    324224710907113891,
                 ),
             ],
         },
@@ -2150,7 +2149,7 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        15601036540397786949,
+                        324224710907113891,
                     ),
                     value: SqliteQueryDigest(
                         SqliteQueryDep {
@@ -2173,11 +2172,11 @@ digraph {
         map: {
             XvcEntity(
                 3,
-                15601036540397786949,
+                324224710907113891,
             ): ChildEntity(
                 XvcEntity(
                     2,
-                    17595501963111217905,
+                    3920065547014771711,
                 ),
                 PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                 PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -2187,14 +2186,14 @@ digraph {
             ChildEntity(
                 XvcEntity(
                     2,
-                    17595501963111217905,
+                    3920065547014771711,
                 ),
                 PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                 PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
             ): [
                 XvcEntity(
                     3,
-                    15601036540397786949,
+                    324224710907113891,
                 ),
             ],
         },
@@ -2203,12 +2202,12 @@ digraph {
                 Add {
                     entity: XvcEntity(
                         3,
-                        15601036540397786949,
+                        324224710907113891,
                     ),
                     value: ChildEntity(
                         XvcEntity(
                             2,
-                            17595501963111217905,
+                            3920065547014771711,
                         ),
                         PhantomData<xvc_pipeline::pipeline::deps::XvcDependency>,
                         PhantomData<xvc_pipeline::pipeline::step::XvcStep>,
@@ -2221,9 +2220,9 @@ digraph {
         ),
     },
 }
-[TRACE][pipeline/src/pipeline/mod.rs::624] step_e: XvcEntity(
+[TRACE][pipeline/src/pipeline/mod.rs::622] step_e: XvcEntity(
     2,
-    17595501963111217905,
+    3920065547014771711,
 )
 [TRACE][pipeline/src/pipeline/mod.rs::564] dep_neighbors: Neighbors {
     iter: Iter(
@@ -2231,56 +2230,56 @@ digraph {
     ),
     ty: PhantomData<petgraph::Directed>,
 }
-[TRACE][pipeline/src/pipeline/mod.rs::625] dependency_steps(step_e, params.dependency_graph)?: {}
+[TRACE][pipeline/src/pipeline/mod.rs::623] dependency_steps(step_e, params.dependency_graph)?: {}
 [TRACE][pipeline/src/pipeline/mod.rs::564] dep_neighbors: Neighbors {
     iter: Iter(
         [],
     ),
     ty: PhantomData<petgraph::Directed>,
 }
-[TRACE][pipeline/src/pipeline/mod.rs::662] &step_state: Begin(
+[TRACE][pipeline/src/pipeline/mod.rs::660] &step_state: Begin(
     FromInit,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::772] step.name: "average-age"
-[TRACE][pipeline/src/pipeline/mod.rs::773] &r_next_state: WaitingDependencySteps(
+[TRACE][pipeline/src/pipeline/mod.rs::770] step.name: "average-age"
+[TRACE][pipeline/src/pipeline/mod.rs::771] &r_next_state: WaitingDependencySteps(
     FromRunConditional,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::775] &step_state: WaitingDependencySteps(
+[TRACE][pipeline/src/pipeline/mod.rs::773] &step_state: WaitingDependencySteps(
     FromRunConditional,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::662] &step_state: WaitingDependencySteps(
+[TRACE][pipeline/src/pipeline/mod.rs::660] &step_state: WaitingDependencySteps(
     FromRunConditional,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::772] step.name: "average-age"
-[TRACE][pipeline/src/pipeline/mod.rs::773] &r_next_state: CheckingOutputs(
+[TRACE][pipeline/src/pipeline/mod.rs::770] step.name: "average-age"
+[TRACE][pipeline/src/pipeline/mod.rs::771] &r_next_state: CheckingOutputs(
     FromDependencyStepsFinishedSuccessfully,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::775] &step_state: CheckingOutputs(
+[TRACE][pipeline/src/pipeline/mod.rs::773] &step_state: CheckingOutputs(
     FromDependencyStepsFinishedSuccessfully,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::662] &step_state: CheckingOutputs(
+[TRACE][pipeline/src/pipeline/mod.rs::660] &step_state: CheckingOutputs(
     FromDependencyStepsFinishedSuccessfully,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::772] step.name: "average-age"
-[TRACE][pipeline/src/pipeline/mod.rs::773] &r_next_state: CheckingSuperficialDiffs(
+[TRACE][pipeline/src/pipeline/mod.rs::770] step.name: "average-age"
+[TRACE][pipeline/src/pipeline/mod.rs::771] &r_next_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::775] &step_state: CheckingSuperficialDiffs(
+[TRACE][pipeline/src/pipeline/mod.rs::773] &step_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::662] &step_state: CheckingSuperficialDiffs(
+[TRACE][pipeline/src/pipeline/mod.rs::660] &step_state: CheckingSuperficialDiffs(
     FromCheckedOutputs,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::1010] parent_entity: XvcEntity(
+[TRACE][pipeline/src/pipeline/mod.rs::1008] parent_entity: XvcEntity(
     2,
-    17595501963111217905,
+    3920065547014771711,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::583] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::1013] deps: HStore {
+[INFO] No dependency steps for step average-age
+[TRACE][pipeline/src/pipeline/mod.rs::1011] deps: HStore {
     map: {
         XvcEntity(
             3,
-            15601036540397786949,
+            324224710907113891,
         ): SqliteQueryDigest(
             SqliteQueryDep {
                 path: XvcPath(
@@ -2312,7 +2311,6 @@ digraph {
 [TRACE][core/src/util/pmp.rs::173] path: AbsolutePath(
     "[CWD]/people.db",
 )
-[TRACE][pipeline/src/pipeline/mod.rs::583] select: Select { .. }
 [TRACE][core/src/util/pmp.rs::175] &md: Ok(
     Metadata {
         file_type: FileType(
@@ -2348,8 +2346,6 @@ digraph {
         ..
     },
 )
-[TRACE][pipeline/src/pipeline/mod.rs::583] select: Select { .. }
-[TRACE][pipeline/src/pipeline/mod.rs::583] select: Select { .. }
 [TRACE][core/src/util/pmp.rs::152] &md: Some(
     XvcMetadata {
         file_type: File,
@@ -2364,11 +2360,11 @@ digraph {
         ),
     },
 )
-[TRACE][pipeline/src/pipeline/mod.rs::1030] step_dependency_diffs: HStore {
+[TRACE][pipeline/src/pipeline/mod.rs::1028] step_dependency_diffs: HStore {
     map: {
         XvcEntity(
             3,
-            15601036540397786949,
+            324224710907113891,
         ): RecordMissing {
             actual: SqliteQueryDigest(
                 SqliteQueryDep {
@@ -2396,7 +2392,7 @@ digraph {
         },
     },
 }
-[TRACE][pipeline/src/pipeline/mod.rs::1036] diff: RecordMissing {
+[TRACE][pipeline/src/pipeline/mod.rs::1034] diff: RecordMissing {
     actual: SqliteQueryDigest(
         SqliteQueryDep {
             path: XvcPath(
@@ -2421,24 +2417,23 @@ digraph {
         },
     ),
 }
-[INFO] No dependency steps for step average-age
-[TRACE][pipeline/src/pipeline/mod.rs::1037] diff.changed(): true
-[TRACE][pipeline/src/pipeline/mod.rs::1042] changed: true
-[TRACE][pipeline/src/pipeline/mod.rs::772] step.name: "average-age"
-[TRACE][pipeline/src/pipeline/mod.rs::773] &r_next_state: CheckingThoroughDiffs(
+[TRACE][pipeline/src/pipeline/mod.rs::1035] diff.changed(): true
+[TRACE][pipeline/src/pipeline/mod.rs::1040] changed: true
+[TRACE][pipeline/src/pipeline/mod.rs::770] step.name: "average-age"
+[TRACE][pipeline/src/pipeline/mod.rs::771] &r_next_state: CheckingThoroughDiffs(
     FromSuperficialDiffsChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::775] &step_state: CheckingThoroughDiffs(
+[TRACE][pipeline/src/pipeline/mod.rs::773] &step_state: CheckingThoroughDiffs(
     FromSuperficialDiffsChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::662] &step_state: CheckingThoroughDiffs(
+[TRACE][pipeline/src/pipeline/mod.rs::660] &step_state: CheckingThoroughDiffs(
     FromSuperficialDiffsChanged,
 )
-[TRACE][pipeline/src/pipeline/mod.rs::1067] deps: HStore {
+[TRACE][pipeline/src/pipeline/mod.rs::1065] deps: HStore {
     map: {
         XvcEntity(
             3,
-            15601036540397786949,
+            324224710907113891,
         ): SqliteQueryDigest(
             SqliteQueryDep {
                 path: XvcPath(
@@ -2468,49 +2463,304 @@ digraph {
         ),
     },
 )
-[TRACE][pipeline/src/pipeline/mod.rs::583] select: Select { .. }
-thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1081:32:
+[TRACE][pipeline/src/pipeline/deps/sqlite_query.rs::71] col: Integer(
+    18,
+)
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1079:32:
 SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 thread '<unnamed>' panicked at lib/src/cli/mod.rs:288:52:
-[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1081]
-[TRACE][pipeline/src/pipeline/mod.rs::519] "Before state updater": "Before state updater"
-[TRACE][pipeline/src/pipeline/mod.rs::593] s: CheckingThoroughDiffs(
-    FromSuperficialDiffsChanged,
-)
-[TRACE][pipeline/src/pipeline/mod.rs::532] step_states: RwLock {
-    data: HStore {
-        map: {
-            XvcEntity(
-                2,
-                17595501963111217905,
-            ): CheckingThoroughDiffs(
-                FromSuperficialDiffsChanged,
-            ),
-        },
-    },
-    poisoned: false,
-    ..
-}
-[TRACE][pipeline/src/pipeline/mod.rs::536] done_successfully: Ok(
-    false,
-)
-[TRACE][core/src/util/pmp.rs::185] self.background_thread: Mutex {
-    data: JoinHandle { .. },
-    poisoned: false,
-    ..
-}
-[TRACE][core/src/util/pmp.rs::190] self.background_thread: Mutex {
-    data: JoinHandle { .. },
-    poisoned: false,
-    ..
-}
-[TRACE][lib/src/cli/mod.rs::376] "Before handle_git_automation": "Before handle_git_automation"
-[TRACE][core/src/util/pmp.rs::99] index: 1
-thread '<unnamed>' panicked at lib/src/git.rs:155:5:
+[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1079]
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:514:17:
 called `Result::unwrap()` on an `Err` value: "SendError(..)"
-thread 'main' panicked at lib/src/cli/mod.rs:402:52:
-called `Result::unwrap()` on an `Err` value: Any { .. }
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
+[TRACE][core/src/util/pmp.rs::96] "pmp background updater ticks": "pmp background updater ticks"
 
 ```
 
@@ -2519,11 +2769,11 @@ But it won't run the step a second time, as the table didn't change.
 ```console
 $ xvc pipeline run
 ? interrupted
-thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1081:32:
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1079:32:
 SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at lib/src/cli/mod.rs:251:52:
-[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1081]
+thread 'note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+<unnamed>' panicked at lib/src/cli/mod.rs:251:52:
+[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1079]
 thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:514:17:
 called `Result::unwrap()` on an `Err` value: "SendError(..)"
 
@@ -2540,11 +2790,11 @@ This time, the step will run again as the result from dependency query (`SELECT 
 ```console
 $ xvc pipeline run
 ? interrupted
-thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1081:32:
+thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:1079:32:
 SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 thread '<unnamed>' panicked at lib/src/cli/mod.rs:251:52:
-[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1081]
+[PANIC] SqliteError { source: FromSqlConversionFailure(18446744073709551615, Null, InvalidType) }, [pipeline/src/pipeline/mod.rs::1079]
 thread '<unnamed>' panicked at pipeline/src/pipeline/mod.rs:514:17:
 called `Result::unwrap()` on an `Err` value: "SendError(..)"
 

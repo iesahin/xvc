@@ -69,7 +69,20 @@ impl SqliteQueryDep {
                 let mut els = String::new();
                 while let Ok(col) = row.get_ref(i) {
                     watch!(col);
-                    els.push_str(col.as_str()?);
+                    match col.data_type() {
+                        rusqlite::types::Type::Text => {
+                            els.push_str(col.as_str()?);
+                        }
+                        rusqlite::types::Type::Integer => {
+                            els.push_str(col.as_i64()?.to_string().as_str());
+                        }
+                        rusqlite::types::Type::Real => {
+                            els.push_str(col.as_f64()?.to_string().as_str());
+                        }
+                        _ => {
+                            els.push_str(col.as_str()?);
+                        }
+                    }
                     i += 1;
                 }
                 Ok(els)
