@@ -103,7 +103,24 @@ wasabi = ["xvc-storage/wasabi"]
 digital-ocean = ["xvc-storage/digital-ocean"]
 bundled-sqlite = ["xvc-pipeline/bundled-sqlite"]
 reflink = ["xvc-file/reflink"]
-
+test-s3 = ["s3"]
+test-minio = ["minio"]
+test-r2 = ["r2"]
+test-gcs = ["gcs"]
+test-wasabi = ["wasabi"]
+test-digital-ocean = ["digital-ocean"]
+test-rsync = []
+test-generic-rsync = []
+test-ci = [
+  "test-s3",
+  "test-minio",
+  "test-r2",
+  "test-gcs",
+  "test-wasabi",
+  "test-digital-ocean",
+  "test-rsync",
+  "test-generic-rsync",
+]
 
 [dev-dependencies]
 anyhow = "^1.0"

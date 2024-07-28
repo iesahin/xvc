@@ -27,11 +27,11 @@ jobs:
           #   rust: beta
           - build: nightly
             rust: nightly-2024-01-01
-            test-args: --features test-s3,test-minio,test-r2,test-rsync,test-generic-rsync  --no-fail-fast
+            test-args: --features test-ci  --no-fail-fast
             ## for submitters other than me, I'll add another job here.
             # test-args: --no-fail-fast
             # test-args: --all-features
-            benches: true
+            # benches: true
             coverage: true
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
