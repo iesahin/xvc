@@ -167,7 +167,7 @@ fn test_storage_new_wasabi() -> Result<()> {
         "--storage-prefix",
         &storage_prefix,
         "--endpoint",
-        &endpoint,
+        endpoint,
     ])?;
 
     watch!(out);

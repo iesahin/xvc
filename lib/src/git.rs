@@ -228,7 +228,7 @@ pub fn git_auto_stage(
     let res_git_add = exec_git(
         git_command,
         xvc_root_str,
-        &["add", &xvc_dir_str, "*.gitignore", "*.xvcignore"],
+        &["add", xvc_dir_str, "*.gitignore", "*.xvcignore"],
     )?;
     debug!(output_snd, "Staging .xvc/ to git: {res_git_add}");
     Ok(())
