@@ -65,8 +65,6 @@
       - [`r2`](./ref/xvc-storage-new-r2.md)
       - [`wasabi`](./ref/xvc-storage-new-wasabi.md)
       - [`digital-ocean`](./ref/xvc-storage-new-digital-ocean.md)
-  - [Server (`xvc server`)](./ref/xvc-server.md)
-    - [`xvc server start`](./ref/xvc-server-start.md)
   - [Utilities](./ref/utilities.md)
     - [`xvc root`](./ref/xvc-root.md)
     - [`xvc check-ignore`](./ref/xvc-check-ignore.md)

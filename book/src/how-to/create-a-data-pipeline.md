@@ -1,25 +1,23 @@
 # How to create a data pipeline with Xvc
 
-A data pipeline starts from data and ends with models. Between there is various data transformations and model training. We try to make all pieces reproducible and Xvc helps with this goal. 
+A data pipeline starts from data and ends with models. Between there is various data transformations and model training. We try to make all pieces reproducible and Xvc helps with this goal.
 
-In this document, we'll create the following pipeline for a digit recognition system. Our purpose is to show how Xvc helps in versioning data, so this document doesn't try to achieve a high classification performance. 
+In this document, we'll create the following pipeline for a digit recognition system. Our purpose is to show how Xvc helps in versioning data, so this document doesn't try to achieve a high classification performance.
 
 ```mermaid
 graph LR
-A[Data Gathering] --> B[Splitting Test and Train Sets]
-B --> C[Preprocessing Images into Numpy Arrays]
-C --> D[Training Model]
-D --> E[Sharing Data and Models]
+  A[Data Gathering] --> B[Splitting Test and Train Sets]
+  B --> C[Preprocessing Images into Numpy Arrays]
+  C --> D[Training Model]
+  D --> E[Sharing Data and Models]
 ```
-
 
 ```admonish info
-This document can be more verbose than usual, because all commands in this document are run on a clean directory during tests to check outputs. Some of the idiosyncrasies, e.g., running certain commands with `zsh -c` are due to this reason. Some of the output that changes in 
-```
-```
+This document can be more verbose than usual, because all commands in this document are run on a clean directory during tests to check outputs. Some of the idiosyncrasies, e.g., running certain commands with `zsh -c` are due to this reason.
 ```
 
-Although you can do without, most of the times Xvc runs in a Git repository. This allows to version control both the data and the code together. 
+Although you can do without, most of the times Xvc runs in a Git repository. This allows to version control both the data and the code together.
+
 ```console
 $ git init
 Initialized empty Git repository in [CWD]/.git/
@@ -27,7 +25,7 @@ Initialized empty Git repository in [CWD]/.git/
 $ xvc init
 ```
 
-In this HOWTO, we use Chinese MNIST dataset to create an image classification pipeline. We already downloaded it [from kaggle](https://www.kaggle.com/datasets/gpreda/chinese-mnist/data). 
+In this HOWTO, we use Chinese MNIST dataset to create an image classification pipeline. We already downloaded it [from kaggle](https://www.kaggle.com/datasets/gpreda/chinese-mnist/data).
 
 ```console
 $ ls -l
@@ -38,6 +36,7 @@ total 21112
 -rw-r--r--  1 iex  staff      4436 Dec  1 22:52 train.py
 
 ```
+
 Let's start by tracking the data file with Xvc.
 
 ```console
@@ -93,9 +92,9 @@ Let's track the data directory as well with Xvc.
 $ xvc file track data --as symlink
 ```
 
-The reason we're tracking the data directory separately is that we'll use different subsets as training, validation, and test data. 
+The reason we're tracking the data directory separately is that we'll use different subsets as training, validation, and test data.
 
-Let's list the track status of files first. 
+Let's list the track status of files first.
 
 ```console
 $ xvc file list data/data/input_9_9_*
@@ -132,14 +131,13 @@ the workspace.
 
 ## Splitting Train, Validation, and Test Sets
 
-The first step of the pipeline is to create subsets of the data. 
+The first step of the pipeline is to create subsets of the data.
 
 The data set contains 15 classes. It has 10 samples for each of these classes
 from 100 different people. As we'll train a Chinese digit recognizer, we'll
 first divide volunteers 1-60 for training, 61-80 for validation, and 81-100 for
 testing. This will ensure that the model is not trained with the same person's
 handwriting.
-
 
 ```console
 $ xvc file copy --name-only data/data/input_?_* data/train/
@@ -160,9 +158,9 @@ data/
 ```
 
 If you look at the contents of these directories, you'll see that they are
-symbolic links to the same files we started to track. 
+symbolic links to the same files we started to track.
 
-Let's check the number of images in each set. 
+Let's check the number of images in each set.
 
 ```console
 $ zsh -c 'ls -1 data/train/*.jpg | wc -l'
@@ -184,6 +182,7 @@ $ xvc pipeline step new -s recheck-data --command 'xvc file recheck data/train/ 
 
 [`xvc file recheck`](/ref/xvc-file-recheck.md) is used in to instate files from Xvc cache.
 Let's test the pipeline by first deleting the files we manually created.
+
 ```console
 $ rm -rf data/train data/validate data/test
 ```
@@ -191,10 +190,11 @@ $ rm -rf data/train data/validate data/test
 We run the steps we created.
 
 ```console
-$ xvc pipeline run 
+$ xvc pipeline run
 [DONE] recheck-data (xvc file recheck data/train/ data/validate/ data/test/)
 
 ```
+
 If we check the contents of the directories, we'll see that they are back.
 
 ```console
@@ -207,13 +207,13 @@ $ zsh -c 'ls -1 data/train/*.jpg | wc -l'
 
 ```mermaid
 graph LR
-A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
-B --> C[Preprocessing Images into Numpy Arrays]
-C --> D[Training Model]
-D --> E[Sharing Data and Models]
+  A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
+  B --> C[Preprocessing Images into Numpy Arrays]
+  C --> D[Training Model]
+  D --> E[Sharing Data and Models]
 ```
 
-The Python script to train a model runs with Numpy arrays. So we'll convert each of these directories with images into two numpy arrays. 
+The Python script to train a model runs with Numpy arrays. So we'll convert each of these directories with images into two numpy arrays.
 One of the arrays will keep $n$ 64x64 images and the other will keep $n$ labels for these images.
 
 ```console
@@ -222,7 +222,7 @@ $ xvc pipeline step new --step-name create-test-array --command '.venv/bin/pytho
 $ xvc pipeline step new --step-name create-validate-array --command '.venv/bin/python3 image_to_numpy_array.py --dir data/validate/'
 ```
 
-These commands will run when the image files in those directories will change. Xvc can keep track of file groups and invalidate a step when the _content_ of any of these files change. Moreover, it's possible to track which files have changed if there are too many files. We don't need this feature of tracking individual items in _globs_, so we'll use a _glob_ dependency. 
+These commands will run when the image files in those directories will change. Xvc can keep track of file groups and invalidate a step when the _content_ of any of these files change. Moreover, it's possible to track which files have changed if there are too many files. We don't need this feature of tracking individual items in _globs_, so we'll use a _glob_ dependency.
 
 ```console
 $ xvc pipeline step dependency --step-name create-train-array --glob 'data/train/*.jpg'
@@ -232,7 +232,7 @@ $ xvc pipeline step dependency --step-name create-validate-array --glob 'data/va
 
 Now we have three more steps that depend on changed files. The script depends on OpenCV to read images. Python best practices recommend to create a separate virtual environment for each project. We'll also make sure that the venv is created and the requirements are installed before running the script.
 
-Create a command to initialize the virtual environment. It will run if there is no `.venv/bin/activate` file. 
+Create a command to initialize the virtual environment. It will run if there is no `.venv/bin/activate` file.
 
 ```console
 $ xvc pipeline step new --step-name init-venv --command 'python3 -m venv .venv'
@@ -241,16 +241,17 @@ $ xvc pipeline step dependency --step-name init-venv --generic 'echo "$(hostname
 
 We used `--generic` dependency that runs a command and checks its output to see whether the step requires to be run again. We only want to run `init-env` once per deployment, so checking output of `hostname` and `pwd` is better than existence of a file. File dependencies must be available before running the pipeline to record their metadata. There is no such restriction for generic dependencies.
 
-Then, another step that depends on `init-venv` and `requirements.txt` will install the dependencies. 
+Then, another step that depends on `init-venv` and `requirements.txt` will install the dependencies.
 
 ```console
 $ xvc pipeline step new --step-name install-requirements --command '.venv/bin/python3 -m pip install -r requirements.txt'
 $ xvc pipeline step dependency --step-name install-requirements --step init-venv
 $ xvc pipeline step dependency --step-name install-requirements --file requirements.txt
 ```
-Note that, unlike other tools, you can specify direct dependencies between steps in Xvc. When a pipeline step must wait another step to finish successfully, a dependency between these two can be defined. 
 
-The above `create-*-array` steps will depend on to `install-requirements` to ensure that requirements are installed when the scripts are run. 
+Note that, unlike other tools, you can specify direct dependencies between steps in Xvc. When a pipeline step must wait another step to finish successfully, a dependency between these two can be defined.
+
+The above `create-*-array` steps will depend on to `install-requirements` to ensure that requirements are installed when the scripts are run.
 
 ```console
 $ xvc pipeline step dependency --step-name create-train-array --step install-requirements
@@ -261,7 +262,7 @@ $ xvc pipeline step dependency --step-name create-test-array --step install-requ
 
 ```
 
-Now, as the pipeline grows, it may be nice to see the graph what we have done so far. 
+Now, as the pipeline grows, it may be nice to see the graph what we have done so far.
 
 ```console
 $ xvc pipeline dag --format mermaid
@@ -284,6 +285,7 @@ flowchart TD
 
 
 ```
+
 ```mermaid
 flowchart TD
     n0["recheck-data"]
@@ -303,7 +305,7 @@ flowchart TD
     n10["requirements.txt"] --> n3
 ```
 
-`dag` command can also produce GraphViz DOT output. For larger graphs, it may be more suitable. We'll use DOT to create images in later sections. 
+`dag` command can also produce GraphViz DOT output. For larger graphs, it may be more suitable. We'll use DOT to create images in later sections.
 
 Let's run the pipeline at this point to test.
 
@@ -387,7 +389,7 @@ Using cached typing_extensions-4.8.0-py3-none-any.whl (31 kB)
 Using cached MarkupSafe-2.1.3-cp311-cp311-macosx_10_9_universal2.whl (17 kB)
 Installing collected packages: mpmath, typing-extensions, threadpoolctl, sympy, pyyaml, numpy, networkx, MarkupSafe, joblib, fsspec, filelock, scipy, opencv-python, jinja2, torch, scikit-learn
 Successfully installed MarkupSafe-2.1.3 filelock-3.13.1 fsspec-2023.10.0 jinja2-3.1.2 joblib-1.3.2 mpmath-1.3.0 networkx-3.2.1 numpy-1.26.2 opencv-python-4.8.1.78 pyyaml-6.0.1 scikit-learn-1.3.2 scipy-1.11.4 sympy-1.12 threadpoolctl-3.2.0 torch-2.1.1 typing-extensions-4.8.0
- 
+
 [DONE] install-requirements (.venv/bin/python3 -m pip install -r requirements.txt)
 [INFO] Dependency steps completed successfully for step create-validate-array
 [INFO] Dependency steps completed successfully for step create-train-array
@@ -424,13 +426,13 @@ Now we have built the NumPy arrays, we can train a model. We'll use a simple con
 
 ```mermaid
 graph LR
-A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
-B --> C[Preprocessing Images into Numpy Arrays ✅]
-C --> D[Training Model]
-D --> E[Sharing Data and Models]
+  A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
+  B --> C[Preprocessing Images into Numpy Arrays ✅]
+  C --> D[Training Model]
+  D --> E[Sharing Data and Models]
 ```
 
-The script receives training, validation and testing directories, loads the data from Numpy arrays we just produced, loads hyperparameters from a file called `params.yaml`, trains the model, tests it and writes the results and model to a file. It's a very involved piece produced with the assistance of GPT-4. 
+The script receives training, validation and testing directories, loads the data from Numpy arrays we just produced, loads hyperparameters from a file called `params.yaml`, trains the model, tests it and writes the results and model to a file. It's a very involved piece produced with the assistance of GPT-4.
 
 We first define the step to run the command:
 
@@ -439,7 +441,8 @@ $ xvc pipeline step new --step-name train-model --command '.venv/bin/python3 tra
 
 ```
 
-The step will depend to array generation steps by depending on the files they produce. In order to define a dependency between `train-model` and `create-train-array` step, we must tell that `create-array-dependency` outputs a file called `images.npy`. We can do this by using `--file` option of `step output` command. 
+The step will depend to array generation steps by depending on the files they produce. In order to define a dependency between `train-model` and `create-train-array` step, we must tell that `create-array-dependency` outputs a file called `images.npy`. We can do this by using `--file` option of `step output` command.
+
 ```console
 $ xvc pipeline step output --step-name create-train-array --output-file data/train/images.npy
 
@@ -449,9 +452,9 @@ $ xvc pipeline step dependency --step-name train-model --file data/train/images.
 $ xvc pipeline step dependency --step-name train-model --file data/train/classes.npy
 ```
 
-Note that this operation is different from creating a direct dependency between steps. There may be multiple steps creating the same outputs and there may be multiple steps depending on the same files. Preferring direct (`--step`) dependencies and indirect (`--file`) dependencies is a matter of taste and use. 
+Note that this operation is different from creating a direct dependency between steps. There may be multiple steps creating the same outputs and there may be multiple steps depending on the same files. Preferring direct (`--step`) dependencies and indirect (`--file`) dependencies is a matter of taste and use.
 
-We'll create these dependencies for other files as well. 
+We'll create these dependencies for other files as well.
 
 ```console
 $ xvc pipeline step output --step-name create-test-array --output-file data/test/images.npy
@@ -472,21 +475,21 @@ $ xvc pipeline step dependency --step-name train-model --file data/validate/clas
 
 ```
 
-Before running the pipeline, let's see the pipeline DAG once more. This time in DOT format. 
+Before running the pipeline, let's see the pipeline DAG once more. This time in DOT format.
 
 ```console
-$ xvc pipeline dag 
+$ xvc pipeline dag
 digraph pipeline{n0[shape=box;label="recheck-data";];n1[shape=box;label="create-train-array";];n2[shape=folder;label="data/train/*.jpg";];n2->n1;n3[shape=box;label="install-requirements";];n3->n1;n4[shape=note;color=black;label="data/train/images.npy";];n1->n4;n5[shape=note;color=black;label="data/train/classes.npy";];n1->n5;n6[shape=box;label="create-test-array";];n7[shape=folder;label="data/test/*.jpg";];n7->n6;n3[shape=box;label="install-requirements";];n3->n6;n8[shape=note;color=black;label="data/test/images.npy";];n6->n8;n9[shape=note;color=black;label="data/test/classes.npy";];n6->n9;n10[shape=box;label="create-validate-array";];n11[shape=folder;label="data/validate/*.jpg";];n11->n10;n3[shape=box;label="install-requirements";];n3->n10;n12[shape=note;color=black;label="data/validate/images.npy";];n10->n12;n13[shape=note;color=black;label="data/validate/classes.npy";];n10->n13;n14[shape=box;label="init-venv";];n15[shape=trapezium;label="echo /"$(hostname)/$(pwd)/"";];n15->n14;n3[shape=box;label="install-requirements";];n14[shape=box;label="init-venv";];n14->n3;n16[shape=note;label="requirements.txt";];n16->n3;n17[shape=box;label="train-model";];n4[shape=note;label="data/train/images.npy";];n4->n17;n5[shape=note;label="data/train/classes.npy";];n5->n17;n8[shape=note;label="data/test/images.npy";];n8->n17;n9[shape=note;label="data/test/classes.npy";];n9->n17;n12[shape=note;label="data/validate/images.npy";];n12->n17;n13[shape=note;label="data/validate/classes.npy";];n13->n17;}
 
 ```
 
-It's not the most readable graph description but you can feed the output to `dot` command to create an SVG file. 
+It's not the most readable graph description but you can feed the output to `dot` command to create an SVG file.
 
 ```console
 $ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline1.svg'
 ```
 
-Note that, as we forgot to create a `params.yaml` file containing the hyperparameters. When a step in the pipeline doesn't run successfully, its dependent steps won't be run. Let's add a `params.yaml` file and add it as a dependency to the train step. 
+Note that, as we forgot to create a `params.yaml` file containing the hyperparameters. When a step in the pipeline doesn't run successfully, its dependent steps won't be run. Let's add a `params.yaml` file and add it as a dependency to the train step.
 
 ```console
 $ zsh -cl 'echo "batch_size: 4" > params.yaml'
@@ -498,8 +501,7 @@ $ xvc pipeline step  dependency --step-name train-model --param params.yaml::epo
 
 With the above commands, the pipeline depends directly to these values. Even if
 the file contains other values, changing them won't invalidate the
-`train-model` step. 
-
+`train-model` step.
 
 We can also specify the model and the results as output and the graph will show them.
 
@@ -515,7 +517,7 @@ Let's see the pipeline DAG once more:
 $ zsh -cl 'xvc pipeline dag | dot -Tsvg > pipeline2.svg'
 ```
 
-We're ready to run the pipeline and train the model. 
+We're ready to run the pipeline and train the model.
 
 ```console
 $ xvc -vv pipeline run
@@ -593,12 +595,13 @@ Confusion Matrix:
  [  0   1   1   1   0   1   3   1   0   0  55   4 132   0   1]
  [  5   0   0   0   2   0   0   2   0   0   1  36   0 153   1]
  [  0   0   0   0   8   0   0   1   2   5   0   0   0   7 177]]
- 
+
 [DONE] train-model (.venv/bin/python3 train.py  --train_dir data/train/ --val_dir data/validate --test_dir data/test)
 
 ```
 
-We now have a model and a result file. Let's track the model with Xvc as well. 
+We now have a model and a result file. Let's track the model with Xvc as well.
+
 ```console
 $ xvc file track model.pth results.json
 ```
@@ -607,21 +610,21 @@ $ xvc file track model.pth results.json
 
 ```mermaid
 graph LR
-A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
-B --> C[Preprocessing Images into Numpy Arrays ✅]
-C --> D[Training Model ✅]
-D --> E[Sharing Data and Models]
+  A[Data Gathering ✅]  --> B[Splitting Test and Train Sets ✅]
+  B --> C[Preprocessing Images into Numpy Arrays ✅]
+  C --> D[Training Model ✅]
+  D --> E[Sharing Data and Models]
 ```
 
-Sharing a machine learning project with Xvc means to share the Git repository and the data and model files that are tracked by Xvc in this repository. For the first, we can use any kind of Git remote, e.g. Github. Xvc doesn't require any special setup (like Git-LFS) to share binary files. 
+Sharing a machine learning project with Xvc means to share the Git repository and the data and model files that are tracked by Xvc in this repository. For the first, we can use any kind of Git remote, e.g. Github. Xvc doesn't require any special setup (like Git-LFS) to share binary files.
 
 In order to share the binary files, we need to specify an Xvc storage. This can be on a local folder, an SSH host with rsync, AWS S3 bucket or any of the supported storage backends. (See `xvc storage new` documentation for the full list.)
 
-In this example, we'll create a new S3 bucket and share all files there. 
+In this example, we'll create a new S3 bucket and share all files there.
 
 ```console
 $ xvc storage new s3 --name my-s3 --bucket-name xvc-test --region eu-central-1 --storage-prefix how-to-create-a-pipeline
-$ xvc file send 
+$ xvc file send
 ? 2
 error: the following required arguments were not provided:
   --remote <REMOTE>
@@ -643,8 +646,8 @@ $ git push
 $ git clone git@github.com:my-user/my-ml-pipeline
 $ xvc file bring
 
-````
+```
 
-Note that, the second time there is no need to configure the remote storage, but the user must have AWS credentials in their environment. You can also automate this on Github and train your pipelines on CI. 
+Note that, the second time there is no need to configure the remote storage, but the user must have AWS credentials in their environment. You can also automate this on Github and train your pipelines on CI.
 
-In this how-to we created an end-to-end machine learning pipeline. Please ask about any issues that are not clear in the comment box below. Thank you for reading so far. 
+In this how-to we created an end-to-end machine learning pipeline. Please ask about any issues that are not clear in the comment box below. Thank you for reading so far.
