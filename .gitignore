@@ -16,3 +16,4 @@ Cargo.lock
 *.swp
 flamegraph.svg
 workflow_tests/docs
+lib/docs
