@@ -19,7 +19,7 @@ debug = true
 
 [features]
 default = [""]
-bundled-sqlite = ["dep:rusqlite/bundled"]
+bundled-sqlite = ["rusqlite/bundled"]
 
 [dependencies]
 xvc-config = { version = "0.6.9-alpha.1", path = "../config" }
