@@ -17,6 +17,9 @@ crate-type = ["rlib"]
 [profile.release]
 debug = true
 
+[features]
+default = []
+bundled_sqlite = ["dep:rusqlite/bundled"]
 
 [dependencies]
 xvc-config = { version = "0.6.9-alpha.1", path = "../config" }
@@ -98,5 +101,6 @@ itertools = "^0.13"
 derive_more = "^0.99"
 
 [dev-dependencies]
+default = []
 xvc-test-helper = { version = "0.6.9-alpha.1", path = "../test_helper/" }
 test-case = "^3.3"
