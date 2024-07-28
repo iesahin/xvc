@@ -7,6 +7,8 @@ tree, and subtasks are marked with indentation.
 
 - Added sqlite-query dependency to xvc pipelines. A step is invalidated to run when the output from an SQLite query changes.
 - Moved bundled sqlite behind a feature flag, bundled_sqlite.
+- Merged xvc-workflow-tests crate to the main xvc crate.
+- Added compiling Xvc with non-default features document
 
 ### 0.6.8 (2024-07-15)
 
