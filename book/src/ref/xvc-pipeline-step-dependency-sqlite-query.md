@@ -105,9 +105,13 @@ This time, the step will run again as the result from dependency query (`SELECT 
 
 ```console
 $ xvc pipeline run
+[OUT] [average-age] 33.3684210526316
+
+[DONE] average-age (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
+
 
 ```
 
-```note
+```admonition note
 Xvc opens the database in read-only mode to avoid locking.
 ```
