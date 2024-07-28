@@ -18,7 +18,7 @@ crate-type = ["rlib"]
 debug = true
 
 [features]
-default = [""]
+default = []
 bundled-sqlite = ["rusqlite/bundled"]
 
 [dependencies]
