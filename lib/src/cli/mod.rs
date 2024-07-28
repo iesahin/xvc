@@ -209,6 +209,8 @@ pub fn run(args: &[&str]) -> Result<XvcRootOpt> {
     dispatch(cli_options)
 }
 
+/// Run the supplied command within the optional [XvcRoot]. If xvc_root is None, it will be tried
+/// to be loaded from `cli_opts.workdir`.
 pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Result<XvcRootOpt> {
 
     // XvcRoot should be kept per repository and shouldn't change directory across runs
