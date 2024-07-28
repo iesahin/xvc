@@ -5,6 +5,13 @@ tree, and subtasks are marked with indentation.
 
 ## Unreleased
 
+- Added sqlite-query dependency to xvc pipelines. A step is invalidated to run when the output from an SQLite query changes.
+- Moved bundled sqlite behind a feature flag, bundled_sqlite.
+
+### 0.6.8 (2024-07-15)
+
+- Modifications for Python bindings
+
 ## 0.6.7 (2024-03-18)
 
 - Added `xvc file share` command to share files from S3 signed URLs
@@ -41,7 +48,7 @@ tree, and subtasks are marked with indentation.
 - Updated README and added its commands to the tests
 - Updated openssl dependency to use vendored feature for Python bindings
 - Fixed clippy warnings
-- Initial Python bindings in https://github.com/iesahin/xvc.py
+- Initial Python bindings in <https://github.com/iesahin/xvc.py>
 
 ## 0.6.2 (2023-10-13)
 
