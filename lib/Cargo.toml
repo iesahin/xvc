@@ -104,6 +104,7 @@ r2 = ["xvc-storage/r2"]
 gcs = ["xvc-storage/gcs"]
 wasabi = ["xvc-storage/wasabi"]
 digital-ocean = ["xvc-storage/digital-ocean"]
+bundled_sqlite = ["xvc-pipeline/bundled-sqlite"]
 
 
 [dev-dependencies]
