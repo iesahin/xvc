@@ -15,8 +15,12 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 name = "xvc_core"
 crate-type = ["rlib"]
 
+[features]
+default = ["reflink"]
+reflink = []
+
 [profile.release]
-debug = true
+debug = false
 
 [dependencies]
 xvc-config = { version = "0.6.9-alpha.1", path = "../config" }
@@ -80,6 +84,7 @@ hex = { version = "^0.4", features = ["serde"] }
 cached = "^0.53"
 derive_more = "^0.99"
 itertools = "^0.13"
+
 
 [dev-dependencies]
 xvc-test-helper = { version = "0.6.9-alpha.1", path = "../test_helper/" }
