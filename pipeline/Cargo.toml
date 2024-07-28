@@ -14,9 +14,6 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 name = "xvc_pipeline"
 crate-type = ["rlib"]
 
-[profile.release]
-debug = true
-
 [features]
 default = []
 bundled-sqlite = ["rusqlite/bundled"]

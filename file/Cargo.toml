@@ -20,10 +20,6 @@ name = "xvc-file"
 test = true
 bench = true
 
-[profile.release]
-debug = true
-
-
 [dependencies]
 xvc-logging = { version = "0.6.9-alpha.1", path = "../logging" }
 xvc-config = { version = "0.6.9-alpha.1", path = "../config" }

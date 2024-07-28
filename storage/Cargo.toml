@@ -15,10 +15,6 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 name = "xvc_storage"
 crate-type = ["rlib"]
 
-[profile.release]
-debug = true
-
-
 [dependencies]
 xvc-logging = { version = "0.6.9-alpha.1", path = "../logging" }
 xvc-config = { version = "0.6.9-alpha.1", path = "../config" }

@@ -15,10 +15,6 @@ keywords = ["file", "devops", "git", "versioning", "mlops"]
 name = "xvc_logging"
 crate-type = ["rlib"]
 
-
-[profile.release]
-debug = true
-
 [dependencies]
 
 ## Logging and errors

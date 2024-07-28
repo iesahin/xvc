@@ -18,4 +18,4 @@ resolver = "2"
 no_individual_tags = true
 
 [profile.release]
-debug = true
+debug = false
