@@ -580,7 +580,6 @@ fn step_state_bulletin(
         select.recv(r);
     }
     loop {
-        watch!(select);
         if let Ok(index) = select.ready_timeout(Duration::from_millis(10)) {
             let res = state_senders[index].1.recv()?;
             if let Some(state) = res {
@@ -590,7 +589,6 @@ fn step_state_bulletin(
             }
         } else {
             if current_states.read()?.iter().all(|(_, s)| {
-                watch!(s);
                 matches!(
                     s,
                     XvcStepState::DoneByRunning(_)
