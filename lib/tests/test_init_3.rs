@@ -5,7 +5,6 @@ use std::fs;
 use xvc::init::InitCLI;
 
 use xvc::error::Result;
-use xvc_tests::watch;
 
 use common::*;
 

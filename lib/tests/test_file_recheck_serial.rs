@@ -4,11 +4,10 @@ use std::{fs, path::PathBuf};
 
 use crate::common::run_in_temp_xvc_dir;
 use log::LevelFilter;
-use xvc::error::Result;
+use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
-use xvc_tests::watch;
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;

@@ -3,7 +3,7 @@ mod common;
 use common::*;
 use xvc::error::Result;
 use xvc_config::XvcVerbosity;
-use xvc_tests::watch;
+use xvc::watch;
 
 #[test]
 fn test_pipeline() -> Result<()> {
