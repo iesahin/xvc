@@ -272,9 +272,11 @@ impl XvcParamValue {
     /// Loads the key (in the form of a.b.c) from a YAML document
     fn parse_yaml(all_content: &str, key: &str) -> Result<XvcParamValue> {
         let yaml_map: YamlValue = serde_yaml::from_str(all_content)?;
+        watch!(yaml_map);
         let nested_keys: Vec<&str> = key.split('.').collect();
         let mut current_scope: YamlValue = yaml_map;
         for k in &nested_keys {
+            watch!(k);
             if let Some(current_value) = current_scope.get(*k) {
                 match current_value {
                     YamlValue::Mapping(_) => {
