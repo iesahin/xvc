@@ -24,7 +24,7 @@ Options:
 
       --only-version <ONLY_VERSION>
           Remove only the specified version of the file
-          
+
           Versions are specified with the content hash 123-456-789abcd. Dashes are optional. Prefix must be unique. If the prefix is not unique, the command will fail.
 
       --force
@@ -42,7 +42,7 @@ Options:
 
 This command deletes files from the Xvc cache or storage. It doesn't remove the file from Xvc tracking.
 
-```admonition tip
+```admonish tip
 If you want to remove a workspace file or link, you can use usual `rm` command. If the file is tracked and carried in to the cache, you can always [recheck](xvc-file-recheck.md) it.
 ```
 
