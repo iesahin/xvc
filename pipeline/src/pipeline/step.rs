@@ -29,6 +29,8 @@ pub struct StepCLI {
 /// Step management subcommands
 #[derive(Debug, Clone, Parser)]
 #[command()]
+// This is just a command description and used once
+#[allow(clippy::large_enum_variant)]
 pub enum StepSubCommand {
     /// List steps in a pipeline
     #[command()]
@@ -79,6 +81,7 @@ pub enum StepSubCommand {
         #[arg(long)]
         when: Option<XvcStepInvalidate>,
     },
+
 
     /// Add a dependency to a step
     #[command()]
@@ -179,6 +182,19 @@ pub enum StepSubCommand {
             aliases = &["line"],
         )]
         lines: Option<Vec<String>>,
+
+        /// Add a sqlite query dependency to the step with the file and the query. Can be used
+        /// once. 
+        ///
+        /// The step is invalidated when the query run and the result is different from previous
+        /// runs, e.g. when an aggregate changed or a new row added to a table. 
+        #[arg(
+            long = "sqlite-query",
+            aliases = &["sqlite_query", "sqlite_query_digest", "sqlite-query-digest"],
+            num_args = 2,
+            value_names = &["SQLITE_FILE", "SQLITE_QUERY"],
+        )]
+        sqlite_query: Option<Vec<String>>,
     },
 
     /// Add an output to a step

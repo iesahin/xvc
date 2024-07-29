@@ -57,9 +57,9 @@ fn test_storage_new_rsync() -> Result<()> {
         "--name",
         "rsync-storage",
         "--host",
-        &test_host,
+        test_host,
         "--user",
-        &test_user,
+        test_user,
         "--storage-dir",
         &storage_dir_name,
     ])?;

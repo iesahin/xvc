@@ -1,6 +1,6 @@
 //! Available hash algorithms in Xvc
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display as EnumDisplay, EnumString, EnumVariantNames};
+use strum_macros::{Display as EnumDisplay, EnumString, VariantNames};
 use xvc_config::{conf, FromConfigKey};
 
 /// The available content hash algorithms to get content addresses.
@@ -24,7 +24,7 @@ use xvc_config::{conf, FromConfigKey};
     Deserialize,
     EnumString,
     EnumDisplay,
-    EnumVariantNames,
+    VariantNames,
 )]
 pub enum HashAlgorithm {
     /// Do nothing.

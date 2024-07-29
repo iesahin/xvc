@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.6.8"
+version = "0.6.9-alpha.3"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -20,16 +20,13 @@ name = "xvc-file"
 test = true
 bench = true
 
-[profile.release]
-debug = true
-
 [dependencies]
-xvc-logging = { version = "0.6.8", path = "../logging" }
-xvc-config = { version = "0.6.8", path = "../config" }
-xvc-core = { version = "0.6.8", path = "../core" }
-xvc-ecs = { version = "0.6.8", path = "../ecs" }
-xvc-walker = { version = "0.6.8", path = "../walker" }
-xvc-storage = { version = "0.6.8", path = "../storage" }
+xvc-logging = { version = "0.6.9-alpha.3", path = "../logging" }
+xvc-config = { version = "0.6.9-alpha.3", path = "../config" }
+xvc-core = { version = "0.6.9-alpha.3", path = "../core" }
+xvc-ecs = { version = "0.6.9-alpha.3", path = "../ecs" }
+xvc-walker = { version = "0.6.9-alpha.3", path = "../walker" }
+xvc-storage = { version = "0.6.9-alpha.3", path = "../storage" }
 
 
 ## Cli and config
@@ -56,12 +53,12 @@ toml = "^0.8"
 rayon = "^1.8"
 crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
-dashmap = { version = "^5", features = ["serde", "rayon"] }
+dashmap = { version = "^6.0", features = ["serde", "rayon"] }
 
 ## File system
 jwalk = "^0.8"
 walkdir = "^2.4"
-reflink = "^0.1"
+reflink = { version = "^0.1", optional = true }
 relative-path = { version = "^1.9", features = ["serde"] }
 path-absolutize = "^3.1"
 glob = "^0.3"
@@ -82,17 +79,20 @@ humantime = "^2.1"
 subprocess = "^0.2"
 regex = "^1.10"
 chrono = "^0.4"
-strum = "0.25.0"
-strum_macros = "0.25.3"
+strum = "^0.26"
+strum_macros = "^0.26"
 lazy_static = "^1.4"
 uuid = { version = "^1.6", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
-itertools = "^0.11"
+itertools = "^0.13"
 derive_more = "^0.99"
 parse-size = "^1.0"
 
+[features]
+default = ["reflink"]
+reflink = ["dep:reflink"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.8", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.9-alpha.3", path = "../test_helper/" }
 shellfn = "^0.1"

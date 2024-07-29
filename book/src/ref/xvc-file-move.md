@@ -78,7 +78,7 @@ $ xvc file move data2.txt data3.txt --as symlink
 
 $ ls -l
 total[..]
-lrwxr-xr-x  1 [..] data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+lrwxr-xr-x[..] data3.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 ```
 
@@ -91,7 +91,7 @@ $ xvc file move data3.txt data4.txt
 
 $ ls -l
 total 0
-lrwxr-xr-x  [..] data4.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
+lrwxr-xr-x[..] data4.txt -> [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
 
 ```
 

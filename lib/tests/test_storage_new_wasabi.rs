@@ -3,7 +3,7 @@ use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
-use common::*;
+use common::run_in_temp_xvc_dir;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -11,10 +11,12 @@ use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
+use crate::common::clean_up;
+
 fn write_s3cmd_config(access_key: &str, secret_key: &str) -> Result<String> {
     let config_file_name = env::temp_dir().join(format!(
         "{}.cfg",
-        common::random_dir_name("gcp-config", None)
+        common::random_dir_name("wasabi-config", None)
     ));
     let config = format!(
         r#"[default]
@@ -22,7 +24,7 @@ access_key = {access_key}
 access_token =
 add_encoding_exts =
 add_headers =
-bucket_location = europe-west3
+bucket_location = eu-central-1
 ca_certs_file =
 cache_file =
 check_ssl_certificate = True
@@ -52,8 +54,8 @@ gpg_decrypt = %(gpg_command)s -d --verbose --no-use-agent --batch --yes --passph
 gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
 gpg_passphrase =
 guess_mime_type = True
-host_base = storage.googleapis.com
-host_bucket = %(bucket)s.storage.googleapis.com
+host_base = s3.wasabisys.com
+host_bucket = %(bucket)s.s3.wasabisys.com
 human_readable_sizes = False
 invalidate_default_index_on_cf = False
 invalidate_default_index_root_on_cf = True
@@ -131,16 +133,16 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
-#[cfg_attr(not(feature = "test-gcs"), ignore)]
-fn test_storage_new_gcs() -> Result<()> {
+#[cfg_attr(not(feature = "test-wasabi"), ignore)]
+fn test_storage_new_wasabi() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";
     let storage_prefix = common::random_dir_name("xvc-storage", None);
 
-    let access_key = env::var("GCS_ACCESS_KEY_ID")?;
-    let secret_key = env::var("GCS_SECRET_ACCESS_KEY")?;
-    let region = "europe-west3";
+    let access_key = env::var("WASABI_ACCESS_KEY_ID")?;
+    let secret_key = env::var("WASABI_SECRET_ACCESS_KEY")?;
+    let endpoint = "s3.wasabisys.com";
 
     let config_file_name = write_s3cmd_config(&access_key, &secret_key)?;
     watch!(config_file_name);
@@ -157,15 +159,15 @@ fn test_storage_new_gcs() -> Result<()> {
     let out = x(&[
         "storage",
         "new",
-        "gcs",
+        "wasabi",
         "--name",
-        "gcs-storage",
+        "wasabi-storage",
         "--bucket-name",
         bucket_name,
         "--storage-prefix",
         &storage_prefix,
-        "--region",
-        &region,
+        "--endpoint",
+        endpoint,
     ])?;
 
     watch!(out);
@@ -189,7 +191,7 @@ fn test_storage_new_gcs() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "gcs-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "wasabi-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -213,7 +215,7 @@ fn test_storage_new_gcs() -> Result<()> {
     // remove all cache
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "gcs-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "wasabi-storage"])?;
 
     watch!(fetch_result);
 
@@ -232,7 +234,7 @@ fn test_storage_new_gcs() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "gcs-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "wasabi-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -246,15 +248,14 @@ fn test_storage_new_gcs() -> Result<()> {
 
     assert!(n_storage_files_after == n_local_files_after_pull);
     assert!(PathBuf::from(the_file).exists());
+    // Set remote specific passwords and remove AWS ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_wasabi-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_wasabi-storage", secret_key);
 
-    // Set remote specific passwords and remove GCS ones
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_gcs-storage", access_key);
-    env::set_var("XVC_STORAGE_SECRET_KEY_gcs-storage", secret_key);
+    env::remove_var("WASABI_ACCESS_KEY_ID");
+    env::remove_var("WASABI_SECRET_ACCESS_KEY");
 
-    env::remove_var("GCS_ACCESS_KEY_ID");
-    env::remove_var("GCS_SECRET_ACCESS_KEY");
-
-    let pull_result_2 = x(&["file", "bring", "--from", "gcs-storage"])?;
+    let pull_result_2 = x(&["file", "bring", "--from", "wasabi-storage"])?;
     watch!(pull_result_2);
 
     clean_up(&xvc_root)

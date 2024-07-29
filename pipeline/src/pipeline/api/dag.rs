@@ -155,6 +155,7 @@ fn dep_identity(dep: &XvcDependency) -> Result<Identity> {
             id_from_string(&format!("{}::{}-{}", dep.path, dep.begin, dep.end))
         }
         XvcDependency::UrlDigest(dep) => id_from_string(dep.url.as_ref()),
+        XvcDependency::SqliteQueryDigest(dep) => id_from_string(&format!("{} {}", dep.path, dep.query)),
     }
 }
 
@@ -185,6 +186,7 @@ fn dep_node_attributes(dep: &XvcDependency) -> AttrList {
         XvcDependency::LineItems(_) => Shape::Component,
         XvcDependency::Lines(_) => Shape::Component,
         XvcDependency::UrlDigest(_) => Shape::Invtrapezium,
+        XvcDependency::SqliteQueryDigest(_) => Shape::Cylinder,
     };
 
     AttrList::new()
@@ -209,6 +211,7 @@ fn dep_label(dep: &XvcDependency) -> String {
         XvcDependency::LineItems(dep) => format!("{}::{}-{}", dep.path, dep.begin, dep.end),
         XvcDependency::Lines(dep) => format!("{}::{}-{}", dep.path, dep.begin, dep.end),
         XvcDependency::UrlDigest(dep) => dep.url.to_string(),
+        XvcDependency::SqliteQueryDigest(dep) => format!("{} {}", dep.path, dep.query),
     }
 }
 

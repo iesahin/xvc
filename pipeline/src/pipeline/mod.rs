@@ -580,7 +580,6 @@ fn step_state_bulletin(
         select.recv(r);
     }
     loop {
-        watch!(select);
         if let Ok(index) = select.ready_timeout(Duration::from_millis(10)) {
             let res = state_senders[index].1.recv()?;
             if let Some(state) = res {
@@ -590,7 +589,6 @@ fn step_state_bulletin(
             }
         } else {
             if current_states.read()?.iter().all(|(_, s)| {
-                watch!(s);
                 matches!(
                     s,
                     XvcStepState::DoneByRunning(_)
@@ -1267,7 +1265,7 @@ fn update_command_environment(
                     update_env("XVC_ALL_REGEX_ITEMS", &items)
                 }
                 XvcDependency::LineItems(_) => {
-                    update_env("XVC_ADDED_ITEMS", &items)?;
+                    update_env("XVC_ADDED_LINE_ITEMS", &items)?;
                     update_env("XVC_REMOVED_LINE_ITEMS", &[])?;
                     update_env("XVC_ALL_LINE_ITEMS", &items)
                 }

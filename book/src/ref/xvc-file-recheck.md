@@ -16,7 +16,7 @@ Options:
       --recheck-method <RECHECK_METHOD>
           How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
           
-          Note: Reflink uses copy if the underlying file system doesn't support it.
+          Note: Reflink support requires "reflink" feature to be enabled and uses copy if the underlying file system doesn't support it.
 
       --no-parallel
           Don't use parallelism
@@ -39,7 +39,7 @@ This command has an alias [`xvc file checkout`](/ref/xvc-file-checkout.md) if yo
 Rechecking is analogous to [git checkout](https://git-scm.com/docs/git-checkout).
 It copies or links a cached file to the workspace.
 
-Let's create an example directory hierarchy as a showcase. 
+Let's create an example directory hierarchy as a showcase.
 
 ```console
 $ xvc-test-helper create-directory-tree --directories 2 --files 3 --seed 231123
@@ -58,7 +58,7 @@ $ tree
 
 ```
 
-Start by tracking files. 
+Start by tracking files.
 
 ```console
 $ git init
@@ -98,16 +98,17 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/
 $ ls -l dir-0002/
 total 24
--rw-rw-rw-  [..] file-0001.bin
--rw-rw-rw-  [..] file-0002.bin
--rw-rw-rw-  [..] file-0003.bin
+-rw-rw-rw-[..] file-0001.bin
+-rw-rw-rw-[..] file-0002.bin
+-rw-rw-rw-[..] file-0003.bin
 
 ```
+
 You can use glob patterns to recheck files.
-```console
+
 ```console
 $ xvc file track 'dir-*'
-
+```
 
 You can update the recheck method of a file. Otherwise it will be kept as same before.
 
@@ -116,18 +117,18 @@ $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/ --as symlink
 $ ls -l dir-0002/
 total 0
-lrwxr-xr-x  [..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
-lrwxr-xr-x  [..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
-lrwxr-xr-x  [..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
+lrwxr-xr-x[..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x[..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x[..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 $ rm -rf dir-0002/
-$ xvc -v file recheck dir-0002/ 
+$ xvc -v file recheck dir-0002/
 
 $ ls -l dir-0002/
 total 0
-lrwxr-xr-x  [..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
-lrwxr-xr-x  [..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
-lrwxr-xr-x  [..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
+lrwxr-xr-x[..] file-0001.bin -> [CWD]/.xvc/b3/3c9/255/424e13d9c38a37c5ddd376e1070cdd5de66996fbc82194c462f653856d/0.bin
+lrwxr-xr-x[..] file-0002.bin -> [CWD]/.xvc/b3/6bc/65f/581e3a03edb127b63b71c5690be176e2fe265266f70abc65f72613f62e/0.bin
+lrwxr-xr-x[..] file-0003.bin -> [CWD]/.xvc/b3/804/fb8/edbb122e735facd7f943c1bbe754e939a968f385c12f56b10411a4a015/0.bin
 
 ```
 
@@ -144,6 +145,7 @@ $ xvc file recheck dir-0002/file-0001.bin --as copy
 $ zsh -c 'echo "120912" >> dir-0002/file-0001.bin'
 
 ```
+
 Note that, as files in the cache are kept read-only, hardlinks and symlinks are also read only. Files rechecked as copy are made read-write explicitly.
 
 ```console
@@ -151,8 +153,8 @@ $ xvc -vv file recheck data.txt --as hardlink
 
 $ ls -l
 total[..]
-drwxr-xr-x [..] dir-0001
-drwxr-xr-x [..] dir-0002
+drwxr-xr-x[..] dir-0001
+drwxr-xr-x[..] dir-0002
 
 ```
 
@@ -166,5 +168,3 @@ $ xvc file recheck data.txt --as reflink
 ```
 
 The above command will create a read only link in macOS APFS and a copy in ext4 or NTFS file systems.
-
-

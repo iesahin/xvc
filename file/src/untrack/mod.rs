@@ -67,7 +67,7 @@ pub fn cmd_untrack(
     for (xe, xvc_path) in untrack_targets.iter() {
         let abs_path = xvc_path.to_absolute_path(xvc_root);
         if !abs_path.symlink_metadata().unwrap().is_file() {
-            let content_digest = all_content_digests[&xe];
+            let content_digest = all_content_digests[xe];
             let recheck_method = RecheckMethod::Copy;
             uwr!(
                 recheck_op_snd.send(Some(RecheckOperation::Recheck {

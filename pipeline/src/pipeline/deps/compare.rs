@@ -16,6 +16,7 @@ use super::line_items::LineItemsDep;
 use super::lines::LinesDep;
 use super::regex::RegexDep;
 use super::regex_items::RegexItemsDep;
+use super::sqlite_query::SqliteQueryDep;
 use super::step::StepDep;
 use super::{ParamDep, XvcDependency};
 
@@ -253,6 +254,7 @@ pub fn thorough_compare_dependency(
         XvcDependency::Glob(dep) => diff_of_dep(thorough_compare_glob(cmp_params, &dep)?),
         XvcDependency::Regex(dep) => diff_of_dep(thorough_compare_regex(cmp_params, &dep)?),
         XvcDependency::Lines(dep) => diff_of_dep(thorough_compare_lines(cmp_params, &dep)?),
+        XvcDependency::SqliteQueryDigest(dep) => diff_of_dep(thorough_compare_query_digest(cmp_params, &dep)?)
     };
 
     Ok(diff)
@@ -396,6 +398,27 @@ fn thorough_compare_lines(
     }
 }
 
+fn thorough_compare_query_digest(
+    cmp_params: &StepStateParams,
+    record: &SqliteQueryDep,
+) -> Result<Diff<SqliteQueryDep>> {
+    let actual = SqliteQueryDep::new(record.path.clone(), record.query.clone())
+        .update_metadata(cmp_params.pmp.get(&record.path));
+
+    // Shortcircuit if the metadata is identical
+    match SqliteQueryDep::diff_superficial(record, &actual) {
+        Diff::Different { record, actual } => {
+            let actual = actual.update_digest(cmp_params.xvc_root, cmp_params.algorithm)?;
+            Ok(SqliteQueryDep::diff_thorough(&record, &actual))
+        }
+        Diff::RecordMissing { actual } => {
+            let actual = actual.update_digest(cmp_params.xvc_root, cmp_params.algorithm)?;
+            Ok(Diff::RecordMissing { actual })
+        }
+        diff => Ok(diff),
+    }
+}
+
 /// Compares dependencies with their earlier version _superficially_, meaning the cost of
 /// comparison is minimized by being optimistic that a dependency is unchanged.
 ///
@@ -448,6 +471,7 @@ pub fn superficial_compare_dependency(
         XvcDependency::Glob(dep) => diff_of_dep(superficial_compare_glob(cmp_params, dep)?),
         XvcDependency::Regex(dep) => diff_of_dep(superficial_compare_regex(cmp_params, dep)?),
         XvcDependency::Lines(dep) => diff_of_dep(superficial_compare_lines(cmp_params, dep)?),
+        XvcDependency::SqliteQueryDigest(dep) => diff_of_dep(superficial_compare_query_digest(cmp_params, dep)?),
     };
 
     Ok(diff)
@@ -552,6 +576,18 @@ fn superficial_compare_lines(
 
     Ok(LinesDep::diff_superficial(record, &actual))
 }
+
+fn superficial_compare_query_digest(
+    cmp_params: &StepStateParams,
+    record: &SqliteQueryDep,
+) -> Result<Diff<SqliteQueryDep>> {
+    let actual = SqliteQueryDep::new(record.path.clone(), record.query.clone())
+        .update_metadata(cmp_params.pmp.get(&record.path));
+
+
+    Ok(SqliteQueryDep::diff_superficial(record, &actual))
+}
+
 fn diff_of_dep<T>(dep: Diff<T>) -> Diff<XvcDependency>
 where
     T: Storable + Into<XvcDependency>,

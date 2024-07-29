@@ -63,7 +63,7 @@ pub fn cmd_update(xvc_root: &XvcRoot, opts: UpdateCLI) -> Result<()> {
                         );
                     }
                     if let Some(newname) = &rename {
-                        pipeline.name = newname.to_owned();
+                        pipeline.name.clone_from(newname);
                     }
 
                     rs.left.update(*pipeline_e, pipeline);

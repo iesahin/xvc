@@ -1,3 +1,4 @@
+//! Home for async operations for S3 compatible storage services. 
 use std::fs;
 use std::str::FromStr;
 
@@ -30,12 +31,21 @@ use super::XvcStorageSendEvent;
 use super::XvcStorageTempDir;
 use super::XVC_STORAGE_GUID_FILENAME;
 
-pub trait XvcS3StorageOperations {
+/// Operations for S3 compatible storage services. Each service implements functions in this trait
+/// for xvc file send and xvc file bring commands to work with the common functions. 
+pub(crate) trait XvcS3StorageOperations {
+    /// Prefix within the storage bucket if you want to separate Xvc files from the rest of the
+    /// bucket. 
     fn storage_prefix(&self) -> String;
+    /// GUID for the storage. This is generated when the storage is first initialized. 
     fn guid(&self) -> &XvcStorageGuid;
+    /// Get the bucket for the storage
     fn get_bucket(&self) -> Result<Bucket>;
+    /// Get the credentials for the
     fn credentials(&self) -> Result<Credentials>;
+    /// Name of the bucket
     fn bucket_name(&self) -> String;
+    /// Build the storage path for the S3 compatible storage
     fn build_storage_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!(
             "{}/{}/{}",
@@ -45,7 +55,10 @@ pub trait XvcS3StorageOperations {
         ))
     }
 
+    /// Region of the bucket
     fn region(&self) -> String;
+
+    /// Write GUID to the storage when first initializing the storage
     async fn write_storage_guid(&self) -> Result<()> {
         let guid_str = self.guid().to_string();
         let guid_bytes = guid_str.as_bytes();
@@ -63,6 +76,7 @@ pub trait XvcS3StorageOperations {
         }
     }
 
+    /// Initialze the bucket as Xvc storage by adding a GUID
     async fn a_init(&mut self, output_snd: &XvcOutputSender) -> Result<XvcStorageInitEvent> {
         let res_response = self.write_storage_guid().await;
 
@@ -77,6 +91,7 @@ pub trait XvcS3StorageOperations {
         }
     }
 
+    /// List files in the S3 compatible storage
     async fn a_list(
         &self,
         output: &XvcOutputSender,
@@ -130,6 +145,7 @@ pub trait XvcS3StorageOperations {
         }
     }
 
+    /// Send files to S3 compatible storage
     async fn a_send(
         &self,
         output_snd: &XvcOutputSender,
@@ -172,6 +188,7 @@ pub trait XvcS3StorageOperations {
         })
     }
 
+    /// Receive files from S3 compatible storage
     async fn a_receive(
         &self,
         output_snd: &XvcOutputSender,
@@ -197,7 +214,7 @@ pub trait XvcS3StorageOperations {
                     info!(output_snd, "{} -> {}", storage_path.as_str(), abs_cache_path);
                     let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
                     while let Some(chunk) = response.bytes().next().await {
-                        async_cache_path.write_all(&chunk).await?;
+                        async_cache_path.write_all(&chunk?).await?;
                     }
                     copied_paths.push(storage_path);
                     watch!(copied_paths.len());
@@ -217,6 +234,7 @@ pub trait XvcS3StorageOperations {
         ))
     }
 
+    /// Delete files from S3 compatible storage
     async fn a_delete(
         &self,
         output: &XvcOutputSender,
@@ -240,6 +258,7 @@ pub trait XvcS3StorageOperations {
         })
     }
 
+    /// Share files from S3 compatible storage for a duration with a signed url
     async fn a_share(
         &self,
         output: &XvcOutputSender,
@@ -257,7 +276,7 @@ pub trait XvcS3StorageOperations {
 
         let expiration_seconds = duration.as_secs() as u32;
         let path = self.build_storage_path(path);
-        let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None)?;
+        let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None).await?;
         info!(output, "[SHARED] {}", path.as_str());
         output!(output, "{}", signed_url);
         Ok(super::XvcStorageExpiringShareEvent {
@@ -270,7 +289,8 @@ pub trait XvcS3StorageOperations {
 }
 
 impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
-    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
+    // FIXME: Do we need xvc_root here?
+    fn init(&mut self, output: &XvcOutputSender, _xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
     where
         Self: Sized,
     {
@@ -310,7 +330,8 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
     fn receive(
         &self,
         output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
+        // FIXME: Do we need xvc_root here?
+        _xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
         force: bool,
     ) -> crate::Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
@@ -324,7 +345,8 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
     fn delete(
         &self,
         output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
+        // FIXME: Do we need xvc_root?
+        _xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {
         let rt = tokio::runtime::Builder::new_multi_thread()
@@ -337,7 +359,8 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
     fn share(
         &self,
         output: &XvcOutputSender,
-        xvc_root: &xvc_core::XvcRoot,
+        //  FIXME: Do we need xvc_root here?
+        _xvc_root: &xvc_core::XvcRoot,
         path: &XvcCachePath,
         duration: std::time::Duration,
     ) -> Result<XvcStorageExpiringShareEvent> {

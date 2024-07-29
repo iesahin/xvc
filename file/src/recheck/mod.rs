@@ -40,7 +40,8 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 pub struct RecheckCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
-    /// Note: Reflink uses copy if the underlying file system doesn't support it.
+    /// Note: Reflink support requires "reflink" feature to be enabled and uses copy if the
+    /// underlying file system doesn't support it.
     #[arg(long, alias = "as")]
     pub recheck_method: Option<RecheckMethod>,
 
@@ -144,12 +145,12 @@ pub fn cmd_recheck(
         watch!(content_digest_diff.get(xe));
         if content_digest_diff.contains_key(xe)
             && matches!(
-                content_digest_diff[&xe],
+                content_digest_diff[xe],
                 Diff::<ContentDigest>::Different { .. }
             )
         {
             let output_snd = output_snd.clone();
-            let xp = &stored_xvc_path_store[&xe];
+            let xp = &stored_xvc_path_store[xe];
             error!(
                 output_snd,
                 "{} has changed on disk. Either carry in, force, or delete the target to recheck. ",

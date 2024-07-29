@@ -167,7 +167,7 @@ pub fn cmd_carry_in(
 
     let cache_paths_to_carry: HStore<XvcCachePath> = xvc_paths_to_carry
         .iter()
-        .filter_map(|(xe, xp)| match content_digest_diff[&xe] {
+        .filter_map(|(xe, xp)| match content_digest_diff[xe] {
             Diff::Identical | Diff::Skipped => {
                 // use stored digest for cache path
                 info!(output_snd, "[FORCE] {xp} is identical to cached copy.");

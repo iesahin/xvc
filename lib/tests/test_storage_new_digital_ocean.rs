@@ -1,5 +1,6 @@
 mod common;
 use common::*;
+
 use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
@@ -11,10 +12,12 @@ use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
-fn write_s3cmd_config(account_id: &str, access_key: &str, secret_key: &str) -> Result<String> {
+use crate::common::run_xvc;
+
+fn write_s3cmd_config(region: &str, access_key: &str, secret_key: &str) -> Result<String> {
     let config_file_name = env::temp_dir().join(format!(
         "{}.cfg",
-        common::random_dir_name("r2-config", None)
+        common::random_dir_name("wasabi-config", None)
     ));
     let config = format!(
         r#"[default]
@@ -22,7 +25,7 @@ access_key = {access_key}
 access_token =
 add_encoding_exts =
 add_headers =
-bucket_location = auto
+bucket_location = eu-central-1
 ca_certs_file =
 cache_file =
 check_ssl_certificate = True
@@ -52,8 +55,8 @@ gpg_decrypt = %(gpg_command)s -d --verbose --no-use-agent --batch --yes --passph
 gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
 gpg_passphrase =
 guess_mime_type = True
-host_base = {account_id}.r2.cloudflarestorage.com
-host_bucket = %(bucket)s.{account_id}.r2.cloudflarestorage.com
+host_base = {region}.digitaloceanspaces.com
+host_bucket = %(bucket)s.{region}.digitaloceanspaces.com
 human_readable_sizes = False
 invalidate_default_index_on_cf = False
 invalidate_default_index_root_on_cf = True
@@ -117,10 +120,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
+    create_directory_tree(&temp_dir, 10, 10, 1000, Some(23))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
+    create_directory_tree(level_1, 10, 10, 1000, Some(23))?;
 
     Ok(temp_dir)
 }
@@ -131,51 +134,43 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
-// #[cfg_attr(not(feature = "test-r2"), ignore)]
-// Ignore this test for now
-#[ignore]
-fn test_storage_new_r2() -> Result<()> {
+#[cfg_attr(not(feature = "test-digital-ocean"), ignore)]
+fn test_storage_new_digital_ocean() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let bucket_name = "xvc-test";
+    let bucket_name = "xvc";
     let storage_prefix = common::random_dir_name("xvc-storage", None);
 
-    let access_key = env::var("R2_ACCESS_KEY_ID")?;
-    let access_key = access_key.trim();
-    let secret_key = env::var("R2_SECRET_ACCESS_KEY")?;
-    let secret_key = secret_key.trim();
-    let account_id = env::var("R2_ACCOUNT_ID")?;
-    let account_id = account_id.trim();
+    let access_key = env::var("DIGITAL_OCEAN_ACCESS_KEY_ID")?;
+    let secret_key = env::var("DIGITAL_OCEAN_SECRET_ACCESS_KEY")?;
+    let region = "fra1";
 
-    let config_file_name = write_s3cmd_config(account_id, access_key, secret_key)?;
-    watch!(config_file_name);
+    let config_file_name = write_s3cmd_config(region, &access_key, &secret_key)?;
 
     let s3cmd = |cmd: &str, append: &str| -> String {
-        let sh_cmd = format!("s3cmd --no-check-md5 --config {config_file_name} {cmd} {append}");
+        let sh_cmd = format!("s3cmd --config {config_file_name} {cmd} {append}");
         sh(sh_cmd)
     };
 
-    let x = |cmd: &[&str]| -> Result<String> {
-        common::run_xvc(Some(xvc_root.as_path()), cmd, XvcVerbosity::Trace)
-    };
+    let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace) };
 
     let out = x(&[
         "storage",
         "new",
-        "r2",
+        "digital-ocean",
         "--name",
-        "r2-storage",
+        "do-storage",
         "--bucket-name",
         bucket_name,
         "--storage-prefix",
         &storage_prefix,
-        "--account-id",
-        &account_id,
+        "--region",
+        region,
     ])?;
 
     watch!(out);
     let s3_bucket_list = s3cmd(
-        &format!("ls --recursive 's3://{bucket_name}'"),
+        &format!("ls --recursive 's3://{bucket_name}/'"),
         &format!("| rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
     watch!(s3_bucket_list);
@@ -183,7 +178,8 @@ fn test_storage_new_r2() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    x(&["file", "track", the_file])?;
+    let file_track_result = x(&["file", "track", the_file])?;
+    watch!(file_track_result);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
@@ -193,7 +189,7 @@ fn test_storage_new_r2() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "r2-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "do-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -217,7 +213,7 @@ fn test_storage_new_r2() -> Result<()> {
     // remove all cache
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "r2-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "do-storage"])?;
 
     watch!(fetch_result);
 
@@ -236,7 +232,7 @@ fn test_storage_new_r2() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "r2-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "do-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -249,16 +245,17 @@ fn test_storage_new_r2() -> Result<()> {
         .count();
 
     assert!(n_storage_files_after == n_local_files_after_pull);
+    watch!(the_file);
     assert!(PathBuf::from(the_file).exists());
 
-    // Set remote specific passwords and remove AWS ones
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_r2-storage", access_key);
-    env::set_var("XVC_STORAGE_SECRET_KEY_r2-storage", secret_key);
+    // Set remote specific passwords and remove DO ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_do-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_do-storage", secret_key);
 
-    env::remove_var("R2_ACCESS_KEY_ID");
-    env::remove_var("R2_SECRET_ACCESS_KEY");
+    env::remove_var("DIGITAL_OCEAN_ACCESS_KEY_ID");
+    env::remove_var("DIGITAL_OCEAN_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "r2-storage"])?;
+    let pull_result_2 = x(&["file", "bring", "--from", "do-storage"])?;
     watch!(pull_result_2);
 
     clean_up(&xvc_root)

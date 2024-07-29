@@ -1,10 +1,9 @@
 mod common;
-use common::*;
-
 use std::{env, fs, path::PathBuf};
 
 use log::LevelFilter;
 
+use common::*;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
 use xvc_config::XvcVerbosity;
@@ -12,12 +11,10 @@ use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
-use crate::common::run_xvc;
-
-fn write_s3cmd_config(region: &str, access_key: &str, secret_key: &str) -> Result<String> {
+fn write_s3cmd_config(access_key: &str, secret_key: &str) -> Result<String> {
     let config_file_name = env::temp_dir().join(format!(
         "{}.cfg",
-        common::random_dir_name("wasabi-config", None)
+        common::random_dir_name("gcp-config", None)
     ));
     let config = format!(
         r#"[default]
@@ -25,7 +22,7 @@ access_key = {access_key}
 access_token =
 add_encoding_exts =
 add_headers =
-bucket_location = eu-central-1
+bucket_location = europe-west3
 ca_certs_file =
 cache_file =
 check_ssl_certificate = True
@@ -55,8 +52,8 @@ gpg_decrypt = %(gpg_command)s -d --verbose --no-use-agent --batch --yes --passph
 gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
 gpg_passphrase =
 guess_mime_type = True
-host_base = {region}.digitaloceanspaces.com
-host_bucket = %(bucket)s.{region}.digitaloceanspaces.com
+host_base = storage.googleapis.com
+host_bucket = %(bucket)s.storage.googleapis.com
 human_readable_sizes = False
 invalidate_default_index_on_cf = False
 invalidate_default_index_root_on_cf = True
@@ -120,10 +117,10 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
-    create_directory_tree(&temp_dir, 10, 10, 1000, Some(23))?;
+    create_directory_tree(&temp_dir, 10, 10, 1000, Some(47))?;
     // root/dir1 may have another tree
     let level_1 = &temp_dir.join(&PathBuf::from("dir-0001"));
-    create_directory_tree(level_1, 10, 10, 1000, Some(23))?;
+    create_directory_tree(level_1, 10, 10, 1000, Some(47))?;
 
     Ok(temp_dir)
 }
@@ -134,38 +131,41 @@ fn sh(cmd: String) -> String {
 }
 
 #[test]
-#[cfg_attr(not(feature = "test-digital-ocean"), ignore)]
-fn test_storage_new_digital_ocean() -> Result<()> {
+#[cfg_attr(not(feature = "test-gcs"), ignore)]
+fn test_storage_new_gcs() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let bucket_name = "xvc";
+    let bucket_name = "xvc-test";
     let storage_prefix = common::random_dir_name("xvc-storage", None);
 
-    let access_key = env::var("DIGITAL_OCEAN_ACCESS_KEY_ID")?;
-    let secret_key = env::var("DIGITAL_OCEAN_SECRET_ACCESS_KEY")?;
-    let region = "fra1";
+    let access_key = env::var("GCS_ACCESS_KEY_ID")?;
+    let secret_key = env::var("GCS_SECRET_ACCESS_KEY")?;
+    let region = "europe-west3";
 
-    let config_file_name = write_s3cmd_config(region, &access_key, &secret_key)?;
+    let config_file_name = write_s3cmd_config(&access_key, &secret_key)?;
+    watch!(config_file_name);
 
     let s3cmd = |cmd: &str, append: &str| -> String {
         let sh_cmd = format!("s3cmd --config {config_file_name} {cmd} {append}");
         sh(sh_cmd)
     };
 
-    let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace) };
+    let x = |cmd: &[&str]| -> Result<String> {
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
+    };
 
     let out = x(&[
         "storage",
         "new",
-        "digital-ocean",
+        "gcs",
         "--name",
-        "do-storage",
+        "gcs-storage",
         "--bucket-name",
         bucket_name,
         "--storage-prefix",
         &storage_prefix,
         "--region",
-        &region,
+        region,
     ])?;
 
     watch!(out);
@@ -189,7 +189,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     );
     watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "do-storage", the_file])?;
+    let push_result = x(&["file", "send", "--to", "gcs-storage", the_file])?;
     watch!(push_result);
 
     let file_list_after = s3cmd(
@@ -213,7 +213,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     // remove all cache
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "do-storage"])?;
+    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "gcs-storage"])?;
 
     watch!(fetch_result);
 
@@ -232,7 +232,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "do-storage"])?;
+    let pull_result = x(&["file", "bring", "--from", "gcs-storage"])?;
     watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
@@ -245,17 +245,16 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         .count();
 
     assert!(n_storage_files_after == n_local_files_after_pull);
-    watch!(the_file);
     assert!(PathBuf::from(the_file).exists());
 
-    // Set remote specific passwords and remove DO ones
-    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_do-storage", access_key);
-    env::set_var("XVC_STORAGE_SECRET_KEY_do-storage", secret_key);
+    // Set remote specific passwords and remove GCS ones
+    env::set_var("XVC_STORAGE_ACCESS_KEY_ID_gcs-storage", access_key);
+    env::set_var("XVC_STORAGE_SECRET_KEY_gcs-storage", secret_key);
 
-    env::remove_var("DIGITAL_OCEAN_ACCESS_KEY_ID");
-    env::remove_var("DIGITAL_OCEAN_SECRET_ACCESS_KEY");
+    env::remove_var("GCS_ACCESS_KEY_ID");
+    env::remove_var("GCS_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "do-storage"])?;
+    let pull_result_2 = x(&["file", "bring", "--from", "gcs-storage"])?;
     watch!(pull_result_2);
 
     clean_up(&xvc_root)

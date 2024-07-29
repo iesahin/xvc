@@ -17,7 +17,6 @@ use log::LevelFilter;
 use std::io;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::types::xvcroot::XvcRootInner;
-use xvc_core::XvcRoot;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
 use xvc_config::{XvcConfigParams, XvcVerbosity};
@@ -210,6 +209,8 @@ pub fn run(args: &[&str]) -> Result<XvcRootOpt> {
     dispatch(cli_options)
 }
 
+/// Run the supplied command within the optional [XvcRoot]. If xvc_root is None, it will be tried
+/// to be loaded from `cli_opts.workdir`.
 pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Result<XvcRootOpt> {
 
     // XvcRoot should be kept per repository and shouldn't change directory across runs
@@ -457,7 +458,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
 }
 
 fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
-    let xvc_config_params = XvcConfigParams {
+    XvcConfigParams {
         current_dir: AbsolutePath::from(&cli_opts.workdir),
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,
@@ -466,24 +467,22 @@ fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
         include_environment_config: !cli_opts.no_env_config,
         command_line_config: Some(cli_opts.consolidate_config_options()),
         default_configuration: default_project_config(true),
-    };
-    xvc_config_params
+    }
 }
 
 fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
-    let term_log_level = match verbosity {
+    match verbosity {
         XvcVerbosity::Quiet => LevelFilter::Off,
         XvcVerbosity::Default => LevelFilter::Error,
         XvcVerbosity::Warn => LevelFilter::Warn,
         XvcVerbosity::Info => LevelFilter::Info,
         XvcVerbosity::Debug => LevelFilter::Debug,
         XvcVerbosity::Trace => LevelFilter::Trace,
-    };
-    term_log_level
+    }
 }
 
 fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
-    let verbosity = if cli_opts.quiet {
+    if cli_opts.quiet {
         XvcVerbosity::Quiet
     } else {
         match cli_opts.verbosity {
@@ -493,6 +492,5 @@ fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
             3 => XvcVerbosity::Debug,
             _ => XvcVerbosity::Trace,
         }
-    };
-    verbosity
+    }
 }

@@ -10,7 +10,6 @@ members = [
   "logging",
   "walker",
   "test_helper",
-  "workflow_tests",
 ]
 resolver = "2"
 
@@ -18,4 +17,4 @@ resolver = "2"
 no_individual_tags = true
 
 [profile.release]
-debug = true
+debug = false

@@ -65,12 +65,16 @@ Options:
           
           The difference between this and the line-items dependency is that the line option keeps track of all matching lines that can be used in the step command. This option only keeps track of the matched lines' digest. If you don't need individual lines to be kept, use this option to save space.
 
+      --sqlite-query <SQLITE_FILE> <SQLITE_QUERY>
+          Add a sqlite query dependency to the step with the file and the query. Can be used once.
+          
+          The step is invalidated when the query run and the result is different from previous runs, e.g. when an aggregate changed or a new row added to a table.
+
   -h, --help
           Print help (see a summary with '-h')
 
 ```
 
-{{#include xvc-pipeline-step-dependency-generic.md}}
 {{#include xvc-pipeline-step-dependency-file.md}}
 {{#include xvc-pipeline-step-dependency-glob.md}}
 {{#include xvc-pipeline-step-dependency-regex.md}}

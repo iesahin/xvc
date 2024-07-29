@@ -91,14 +91,14 @@ $ xvc pipeline run
 [DONE] new-females (echo "New Females:/n ${XVC_ADDED_REGEX_ITEMS}")
 
 
-``````
+```
 
 When you run the pipeline again, the steps are not run because the regexes didn't change.
 
 ```console
 $ xvc pipeline run
 
-``````
+```
 
 When you add a new female record to the file, only the female count step is run.
 

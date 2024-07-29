@@ -8,6 +8,7 @@ use std::num::TryFromIntError;
 use std::path::PathBuf;
 use std::sync::PoisonError;
 use thiserror::Error as ThisError;
+use rusqlite::Error as SqliteError;
 
 #[derive(ThisError, Debug)]
 /// Error messages for pipelines crate
@@ -197,6 +198,12 @@ pub enum Error {
         #[from]
         source: TryFromIntError,
     },
+
+    #[error("Sqlite Error:")]
+    SqliteError {
+        #[from]
+        source: SqliteError 
+    },
 }
 
 
@@ -258,6 +265,7 @@ impl Error {
         panic!("{}", self);
     }
 }
+
 
 /// The result type for xvc pipeline crate
 pub type Result<T> = std::result::Result<T, Error>;
