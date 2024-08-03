@@ -82,6 +82,7 @@ Options:
 {{#include xvc-pipeline-step-dependency-glob-items.md}}
 {{#include xvc-pipeline-step-dependency-regex-items.md}}
 {{#include xvc-pipeline-step-dependency-line-items.md}}
+{{#include xvc-pipeline-step-dependency-sqlite-query.md}}
 {{#include xvc-pipeline-step-dependency-param.md}}
 {{#include xvc-pipeline-step-dependency-step.md}}
 {{#include xvc-pipeline-step-dependency-url.md}}

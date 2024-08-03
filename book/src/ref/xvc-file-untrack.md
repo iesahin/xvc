@@ -42,7 +42,7 @@ Total #: 1 Workspace Size:          19 Cached Size:          19
 
 Without any options, it removes the file from Xvc tracking and the cache.
 
-```admonition warning
+```admonish warning
 
 `xvc file untrack` doesn't modify the `.gitignore` files to remove the previously tracked files. You must do it manually if you want to track the file with Git.
 

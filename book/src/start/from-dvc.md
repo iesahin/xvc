@@ -61,7 +61,7 @@ have one file symlinked to the cache, another file copied from the cache, etc.
 
 ## Command Differences
 
-```admonition warning
+```admonish warning
 Some of the Xvc commands described here are still in development.
 ```
 

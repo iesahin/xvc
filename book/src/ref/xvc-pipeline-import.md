@@ -23,7 +23,7 @@ This command is used to import pipelines exported with [`xvc pipeline export`](/
 
 You can edit and import the pipelines exported with the command.
 
-```admonition warning
+```admonish warning
 Xvc doesn't guarantee that the format of these files will be compatible across versions. You can use these files to share pipeline definitions but it may not be a good way to store pipeline definitions for longer periods.
 ```
 

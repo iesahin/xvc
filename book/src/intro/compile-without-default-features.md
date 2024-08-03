@@ -4,7 +4,7 @@ You may want to customize the [feature set][features] when you want a smaller bi
 
 When you turn off all remote storage features, async runtime (`tokio`) is also excluded from binary.
 
-````bash
+```bash
 cargo build --no-default-features --release
 [..]
     Finished `release` profile [optimized] target(s) in 4.65s
@@ -22,14 +22,14 @@ use.
 cargo build --no-default-features --features "reflink" --release
 [..]
     Finished `release` profile [optimized + debuginfo] target(s) in 56.40s
-````
+```
 
 Note that when you supply `--no-default-features`, all other default features
 like `s3` etc are also turned off. You'll have to specify which [features] you
 want in the features list. Otherwise Xvc cannot connect to your storages.
 
 ```bash
-cargo build --no-default-features --features "reflink,s3" --release
+cargo build --no-default-features --features "s3,wasabi" --release
 [..]
     Finished `release` profile [optimized + debuginfo] target(s) in 56.40s
 ```

@@ -73,7 +73,7 @@ $ xvc pipeline step dependency --step-name average-age --sqlite-query people.db 
 
 ```
 
-```admonition note
+```admonish note
 The dependency query is run everytime the pipeline runs. It's expected to be lightweight to avoid performance issues.
 ```
 
@@ -112,6 +112,6 @@ $ xvc pipeline run
 
 ```
 
-```admonition note
+```admonish note
 Xvc opens the database in read-only mode to avoid locking.
 ```

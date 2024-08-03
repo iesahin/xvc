@@ -22,7 +22,7 @@ You can export the pipeline you created to a JSON or YAML file to edit and resto
 import`](/ref/xvc-pipeline-import/). This allows to fix typos and update commands in place, and see pipeline internals
 for debugging.
 
-```admonition warning
+```admonish warning
 Xvc doesn't guarantee that the format of these files will be compatible across versions. You can use these files to share pipeline definitions but it may not be a good way to store pipeline definitions for longer periods.
 ```
 
