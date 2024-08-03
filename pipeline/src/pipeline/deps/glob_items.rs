@@ -47,6 +47,7 @@ impl GlobItemsDep {
     ) -> Result<GlobItemsDep> {
         let xvc_path_metadata_map =
             glob_paths(pmp, glob_root, &glob).map(|paths| paths.into_iter().collect())?;
+        watch!(xvc_path_metadata_map);
         // We don't calculate the content digest map immediately, we only do that in through comparison
         Ok(GlobItemsDep {
             glob,
@@ -79,7 +80,7 @@ impl GlobItemsDep {
         algorithm: HashAlgorithm,
     ) -> Result<Self> {
         let mut xvc_path_content_digest_map = BTreeMap::new();
-
+        watch!(xvc_path_metadata_map);
         for (xvc_path, xvc_metadata) in self.xvc_path_metadata_map.iter() {
             let record_metadata = record.xvc_path_metadata_map.get(xvc_path);
             let content_digest = if XvcMetadata::diff(record_metadata, Some(xvc_metadata)).changed()
@@ -92,6 +93,7 @@ impl GlobItemsDep {
 
             xvc_path_content_digest_map.insert(xvc_path.clone(), content_digest);
         }
+        watch!(xvc_path_content_digest_map);
         Ok(Self {
             xvc_path_content_digest_map,
             ..self
