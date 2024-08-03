@@ -57,7 +57,7 @@ crossbeam = "^0.8"
 
 ## File system
 subprocess = "^0.2"
-reflink = { "^0.1".optional = true }
+reflink = { version = "^0.1", optional = true }
 relative-path = { version = "^1.9", features = ["serde"] }
 path-absolutize = "^3.1"
 glob = "^0.3"
