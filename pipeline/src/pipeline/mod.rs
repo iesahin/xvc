@@ -293,16 +293,10 @@ pub fn the_grand_pipeline_loop(
     watch!(consider_changed);
 
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
-    watch!(all_deps.parents.len());
-    watch!(all_deps.children.len());
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
-    watch!(all_outs.parents.len());
-    watch!(all_outs.children.len());
     let pmp = XvcPathMetadataProvider::new(output_snd, xvc_root)?;
-    watch!(&pmp);
 
     let pipeline_len = pipeline_steps.len();
-    watch!(pipeline_len);
 
     let mut dependency_graph = DiGraphMap::<XvcEntity, XvcDependency>::with_capacity(
         pipeline_len,
