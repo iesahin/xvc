@@ -396,7 +396,7 @@ impl<'a> XvcDependencyList<'a> {
          }
         Ok(self)
     }
-    /// Records dependencies the store, as childs of `self.step`.
+    /// Records dependencies the store, as children of `self.step`.
     pub fn record(&self) -> Result<()> {
         self.xvc_root
             .with_r1nstore_mut(|rs: &mut R1NStore<XvcStep, XvcDependency>| {
