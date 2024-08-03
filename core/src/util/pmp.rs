@@ -38,7 +38,6 @@ impl XvcPathMetadataProvider {
     pub fn new(output_sender: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<Self> {
         let initial_rules = IgnoreRules::try_from_patterns(xvc_root, COMMON_IGNORE_PATTERNS)?;
         let ignore_rules = build_ignore_rules(initial_rules, xvc_root, XVCIGNORE_FILENAME)?;
-        watch!(ignore_rules);
         let path_map = Arc::new(RwLock::new(HashMap::new()));
 
         let (watcher, event_receiver) = make_watcher(ignore_rules.clone())?;
@@ -58,18 +57,17 @@ impl XvcPathMetadataProvider {
             let watcher = watcher;
             watch!(watcher);
 
-            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
+            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| {
+                match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
-                    watch!("Creating {} with {}", xvc_path, xvc_md);
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
                 PathEvent::Update { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
-                    watch!("Updating {} with {}", xvc_path, xvc_md);
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
@@ -80,11 +78,10 @@ impl XvcPathMetadataProvider {
                         size: None,
                         modified: None,
                     };
-                    watch!("Deleting {}", xvc_path);
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
-            };
+            } };
 
             let mut sel = Select::new();
             let fs_event_index = sel.recv(&fs_receiver);
@@ -100,6 +97,7 @@ impl XvcPathMetadataProvider {
                     if index == fs_event_index {
                         let fs_event = selection.recv(&fs_receiver);
                         watch!(fs_event);
+                        watch!(path_map.read());
                         match fs_event {
                             Ok(Some(fs_event)) => {
                                 let pmm = path_map.clone();
@@ -228,6 +226,7 @@ impl XvcPathMetadataProvider {
     pub fn glob_paths(&self, glob: &str) -> Result<XvcPathMetadataMap> {
         watch!(glob);
         self.update_with_glob(glob)?;
+        watch!(self.path_map.read());
         let mut matches = XvcPathMetadataMap::new();
         let pattern = glob::Pattern::new(glob)?;
         for (p, md) in self.path_map.read().unwrap().iter() {
@@ -252,6 +251,7 @@ impl XvcPathMetadataProvider {
 impl Drop for XvcPathMetadataProvider {
     /// Stop the background thread when quit
     fn drop(&mut self) {
+        watch!("Dropping XvcPathMetadataProvider", self);
         // Ignore if the channel is closed
         let _ = self.stop();
     }
