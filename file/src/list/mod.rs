@@ -250,7 +250,6 @@ fn format_recheck_method(recheck_method: RecheckMethod) -> String {
         RecheckMethod::Copy => "C".to_string(),
         RecheckMethod::Symlink => "S".to_string(),
         RecheckMethod::Hardlink => "H".to_string(),
-        #[cfg(feature="reflink")]
         RecheckMethod::Reflink => "R".to_string(),
     }
 }
