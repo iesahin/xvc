@@ -200,7 +200,7 @@ jobs:
         with:
           use-cross: false
           command: build
-          args: --release --target ${{ matrix.target }} --features bundled_sqlite
+          args: --release --target ${{ matrix.target }} --features bundled-sqlite
 
       - name: Package
         shell: bash
