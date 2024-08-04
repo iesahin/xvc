@@ -293,16 +293,10 @@ pub fn the_grand_pipeline_loop(
     watch!(consider_changed);
 
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
-    watch!(all_deps.parents.len());
-    watch!(all_deps.children.len());
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
-    watch!(all_outs.parents.len());
-    watch!(all_outs.children.len());
     let pmp = XvcPathMetadataProvider::new(output_snd, xvc_root)?;
-    watch!(&pmp);
 
     let pipeline_len = pipeline_steps.len();
-    watch!(pipeline_len);
 
     let mut dependency_graph = DiGraphMap::<XvcEntity, XvcDependency>::with_capacity(
         pipeline_len,
@@ -418,10 +412,6 @@ pub fn the_grand_pipeline_loop(
         .try_into()?;
     let default_step_timeout: u64 = 10000;
     let terminate_on_timeout = true;
-    let _step_timeouts: HStore<Duration> = pipeline_steps
-        .keys()
-        .map(|step_e| (*step_e, Duration::from_secs(default_step_timeout)))
-        .collect();
 
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
@@ -607,14 +597,6 @@ fn step_state_bulletin(
 }
 
 fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()> {
-    // We check all other steps states in Select.
-    // If we only block on this step's dependencies, two parallel steps will block each other forever.
-    let _other_steps: Vec<XvcEntity> = params
-        .steps
-        .iter()
-        .filter_map(|(e, _)| if *e != step_e { Some(*e) } else { None })
-        .collect();
-
     let step_state_sender = params.state_sender;
     let current_states = params.current_states.clone();
     let mut step_state = XvcStepState::begin();
@@ -787,9 +769,9 @@ fn s_no_need_to_run_f_run_never<'a>(
     s: &DoneWithoutRunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    info!(
+    output!(
         params.output_snd,
-        "Step {} has run_never set to true. Skipping.", params.step.name
+        "[NEVER] [{}]", params.step.name
     );
     Ok((s.keep_done(), params))
 }
@@ -798,9 +780,9 @@ fn s_no_need_to_run_f_diffs_not_changed<'a>(
     s: &DoneWithoutRunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    info!(
+    output!(
         params.output_snd,
-        "Dependencies for step {} hasn't changed. Skipping.", params.step.name
+        "[SKIP] [{}]", params.step.name
     );
     Ok((s.keep_done(), params))
 }
@@ -1486,7 +1468,7 @@ fn s_running_f_wait_process<'a>(
 
                 Some(exit_code) => match exit_code {
             ExitStatus::Exited(0) => {
-                output!(params.output_snd, "[DONE] {} ({})\n", step.name, step_command);
+                output!(params.output_snd, "[DONE] [{}] ({})\n", step.name, step_command);
                 return_state = Some(s.process_completed_successfully());
             }
             ,

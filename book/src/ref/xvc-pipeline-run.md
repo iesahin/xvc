@@ -56,7 +56,7 @@ You can run the default pipeline without specifying its name.
 $ xvc pipeline run
 [OUT] [hello] hello
 
-[DONE] hello (echo hello)
+[DONE] [hello] (echo hello)
 
 
 ```
@@ -85,7 +85,7 @@ $ xvc pipeline --pipeline-name my-pipeline step new --step-name my-hello --comma
 $ xvc pipeline run --pipeline-name my-pipeline
 [OUT] [my-hello] hello from my-pipeline
 
-[DONE] my-hello (echo 'hello from my-pipeline')
+[DONE] [my-hello] (echo 'hello from my-pipeline')
 
 
 ```

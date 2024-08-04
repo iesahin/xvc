@@ -77,7 +77,7 @@ $ xvc pipeline run
 Removed Lines:
 
 
-[DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
+[DONE] [print-top-10] (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
 
 
 ```
@@ -105,7 +105,7 @@ $ xvc pipeline run
 Removed Lines:
 "Hank",       "M",   30,       71,      158
 
-[DONE] print-top-10 (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
+[DONE] [print-top-10] (echo "Added Lines:/n ${XVC_ADDED_LINE_ITEMS}/nRemoved Lines:/n${XVC_REMOVED_LINE_ITEMS}")
 
 
 ```

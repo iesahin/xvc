@@ -16,7 +16,7 @@ use xvc_logging::{warn, watch};
 
 /// Shows which information is identical, missing or different in diff calculations.
 ///
-/// We use this to compare anything that's storable.
+/// We use this to compare anything that's Storable.
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Hash, Clone, Default)]
 #[serde(bound = "T: Serialize, for<'lt> T: Deserialize<'lt>")]
 pub enum Diff<T: Storable> {
@@ -39,9 +39,8 @@ pub enum Diff<T: Storable> {
         /// The value found in workspace
         actual: T,
     },
-    /// We skipped this comparison.
-    /// It's not an error, but it means we didn't compare this field.
-    /// It may be shortcutted, we don't care or irrelevant.
+    /// We skipped this comparison. It's not an error, but it means we didn't compare this field.
+    /// It may be shortcut, we don't care or irrelevant.
     #[default]
     Skipped,
 }
@@ -195,7 +194,7 @@ pub fn apply_diff<T: Storable>(
 
 impl<T: Storable> Diff<T> {
     /// Return true if the diff is not [Diff::Identical] or [Diff::Skipped].
-    /// This is used to find out if <T> has changed.
+    /// This is used to find out if T is changed.
     pub fn changed(&self) -> bool {
         match self {
             Diff::Identical => false,
@@ -279,7 +278,7 @@ impl<T: Storable, U: Storable, V: Storable, W: Storable> DiffStore4<T, U, V, W> 
     }
 }
 
-/// Used to find out if record and actual are different for type T.
+/// Used to find out if record and actual are different for type T
 pub trait Diffable {
     /// The type of the entity to compare.
     type Item: Storable;
@@ -289,7 +288,7 @@ pub trait Diffable {
     /// compare the content. )
     ///
     /// This is to convert optional entities to diffs.
-    /// e.g. a file may be missing from the disk, but it may exist in the records.
+    /// For example, a file may be missing from the disk, but it may exist in the records.
     /// ((Some(record), None) -> Diff::ActualMissing)
     fn diff(record: Option<&Self::Item>, actual: Option<&Self::Item>) -> Diff<Self::Item> {
         watch!(record);
@@ -316,7 +315,7 @@ pub trait Diffable {
     }
 
     /// This is to compare two entities with a quick comparison.
-    /// e.g. metadata of a file, timestamp of a URL etc.
+    /// Example: metadata of a file, timestamp of a URL etc.
     /// You may need to update actual's metadata or timestamp before calling this.
     fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         if record == actual {
@@ -330,7 +329,7 @@ pub trait Diffable {
     }
 
     /// This is to calculate two entities with a thorough comparison.
-    /// e.g. content of a file, content of a URL etc.
+    /// Example: content of a file, content of a URL etc.
     /// You may need to update actual's content before calling this.
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         Self::diff_superficial(record, actual)

@@ -90,12 +90,6 @@ pub fn compiled_glob(pipeline_rundir: &Path, glob: &str) -> Result<glob::Pattern
 }
 
 /// Returns all _non-ignored_ paths described with `glob` under `root_dir`
-#[cached(
-    ty = "UnboundCache<String, XvcPathMetadataMap>",
-    create = "{ UnboundCache::new() }",
-    convert = r#"{ format!("{}{}", root_dir, glob) }"#,
-    result = true
-)]
 pub fn glob_paths(
     pmp: &XvcPathMetadataProvider,
     root_dir: &XvcPath,
@@ -108,15 +102,6 @@ pub fn glob_paths(
 
 /// Checks whether `glob` includes `path`.
 /// Note that, if the `path` is ignored, this fn always returns false
-///
-/// WARNING: Assumes xvc_ignore doesn't change during the run.
-///          It caches the results by pipeline_rundir, glob and path as keys.
-#[cached(
-    ty = "UnboundCache<String, bool>",
-    create = "{ UnboundCache::new() }",
-    convert = r#"{ format!("{:?}##{}##{:?}", pipeline_rundir, glob, path) }"#,
-    result = true
-)]
 pub fn glob_includes(
     xvc_root: &XvcRoot,
     pmp: &XvcPathMetadataProvider,
@@ -134,12 +119,6 @@ pub fn glob_includes(
 }
 
 /// Checks whether path is under directory by checking first if it's in the `pmm` keys
-#[cached(
-    ty = "UnboundCache<String, bool>",
-    create = "{ UnboundCache::new() }",
-    convert = r#"{ format!("{:?}##{:?}", directory, path) }"#,
-    result = true
-)]
 pub fn dir_includes(pmm: &XvcPathMetadataMap, directory: &XvcPath, path: &XvcPath) -> Result<bool> {
     if pmm.contains_key(path) {
         // Makes a prefix comparison to see whether dir includes the path

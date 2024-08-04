@@ -311,14 +311,13 @@ fn thorough_compare_glob_items(
     cmp_params: &StepStateParams,
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
-    let actual = GlobItemsDep::from_pmp(
-        cmp_params.xvc_root,
-        cmp_params.pipeline_rundir,
-        record.glob.clone(),
-        cmp_params.pmp,
-    )?
-    .update_changed_paths_digests(record, cmp_params.xvc_root, cmp_params.algorithm)?;
 
+    let glob_root = cmp_params.pipeline_rundir;
+    let xvc_root = cmp_params.xvc_root;
+    let pmp = cmp_params.pmp;
+    let algorithm = cmp_params.algorithm;
+    // Calls update_paths in the update_changed_paths_digests method
+    let actual = record.clone().update_changed_paths_digests(record, xvc_root, glob_root, pmp, algorithm)?;
     Ok(GlobItemsDep::diff(Some(record), Some(&actual)))
 }
 
@@ -343,7 +342,7 @@ fn thorough_compare_regex(
 ) -> Result<Diff<RegexDep>> {
     let actual = RegexDep::new(record.path.clone(), record.regex.clone())
         .update_metadata(cmp_params.pmp.get(&record.path));
-    // Shortcircuit if the metadata is identical
+    // Short circuit if the metadata is identical
     match RegexDep::diff_superficial(record, &actual) {
         Diff::Different { record, actual } => {
             let actual = actual.update_digest(cmp_params.xvc_root, cmp_params.algorithm);
@@ -535,14 +534,8 @@ fn superficial_compare_glob_items(
     cmp_params: &StepStateParams,
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
-    let actual = GlobItemsDep::from_pmp(
-        cmp_params.xvc_root,
-        cmp_params.pipeline_rundir,
-        record.glob.clone(),
-        cmp_params.pmp,
-    )?
-    .update_changed_paths_digests(record, cmp_params.xvc_root, cmp_params.algorithm)?;
-
+    // We just compare the file list
+    let actual = record.clone().update_paths(cmp_params.pipeline_rundir, cmp_params.pmp)?;
     Ok(GlobItemsDep::diff_superficial(record, &actual))
 }
 

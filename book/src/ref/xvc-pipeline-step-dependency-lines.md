@@ -67,7 +67,7 @@ $ xvc pipeline run
 "Hank",       "M",   30,       71,      158
 "Ivan",       "M",   53,       72,      175
 
-[DONE] print-top-10 (head people.csv)
+[DONE] [print-top-10] (head people.csv)
 
 
 ``````
@@ -101,7 +101,7 @@ $ xvc pipeline run
 "Ferzan",       "M",   30,       71,      158
 "Ivan",       "M",   53,       72,      175
 
-[DONE] print-top-10 (head people.csv)
+[DONE] [print-top-10] (head people.csv)
 
 
 ```

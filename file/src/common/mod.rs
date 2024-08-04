@@ -318,16 +318,7 @@ pub fn recheck_from_cache(
     #[allow(clippy::permissions_set_readonly_false)]
     match recheck_method {
         RecheckMethod::Copy => {
-            watch!("Before copy");
-            watch!(&cache_path);
-            watch!(&path);
-            fs::copy(&cache_path, &path)?;
-            info!(output_snd, "[COPY] {} -> {}", cache_path, path);
-            let mut perm = path.metadata()?.permissions();
-            watch!(&perm);
-            perm.set_readonly(false);
-            watch!(&perm);
-            fs::set_permissions(&path, perm)?;
+            copy_file(output_snd, cache_path, path)?;
         }
         RecheckMethod::Hardlink => {
             fs::hard_link(&cache_path, &path)?;
@@ -337,26 +328,8 @@ pub fn recheck_from_cache(
             make_symlink(&cache_path, &path)?;
             info!(output_snd, "[SYMLINK] {} -> {}", cache_path, path);
         }
-        #[cfg(feature="reflink")]
         RecheckMethod::Reflink => {
-            match reflink::reflink_or_copy(&cache_path, &path) {
-                Ok(None) => {
-                    info!(output_snd, "[REFLINK] {} -> {}", cache_path, path);
-                }
-                Ok(Some(_)) => {
-                    warn!(
-                        output_snd,
-                        "File system doesn't support reflink. Copying instead."
-                    );
-                    info!(output_snd, "[COPY] {} -> {}", cache_path, path);
-                    let mut perm = path.metadata()?.permissions();
-                    perm.set_readonly(false);
-                    fs::set_permissions(&path, perm)?;
-                }
-                Err(source) => {
-                    Error::IoError { source }.error();
-                }
-            };
+            reflink(output_snd, cache_path, path)?;
         }
     }
     uwr!(
@@ -367,6 +340,46 @@ pub fn recheck_from_cache(
     );
     watch!("Return recheck_from_cache");
     Ok(())
+}
+
+#[cfg(feature="reflink")]
+fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
+    match reflink::reflink(&cache_path, &path) {
+        Ok(_) => {
+            info!(output_snd, "[REFLINK] {} -> {}", cache_path, path);
+            Ok(())
+        }
+        Err(e) => {
+            warn!(
+                output_snd,
+                "File system doesn't support reflink. {e}. Copying instead."
+            );
+            copy_file(output_snd, cache_path, path)
+        }
+    }
+}
+
+fn copy_file(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
+            watch!("Before copy");
+            watch!(&cache_path);
+            watch!(&path);
+            fs::copy(&cache_path, &path)?;
+            info!(output_snd, "[COPY] {} -> {}", cache_path, path);
+            let mut perm = path.metadata()?.permissions();
+            watch!(&perm);
+            perm.set_readonly(false);
+            watch!(&perm);
+            fs::set_permissions(&path, perm)?;
+    Ok(())
+}
+
+#[cfg(not(feature="reflink"))]
+fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
+    warn!(
+        output_snd,
+        "Xvc isn't compiled with reflink support. Copying the file."
+    );
+    copy_file(output_snd, cache_path, path)
 }
 
 /// All cache paths for all xvc paths.

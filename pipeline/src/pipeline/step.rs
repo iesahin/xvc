@@ -130,7 +130,10 @@ pub enum StepSubCommand {
         #[arg(long = "glob", aliases=&["globs"])]
         globs: Option<Vec<String>>,
 
-        /// Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times.
+        /// Add a parameter dependency to the step in the form filename.yaml::model.units
+        ///
+        /// The file can be a JSON, TOML, or YAML file. You can specify hierarchical keys like
+        /// my.dict.key 
         #[arg(long = "param", aliases = &["params"])]
         params: Option<Vec<String>>,
 

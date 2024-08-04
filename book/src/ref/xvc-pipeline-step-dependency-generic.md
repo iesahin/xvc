@@ -36,7 +36,7 @@ The step won't run until tomorrow, when `date +%F` changes.
 $ xvc pipeline run
 [OUT] [morning-message] Good Morning!
 
-[DONE] morning-message (echo 'Good Morning!')
+[DONE] [morning-message] (echo 'Good Morning!')
 
 
 ```
@@ -52,7 +52,7 @@ $ xvc pipeline step dependency --step-name directory-contents --generic 'ls'
 $ xvc pipeline run
 [OUT] [directory-contents] Files changed
 
-[DONE] directory-contents (echo 'Files changed')
+[DONE] [directory-contents] (echo 'Files changed')
 
 
 ```
@@ -66,7 +66,7 @@ $ xvc-test-helper generate-random-file new-file.txt
 $ xvc pipeline run
 [OUT] [directory-contents] Files changed
 
-[DONE] directory-contents (echo 'Files changed')
+[DONE] [directory-contents] (echo 'Files changed')
 
 
 ```

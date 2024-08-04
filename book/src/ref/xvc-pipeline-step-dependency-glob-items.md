@@ -63,7 +63,7 @@ dir-0002/file-0003.bin
 ### Changed Files:
 
 
-[DONE] files-changed (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
+[DONE] [files-changed] (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
 
 
 $ xvc pipeline run
@@ -83,7 +83,7 @@ dir-0001/file-0001.bin
 ### Changed Files:
 
 
-[DONE] files-changed (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
+[DONE] [files-changed] (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
 
 
 ```
@@ -101,7 +101,7 @@ $ xvc pipeline run
 ### Changed Files:
 dir-0001/file-0002.bin
 
-[DONE] files-changed (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
+[DONE] [files-changed] (echo "### Added Files:/n${XVC_ADDED_GLOB_ITEMS}/n### Removed Files:/n${XVC_REMOVED_GLOB_ITEMS}/n### Changed Files:/n${XVC_CHANGED_GLOB_ITEMS}")
 
 
 ```

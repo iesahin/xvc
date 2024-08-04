@@ -1,18 +1,22 @@
-# Introduction
-
-This document is a change log that I write for the project as I develop. It's a
-tree, and subtasks are marked with indentation.
-
 ## Unreleased
+
+## 0.6.10 (2024-08-04)
+
+- PR: <https://github.com/iesahin/xvc/pull/259>
+- Removed caching for globs that caused bugs in Python bindings and long running processes.
+- Documentation updates
+- Fix optional features. Now inter-workspace dependencies are defined by `default-features = false` on Cargo.toml
+- Added `bundled-openssl` feature to use `vendored` feature of `openssl` crate optionally. This is turned on for Windows builds on GA.
+- Crates are published from Github Actions
 
 ## 0.6.9 (2024-07-29)
 
 - Added sqlite-query dependency to xvc pipelines. A step is invalidated to run when the output from an SQLite query changes.
 - Moved bundled sqlite behind a feature flag, bundled_sqlite.
 - Merged xvc-workflow-tests crate to the main xvc crate.
-- Added compiling Xvc with non-default features to the book.
+- Added compiling Xvc with non-default features document
 
-### 0.6.8 (2024-07-15)
+## 0.6.8 (2024-07-15)
 
 - Modifications for Python bindings
 
@@ -76,7 +80,7 @@ tree, and subtasks are marked with indentation.
 
 - Major overhaul in pipelines
   - PR: <https://github.com/iesahin/xvc/pull/224/>
-  - Added `--generic`, `--url`, `--regex-items`, `--line-items`, `--glob-items`
+  - Added `--generic`, `--url`, `--regex-items`, `--line-items`, `--glob-items` dependencies
   - as dependency types to `xvc pipeline step dependency` command
   - Updated `xvc pipelines` to run the pipeline by creating a thread for each step.
   - Updated pipelines state machine
