@@ -8,7 +8,7 @@ tree, and subtasks are marked with indentation.
 - Removed caching for globs that caused bugs in Python bindings.
 - Documentation updates
 - Fix optional features. Now inter-workspace dependencies are defined by `default-features = false` on Cargo.toml
-- Added `bundled-openssl` feature to use `vendored` feature of `openssl` crate optionally. This is turned on for Windows.
+- Added `bundled-openssl` feature to use `vendored` feature of `openssl` crate optionally. This is turned on for Windows builds on GA.
 
 ## 0.6.9 (2024-07-29)
 

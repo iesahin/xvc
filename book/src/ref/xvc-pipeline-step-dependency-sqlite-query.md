@@ -61,7 +61,7 @@ Let's run the step without a dependency first.
 $ xvc pipeline run
 [OUT] [average-age] 34.6666666666667
 
-[DONE] average-age (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
+[DONE] [average-age] (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
 
 
 ```
@@ -83,7 +83,7 @@ So, when the number of people in the table changes, the step will run. Initially
 $ xvc pipeline run
 [OUT] [average-age] 34.6666666666667
 
-[DONE] average-age (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
+[DONE] [average-age] (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
 
 
 ```
@@ -107,7 +107,7 @@ This time, the step will run again as the result from dependency query (`SELECT 
 $ xvc pipeline run
 [OUT] [average-age] 33.3684210526316
 
-[DONE] average-age (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
+[DONE] [average-age] (sqlite3 people.db 'SELECT AVG(Age) FROM People;')
 
 
 ```

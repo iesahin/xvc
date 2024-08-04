@@ -43,7 +43,9 @@ Options:
           The difference between this and the glob-items option is that the glob-items option keeps track of all matching files individually, but this option only keeps track of the matched files' digest. This dependency uses considerably less disk space.
 
       --param <PARAMS>
-          Add a parameter dependency to the step in the form filename.yaml::model.units . Can be used multiple times
+          Add a parameter dependency to the step in the form filename.yaml::model.units
+          
+          The file can be a JSON, TOML, or YAML file. You can specify hierarchical keys like my.dict.key
 
       --regex_items <REGEX_ITEMS>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.

@@ -25,11 +25,11 @@ When run, the dependency will be run first and the step will be run after.
 $ xvc pipeline run
 [OUT] [hello] hello
 
-[DONE] hello (echo hello)
+[DONE] [hello] (echo hello)
 
 [OUT] [world] world
 
-[DONE] world (echo world)
+[DONE] [world] (echo world)
 
 
 ```
@@ -49,7 +49,7 @@ $ xvc pipeline step update --step-name world --when always
 $ xvc pipeline run
 [OUT] [world] world
 
-[DONE] world (echo world)
+[DONE] [world] (echo world)
 
 
 ```
