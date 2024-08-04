@@ -1,11 +1,8 @@
-# Introduction
-
-This document is a change log that I write for the project as I develop. It's a
-tree, and subtasks are marked with indentation.
-
 ## Unreleased
 
-- Removed caching for globs that caused bugs in Python bindings.
+## 0.6.10 (2024-08-04)
+
+- Removed caching for globs that caused bugs in Python bindings and long running processes.
 - Documentation updates
 - Fix optional features. Now inter-workspace dependencies are defined by `default-features = false` on Cargo.toml
 - Added `bundled-openssl` feature to use `vendored` feature of `openssl` crate optionally. This is turned on for Windows builds on GA.

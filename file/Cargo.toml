@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.6.10-alpha.2"
+version = "0.6.10"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -21,12 +21,12 @@ test = true
 bench = true
 
 [dependencies]
-xvc-logging = { version = "0.6.10-alpha.2", path = "../logging" }
-xvc-config = { version = "0.6.10-alpha.2", path = "../config" }
-xvc-core = { version = "0.6.10-alpha.2", path = "../core" }
-xvc-ecs = { version = "0.6.10-alpha.2", path = "../ecs" }
-xvc-walker = { version = "0.6.10-alpha.2", path = "../walker" }
-xvc-storage = { version = "0.6.10-alpha.2", path = "../storage", default-features = false }
+xvc-logging = { version = "0.6.10", path = "../logging" }
+xvc-config = { version = "0.6.10", path = "../config" }
+xvc-core = { version = "0.6.10", path = "../core" }
+xvc-ecs = { version = "0.6.10", path = "../ecs" }
+xvc-walker = { version = "0.6.10", path = "../walker" }
+xvc-storage = { version = "0.6.10", path = "../storage", default-features = false }
 
 
 ## Cli and config
@@ -94,5 +94,5 @@ default = ["reflink"]
 reflink = ["dep:reflink"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.10-alpha.2", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.10", path = "../test_helper/" }
 shellfn = "^0.1"
