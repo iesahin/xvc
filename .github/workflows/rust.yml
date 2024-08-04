@@ -26,7 +26,8 @@ jobs:
           # - build: beta
           #   rust: beta
           - build: nightly
-            rust: nightly-2024-01-01
+            rust: nightly
+            # rust: nightly-2024-01-01
             test-args: --features test-ci --no-fail-fast
             ## for submitters other than me, I'll add another job here.
             # test-args: --no-fail-fast

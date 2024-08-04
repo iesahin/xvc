@@ -2,6 +2,7 @@
 
 ## 0.6.10 (2024-08-04)
 
+- PR: <https://github.com/iesahin/xvc/pull/259>
 - Removed caching for globs that caused bugs in Python bindings and long running processes.
 - Documentation updates
 - Fix optional features. Now inter-workspace dependencies are defined by `default-features = false` on Cargo.toml
