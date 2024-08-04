@@ -158,7 +158,7 @@ jobs:
         with:
           use-cross: false
           command: build
-          args: --release --target ${{ matrix.target }}
+          args: --release --target ${{ matrix.target }} --features=bundled-openssl
 
       - name: Package
         shell: bash
