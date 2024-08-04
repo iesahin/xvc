@@ -80,7 +80,7 @@
 
 - Major overhaul in pipelines
   - PR: <https://github.com/iesahin/xvc/pull/224/>
-  - Added `--generic`, `--url`, `--regex-items`, `--line-items`, `--glob-items`
+  - Added `--generic`, `--url`, `--regex-items`, `--line-items`, `--glob-items` dependencies
   - as dependency types to `xvc pipeline step dependency` command
   - Updated `xvc pipelines` to run the pipeline by creating a thread for each step.
   - Updated pipelines state machine
