@@ -25,4 +25,4 @@ xvc-logging = { version = "0.6.10", path = "../logging/" }
 rand = "^0.8"
 log = "^0.4"
 anyhow = "^1.0"
-clap = { version = "^4.4", features = ["derive"] }
+clap = { version = "^4.5", features = ["derive"] }
