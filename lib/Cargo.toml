@@ -27,9 +27,10 @@ xvc-ecs = { version = "0.6.10", path = "../ecs" }
 xvc-file = { version = "0.6.10", path = "../file", default-features = false }
 xvc-pipeline = { version = "0.6.10", path = "../pipeline" }
 xvc-walker = { version = "0.6.10", path = "../walker" }
+xvc-storage = { version = "0.6.10", path = "../storage", default-features = false }
+
 ## Cli and config
 clap = { version = "^4.4", features = ["derive", "cargo"] }
-xvc-storage = { version = "0.6.10", path = "../storage", default-features = false }
 directories-next = "2.0"
 
 ## Hashing
@@ -55,7 +56,6 @@ crossbeam = "^0.8"
 
 ## File system
 subprocess = "^0.2"
-# reflink = { version = "^0.1", optional = true }
 relative-path = { version = "^1.9", features = ["serde"] }
 path-absolutize = "^3.1"
 glob = "^0.3"
