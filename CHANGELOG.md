@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bump dependencies
+
 ## 0.6.10 (2024-08-04)
 
 - PR: <https://github.com/iesahin/xvc/pull/259>
