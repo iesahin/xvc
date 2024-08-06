@@ -1,10 +1,13 @@
 //! Git operations
 use std::path::{Path, PathBuf};
 
+use xvc_logging::watch;
 use xvc_walker::{build_ignore_rules, AbsolutePath, IgnoreRules};
 
 use crate::error::Result;
 use crate::GIT_DIR;
+
+use crate::PEAK_ALLOC;
 
 /// Check whether a path is inside a Git repository.
 /// It returns `None` if not, otherwise returns the closest directory with `.git`.
@@ -27,9 +30,13 @@ pub fn inside_git(path: &Path) -> Option<PathBuf> {
 /// Returns [xvc_walker::IgnoreRules] for `.gitignore`
 /// It's used to check whether a path is already ignored by Git.
 pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
+
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let initial_rules = IgnoreRules::empty(git_root);
+    watch!(PEAK_ALLOC.current_usage_as_mb());
 
     let rules = build_ignore_rules(initial_rules, git_root, ".gitignore")?;
+    watch!(PEAK_ALLOC.current_usage_as_mb());
 
     Ok(rules)
 }

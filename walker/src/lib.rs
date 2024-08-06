@@ -33,6 +33,11 @@ pub use notify::RecommendedWatcher;
 
 use xvc_logging::watch;
 
+use peak_alloc::PeakAlloc;
+
+#[global_allocator]
+pub static PEAK_ALLOC: PeakAlloc = PeakAlloc;
+
 use crossbeam_channel::Sender;
 // use glob::{MatchOptions, Pattern, PatternError};
 pub use globset::{self, Glob, GlobSet, GlobSetBuilder};
@@ -479,17 +484,26 @@ pub fn build_ignore_rules(
     dir: &Path,
     ignore_filename: &str,
 ) -> Result<IgnoreRules> {
+
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let elements = dir
         .read_dir()
         .map_err(|e| anyhow!("Error reading directory: {:?}, {:?}", dir, e))?;
 
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let mut child_dirs = Vec::<PathBuf>::new();
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let ignore_fn = OsString::from(ignore_filename);
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     xvc_logging::watch!(ignore_fn);
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let ignore_root = given.root.clone();
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     xvc_logging::watch!(ignore_root);
     let mut ignore_rules = given;
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let mut new_patterns: Option<Vec<GlobPattern>> = None;
+    watch!(PEAK_ALLOC.current_usage_as_mb());
 
     for entry in elements {
         match entry {
@@ -521,19 +535,25 @@ pub fn build_ignore_rules(
         }
     }
 
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     if let Some(new_patterns) = new_patterns {
         ignore_rules.update(new_patterns)?;
     }
 
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     for child_dir in child_dirs {
+    watch!(PEAK_ALLOC.current_usage_as_mb());
         match check_ignore(&ignore_rules, &child_dir) {
             MatchResult::NoMatch | MatchResult::Whitelist => {
+    watch!(PEAK_ALLOC.current_usage_as_mb());
                 ignore_rules = build_ignore_rules(ignore_rules, &child_dir, ignore_filename)?;
+    watch!(PEAK_ALLOC.current_usage_as_mb());
             }
             MatchResult::Ignore => {}
         }
     }
 
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     Ok(ignore_rules)
 }
 
@@ -752,8 +772,9 @@ pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     watch!(path_str);
     let final_slash = path_str.ends_with('/');
     watch!(final_slash);
-
+    
     let path = if is_abs {
+
         if final_slash {
             format!(
                 "/{}/",
@@ -774,13 +795,16 @@ pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
     };
 
     watch!(path);
-    if ignore_rules.whitelist_set.read().unwrap().is_match(&path) {
+    watch!(PEAK_ALLOC.current_usage_as_mb());
+    let result = if ignore_rules.whitelist_set.read().unwrap().is_match(&path) {
         MatchResult::Whitelist
     } else if ignore_rules.ignore_set.read().unwrap().is_match(&path) {
         MatchResult::Ignore
     } else {
         MatchResult::NoMatch
-    }
+    };
+    watch!(PEAK_ALLOC.current_usage_as_mb());
+    result
 }
 
 /// Return all childs of a directory regardless of any ignore rules

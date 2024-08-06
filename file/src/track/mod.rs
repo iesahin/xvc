@@ -14,7 +14,7 @@ use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
-use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
+use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot, PEAK_ALLOC};
 use xvc_logging::{watch, XvcOutputSender};
 
 use crate::carry_in::carry_in;
@@ -31,6 +31,7 @@ use std::path::PathBuf;
 use xvc_core::RecheckMethod;
 use xvc_core::XvcPath;
 use xvc_ecs::{HStore, XvcEntity};
+
 
 /// Add files for tracking with Xvc
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
@@ -219,15 +220,26 @@ pub fn cmd_track(
         })
         .collect();
 
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let current_gitignore = build_gitignore(xvc_root)?;
 
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     watch!(file_targets);
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     watch!(dir_targets);
+    watch!(PEAK_ALLOC.current_usage_as_mb());
 
     update_dir_gitignores(xvc_root, &current_gitignore, &dir_targets)?;
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     // We reload gitignores here to make sure we ignore the given dirs
+
+    watch!(PEAK_ALLOC.current_usage_as_mb());
     let current_gitignore = build_gitignore(xvc_root)?;
+    watch!(PEAK_ALLOC.current_usage_as_mb());
+
     update_file_gitignores(xvc_root, &current_gitignore, &file_targets)?;
+    watch!(PEAK_ALLOC.current_usage_as_mb());
+
 
     if !opts.no_commit {
         let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -285,5 +297,6 @@ pub fn cmd_track(
             opts.force,
         )?;
     }
+
     Ok(())
 }
