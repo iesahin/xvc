@@ -1,6 +1,6 @@
 [package]
 name = "xvc-logging"
-version = "0.6.10"
+version = "0.6.11-alpha.5"
 edition = "2021"
 description = "Logging crate for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -18,6 +18,7 @@ crate-type = ["rlib"]
 [dependencies]
 
 ## Logging and errors
+peak_alloc = "^0.2"
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
 # We don't use sled anymore, keep the above note for future reference

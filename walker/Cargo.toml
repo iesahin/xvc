@@ -1,6 +1,6 @@
 [package]
 name = "xvc-walker"
-version = "0.6.10"
+version = "0.6.11-alpha.5"
 edition = "2021"
 description = "Xvc parallel file system walker with ignore features"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,7 +16,7 @@ name = "xvc_walker"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.10", path = "../logging" }
+xvc-logging = { version = "0.6.11-alpha.5", path = "../logging" }
 globset = "^0.4"
 
 ## Parallelization
@@ -32,13 +32,14 @@ dashmap = "^6"
 thiserror = "^1.0"
 anyhow = "^1.0"
 log = "^0.4"
+peak_alloc = "^0.2"
 
 ## Misc
 itertools = "^0.13"
 regex = "^1.10"
 
 [dev-dependencies]
-xvc-test-helper = { path = "../test_helper/", version = "0.6.10" }
+xvc-test-helper = { path = "../test_helper/", version = "0.6.11-alpha.5" }
 test-case = "^3.3"
 
 [package.metadata.cargo-udeps.ignore]
