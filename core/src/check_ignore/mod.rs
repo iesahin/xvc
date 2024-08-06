@@ -43,8 +43,8 @@ pub struct CheckIgnoreCLI {
 
 impl UpdateFromXvcConfig for CheckIgnoreCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
-        let details = self.details || conf.get_bool("check_ignore.details")?.option;
-        let non_matching = self.non_matching || conf.get_bool("check_ignore.non_matching")?.option;
+        let details = self.details || conf.get_bool("check-ignore.details")?.option;
+        let non_matching = self.non_matching;
         let ignore_filename = self.ignore_filename.clone();
         Ok(Box::new(Self {
             details,

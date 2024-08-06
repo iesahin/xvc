@@ -48,6 +48,8 @@ pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_p
 pub use util::pmp::XvcPathMetadataProvider;
 pub use util::XvcPathMetadataMap;
 
+pub use xvc_walker::PEAK_ALLOC;
+
 /// Channel size for [crossbeam_channel::bounded] used across the library.
 /// TODO: This can be configurable for smaller/larger RAM sizes.
 pub const CHANNEL_BOUND: usize = 1000000;
@@ -222,7 +224,10 @@ default = "default"
 default_params_file = "params.yaml"
 # Number of command processes to run concurrently
 process_pool_size = 4
-# 
+ 
+[check-ignore]
+# Show details by default
+details = false
 
 "##,
         guid = guid,
