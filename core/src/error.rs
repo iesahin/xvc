@@ -130,11 +130,6 @@ pub enum Error {
         #[from]
         source: relative_path::FromPathError,
     },
-    #[error("Glob error: {source}")]
-    GlobSetError {
-        #[from]
-        source: xvc_walker::globset::Error,
-    },
 
     #[error("Cannot find parent path")]
     CannotFindParentPath { path: PathBuf },
