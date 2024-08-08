@@ -559,7 +559,7 @@ pub fn build_ignore_rules(
         match entry {
             Ok(entry) => {
                 if entry.path().is_dir() {
-                    xvc_logging::watch!(entry.path());
+                    watch!(entry.path());
                     child_dirs.push(entry.path());
                 }
                 if entry.file_name() == ignore_fn && entry.path().exists() {
@@ -585,45 +585,20 @@ pub fn build_ignore_rules(
         }
     }
 
-    watch!(PEAK_ALLOC.current_usage_as_mb());
     if let Some(new_patterns) = new_patterns {
         ignore_rules.update(new_patterns)?;
     }
 
-    watch!(PEAK_ALLOC.current_usage_as_mb());
     for child_dir in child_dirs {
-    watch!(PEAK_ALLOC.current_usage_as_mb());
         match check_ignore(&ignore_rules, &child_dir) {
             MatchResult::NoMatch | MatchResult::Whitelist => {
-    watch!(PEAK_ALLOC.current_usage_as_mb());
                 ignore_rules = build_ignore_rules(ignore_rules, &child_dir, ignore_filename)?;
-    watch!(PEAK_ALLOC.current_usage_as_mb());
             }
             MatchResult::Ignore => {}
         }
     }
 
-    watch!(PEAK_ALLOC.current_usage_as_mb());
     Ok(ignore_rules)
-}
-
-fn clear_glob_errors(
-    sender: &Sender<Result<PathMetadata>>,
-    new_patterns: Vec<Pattern<Result<Glob>>>,
-) -> Vec<Pattern<Glob>> {
-    let new_glob_patterns: Vec<Pattern<Glob>> = new_patterns
-        .into_iter()
-        .filter_map(|p| match p.transpose() {
-            Ok(p) => Some(p),
-            Err(e) => {
-                sender
-                    .send(Err(Error::from(anyhow!("Error in glob pattern: {:?}", e))))
-                    .expect("Error in channel");
-                None
-            }
-        })
-        .collect();
-    new_glob_patterns
 }
 
 fn transform_pattern_for_glob(pattern: Pattern<String>) -> Pattern<String> {
