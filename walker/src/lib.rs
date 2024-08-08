@@ -541,25 +541,19 @@ pub fn build_ignore_rules(
     ignore_filename: &str,
 ) -> Result<IgnoreRules> {
 
-    watch!(PEAK_ALLOC.current_usage_as_mb());
     let elements = dir
         .read_dir()
         .map_err(|e| anyhow!("Error reading directory: {:?}, {:?}", dir, e))?;
 
-    watch!(PEAK_ALLOC.current_usage_as_mb());
     let mut child_dirs = Vec::<PathBuf>::new();
-    watch!(PEAK_ALLOC.current_usage_as_mb());
     let ignore_fn = OsString::from(ignore_filename);
-    watch!(PEAK_ALLOC.current_usage_as_mb());
-    xvc_logging::watch!(ignore_fn);
-    watch!(PEAK_ALLOC.current_usage_as_mb());
+    watch!(ignore_fn);
     let ignore_root = given.root.clone();
-    watch!(PEAK_ALLOC.current_usage_as_mb());
-    xvc_logging::watch!(ignore_root);
+    watch!(ignore_root);
+
     let mut ignore_rules = given;
-    watch!(PEAK_ALLOC.current_usage_as_mb());
+
     let mut new_patterns: Option<Vec<GlobPattern>> = None;
-    watch!(PEAK_ALLOC.current_usage_as_mb());
 
     for entry in elements {
         match entry {
