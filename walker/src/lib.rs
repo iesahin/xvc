@@ -18,8 +18,11 @@ pub use abspath::AbsolutePath;
 use crossbeam::queue::SegQueue;
 pub use error::{Error, Result};
 pub use ignore_rules::IgnoreRules;
+use jwalk::WalkDirGeneric;
 pub use notify::make_watcher;
+use std::borrow::BorrowMut;
 pub use std::hash::Hash;
+use std::ops::DerefMut;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::RwLock;
@@ -40,7 +43,7 @@ pub static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 
 use crossbeam_channel::Sender;
 // use glob::{MatchOptions, Pattern, PatternError};
-pub use globset::{self, Glob, GlobSet, GlobSetBuilder};
+pub use fast_glob::Glob;
 use std::{
     ffi::OsString,
     fmt::Debug,
@@ -158,26 +161,8 @@ impl<T: PartialEq + Hash> Pattern<T> {
     }
 }
 
-impl<T: PartialEq + Hash> Pattern<Result<T>> {
-    /// Convert from `Pattern<Result<T>>` to `Result<Pattern<Ok>>` to get the result from
-    /// [Self::map]
-    fn transpose(self) -> Result<Pattern<T>> {
-        match self.pattern {
-            Ok(p) => Ok(Pattern::<T> {
-                pattern: p,
-                original: self.original,
-                source: self.source,
-                effect: self.effect,
-                relativity: self.relativity,
-                path_kind: self.path_kind,
-            }),
-            Err(e) => Err(e),
-        }
-    }
-}
-
 /// One of the concrete types that can represent a pattern.
-type GlobPattern = Pattern<Glob>;
+type GlobPattern = Pattern<String>;
 
 /// What's the ignore file name and should we add directories to the result?
 #[derive(Debug, Clone)]
@@ -477,6 +462,77 @@ pub fn walk_serial(
 
     Ok((res_paths, ignore_rules))
 }
+
+/// FIXME: This should be Arc<RwLock<Glob>>> when Glob.is_match doesn't require mutable self
+type IgnoreGlob = Arc<Mutex<Glob>>;
+
+/// Builds a [fast_glob::Glob] used to ignore files in they match
+///
+/// This doesn't keep track of where the ignore rules are gathered. It's used for basic operations. 
+pub fn build_ignore_glob(
+    given: &str,
+    ignore_root: &Path,
+    ignore_filename: &str,
+) -> Result<IgnoreGlob> {
+
+    let mut glob = IgnoreGlob::new(Mutex::new(Glob::new(given)));
+
+    let ignore_file_walker = WalkDirGeneric::<((usize),(bool))>::new(ignore_root)
+    .process_read_dir(|depth, path, read_dir_state, children| {
+        // Keep only ignore files
+        children.retain(|dir_entry_result| {
+            dir_entry_result.as_ref().map(|dir_entry| {
+                match dir_entry.file_type {
+                    FileType::Dir => {
+                        // Don't read ignored directories
+                        let ignored_dir = glob.borrow_mut().deref_mut().is_match(
+                            &format!(
+                                "/{}/",
+                                dir_entry.path().strip_prefix(&ignore_root).unwrap().to_string_lossy()
+                            )
+                        );
+                        if ignored_dir {
+                            dir_entry.read_children_path = None;
+                            return false;
+                        }
+                    }
+                    FileType::File => {
+                        // Read only ignore files
+                        dir_entry.file_name()
+                        .to_str()
+                        .map(|s| s == ignore_filename)
+                        .unwrap_or(false)
+                    }
+                }
+            }).unwrap_or(false)
+        });
+    });
+    for entry in walk_dir {
+        if let Ok(entry) = entry {
+            assert!(entry.file_type.is_dir() || entry.file_name.to_str() == Some(ignore_filename));
+
+            let content = fs::read_to_string(entry.path())?;
+            let entry_root = entry.path().strip_prefix(&ignore_root).unwrap();
+
+        let ignore_rules = content.lines().filter_map(|line| {
+            if line.trim().is_empty() || line.trim().starts_with('#') {
+            None
+            } else {
+            Some(format!("{}/{}", entry_root, line))
+            }
+        }).for_each(|line| {
+                    // FIXME: A small optimization is to add all patterns at once with a single
+                    // unlock
+                glob.borrow_mut().deref_mut().add(&line);
+            });
+        } else {
+            debug!("Error reading ignore file: {:?}", entry.unwrap_err());
+        }
+    }
+
+    Ok(glob)
+}
+
 
 /// Just build the ignore rules with the given directory
 pub fn build_ignore_rules(
