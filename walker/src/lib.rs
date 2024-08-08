@@ -638,7 +638,7 @@ fn build_globset(patterns: &Vec<String>) -> Result<Glob> {
 fn patterns_from_file(
     ignore_root: &Path,
     ignore_path: &Path,
-) -> Result<Vec<Pattern<Result<Glob>>>> {
+) -> Result<Vec<GlobPattern>> {
     watch!(ignore_root);
     watch!(ignore_path);
     let content = fs::read_to_string(ignore_path).with_context(|| {
@@ -663,8 +663,8 @@ pub fn content_to_patterns(
     ignore_root: &Path,
     source: Option<&Path>,
     content: &str,
-) -> Vec<Pattern<Result<Glob>>> {
-    let patterns: Vec<Pattern<Result<Glob>>> = content
+) -> Vec<GlobPattern> {
+    let patterns: Vec<GlobPattern> = content
         .lines()
         .enumerate()
         // A line starting with # serves as a comment. Put a backslash ("\") in front of the first hash for patterns that begin with a hash.
@@ -695,7 +695,6 @@ pub fn content_to_patterns(
         })
         .map(|(line, source)| build_pattern(source, line))
         .map(transform_pattern_for_glob)
-        .map(|pc| pc.map(|s| Glob::new(&s).map_err(Error::from)))
         .collect();
 
     patterns
@@ -819,16 +818,18 @@ pub fn check_ignore(ignore_rules: &IgnoreRules, path: &Path) -> MatchResult {
         path_str.to_string()
     };
 
+    // FIXME: Current fast_glob implementation requires &mut self in is_match, possibly to avoid to
+    // clone internal state. This requires to lock the ignore_rules for each call. It's possible to
+    // keep a clone of the ignore_rules for each thread with a design change -- or fork the glob
+    // lib. 
     watch!(path);
-    watch!(PEAK_ALLOC.current_usage_as_mb());
-    let result = if ignore_rules.whitelist_set.read().unwrap().is_match(&path) {
+    let result = if ignore_rules.whitelist_set.write().unwrap().is_match(&path) {
         MatchResult::Whitelist
-    } else if ignore_rules.ignore_set.read().unwrap().is_match(&path) {
+    } else if ignore_rules.ignore_set.write().unwrap().is_match(&path) {
         MatchResult::Ignore
     } else {
         MatchResult::NoMatch
     };
-    watch!(PEAK_ALLOC.current_usage_as_mb());
     result
 }
 
@@ -948,11 +949,8 @@ mod tests {
         patterns.len()
     }
 
-    fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern<Glob>> {
+    fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<GlobPattern> {
         content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
-            .into_iter()
-            .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
-            .collect()
     }
 
     fn new_dir_with_ignores(
