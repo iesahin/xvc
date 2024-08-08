@@ -7,11 +7,11 @@ use std::fs::OpenOptions;
 use std::io::Write;
 
 use std::thread::JoinHandle;
-use xvc_core::util::git::build_gitignore;
+use xvc_core::{util::git::build_gitignore};
 
-use crate::Result;
+use crate::{Result, CHANNEL_CAPACITY};
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_logging::{debug, error, info, uwr, XvcOutputSender};
+use xvc_logging::{debug, error, info, uwr, watch, XvcOutputSender};
 use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
 
 /// Used to signal ignored files and directories to the ignore handler
@@ -39,11 +39,12 @@ pub fn make_ignore_handler(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
 ) -> Result<(Sender<IgnoreOp>, JoinHandle<()>)> {
-    let (sender, receiver) = crossbeam_channel::unbounded();
+    let (sender, receiver) = crossbeam_channel::bounded(CHANNEL_CAPACITY);
     let output_snd = output_snd.clone();
     let xvc_root = xvc_root.absolute_path().clone();
 
     let handle = std::thread::spawn(move || {
+
         let mut ignore_dirs = Vec::<XvcPath>::new();
         let mut ignore_files = Vec::<XvcPath>::new();
 
@@ -75,10 +76,12 @@ pub fn make_ignore_handler(
             }
         }
         debug!(output_snd, "Writing directories to .gitignore");
+
         uwr!(
             update_dir_gitignores(&xvc_root, &gitignore, &ignore_dirs),
             output_snd
         );
+
         // Load again to get ignored directories
         let gitignore = build_gitignore(&xvc_root).unwrap();
         debug!(output_snd, "Writing files to .gitignore");
@@ -101,6 +104,7 @@ pub fn update_dir_gitignores(
     current_gitignore: &IgnoreRules,
     dirs: &[XvcPath],
 ) -> Result<()> {
+
     // Check if dirs are already ignored
     let dirs: Vec<XvcPath> = dirs
         .iter()
@@ -127,7 +131,7 @@ pub fn update_dir_gitignores(
                     None
                 }
             }}).collect();
-
+ 
     // Check if files are already ignored
     let mut changes = HashMap::<RelativePathBuf, Vec<String>>::new();
 
