@@ -624,15 +624,15 @@ fn transform_pattern_for_glob(pattern: Pattern<String>) -> Pattern<String> {
     }
 }
 
-fn build_globset(patterns: Vec<Glob>) -> Result<GlobSet> {
-    let mut gs_builder = GlobSetBuilder::new();
+fn build_globset(patterns: &Vec<String>) -> Result<Glob> {
+    let mut glob = Glob::new("").expect("Error building glob set");
 
     for p in patterns {
-        gs_builder.add(p.clone());
+        if !glob.add(&p) {
+        return Err(anyhow!("Error adding pattern {} to glob set", p).into());
+     }
     }
-    gs_builder
-        .build()
-        .map_err(|e| anyhow!("Error building glob set: {:?}", e).into())
+    Ok(glob)
 }
 
 fn patterns_from_file(
