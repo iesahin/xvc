@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use globset::Glob;
+use fast_glob::Glob;
 use log::LevelFilter;
 use xvc_walker::*;
 
