@@ -28,7 +28,7 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
-use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder, PathSync};
+use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, IgnoreRules, PathSync, Source};
 
 use self::gitignore::IgnoreOp;
 
@@ -146,28 +146,63 @@ pub fn filter_targets_from_store(
 /// Filter a set of paths by a set of globs. The globs are compiled into a
 /// GlobSet and paths are checked against the set.
 pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Result<HStore<XvcPath>> {
-    let mut glob_matcher = GlobSetBuilder::new();
-    globs.iter().for_each(|t| {
+    if globs.is_empty() {
+    return Ok(paths.to_owned()) 
+    }
+
+    let mut glob_matcher = globs.first().and_then(|glob| Glob::new(glob)).unwrap();
+    globs.iter().skip(1).for_each(|t| {
         watch!(t);
         if t.ends_with('/') {
-            glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
+            glob_matcher.add(&format!("{t}**"));
         } else {
-            glob_matcher.add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
+            glob_matcher.add(&format!("{t}/**"));
         }
-        glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
     });
-    let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
 
     let paths = paths
-        .filter(|_, p| {
+        .iter()
+        .filter_map(|(e, p)| {
             let str_path = &p.as_relative_path().as_str();
 
-            glob_matcher.is_match(str_path)
+            if glob_matcher.is_match(str_path) {
+                Some((*e, p.clone()))
+                } else {
+                    None
+                }
         })
-        .cloned();
-
+        .collect();
     watch!(paths);
+    
     Ok(paths)
+}
+
+pub fn build_glob_matcher(output_snd: &XvcOutputSender, dir: &Path, globs: &[String]) -> Result<Glob> {
+
+    let source = Source::Global;
+
+    let mut glob_matcher = globs.first().and_then(|glob| Glob::new(glob)).unwrap();
+    globs.iter().skip(1).for_each(|t| {
+        globs.iter().for_each(|t| {
+            if t.ends_with('/') {
+                if !glob_matcher.add(&format!("{t}**")) {
+                    error!(output_snd, "Error in glob: {t}");
+                }
+            } else if !t.contains('*') {
+                let abs_target = dir.join(Path::new(t));
+                if abs_target.is_dir() {
+                   if !glob_matcher.add(&format!("{t}/**")) {
+                    error!(output_snd, "Error in glob: {t}")
+                    }
+                } else if !glob_matcher.add(t) {
+                    error!(output_snd, "Error in glob: {t}")
+                }
+            } else if !glob_matcher.add(t) {
+                error!(output_snd, "Error in glob: {t}")
+            }
+        });
+    });
+    Ok(glob_matcher)
 }
 
 /// Converts targets to a map of XvcPaths and their metadata. It walks the file
@@ -186,6 +221,7 @@ pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Resul
 /// repositories.
 
 pub fn targets_from_disk(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
@@ -203,29 +239,20 @@ pub fn targets_from_disk(
             None => vec![cwd.to_string()],
         };
 
-        return targets_from_disk(xvc_root, xvc_root.absolute_path(), &Some(targets));
+        return targets_from_disk(output_snd, xvc_root, xvc_root.absolute_path(), &Some(targets));
     }
+    // FIXME: If there are no globs/directories in the targets, no need to retrieve all the paths
+    // here. 
     let (all_paths, _) = all_paths_and_metadata(xvc_root);
 
     watch!(all_paths);
 
     if let Some(targets) = targets {
-        let mut glob_matcher = GlobSetBuilder::new();
-        targets.iter().for_each(|t| {
-            if t.ends_with('/') {
-                glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
-            } else if !t.contains('*') {
-                let abs_target = current_dir.join(Path::new(t));
-                if abs_target.is_dir() {
-                    glob_matcher.add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
-                } else {
-                    glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
-                }
-            } else {
-                glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
-            }
-        });
-        let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
+        if targets.is_empty() {
+            return Ok(XvcPathMetadataMap::new());
+        }
+
+        let mut glob_matcher = build_glob_matcher(output_snd, &xvc_root, targets)?;
         watch!(glob_matcher);
         Ok(all_paths
             .into_iter()

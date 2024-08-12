@@ -8,6 +8,8 @@ pub mod root;
 pub mod types;
 pub mod util;
 
+use std::ffi::OsStr;
+
 pub use types::hashalgorithm::HashAlgorithm;
 pub use types::recheckmethod::RecheckMethod;
 
@@ -47,8 +49,6 @@ pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_p
 
 pub use util::pmp::XvcPathMetadataProvider;
 pub use util::XvcPathMetadataMap;
-
-pub use xvc_walker::PEAK_ALLOC;
 
 /// Channel size for [crossbeam_channel::bounded] used across the library.
 /// TODO: This can be configurable for smaller/larger RAM sizes.

@@ -1,6 +1,5 @@
 use std::{
-    fs,
-    path::{Path, PathBuf},
+    ffi::OsString, fs, path::{Path, PathBuf}
 };
 
 use fast_glob::Glob;
@@ -45,17 +44,14 @@ fn new_dir_with_ignores(
     initial_patterns: &str,
 ) -> Result<IgnoreRules> {
     let patterns = create_patterns(root, dir, initial_patterns);
-    let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
+    let initialized = IgnoreRules::empty(&PathBuf::from(root));
     watch!(patterns);
-    initialized.update(patterns).unwrap();
+    initialized.add_patterns(patterns).unwrap();
     Ok(initialized)
 }
 
-fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern<Glob>> {
+fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern> {
     xvc_walker::content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
-        .into_iter()
-        .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
-        .collect()
 }
 
 #[test_case("", "" => it contains "dir-0002/file-0001.bin" ; "t3733909666")]
@@ -85,7 +81,7 @@ fn test_walk_parallel(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     .unwrap();
     let initial_rules = new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap();
     let walk_options = WalkOptions {
-        ignore_filename: Some(".gitignore".to_string()),
+        ignore_filename: Some(OsString::from(".gitignore")),
         include_dirs: true,
     };
     walk_parallel(

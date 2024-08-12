@@ -2,18 +2,18 @@
 
 use std::collections::HashMap;
 
+use std::ffi::OsString;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 use xvc_logging::{error, uwr, watch, XvcOutputSender};
-use xvc_walker::{build_ignore_rules, make_watcher, IgnoreRules, MatchResult, PathEvent};
+use xvc_walker::{build_ignore_patterns, make_watcher, IgnoreRules, MatchResult, PathEvent};
 
 use crate::error::Error;
 use crate::error::Result;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcFileType, XVCIGNORE_FILENAME};
 use crossbeam_channel::{bounded, RecvError, Select, Sender};
-use xvc_walker::check_ignore;
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 use crate::XvcMetadata;
@@ -36,8 +36,7 @@ pub struct XvcPathMetadataProvider {
 impl XvcPathMetadataProvider {
     /// Create a new PathMetadataProvider
     pub fn new(output_sender: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<Self> {
-        let initial_rules = IgnoreRules::try_from_patterns(xvc_root, COMMON_IGNORE_PATTERNS)?;
-        let ignore_rules = build_ignore_rules(initial_rules, xvc_root, XVCIGNORE_FILENAME)?;
+        let ignore_rules = build_ignore_patterns(COMMON_IGNORE_PATTERNS, xvc_root, OsString::from(XVCIGNORE_FILENAME).as_ref())?;
         let path_map = Arc::new(RwLock::new(HashMap::new()));
 
         let (watcher, event_receiver) = make_watcher(ignore_rules.clone())?;
@@ -195,7 +194,7 @@ impl XvcPathMetadataProvider {
             match entry {
                 Ok(entry) => {
                     if matches!(
-                        check_ignore(&self.ignore_rules, &entry),
+                        &self.ignore_rules.check(&entry),
                         MatchResult::Ignore
                     ) {
                         continue;

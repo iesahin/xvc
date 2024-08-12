@@ -4,6 +4,7 @@ use assert_fs::prelude::{FileTouch, FileWriteBin, PathChild};
 use assert_fs::TempDir;
 use common::*;
 use std::env;
+use std::ffi::OsString;
 use std::fs::remove_file;
 use std::path::PathBuf;
 use std::thread::{self, sleep};
@@ -16,7 +17,7 @@ use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::XVCIGNORE_FILENAME;
 
 use xvc_walker::notify::{make_polling_watcher, PathEvent};
-use xvc_walker::{walk_serial, IgnoreRules, WalkOptions};
+use xvc_walker::{walk_serial, WalkOptions};
 
 #[test]
 fn test_notify() -> Result<()> {
@@ -24,9 +25,8 @@ fn test_notify() -> Result<()> {
     env::set_current_dir(&temp_dir)?;
     watch!(temp_dir);
     test_logging(log::LevelFilter::Trace);
-    let initial_rules = IgnoreRules::try_from_patterns(&temp_dir, COMMON_IGNORE_PATTERNS)?;
     let walk_options = WalkOptions {
-        ignore_filename: Some(XVCIGNORE_FILENAME.to_string()),
+        ignore_filename: Some(OsString::from(XVCIGNORE_FILENAME)),
         include_dirs: true,
     };
     let (created_paths_snd, created_paths_rec) = crossbeam_channel::unbounded();
@@ -48,7 +48,7 @@ fn test_notify() -> Result<()> {
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
 
     let (initial_paths, all_rules) =
-        walk_serial(&output_sender, initial_rules, &temp_dir, &walk_options)?;
+        walk_serial(&output_sender, COMMON_IGNORE_PATTERNS, &temp_dir, &walk_options)?;
     watch!(all_rules);
     assert!(output_receiver.is_empty());
     let (watcher, receiver) = make_polling_watcher(all_rules)?;

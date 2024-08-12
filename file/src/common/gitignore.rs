@@ -12,7 +12,7 @@ use xvc_core::{util::git::build_gitignore};
 use crate::{Result, CHANNEL_CAPACITY};
 use xvc_core::{XvcPath, XvcRoot};
 use xvc_logging::{debug, error, info, uwr, watch, XvcOutputSender};
-use xvc_walker::{check_ignore, AbsolutePath, IgnoreRules, MatchResult};
+use xvc_walker::{AbsolutePath, IgnoreRules, MatchResult};
 
 /// Used to signal ignored files and directories to the ignore handler
 pub enum IgnoreOperation {
@@ -42,6 +42,8 @@ pub fn make_ignore_handler(
     let (sender, receiver) = crossbeam_channel::bounded(CHANNEL_CAPACITY);
     let output_snd = output_snd.clone();
     let xvc_root = xvc_root.absolute_path().clone();
+    let xvc_directory = xvc_root.as_path().to_str().unwrap();
+
 
     let handle = std::thread::spawn(move || {
 
@@ -56,7 +58,8 @@ pub fn make_ignore_handler(
                         let path = dir.to_absolute_path(&xvc_root).to_path_buf();
 
                         if !ignore_dirs.contains(&dir)
-                            && matches!(check_ignore(&gitignore, &path), MatchResult::NoMatch)
+                            
+                            && matches!(gitignore.check(&path), MatchResult::NoMatch)
                         {
                             ignore_dirs.push(dir);
                         }
@@ -64,7 +67,7 @@ pub fn make_ignore_handler(
                     IgnoreOperation::IgnoreFile { file } => {
                         let path = file.to_absolute_path(&xvc_root).to_path_buf();
                         if !ignore_files.contains(&file)
-                            && matches!(check_ignore(&gitignore, &path), MatchResult::NoMatch)
+                            && matches!(gitignore.check(&path), MatchResult::NoMatch)
                         {
                             ignore_files.push(file);
                         }
@@ -115,7 +118,7 @@ pub fn update_dir_gitignores(
                 xvc_root.join(format!("{}/", dir))
             };
 
-            let ignore_res = check_ignore(current_gitignore, &abs_path);
+            let ignore_res = current_gitignore.check(&abs_path);
 
             match ignore_res {
                 MatchResult::Ignore => {
@@ -180,7 +183,7 @@ pub fn update_file_gitignores(
     files: &[XvcPath],
 ) -> Result<()> {
     // Filter already ignored files
-    let files: Vec<XvcPath> = files.iter().filter_map(|f| match check_ignore(current_gitignore, &f.to_absolute_path(xvc_root)) {
+    let files: Vec<XvcPath> = files.iter().filter_map(|f| match current_gitignore.check(&f.to_absolute_path(xvc_root)) {
                 MatchResult::NoMatch => {
                     Some(f.clone())
                 }

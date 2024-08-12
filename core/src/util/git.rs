@@ -2,12 +2,10 @@
 use std::path::{Path, PathBuf};
 
 use xvc_logging::watch;
-use xvc_walker::{build_ignore_rules, AbsolutePath, IgnoreRules};
+use xvc_walker::{build_ignore_patterns, AbsolutePath, IgnoreRules};
 
 use crate::error::Result;
 use crate::GIT_DIR;
-
-use crate::PEAK_ALLOC;
 
 /// Check whether a path is inside a Git repository.
 /// It returns `None` if not, otherwise returns the closest directory with `.git`.
@@ -31,12 +29,7 @@ pub fn inside_git(path: &Path) -> Option<PathBuf> {
 /// It's used to check whether a path is already ignored by Git.
 pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
 
-    watch!(PEAK_ALLOC.current_usage_as_mb());
-    let initial_rules = IgnoreRules::empty(git_root);
-    watch!(PEAK_ALLOC.current_usage_as_mb());
-
-    let rules = build_ignore_rules(initial_rules, git_root, ".gitignore")?;
-    watch!(PEAK_ALLOC.current_usage_as_mb());
+    let rules = build_ignore_patterns("", git_root, ".gitignore".to_owned().as_ref())?;
 
     Ok(rules)
 }
@@ -44,11 +37,13 @@ pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::ffi::OsStr;
+    use std::ffi::OsString;
     use std::fs;
     use test_case::test_case;
     use xvc_logging::watch;
     use xvc_test_helper::*;
-    use xvc_walker::check_ignore;
+    use xvc_walker::IgnoreRules;
     use xvc_walker::MatchResult as M;
 
     #[test_case("myfile.txt" , ".gitignore", "/myfile.txt" => matches M::Ignore ; "myfile.txt")]
@@ -70,15 +65,15 @@ mod test {
         }
         fs::write(&gitignore_path, format!("{}\n", ignore_line)).unwrap();
 
-        let gitignore = build_ignore_rules(
-            IgnoreRules::empty(&git_root),
+        let gitignore = build_ignore_patterns(
+            "",
             gitignore_path.parent().unwrap(),
-            ".gitignore",
+            OsString::from(".gitignore").as_ref()
         )
         .unwrap();
 
         watch!(gitignore);
 
-        check_ignore(&gitignore, &path)
+        gitignore.check(&path)
     }
 }

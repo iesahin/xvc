@@ -6,7 +6,8 @@ use crate::{XvcMetadata, XvcPathMetadataMap, CHANNEL_BOUND, XVCIGNORE_FILENAME};
 use crate::error::{Error, Result};
 use crossbeam_channel::{bounded, Sender};
 
-use std::sync::{Arc, RwLock};
+use std::ffi::OsString;
+use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
 use xvc_logging::{warn, XvcOutputSender};
 use xvc_walker::Result as XvcWalkerResult;
@@ -39,14 +40,12 @@ pub fn walk_serial(
     xvc_root: &XvcRoot,
     include_dirs: bool,
 ) -> Result<(XvcPathMetadataMap, IgnoreRules)> {
-    // We assume ignore_src is among the directories created
-    let initial_rules = IgnoreRules::try_from_patterns(xvc_root, COMMON_IGNORE_PATTERNS)?;
     let walk_options = WalkOptions {
-        ignore_filename: Some(XVCIGNORE_FILENAME.to_string()),
+        ignore_filename: Some(OsString::from(XVCIGNORE_FILENAME)),
         include_dirs,
     };
     let (res_paths, ignore_rules) =
-        xvc_walker::walk_serial(output_snd, initial_rules, xvc_root, &walk_options)?;
+        xvc_walker::walk_serial::walk_serial(output_snd, COMMON_IGNORE_PATTERNS, xvc_root, &walk_options)?;
     let pmp: XvcPathMetadataMap = res_paths
         .iter()
         .filter_map(|pm| {
@@ -110,7 +109,7 @@ pub fn walk_parallel(
         pmm
     });
 
-    let mut ignore_rules = IgnoreRules::empty(xvc_root);
+    let ignore_rules = IgnoreRules::empty(xvc_root);
     let ignore_rules_thread = thread::spawn(move || {
         for ignore_rule in ignore_receiver {
             if let Ok(ignore_rule) = ignore_rule {
@@ -168,16 +167,16 @@ pub fn walk_channel(
     xpm_upstream: Sender<(XvcPath, XvcMetadata)>,
     ignore_upstream: Sender<Result<IgnoreRules>>,
 ) -> Result<()> {
-    let initial_rules = IgnoreRules::try_from_patterns(xvc_root, initial_patterns)?;
+    let initial_rules = IgnoreRules::from_global_patterns(xvc_root, initial_patterns);
     let walk_options = WalkOptions {
-        ignore_filename,
+        ignore_filename: ignore_filename.map(OsString::from),
         include_dirs,
     };
     let (path_sender, path_receiver) = bounded::<XvcWalkerResult<PathMetadata>>(CHANNEL_BOUND);
     let (ignore_sender, ignore_receiver) =
-        bounded::<XvcWalkerResult<Arc<RwLock<IgnoreRules>>>>(CHANNEL_BOUND);
+        bounded::<XvcWalkerResult<Arc<Mutex<IgnoreRules>>>>(CHANNEL_BOUND);
 
-    xvc_walker::walk_parallel(
+    xvc_walker::walk_parallel::walk_parallel(
         initial_rules,
         xvc_root,
         walk_options,
@@ -216,7 +215,7 @@ pub fn walk_channel(
             for ignore_rule in ignore_receiver {
                 match ignore_rule {
                     Ok(ir) => {
-                        ir.read()
+                        ir.lock()
                             .map(|ir| {
                                 ignore_upstream
                                     .send(Ok(ir.clone()))

@@ -10,7 +10,7 @@ use std::io::BufRead;
 use std::path::{Path, PathBuf};
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_logging::{output, XvcOutputSender};
-use xvc_walker::{build_ignore_rules, check_ignore, IgnoreRules, MatchResult, WalkOptions};
+use xvc_walker::{build_ignore_patterns, IgnoreRules, MatchResult, WalkOptions};
 
 // DIFFERENCES from DVC
 // merged --all and --details, they are the same now
@@ -77,13 +77,13 @@ pub fn cmd_check_ignore<R: BufRead>(
 
     let current_dir = conf.current_dir()?;
     let walk_options = WalkOptions {
-        ignore_filename: Some(opts.ignore_filename.clone()),
+        ignore_filename: Some(opts.ignore_filename.clone().into()),
         include_dirs: true,
     };
-    let initial_rules = IgnoreRules::try_from_patterns(xvc_root, COMMON_IGNORE_PATTERNS)?;
-    let ignore_rules = build_ignore_rules(
-        initial_rules,
-        current_dir,
+
+    let ignore_rules = build_ignore_patterns(
+        COMMON_IGNORE_PATTERNS,
+        &xvc_root,
         &walk_options.ignore_filename.unwrap_or_default(),
     )?;
     if !opts.targets.is_empty() {
@@ -149,7 +149,7 @@ fn check_ignore_line(
     absolute_path: &Path,
     show_no_match: bool,
 ) -> String {
-    match check_ignore(ignore_rules, absolute_path) {
+    match ignore_rules.check(absolute_path) {
         MatchResult::NoMatch => {
             if show_no_match {
                 format!("[NO MATCH] {}", absolute_path.to_string_lossy())

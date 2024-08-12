@@ -30,8 +30,10 @@ fn test_walk() -> Result<()> {
         assert!(!pmp1.contains_key(&xp), "Result Contains {:?}", xp)
     }
 
-    common::test_logging(LevelFilter::Trace);
     let (pmp2, _) = walk_parallel(&xvc_root, true)?;
+
+    watch!(pmp1);
+    watch!(pmp2);
 
     let mut diff1 = Vec::<&XvcPath>::new();
     for k in pmp1.keys() {
