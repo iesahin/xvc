@@ -8,8 +8,6 @@ pub mod root;
 pub mod types;
 pub mod util;
 
-use std::ffi::OsStr;
-
 pub use types::hashalgorithm::HashAlgorithm;
 pub use types::recheckmethod::RecheckMethod;
 

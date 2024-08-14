@@ -2,7 +2,6 @@
 
 use std::collections::HashMap;
 
-use std::ffi::OsString;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
@@ -36,7 +35,8 @@ pub struct XvcPathMetadataProvider {
 impl XvcPathMetadataProvider {
     /// Create a new PathMetadataProvider
     pub fn new(output_sender: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<Self> {
-        let ignore_rules = build_ignore_patterns(COMMON_IGNORE_PATTERNS, xvc_root, XVCIGNORE_FILENAME)?;
+        let ignore_rules =
+            build_ignore_patterns(COMMON_IGNORE_PATTERNS, xvc_root, XVCIGNORE_FILENAME)?;
         let path_map = Arc::new(RwLock::new(HashMap::new()));
 
         let (watcher, event_receiver) = make_watcher(ignore_rules.clone())?;
@@ -56,8 +56,7 @@ impl XvcPathMetadataProvider {
             let watcher = watcher;
             watch!(watcher);
 
-            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| {
-                match fs_event {
+            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
@@ -80,7 +79,7 @@ impl XvcPathMetadataProvider {
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
-            } };
+            };
 
             let mut sel = Select::new();
             let fs_event_index = sel.recv(&fs_receiver);
@@ -193,10 +192,7 @@ impl XvcPathMetadataProvider {
         for entry in glob::glob(glob)? {
             match entry {
                 Ok(entry) => {
-                    if matches!(
-                        &self.ignore_rules.check(&entry),
-                        MatchResult::Ignore
-                    ) {
+                    if matches!(&self.ignore_rules.check(&entry), MatchResult::Ignore) {
                         continue;
                     } else {
                         let xvc_path = XvcPath::new(&self.xvc_root, &self.xvc_root, &entry)?;

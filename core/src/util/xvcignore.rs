@@ -6,8 +6,7 @@ use crate::{XvcMetadata, XvcPathMetadataMap, CHANNEL_BOUND, XVCIGNORE_FILENAME};
 use crate::error::{Error, Result};
 use crossbeam_channel::{bounded, Sender};
 
-use std::ffi::OsString;
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{Arc, RwLock};
 use std::thread;
 use xvc_logging::{warn, watch, XvcOutputSender};
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
@@ -27,14 +26,14 @@ pub const COMMON_IGNORE_PATTERNS: &str = ".xvc\n.git\n";
 ///
 /// - `xvc_root`: The root structure for Xvc
 /// - `include_dirs`: Whether to include directories themselves.
-/// If `false`, only the actual files in the repository are listed.
+///   If `false`, only the actual files in the repository are listed.
 ///
 /// ## Returns
 ///
 /// - `XvcPathMetadataMap`: A hash map of files. Keys are [XvcPath], values are their
-/// [XvcMetadata].
+///   [XvcMetadata].
 /// - `IgnoreRules`: The rules that were produced while reading the directories.
-/// This is returned here to prevent a second traversal for ignores.
+///   This is returned here to prevent a second traversal for ignores.
 pub fn walk_serial(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -81,14 +80,14 @@ pub fn walk_serial(
 ///
 /// - `xvc_root`: The root structure for Xvc
 /// - `include_dirs`: Whether to include directories themselves.
-/// If `false`, only the actual files in the repository are listed.
+///    If `false`, only the actual files in the repository are listed.
 ///
 /// ## Returns
 ///
 /// - `XvcPathMetadataMap`: A hash map of files. Keys are [XvcPath], values are their
-/// [XvcMetadata].
+///   [XvcMetadata].
 /// - `IgnoreRules`: The rules that were produced while reading the directories.
-/// This is returned here to prevent a second traversal for ignores.
+///   This is returned here to prevent a second traversal for ignores.
 pub fn walk_parallel(
     xvc_root: &XvcRoot,
     global_ignore_rules: &str,
@@ -133,7 +132,7 @@ pub fn walk_parallel(
 ///  - `xvc_root`: The repository root
 ///  - `initial_patterns`: A set of patterns arranged similar to an `.xvcignore` (`.gitignore`) content.
 ///  - `ignore_filename`: The name of the ignore files to be loaded for ignore rules.
-///  (ex: `.xvcignore`, `.ignore`, or `.gitignore`)
+///    (ex: `.xvcignore`, `.ignore`, or `.gitignore`)
 ///  - `include_dirs`: Whether to send directory records themselves.
 ///     If `false`, only the files in directories are sent.
 ///  - `xpm_upstream`: The channel this function sends the paths and metadata.

@@ -1,7 +1,6 @@
 //! Git operations
 use std::path::{Path, PathBuf};
 
-use xvc_logging::watch;
 use xvc_walker::{build_ignore_patterns, AbsolutePath, IgnoreRules};
 
 use crate::error::Result;
@@ -28,7 +27,6 @@ pub fn inside_git(path: &Path) -> Option<PathBuf> {
 /// Returns [xvc_walker::IgnoreRules] for `.gitignore`
 /// It's used to check whether a path is already ignored by Git.
 pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
-
     let rules = build_ignore_patterns("", git_root, ".gitignore".to_owned().as_ref())?;
 
     Ok(rules)
@@ -62,12 +60,8 @@ mod test {
         }
         fs::write(&gitignore_path, format!("{}\n", ignore_line)).unwrap();
 
-        let gitignore = build_ignore_patterns(
-            "",
-            gitignore_path.parent().unwrap(),
-            ".gitignore"
-        )
-        .unwrap();
+        let gitignore =
+            build_ignore_patterns("", gitignore_path.parent().unwrap(), ".gitignore").unwrap();
 
         watch!(gitignore);
 
