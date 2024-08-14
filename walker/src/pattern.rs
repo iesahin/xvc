@@ -1,20 +1,16 @@
 //! Pattern describes a single line in an ignore file and its semantics
 //! It is used to match a path with the given pattern
+use crate::sync;
 pub use error::{Error, Result};
 pub use ignore_rules::IgnoreRules;
-use crate::sync;
 pub use std::hash::Hash;
 pub use sync::{PathSync, PathSyncSingleton};
 
 pub use crate::notify::{make_watcher, PathEvent, RecommendedWatcher};
 
-
 // use glob::{MatchOptions, Pattern, PatternError};
 pub use fast_glob::Glob;
-use std::{
-    fmt::Debug,
-    path::PathBuf,
-};
+use std::{fmt::Debug, path::PathBuf};
 
 use crate::error;
 use crate::ignore_rules;
@@ -66,7 +62,7 @@ pub enum PatternEffect {
 pub enum Source {
     /// Pattern is globally defined in code
     Global,
-    
+
     /// Pattern is obtained from file
     File {
         /// Path of the pattern file
@@ -76,9 +72,7 @@ pub enum Source {
     },
 
     /// Pattern is from CLI
-    CommandLine {
-        current_dir: PathBuf
-    }
+    CommandLine { current_dir: PathBuf },
 }
 
 /// Pattern is generic and could be an instance of String, Glob, Regex or any other object.
@@ -86,8 +80,7 @@ pub enum Source {
 /// A pattern can start its life as `Pattern<String>` and can be compiled into `Pattern<Glob>` or
 /// `Pattern<Regex>`.
 #[derive(Debug)]
-pub struct Pattern
-{
+pub struct Pattern {
     /// The pattern type
     pub glob: String,
     /// The original string that defines the pattern
@@ -103,106 +96,105 @@ pub struct Pattern
 }
 
 impl Pattern {
-
-pub fn new(source: Source, original: &str) -> Self {
-
-    let original = original.to_owned();
-    let current_dir = match &source {
-        Source::Global => "".to_string(),
-        Source::File { path, .. } => {
-            let path = path
-                .parent()
-                .expect("Pattern source file doesn't have parent")
-                .to_string_lossy()
-                .to_string();
-            if path.starts_with('/') {
-                path
-            } else {
-                format!("/{path}")
+    pub fn new(source: Source, original: &str) -> Self {
+        let original = original.to_owned();
+        let current_dir = match &source {
+            Source::Global => "".to_string(),
+            Source::File { path, .. } => {
+                let path = path
+                    .parent()
+                    .expect("Pattern source file doesn't have parent")
+                    .to_string_lossy()
+                    .to_string();
+                if path.starts_with('/') {
+                    path
+                } else {
+                    format!("/{path}")
+                }
             }
+            Source::CommandLine { current_dir } => current_dir.to_string_lossy().to_string(),
+        };
+
+        // if Pattern starts with ! it's whitelist, if ends with / it's dir only, if it contains
+        // non final slash, it should be considered under the current dir only, otherwise it
+        // matches
+
+        let begin_exclamation = original.starts_with('!');
+        let mut line = if begin_exclamation || original.starts_with(r"\!") {
+            original[1..].to_owned()
+        } else {
+            original.to_owned()
+        };
+
+        // TODO: We should handle filenames with trailing spaces better, with regex match and removing
+        // the \\ from the name
+        if !line.ends_with("\\ ") {
+            line = line.trim_end().to_string();
         }
-        Source::CommandLine { current_dir } => current_dir.to_string_lossy().to_string(),
-    };
 
-    // if Pattern starts with ! it's whitelist, if ends with / it's dir only, if it contains
-    // non final slash, it should be considered under the current dir only, otherwise it
-    // matches
-
-    let begin_exclamation = original.starts_with('!');
-    let mut line = if begin_exclamation || original.starts_with(r"\!") {
-        original[1..].to_owned()
-    } else {
-        original.to_owned()
-    };
-
-    // TODO: We should handle filenames with trailing spaces better, with regex match and removing
-    // the \\ from the name
-    if !line.ends_with("\\ ") {
-        line = line.trim_end().to_string();
-    }
-
-    let end_slash = line.ends_with('/');
-    if end_slash {
-        line = line[..line.len() - 1].to_string()
-    }
-
-    let begin_slash = line.starts_with('/');
-    let non_final_slash = if !line.is_empty() {
-        line[..line.len() - 1].chars().any(|c| c == '/')
-    } else {
-        false
-    };
-
-    if begin_slash {
-        line = line[1..].to_string();
-    }
-
-    let current_dir = if current_dir.ends_with('/') {
-        &current_dir[..current_dir.len() - 1]
-    } else {
-        &current_dir
-    };
-
-    let effect = if begin_exclamation {
-        PatternEffect::Whitelist
-    } else {
-        PatternEffect::Ignore
-    };
-
-    let path_kind = if end_slash {
-        PathKind::Directory
-    } else {
-        PathKind::Any
-    };
-
-    let relativity = if non_final_slash {
-        PatternRelativity::RelativeTo {
-            directory: current_dir.to_owned(),
+        let end_slash = line.ends_with('/');
+        if end_slash {
+            line = line[..line.len() - 1].to_string()
         }
-    } else {
-        PatternRelativity::Anywhere
-    };
+
+        let begin_slash = line.starts_with('/');
+        let non_final_slash = if !line.is_empty() {
+            line[..line.len() - 1].chars().any(|c| c == '/')
+        } else {
+            false
+        };
+
+        if begin_slash {
+            line = line[1..].to_string();
+        }
+
+        let current_dir = if current_dir.ends_with('/') {
+            &current_dir[..current_dir.len() - 1]
+        } else {
+            &current_dir
+        };
+
+        let effect = if begin_exclamation {
+            PatternEffect::Whitelist
+        } else {
+            PatternEffect::Ignore
+        };
+
+        let path_kind = if end_slash {
+            PathKind::Directory
+        } else {
+            PathKind::Any
+        };
+
+        let relativity = if non_final_slash {
+            PatternRelativity::RelativeTo {
+                directory: current_dir.to_owned(),
+            }
+        } else {
+            PatternRelativity::Anywhere
+        };
 
         let glob = transform_pattern_for_glob(&line, relativity.clone(), path_kind.clone());
 
-    Pattern {
+        Pattern {
             glob,
-        original,
-        source,
-        effect,
-        relativity,
-        path_kind,
+            original,
+            source,
+            effect,
+            relativity,
+            path_kind,
+        }
     }
 }
 
-
-}
-
-
-fn transform_pattern_for_glob(original: &str, relativity: PatternRelativity, path_kind: PathKind) -> String {
+fn transform_pattern_for_glob(
+    original: &str,
+    relativity: PatternRelativity,
+    path_kind: PathKind,
+) -> String {
     let anything_anywhere = |p| format!("**/{p}");
     let anything_relative = |p, directory| format!("{directory}/**/{p}");
-    let directory_anywhere = |p| format!("**{p}/**");
+    let directory_anywhere = |p| format!("**/{p}/**");
     let directory_relative = |p, directory| format!("{directory}/**/{p}/**");
 
     let transformed_pattern = match (path_kind, relativity) {

@@ -10,8 +10,8 @@ use std::ffi::OsString;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
 use xvc_logging::{warn, watch, XvcOutputSender};
-use xvc_walker::{Result as XvcWalkerResult, SharedIgnoreRules};
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
+use xvc_walker::{Result as XvcWalkerResult, SharedIgnoreRules};
 
 /// We ignore `.git` directories even we are not using `.git`
 pub const COMMON_IGNORE_PATTERNS: &str = ".xvc\n.git\n";
@@ -44,8 +44,12 @@ pub fn walk_serial(
         ignore_filename: Some(XVCIGNORE_FILENAME.to_owned()),
         include_dirs,
     };
-    let (res_paths, ignore_rules) =
-        xvc_walker::walk_serial::walk_serial(output_snd, COMMON_IGNORE_PATTERNS, xvc_root, &walk_options)?;
+    let (res_paths, ignore_rules) = xvc_walker::walk_serial::walk_serial(
+        output_snd,
+        COMMON_IGNORE_PATTERNS,
+        xvc_root,
+        &walk_options,
+    )?;
     let pmp: XvcPathMetadataMap = res_paths
         .iter()
         .filter_map(|pm| {
@@ -77,14 +81,14 @@ pub fn walk_serial(
 ///
 /// - `xvc_root`: The root structure for Xvc
 /// - `include_dirs`: Whether to include directories themselves.
-///   If `false`, only the actual files in the repository are listed.
+/// If `false`, only the actual files in the repository are listed.
 ///
 /// ## Returns
 ///
 /// - `XvcPathMetadataMap`: A hash map of files. Keys are [XvcPath], values are their
-///    [XvcMetadata].
+/// [XvcMetadata].
 /// - `IgnoreRules`: The rules that were produced while reading the directories.
-///    This is returned here to prevent a second traversal for ignores.
+/// This is returned here to prevent a second traversal for ignores.
 pub fn walk_parallel(
     xvc_root: &XvcRoot,
     global_ignore_rules: &str,
@@ -95,16 +99,12 @@ pub fn walk_parallel(
     let ignore_rules = Arc::new(RwLock::new(IgnoreRules::from_global_patterns(
         xvc_root,
         Some(XVCIGNORE_FILENAME),
-        global_ignore_rules)));
+        global_ignore_rules,
+    )));
 
     watch!(ignore_rules);
 
-    walk_channel(
-        xvc_root,
-        ignore_rules.clone(),
-        include_dirs,
-        sender,
-    )?;
+    walk_channel(xvc_root, ignore_rules.clone(), include_dirs, sender)?;
 
     let pmm = thread::spawn(move || {
         let mut pmm = XvcPathMetadataMap::new();
@@ -113,7 +113,9 @@ pub fn walk_parallel(
             pmm.insert(path, md);
         }
         pmm
-    }).join().map_err(Error::from)?;
+    })
+    .join()
+    .map_err(Error::from)?;
 
     Ok((pmm, ignore_rules))
 }
@@ -131,7 +133,7 @@ pub fn walk_parallel(
 ///  - `xvc_root`: The repository root
 ///  - `initial_patterns`: A set of patterns arranged similar to an `.xvcignore` (`.gitignore`) content.
 ///  - `ignore_filename`: The name of the ignore files to be loaded for ignore rules.
-///     (ex: `.xvcignore`, `.ignore`, or `.gitignore`)
+///  (ex: `.xvcignore`, `.ignore`, or `.gitignore`)
 ///  - `include_dirs`: Whether to send directory records themselves.
 ///     If `false`, only the files in directories are sent.
 ///  - `xpm_upstream`: The channel this function sends the paths and metadata.
@@ -152,19 +154,13 @@ pub fn walk_channel(
     include_dirs: bool,
     xpm_upstream: Sender<(XvcPath, XvcMetadata)>,
 ) -> Result<()> {
-
     let walk_options = WalkOptions {
         ignore_filename: ignore_rules.read()?.ignore_filename.clone(),
         include_dirs,
     };
     let (path_sender, path_receiver) = bounded::<XvcWalkerResult<PathMetadata>>(CHANNEL_BOUND);
-    
-    xvc_walker::walk_parallel::walk_parallel(
-        ignore_rules,
-        xvc_root,
-        walk_options,
-        path_sender,
-    )?;
+
+    xvc_walker::walk_parallel::walk_parallel(ignore_rules, xvc_root, walk_options, path_sender)?;
 
     crossbeam::scope(|s| {
         s.spawn(|_| {
@@ -193,7 +189,6 @@ pub fn walk_channel(
                 }
             }
         });
-
     })
     .map_err(Error::from)?;
     Ok(())

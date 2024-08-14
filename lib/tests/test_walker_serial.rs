@@ -1,6 +1,4 @@
-use std::{
-    ffi::OsString, fs, path::{Path, PathBuf}
-};
+use std::{fs, path::PathBuf};
 
 use xvc_walker::*;
 
@@ -64,8 +62,7 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
         include_dirs: true,
     };
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
-    let (res_paths, ignore_rules) =
-        walk_serial(&output_sender, "", &root, &walk_options).unwrap();
+    let (res_paths, ignore_rules) = walk_serial(&output_sender, "", &root, &walk_options).unwrap();
     watch!(ignore_rules.ignore_patterns.read().unwrap());
     watch!(ignore_rules.whitelist_patterns.read().unwrap());
     watch!(output_receiver);

@@ -7,7 +7,11 @@ use xvc_core::{
 };
 use xvc_test_helper::test_logging;
 
-use std::{path::Path, time::Duration};
+use std::{
+    collections::{BTreeSet, HashSet},
+    path::Path,
+    time::Duration,
+};
 
 use xvc_logging::watch;
 
@@ -22,34 +26,23 @@ fn test_walk() -> Result<()> {
 
     let (pmp1, _) = walk_serial(&output_sender, &xvc_root, true)?;
 
-    assert!(!pmp1.is_empty());
+    let path_set1 = HashSet::<XvcPath>::from_iter(pmp1.keys().cloned());
+    assert!(!path_set1.is_empty());
 
     // Test skip list
     for skipped in [".dvc", ".xvc", ".git"] {
         let xp = XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new(skipped))?;
-        assert!(!pmp1.contains_key(&xp), "Result Contains {:?}", xp)
-    }
- 
-    let (pmp2, _) = walk_parallel(&xvc_root,  COMMON_IGNORE_PATTERNS, true)?;
-
-    watch!(pmp1);
-    watch!(pmp2);
-
-    let mut diff1 = Vec::<&XvcPath>::new();
-    for k in pmp1.keys() {
-        if !pmp2.contains_key(k) {
-            diff1.push(k);
-        }
+        assert!(!path_set1.contains(&xp), "Result Contains {:?}", xp)
     }
 
+    let (pmp2, _) = walk_parallel(&xvc_root, COMMON_IGNORE_PATTERNS, true)?;
+    let path_set2 = HashSet::<XvcPath>::from_iter(pmp2.keys().cloned());
+    assert!(!path_set2.is_empty());
+
+    let diff1: HashSet<&XvcPath> = path_set1.difference(&path_set2).collect();
     watch!(diff1);
 
-    let mut diff2 = Vec::<&XvcPath>::new();
-    for k in pmp2.keys() {
-        if !pmp1.contains_key(k) {
-            diff2.push(k);
-        }
-    }
+    let diff2: HashSet<&XvcPath> = path_set2.difference(&path_set1).collect();
 
     watch!(diff2);
 

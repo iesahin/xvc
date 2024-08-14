@@ -1,11 +1,16 @@
-use std::{path::Path, sync::{Arc, Mutex}};
+use std::{
+    path::Path,
+    sync::{Arc, Mutex},
+};
 
 use crossbeam::queue::SegQueue;
 use crossbeam_channel::Sender;
 use xvc_logging::{uwr, watch};
 
-use crate::{directory_list, update_ignore_rules, IgnoreRules, MatchResult, PathMetadata, Result, SharedIgnoreRules, WalkOptions, MAX_THREADS_PARALLEL_WALK};
-
+use crate::{
+    directory_list, update_ignore_rules, IgnoreRules, MatchResult, PathMetadata, Result,
+    SharedIgnoreRules, WalkOptions, MAX_THREADS_PARALLEL_WALK,
+};
 
 fn walk_parallel_inner(
     ignore_rules: SharedIgnoreRules,
@@ -13,49 +18,58 @@ fn walk_parallel_inner(
     walk_options: WalkOptions,
     path_sender: Sender<Result<PathMetadata>>,
 ) -> Result<Vec<PathMetadata>> {
-        update_ignore_rules(dir, &ignore_rules.write().unwrap())?;
+    update_ignore_rules(dir, &ignore_rules.write().unwrap())?;
 
-        Ok(directory_list(dir)?
+    Ok(directory_list(dir)?
         .drain(..)
         .filter_map(|pm_res| match pm_res {
             Ok(pm) => {
                 watch!(pm);
                 Some(pm)
-            },
+            }
             Err(e) => {
                 path_sender
                     .send(Err(e))
                     .expect("Channel error in walk_parallel");
                 None
             }
-        }).filter_map(|pm| {
-                let ignore_res = ignore_rules.read().unwrap().check(pm.path.as_ref());
-                watch!(ignore_res);
-                match ignore_res {
-                    MatchResult::NoMatch | MatchResult::Whitelist => {
-                    
+        })
+        .filter_map(|pm| {
+            let ignore_res = ignore_rules.read().unwrap().check(pm.path.as_ref());
+            watch!(ignore_res);
+            match ignore_res {
+                MatchResult::NoMatch | MatchResult::Whitelist => {
                     // If the path is a file, don't send it to caller, just send it to the channel.
                     // If the path is a directory, send it to the channel if `include_dirs` is true.
                     // The caller expects a list of directories to recurse into.
-                                       
-                if pm.metadata.is_file() { 
- path_sender.send(Ok(pm.clone())).expect("Channel error in walk_parallel");
+
+                    if pm.metadata.is_file() {
+                        path_sender
+                            .send(Ok(pm.clone()))
+                            .expect("Channel error in walk_parallel");
                         None
-                        } else if pm.metadata.is_dir() {
- path_sender.send(Ok(pm.clone())).expect("Channel error in walk_parallel");
+                    } else if pm.metadata.is_dir() {
+                        path_sender
+                            .send(Ok(pm.clone()))
+                            .expect("Channel error in walk_parallel");
 
                         if walk_options.include_dirs {
                             Some(pm)
                         } else {
-                    None
-                        } } else { None } },
-
-                    MatchResult::Ignore => {
-                        watch!(pm.path);
+                            None
+                        }
+                    } else {
                         None
                     }
-            }}).collect::<Vec<PathMetadata>>())
+                }
 
+                MatchResult::Ignore => {
+                    watch!(pm.path);
+                    None
+                }
+            }
+        })
+        .collect::<Vec<PathMetadata>>())
 }
 
 /// Walk all child paths under `dir` and send non-ignored paths to `path_sender`.
@@ -105,7 +119,8 @@ pub fn walk_parallel(
                         &pm.path,
                         walk_options.clone(),
                         path_sender.clone(),
-                    ).unwrap();
+                    )
+                    .unwrap();
 
                     for child_dir in child_dirs {
                         dir_queue.push(child_dir);
@@ -121,4 +136,3 @@ pub fn walk_parallel(
 
     Ok(())
 }
-
