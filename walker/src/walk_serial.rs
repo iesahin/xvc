@@ -1,8 +1,10 @@
+//! Serial directory walker without parallelization
+//! See [`walk_parallel`] for parallel version.
 use std::{ffi::OsString, fs, path::Path, sync::{Arc, Mutex}};
 
 use xvc_logging::{debug, warn, watch, XvcOutputSender};
 
-use crate::{content_to_patterns, directory_list, pattern::MatchResult, update_ignore_rules, IgnoreRules, PathMetadata, Pattern, Result, WalkOptions};
+use crate::{content_to_patterns, directory_list, pattern::MatchResult, update_ignore_rules, IgnoreRules, PathMetadata, Result, WalkOptions};
 
 /// Walk `dir` with `walk_options`, with the given _initial_ `ignore_rules`.
 /// Note that ignore rules are expanded with the rules given in the `ignore_filename` in
@@ -17,12 +19,10 @@ pub fn walk_serial(
     dir: &Path,
     walk_options: &WalkOptions,
 ) -> Result<(Vec<PathMetadata>, IgnoreRules)> {
-    let ignore_filename = walk_options.ignore_filename.clone().map(OsString::from);
-    let ignore_rules = IgnoreRules::from_global_patterns(dir,  global_ignore_rules);
+    let ignore_rules = IgnoreRules::from_global_patterns(dir,  walk_options.ignore_filename.as_deref(), global_ignore_rules);
     let ignore_rules = Arc::new(Mutex::new(ignore_rules));
     let dir_stack = crossbeam::queue::SegQueue::new();
     let res_paths = Arc::new(Mutex::new(Vec::<PathMetadata>::new()));
-    let ignore_root = dir.to_path_buf();
 
     dir_stack.push(dir.to_path_buf());
 
@@ -39,34 +39,9 @@ pub fn walk_serial(
         .collect())
     };
 
-    let filter_child_paths = |child_paths: &Vec<PathMetadata>| -> Result<()> {
-        for child_path in child_paths {
-            watch!(child_path.path);
-            let ignore_res = ignore_rules.lock()?.check(child_path.path.as_ref());
-            match ignore_res {
-                MatchResult::NoMatch | MatchResult::Whitelist => {
-                    if child_path.metadata.is_dir() {
-                        if walk_options.include_dirs {
-                            res_paths.lock()?.push(child_path.clone());
-                        }
-                        dir_stack.push(child_path.path.clone());
-                    } else {
-                        res_paths.lock()?.push(child_path.clone());
-                    }
-                }
-                // We can return anyhow! error here to notice the user that the path is ignored
-                MatchResult::Ignore => {
-                    debug!(output_snd, "Ignored: {:?}", child_path.path);
-                }
-            }
-            watch!(child_path);
-        }
-        Ok(())
-    };
-
     while let Some(dir) = dir_stack.pop() {
         watch!(dir);
-        update_ignore_rules(&ignore_filename, &dir, &ignore_rules.lock().unwrap())?;
+        update_ignore_rules(&dir, &ignore_rules.lock().unwrap())?;
         let mut res_paths = res_paths.lock()?; 
         get_child_paths(&dir)?.drain(..).filter_map(|p| 
             match ignore_rules.lock().unwrap().check(p.path.as_ref()) {

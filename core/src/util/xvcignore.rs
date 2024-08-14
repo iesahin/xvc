@@ -9,8 +9,8 @@ use crossbeam_channel::{bounded, Sender};
 use std::ffi::OsString;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread;
-use xvc_logging::{warn, XvcOutputSender};
-use xvc_walker::Result as XvcWalkerResult;
+use xvc_logging::{warn, watch, XvcOutputSender};
+use xvc_walker::{Result as XvcWalkerResult, SharedIgnoreRules};
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
 
 /// We ignore `.git` directories even we are not using `.git`
@@ -41,7 +41,7 @@ pub fn walk_serial(
     include_dirs: bool,
 ) -> Result<(XvcPathMetadataMap, IgnoreRules)> {
     let walk_options = WalkOptions {
-        ignore_filename: Some(OsString::from(XVCIGNORE_FILENAME)),
+        ignore_filename: Some(XVCIGNORE_FILENAME.to_owned()),
         include_dirs,
     };
     let (res_paths, ignore_rules) =
@@ -77,56 +77,43 @@ pub fn walk_serial(
 ///
 /// - `xvc_root`: The root structure for Xvc
 /// - `include_dirs`: Whether to include directories themselves.
-/// If `false`, only the actual files in the repository are listed.
+///   If `false`, only the actual files in the repository are listed.
 ///
 /// ## Returns
 ///
 /// - `XvcPathMetadataMap`: A hash map of files. Keys are [XvcPath], values are their
-/// [XvcMetadata].
+///    [XvcMetadata].
 /// - `IgnoreRules`: The rules that were produced while reading the directories.
-/// This is returned here to prevent a second traversal for ignores.
+///    This is returned here to prevent a second traversal for ignores.
 pub fn walk_parallel(
     xvc_root: &XvcRoot,
+    global_ignore_rules: &str,
     include_dirs: bool,
-) -> Result<(XvcPathMetadataMap, IgnoreRules)> {
+) -> Result<(XvcPathMetadataMap, SharedIgnoreRules)> {
     let (sender, receiver) = bounded::<(XvcPath, XvcMetadata)>(CHANNEL_BOUND);
-    let (ignore_sender, ignore_receiver) = bounded::<Result<IgnoreRules>>(CHANNEL_BOUND);
+    watch!(sender);
+    let ignore_rules = Arc::new(RwLock::new(IgnoreRules::from_global_patterns(
+        xvc_root,
+        Some(XVCIGNORE_FILENAME),
+        global_ignore_rules)));
+
+    watch!(ignore_rules);
 
     walk_channel(
         xvc_root,
-        COMMON_IGNORE_PATTERNS,
-        Some(XVCIGNORE_FILENAME.to_string()),
+        ignore_rules.clone(),
         include_dirs,
         sender,
-        ignore_sender,
     )?;
 
-    let pusher = thread::spawn(move || {
+    let pmm = thread::spawn(move || {
         let mut pmm = XvcPathMetadataMap::new();
         for (path, md) in receiver.iter() {
+            watch!(path);
             pmm.insert(path, md);
         }
         pmm
-    });
-
-    let ignore_rules = IgnoreRules::empty(xvc_root);
-    let ignore_rules_thread = thread::spawn(move || {
-        for ignore_rule in ignore_receiver {
-            if let Ok(ignore_rule) = ignore_rule {
-                assert!(ignore_rules.root == ignore_rule.root);
-                ignore_rules.merge_with(&ignore_rule).unwrap();
-            } else {
-                warn!("Error while collecting ignore rules");
-            }
-        }
-        ignore_rules
-    });
-
-    let pmm = pusher.join().map_err(|e| Error::FSWalkerError {
-        error: format!("{:?}", e),
-    })?;
-
-    let ignore_rules = ignore_rules_thread.join()?;
+    }).join().map_err(Error::from)?;
 
     Ok((pmm, ignore_rules))
 }
@@ -144,7 +131,7 @@ pub fn walk_parallel(
 ///  - `xvc_root`: The repository root
 ///  - `initial_patterns`: A set of patterns arranged similar to an `.xvcignore` (`.gitignore`) content.
 ///  - `ignore_filename`: The name of the ignore files to be loaded for ignore rules.
-///  (ex: `.xvcignore`, `.ignore`, or `.gitignore`)
+///     (ex: `.xvcignore`, `.ignore`, or `.gitignore`)
 ///  - `include_dirs`: Whether to send directory records themselves.
 ///     If `false`, only the files in directories are sent.
 ///  - `xpm_upstream`: The channel this function sends the paths and metadata.
@@ -161,28 +148,24 @@ pub fn walk_parallel(
 ///  These overlapping rules can be merged with [merge_ignores].
 pub fn walk_channel(
     xvc_root: &XvcRoot,
-    initial_patterns: &str,
-    ignore_filename: Option<String>,
+    ignore_rules: SharedIgnoreRules,
     include_dirs: bool,
     xpm_upstream: Sender<(XvcPath, XvcMetadata)>,
-    ignore_upstream: Sender<Result<IgnoreRules>>,
 ) -> Result<()> {
-    let initial_rules = IgnoreRules::from_global_patterns(xvc_root, initial_patterns);
+
     let walk_options = WalkOptions {
-        ignore_filename: ignore_filename.map(OsString::from),
+        ignore_filename: ignore_rules.read()?.ignore_filename.clone(),
         include_dirs,
     };
     let (path_sender, path_receiver) = bounded::<XvcWalkerResult<PathMetadata>>(CHANNEL_BOUND);
-    let (ignore_sender, ignore_receiver) =
-        bounded::<XvcWalkerResult<Arc<Mutex<IgnoreRules>>>>(CHANNEL_BOUND);
-
+    
     xvc_walker::walk_parallel::walk_parallel(
-        initial_rules,
+        ignore_rules,
         xvc_root,
         walk_options,
         path_sender,
-        ignore_sender,
     )?;
+
     crossbeam::scope(|s| {
         s.spawn(|_| {
             for result in path_receiver {
@@ -211,27 +194,6 @@ pub fn walk_channel(
             }
         });
 
-        s.spawn(|_| {
-            for ignore_rule in ignore_receiver {
-                match ignore_rule {
-                    Ok(ir) => {
-                        ir.lock()
-                            .map(|ir| {
-                                ignore_upstream
-                                    .send(Ok(ir.clone()))
-                                    .map_err(|e| {
-                                        Error::from(e).warn();
-                                    })
-                                    .unwrap_or_default();
-                            })
-                            .unwrap_or_default();
-                    }
-                    Err(e) => {
-                        e.warn();
-                    }
-                }
-            }
-        });
     })
     .map_err(Error::from)?;
     Ok(())

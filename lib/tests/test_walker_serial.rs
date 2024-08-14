@@ -60,14 +60,14 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     )
     .unwrap();
     let walk_options = WalkOptions {
-        ignore_filename: Some(OsString::from(".gitignore")),
+        ignore_filename: Some(".gitignore".to_owned()),
         include_dirs: true,
     };
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
     let (res_paths, ignore_rules) =
         walk_serial(&output_sender, "", &root, &walk_options).unwrap();
-    watch!(ignore_rules.ignore_patterns.lock().unwrap());
-    watch!(ignore_rules.whitelist_patterns.lock().unwrap());
+    watch!(ignore_rules.ignore_patterns.read().unwrap());
+    watch!(ignore_rules.whitelist_patterns.read().unwrap());
     watch!(output_receiver);
     watch!(res_paths);
     fs::remove_dir_all(&root).unwrap();

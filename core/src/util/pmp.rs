@@ -36,7 +36,7 @@ pub struct XvcPathMetadataProvider {
 impl XvcPathMetadataProvider {
     /// Create a new PathMetadataProvider
     pub fn new(output_sender: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<Self> {
-        let ignore_rules = build_ignore_patterns(COMMON_IGNORE_PATTERNS, xvc_root, OsString::from(XVCIGNORE_FILENAME).as_ref())?;
+        let ignore_rules = build_ignore_patterns(COMMON_IGNORE_PATTERNS, xvc_root, XVCIGNORE_FILENAME)?;
         let path_map = Arc::new(RwLock::new(HashMap::new()));
 
         let (watcher, event_receiver) = make_watcher(ignore_rules.clone())?;

@@ -26,7 +26,7 @@ fn test_notify() -> Result<()> {
     watch!(temp_dir);
     test_logging(log::LevelFilter::Trace);
     let walk_options = WalkOptions {
-        ignore_filename: Some(OsString::from(XVCIGNORE_FILENAME)),
+        ignore_filename: Some(XVCIGNORE_FILENAME.to_owned()),
         include_dirs: true,
     };
     let (created_paths_snd, created_paths_rec) = crossbeam_channel::unbounded();

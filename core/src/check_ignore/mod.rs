@@ -77,13 +77,13 @@ pub fn cmd_check_ignore<R: BufRead>(
 
     let current_dir = conf.current_dir()?;
     let walk_options = WalkOptions {
-        ignore_filename: Some(opts.ignore_filename.clone().into()),
+        ignore_filename: Some(opts.ignore_filename.clone()),
         include_dirs: true,
     };
 
     let ignore_rules = build_ignore_patterns(
         COMMON_IGNORE_PATTERNS,
-        &xvc_root,
+        xvc_root,
         &walk_options.ignore_filename.unwrap_or_default(),
     )?;
     if !opts.targets.is_empty() {

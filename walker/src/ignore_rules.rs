@@ -1,10 +1,12 @@
 //! Ignore patterns for a directory and its child directories.
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, RwLock};
 use crate::{Result, Source};
 
+use rayon::prelude::*;
 use crate::pattern::{MatchResult, Pattern};
 
+use fast_glob::glob_match;
 use xvc_logging::watch;
 
 /// Complete set of ignore rules for a directory and its child directories.
@@ -14,27 +16,31 @@ pub struct IgnoreRules {
     /// Typically this is the root directory of Git or Xvc repository.
     pub root: PathBuf,
 
+    /// The name of the ignore file (e.g. `.xvcignore`, `.gitignore`) to be loaded for ignore rules.
+    pub ignore_filename: Option<String>,
+
     /// All ignore patterns collected from ignore files or specified in code.
-    // FIXME: This should be RwLock instead but as [fast_glob::Glob.is_match] requires &mut self,
-    // we use a simpler approach. 
-    pub ignore_patterns: Arc<Mutex<Vec<Pattern>>>,
+    pub ignore_patterns: Arc<RwLock<Vec<Pattern>>>,
 
     /// All whitelist patterns collected from ignore files or specified in code
-    pub whitelist_patterns: Arc<Mutex<Vec<Pattern>>>,
+    pub whitelist_patterns: Arc<RwLock<Vec<Pattern>>>,
 
 }
 
+pub type SharedIgnoreRules = Arc<RwLock<IgnoreRules>>;
+
 impl IgnoreRules {
     /// An empty set of ignore rules that neither ignores nor whitelists any path.
-    pub fn empty(dir: &Path) -> Self {
+    pub fn empty(dir: &Path, ignore_filename: Option<&str>) -> Self {
         IgnoreRules {
             root: PathBuf::from(dir),
-            ignore_patterns: Arc::new(Mutex::new(Vec::<Pattern>::new())),
-            whitelist_patterns: Arc::new(Mutex::new(Vec::<Pattern>::new())),
+            ignore_filename: ignore_filename.map(|s| s.to_string()),
+            ignore_patterns: Arc::new(RwLock::new(Vec::<Pattern>::new())),
+            whitelist_patterns: Arc::new(RwLock::new(Vec::<Pattern>::new())),
         }
     }
 
-    pub fn from_global_patterns(ignore_root: &Path, given: &str) -> Self {
+    pub fn from_global_patterns(ignore_root: &Path, ignore_filename: Option<&str>, given: &str) -> Self {
 
     let mut given_patterns = Vec::<Pattern>::new();
     // Add given patterns to ignore_patterns
@@ -42,7 +48,7 @@ impl IgnoreRules {
         let pattern = Pattern::new(Source::Global, line);
         given_patterns.push(pattern);
     }
-        IgnoreRules::from_patterns(given_patterns, ignore_root)
+        IgnoreRules::from_patterns(ignore_root, ignore_filename, given_patterns)
         }
 
 
@@ -60,7 +66,7 @@ impl IgnoreRules {
 /// # Returns
 ///
 /// A new `IgnoreRules` instance containing the given patterns and root path.
-    pub fn from_patterns(mut patterns: Vec<Pattern>, ignore_root: &Path) -> Self {
+    pub fn from_patterns(ignore_root: &Path, ignore_filename: Option<&str>, mut patterns: Vec<Pattern>) -> Self {
         let mut ignore_patterns = Vec::new();
         let mut whitelist_patterns = Vec::new();
         patterns.drain(0..patterns.len()).for_each(|pattern| {
@@ -71,8 +77,9 @@ impl IgnoreRules {
         });
         IgnoreRules {
             root: PathBuf::from(ignore_root),
-            ignore_patterns: Arc::new(Mutex::new(ignore_patterns)),
-            whitelist_patterns: Arc::new(Mutex::new(whitelist_patterns)),
+            ignore_filename: ignore_filename.map(|s| s.to_string()),
+            ignore_patterns: Arc::new(RwLock::new(ignore_patterns)),
+            whitelist_patterns: Arc::new(RwLock::new(whitelist_patterns)),
         }
     }
 
@@ -101,13 +108,10 @@ impl IgnoreRules {
 /// * `MatchResult::NoMatch` if the path does not match any pattern.
     pub fn check(&self, path: &Path) -> MatchResult {
     let is_abs = path.is_absolute();
-    watch!(is_abs);
     // strip_prefix eats the final slash, and ends_with behave differently than str, so we work
     // around here
     let path_str = path.to_string_lossy();
-    watch!(path_str);
     let final_slash = path_str.ends_with('/');
-    watch!(final_slash);
     
     let path = if is_abs {
 
@@ -132,22 +136,18 @@ impl IgnoreRules {
 
 
         { 
-            let mut whitelist_patterns = self.whitelist_patterns.lock().unwrap();
-                       
-            for pattern in whitelist_patterns.iter_mut() {
-                let glob = &mut pattern.glob;
-                if glob.is_match(&path) {
-                    return MatchResult::Whitelist;
-                }
+            let whitelist_patterns = self.whitelist_patterns.read().unwrap();
+            if let Some(p) = whitelist_patterns.par_iter().find_any(|pattern| glob_match(&pattern.glob, &path)) {
+                watch!(p);
+                return MatchResult::Whitelist;
             }
         }
 
         { 
-            let mut ignore_patterns = self.ignore_patterns.lock().unwrap();
-            for pattern in ignore_patterns.iter_mut() {
-                if pattern.glob.is_match(&path) {
-                    return MatchResult::Ignore;
-                }
+            let ignore_patterns = self.ignore_patterns.read().unwrap();
+            if let Some(p) = ignore_patterns.par_iter().find_any(|pattern| glob_match(&pattern.glob, &path)) {
+                watch!(p);
+                return MatchResult::Ignore;
             }
         }
 
@@ -176,17 +176,17 @@ impl IgnoreRules {
         assert_eq!(self.root, other.root);
 
         { 
-            let mut ignore_patterns = self.ignore_patterns.lock().unwrap();
-            let mut other_ignore_patterns = other.ignore_patterns.lock().unwrap();
+            let mut ignore_patterns = self.ignore_patterns.write().unwrap();
+            let mut other_ignore_patterns = other.ignore_patterns.write().unwrap();
             let len = other_ignore_patterns.len();
-            other_ignore_patterns.drain(0..len).for_each(|p| ignore_patterns.push(p.into()));
+            other_ignore_patterns.drain(0..len).for_each(|p| ignore_patterns.push(p));
         }
 
         { 
-            let mut whitelist_patterns = self.whitelist_patterns.lock().unwrap();
-            let mut other_whitelist_patterns = other.whitelist_patterns.lock().unwrap();
+            let mut whitelist_patterns = self.whitelist_patterns.write().unwrap();
+            let mut other_whitelist_patterns = other.whitelist_patterns.write().unwrap();
             let len = other_whitelist_patterns.len();
-            other_whitelist_patterns.drain(0..len).for_each(|p| whitelist_patterns.push(p.into()));
+            other_whitelist_patterns.drain(0..len).for_each(|p| whitelist_patterns.push(p));
                     
         }
 
@@ -194,7 +194,7 @@ impl IgnoreRules {
     }
 
     pub  fn add_patterns(&self, patterns: Vec<Pattern>) -> Result<()> {
-        let other = IgnoreRules::from_patterns(patterns, &self.root);
+        let other = IgnoreRules::from_patterns(&self.root, None, patterns);
         self.merge_with(&other)
         }
     }

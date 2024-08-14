@@ -29,7 +29,10 @@ pub use walk_serial::walk_serial;
 
 pub use abspath::AbsolutePath;
 pub use error::{Error, Result};
+
 pub use ignore_rules::IgnoreRules;
+pub use ignore_rules::SharedIgnoreRules;
+
 pub use notify::make_watcher;
 use std::ffi::OsStr;
 pub use std::hash::Hash;
@@ -68,7 +71,7 @@ pub struct PathMetadata {
 pub struct WalkOptions {
     /// The ignore filename (`.gitignore`, `.xvcignore`, `.ignore`, etc.) or `None` for not
     /// ignoring anything.
-    pub ignore_filename: Option<OsString>,
+    pub ignore_filename: Option<String>,
     /// Should the results include directories themselves?
     /// Note that they are always traversed, but may not be listed if we're only interested in
     /// actual files.
@@ -119,7 +122,7 @@ type IgnorePatterns = Vec<Pattern>;
 pub fn build_ignore_patterns(
     given: &str,
     ignore_root: &Path,
-    ignore_filename: &OsStr,
+    ignore_filename: &str,
 ) -> Result<IgnoreRules> {
 
     watch!(ignore_filename);
@@ -130,9 +133,10 @@ pub fn build_ignore_patterns(
         .map_err(|e| anyhow!("Error reading directory: {:?}, {:?}", ignore_root, e))?;
 
     let mut dir_stack = Vec::<PathBuf>::new();
-    let ignore_fn = OsString::from(ignore_filename);
 
-    let ignore_rules = IgnoreRules::from_global_patterns(ignore_root, given);
+    let ignore_rules = IgnoreRules::from_global_patterns(ignore_root, Some(ignore_filename), given);
+
+    let ignore_fn = ignore_rules.ignore_filename.as_deref().unwrap();
 
     while let Some(dir) = dir_stack.pop() {
         let mut new_dirs = Vec::<PathBuf>::new();
@@ -220,11 +224,11 @@ pub fn content_to_patterns(
 }
 
 
-pub fn update_ignore_rules(ignore_filename: &Option<OsString>, 
+pub fn update_ignore_rules(
                         dir: &Path, 
                         ignore_rules: &IgnoreRules) -> Result<()> {
 
-    if let Some(ignore_filename) = ignore_filename { 
+    if let Some(ref ignore_filename) = ignore_rules.ignore_filename { 
         let ignore_root = &ignore_rules.root;
     let ignore_path = dir.join(ignore_filename);
     if ignore_path.is_file() {
@@ -364,7 +368,7 @@ mod tests {
         initial_patterns: &str,
     ) -> Result<IgnoreRules> {
         let patterns = create_patterns(root, dir, initial_patterns);
-        let initialized = IgnoreRules::empty(&PathBuf::from(root));
+        let initialized = IgnoreRules::empty(&PathBuf::from(root), None);
 
         initialized.add_patterns(patterns)?;
         Ok(initialized)
@@ -416,7 +420,7 @@ mod tests {
             line: 1,
         };
         let pattern = Pattern::new(source, pattern);
-        pattern.pattern
+        pattern.glob
     }
 
     // Blank file tests

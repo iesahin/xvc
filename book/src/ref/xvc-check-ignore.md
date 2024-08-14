@@ -4,7 +4,7 @@
 
 Check whether a path is ignored or whitelisted by Xvc.
 
-## Synopsis 
+## Synopsis
 
 ```console
 $ xvc check-ignore --help
@@ -22,9 +22,9 @@ Options:
 
       --ignore-filename <IGNORE_FILENAME>
           Filename that contains ignore rules
-          
+
           This can be set to .gitignore to test whether Git and Xvc work the same way.
-          
+
           [default: .xvcignore]
 
   -n, --non-matching
@@ -44,7 +44,7 @@ $ xvc check-ignore
 my-dir/my-file
 ```
 
-If you supply paths from the CLI, they are checked instead. 
+If you supply paths from the CLI, they are checked instead.
 
 ```shell
 $ xvc check-ignore my-dir/my-file another-dir/another-file
@@ -62,8 +62,5 @@ You can specify an alternative ignore filename with `--ignore-filename` option.
 The below command is identical to `git check-ignore` and should give the same results.
 
 ```shell
-$ xvc check-ignore --ignore-filename .gitignore 
+$ xvc check-ignore --ignore-filename .gitignore
 ```
-
-
-

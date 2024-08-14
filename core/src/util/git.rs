@@ -37,13 +37,10 @@ pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::ffi::OsStr;
-    use std::ffi::OsString;
     use std::fs;
     use test_case::test_case;
     use xvc_logging::watch;
     use xvc_test_helper::*;
-    use xvc_walker::IgnoreRules;
     use xvc_walker::MatchResult as M;
 
     #[test_case("myfile.txt" , ".gitignore", "/myfile.txt" => matches M::Ignore ; "myfile.txt")]
@@ -68,7 +65,7 @@ mod test {
         let gitignore = build_ignore_patterns(
             "",
             gitignore_path.parent().unwrap(),
-            OsString::from(".gitignore").as_ref()
+            ".gitignore"
         )
         .unwrap();
 

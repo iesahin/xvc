@@ -39,11 +39,7 @@ impl XvcMetadataDigest {
             0u64
         };
 
-        let size = if let Some(size) = xvc_metadata.size {
-            size
-        } else {
-            0u64
-        };
+        let size = xvc_metadata.size.unwrap_or_default();
 
         let mut bytes: [u8; 32] = [0; 32];
         bytes[..8].clone_from_slice(&ft.to_le_bytes());

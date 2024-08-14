@@ -2,7 +2,7 @@ mod common;
 use common::*;
 use log::LevelFilter;
 use xvc_core::{
-    util::xvcignore::{walk_parallel, walk_serial},
+    util::xvcignore::{walk_parallel, walk_serial, COMMON_IGNORE_PATTERNS},
     XvcPath,
 };
 use xvc_test_helper::test_logging;
@@ -29,8 +29,8 @@ fn test_walk() -> Result<()> {
         let xp = XvcPath::new(&xvc_root, xvc_root.absolute_path(), Path::new(skipped))?;
         assert!(!pmp1.contains_key(&xp), "Result Contains {:?}", xp)
     }
-
-    let (pmp2, _) = walk_parallel(&xvc_root, true)?;
+ 
+    let (pmp2, _) = walk_parallel(&xvc_root,  COMMON_IGNORE_PATTERNS, true)?;
 
     watch!(pmp1);
     watch!(pmp2);

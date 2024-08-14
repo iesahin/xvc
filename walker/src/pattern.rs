@@ -89,9 +89,7 @@ pub enum Source {
 pub struct Pattern
 {
     /// The pattern type
-    pub glob: Glob,
-    /// The line that we used for glob
-    pub pattern: String,
+    pub glob: String,
     /// The original string that defines the pattern
     pub original: String,
     /// Where did we get this pattern?
@@ -185,12 +183,10 @@ pub fn new(source: Source, original: &str) -> Self {
         PatternRelativity::Anywhere
     };
 
-        let pattern = transform_pattern_for_glob(&line, relativity.clone(), path_kind.clone());
-        let glob = Glob::new(&pattern).unwrap();
+        let glob = transform_pattern_for_glob(&line, relativity.clone(), path_kind.clone());
 
     Pattern {
             glob,
-        pattern,
         original,
         source,
         effect,
