@@ -145,6 +145,8 @@ pub fn filter_targets_from_store(
 
 /// Filter a set of paths by a set of globs. The globs are compiled into a
 /// GlobSet and paths are checked against the set.
+///
+/// If a target ends with /, it's considered a directory and all its children are also selected.
 pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Result<HStore<XvcPath>> {
     if globs.is_empty() {
         return Ok(paths.to_owned());
@@ -156,7 +158,7 @@ pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Resul
         if t.ends_with('/') {
             glob_matcher.add(&format!("{t}**"));
         } else {
-            glob_matcher.add(&format!("{t}/**"));
+            glob_matcher.add(t);
         }
     });
 
@@ -176,6 +178,31 @@ pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Resul
 
     Ok(paths)
 }
+
+/// Builds a glob matcher based on the provided directory and glob patterns.
+///
+/// # Arguments
+///
+/// * `output_snd`: A sender for output messages.
+/// * `dir`: The directory to which the glob patterns will be applied.
+/// * `globs`: A slice of glob patterns as strings.
+///
+/// # Returns
+///
+/// * `Result<Glob>`: A `Result` that contains the `Glob` matcher if successful, or an error if not.
+///
+/// # Errors
+///
+/// This function will return an error if any of the glob patterns are invalid.
+///
+/// # Example
+///
+/// ```
+/// let output_snd = ...; // Some XvcOutputSender
+/// let dir = Path::new("/path/to/dir");
+/// let globs = vec!["*.rs", "src/"];
+/// let matcher = build_glob_matcher(&output_snd, &dir, &globs);
+/// ```
 
 pub fn build_glob_matcher(
     output_snd: &XvcOutputSender,

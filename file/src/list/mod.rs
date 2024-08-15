@@ -192,12 +192,12 @@ impl ListRow {
         watch!(&path_prefix);
         let name = if let Some(ap) = path_match.actual_path {
             watch!(ap);
-            ap.strip_prefix(&path_prefix.to_string_lossy().to_string())
+            ap.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
         } else if let Some(rp) = path_match.recorded_path {
             watch!(rp);
-            rp.strip_prefix(&path_prefix.to_string_lossy().to_string())
+            rp.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
         } else {
