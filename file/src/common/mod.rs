@@ -211,26 +211,24 @@ pub fn build_glob_matcher(
 ) -> Result<Glob> {
     let mut glob_matcher = Glob::default();
     globs.iter().for_each(|t| {
-        globs.iter().for_each(|t| {
-            watch!(t);
-            if t.ends_with('/') {
-                if !glob_matcher.add(&format!("{t}**")) {
-                    error!(output_snd, "Error in glob: {t}");
-                }
-            } else if !t.contains('*') {
-                let abs_target = dir.join(Path::new(t));
-                watch!(abs_target);
-                if abs_target.is_dir() {
-                    if !glob_matcher.add(&format!("{t}/**")) {
-                        error!(output_snd, "Error in glob: {t}")
-                    }
-                } else if !glob_matcher.add(t) {
+        watch!(t);
+        if t.ends_with('/') {
+            if !glob_matcher.add(&format!("{t}**")) {
+                error!(output_snd, "Error in glob: {t}");
+            }
+        } else if !t.contains('*') {
+            let abs_target = dir.join(Path::new(t));
+            watch!(abs_target);
+            if abs_target.is_dir() {
+                if !glob_matcher.add(&format!("{t}/**")) {
                     error!(output_snd, "Error in glob: {t}")
                 }
             } else if !glob_matcher.add(t) {
                 error!(output_snd, "Error in glob: {t}")
             }
-        });
+        } else if !glob_matcher.add(t) {
+            error!(output_snd, "Error in glob: {t}")
+        }
     });
     Ok(glob_matcher)
 }

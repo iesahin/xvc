@@ -2,7 +2,7 @@
 //! See [`walk_parallel`] for parallel version.
 use std::path::Path;
 
-use xvc_logging::{debug, warn, watch, XvcOutputSender};
+use xvc_logging::{debug, warn, XvcOutputSender};
 
 use crate::{
     directory_list, pattern::MatchResult, update_ignore_rules, IgnoreRules, PathMetadata, Result,

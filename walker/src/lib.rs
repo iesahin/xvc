@@ -12,17 +12,17 @@ pub mod abspath;
 pub mod error;
 pub mod ignore_rules;
 pub mod notify;
-pub mod sync;
 pub mod pattern;
-pub mod walk_serial;
+pub mod sync;
 pub mod walk_parallel;
+pub mod walk_serial;
 
-pub use pattern::Pattern;
-pub use pattern::PatternRelativity;
-pub use pattern::PathKind;
-pub use pattern::PatternEffect;
-pub use pattern::Source;
 pub use pattern::MatchResult;
+pub use pattern::PathKind;
+pub use pattern::Pattern;
+pub use pattern::PatternEffect;
+pub use pattern::PatternRelativity;
+pub use pattern::Source;
 
 pub use walk_parallel::walk_parallel;
 pub use walk_serial::walk_serial;
@@ -115,67 +115,54 @@ impl WalkOptions {
     }
 }
 
-/// FIXME: This should be Arc<RwLock<Glob>>> when Glob.is_match doesn't require mutable self
-type IgnorePatterns = Vec<Pattern>;
-
 /// Build the ignore rules with the given directory
 pub fn build_ignore_patterns(
     given: &str,
     ignore_root: &Path,
     ignore_filename: &str,
 ) -> Result<IgnoreRules> {
-
     watch!(ignore_filename);
     watch!(ignore_root);
 
-    let elements = ignore_root
-        .read_dir()
-        .map_err(|e| anyhow!("Error reading directory: {:?}, {:?}", ignore_root, e))?;
-
-    let mut dir_stack = Vec::<PathBuf>::new();
-
     let ignore_rules = IgnoreRules::from_global_patterns(ignore_root, Some(ignore_filename), given);
+
+    let dirs_under = |p: &Path| -> Vec<PathBuf> {
+        p.read_dir()
+            .unwrap()
+            .filter_map(|p| {
+                if let Ok(p) = p {
+                    if p.path().is_dir() {
+                        Some(p.path())
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                }
+            })
+            .filter_map(|p| match ignore_rules.check(&p) {
+                MatchResult::NoMatch | MatchResult::Whitelist => Some(p),
+                MatchResult::Ignore => None,
+            })
+            .collect()
+    };
+
+    let mut dir_stack: Vec<PathBuf> = vec![ignore_root.to_path_buf()];
 
     let ignore_fn = ignore_rules.ignore_filename.as_deref().unwrap();
 
     while let Some(dir) = dir_stack.pop() {
-        let mut new_dirs = Vec::<PathBuf>::new();
-        let mut new_patterns: Vec<Pattern> = Vec::new();
-        let elements = dir.read_dir()?;
-        for entry in elements {
-            match entry {
-                Ok(entry) => {
-                    if entry.path().is_dir() {
-                        watch!(entry.path());
-                        new_dirs.push(entry.path());
-                    }
-                    if entry.file_name() == ignore_fn && entry.path().exists() {
-                        let ignore_path = entry.path();
-                        watch!(ignore_path);
-                        let ignore_content = fs::read_to_string(&ignore_path)?;
-                        new_patterns.extend(
-                            content_to_patterns(&ignore_root, Some(&ignore_path), &ignore_content),
-                        );
-                    }
-                }
-                Err(e) => {
-                    warn!("{}", e);
-                }
-            }
+        watch!(dir);
+        let ignore_filename = dir.join(ignore_fn);
+        watch!(ignore_filename);
+        if ignore_filename.is_file() {
+            let ignore_content = fs::read_to_string(&ignore_filename)?;
+            let new_patterns =
+                content_to_patterns(ignore_root, Some(&ignore_filename), &ignore_content);
+            ignore_rules.add_patterns(new_patterns)?;
+            dir_stack.extend(dirs_under(&dir));
         }
-
-        ignore_rules.add_patterns(new_patterns)?;
-
-        new_dirs.drain(0..new_dirs.len()).for_each(|new_dir| {
-            match ignore_rules.check(&new_dir) {
-            MatchResult::NoMatch | MatchResult::Whitelist => {
-                dir_stack.push(new_dir);
-            }
-            MatchResult::Ignore => {}
-            }
-        });
     }
-
 
     Ok(ignore_rules)
 }
@@ -223,15 +210,11 @@ pub fn content_to_patterns(
     patterns
 }
 
-
-pub fn update_ignore_rules(
-                        dir: &Path, 
-                        ignore_rules: &IgnoreRules) -> Result<()> {
-
-    if let Some(ref ignore_filename) = ignore_rules.ignore_filename { 
+pub fn update_ignore_rules(dir: &Path, ignore_rules: &IgnoreRules) -> Result<()> {
+    if let Some(ref ignore_filename) = ignore_rules.ignore_filename {
         let ignore_root = &ignore_rules.root;
-    let ignore_path = dir.join(ignore_filename);
-    if ignore_path.is_file() {
+        let ignore_path = dir.join(ignore_filename);
+        if ignore_path.is_file() {
             let new_patterns: Vec<Pattern> = {
                 let content = fs::read_to_string(&ignore_path)?;
                 content_to_patterns(ignore_root, Some(ignore_path).as_deref(), &content)

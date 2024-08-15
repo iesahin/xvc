@@ -6,6 +6,8 @@ use xvc_walker::{build_ignore_patterns, AbsolutePath, IgnoreRules};
 use crate::error::Result;
 use crate::GIT_DIR;
 
+use super::xvcignore::COMMON_IGNORE_PATTERNS;
+
 /// Check whether a path is inside a Git repository.
 /// It returns `None` if not, otherwise returns the closest directory with `.git`.
 /// It works by checking `.git` directories in parents, until no more parent left.
@@ -27,7 +29,11 @@ pub fn inside_git(path: &Path) -> Option<PathBuf> {
 /// Returns [xvc_walker::IgnoreRules] for `.gitignore`
 /// It's used to check whether a path is already ignored by Git.
 pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
-    let rules = build_ignore_patterns("", git_root, ".gitignore".to_owned().as_ref())?;
+    let rules = build_ignore_patterns(
+        COMMON_IGNORE_PATTERNS,
+        git_root,
+        ".gitignore".to_owned().as_ref(),
+    )?;
 
     Ok(rules)
 }

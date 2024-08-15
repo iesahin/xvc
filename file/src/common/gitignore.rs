@@ -7,7 +7,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 
 use std::thread::JoinHandle;
-use xvc_core::{util::git::build_gitignore};
+use xvc_core::util::git::build_gitignore;
 
 use crate::{Result, CHANNEL_CAPACITY};
 use xvc_core::{XvcPath, XvcRoot};
@@ -42,11 +42,8 @@ pub fn make_ignore_handler(
     let (sender, receiver) = crossbeam_channel::bounded(CHANNEL_CAPACITY);
     let output_snd = output_snd.clone();
     let xvc_root = xvc_root.absolute_path().clone();
-    let xvc_directory = xvc_root.as_path().to_str().unwrap();
-
 
     let handle = std::thread::spawn(move || {
-
         let mut ignore_dirs = Vec::<XvcPath>::new();
         let mut ignore_files = Vec::<XvcPath>::new();
 
@@ -58,7 +55,6 @@ pub fn make_ignore_handler(
                         let path = dir.to_absolute_path(&xvc_root).to_path_buf();
 
                         if !ignore_dirs.contains(&dir)
-                            
                             && matches!(gitignore.check(&path), MatchResult::NoMatch)
                         {
                             ignore_dirs.push(dir);
@@ -107,7 +103,6 @@ pub fn update_dir_gitignores(
     current_gitignore: &IgnoreRules,
     dirs: &[XvcPath],
 ) -> Result<()> {
-
     // Check if dirs are already ignored
     let dirs: Vec<XvcPath> = dirs
         .iter()
@@ -134,7 +129,7 @@ pub fn update_dir_gitignores(
                     None
                 }
             }}).collect();
- 
+
     // Check if files are already ignored
     let mut changes = HashMap::<RelativePathBuf, Vec<String>>::new();
 
