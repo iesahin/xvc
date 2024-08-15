@@ -3,8 +3,8 @@
 //! - [BringCLI] defines the command line options.
 //!
 //! - [cmd_bring]  is the entry point for the command.
-//! Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
-//! workspace.
+//!   Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
+//!   workspace.
 
 use crate::common::{load_targets_from_store, move_to_cache};
 

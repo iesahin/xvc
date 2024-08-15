@@ -28,7 +28,7 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
-use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, IgnoreRules, PathSync, Source};
+use xvc_walker::{AbsolutePath, Glob, PathSync};
 
 use self::gitignore::IgnoreOp;
 
@@ -147,7 +147,7 @@ pub fn filter_targets_from_store(
 /// GlobSet and paths are checked against the set.
 pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Result<HStore<XvcPath>> {
     if globs.is_empty() {
-    return Ok(paths.to_owned()) 
+        return Ok(paths.to_owned());
     }
 
     let mut glob_matcher = globs.first().and_then(|glob| Glob::new(glob)).unwrap();
@@ -167,20 +167,21 @@ pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Resul
 
             if glob_matcher.is_match(str_path) {
                 Some((*e, p.clone()))
-                } else {
-                    None
-                }
+            } else {
+                None
+            }
         })
         .collect();
     watch!(paths);
-    
+
     Ok(paths)
 }
 
-pub fn build_glob_matcher(output_snd: &XvcOutputSender, dir: &Path, globs: &[String]) -> Result<Glob> {
-
-    let source = Source::Global;
-
+pub fn build_glob_matcher(
+    output_snd: &XvcOutputSender,
+    dir: &Path,
+    globs: &[String],
+) -> Result<Glob> {
     let mut glob_matcher = globs.first().and_then(|glob| Glob::new(glob)).unwrap();
     globs.iter().skip(1).for_each(|t| {
         globs.iter().for_each(|t| {
@@ -191,8 +192,8 @@ pub fn build_glob_matcher(output_snd: &XvcOutputSender, dir: &Path, globs: &[Str
             } else if !t.contains('*') {
                 let abs_target = dir.join(Path::new(t));
                 if abs_target.is_dir() {
-                   if !glob_matcher.add(&format!("{t}/**")) {
-                    error!(output_snd, "Error in glob: {t}")
+                    if !glob_matcher.add(&format!("{t}/**")) {
+                        error!(output_snd, "Error in glob: {t}")
                     }
                 } else if !glob_matcher.add(t) {
                     error!(output_snd, "Error in glob: {t}")
@@ -239,10 +240,15 @@ pub fn targets_from_disk(
             None => vec![cwd.to_string()],
         };
 
-        return targets_from_disk(output_snd, xvc_root, xvc_root.absolute_path(), &Some(targets));
+        return targets_from_disk(
+            output_snd,
+            xvc_root,
+            xvc_root.absolute_path(),
+            &Some(targets),
+        );
     }
     // FIXME: If there are no globs/directories in the targets, no need to retrieve all the paths
-    // here. 
+    // here.
     let (all_paths, _) = all_paths_and_metadata(xvc_root);
 
     watch!(all_paths);
@@ -252,7 +258,7 @@ pub fn targets_from_disk(
             return Ok(XvcPathMetadataMap::new());
         }
 
-        let mut glob_matcher = build_glob_matcher(output_snd, &xvc_root, targets)?;
+        let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, targets)?;
         watch!(glob_matcher);
         Ok(all_paths
             .into_iter()
@@ -369,8 +375,12 @@ pub fn recheck_from_cache(
     Ok(())
 }
 
-#[cfg(feature="reflink")]
-fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
+#[cfg(feature = "reflink")]
+fn reflink(
+    output_snd: &XvcOutputSender,
+    cache_path: AbsolutePath,
+    path: AbsolutePath,
+) -> Result<()> {
     match reflink::reflink(&cache_path, &path) {
         Ok(_) => {
             info!(output_snd, "[REFLINK] {} -> {}", cache_path, path);
@@ -386,22 +396,31 @@ fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: Absolut
     }
 }
 
-fn copy_file(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
-            watch!("Before copy");
-            watch!(&cache_path);
-            watch!(&path);
-            fs::copy(&cache_path, &path)?;
-            info!(output_snd, "[COPY] {} -> {}", cache_path, path);
-            let mut perm = path.metadata()?.permissions();
-            watch!(&perm);
-            perm.set_readonly(false);
-            watch!(&perm);
-            fs::set_permissions(&path, perm)?;
+fn copy_file(
+    output_snd: &XvcOutputSender,
+    cache_path: AbsolutePath,
+    path: AbsolutePath,
+) -> Result<()> {
+    watch!("Before copy");
+    watch!(&cache_path);
+    watch!(&path);
+    fs::copy(&cache_path, &path)?;
+    info!(output_snd, "[COPY] {} -> {}", cache_path, path);
+    let mut perm = path.metadata()?.permissions();
+    watch!(&perm);
+    // FIXME: Fix the clippy warning in the following line
+    perm.set_readonly(false);
+    watch!(&perm);
+    fs::set_permissions(&path, perm)?;
     Ok(())
 }
 
-#[cfg(not(feature="reflink"))]
-fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
+#[cfg(not(feature = "reflink"))]
+fn reflink(
+    output_snd: &XvcOutputSender,
+    cache_path: AbsolutePath,
+    path: AbsolutePath,
+) -> Result<()> {
     warn!(
         output_snd,
         "Xvc isn't compiled with reflink support. Copying the file."
