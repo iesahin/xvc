@@ -531,6 +531,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
     let current_dir = conf.current_dir()?;
 
     let all_from_disk = targets_from_disk(output_snd, xvc_root, current_dir, &opts.targets)?;
+    watch!(&all_from_disk);
     let from_disk = if opts.show_dot_files {
         all_from_disk
     } else {

@@ -6,7 +6,6 @@ use std::path::Path;
 use log::LevelFilter;
 
 use xvc::error::Result;
-use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_test_helper::{create_directory_tree, test_logging};
 use xvc_walker::AbsolutePath;
@@ -55,13 +54,9 @@ fn test_file_list() -> Result<()> {
         common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
-    watch!("begin");
     let list_all = x(&["list", "--format", "{{name}}", "--show-dot-files"])?;
 
-    watch!(list_all);
-
     let count_all = list_all.trim().lines().count();
-    watch!(count_all);
     // There must be 33 elements in total. 6 x 5: directories, 1 for .gitignore,
     // 1 for .xvcignore, another line for the summary.
     assert!(count_all == 33);

@@ -150,8 +150,8 @@ pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Resul
         return Ok(paths.to_owned());
     }
 
-    let mut glob_matcher = globs.first().and_then(|glob| Glob::new(glob)).unwrap();
-    globs.iter().skip(1).for_each(|t| {
+    let mut glob_matcher = Glob::default();
+    globs.iter().for_each(|t| {
         watch!(t);
         if t.ends_with('/') {
             glob_matcher.add(&format!("{t}**"));
@@ -182,15 +182,17 @@ pub fn build_glob_matcher(
     dir: &Path,
     globs: &[String],
 ) -> Result<Glob> {
-    let mut glob_matcher = globs.first().and_then(|glob| Glob::new(glob)).unwrap();
-    globs.iter().skip(1).for_each(|t| {
+    let mut glob_matcher = Glob::default();
+    globs.iter().for_each(|t| {
         globs.iter().for_each(|t| {
+            watch!(t);
             if t.ends_with('/') {
                 if !glob_matcher.add(&format!("{t}**")) {
                     error!(output_snd, "Error in glob: {t}");
                 }
             } else if !t.contains('*') {
                 let abs_target = dir.join(Path::new(t));
+                watch!(abs_target);
                 if abs_target.is_dir() {
                     if !glob_matcher.add(&format!("{t}/**")) {
                         error!(output_snd, "Error in glob: {t}")
@@ -239,7 +241,7 @@ pub fn targets_from_disk(
             Some(targets) => targets.iter().map(|t| format!("{cwd}{t}")).collect(),
             None => vec![cwd.to_string()],
         };
-
+        watch!(targets);
         return targets_from_disk(
             output_snd,
             xvc_root,
