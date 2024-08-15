@@ -56,7 +56,8 @@ impl XvcPathMetadataProvider {
             let watcher = watcher;
             watch!(watcher);
 
-            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
+            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| {
+                match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
@@ -79,7 +80,7 @@ impl XvcPathMetadataProvider {
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
-            };
+            } };
 
             let mut sel = Select::new();
             let fs_event_index = sel.recv(&fs_receiver);
