@@ -1,5 +1,8 @@
 use std::{
-    ffi::OsString, fs, path::{Path, PathBuf}, sync::{Arc, RwLock}
+    ffi::OsString,
+    fs,
+    path::{Path, PathBuf},
+    sync::{Arc, RwLock},
 };
 
 use fast_glob::Glob;
@@ -44,7 +47,7 @@ fn new_dir_with_ignores(
     initial_patterns: &str,
 ) -> Result<IgnoreRules> {
     let patterns = create_patterns(root, dir, initial_patterns);
-    let initialized = IgnoreRules::empty(&PathBuf::from(root), None);
+    let initialized = IgnoreRules::empty(&PathBuf::from(root), Some(".gitignore"));
     watch!(patterns);
     initialized.add_patterns(patterns).unwrap();
     Ok(initialized)
@@ -78,18 +81,14 @@ fn test_walk_parallel(ignore_src: &str, ignore_content: &str) -> Vec<String> {
         ignore_content,
     )
     .unwrap();
-    let initial_rules = Arc::new(RwLock::new(new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap()));
+    let initial_rules = Arc::new(RwLock::new(
+        new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap(),
+    ));
     let walk_options = WalkOptions {
         ignore_filename: Some(".gitignore".to_owned()),
         include_dirs: true,
     };
-    walk_parallel(
-        initial_rules,
-        &root,
-        walk_options,
-        path_sender,
-    )
-    .unwrap();
+    walk_parallel(initial_rules, &root, walk_options, path_sender).unwrap();
     let paths = path_receiver
         .iter()
         .filter_map(|e| match e {
