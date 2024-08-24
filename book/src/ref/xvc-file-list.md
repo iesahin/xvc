@@ -11,15 +11,15 @@ Usage: xvc file list [OPTIONS] [TARGETS]...
 Arguments:
   [TARGETS]...
           Files/directories to list.
-          
+
           If not supplied, lists all files under the current directory.
 
 Options:
   -f, --format <FORMAT>
           A string for each row of the output table
-          
+
           The following are the keys for each row:
-          
+
           - {{acd8}}:  actual content digest from the workspace file. First 8 digits.
           - {{acd64}}:  actual content digest. All 64 digits.
           - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
@@ -38,24 +38,24 @@ Options:
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
             MB, GB and TB to represent sizes larged than 1MB.
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-          
+
           The default format can be set with file.list.format in the config file.
 
   -s, --sort <SORT>
           Sort criteria.
-          
+
           It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-          
+
           The default option can be set with file.list.sort in the config file.
 
       --no-summary
           Don't show total number and size of the listed files.
-          
+
           The default option can be set with file.list.no_summary in the config file.
 
   -a, --show-dot-files
           Don't hide dot files
-          
+
           If not supplied, hides dot files like .gitignore and .xvcignore
 
   -h, --help
@@ -168,7 +168,7 @@ Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 ```
 
-By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag. 
+By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag.
 
 ```console
 $ xvc file list --sort name-asc --show-dot-files
@@ -209,7 +209,7 @@ Total #: 32 Workspace Size:       51443 Cached Size:           0
 
 ```
 
-You can also hide the summary below the list to get only the list of files. 
+You can also hide the summary below the list to get only the list of files.
 
 ```console
 $ xvc file list  --sort name-asc --no-summary
@@ -278,14 +278,13 @@ print the second letter as `H`.
 ```console
 $ xvc file track dir-0002/ --recheck-method hardlink
 
-$ xvc -vvvv file list dir-0002
+$ xvc file list dir-0002
 FH        2005 [..] 447933dc 447933dc dir-0002/file-0005.bin
 FH        2004 [..] 63535612 63535612 dir-0002/file-0004.bin
 FH        2003 [..] d2432259 d2432259 dir-0002/file-0003.bin
 FH        2002 [..] 7e807161 7e807161 dir-0002/file-0002.bin
 FH        2001 [..] 1953f05d 1953f05d dir-0002/file-0001.bin
 Total #: 5 Workspace Size:       10015 Cached Size:       10015
-
 
 ```
 
