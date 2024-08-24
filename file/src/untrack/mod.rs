@@ -43,8 +43,13 @@ pub fn cmd_untrack(
     let current_dir = xvc_root.config().current_dir()?;
     let all_paths = xvc_root.load_store()?;
     let all_content_digests = xvc_root.load_store()?;
-    let untrack_targets =
-        filter_targets_from_store(xvc_root, &all_paths, current_dir, &Some(opts.targets))?;
+    let untrack_targets = filter_targets_from_store(
+        output_snd,
+        xvc_root,
+        &all_paths,
+        current_dir,
+        &Some(opts.targets),
+    )?;
 
     let all_cache_paths = cache_paths_for_xvc_paths(output_snd, &all_paths, &all_content_digests)?;
 

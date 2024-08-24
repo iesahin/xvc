@@ -163,6 +163,7 @@ pub fn cmd_move(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: MoveCLI)
     let stored_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let (source_xvc_paths, source_metadata) = get_source_path_metadata(
+        output_snd,
         xvc_root,
         &stored_xvc_path_store,
         &stored_metadata_store,

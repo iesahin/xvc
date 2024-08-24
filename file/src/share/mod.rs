@@ -33,7 +33,8 @@ pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCL
     let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
     watch!(storage);
     let current_dir = xvc_root.config().current_dir()?;
-    let targets = load_targets_from_store(xvc_root, current_dir, &Some(vec![opts.target]))?;
+    let targets =
+        load_targets_from_store(output_snd, xvc_root, current_dir, &Some(vec![opts.target]))?;
     watch!(targets);
 
     let target_file_xvc_metadata = xvc_root

@@ -94,7 +94,7 @@ pub fn cmd_recheck(
 
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
