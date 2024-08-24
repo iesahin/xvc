@@ -276,7 +276,7 @@ If you add another set of files as hardlinks to the cached copies, it will
 print the second letter as `H`.
 
 ```console
-$ xvc -vvvv file track dir-0002/ --recheck-method hardlink
+$ xvc file track dir-0002/ --recheck-method hardlink
 
 $ xvc -vvvv file list dir-0002
 FH        2005 [..] 447933dc 447933dc dir-0002/file-0005.bin
