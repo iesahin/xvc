@@ -43,7 +43,7 @@ fn walk_parallel_inner(
                     // If the path is a directory, send it to the channel if `include_dirs` is true.
                     // The caller expects a list of directories to recurse into.
 
-                    if pm.metadata.is_file() {
+                    if pm.metadata.is_file() || pm.metadata.is_symlink() {
                         path_sender
                             .send(Ok(pm.clone()))
                             .expect("Channel error in walk_parallel");
