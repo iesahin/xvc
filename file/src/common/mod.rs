@@ -93,12 +93,14 @@ pub fn pipe_path_digest(
 ///
 /// If `targets` is `None`, all paths in the store are returned.
 pub fn load_targets_from_store(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
     let store: XvcStore<XvcPath> = xvc_root.load_store()?;
-    filter_targets_from_store(xvc_root, &store, current_dir, targets)
+    watch!(store);
+    filter_targets_from_store(output_snd, xvc_root, &store, current_dir, targets)
 }
 
 /// Filters the paths in the store by given globs.
@@ -107,6 +109,7 @@ pub fn load_targets_from_store(
 ///
 /// If `current_dir` is not the root, all targets are prefixed with it.
 pub fn filter_targets_from_store(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     store: &XvcStore<XvcPath>,
     current_dir: &AbsolutePath,
@@ -124,6 +127,7 @@ pub fn filter_targets_from_store(
         };
 
         return filter_targets_from_store(
+            output_snd,
             xvc_root,
             store,
             xvc_root.absolute_path(),
@@ -135,7 +139,7 @@ pub fn filter_targets_from_store(
 
     let hstore = HStore::<XvcPath>::from(store);
     if let Some(targets) = targets {
-        let paths = filter_paths_by_globs(&hstore, targets.as_slice())?;
+        let paths = filter_paths_by_globs(output_snd, xvc_root, &hstore, targets.as_slice())?;
         watch!(paths);
         Ok(paths)
     } else {
@@ -147,35 +151,30 @@ pub fn filter_targets_from_store(
 /// GlobSet and paths are checked against the set.
 ///
 /// If a target ends with /, it's considered a directory and all its children are also selected.
-pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Result<HStore<XvcPath>> {
+pub fn filter_paths_by_globs(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    paths: &HStore<XvcPath>,
+    globs: &[String],
+) -> Result<HStore<XvcPath>> {
     if globs.is_empty() {
         return Ok(paths.to_owned());
     }
 
-    let mut glob_matcher = Glob::default();
-    globs.iter().for_each(|t| {
-        watch!(t);
-        if t.ends_with('/') {
-            glob_matcher.add(&format!("{t}**"));
-        } else {
-            glob_matcher.add(t);
-        }
-    });
-
+    let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, globs)?;
+    watch!(glob_matcher);
     let paths = paths
         .iter()
         .filter_map(|(e, p)| {
-            let str_path = &p.as_relative_path().as_str();
-
-            if glob_matcher.is_match(str_path) {
+            if glob_matcher.is_match(p.as_str()) {
                 Some((*e, p.clone()))
             } else {
                 None
             }
         })
         .collect();
-    watch!(paths);
 
+    watch!(paths);
     Ok(paths)
 }
 
