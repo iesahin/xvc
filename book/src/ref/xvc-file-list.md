@@ -278,7 +278,7 @@ print the second letter as `H`.
 ```console
 $ xvc file track dir-0002 --recheck-method hardlink
 
-$ xvc file list dir-0002
+$ xvc -vvvv file list dir-0002
 FH        2005 [..] 447933dc 447933dc dir-0002/file-0005.bin
 FH        2004 [..] 63535612 63535612 dir-0002/file-0004.bin
 FH        2003 [..] d2432259 d2432259 dir-0002/file-0003.bin
