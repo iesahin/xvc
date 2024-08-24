@@ -46,15 +46,20 @@ $ xvc init
 ```
 
 ```console
-$ cat .xvcignore
+$ zsh -cl "echo 'my-dir/my-file' > .xvcignore"
 ```
 
 ```console
-$ xvc check-ignore
+
+# Add patterns of files xvc should ignore, which could improve
+# the performance.
+# It's in the same format as .gitignore files.
+
+.DS_Store
 
 ```
 
-If you supply paths from the CLI, they are checked instead.
+If you supply paths from the CLI, they are checked against the ignore rules in `.xvcignore`.
 
 ```console
 $ xvc check-ignore my-dir/my-file another-dir/another-file
