@@ -77,7 +77,7 @@ $ xvc check-ignore my-dir/my-file another-dir/another-file
 You can also add whitelist patterns to `,.xvcignore` files.
 
 ```console
-$ zsh -cl "echo 'another-dir/*' >> .xvcignore"
+$ zsh -cl "echo '!another-dir/*' >> .xvcignore"
 ```
 
 ```console
