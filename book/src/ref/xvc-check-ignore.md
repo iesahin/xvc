@@ -43,10 +43,10 @@ $ git init
 $ xvc init
 ```
 
-The `.xvcignore` file format is identical to [`.gitignore` file format](https://git-scm.com/docs/gitignore).
+You can add files and directories to be ignored by Xvc to `.xvcignore` files.
 
 ```console
-$ zsh -cl "echo 'my-dir/my-file' > .xvcignore"
+$ zsh -cl "echo 'my-dir/my-file' >> .xvcignore"
 ```
 
 By default it checks the files supplied from `stdin`.
