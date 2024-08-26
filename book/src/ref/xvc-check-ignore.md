@@ -74,7 +74,7 @@ my-dir/my-file
 If you supply paths from the CLI, they are checked against the ignore rules in `.xvcignore`.
 
 ```console
-$ xvc check-ignore my-dir/my-file another-dir/another-file
+$ xvc -vvvv check-ignore my-dir/my-file another-dir/another-file
 
 ```
 
