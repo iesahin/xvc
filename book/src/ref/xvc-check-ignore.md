@@ -74,7 +74,7 @@ my-dir/my-file
 If you supply paths from the CLI, they are checked against the ignore rules in `.xvcignore`.
 
 ```console
-$ xvc -vvvv check-ignore my-dir/my-file another-dir/another-file
+$ xvc check-ignore my-dir/my-file another-dir/another-file
 
 ```
 
@@ -82,6 +82,8 @@ If you're looking which `.xvcignore` file ignores (or whitelists) a certain path
 
 ```console
 $ xvc check-ignore --details my-dir/my-file another-dir/another-file
+[IGNORE] [CWD]/my-dir/my-file
+
 
 ```
 
