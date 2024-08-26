@@ -23,39 +23,6 @@ use crate::{XvcMetadata, XvcPath, CHANNEL_BOUND};
 /// A hashmap to store [XvcMetadata] for [XvcPath]
 pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;
 
-/// Expands the given glob `targets` to paths under `current_dir`.
-/// It uses [glob::glob] to travers and expand the paths.
-/// WARNING:
-///     This function doesn't consider any ignore rules in traversal.
-///     It may be better to use `xvc_walker::walk_parallel` first and
-///     [crate::util::file::glob_paths] to filter the paths.
-pub fn expand_globs_to_paths<T>(current_dir: &Path, targets: &[T]) -> Result<Vec<PathBuf>>
-where
-    T: AsRef<str> + Display,
-{
-    let current_dir = current_dir.to_str().ok_or(Error::UnicodeError {
-        cause: current_dir.as_os_str().to_os_string(),
-    })?;
-    let mut paths = Vec::<PathBuf>::new();
-    for t in targets {
-        let glob_t = format!("{}/{}", current_dir, t);
-        match glob(&glob_t) {
-            Ok(glob_path_it) => {
-                for p in glob_path_it {
-                    match p {
-                        Ok(path) => paths.push(path),
-                        Err(source) => {
-                            Error::GlobError { source }.error();
-                        }
-                    }
-                }
-            }
-            Err(source) => return Err(Error::GlobPatternError { source }.error()),
-        }
-    }
-    Ok(paths)
-}
-
 /// Converts stdin input to a channel.
 ///
 /// It works by creating a thread inside.
