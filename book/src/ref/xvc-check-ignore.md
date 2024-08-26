@@ -19,9 +19,9 @@ Arguments:
 Options:
       --ignore-filename <IGNORE_FILENAME>
           Filename that contains ignore rules
-
+          
           This can be set to .gitignore to test whether Git and Xvc work the same way.
-
+          
           [default: .xvcignore]
 
   -h, --help
@@ -82,6 +82,9 @@ $ zsh -cl "echo '!another-dir/*' >> .xvcignore"
 
 ```console
 $ xvc check-ignore my-dir/my-file another-dir/another-file
+[IGNORE] [CWD]/my-dir/my-file
+[WHITELIST] [CWD]/another-dir/another-file
+
 ```
 
 This utility can be used to check any other ignore rules in other files as well.
