@@ -52,16 +52,22 @@ $ zsh -cl "echo 'my-dir/my-file' >> .xvcignore"
 By default it checks the files supplied from `stdin`.
 
 ```console
-$ echo my-dir/my-file | xvc check-ignore
+$ zsh -cl 'echo my-dir/my-file | xvc check-ignore'
+[IGNORE] [CWD]/my-dir/my-file
+
 ```
 
+The `.xvcignore` file format is identical to [`.gitignore` file format](https://git-scm.com/docs/gitignore).
+
 ```console
+$ cat .xvcignore
 
 # Add patterns of files xvc should ignore, which could improve
 # the performance.
 # It's in the same format as .gitignore files.
 
 .DS_Store
+my-dir/my-file
 
 ```
 
