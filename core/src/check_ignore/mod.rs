@@ -7,7 +7,6 @@ use clap::Parser;
 use log::trace;
 use std::io::BufRead;
 use std::path::{Path, PathBuf};
-use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_logging::{output, watch, XvcOutputSender};
 use xvc_walker::{build_ignore_patterns, IgnoreRules, MatchResult, WalkOptions};
 
@@ -18,10 +17,6 @@ use xvc_walker::{build_ignore_patterns, IgnoreRules, MatchResult, WalkOptions};
 #[command()]
 /// Check whether xvcignore files ignore a path in an XVC repository
 pub struct CheckIgnoreCLI {
-    #[arg(short, long, alias = "all")]
-    /// Show the exclude patterns along with each target path.
-    /// A series of lines are printed in this format: <path/to/.xvcignore>:<line_num>:<pattern> <target_path>
-    details: bool,
     #[arg(
         long,
         default_value = XVCIGNORE_FILENAME,
@@ -30,28 +25,11 @@ pub struct CheckIgnoreCLI {
     ///
     /// This can be set to .gitignore to test whether Git and Xvc work the same way.
     ignore_filename: String,
-    #[arg(short, long)]
-    /// Include the target paths which don’t match any pattern in the --details list.
-    /// All fields in each line, except for <target_path>, will be empty. Has no effect without --details.
-    non_matching: bool,
+
     #[arg()]
     /// Targets to check.
     /// If no targets are provided, they are read from stdin.
     targets: Vec<String>,
-}
-
-impl UpdateFromXvcConfig for CheckIgnoreCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
-        let details = self.details || conf.get_bool("check-ignore.details")?.option;
-        let non_matching = self.non_matching;
-        let ignore_filename = self.ignore_filename.clone();
-        Ok(Box::new(Self {
-            details,
-            non_matching,
-            ignore_filename,
-            targets: self.targets.clone(),
-        }))
-    }
 }
 
 /// # `xvc check_ignore`
@@ -72,7 +50,6 @@ pub fn cmd_check_ignore<R: BufRead>(
     opts: CheckIgnoreCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
-    let opts = opts.update_from_conf(conf)?;
 
     let current_dir = conf.current_dir()?;
     let walk_options = WalkOptions {
@@ -96,9 +73,9 @@ pub fn cmd_check_ignore<R: BufRead>(
             .map(|p| XvcPath::new(xvc_root, current_dir, &PathBuf::from(p)))
             .collect::<Result<Vec<XvcPath>>>()?;
         watch!(xvc_paths);
-        check_ignore_paths(xvc_root, &opts, &ignore_rules, &xvc_paths)
+        check_ignore_paths(xvc_root, &ignore_rules, &xvc_paths)
     } else {
-        check_ignore_stdin(input, output_snd, xvc_root, &opts, &ignore_rules)
+        check_ignore_stdin(input, output_snd, xvc_root, &ignore_rules)
     }
 }
 
@@ -106,7 +83,6 @@ fn check_ignore_stdin<R: BufRead>(
     input: R,
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    opts: &CheckIgnoreCLI,
     ignore_rules: &IgnoreRules,
 ) -> Result<()> {
     let conf = xvc_root.config();
@@ -123,7 +99,7 @@ fn check_ignore_stdin<R: BufRead>(
         })
         .for_each(|xvc_path| {
             let absolute_path = xvc_path.to_absolute_path(xvc_root);
-            let res = check_ignore_line(ignore_rules, &absolute_path, opts.non_matching);
+            let res = check_ignore_line(ignore_rules, &absolute_path);
             if !res.trim().is_empty() {
                 output!(output_snd, "{}", res);
             }
@@ -134,13 +110,12 @@ fn check_ignore_stdin<R: BufRead>(
 
 fn check_ignore_paths(
     xvc_root: &XvcRoot,
-    opts: &CheckIgnoreCLI,
     ignore_rules: &IgnoreRules,
     xvc_paths: &[XvcPath],
 ) -> Result<()> {
     for path in xvc_paths {
         let absolute_path = path.to_absolute_path(xvc_root);
-        let output = check_ignore_line(ignore_rules, &absolute_path, opts.non_matching);
+        let output = check_ignore_line(ignore_rules, &absolute_path);
         trace!("output: {}", output);
         println!("{}", output)
     }
@@ -150,18 +125,10 @@ fn check_ignore_paths(
 /// Check whether the records match to the full_path. It reports the details if
 /// set true. Non_matching inverts the reporting.
 
-fn check_ignore_line(
-    ignore_rules: &IgnoreRules,
-    absolute_path: &Path,
-    show_no_match: bool,
-) -> String {
+fn check_ignore_line(ignore_rules: &IgnoreRules, absolute_path: &Path) -> String {
     match ignore_rules.check(absolute_path) {
         MatchResult::NoMatch => {
-            if show_no_match {
-                format!("[NO MATCH] {}", absolute_path.to_string_lossy())
-            } else {
-                String::new()
-            }
+            format!("[NO MATCH] {}", absolute_path.to_string_lossy())
         }
         MatchResult::Ignore => {
             format!("[IGNORE] {}", absolute_path.to_string_lossy())
