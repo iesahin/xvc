@@ -9,7 +9,7 @@ use log::trace;
 use std::io::BufRead;
 use std::path::{Path, PathBuf};
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
-use xvc_logging::{output, XvcOutputSender};
+use xvc_logging::{output, watch, XvcOutputSender};
 use xvc_walker::{build_ignore_patterns, IgnoreRules, MatchResult, WalkOptions};
 
 // DIFFERENCES from DVC
@@ -86,6 +86,9 @@ pub fn cmd_check_ignore<R: BufRead>(
         xvc_root,
         &walk_options.ignore_filename.unwrap_or_default(),
     )?;
+
+    watch!(ignore_rules);
+
     if !opts.targets.is_empty() {
         let path_bufs = expand_globs_to_paths(current_dir, &opts.targets)?;
 
@@ -110,19 +113,22 @@ fn check_ignore_stdin<R: BufRead>(
     let current_dir = conf.current_dir()?;
     let mut buffer = String::new();
     let lines_iter = input.lines();
-    lines_iter.map_while(|line| { 
-        if let Ok(line) = line{
-            XvcPath::new(xvc_root, current_dir, &PathBuf::from(line)).ok()
-        } else {
-    None
-        }}).for_each(|xvc_path|  {
-        let absolute_path = xvc_path.to_absolute_path(xvc_root);
-        let res = check_ignore_line(ignore_rules, &absolute_path, opts.non_matching);
-        if !res.trim().is_empty() {
-            output!(output_snd, "{}", res);
-        }
-        buffer.clear();
-    });
+    lines_iter
+        .map_while(|line| {
+            if let Ok(line) = line {
+                XvcPath::new(xvc_root, current_dir, &PathBuf::from(line)).ok()
+            } else {
+                None
+            }
+        })
+        .for_each(|xvc_path| {
+            let absolute_path = xvc_path.to_absolute_path(xvc_root);
+            let res = check_ignore_line(ignore_rules, &absolute_path, opts.non_matching);
+            if !res.trim().is_empty() {
+                output!(output_snd, "{}", res);
+            }
+            buffer.clear();
+        });
     Ok(())
 }
 

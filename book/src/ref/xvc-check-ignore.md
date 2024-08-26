@@ -37,16 +37,22 @@ Options:
 
 ## Examples
 
-By default it checks the files supplied from `stdin`.
-
 ```console
 $ git init
 ...
 $ xvc init
 ```
 
+The `.xvcignore` file format is identical to [`.gitignore` file format](https://git-scm.com/docs/gitignore).
+
 ```console
 $ zsh -cl "echo 'my-dir/my-file' > .xvcignore"
+```
+
+By default it checks the files supplied from `stdin`.
+
+```console
+$ echo my-dir/my-file | xvc check-ignore
 ```
 
 ```console
@@ -73,7 +79,6 @@ $ xvc check-ignore --details my-dir/my-file another-dir/another-file
 
 ```
 
-`.xvcignore` file format is identical to [`.gitignore` file format](https://git-scm.com/docs/gitignore).
 This utility can be used to check any other ignore rules in other files as well.
 You can specify an alternative ignore filename with `--ignore-filename` option.
 The below command is identical to `git check-ignore` and should give the same results.
