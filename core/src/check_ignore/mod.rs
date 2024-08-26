@@ -88,14 +88,17 @@ pub fn cmd_check_ignore<R: BufRead>(
     )?;
 
     watch!(ignore_rules);
+    watch!(opts.targets);
 
     if !opts.targets.is_empty() {
         let path_bufs = expand_globs_to_paths(current_dir, &opts.targets)?;
+        watch!(path_bufs);
 
-        let mut xvc_paths = Vec::<XvcPath>::new();
-        for p in path_bufs {
-            xvc_paths.push(XvcPath::new(xvc_root, current_dir, &p)?);
-        }
+        let xvc_paths = path_bufs
+            .iter()
+            .map(|p| XvcPath::new(xvc_root, current_dir, p))
+            .collect::<Result<Vec<XvcPath>>>()?;
+        watch!(xvc_paths);
         check_ignore_paths(xvc_root, &opts, &ignore_rules, &xvc_paths)
     } else {
         check_ignore_stdin(input, output_snd, xvc_root, &opts, &ignore_rules)
