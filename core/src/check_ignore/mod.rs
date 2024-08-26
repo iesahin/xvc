@@ -1,6 +1,5 @@
 //! xvc check ignore CLI handling module
 use crate::error::Result;
-use crate::util::expand_globs_to_paths;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use crate::{XvcPath, XvcRoot, XVCIGNORE_FILENAME};
 use clap::Parser;
