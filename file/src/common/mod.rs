@@ -185,6 +185,7 @@ pub fn filter_paths_by_globs(
             watch!(g);
             if !g.ends_with('/') && !g.contains('*') {
                 let xvc_path = XvcPath::new(xvc_root, xvc_root, &PathBuf::from(g)).unwrap();
+                watch!(xvc_path);
                 paths
                     .entity_by_value(&xvc_path)
                     .map(|e| {
