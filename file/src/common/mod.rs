@@ -184,7 +184,8 @@ pub fn filter_paths_by_globs(
         .map(|g| {
             watch!(g);
             if !g.ends_with('/') && !g.contains('*') {
-                let xvc_path = XvcPath::new(xvc_root, xvc_root, &PathBuf::from(g)).unwrap();
+                let slashed = format!("{g}/");
+                let xvc_path = XvcPath::new(xvc_root, xvc_root, &PathBuf::from(&slashed)).unwrap();
                 watch!(xvc_path);
                 paths
                     .entity_by_value(&xvc_path)
@@ -194,7 +195,7 @@ pub fn filter_paths_by_globs(
                             watch!(xmd);
                             if xmd.is_dir() {
                                 // We convert these to dir/** in build_glob_matcher
-                                format!("{g}/")
+                                slashed
                             } else {
                                 g.clone()
                             }
