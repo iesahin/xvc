@@ -185,6 +185,7 @@ pub fn filter_paths_by_globs(
             watch!(g);
             if !g.ends_with('/') && !g.contains('*') {
                 let slashed = format!("{g}/");
+                watch!(slashed);
                 let xvc_path = XvcPath::new(xvc_root, xvc_root, &PathBuf::from(&slashed)).unwrap();
                 watch!(xvc_path);
                 paths
