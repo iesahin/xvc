@@ -94,7 +94,7 @@ $ rm -rf dir-0001/
 Then get back them from the storage.
 
 ```console
-$ xvc file bring --from backup dir-0001
+$ xvc -vvvv file bring --from backup dir-0001
 
 $ tree dir-0001
 dir-0001
