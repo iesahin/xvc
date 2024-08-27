@@ -42,11 +42,13 @@ pub fn cmd_untrack(
     // Load targets from store
     let current_dir = xvc_root.config().current_dir()?;
     let all_paths = xvc_root.load_store()?;
+    let all_metadata = xvc_root.load_store()?;
     let all_content_digests = xvc_root.load_store()?;
     let untrack_targets = filter_targets_from_store(
         output_snd,
         xvc_root,
         &all_paths,
+        &all_metadata,
         current_dir,
         &Some(opts.targets),
     )?;

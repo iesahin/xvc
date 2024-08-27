@@ -80,6 +80,7 @@ pub(crate) fn get_source_path_metadata(
         output_snd,
         xvc_root,
         stored_xvc_path_store,
+        stored_xvc_metadata_store,
         current_dir,
         &Some(source_targets),
     )?;
