@@ -173,6 +173,7 @@ pub fn filter_paths_by_globs(
     md: &XvcStore<XvcMetadata>,
     globs: &[String],
 ) -> Result<HStore<XvcPath>> {
+    watch!(globs);
     if globs.is_empty() {
         return Ok(paths.into());
     }
@@ -181,6 +182,7 @@ pub fn filter_paths_by_globs(
     let globs = globs
         .into_iter()
         .map(|g| {
+            watch!(g);
             if !g.ends_with('/') && !g.contains('*') {
                 let xvc_path = XvcPath::new(xvc_root, xvc_root, &PathBuf::from(g)).unwrap();
                 paths
@@ -203,6 +205,7 @@ pub fn filter_paths_by_globs(
         })
         .collect::<Vec<String>>();
 
+    watch!(globs);
     let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, &globs)?;
     watch!(glob_matcher);
     let paths = paths
