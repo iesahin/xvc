@@ -289,6 +289,8 @@ where
     where
         T: PartialEq,
     {
+        watch!(self.entity_index);
+        watch!(value);
         self.entity_index.get(value)
     }
 
