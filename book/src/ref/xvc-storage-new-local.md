@@ -21,7 +21,7 @@ Options:
 
   -n, --name <NAME>
           Name of the storage.
-          
+
           Recommended to keep this name unique to refer easily.
 
   -h, --help
@@ -94,7 +94,7 @@ $ rm -rf dir-0001/
 Then get back them from the storage.
 
 ```console
-$ xvc -vvvv file bring --from backup dir-0001
+$ xvc file bring --from backup dir-0001
 
 $ tree dir-0001
 dir-0001
@@ -117,7 +117,7 @@ $ xvc file remove --from-storage backup dir-0001/
 
 `--name NAME` is not checked to be unique but you should use unique storage names to refer them later.
 
-`--path PATH`  should be accessible for writing and shouldn't already exist.
+`--path PATH` should be accessible for writing and shouldn't already exist.
 
 ## Technical Details
 
