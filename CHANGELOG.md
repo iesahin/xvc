@@ -5,6 +5,7 @@
 - Remove buggy --details option from xvc check-ignore
 - Fixed xvc check-ignore to work with supplied paths
 - Fixed loading store targets from xvc file list
+- Directory targets in various commands doesn't require / at the end
 
 ## 0.6.10 (2024-08-04)
 
