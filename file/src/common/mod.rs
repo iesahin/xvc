@@ -98,9 +98,17 @@ pub fn load_targets_from_store(
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
-    let store: XvcStore<XvcPath> = xvc_root.load_store()?;
-    watch!(store);
-    filter_targets_from_store(output_snd, xvc_root, &store, current_dir, targets)
+    let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
+    let md_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
+    watch!(xvc_path_store);
+    filter_targets_from_store(
+        output_snd,
+        xvc_root,
+        &xvc_path_store,
+        &md_store,
+        current_dir,
+        targets,
+    )
 }
 
 /// Filters the paths in the store by given globs.
@@ -111,7 +119,8 @@ pub fn load_targets_from_store(
 pub fn filter_targets_from_store(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    store: &XvcStore<XvcPath>,
+    xvc_path_store: &XvcStore<XvcPath>,
+    md_store: &XvcStore<XvcMetadata>,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
@@ -129,7 +138,8 @@ pub fn filter_targets_from_store(
         return filter_targets_from_store(
             output_snd,
             xvc_root,
-            store,
+            xvc_path_store,
+            md_store,
             xvc_root.absolute_path(),
             &Some(targets),
         );
@@ -137,13 +147,18 @@ pub fn filter_targets_from_store(
 
     watch!(targets);
 
-    let hstore = HStore::<XvcPath>::from(store);
     if let Some(targets) = targets {
-        let paths = filter_paths_by_globs(output_snd, xvc_root, &hstore, targets.as_slice())?;
+        let paths = filter_paths_by_globs(
+            output_snd,
+            xvc_root,
+            &xvc_path_store,
+            md_store,
+            targets.as_slice(),
+        )?;
         watch!(paths);
         Ok(paths)
     } else {
-        Ok(hstore)
+        Ok(xvc_path_store.into())
     }
 }
 
@@ -154,14 +169,41 @@ pub fn filter_targets_from_store(
 pub fn filter_paths_by_globs(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    paths: &HStore<XvcPath>,
+    paths: &XvcStore<XvcPath>,
+    md: &XvcStore<XvcMetadata>,
     globs: &[String],
 ) -> Result<HStore<XvcPath>> {
     if globs.is_empty() {
-        return Ok(paths.to_owned());
+        return Ok(paths.into());
     }
 
-    let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, globs)?;
+    // Ensure directories end with /
+    let globs = globs
+        .into_iter()
+        .map(|g| {
+            if !g.ends_with('/') && !g.contains('*') {
+                let xvc_path = XvcPath::new(xvc_root, xvc_root, &PathBuf::from(g)).unwrap();
+                paths
+                    .entity_by_value(&xvc_path)
+                    .map(|e| {
+                        md.get(&e).map(|xmd| {
+                            if xmd.is_dir() {
+                                // We convert these to dir/** in build_glob_matcher
+                                format!("{g}/")
+                            } else {
+                                g.clone()
+                            }
+                        })
+                    })
+                    .flatten()
+                    .unwrap_or_else(|| g.clone())
+            } else {
+                g.clone()
+            }
+        })
+        .collect::<Vec<String>>();
+
+    let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, &globs)?;
     watch!(glob_matcher);
     let paths = paths
         .iter()
