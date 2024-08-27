@@ -189,8 +189,9 @@ pub fn filter_paths_by_globs(
                 paths
                     .entity_by_value(&xvc_path)
                     .map(|e| {
+                        watch!(e);
                         md.get(&e).map(|xmd| {
-                            watch!(e);
+                            watch!(xmd);
                             if xmd.is_dir() {
                                 // We convert these to dir/** in build_glob_matcher
                                 format!("{g}/")
