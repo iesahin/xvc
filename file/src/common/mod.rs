@@ -180,30 +180,18 @@ pub fn filter_paths_by_globs(
 
     // Ensure directories end with /
     let globs = globs
-        .into_iter()
+        .iter()
         .map(|g| {
             watch!(g);
             if !g.ends_with('/') && !g.contains('*') {
                 let slashed = format!("{g}/");
                 watch!(slashed);
-                let xvc_path = XvcPath::new(xvc_root, xvc_root, &PathBuf::from(&slashed)).unwrap();
-                watch!(xvc_path);
-                paths
-                    .entity_by_value(&xvc_path)
-                    .map(|e| {
-                        watch!(e);
-                        md.get(&e).map(|xmd| {
-                            watch!(xmd);
-                            if xmd.is_dir() {
-                                // We convert these to dir/** in build_glob_matcher
-                                slashed
-                            } else {
-                                g.clone()
-                            }
-                        })
-                    })
-                    .flatten()
-                    .unwrap_or_else(|| g.clone())
+                // We don't track directories. Instead we look for files that start with the directory.
+                if paths.any(|_, p| p.as_str().starts_with(&slashed)) {
+                    slashed
+                } else {
+                    g.clone()
+                }
             } else {
                 g.clone()
             }

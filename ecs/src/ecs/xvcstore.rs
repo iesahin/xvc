@@ -274,6 +274,21 @@ where
         HStore::from(s)
     }
 
+    /// Runs `predicate` for all elements and returns true if one of them is true.
+    ///
+    /// `predicate` must be a function or closure that returns `bool`.
+    pub fn any<F>(&self, predicate: F) -> bool
+    where
+        F: Fn(&XvcEntity, &T) -> bool,
+    {
+        for (e, v) in self.map.iter() {
+            if predicate(e, v) {
+                return true;
+            }
+        }
+        false
+    }
+
     /// Returns the first element of the map
     ///
     /// This is useful when there is only one element after [Self::filter]
