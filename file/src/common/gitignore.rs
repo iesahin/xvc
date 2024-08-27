@@ -11,7 +11,7 @@ use xvc_core::util::git::build_gitignore;
 
 use crate::{Result, CHANNEL_CAPACITY};
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_logging::{debug, error, info, uwr, watch, XvcOutputSender};
+use xvc_logging::{debug, error, info, uwr, XvcOutputSender};
 use xvc_walker::{AbsolutePath, IgnoreRules, MatchResult};
 
 /// Used to signal ignored files and directories to the ignore handler

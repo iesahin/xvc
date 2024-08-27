@@ -99,16 +99,7 @@ pub fn load_targets_from_store(
     targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
     let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
-    let md_store: XvcStore<XvcMetadata> = xvc_root.load_store()?;
-    watch!(xvc_path_store);
-    filter_targets_from_store(
-        output_snd,
-        xvc_root,
-        &xvc_path_store,
-        &md_store,
-        current_dir,
-        targets,
-    )
+    filter_targets_from_store(output_snd, xvc_root, &xvc_path_store, current_dir, targets)
 }
 
 /// Filters the paths in the store by given globs.
@@ -120,7 +111,6 @@ pub fn filter_targets_from_store(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     xvc_path_store: &XvcStore<XvcPath>,
-    md_store: &XvcStore<XvcMetadata>,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
@@ -139,7 +129,6 @@ pub fn filter_targets_from_store(
             output_snd,
             xvc_root,
             xvc_path_store,
-            md_store,
             xvc_root.absolute_path(),
             &Some(targets),
         );
@@ -148,13 +137,8 @@ pub fn filter_targets_from_store(
     watch!(targets);
 
     if let Some(targets) = targets {
-        let paths = filter_paths_by_globs(
-            output_snd,
-            xvc_root,
-            &xvc_path_store,
-            md_store,
-            targets.as_slice(),
-        )?;
+        let paths =
+            filter_paths_by_globs(output_snd, xvc_root, xvc_path_store, targets.as_slice())?;
         watch!(paths);
         Ok(paths)
     } else {
@@ -170,7 +154,6 @@ pub fn filter_paths_by_globs(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     paths: &XvcStore<XvcPath>,
-    md: &XvcStore<XvcMetadata>,
     globs: &[String],
 ) -> Result<HStore<XvcPath>> {
     watch!(globs);

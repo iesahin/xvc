@@ -39,6 +39,7 @@ pub struct InitCLI {
 /// # Arguments
 ///
 /// - `xvc_root_opt`: Optional [xvc_core::XvcRoot]
+///
 /// It's an error to reinit inside an Xvc repository (with `Some(xvc_root)`) normally.
 /// It's possible to force reinit with `opts.force` though.
 ///

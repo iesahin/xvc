@@ -67,13 +67,11 @@ pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: Remove
     let current_dir = xvc_root.config().current_dir()?;
 
     let all_paths = xvc_root.load_store()?;
-    let all_md = xvc_root.load_store()?;
     let all_content_digests = xvc_root.load_store()?;
     let remove_targets = filter_targets_from_store(
         output_snd,
         xvc_root,
         &all_paths,
-        &all_md,
         current_dir,
         &Some(opts.targets),
     )?;

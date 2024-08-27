@@ -5,7 +5,6 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use fast_glob::Glob;
 use log::LevelFilter;
 use xvc_walker::*;
 

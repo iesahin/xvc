@@ -1,7 +1,7 @@
 //! Ignore patterns for a directory and its child directories.
 use crate::{Result, Source};
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{Arc, RwLock};
 
 use crate::pattern::{MatchResult, Pattern};
 use rayon::prelude::*;
@@ -26,6 +26,7 @@ pub struct IgnoreRules {
     pub whitelist_patterns: Arc<RwLock<Vec<Pattern>>>,
 }
 
+/// IgnoreRules shared across threads.
 pub type SharedIgnoreRules = Arc<RwLock<IgnoreRules>>;
 
 impl IgnoreRules {
@@ -202,6 +203,11 @@ impl IgnoreRules {
 
         Ok(())
     }
+    /// Adds a list of patterns to the current ignore rules.
+    ///
+    /// # Arguments
+    ///
+    /// * `patterns` - A vector of patterns to be added to the ignore rules.
 
     pub fn add_patterns(&self, patterns: Vec<Pattern>) -> Result<()> {
         let other = IgnoreRules::from_patterns(&self.root, None, patterns);
