@@ -91,7 +91,7 @@ pub fn download_example_project() -> Result<()> {
         .arg("xzf")
         .arg(curl_output_filename)
         .arg("--directory")
-        .arg(&env::temp_dir().to_string_lossy().to_string())
+        .arg(env::temp_dir().to_string_lossy().as_ref())
         .output()?;
 
     if !tar_output.status.success() {
