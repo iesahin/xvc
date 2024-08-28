@@ -7,11 +7,7 @@ use xvc_core::{
 };
 use xvc_test_helper::test_logging;
 
-use std::{
-    collections::{BTreeSet, HashSet},
-    path::Path,
-    time::Duration,
-};
+use std::{collections::HashSet, path::Path, time::Duration};
 
 use xvc_logging::watch;
 
