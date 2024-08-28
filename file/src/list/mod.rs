@@ -522,6 +522,7 @@ impl UpdateFromXvcConfig for ListCLI {
 /// - =: Recorded and actual file have the same timestamp
 /// - >: Cached file is newer, xvc recheck to update the file
 /// - <: File is newer, xvc carry-in to update the cache
+///
 /// TODO: - I: File is ignored
 
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
