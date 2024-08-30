@@ -387,18 +387,48 @@ mod tests {
         let pattern = Pattern::new(source, pattern);
         pattern.relativity
     }
-
-    #[test_case("", "myfile" => "myfile" ; "t1142345310")]
-    #[test_case("", "/myfile" => "myfile" ; "t1427001291")]
-    #[test_case("", "myfile/" => "myfile" ; "t789151905")]
-    #[test_case("", "mydir/myfile" => "mydir/myfile" ; "t21199018162")]
-    #[test_case("", "myfile.*" => "myfile.*" ; "t31199018162")]
-    #[test_case("", "mydir/**.*" => "mydir/**.*" ; "t41199018162")]
-    #[test_case("dir", "myfile" => "myfile" ; "t1242345310")]
-    #[test_case("dir", "/myfile" => "myfile" ; "t3427001291")]
-    #[test_case("dir", "myfile/" => "myfile" ; "t759151905")]
-    #[test_case("dir", "mydir/myfile" => "mydir/myfile" ; "t21199018562")]
-    #[test_case("dir", "/my/file.*" => "my/file.*" ; "t61199018162")]
+    // ---- tests::test_pattern_line::t1242345310 stdout ----
+    // thread 'tests::test_pattern_line::t1242345310' panicked at walker/src/lib.rs:391:5:
+    // assertion `left == right` failed
+    //   left: "myfile"
+    //  right: "**/myfile"
+    //
+    // ---- tests::test_pattern_line::t1142345310 stdout ----
+    // thread 'tests::test_pattern_line::t1142345310' panicked at walker/src/lib.rs:391:5:
+    // assertion `left == right` failed
+    //   left: "myfile"
+    //  right: "**/myfile"
+    // note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+    //
+    // ---- tests::test_pattern_line::t1427001291 stdout ----
+    // thread 'tests::test_pattern_line::t1427001291' panicked at walker/src/lib.rs:391:5:
+    // assertion `left == right` failed
+    //   left: "myfile"
+    //  right: "/**/myfile"
+    //
+    // ---- tests::test_pattern_line::t21199018562 stdout ----
+    // thread 'tests::test_pattern_line::t21199018562' panicked at walker/src/lib.rs:391:5:
+    // assertion `left == right` failed
+    //   left: "mydir/myfile"
+    //  right: "/**/mydir/myfile"
+    //
+    // ---- tests::test_pattern_line::t21199018162 stdout ----
+    // thread 'tests::test_pattern_line::t21199018162' panicked at walker/src/lib.rs:391:5:
+    // assertion `left == right` failed
+    //   left: "mydir/myfile"
+    //  right: "/**/mydir/myfile"
+    //
+    // ---- tests::test_pattern_line::t31199018162 stdout ----
+    // thread 'tests::test_pattern_line::t31199018162' panicked at walker/src/lib.rs:391:5:
+    // assertion `left == right` failed
+    //   left: "myfile.*"
+    //  right: "**/myfile.*"
+    //
+    #[test_case("dir", "myfile" => "**/myfile" ; "t1242345310")]
+    #[test_case("dir", "/myfile" => "/**/myfile" ; "t3427001291")]
+    #[test_case("dir", "myfile/" => "**/myfile/**" ; "t759151905")]
+    #[test_case("dir", "mydir/myfile" => "/**/mydir/myfile" ; "t21199018562")]
+    #[test_case("dir", "/my/file.*" => "/**/my/file.*" ; "t61199018162")]
     #[test_case("dir", "/mydir/**.*" => "mydir/**.*" ; "t47199018162")]
     fn test_pattern_line(dir: &str, pattern: &str) -> String {
         let source = Source::File {
