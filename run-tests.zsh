@@ -1,1 +1,1 @@
-cargo test -p xvc-walker --lib # -p xvc-file --doc
+cargo test -p xvc-file --doc
