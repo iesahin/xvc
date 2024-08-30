@@ -196,7 +196,10 @@ fn test_storage_new_minio() -> Result<()> {
     let push_result = x(&["file", "send", "--to", "minio-storage", the_file])?;
     watch!(push_result);
 
-    let file_list = s3cmd(&format!("ls -r s3://one/{storage_prefix}"), "| rg 0.bin");
+    let file_list = s3cmd(
+        &format!("ls -r s3://xvc-tests/{storage_prefix}"),
+        "| rg 0.bin",
+    );
     watch!(file_list);
 
     // The file should be in:
