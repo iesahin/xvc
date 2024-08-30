@@ -8,6 +8,7 @@
 - Fixed xvc check-ignore to work with supplied paths
 - Fixed loading store targets from xvc file list
 - Directory targets in various commands doesn't require / at the end when they only exist in the cache
+- Removed some duplicate tests from ignore
 
 ## 0.6.10 (2024-08-04)
 
