@@ -429,7 +429,7 @@ mod tests {
     #[test_case("dir", "myfile/" => "**/myfile/**" ; "t759151905")]
     #[test_case("dir", "mydir/myfile" => "/**/mydir/myfile" ; "t21199018562")]
     #[test_case("dir", "/my/file.*" => "/**/my/file.*" ; "t61199018162")]
-    #[test_case("dir", "/mydir/**.*" => "mydir/**.*" ; "t47199018162")]
+    #[test_case("dir", "/mydir/**.*" => "/**/mydir/**.*" ; "t47199018162")]
     fn test_pattern_line(dir: &str, pattern: &str) -> String {
         let source = Source::File {
             path: PathBuf::from(format!("{dir}.gitignore")),
