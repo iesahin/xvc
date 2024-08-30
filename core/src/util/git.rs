@@ -53,18 +53,24 @@ mod test {
     #[test_case("mydir/myfile.txt" , ".gitignore", ""  => matches M::NoMatch ; "non ignore")]
     #[test_case("mydir/myfile.txt" , ".gitignore", "mydir/**" => matches M::Ignore ; "ignore dir star 2")]
     #[test_case("mydir/myfile.txt" , ".gitignore", "mydir/*" => matches M::Ignore ; "ignore dir star")]
-    #[test_case("mydir/yourdir/myfile.txt" , "mydir/.gitignore", "yourdir/**" => matches M::Ignore ; "ignore deep dir star 2")]
     #[test_case("mydir/yourdir/myfile.txt" , "mydir/.gitignore", "yourdir/*" => matches M::Ignore ; "ignore deep dir star")]
+    #[test_case("mydir/yourdir/myfile.txt" , "mydir/.gitignore", "yourdir/**" => matches M::Ignore ; "ignore deep dir star 2")]
     #[test_case("mydir/myfile.txt" , "another-dir/.gitignore", "another-dir/myfile.txt" => matches M::NoMatch ; "non ignore from dir")]
     fn test_gitignore(path: &str, gitignore_path: &str, ignore_line: &str) -> M {
         test_logging(log::LevelFilter::Trace);
         let git_root = temp_git_dir();
+        watch!(git_root);
         let path = git_root.join(PathBuf::from(path));
+        watch!(path);
         let gitignore_path = git_root.join(PathBuf::from(gitignore_path));
+        watch!(gitignore_path);
         if let Some(ignore_dir) = gitignore_path.parent() {
+            watch!(ignore_dir);
             fs::create_dir_all(ignore_dir).unwrap();
+            watch!(ignore_dir.exists());
         }
         fs::write(&gitignore_path, format!("{}\n", ignore_line)).unwrap();
+        watch!(gitignore_path.exists());
 
         let gitignore = build_ignore_patterns("", &git_root, ".gitignore").unwrap();
 

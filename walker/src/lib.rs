@@ -160,8 +160,11 @@ pub fn build_ignore_patterns(
             let new_patterns =
                 content_to_patterns(ignore_root, Some(&ignore_filename), &ignore_content);
             ignore_rules.add_patterns(new_patterns)?;
-            dir_stack.extend(dirs_under(&dir));
         }
+        let mut new_dirs = dirs_under(&dir);
+        watch!(new_dirs);
+        dir_stack.append(&mut new_dirs);
+        watch!(dir_stack);
     }
 
     Ok(ignore_rules)
