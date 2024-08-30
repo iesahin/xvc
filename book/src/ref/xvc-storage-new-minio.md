@@ -78,7 +78,7 @@ $ xvc file track dir-0001
 You can define a storage bucket as storage and begin to use it.
 
 ```console,ignore
-$ xvc storage new minio --name backup --endpoint http://emresult.com:9000 --bucket-name one --region us-east-1 --storage-prefix xvc
+$ xvc storage new minio --name backup --endpoint http://e1.xvc.dev:9000 --bucket-name xvc-tests --region us-east-1 --storage-prefix xvc
 
 ```
 
@@ -147,7 +147,6 @@ You may need to consider this when you have servers running in exact URLs.
 If you have a `http://minio.example.com:9001` as a Minio server, you may want to supply `http://example.com:9001` as the endpoint, and `minio` as the bucket name to form the correct URL.
 This behavior may change in the future.
 
-
 ## Technical Details
 
 This command requires Xvc to be compiled with `minio` feature, which is _on_ by default.
@@ -162,5 +161,3 @@ A file that's found in `.xvc/{{HASH_PREFIX}}/{{CACHE_PATH}}` is saved to `http:/
 `{{REPO_ID}}` is the unique identifier for the repository created during `xvc init`.
 Hence if you use a common storage for different Xvc projects, their files are kept under different directories.
 There is no inter-project deduplication.
-
-

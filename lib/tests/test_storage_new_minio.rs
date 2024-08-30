@@ -134,8 +134,8 @@ fn sh(cmd: String) -> String {
 fn test_storage_new_minio() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let endpoint = "http://emresult.com:9000";
-    let bucket_name = "one";
+    let endpoint = "http://e1.xvc.dev:9000";
+    let bucket_name = "xvc-tests";
     let storage_prefix = common::random_dir_name("xvc", None);
     let region = "us-east-1";
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
