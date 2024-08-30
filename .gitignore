@@ -17,4 +17,3 @@ Cargo.lock
 flamegraph.svg
 workflow_tests/docs
 lib/docs
-run-tests.zsh
