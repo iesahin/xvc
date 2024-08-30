@@ -215,14 +215,6 @@ pub fn filter_paths_by_globs(
 ///
 /// This function will return an error if any of the glob patterns are invalid.
 ///
-/// # Example
-///
-/// ```
-/// let output_snd = ...; // Some XvcOutputSender
-/// let dir = Path::new("/path/to/dir");
-/// let globs = vec!["*.rs", "src/"];
-/// let matcher = build_glob_matcher(&output_snd, &dir, &globs);
-/// ```
 
 pub fn build_glob_matcher(
     output_snd: &XvcOutputSender,
