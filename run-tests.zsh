@@ -1,1 +1,1 @@
-cargo test -p xvc-file --doc
+cargo test --features test-ci
