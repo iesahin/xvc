@@ -24,7 +24,7 @@ add_headers =
 bucket_location = us-east-1
 ca_certs_file =
 cache_file =
-check_ssl_certificate = False
+check_ssl_certificate = True
 check_ssl_hostname = True
 cloudfront_host = cloudfront.amazonaws.com
 connection_max_age = 5
@@ -135,7 +135,7 @@ fn test_storage_new_minio() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let endpoint = "http://e1.xvc.dev:9000";
-    let bucket_name = "xvc-tests";
+    let bucket_name = "xvctests";
     let storage_prefix = common::random_dir_name("xvc", None);
     let region = "us-east-1";
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
