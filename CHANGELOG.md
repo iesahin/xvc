@@ -9,6 +9,7 @@
 - Fixed loading store targets from xvc file list
 - Directory targets in various commands doesn't require / at the end when they only exist in the cache
 - Removed some duplicate tests from ignore
+- Minio tests now use mc instead of s3cmd
 
 ## 0.6.10 (2024-08-04)
 

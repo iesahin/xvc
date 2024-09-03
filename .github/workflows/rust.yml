@@ -67,6 +67,7 @@ jobs:
           brew install tree
           brew install lsd
           brew install python3
+          brew install minio/stable/mc
 
       - name: Git config for automated Git tests
         run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
