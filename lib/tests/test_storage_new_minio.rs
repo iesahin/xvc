@@ -113,6 +113,7 @@ fn test_storage_new_minio() -> Result<()> {
     // remove all cache
     //
     let cache_dir = xvc_root.xvc_dir().join("b3");
+    sh(format!("chmod -R +w {}", cache_dir.to_string_lossy()));
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "minio-storage"])?;
