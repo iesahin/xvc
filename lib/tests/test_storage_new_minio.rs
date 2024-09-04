@@ -101,10 +101,11 @@ fn test_storage_new_minio() -> Result<()> {
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
 
-    let n_storage_files_after = file_list.lines().count();
+    // Remove guid file from the count
+    let n_storage_files_after = file_list.lines().count() - 1;
 
     assert!(
-        n_storage_files_before + 2 == n_storage_files_after,
+        n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
         n_storage_files_before,
         n_storage_files_after
