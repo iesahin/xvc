@@ -123,6 +123,7 @@ fn test_storage_new_minio() -> Result<()> {
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
         .filter(|f| {
+            watch!(f);
             f.as_ref()
                 .map(|f| f.file_type().is_file())
                 .unwrap_or_else(|_| false)
