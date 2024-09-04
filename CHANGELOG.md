@@ -1,6 +1,6 @@
 ## Unreleased
 
-## 0.6.11 (2024-08-26)
+## 0.6.11 (2024-09-04)
 
 - Bump dependencies
 - Replace globset with fast-glob for memory usage
