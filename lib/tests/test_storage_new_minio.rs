@@ -44,7 +44,7 @@ fn test_storage_new_minio() -> Result<()> {
     let mc_aliases = sh("mc alias list".to_owned());
     if !mc_aliases.contains(&access_key) {
         let mc_alias = sh(format!(
-            "mc alias set {alias_name} {endpoint} {access_key} {secret_key}"
+            "zsh -c \"mc alias set {alias_name} {endpoint} {access_key} {secret_key}\""
         ));
         watch!(mc_alias);
     }
