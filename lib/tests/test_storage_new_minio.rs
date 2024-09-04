@@ -129,9 +129,15 @@ fn test_storage_new_minio() -> Result<()> {
         })
         .count();
 
-    assert!(n_storage_files_after == n_local_files_after_fetch);
+    assert!(
+        n_storage_files_after == n_local_files_after_fetch,
+        "{} - {}",
+        n_storage_files_after,
+        n_local_files_after_fetch
+    );
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
+    sh(format!("chmod -R +w {}", cache_dir.to_string_lossy()));
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
@@ -147,7 +153,7 @@ fn test_storage_new_minio() -> Result<()> {
         })
         .count();
 
-    assert!(n_storage_files_after == n_local_files_after_pull);
+    assert!(n_storage_files_after == n_local_files_after_pull, "{} - {}", n_storage_files_after, n_local_files_after_pull)
     assert!(PathBuf::from(the_file).exists());
 
     // Set remote specific passwords and remove general ones
