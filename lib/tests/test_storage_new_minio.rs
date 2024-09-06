@@ -76,7 +76,7 @@ fn test_storage_new_minio() -> Result<()> {
     };
 
     let x = |cmd: &[&str]| -> Result<String> {
-        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
+        common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
     let out = x(&[
