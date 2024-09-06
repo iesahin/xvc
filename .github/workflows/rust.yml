@@ -106,6 +106,9 @@ jobs:
       - name: Check if xvc is in PATH
         run: tree $GITHUB_WORKSPACE && xvc --help
 
+      - name: Run Current Dev Tests
+        run: $GITHUB_WORKSPACE/run-tests.zsh
+
       - name: Test
         if: matrix.coverage
         uses: actions-rs/cargo@v1
