@@ -22,6 +22,25 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     Ok(temp_dir)
 }
 
+fn mc_config(alias: &str, endpoint: &str, access_key: &str, secret_key: &str) -> String {
+    format!(
+        r##"
+{{
+	"version": "10",
+	"aliases": {{
+		"{alias}": {{
+			"url": "{endpoint}",
+			"accessKey": "{access_key}",
+			"secretKey": "{secret_key}",
+			"api": "s3v4",
+			"path": "auto"
+    }}
+	}}
+}}
+"##
+    )
+}
+
 fn sh(cmd: String) -> String {
     watch!(cmd);
     Exec::shell(cmd).capture().unwrap().stdout_str()
@@ -40,16 +59,19 @@ fn test_storage_new_minio() -> Result<()> {
     let access_key = env::var("MINIO_ACCESS_KEY_ID")?;
     let secret_key = env::var("MINIO_SECRET_ACCESS_KEY")?;
     let alias_name = "xvc";
+    let mc_config = mc_config(
+        alias_name,
+        endpoint,
+        access_key.as_str(),
+        secret_key.as_str(),
+    );
+    let mc_config_dir = xvc_root.xvc_dir().join(".mc");
+    fs::create_dir_all(&mc_config_dir)?;
+    let mc_config_file = mc_config_dir.join("config.json");
+    fs::write(mc_config_file, mc_config)?;
 
-    let mc_aliases = sh("mc alias list".to_owned());
-    if !mc_aliases.contains(&access_key) {
-        let mc_alias = sh(format!(
-            "zsh -c \"mc alias set {alias_name} {endpoint} {access_key} {secret_key}\""
-        ));
-        watch!(mc_alias);
-    }
     let mc = |cmd: &str, append: &str| -> String {
-        let sh_cmd = format!("mc {cmd} {alias_name} {append}");
+        let sh_cmd = format!("mc --config-dir {mc_config_dir} {cmd} {alias_name} {append}");
         sh(sh_cmd)
     };
 
