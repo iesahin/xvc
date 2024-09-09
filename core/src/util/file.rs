@@ -11,20 +11,27 @@ use std::os::unix::fs as unix_fs;
 use std::os::windows::fs as windows_fs;
 
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, RwLock};
 use xvc_logging::watch;
-use xvc_walker::{IgnoreRules, PathMetadata, WalkOptions};
+use xvc_walker::{IgnoreRules, PathMetadata, SharedIgnoreRules, WalkOptions};
 
 use crate::error::Error;
 use crate::error::Result;
 use crate::CHANNEL_BOUND;
+
 use crossbeam_channel::{bounded, Receiver, Sender};
+
+
+
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 
 use super::pmp::XvcPathMetadataProvider;
-use super::xvcignore::walk_parallel;
+use super::xvcignore::{walk_parallel, COMMON_IGNORE_PATTERNS};
 use super::XvcPathMetadataMap;
 
+///w
+///
 /// A parallel directory walker.
 /// It starts from `start_dir` and sends [PathMetadata] by traversing all child directories.
 /// It uses [xvc_walker::walk_parallel] after building an empty [IgnoreRules].
@@ -33,19 +40,18 @@ use super::XvcPathMetadataMap;
 ///     It doesn't check any ignore files.
 ///     It even returns `.git` and `.xvc` directory contents.
 pub fn path_metadata_channel(sender: Sender<Result<PathMetadata>>, start_dir: &Path) -> Result<()> {
-    let initial_rules = IgnoreRules::empty(start_dir);
     let walk_options = WalkOptions {
         ignore_filename: None,
         include_dirs: true,
     };
+    let ignore_rules = Arc::new(RwLock::new(IgnoreRules::empty(start_dir, None)));
     let (w_sender, w_receiver) = bounded(CHANNEL_BOUND);
-    let (ignore_sender, _ignore_receiver) = bounded(CHANNEL_BOUND);
-    xvc_walker::walk_parallel(
-        initial_rules,
+
+    xvc_walker::walk_parallel::walk_parallel(
+        ignore_rules,
         start_dir,
         walk_options,
         w_sender,
-        ignore_sender,
     )?;
     for pm in w_receiver {
         sender.send(Ok(pm?))?;
@@ -73,8 +79,8 @@ pub fn pipe_filter_path_errors(
 /// NOTE:
 ///     This function only returns a snapshot of the repository.
 ///     If you want to handle events after this initial snapshot, see [xvc_walker::notify::make_watcher].
-pub fn all_paths_and_metadata(xvc_root: &XvcRoot) -> (XvcPathMetadataMap, IgnoreRules) {
-    walk_parallel(xvc_root, true).unwrap()
+pub fn all_paths_and_metadata(xvc_root: &XvcRoot) -> (XvcPathMetadataMap, SharedIgnoreRules) {
+    walk_parallel(xvc_root, COMMON_IGNORE_PATTERNS, true).unwrap()
 }
 
 /// Returns a compiled [glob::Pattern] by prepending it with `pipeline_rundir`.

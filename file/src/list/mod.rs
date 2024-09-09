@@ -192,12 +192,12 @@ impl ListRow {
         watch!(&path_prefix);
         let name = if let Some(ap) = path_match.actual_path {
             watch!(ap);
-            ap.strip_prefix(&path_prefix.to_string_lossy().to_string())
+            ap.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
         } else if let Some(rp) = path_match.recorded_path {
             watch!(rp);
-            rp.strip_prefix(&path_prefix.to_string_lossy().to_string())
+            rp.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
         } else {
@@ -522,6 +522,7 @@ impl UpdateFromXvcConfig for ListCLI {
 /// - =: Recorded and actual file have the same timestamp
 /// - >: Cached file is newer, xvc recheck to update the file
 /// - <: File is newer, xvc carry-in to update the cache
+///
 /// TODO: - I: File is ignored
 
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
@@ -530,7 +531,10 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
 
     let current_dir = conf.current_dir()?;
 
-    let all_from_disk = targets_from_disk(xvc_root, current_dir, &opts.targets)?;
+    // If targets are directories on disk, make sure they end with /
+
+    let all_from_disk = targets_from_disk(output_snd, xvc_root, current_dir, &opts.targets)?;
+    watch!(&all_from_disk);
     let from_disk = if opts.show_dot_files {
         all_from_disk
     } else {
@@ -548,7 +552,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
     };
 
     watch!(from_disk);
-    let from_store = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let from_store = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
     watch!(from_store);
     let stored_xvc_metadata = xvc_root.load_store::<XvcMetadata>()?;
     let stored_recheck_method = xvc_root.load_store::<RecheckMethod>()?;

@@ -37,7 +37,7 @@ fn test_storage_new_generic_rsync() -> Result<()> {
         "/tmp/{}/",
         common::random_dir_name("xvc-storage", Some(111))
     );
-    let test_host = "xvc-test@one.emresult.com";
+    let test_host = "iex@e1.xvc.dev";
     let url = test_host.to_string();
     let local_test_dir = env::temp_dir().join(common::random_dir_name("xvc-storage-copy", None));
 

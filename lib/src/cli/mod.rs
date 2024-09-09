@@ -167,7 +167,7 @@ impl XvcCLI {
     }
 }
 
-// Implement FromStr for XvcCLI 
+// Implement FromStr for XvcCLI
 
 impl FromStr for XvcCLI {
     type Err = Error;
@@ -212,7 +212,6 @@ pub fn run(args: &[&str]) -> Result<XvcRootOpt> {
 /// Run the supplied command within the optional [XvcRoot]. If xvc_root is None, it will be tried
 /// to be loaded from `cli_opts.workdir`.
 pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Result<XvcRootOpt> {
-
     // XvcRoot should be kept per repository and shouldn't change directory across runs
     assert!(
         xvc_root_opt.as_ref().is_none()
@@ -309,22 +308,22 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                     Some(xvc_root)
                 }
 
-                XvcSubCommand::Aliases(opts) => { 
+                XvcSubCommand::Aliases(opts) => {
                     aliases::run(&output_snd, opts)?;
                     xvc_root_opt
-                },
+                }
 
                 // following commands can only be run inside a repository
-                XvcSubCommand::Root(opts) => { root::run(
-                    &output_snd,
+                XvcSubCommand::Root(opts) => {
+                    root::run(
+                        &output_snd,
+                        xvc_root_opt
+                            .as_ref()
+                            .ok_or_else(|| Error::RequiresXvcRepository)?,
+                        opts,
+                    )?;
                     xvc_root_opt
-                        .as_ref()
-                        .ok_or_else(|| Error::RequiresXvcRepository)?,
-                    opts,
-                )?;
-                xvc_root_opt
-                },
-
+                }
 
                 XvcSubCommand::File(opts) => {
                     file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
@@ -342,7 +341,6 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                     )?;
 
                     xvc_root_opt
-
                 }
 
                 XvcSubCommand::CheckIgnore(opts) => {
@@ -357,7 +355,6 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                     )?;
 
                     xvc_root_opt
-
                 }
 
                 XvcSubCommand::Storage(opts) => {
@@ -372,7 +369,6 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
 
                     xvc_root_opt
                 }
-
             };
 
             watch!("Before handle_git_automation");
@@ -414,8 +410,6 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
     .unwrap();
 
     xvc_root_opt
-
-
 }
 
 /// Dispatch commands to respective functions in the API
@@ -454,7 +448,6 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
     };
 
     dispatch_with_root(cli_opts, xvc_root_opt)
-
 }
 
 fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {

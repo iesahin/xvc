@@ -28,7 +28,7 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
-use xvc_walker::{AbsolutePath, Error as XvcWalkerError, Glob, GlobSetBuilder, PathSync};
+use xvc_walker::{AbsolutePath, Glob, PathSync};
 
 use self::gitignore::IgnoreOp;
 
@@ -93,12 +93,13 @@ pub fn pipe_path_digest(
 ///
 /// If `targets` is `None`, all paths in the store are returned.
 pub fn load_targets_from_store(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
-    let store: XvcStore<XvcPath> = xvc_root.load_store()?;
-    filter_targets_from_store(xvc_root, &store, current_dir, targets)
+    let xvc_path_store: XvcStore<XvcPath> = xvc_root.load_store()?;
+    filter_targets_from_store(output_snd, xvc_root, &xvc_path_store, current_dir, targets)
 }
 
 /// Filters the paths in the store by given globs.
@@ -107,8 +108,9 @@ pub fn load_targets_from_store(
 ///
 /// If `current_dir` is not the root, all targets are prefixed with it.
 pub fn filter_targets_from_store(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    store: &XvcStore<XvcPath>,
+    xvc_path_store: &XvcStore<XvcPath>,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
 ) -> Result<HStore<XvcPath>> {
@@ -124,8 +126,9 @@ pub fn filter_targets_from_store(
         };
 
         return filter_targets_from_store(
+            output_snd,
             xvc_root,
-            store,
+            xvc_path_store,
             xvc_root.absolute_path(),
             &Some(targets),
         );
@@ -133,41 +136,113 @@ pub fn filter_targets_from_store(
 
     watch!(targets);
 
-    let hstore = HStore::<XvcPath>::from(store);
     if let Some(targets) = targets {
-        let paths = filter_paths_by_globs(&hstore, targets.as_slice())?;
+        let paths =
+            filter_paths_by_globs(output_snd, xvc_root, xvc_path_store, targets.as_slice())?;
         watch!(paths);
         Ok(paths)
     } else {
-        Ok(hstore)
+        Ok(xvc_path_store.into())
     }
 }
 
 /// Filter a set of paths by a set of globs. The globs are compiled into a
 /// GlobSet and paths are checked against the set.
-pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Result<HStore<XvcPath>> {
-    let mut glob_matcher = GlobSetBuilder::new();
-    globs.iter().for_each(|t| {
-        watch!(t);
-        if t.ends_with('/') {
-            glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
-        } else {
-            glob_matcher.add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
-        }
-        glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
-    });
-    let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
+///
+/// If a target ends with /, it's considered a directory and all its children are also selected.
+pub fn filter_paths_by_globs(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    paths: &XvcStore<XvcPath>,
+    globs: &[String],
+) -> Result<HStore<XvcPath>> {
+    watch!(globs);
+    if globs.is_empty() {
+        return Ok(paths.into());
+    }
 
-    let paths = paths
-        .filter(|_, p| {
-            let str_path = &p.as_relative_path().as_str();
-
-            glob_matcher.is_match(str_path)
+    // Ensure directories end with /
+    let globs = globs
+        .iter()
+        .map(|g| {
+            watch!(g);
+            if !g.ends_with('/') && !g.contains('*') {
+                let slashed = format!("{g}/");
+                watch!(slashed);
+                // We don't track directories. Instead we look for files that start with the directory.
+                if paths.any(|_, p| p.as_str().starts_with(&slashed)) {
+                    slashed
+                } else {
+                    g.clone()
+                }
+            } else {
+                g.clone()
+            }
         })
-        .cloned();
+        .collect::<Vec<String>>();
+
+    watch!(globs);
+    let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, &globs)?;
+    watch!(glob_matcher);
+    let paths = paths
+        .iter()
+        .filter_map(|(e, p)| {
+            if glob_matcher.is_match(p.as_str()) {
+                Some((*e, p.clone()))
+            } else {
+                None
+            }
+        })
+        .collect();
 
     watch!(paths);
     Ok(paths)
+}
+
+/// Builds a glob matcher based on the provided directory and glob patterns.
+///
+/// # Arguments
+///
+/// * `output_snd`: A sender for output messages.
+/// * `dir`: The directory to which the glob patterns will be applied.
+/// * `globs`: A slice of glob patterns as strings.
+///
+/// # Returns
+///
+/// * `Result<Glob>`: A `Result` that contains the `Glob` matcher if successful, or an error if not.
+///
+/// # Errors
+///
+/// This function will return an error if any of the glob patterns are invalid.
+///
+
+pub fn build_glob_matcher(
+    output_snd: &XvcOutputSender,
+    dir: &Path,
+    globs: &[String],
+) -> Result<Glob> {
+    let mut glob_matcher = Glob::default();
+    globs.iter().for_each(|t| {
+        watch!(t);
+        if t.ends_with('/') {
+            if !glob_matcher.add(&format!("{t}**")) {
+                error!(output_snd, "Error in glob: {t}");
+            }
+        } else if !t.contains('*') {
+            let abs_target = dir.join(Path::new(t));
+            watch!(abs_target);
+            if abs_target.is_dir() {
+                if !glob_matcher.add(&format!("{t}/**")) {
+                    error!(output_snd, "Error in glob: {t}")
+                }
+            } else if !glob_matcher.add(t) {
+                error!(output_snd, "Error in glob: {t}")
+            }
+        } else if !glob_matcher.add(t) {
+            error!(output_snd, "Error in glob: {t}")
+        }
+    });
+    Ok(glob_matcher)
 }
 
 /// Converts targets to a map of XvcPaths and their metadata. It walks the file
@@ -186,6 +261,7 @@ pub fn filter_paths_by_globs(paths: &HStore<XvcPath>, globs: &[String]) -> Resul
 /// repositories.
 
 pub fn targets_from_disk(
+    output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
@@ -202,30 +278,26 @@ pub fn targets_from_disk(
             Some(targets) => targets.iter().map(|t| format!("{cwd}{t}")).collect(),
             None => vec![cwd.to_string()],
         };
-
-        return targets_from_disk(xvc_root, xvc_root.absolute_path(), &Some(targets));
+        watch!(targets);
+        return targets_from_disk(
+            output_snd,
+            xvc_root,
+            xvc_root.absolute_path(),
+            &Some(targets),
+        );
     }
+    // FIXME: If there are no globs/directories in the targets, no need to retrieve all the paths
+    // here.
     let (all_paths, _) = all_paths_and_metadata(xvc_root);
 
     watch!(all_paths);
 
     if let Some(targets) = targets {
-        let mut glob_matcher = GlobSetBuilder::new();
-        targets.iter().for_each(|t| {
-            if t.ends_with('/') {
-                glob_matcher.add(Glob::new(&format!("{t}**")).expect("Error in glob: {t}**"));
-            } else if !t.contains('*') {
-                let abs_target = current_dir.join(Path::new(t));
-                if abs_target.is_dir() {
-                    glob_matcher.add(Glob::new(&format!("{t}/**")).expect("Error in glob: {t}/**"));
-                } else {
-                    glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
-                }
-            } else {
-                glob_matcher.add(Glob::new(t).expect("Error in glob: {t}"));
-            }
-        });
-        let glob_matcher = glob_matcher.build().map_err(XvcWalkerError::from)?;
+        if targets.is_empty() {
+            return Ok(XvcPathMetadataMap::new());
+        }
+
+        let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, targets)?;
         watch!(glob_matcher);
         Ok(all_paths
             .into_iter()
@@ -342,8 +414,12 @@ pub fn recheck_from_cache(
     Ok(())
 }
 
-#[cfg(feature="reflink")]
-fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
+#[cfg(feature = "reflink")]
+fn reflink(
+    output_snd: &XvcOutputSender,
+    cache_path: AbsolutePath,
+    path: AbsolutePath,
+) -> Result<()> {
     match reflink::reflink(&cache_path, &path) {
         Ok(_) => {
             info!(output_snd, "[REFLINK] {} -> {}", cache_path, path);
@@ -359,22 +435,31 @@ fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: Absolut
     }
 }
 
-fn copy_file(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
-            watch!("Before copy");
-            watch!(&cache_path);
-            watch!(&path);
-            fs::copy(&cache_path, &path)?;
-            info!(output_snd, "[COPY] {} -> {}", cache_path, path);
-            let mut perm = path.metadata()?.permissions();
-            watch!(&perm);
-            perm.set_readonly(false);
-            watch!(&perm);
-            fs::set_permissions(&path, perm)?;
+fn copy_file(
+    output_snd: &XvcOutputSender,
+    cache_path: AbsolutePath,
+    path: AbsolutePath,
+) -> Result<()> {
+    watch!("Before copy");
+    watch!(&cache_path);
+    watch!(&path);
+    fs::copy(&cache_path, &path)?;
+    info!(output_snd, "[COPY] {} -> {}", cache_path, path);
+    let mut perm = path.metadata()?.permissions();
+    watch!(&perm);
+    // FIXME: Fix the clippy warning in the following line
+    perm.set_readonly(false);
+    watch!(&perm);
+    fs::set_permissions(&path, perm)?;
     Ok(())
 }
 
-#[cfg(not(feature="reflink"))]
-fn reflink(output_snd: &XvcOutputSender, cache_path: AbsolutePath, path: AbsolutePath) -> Result<()> {
+#[cfg(not(feature = "reflink"))]
+fn reflink(
+    output_snd: &XvcOutputSender,
+    cache_path: AbsolutePath,
+    path: AbsolutePath,
+) -> Result<()> {
     warn!(
         output_snd,
         "Xvc isn't compiled with reflink support. Copying the file."

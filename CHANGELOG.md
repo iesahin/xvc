@@ -1,4 +1,18 @@
+# Xvc Changelog
+
 ## Unreleased
+
+## 0.6.11 (2024-09-04)
+
+- Bump dependencies
+- Replace globset with fast-glob for memory usage
+- Remove --details option from xvc check-ignore
+- Fixed xvc check-ignore to work with supplied paths
+- Fixed loading store targets from xvc file list
+- Directory targets in various commands doesn't require / at the end when they only exist in the cache
+- Removed some duplicate tests from ignore
+- Minio tests now use mc instead of s3cmd
+- Add a step to run a subset of tests in CI for faster feedback
 
 ## 0.6.10 (2024-08-04)
 

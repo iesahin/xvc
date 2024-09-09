@@ -233,3 +233,16 @@ pub fn git_auto_stage(
     debug!(output_snd, "Staging .xvc/ to git: {res_git_add}");
     Ok(())
 }
+
+pub fn git_ignored(output_snd: &XvcOutputSender,
+    git_command: &str,
+    xvc_root_str: &str,
+    path: &str) -> Result<bool> {
+    let command_res = exec_git(git_command, xvc_root_str, &["check-ignore", path])?;
+
+    if command_res.trim().is_empty() {
+        Ok(false)
+    } else {
+        Ok(true)
+    }
+}

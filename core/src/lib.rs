@@ -222,7 +222,10 @@ default = "default"
 default_params_file = "params.yaml"
 # Number of command processes to run concurrently
 process_pool_size = 4
-# 
+ 
+[check-ignore]
+# Show details by default
+details = false
 
 "##,
         guid = guid,

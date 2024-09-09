@@ -168,7 +168,7 @@ Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 ```
 
-By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag. 
+By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag.
 
 ```console
 $ xvc file list --sort name-asc --show-dot-files
@@ -209,7 +209,7 @@ Total #: 32 Workspace Size:       51443 Cached Size:           0
 
 ```
 
-You can also hide the summary below the list to get only the list of files. 
+You can also hide the summary below the list to get only the list of files.
 
 ```console
 $ xvc file list  --sort name-asc --no-summary
@@ -276,7 +276,7 @@ If you add another set of files as hardlinks to the cached copies, it will
 print the second letter as `H`.
 
 ```console
-$ xvc file track dir-0002 --recheck-method hardlink
+$ xvc file track dir-0002/ --recheck-method hardlink
 
 $ xvc file list dir-0002
 FH        2005 [..] 447933dc 447933dc dir-0002/file-0005.bin

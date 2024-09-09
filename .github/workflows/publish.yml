@@ -22,4 +22,4 @@ jobs:
       - name: Publish to crates.io
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        run: for p in xvc-logging xvc-test-helper xvc-walker xvc-ecs  xvc-config xvc-core xvc-storage xvc-file xvc-pipelines xvc ; do cargo publish --package $p ; done
+        run: for p in xvc-logging xvc-test-helper xvc-walker xvc-ecs xvc-config xvc-core xvc-storage xvc-file xvc-pipelines xvc ; do cargo publish --package $p ; done

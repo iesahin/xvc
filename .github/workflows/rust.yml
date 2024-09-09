@@ -28,7 +28,7 @@ jobs:
           - build: nightly
             rust: nightly
             # rust: nightly-2024-01-01
-            test-args: --features test-ci --no-fail-fast
+            test-args: --features test-ci # --no-fail-fast
             ## for submitters other than me, I'll add another job here.
             # test-args: --no-fail-fast
             # test-args: --all-features
@@ -67,6 +67,7 @@ jobs:
           brew install tree
           brew install lsd
           brew install python3
+          brew install minio/stable/mc
 
       - name: Git config for automated Git tests
         run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
@@ -104,6 +105,9 @@ jobs:
 
       - name: Check if xvc is in PATH
         run: tree $GITHUB_WORKSPACE && xvc --help
+
+      - name: Run Current Dev Tests
+        run: $GITHUB_WORKSPACE/run-tests.zsh
 
       - name: Test
         if: matrix.coverage

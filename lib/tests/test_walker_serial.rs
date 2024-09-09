@@ -1,9 +1,5 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fs, path::PathBuf};
 
-use globset::Glob;
 use xvc_walker::*;
 
 use test_case::test_case;
@@ -12,27 +8,6 @@ use xvc::error::Result;
 use xvc_logging::watch;
 use xvc_test_helper::*;
 use xvc_walker::AbsolutePath;
-
-fn new_dir_with_ignores(
-    root: &str,
-    dir: Option<&str>,
-    initial_patterns: &str,
-) -> Result<IgnoreRules> {
-    let patterns = create_patterns(root, dir, initial_patterns);
-    let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
-    watch!(patterns);
-    initialized.update(patterns).unwrap();
-    watch!(initialized.ignore_patterns.read().unwrap());
-    watch!(initialized.whitelist_patterns.read().unwrap());
-    Ok(initialized)
-}
-
-fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern<Glob>> {
-    xvc_walker::content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
-        .into_iter()
-        .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
-        .collect()
-}
 
 // TODO: Patterns shouldn't have / prefix, but an appropriate PathKind
 #[test_case(true => matches Ok(_); "this is to refresh the dir for each test run")]
@@ -82,14 +57,12 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
         ignore_content,
     )
     .unwrap();
-    let initial_rules = new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap();
     let walk_options = WalkOptions {
-        ignore_filename: Some(".gitignore".to_string()),
+        ignore_filename: Some(".gitignore".to_owned()),
         include_dirs: true,
     };
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
-    let (res_paths, ignore_rules) =
-        walk_serial(&output_sender, initial_rules, &root, &walk_options).unwrap();
+    let (res_paths, ignore_rules) = walk_serial(&output_sender, "", &root, &walk_options).unwrap();
     watch!(ignore_rules.ignore_patterns.read().unwrap());
     watch!(ignore_rules.whitelist_patterns.read().unwrap());
     watch!(output_receiver);

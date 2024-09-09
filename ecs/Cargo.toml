@@ -1,6 +1,6 @@
 [package]
 name = "xvc-ecs"
-version = "0.6.10"
+version = "0.6.11"
 edition = "2021"
 description = "Entity-Component System for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,16 +16,16 @@ name = "xvc_ecs"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.10", path = "../logging" }
+xvc-logging = { version = "0.6.11", path = "../logging" }
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }
 serde_json = "^1.0"
 rmp = "^0.8"
-rmp-serde = "1.1.2"
+rmp-serde = "1.3.0"
 
 ## Parallelization
-rayon = "^1.8"
+rayon = "^1.10"
 crossbeam-channel = "^0.5"
 
 ## Logging and errors
@@ -35,7 +35,7 @@ fern = { version = "^0.6", features = ["colored"] }
 thiserror = "^1.0"
 
 ## Misc
-lazy_static = "^1.4"
+lazy_static = "^1.5"
 rand = "^0.8"
 
 

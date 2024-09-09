@@ -3,8 +3,8 @@
 //! - [BringCLI] defines the command line options.
 //!
 //! - [cmd_bring]  is the entry point for the command.
-//! Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
-//! workspace.
+//!   Uses [fetch] and [crate::recheck::cmd_recheck] to bring the file and copy/link it to the
+//!   workspace.
 
 use crate::common::{load_targets_from_store, move_to_cache};
 
@@ -65,7 +65,7 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
     let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
 
     let current_dir = xvc_root.config().current_dir()?;
-    let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
     let force = opts.force;
     watch!(targets);
 

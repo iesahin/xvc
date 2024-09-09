@@ -117,7 +117,7 @@ $ xvc file remove --from-storage backup dir-0001/
 
 `--name NAME` is not checked to be unique but you should use unique storage names to refer them later.
 
-`--path PATH`  should be accessible for writing and shouldn't already exist.
+`--path PATH` should be accessible for writing and shouldn't already exist.
 
 ## Technical Details
 

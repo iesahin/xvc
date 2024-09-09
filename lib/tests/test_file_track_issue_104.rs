@@ -16,7 +16,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
     Ok(temp_dir)
 }
 
-/// When a directory is added to projects, its child files are also ignored.
+/// When a directory is added to projects, its child files should also ignored.
 ///
 #[test]
 fn test_file_track_issue_104() -> Result<()> {
@@ -37,6 +37,10 @@ fn test_file_track_issue_104() -> Result<()> {
     let root_gitignore = fs::read_to_string(xvc_root.join(Path::new(".gitignore")))?;
     watch!(root_gitignore);
     let dir_ignore = xvc_root.join(Path::new("dir-0001/.gitignore"));
+    watch!(dir_ignore);
+
+    watch!(std::fs::read_dir(dir_1)?);
+
     assert!(!dir_ignore.exists());
 
     assert!(

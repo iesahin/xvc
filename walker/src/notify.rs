@@ -5,7 +5,6 @@
 //! It defines [PathEvent] as a simple version of [notify::EventKind].
 //! It defines [PathEventHandler] that handles events from [notify::EventHandler].
 use crate::{
-    check_ignore,
     error::{Error, Result},
     IgnoreRules, MatchResult,
 };
@@ -89,7 +88,7 @@ impl EventHandler for PathEventHandler {
 
 impl PathEventHandler {
     fn write_event(&mut self, path: PathBuf) {
-        match check_ignore(&self.ignore_rules, &path) {
+        match self.ignore_rules.check(&path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
                 if let Ok(metadata) = path.metadata() {
                     self.sender
@@ -111,7 +110,7 @@ impl PathEventHandler {
     }
 
     fn create_event(&mut self, path: PathBuf) {
-        match check_ignore(&self.ignore_rules, &path) {
+        match self.ignore_rules.check(&path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
                 if let Ok(metadata) = path.metadata() {
                     self.sender
@@ -133,7 +132,7 @@ impl PathEventHandler {
     }
 
     fn remove_event(&mut self, path: PathBuf) {
-        match check_ignore(&self.ignore_rules, &path) {
+        match self.ignore_rules.check(&path) {
             MatchResult::Whitelist | MatchResult::NoMatch => {
                 self.sender
                     .send(Some(PathEvent::Delete { path }))

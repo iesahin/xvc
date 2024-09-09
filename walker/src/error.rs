@@ -18,12 +18,6 @@ pub enum Error {
     #[error("Ignore rules poisoned")]
     LockPoisonError { t: String, cause: String },
 
-    #[error("Glob error: {source}")]
-    GlobError {
-        #[from]
-        source: globset::Error,
-    },
-
     #[error("File System Notify Error: {source:?}")]
     NotifyError {
         #[from]

@@ -69,7 +69,7 @@ $ xvc file track dir-0001
 You can define a storage bucket as storage and begin to use it.
 
 ```console
-$ xvc storage new rsync --name backup --host one.emresult.com --user iex --storage-dir /tmp/xvc-backup/
+$ xvc storage new rsync --name backup --host e1.xvc.dev --user iex --storage-dir /tmp/xvc-backup/
 
 ```
 

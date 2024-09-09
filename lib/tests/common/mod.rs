@@ -61,7 +61,7 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
 }
 
 pub fn example_project_url() -> Result<String> {
-    Ok(format!("http://one.emresult.com/~iex/{EXAMPLE_PROJECT_NAME}.tgz").to_string())
+    Ok("http://e1.xvc.dev/example-xvc.tgz".to_string())
 }
 
 pub fn example_project_template_path() -> Result<PathBuf> {
@@ -91,7 +91,7 @@ pub fn download_example_project() -> Result<()> {
         .arg("xzf")
         .arg(curl_output_filename)
         .arg("--directory")
-        .arg(&env::temp_dir().to_string_lossy().to_string())
+        .arg(env::temp_dir().to_string_lossy().as_ref())
         .output()?;
 
     if !tar_output.status.success() {

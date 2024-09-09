@@ -1,9 +1,10 @@
 use std::{
+    ffi::OsString,
     fs,
     path::{Path, PathBuf},
+    sync::{Arc, RwLock},
 };
 
-use globset::Glob;
 use log::LevelFilter;
 use xvc_walker::*;
 
@@ -45,17 +46,14 @@ fn new_dir_with_ignores(
     initial_patterns: &str,
 ) -> Result<IgnoreRules> {
     let patterns = create_patterns(root, dir, initial_patterns);
-    let mut initialized = IgnoreRules::empty(&PathBuf::from(root));
+    let initialized = IgnoreRules::empty(&PathBuf::from(root), Some(".gitignore"));
     watch!(patterns);
-    initialized.update(patterns).unwrap();
+    initialized.add_patterns(patterns).unwrap();
     Ok(initialized)
 }
 
-fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern<Glob>> {
+fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern> {
     xvc_walker::content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
-        .into_iter()
-        .map(|pat_res_g| pat_res_g.map(|res_g| res_g.unwrap()))
-        .collect()
 }
 
 #[test_case("", "" => it contains "dir-0002/file-0001.bin" ; "t3733909666")]
@@ -76,26 +74,20 @@ fn test_walk_parallel(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     test_logging(LevelFilter::Trace);
     let root = create_directory_hierarchy(true).unwrap();
     let (path_sender, path_receiver) = crossbeam_channel::unbounded();
-    let (ignore_sender, _ignore_receiver) = crossbeam_channel::unbounded();
     // We assume ignore_src is among the directories created
     fs::write(
         format!("{}/{ignore_src}.gitignore", root.to_string_lossy()),
         ignore_content,
     )
     .unwrap();
-    let initial_rules = new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap();
+    let initial_rules = Arc::new(RwLock::new(
+        new_dir_with_ignores(root.to_string_lossy().as_ref(), None, "").unwrap(),
+    ));
     let walk_options = WalkOptions {
-        ignore_filename: Some(".gitignore".to_string()),
+        ignore_filename: Some(".gitignore".to_owned()),
         include_dirs: true,
     };
-    walk_parallel(
-        initial_rules,
-        &root,
-        walk_options,
-        path_sender,
-        ignore_sender,
-    )
-    .unwrap();
+    walk_parallel(initial_rules, &root, walk_options, path_sender).unwrap();
     let paths = path_receiver
         .iter()
         .filter_map(|e| match e {

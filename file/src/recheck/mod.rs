@@ -94,15 +94,20 @@ pub fn cmd_recheck(
 
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = load_targets_from_store(xvc_root, current_dir, &opts.targets)?;
+    let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
     watch!(targets);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
+    watch!(stored_xvc_path_store);
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+    watch!(stored_xvc_metadata_store);
     let target_files = only_file_targets(&stored_xvc_metadata_store, &targets)?;
+    watch!(target_files);
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
+    watch!(target_xvc_path_metadata_map);
 
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
+    watch!(stored_recheck_method_store);
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
     let default_recheck_method = RecheckMethod::from_conf(xvc_root.config());
