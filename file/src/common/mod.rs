@@ -9,6 +9,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+
 use crate::common::gitignore::IgnoreOperation;
 use crate::error::{Error, Result};
 use crossbeam_channel::{Receiver, Sender};
@@ -386,8 +389,6 @@ pub fn recheck_from_cache(
     watch!(path);
     watch!(recheck_method);
 
-    // TODO: Remove this when we set unix permissions in platform dependent fashion
-    #[allow(clippy::permissions_set_readonly_false)]
     match recheck_method {
         RecheckMethod::Copy => {
             copy_file(output_snd, cache_path, path)?;
@@ -440,17 +441,46 @@ fn copy_file(
     cache_path: AbsolutePath,
     path: AbsolutePath,
 ) -> Result<()> {
-    watch!("Before copy");
-    watch!(&cache_path);
-    watch!(&path);
     fs::copy(&cache_path, &path)?;
     info!(output_snd, "[COPY] {} -> {}", cache_path, path);
+    Ok(())
+}
+
+#[cfg(not(unix))]
+pub fn set_writable(path: &Path) -> Result<()> {
     let mut perm = path.metadata()?.permissions();
     watch!(&perm);
-    // FIXME: Fix the clippy warning in the following line
     perm.set_readonly(false);
     watch!(&perm);
-    fs::set_permissions(&path, perm)?;
+    fs::set_permissions(path, perm)?;
+    Ok(())
+}
+
+#[cfg(not(unix))]
+pub fn set_readonly(path: &Path) -> Result<()> {
+    let mut perm = path.metadata()?.permissions();
+    watch!(&perm);
+    perm.set_readonly(true);
+    watch!(&perm);
+    fs::set_permissions(path, perm)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+pub fn set_writable(path: &Path) -> Result<()> {
+    let mut permissions = path.metadata()?.permissions();
+    let mode = permissions.mode();
+    let new_mode = mode | 0o200;
+    permissions.set_mode(new_mode);
+    Ok(())
+}
+
+#[cfg(unix)]
+pub fn set_readonly(path: &Path) -> Result<()> {
+    let mut permissions = path.metadata()?.permissions();
+    let mode = permissions.mode();
+    let new_mode = mode & !0o200;
+    permissions.set_mode(new_mode);
     Ok(())
 }
 
