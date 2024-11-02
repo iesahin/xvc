@@ -69,7 +69,7 @@ log = "^0.4"
 anyhow = "^1.0"
 peak_alloc = "^0.2"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
-fern = { version = "^0.6", features = ["colored"] }
+fern = { version = "^0.7", features = ["colored"] }
 
 
 ## macros
@@ -87,8 +87,8 @@ uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
 itertools = "^0.13"
-derive_more = "^0.99"
-parse-size = "^1.0"
+derive_more = "^1.0"
+parse-size = "^1.1"
 
 [features]
 default = ["reflink"]
