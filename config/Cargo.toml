@@ -39,7 +39,7 @@ walkdir = "^2.5"
 thiserror = "^1.0"
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
-fern = { version = "^0.6", features = ["colored"] }
+fern = { version = "^0.7", features = ["colored"] }
 
 ## Misc
 regex = "^1.10"

@@ -65,7 +65,7 @@ log = "^0.4"
 anyhow = "^1.0"
 
 ## meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
-fern = { version = "^0.6", features = ["colored", "meta-logging-in-format"] }
+fern = { version = "^0.7", features = ["colored", "meta-logging-in-format"] }
 
 ## sqlite
 ## TODO: Add feature flags for sqlite when bundling needed
