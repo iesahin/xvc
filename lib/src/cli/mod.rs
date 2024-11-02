@@ -117,7 +117,7 @@ pub struct XvcCLI {
 impl XvcCLI {
     /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
     /// [XvcCLI::command_string].
-    pub fn from_str_slice(args: &[&str]) -> Result<XvcCLI> {
+    pub fn from_str_slice(args: &[&str]) -> Result<Self> {
         let command_string = args.join(" ");
         let parsed = Self::parse_from(args);
         Ok(Self {
@@ -128,7 +128,7 @@ impl XvcCLI {
 
     /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
     /// [XvcCLI::command_string].
-    pub fn from_string_slice(args: &[String]) -> Result<XvcCLI> {
+    pub fn from_string_slice(args: &[String]) -> Result<Self> {
         let command_string = args.join(" ");
         let parsed = Self::parse_from(args);
         Ok(Self {
@@ -139,7 +139,7 @@ impl XvcCLI {
 
     /// Parse the command line from the result of [`std::env::args_os`].
     /// This updates [XvcCLI::command_string] with the command line.
-    pub fn from_args_os(args_os: ArgsOs) -> Result<XvcCLI> {
+    pub fn from_args_os(args_os: ArgsOs) -> Result<Self> {
         let args: Vec<OsString> = args_os.collect();
         let args: Vec<String> = args
             .iter()

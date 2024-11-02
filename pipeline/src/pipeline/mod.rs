@@ -769,10 +769,7 @@ fn s_no_need_to_run_f_run_never<'a>(
     s: &DoneWithoutRunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    output!(
-        params.output_snd,
-        "[NEVER] [{}]", params.step.name
-    );
+    output!(params.output_snd, "[NEVER] [{}]", params.step.name);
     Ok((s.keep_done(), params))
 }
 
@@ -780,10 +777,7 @@ fn s_no_need_to_run_f_diffs_not_changed<'a>(
     s: &DoneWithoutRunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    output!(
-        params.output_snd,
-        "[SKIP] [{}]", params.step.name
-    );
+    output!(params.output_snd, "[SKIP] [{}]", params.step.name);
     Ok((s.keep_done(), params))
 }
 
