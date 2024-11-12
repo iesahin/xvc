@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Refactor `xvc file list` command handler for Xvc GUI
+
 ## 0.6.11 (2024-09-04)
 
 - Bump dependencies
