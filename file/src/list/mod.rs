@@ -56,7 +56,7 @@ enum ListColumn {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct ListFormat {
+pub struct ListFormat {
     columns: Vec<ListColumn>,
 }
 
@@ -82,7 +82,7 @@ impl FromStr for ListFormat {
 conf!(ListFormat, "file.list.format");
 
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
-enum ListSortCriteria {
+pub enum ListSortCriteria {
     #[strum(serialize = "none")]
     None,
     #[strum(serialize = "name-asc")]
@@ -105,7 +105,7 @@ enum ListSortCriteria {
 conf!(ListSortCriteria, "file.list.sort");
 
 #[derive(Debug, Clone)]
-struct ListRow {
+pub struct ListRow {
     actual_content_digest_str: String,
     actual_size: u64,
     actual_size_str: String,
@@ -453,32 +453,32 @@ pub struct ListCLI {
     ///
     /// The default format can be set with file.list.format in the config file.
     #[arg(long, short = 'f', verbatim_doc_comment)]
-    format: Option<ListFormat>,
+    pub format: Option<ListFormat>,
     /// Sort criteria.
     ///
     /// It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
     ///
     /// The default option can be set with file.list.sort in the config file.
     #[arg(long, short = 's')]
-    sort: Option<ListSortCriteria>,
+    pub sort: Option<ListSortCriteria>,
 
     /// Don't show total number and size of the listed files.
     ///
     /// The default option can be set with file.list.no_summary in the config file.
     #[arg(long)]
-    no_summary: bool,
+    pub no_summary: bool,
 
     /// Don't hide dot files
     ///
     /// If not supplied, hides dot files like .gitignore and .xvcignore
     #[arg(long, short = 'a')]
-    show_dot_files: bool,
+    pub show_dot_files: bool,
 
     /// Files/directories to list.
     ///
     /// If not supplied, lists all files under the current directory.
     #[arg()]
-    targets: Option<Vec<String>>,
+    pub targets: Option<Vec<String>>,
 }
 
 impl UpdateFromXvcConfig for ListCLI {
@@ -526,46 +526,173 @@ impl UpdateFromXvcConfig for ListCLI {
 /// TODO: - I: File is ignored
 
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
+    // FIXME: `opts` shouldn't be sent to the inner function, but we cannot make sure that it's
+    // updated from the config files in callers. A refactoring is good here.
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
+    let no_summary = opts.no_summary;
+    let list_rows = cmd_list_inner(output_snd, xvc_root, &opts)?;
+
+    // TODO: All output should be produced in a central location with implemented traits.
+    // [ListRows] could receive no_summary when it's built and implement Display
+    output!(output_snd, "{}", list_rows.build_table(!no_summary));
+    Ok(())
+}
+
+/// The actual implementation moved here to get the listed elements separately to be used in
+/// desktop and server
+pub fn cmd_list_inner(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    opts: &ListCLI,
+) -> Result<ListRows> {
+    let conf = xvc_root.config();
 
     let current_dir = conf.current_dir()?;
 
-    // If targets are directories on disk, make sure they end with /
-
     let all_from_disk = targets_from_disk(output_snd, xvc_root, current_dir, &opts.targets)?;
     watch!(&all_from_disk);
-    let from_disk = if opts.show_dot_files {
-        all_from_disk
-    } else {
-        all_from_disk
-            .into_iter()
-            .filter_map(|(path, md)| {
-                let path_str = path.to_string();
-                if path_str.starts_with('.') || path_str.contains("./") {
-                    None
-                } else {
-                    Some((path, md))
-                }
-            })
-            .collect()
-    };
 
+    let from_disk = filter_dot_files(all_from_disk, opts.show_dot_files);
     watch!(from_disk);
+
     let from_store = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
     watch!(from_store);
+
     let stored_xvc_metadata = xvc_root.load_store::<XvcMetadata>()?;
     let stored_recheck_method = xvc_root.load_store::<RecheckMethod>()?;
 
+    let matches = match_store_and_disk_paths(
+        from_disk,
+        from_store,
+        stored_xvc_metadata,
+        stored_recheck_method,
+    );
+    watch!(matches);
+
+    let matches = if opts.format.as_ref().unwrap().columns.iter().any(|c| {
+        *c == ListColumn::RecordedContentDigest64 || *c == ListColumn::RecordedContentDigest8
+    }) {
+        fill_recorded_content_digests(xvc_root, matches)?
+    } else {
+        matches
+    };
+
+    let matches =
+        if opts.format.as_ref().unwrap().columns.iter().any(|c| {
+            *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
+        }) {
+            let algorithm = HashAlgorithm::from_conf(conf);
+            fill_actual_content_digests(output_snd, xvc_root, algorithm, matches)?
+        } else {
+            matches
+        };
+
+    let path_prefix = current_dir.strip_prefix(xvc_root.absolute_path())?;
+
+    let rows = build_rows_from_matches(output_snd, matches, path_prefix);
+
+    let list_rows = ListRows::new(opts.format.unwrap(), opts.sort.unwrap(), rows);
+    Ok(list_rows)
+}
+
+fn build_rows_from_matches(
+    output_snd: &XvcOutputSender,
+    matches: Vec<PathMatch>,
+    path_prefix: &Path,
+) -> Vec<ListRow> {
+    matches
+        .into_iter()
+        .filter_map(|pm| match ListRow::new(path_prefix, pm) {
+            Ok(lr) => Some(lr),
+            Err(e) => {
+                error!(output_snd, "{}", e);
+                None
+            }
+        })
+        .collect()
+}
+
+fn fill_actual_content_digests(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    algorithm: HashAlgorithm,
+    matches: Vec<PathMatch>,
+) -> Result<Vec<PathMatch>> {
+    let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
+    Ok(matches
+        .into_iter()
+        .filter_map(|pm| {
+            if pm
+                .actual_path
+                .as_deref()
+                .and(pm.actual_metadata.map(|md| md.is_file()))
+                == Some(true)
+            {
+                let actual_path = pm.actual_path.as_ref().unwrap();
+                let path = actual_path.to_absolute_path(xvc_root);
+                let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
+                    text_or_binary_store
+                        .get(&xvc_entity)
+                        .copied()
+                        .unwrap_or_default()
+                } else {
+                    FileTextOrBinary::default()
+                };
+
+                match ContentDigest::new(&path, algorithm, text_or_binary.as_inner()) {
+                    Ok(digest) => Some(PathMatch {
+                        actual_digest: Some(digest),
+                        ..pm
+                    }),
+                    Err(e) => {
+                        error!(output_snd, "{}", e);
+                        None
+                    }
+                }
+            } else {
+                Some(pm)
+            }
+        })
+        .collect())
+}
+
+fn fill_recorded_content_digests(
+    xvc_root: &std::sync::Arc<xvc_core::types::xvcroot::XvcRootInner>,
+    matches: Vec<PathMatch>,
+) -> Result<Vec<PathMatch>> {
+    let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
+    let matches: Vec<PathMatch> = matches
+        .into_iter()
+        .map(|pm| {
+            if let Some(xvc_entity) = pm.xvc_entity {
+                let digest = content_digest_store.get(&xvc_entity).cloned();
+                PathMatch {
+                    recorded_digest: digest,
+                    ..pm
+                }
+            } else {
+                pm
+            }
+        })
+        .collect();
+    Ok(matches)
+}
+
+/// There are four groups of paths:
+/// 1. Paths that are in the store and on disk and have identical metadata
+/// 2. Paths that are in the store and on disk but have different metadata
+/// 3. Paths that are in the store but not on disk
+/// 4. Paths that are on disk but not in the store
+fn match_store_and_disk_paths(
+    from_disk: HashMap<XvcPath, XvcMetadata>,
+    from_store: xvc_ecs::HStore<XvcPath>,
+    stored_xvc_metadata: xvc_ecs::XvcStore<XvcMetadata>,
+    stored_recheck_method: xvc_ecs::XvcStore<RecheckMethod>,
+) -> Vec<PathMatch> {
     // Now match actual and recorded paths
 
     let mut matches = Vec::<PathMatch>::new();
-
-    // There are four groups of paths:
-    // 1. Paths that are in the store and on disk and have identical metadata
-    // 2. Paths that are in the store and on disk but have different metadata
-    // 3. Paths that are in the store but not on disk
-    // 4. Paths that are on disk but not in the store
 
     let mut found_entities = HashSet::<XvcEntity>::new();
 
@@ -631,89 +758,26 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
         };
         matches.push(pm);
     }
+    matches
+}
 
-    watch!(matches);
-
-    // Now fill in the digests if needed.
-    // We use rec content digest to identify cache paths and calculate cache
-    // size. So we always load and fill these values.
-    let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
-    let matches: Vec<PathMatch> = matches
-        .into_iter()
-        .map(|pm| {
-            if let Some(xvc_entity) = pm.xvc_entity {
-                let digest = content_digest_store.get(&xvc_entity).cloned();
-                PathMatch {
-                    recorded_digest: digest,
-                    ..pm
+fn filter_dot_files(
+    all_from_disk: HashMap<XvcPath, XvcMetadata>,
+    show_dot_files: bool,
+) -> HashMap<XvcPath, XvcMetadata> {
+    if show_dot_files {
+        all_from_disk
+    } else {
+        all_from_disk
+            .into_iter()
+            .filter_map(|(path, md)| {
+                let path_str = path.to_string();
+                if path_str.starts_with('.') || path_str.contains("./") {
+                    None
+                } else {
+                    Some((path, md))
                 }
-            } else {
-                pm
-            }
-        })
-        .collect();
-
-    // Do not calculate actual content hashes if it's not requested in the
-    // format string.
-    let matches =
-        if opts.format.as_ref().unwrap().columns.iter().any(|c| {
-            *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
-        }) {
-            let algorithm = HashAlgorithm::from_conf(conf);
-            let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
-            matches
-                .into_iter()
-                .filter_map(|pm| {
-                    if pm
-                        .actual_path
-                        .as_deref()
-                        .and(pm.actual_metadata.map(|md| md.is_file()))
-                        == Some(true)
-                    {
-                        let actual_path = pm.actual_path.as_ref().unwrap();
-                        let path = actual_path.to_absolute_path(xvc_root);
-                        let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
-                            text_or_binary_store
-                                .get(&xvc_entity)
-                                .copied()
-                                .unwrap_or_default()
-                        } else {
-                            FileTextOrBinary::default()
-                        };
-
-                        match ContentDigest::new(&path, algorithm, text_or_binary.as_inner()) {
-                            Ok(digest) => Some(PathMatch {
-                                actual_digest: Some(digest),
-                                ..pm
-                            }),
-                            Err(e) => {
-                                error!(output_snd, "{}", e);
-                                None
-                            }
-                        }
-                    } else {
-                        Some(pm)
-                    }
-                })
-                .collect()
-        } else {
-            matches
-        };
-
-    let path_prefix = current_dir.strip_prefix(xvc_root.absolute_path())?;
-
-    let rows = matches
-        .into_iter()
-        .filter_map(|pm| match ListRow::new(path_prefix, pm) {
-            Ok(lr) => Some(lr),
-            Err(e) => {
-                error!(output_snd, "{}", e);
-                None
-            }
-        })
-        .collect();
-
-    let list_rows = ListRows::new(opts.format.unwrap(), opts.sort.unwrap(), rows);
-    output!(output_snd, "{}", list_rows.build_table(!opts.no_summary));
-    Ok(())
+            })
+            .collect()
+    }
 }
