@@ -18,7 +18,7 @@ pub mod s3;
 #[cfg(feature = "wasabi")]
 pub mod wasabi;
 
-use std::{fmt::Display, str::FromStr, time::Duration};
+use std::{str::FromStr, time::Duration};
 
 use derive_more::Display;
 pub use event::{
@@ -74,7 +74,7 @@ pub enum XvcStorage {
 }
 persist!(XvcStorage, "storage");
 
-impl Display for XvcStorage {
+impl std::fmt::Display for XvcStorage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             XvcStorage::Local(lr) => {
@@ -497,7 +497,10 @@ pub fn get_storage_record(
         error!(output_snd, "Cannot find remote {}", identifier);
     }
     if storage_store.len() > 1 {
-        error!(output_snd, "Ambiguous remote identifier: {} Please use Storage GUID.", identifier);
+        error!(
+            output_snd,
+            "Ambiguous remote identifier: {} Please use Storage GUID.", identifier
+        );
     }
 
     let (_, storage) =

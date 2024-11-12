@@ -144,7 +144,7 @@ impl XvcS3StorageOperations for XvcR2Storage {
         .map_err(|e| e.into())
     }
 
-    fn get_bucket(&self) -> Result<Bucket> {
+    fn get_bucket(&self) -> Result<Box<Bucket>> {
         // We'll just put guid file to endpoint/bucket/prefix/XVC_GUID_FILENAME
         let credentials = self.credentials()?;
         let region = Region::R2 {
