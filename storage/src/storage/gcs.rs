@@ -109,7 +109,7 @@ impl XvcS3StorageOperations for XvcGcsStorage {
     fn guid(&self) -> &XvcStorageGuid {
         &self.guid
     }
-    fn get_bucket(&self) -> Result<Bucket> {
+    fn get_bucket(&self) -> Result<Box<Bucket>> {
         let credentials = self.credentials()?;
         let region = Region::Custom {
             region: self.region.to_owned(),

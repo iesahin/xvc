@@ -133,7 +133,7 @@ impl XvcS3StorageOperations for XvcWasabiStorage {
         self.endpoint.clone()
     }
 
-    fn get_bucket(&self) -> Result<Bucket> {
+    fn get_bucket(&self) -> Result<Box<Bucket>> {
         // We'll just put guid file to endpoint/bucket/prefix/XVC_GUID_FILENAME
         let credentials = self.credentials()?;
         let region: Region = Region::Custom {
