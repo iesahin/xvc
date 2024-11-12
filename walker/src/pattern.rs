@@ -8,8 +8,6 @@ pub use sync::{PathSync, PathSyncSingleton};
 
 pub use crate::notify::{make_watcher, PathEvent, RecommendedWatcher};
 
-// use glob::{MatchOptions, Pattern, PatternError};
-pub use fast_glob::Glob;
 use std::{fmt::Debug, path::PathBuf};
 
 use crate::error;
@@ -72,7 +70,10 @@ pub enum Source {
     },
 
     /// Pattern is from CLI
-    CommandLine { current_dir: PathBuf },
+    CommandLine {
+        /// Current directory
+        current_dir: PathBuf,
+    },
 }
 
 /// Pattern is generic and could be an instance of String, Glob, Regex or any other object.

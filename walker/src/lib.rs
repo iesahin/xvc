@@ -10,6 +10,7 @@
 #![forbid(unsafe_code)]
 pub mod abspath;
 pub mod error;
+pub mod glob;
 pub mod ignore_rules;
 pub mod notify;
 pub mod pattern;
@@ -34,7 +35,6 @@ pub use ignore_rules::IgnoreRules;
 pub use ignore_rules::SharedIgnoreRules;
 
 pub use notify::make_watcher;
-use std::ffi::OsStr;
 pub use std::hash::Hash;
 pub use sync::{PathSync, PathSyncSingleton};
 use xvc_logging::warn;
@@ -42,18 +42,17 @@ use xvc_logging::warn;
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
 
+pub use fast_glob::Glob;
+
 use xvc_logging::watch;
 
-// use glob::{MatchOptions, Pattern, PatternError};
-pub use fast_glob::Glob;
 use std::{
-    ffi::OsString,
     fmt::Debug,
     fs::{self, Metadata},
     path::{Path, PathBuf},
 };
 
-use anyhow::{anyhow, Context};
+use anyhow::anyhow;
 
 static MAX_THREADS_PARALLEL_WALK: usize = 8;
 
