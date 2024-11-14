@@ -40,6 +40,7 @@ impl IgnoreRules {
         }
     }
 
+    /// Constructs a new `IgnoreRules` instance from a given set of global ignore patterns.
     pub fn from_global_patterns(
         ignore_root: &Path,
         ignore_filename: Option<&str>,

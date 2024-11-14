@@ -10,7 +10,6 @@ use anyhow::anyhow;
 use chrono;
 use clap::Parser;
 
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 use std::path::Path;
@@ -25,6 +24,7 @@ use xvc_core::{
 use xvc_ecs::XvcEntity;
 use xvc_logging::{error, output, watch, XvcOutputSender};
 
+/// Format specifier for file list columns
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
 pub enum ListColumn {
     /// Column for the actual content digest (base64 encoded).
