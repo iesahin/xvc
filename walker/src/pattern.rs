@@ -97,6 +97,7 @@ pub struct Pattern {
 }
 
 impl Pattern {
+    /// Create a new pattern from a string and its source
     pub fn new(source: Source, original: &str) -> Self {
         let original = original.to_owned();
         let current_dir = match &source {
