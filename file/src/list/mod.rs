@@ -26,38 +26,65 @@ use xvc_ecs::XvcEntity;
 use xvc_logging::{error, output, watch, XvcOutputSender};
 
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
-enum ListColumn {
+pub enum ListColumn {
+    /// Column for the actual content digest (base64 encoded).
     #[strum(serialize = "acd64")]
     ActualContentDigest64,
+
+    /// Column for the actual content digest (base8 encoded).
     #[strum(serialize = "acd8")]
     ActualContentDigest8,
+
+    /// Column for the actual file type.
     #[strum(serialize = "aft")]
     ActualFileType,
+
+    /// Column for the actual size of the file.
     #[strum(serialize = "asz")]
     ActualSize,
+
+    /// Column for the actual timestamp of the file.
     #[strum(serialize = "ats")]
     ActualTimestamp,
+
+    /// Column for the name of the file.
     #[strum(serialize = "name")]
     Name,
+
+    /// Column for the cache status of the file.
     #[strum(serialize = "cst")]
     CacheStatus,
+
+    /// Column for the recorded recheck method.
     #[strum(serialize = "rrm")]
     RecordedRecheckMethod,
+
+    /// Column for the recorded content digest (base64 encoded).
     #[strum(serialize = "rcd64")]
     RecordedContentDigest64,
+
+    /// Column for the recorded content digest (base8 encoded).
     #[strum(serialize = "rcd8")]
     RecordedContentDigest8,
+
+    /// Column for the recorded size of the file.
     #[strum(serialize = "rsz")]
     RecordedSize,
+
+    /// Column for the recorded timestamp of the file.
     #[strum(serialize = "rts")]
     RecordedTimestamp,
+
+    /// Column for a literal string value.
     #[strum(disabled)]
     Literal(String),
 }
 
+/// Represents the format of a list, including the columns to be displayed.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ListFormat {
-    columns: Vec<ListColumn>,
+    /// A vector of [ListColumn] enums representing the columns in the table.
+    pub columns: Vec<ListColumn>,
 }
 
 impl FromStr for ListFormat {
@@ -104,26 +131,26 @@ pub enum ListSortCriteria {
 }
 conf!(ListSortCriteria, "file.list.sort");
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ListRow {
-    actual_content_digest_str: String,
-    actual_size: u64,
-    actual_size_str: String,
-    actual_timestamp: SystemTime,
-    actual_timestamp_str: String,
-    actual_file_type: String,
+    pub actual_content_digest_str: String,
+    pub actual_size: u64,
+    pub actual_size_str: String,
+    pub actual_timestamp: SystemTime,
+    pub actual_timestamp_str: String,
+    pub actual_file_type: String,
 
-    name: String,
-    cache_status: String,
+    pub name: String,
+    pub cache_status: String,
 
-    recorded_recheck_method: String,
-    recorded_content_digest_str: String,
-    recorded_size: u64,
-    recorded_size_str: String,
+    pub recorded_recheck_method: String,
+    pub recorded_content_digest_str: String,
+    pub recorded_size: u64,
+    pub recorded_size_str: String,
     // This can be used as a separate field to sort in the future
     #[allow(dead_code)]
-    recorded_timestamp: SystemTime,
-    recorded_timestamp_str: String,
+    pub recorded_timestamp: SystemTime,
+    pub recorded_timestamp_str: String,
 }
 
 impl ListRow {
@@ -303,108 +330,126 @@ struct PathMatch {
     recorded_recheck_method: Option<RecheckMethod>,
 }
 
-#[derive(Debug, Clone)]
-struct ListRows {
-    format: ListFormat,
-    sort_criteria: ListSortCriteria,
-    rows: RefCell<Vec<ListRow>>,
+#[derive(Debug, Clone, PartialEq)]
+pub struct ListRows {
+    pub format: ListFormat,
+    pub sort_criteria: ListSortCriteria,
+    pub rows: Vec<ListRow>,
 }
 
 impl ListRows {
     pub fn new(format: ListFormat, sort_criteria: ListSortCriteria, rows: Vec<ListRow>) -> Self {
-        Self {
+        let mut s = Self {
             format,
             sort_criteria,
-            rows: RefCell::new(rows),
-        }
-    }
-
-    fn build_row(&self, row: &ListRow) -> String {
-        let mut output = String::new();
-        for column in &self.format.columns {
-            match column {
-                ListColumn::RecordedRecheckMethod => output.push_str(&row.recorded_recheck_method),
-                ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
-                ListColumn::ActualSize => output.push_str(&row.actual_size_str),
-                ListColumn::ActualContentDigest64 => {
-                    output.push_str(&row.actual_content_digest_str)
-                }
-                ListColumn::ActualContentDigest8 => {
-                    output.push_str(if row.actual_content_digest_str.len() >= 8 {
-                        &row.actual_content_digest_str[..8]
-                    } else {
-                        &row.actual_content_digest_str
-                    })
-                }
-                ListColumn::ActualTimestamp => output.push_str(&row.actual_timestamp_str),
-                ListColumn::Name => output.push_str(&row.name),
-                ListColumn::RecordedSize => output.push_str(&row.recorded_size_str),
-                ListColumn::RecordedContentDigest64 => {
-                    output.push_str(&row.recorded_content_digest_str)
-                }
-                ListColumn::RecordedContentDigest8 => {
-                    output.push_str(if row.recorded_content_digest_str.len() >= 8 {
-                        &row.recorded_content_digest_str[..8]
-                    } else {
-                        &row.recorded_content_digest_str
-                    })
-                }
-                ListColumn::RecordedTimestamp => output.push_str(&row.recorded_timestamp_str),
-                ListColumn::CacheStatus => output.push_str(&row.cache_status),
-                ListColumn::Literal(literal) => output.push_str(literal),
-            }
-        }
-        output
-    }
-
-    pub fn build_table(&self, print_summary: bool) -> String {
-        let mut output = String::new();
-        let row_cmp = |a: &ListRow, b: &ListRow| match self.sort_criteria {
-            ListSortCriteria::NameAsc => a.name.cmp(&b.name),
-            ListSortCriteria::NameDesc => b.name.cmp(&a.name),
-            ListSortCriteria::SizeAsc => a.actual_size.cmp(&b.actual_size),
-            ListSortCriteria::SizeDesc => b.actual_size.cmp(&a.actual_size),
-            ListSortCriteria::TimestampAsc => a.actual_timestamp.cmp(&b.actual_timestamp),
-            ListSortCriteria::TimestampDesc => b.actual_timestamp.cmp(&a.actual_timestamp),
-            ListSortCriteria::None => std::cmp::Ordering::Equal,
+            rows,
         };
-        if self.sort_criteria != ListSortCriteria::None {
-            self.rows.borrow_mut().sort_unstable_by(row_cmp)
-        }
-
-        for row in self.rows.borrow().iter() {
-            let row_str = self.build_row(row);
-            output.push_str(&row_str);
-            output.push('\n');
-        }
-
-        if print_summary {
-            let total_lines = self.rows.borrow().len();
-            let total_actual_size = format_size(Some(
-                self.rows
-                    .borrow()
-                    .iter()
-                    .fold(0u64, |tot, r| tot + r.actual_size),
-            ));
-            let mut cached_sizes = HashMap::<String, u64>::new();
-            self.rows.borrow().iter().for_each(|r| {
-                if !r.recorded_content_digest_str.trim().is_empty() {
-                    cached_sizes.insert(r.recorded_content_digest_str.to_string(), r.recorded_size);
-                }
-            });
-
-            let total_cached_size = format_size(Some(cached_sizes.values().sum()));
-            output.push_str(
-                &format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n"),
-            )
-        }
-        output
+        sort_list_rows(&mut s);
+        s
     }
+
+    pub fn total_lines(&self) -> usize {
+        self.rows.len()
+    }
+
+    pub fn total_actual_size(&self) -> u64 {
+        self.rows.iter().fold(0u64, |tot, r| tot + r.actual_size)
+    }
+
+    pub fn total_cached_size(&self) -> u64 {
+        let mut cached_sizes = HashMap::<String, u64>::new();
+        self.rows.iter().for_each(|r| {
+            if !r.recorded_content_digest_str.trim().is_empty() {
+                cached_sizes.insert(r.recorded_content_digest_str.to_string(), r.recorded_size);
+            }
+        });
+
+        cached_sizes.values().sum()
+    }
+}
+
+pub fn build_row(row: &ListRow, format: &ListFormat) -> String {
+    let mut output = String::new();
+    for column in &format.columns {
+        match column {
+            ListColumn::RecordedRecheckMethod => output.push_str(&row.recorded_recheck_method),
+            ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
+            ListColumn::ActualSize => output.push_str(&row.actual_size_str),
+            ListColumn::ActualContentDigest64 => output.push_str(&row.actual_content_digest_str),
+            ListColumn::ActualContentDigest8 => {
+                output.push_str(if row.actual_content_digest_str.len() >= 8 {
+                    &row.actual_content_digest_str[..8]
+                } else {
+                    &row.actual_content_digest_str
+                })
+            }
+            ListColumn::ActualTimestamp => output.push_str(&row.actual_timestamp_str),
+            ListColumn::Name => output.push_str(&row.name),
+            ListColumn::RecordedSize => output.push_str(&row.recorded_size_str),
+            ListColumn::RecordedContentDigest64 => {
+                output.push_str(&row.recorded_content_digest_str)
+            }
+            ListColumn::RecordedContentDigest8 => {
+                output.push_str(if row.recorded_content_digest_str.len() >= 8 {
+                    &row.recorded_content_digest_str[..8]
+                } else {
+                    &row.recorded_content_digest_str
+                })
+            }
+            ListColumn::RecordedTimestamp => output.push_str(&row.recorded_timestamp_str),
+            ListColumn::CacheStatus => output.push_str(&row.cache_status),
+            ListColumn::Literal(literal) => output.push_str(literal),
+        }
+    }
+    output
+}
+
+pub fn build_table(
+    list_rows: &ListRows,
+    build_row: Box<dyn Fn(&ListRow, &ListFormat) -> String>,
+) -> String {
+    let mut output = String::new();
+
+    let format = &list_rows.format;
+    for row in list_rows.rows.iter() {
+        let row_str = build_row(row, format);
+        output.push_str(&row_str);
+        output.push('\n');
+    }
+
+    output
+}
+
+fn add_summary_line(list_rows: &ListRows) -> String {
+    let total_lines = list_rows.total_lines();
+    let total_actual_size = format_size(Some(list_rows.total_actual_size()));
+    let total_cached_size = format_size(Some(list_rows.total_cached_size()));
+
+    // TODO: Add a format string to this output similar to files
+    format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n")
+}
+
+fn sort_list_rows(list_rows: &mut ListRows) {
+    let row_cmp = match list_rows.sort_criteria {
+        ListSortCriteria::NameAsc => |a: &ListRow, b: &ListRow| a.name.cmp(&b.name),
+        ListSortCriteria::NameDesc => |a: &ListRow, b: &ListRow| b.name.cmp(&a.name),
+        ListSortCriteria::SizeAsc => |a: &ListRow, b: &ListRow| a.actual_size.cmp(&b.actual_size),
+        ListSortCriteria::SizeDesc => |a: &ListRow, b: &ListRow| b.actual_size.cmp(&a.actual_size),
+        ListSortCriteria::TimestampAsc => {
+            |a: &ListRow, b: &ListRow| a.actual_timestamp.cmp(&b.actual_timestamp)
+        }
+        ListSortCriteria::TimestampDesc => {
+            |a: &ListRow, b: &ListRow| b.actual_timestamp.cmp(&a.actual_timestamp)
+        }
+        ListSortCriteria::None => |_: &ListRow, _: &ListRow| std::cmp::Ordering::Equal,
+    };
+
+    list_rows.rows.sort_unstable_by(row_cmp);
 }
 
 impl Display for ListRows {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.build_table(true))?;
+        write!(f, "{}", build_table(self, Box::new(build_row)))?;
         Ok(())
     }
 }
@@ -535,7 +580,15 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
 
     // TODO: All output should be produced in a central location with implemented traits.
     // [ListRows] could receive no_summary when it's built and implement Display
-    output!(output_snd, "{}", list_rows.build_table(!no_summary));
+    output!(
+        output_snd,
+        "{}",
+        build_table(&list_rows, Box::new(build_row))
+    );
+    if !no_summary {
+        output!(output_snd, "{}", add_summary_line(&list_rows));
+    }
+
     Ok(())
 }
 
@@ -591,8 +644,13 @@ pub fn cmd_list_inner(
     let path_prefix = current_dir.strip_prefix(xvc_root.absolute_path())?;
 
     let rows = build_rows_from_matches(output_snd, matches, path_prefix);
+    let format = opts
+        .format
+        .clone()
+        .expect("Option must be filled at this point");
+    let sort_criteria = opts.sort.expect("Option must be filled at this point");
 
-    let list_rows = ListRows::new(opts.format.unwrap(), opts.sort.unwrap(), rows);
+    let list_rows = ListRows::new(format, sort_criteria, rows);
     Ok(list_rows)
 }
 
