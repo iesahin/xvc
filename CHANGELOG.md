@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Expose types from `xvc::file::list` to be used in GUI
 - Refactor `xvc file list` command handler for Xvc GUI
 
 ## 0.6.11 (2024-09-04)
