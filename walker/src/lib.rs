@@ -10,7 +10,6 @@
 #![forbid(unsafe_code)]
 pub mod abspath;
 pub mod error;
-pub mod glob;
 pub mod ignore_rules;
 pub mod notify;
 pub mod pattern;
