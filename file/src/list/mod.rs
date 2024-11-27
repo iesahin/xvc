@@ -348,6 +348,14 @@ impl ListRows {
         s
     }
 
+    pub fn empty() -> Self {
+        Self {
+            format: ListFormat { columns: vec![] },
+            sort_criteria: ListSortCriteria::None,
+            rows: vec![],
+        }
+    }
+
     pub fn total_lines(&self) -> usize {
         self.rows.len()
     }
