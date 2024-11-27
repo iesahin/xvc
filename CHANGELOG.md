@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add ListFormat::empty for default xvc file list format
 - Expose types from `xvc::file::list` to be used in GUI
 - Refactor `xvc file list` command handler for Xvc GUI
 
