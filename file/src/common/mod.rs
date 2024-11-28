@@ -534,6 +534,7 @@ fn copy_file(
     path: AbsolutePath,
 ) -> Result<()> {
     fs::copy(&cache_path, &path)?;
+    set_writable(&path)?;
     info!(output_snd, "[COPY] {} -> {}", cache_path, path);
     Ok(())
 }
