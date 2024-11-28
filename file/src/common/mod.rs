@@ -562,9 +562,13 @@ pub fn set_readonly(path: &Path) -> Result<()> {
 #[cfg(unix)]
 pub fn set_writable(path: &Path) -> Result<()> {
     let mut permissions = path.metadata()?.permissions();
+    watch!(&permissions);
     let mode = permissions.mode();
     let new_mode = mode | 0o200;
+    watch!(new_mode);
     permissions.set_mode(new_mode);
+    watch!(&permissions);
+
     Ok(())
 }
 
