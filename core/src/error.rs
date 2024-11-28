@@ -123,12 +123,27 @@ pub enum Error {
         source: reqwest::Error,
     },
 
+    #[error("Git Process Error: \nSTDOUT: {stdout}\nSTDERR: {stderr}")]
+    GitProcessError { stdout: String, stderr: String },
+
     #[error("Crossbeam Send Error for Type: {t:?} {cause:?}")]
     CrossbeamSendError { t: String, cause: String },
     #[error("Relative Path Conversion Error: {source}")]
     RelativePathError {
         #[from]
         source: relative_path::FromPathError,
+    },
+
+    #[error("Cannot Find Executable: {source}")]
+    WhichError {
+        #[from]
+        source: which::Error,
+    },
+
+    #[error("Process Exec Error: {source}")]
+    ProcessExecError {
+        #[from]
+        source: subprocess::PopenError,
     },
 
     #[error("Cannot find parent path")]
