@@ -174,12 +174,34 @@ Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 ```
 
-By default the command hides dotfiles. If you also want to show them, you can use `--show-dot-files`/`-a` flag.
+This command doesn't list Git-tracked files by default. If you want to list them, use `--include-git-files` flag.
+```console
+$ zsh -c 'echo "#!/bin/bash" > my-git-tracked-script.sh'
+$ git add my-git-tracked-script.sh
+$ git commit -m "Added a script"
+[main e4cf73a] Added a script
+ 1 file changed, 1 insertion(+)
+ create mode 100644 my-git-tracked-script.sh
+
+$ xvc file list 'my-git-tracked-script.sh'
+
+Total #: 0 Workspace Size:           0 Cached Size:           0
+
+
+$ xvc file list --include-git-files 'my-git-tracked-script.sh'
+FX          12 [..]          6ecb3ffc my-git-tracked-script.sh
+
+Total #: 1 Workspace Size:          12 Cached Size:           0
+
+
+```
+
+By default the command hides dotfiles too. If you also want to show them, you can use `--show-dot-files`/`-a` flag. If you want to show dotfiles also tracked by git, you may use `--show-dot-files` and `--include-git-files` together.
 
 ```console
-$ xvc file list --sort name-asc --show-dot-files
-FX        [..] [..]          [..] .gitignore
-FX        [..] [..]          [..] .xvcignore
+$ xvc file list --sort name-asc --show-dot-files --include-git-files
+FX         107 [..]          ce9fcf30 .gitignore
+FX         141 [..]          3054b812 .xvcignore
 DX         224 [..]                   dir-0001
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
@@ -210,7 +232,9 @@ FX        2002 [..]          7e807161 dir-0005/file-0002.bin
 FX        2003 [..]          d2432259 dir-0005/file-0003.bin
 FX        2004 [..]          63535612 dir-0005/file-0004.bin
 FX        2005 [..]          447933dc dir-0005/file-0005.bin
-Total #: 32 Workspace Size:       51443 Cached Size:           0
+FX          12 [..]          6ecb3ffc my-git-tracked-script.sh
+
+Total #: 33 Workspace Size:       51455 Cached Size:           0
 
 
 ```
@@ -313,6 +337,7 @@ SS         [..] 63535612          dir-0003/file-0004.bin
 SS         [..] d2432259          dir-0003/file-0003.bin
 SS         [..] 7e807161          dir-0003/file-0002.bin
 SS         [..] 1953f05d          dir-0003/file-0001.bin
+
 Total #: 5 Workspace Size:         [..] Cached Size:       10015
 
 
@@ -411,7 +436,7 @@ $ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0001/
        2002 dir-0001/file-0002.bin
        2001 dir-0001/file-0001.bin
 
-Total #: 5 Workspace Size:       10015 Cached Size:       10015
+Total #: 5 Workspace Size:       10015 Cached Size:       [..]
 
 
 ```
@@ -449,7 +474,7 @@ $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0001.bin
 X dir-0001/a-new-file.bin
 
-Total #: 6 Workspace Size:       10115 Cached Size:       10015
+Total #: 6 Workspace Size:       10115 Cached Size:           0
 
 
 ```
