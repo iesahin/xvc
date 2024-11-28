@@ -250,7 +250,9 @@ pub fn carry_in(
             if force {
                 let cache_dir = uwo!(abs_cache_path.parent(), output_snd);
                 uwr!(set_writable(cache_dir), output_snd);
+                watch!(cache_dir.metadata().unwrap().permissions());
                 uwr!(set_writable(&abs_cache_path), output_snd);
+                watch!(abs_cache_path.metadata().unwrap().permissions());
                 /* let mut dir_perm = cache_dir.metadata()?.permissions(); */
                 /* dir_perm.set_readonly(true); */
                 uwr!(fs::remove_file(&abs_cache_path), output_snd);
