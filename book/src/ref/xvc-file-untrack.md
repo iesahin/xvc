@@ -35,6 +35,7 @@ $ xvc file track 'd*.txt'
 
 $ xvc file list
 FC          19 [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 

@@ -44,7 +44,7 @@ pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
 }
 
 /// Find the absolute path to the git executable to run
-/// TODO: This must be cached. It makes a which request every time a command runs.
+/// TODO: This must be cached. It makes a which request every time a command runs
 pub fn get_absolute_git_command(git_command: &str) -> Result<String> {
     let git_cmd_path = PathBuf::from(git_command);
     let git_cmd = if git_cmd_path.is_absolute() {

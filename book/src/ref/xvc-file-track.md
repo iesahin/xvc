@@ -175,6 +175,7 @@ $ xvc file list dir-0004/
 FS        [..] ab361981 ab361981 dir-0004/file-0003.bin
 FS        [..] 493eeb65 493eeb65 dir-0004/file-0002.bin
 FS        [..] e517d6b9 e517d6b9 dir-0004/file-0001.bin
+
 Total #: 3 Workspace Size:        6006 Cached Size:        6006
 
 
