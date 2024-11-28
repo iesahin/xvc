@@ -5,10 +5,11 @@ use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use crate::git_checkout_ref;
-use crate::handle_git_automation;
 use crate::init;
 use crate::XvcRootOpt;
+
+use xvc_core::git_checkout_ref;
+use xvc_core::handle_git_automation;
 
 use clap::Parser;
 use crossbeam::thread;

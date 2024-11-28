@@ -32,7 +32,6 @@ use xvc_core::RecheckMethod;
 use xvc_core::XvcPath;
 use xvc_ecs::{HStore, XvcEntity};
 
-
 /// Add files for tracking with Xvc
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
 #[command(rename_all = "kebab-case")]
@@ -50,9 +49,19 @@ pub struct TrackCLI {
     /// auto)
     #[arg(long)]
     text_or_binary: Option<FileTextOrBinary>,
+
+    /// Include git tracked files as well. (Default: false)
+    ///
+    /// Xvc doesn't track files that are already tracked by git by default.
+    /// You can set files.track.include-git to true in the configuration file to
+    /// change this behavior.
+    #[arg(long)]
+    include_git_files: bool,
+
     /// Add targets even if they are already tracked
     #[arg(long)]
     force: bool,
+
     /// Don't use parallelism
     #[arg(long)]
     no_parallel: bool,
@@ -76,6 +85,8 @@ impl UpdateFromXvcConfig for TrackCLI {
             || Some(FileTextOrBinary::from_conf(conf)),
             |v| Some(v.to_owned()),
         );
+        let include_git_files =
+            self.include_git_files || conf.get_bool("file.track.include_git_files")?.option;
 
         Ok(Box::new(Self {
             targets: self.targets.clone(),
@@ -84,6 +95,7 @@ impl UpdateFromXvcConfig for TrackCLI {
             force,
             no_parallel,
             text_or_binary,
+            include_git_files,
         }))
     }
 }
@@ -118,7 +130,14 @@ pub fn cmd_track(
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
-    let targets = targets_from_disk(output_snd, xvc_root, current_dir, &opts.targets)?;
+    let filter_git_files = !opts.include_git_files;
+    let targets = targets_from_disk(
+        output_snd,
+        xvc_root,
+        current_dir,
+        &opts.targets,
+        filter_git_files,
+    )?;
     watch!(targets);
     let requested_recheck_method = opts.recheck_method;
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
@@ -231,7 +250,6 @@ pub fn cmd_track(
     let current_gitignore = build_gitignore(xvc_root)?;
 
     update_file_gitignores(xvc_root, &current_gitignore, &file_targets)?;
-
 
     if !opts.no_commit {
         let current_xvc_path_store = xvc_root.load_store::<XvcPath>()?;

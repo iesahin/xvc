@@ -3,7 +3,6 @@
 //! The main dispatching functions for the entire Xvc CLI
 pub mod cli;
 pub mod error;
-pub mod git;
 pub mod init;
 
 pub mod api;
