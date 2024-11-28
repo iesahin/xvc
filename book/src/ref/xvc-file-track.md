@@ -28,6 +28,11 @@ Options:
       --text-or-binary <TEXT_OR_BINARY>
           Calculate digests as text or binary file without checking contents, or by automatically. (Default: auto)
 
+      --include-git-files
+          Include git tracked files as well. (Default: false)
+          
+          Xvc doesn't track files that are already tracked by git by default. You can set files.track.include-git to true in the configuration file to change this behavior.
+
       --force
           Add targets even if they are already tracked
 
@@ -186,21 +191,7 @@ command. Note that, as the files are deduplicated, we need to use `--force` in
 carry-in command. This behavior may change in the future.
 
 ```console
-$ xvc --debug file carry-in --force dir-0004/
-? 101
-thread '<unnamed>' panicked at file/src/carry_in/mod.rs:256:17:
-Os { code: 13, kind: PermissionDenied, message: "Permission denied" }
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-thread '<unnamed>' panicked at file/src/carry_in/mod.rs:256:17:
-Os { code: 13, kind: PermissionDenied, message: "Permission denied" }
-thread '<unnamed>' panicked at lib/src/cli/mod.rs:254:52:
-[PANIC] Os { code: 13, kind: PermissionDenied, message: "Permission denied" }, [file/src/carry_in/mod.rs::256]
-thread '<unnamed>' panicked at file/src/carry_in/mod.rs:256:17:
-Os { code: 13, kind: PermissionDenied, message: "Permission denied" }
-thread '<unnamed>' panicked at file/src/common/gitignore.rs:77:9:
-called `Result::unwrap()` on an `Err` value: "SendError(..)"
-thread 'main' panicked at lib/src/cli/mod.rs:403:52:
-called `Result::unwrap()` on an `Err` value: Any { .. }
+$ xvc file carry-in --force dir-0004/
 
 $ ls -l dir-0004/
 total 0
