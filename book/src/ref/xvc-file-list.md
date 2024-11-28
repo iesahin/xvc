@@ -179,7 +179,7 @@ This command doesn't list Git-tracked files by default. If you want to list them
 $ zsh -c 'echo "#!/bin/bash" > my-git-tracked-script.sh'
 $ git add my-git-tracked-script.sh
 $ git commit -m "Added a script"
-[main e4cf73a] Added a script
+[main [..]] Added a script
  1 file changed, 1 insertion(+)
  create mode 100644 my-git-tracked-script.sh
 
