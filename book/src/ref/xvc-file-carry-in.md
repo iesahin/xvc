@@ -52,6 +52,7 @@ $ xvc file track data.txt
 
 $ xvc file list data.txt
 FC          19 [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
@@ -67,6 +68,7 @@ Oh, deetee, my, deetee
 
 $ xvc file list data.txt
 FC          23 [..] c85f3e81 e37c686a data.txt
+
 Total #: 1 Workspace Size:          23 Cached Size:          19
 
 
@@ -79,6 +81,7 @@ $ xvc file carry-in data.txt
 
 $ xvc file list data.txt
 FC          23 [..] e37c686a e37c686a data.txt
+
 Total #: 1 Workspace Size:          23 Cached Size:          23
 
 
