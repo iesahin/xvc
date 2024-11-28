@@ -106,6 +106,7 @@ $ xvc file move d*.txt another-set/ --as hardlink
 $ xvc file list another-set/
 FH          [..] c85f3e81 c85f3e81 another-set/data5.txt
 FH          [..] c85f3e81 c85f3e81 another-set/data4.txt
+
 Total #: 2 Workspace Size:          38 Cached Size:          19
 
 
@@ -122,6 +123,7 @@ $ xvc file list
 XH                                 c85f3e81          data6.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data4.txt
 DX          96 [..]                   another-set
+
 Total #: 3 Workspace Size:         115 Cached Size:          19
 
 

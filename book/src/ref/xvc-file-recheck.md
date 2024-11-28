@@ -96,7 +96,7 @@ You can track and recheck complete directories
 $ xvc file track dir-0002/
 $ rm -rf dir-0002/
 $ xvc -v file recheck dir-0002/
-$ ls -l dir-0002/
+$ lsd -l dir-0002/
 total 24
 -rw-rw-rw-[..] file-0001.bin
 -rw-rw-rw-[..] file-0002.bin
