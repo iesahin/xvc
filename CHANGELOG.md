@@ -1,7 +1,8 @@
 # Xvc Changelog
 
-## 0.6.12-alpha.0 (2024-11-28)
+## 0.6.12-alpha.1 (2024-11-28)
 
+- Fixed cache permissions issue
 - Add --include-git-files option to xvc file track and xvc file list commands
 - Don't track and list Git-tracked files by default
 - Add ListFormat::empty for default xvc file list format
