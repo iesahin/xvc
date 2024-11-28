@@ -1,7 +1,9 @@
 # Xvc Changelog
 
-## Unreleased
+## 0.6.12-alpha.0 (2024-11-28)
 
+- Add --include-git-files option to xvc file track and xvc file list commands
+- Don't track and list Git-tracked files by default
 - Add ListFormat::empty for default xvc file list format
 - Expose types from `xvc::file::list` to be used in GUI
 - Refactor `xvc file list` command handler for Xvc GUI
