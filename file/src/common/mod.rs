@@ -569,7 +569,7 @@ pub fn set_writable(path: &Path) -> Result<()> {
     watch!(new_mode);
     permissions.set_mode(new_mode);
     watch!(&permissions);
-
+    fs::set_permissions(path, permissions)?;
     Ok(())
 }
 
@@ -579,6 +579,7 @@ pub fn set_readonly(path: &Path) -> Result<()> {
     let mode = permissions.mode();
     let new_mode = mode & !0o200;
     permissions.set_mode(new_mode);
+    fs::set_permissions(path, permissions)?;
     Ok(())
 }
 
