@@ -527,6 +527,12 @@ pub struct ListCLI {
     #[arg(long, short = 'a')]
     pub show_dot_files: bool,
 
+    /// List files tracked by Git.
+    ///
+    /// By default, Xvc doesn't list files tracked by Git. Supply this option to list them.
+    #[arg(long)]
+    pub include_git_files: bool,
+
     /// Files/directories to list.
     ///
     /// If not supplied, lists all files under the current directory.
@@ -547,9 +553,13 @@ impl UpdateFromXvcConfig for ListCLI {
         let sort_criteria = self
             .sort
             .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
+        let include_git_files =
+            self.include_git_files || conf.get_bool("file.list.include_git_files")?.option;
+
         Ok(Box::new(Self {
             no_summary,
             show_dot_files,
+            include_git_files,
             format: Some(format),
             sort: Some(sort_criteria),
             ..self
@@ -610,8 +620,15 @@ pub fn cmd_list_inner(
     let conf = xvc_root.config();
 
     let current_dir = conf.current_dir()?;
+    let filter_git_paths = !opts.include_git_files;
 
-    let all_from_disk = targets_from_disk(output_snd, xvc_root, current_dir, &opts.targets)?;
+    let all_from_disk = targets_from_disk(
+        output_snd,
+        xvc_root,
+        current_dir,
+        &opts.targets,
+        filter_git_paths,
+    )?;
     watch!(&all_from_disk);
 
     let from_disk = filter_dot_files(all_from_disk, opts.show_dot_files);

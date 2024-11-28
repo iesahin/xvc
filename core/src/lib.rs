@@ -162,6 +162,9 @@ text_or_binary = "auto"
 # Note that some of the operations are implemented in parallel by default, and this option affects some heavier operations.
 no_parallel = false
 
+# Track files that are tracked by Git. 
+include_git_files = {include_git_files}
+
 [file.list]
 
 # Format for `xvc file list` rows. You can reorder or remove columns.
@@ -204,6 +207,9 @@ no_summary = false
 # List files recursively always.
 recursive = false
 
+# List files tracked by Git. 
+include_git_files = {include_git_files}
+
 [file.carry-in]
 # Carry-in the files to cache always, even if they are already present.
 force = false
@@ -235,5 +241,6 @@ details = false
 "##,
         guid = guid,
         use_git = use_git,
+        include_git_files = !use_git
     )
 }
