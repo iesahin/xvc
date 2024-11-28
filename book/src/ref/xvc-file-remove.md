@@ -58,6 +58,7 @@ $ xvc file track 'd*.txt'
 
 $ xvc file list
 FC        [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
@@ -116,6 +117,7 @@ $ xvc file carry-in --force data.txt
 
 $ xvc file list
 FC         [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
@@ -153,6 +155,7 @@ $ tree .xvc/b3/
 
 $ xvc file list
 FC         [..] 6602cff6 6602cff6 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
