@@ -58,6 +58,11 @@ Options:
           
           If not supplied, hides dot files like .gitignore and .xvcignore
 
+      --include-git-files
+          List files tracked by Git.
+          
+          By default, Xvc doesn't list files tracked by Git. Supply this option to list them.
+
   -h, --help
           Print help (see a summary with '-h')
 
@@ -163,6 +168,7 @@ FX        2002 [..]          7e807161 dir-0005/file-0002.bin
 FX        2003 [..]          d2432259 dir-0005/file-0003.bin
 FX        2004 [..]          63535612 dir-0005/file-0004.bin
 FX        2005 [..]          447933dc dir-0005/file-0005.bin
+
 Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 
@@ -267,6 +273,7 @@ FC        2004 [..] 63535612 63535612 dir-0001/file-0004.bin
 FC        2003 [..] d2432259 d2432259 dir-0001/file-0003.bin
 FC        2002 [..] 7e807161 7e807161 dir-0001/file-0002.bin
 FC        2001 [..] 1953f05d 1953f05d dir-0001/file-0001.bin
+
 Total #: 5 Workspace Size:       10015 Cached Size:       10015
 
 
@@ -284,6 +291,7 @@ FH        2004 [..] 63535612 63535612 dir-0002/file-0004.bin
 FH        2003 [..] d2432259 d2432259 dir-0002/file-0003.bin
 FH        2002 [..] 7e807161 7e807161 dir-0002/file-0002.bin
 FH        2001 [..] 1953f05d 1953f05d dir-0002/file-0001.bin
+
 Total #: 5 Workspace Size:       10015 Cached Size:       10015
 
 
@@ -323,6 +331,7 @@ FX        2001 [..]          1953f05d dir-0004/file-0001.bin
 SS         [..] 1953f05d          dir-0003/file-0001.bin
 FH        2[..] 1953f05d 1953f05d dir-0002/file-0001.bin
 FC        2[..] 1953f05d 1953f05d dir-0001/file-0001.bin
+
 Total #: 5 Workspace Size:        [..] Cached Size:        2001
 
 
@@ -345,6 +354,7 @@ FH        [..] 7e807161 7e807161 dir-0002/file-0002.bin
 FH        [..] 1953f05d 1953f05d dir-0002/file-0001.bin
 FC        [..] 7e807161 7e807161 dir-0001/file-0002.bin
 FC        [..] 1953f05d 1953f05d dir-0001/file-0001.bin
+
 Total #: 10 Workspace Size:       [..] Cached Size:        4003
 
 
@@ -364,6 +374,7 @@ FC        2004 [..] 63535612 63535612 dir-0001/file-0004.bin
 FC        2003 [..] d2432259 d2432259 dir-0001/file-0003.bin
 FC        2002 [..] 7e807161 7e807161 dir-0001/file-0002.bin
 FC        2001 [..] 1953f05d 1953f05d dir-0001/file-0001.bin
+
 Total #: 5 Workspace Size:       10015 Cached Size:       10015
 
 
@@ -376,6 +387,7 @@ FC        2002 [..] 7e807161 7e807161 dir-0001/file-0002.bin
 FC        2003 [..] d2432259 d2432259 dir-0001/file-0003.bin
 FC        2004 [..] 63535612 63535612 dir-0001/file-0004.bin
 FC        2005 [..] 447933dc 447933dc dir-0001/file-0005.bin
+
 Total #: 5 Workspace Size:       10015 Cached Size:       10015
 
 
@@ -398,6 +410,7 @@ $ xvc file list --format '{{asz}} {{name}}' --sort size-desc dir-0001/
        2003 dir-0001/file-0003.bin
        2002 dir-0001/file-0002.bin
        2001 dir-0001/file-0001.bin
+
 Total #: 5 Workspace Size:       10015 Cached Size:       10015
 
 
@@ -412,6 +425,7 @@ $ xvc file list --format '{{acd8}} {{rcd8}} {{name}}' --sort ts-asc dir-0001
 d2432259 d2432259 dir-0001/file-0003.bin
 63535612 63535612 dir-0001/file-0004.bin
 447933dc 447933dc dir-0001/file-0005.bin
+
 Total #: 5 Workspace Size:       10015 Cached Size:       10015
 
 
@@ -434,6 +448,7 @@ $ xvc file list --format '{{cst}} {{name}}' dir-0001/
 = dir-0001/file-0002.bin
 = dir-0001/file-0001.bin
 X dir-0001/a-new-file.bin
+
 Total #: 6 Workspace Size:       10115 Cached Size:       10015
 
 
