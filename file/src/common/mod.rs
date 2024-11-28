@@ -281,6 +281,13 @@ pub fn targets_from_disk(
             .strip_prefix(xvc_root.absolute_path())?
             .to_str()
             .unwrap();
+
+        let cwd = if cwd.ends_with('/') {
+            cwd.to_owned()
+        } else {
+            format!("{cwd}/")
+        };
+
         let targets = match targets {
             Some(targets) => targets.iter().map(|t| format!("{cwd}{t}")).collect(),
             None => vec![cwd.to_string()],
