@@ -564,6 +564,7 @@ pub fn set_writable(path: &Path) -> Result<()> {
     let mut permissions = path.metadata()?.permissions();
     watch!(&permissions);
     let mode = permissions.mode();
+    watch!(mode);
     let new_mode = mode | 0o200;
     watch!(new_mode);
     permissions.set_mode(new_mode);
