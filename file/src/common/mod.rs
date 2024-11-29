@@ -321,7 +321,7 @@ pub fn targets_from_disk(
         let (pmm, _) = path_metadata_map_from_file_targets(
             output_snd,
             COMMON_IGNORE_PATTERNS,
-            &xvc_root,
+            xvc_root,
             // This should be ok as we checked empty condition on has_globs_or_dirs
             targets.clone().unwrap(),
             &xvc_walker::WalkOptions::xvcignore(),

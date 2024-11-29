@@ -199,7 +199,7 @@ fn transform_pattern_for_glob(
     let directory_anywhere = |p| format!("**/{p}/**");
     let directory_relative = |p, directory| format!("{directory}/**/{p}/**");
 
-    let transformed_pattern = match (path_kind, relativity) {
+    match (path_kind, relativity) {
         (PathKind::Any, PatternRelativity::Anywhere) => anything_anywhere(original),
         (PathKind::Any, PatternRelativity::RelativeTo { directory }) => {
             anything_relative(original, directory)
@@ -208,11 +208,10 @@ fn transform_pattern_for_glob(
         (PathKind::Directory, PatternRelativity::RelativeTo { directory }) => {
             directory_relative(original, directory)
         }
-    };
-
-    transformed_pattern
+    }
 }
 
+/// Build a list of patterns from a list of strings
 pub fn build_pattern_list(patterns: Vec<String>, source: Source) -> Vec<Pattern> {
     patterns
         .iter()
