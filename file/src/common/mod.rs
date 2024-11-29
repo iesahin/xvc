@@ -558,20 +558,18 @@ pub fn set_readonly(path: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Set a path to user writable on unix systems.
 #[cfg(unix)]
 pub fn set_writable(path: &Path) -> Result<()> {
     let mut permissions = path.metadata()?.permissions();
-    watch!(&permissions);
     let mode = permissions.mode();
-    watch!(mode);
     let new_mode = mode | 0o200;
-    watch!(new_mode);
     permissions.set_mode(new_mode);
-    watch!(&permissions);
     fs::set_permissions(path, permissions)?;
     Ok(())
 }
 
+/// Set a path to readonly on unix systems.
 #[cfg(unix)]
 pub fn set_readonly(path: &Path) -> Result<()> {
     let mut permissions = path.metadata()?.permissions();
