@@ -350,7 +350,6 @@ pub fn targets_from_disk(
         let git_command_str = xvc_root.config().get_str("git.command")?.option;
         let git_command = get_absolute_git_command(&git_command_str)?;
         get_git_tracked_files(
-            output_snd,
             &git_command,
             xvc_root
                 .absolute_path()

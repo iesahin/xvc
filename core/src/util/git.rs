@@ -86,11 +86,7 @@ pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -
 ///
 /// NOTE: Assumptions for this function:
 /// - No submodules
-pub fn get_git_tracked_files(
-    output_snd: &XvcOutputSender,
-    git_command: &str,
-    xvc_directory: &str,
-) -> Result<Vec<String>> {
+pub fn get_git_tracked_files(git_command: &str, xvc_directory: &str) -> Result<Vec<String>> {
     let git_ls_files_out = exec_git(git_command, xvc_directory, &["ls-files", "--full-name"])?;
     watch!(git_ls_files_out);
     let git_ls_files_out = git_ls_files_out
@@ -289,12 +285,8 @@ pub fn git_auto_stage(
     Ok(())
 }
 
-pub fn git_ignored(
-    output_snd: &XvcOutputSender,
-    git_command: &str,
-    xvc_root_str: &str,
-    path: &str,
-) -> Result<bool> {
+/// Run `git check-ignore` to check if a path is ignored by Git
+pub fn git_ignored(git_command: &str, xvc_root_str: &str, path: &str) -> Result<bool> {
     let command_res = exec_git(git_command, xvc_root_str, &["check-ignore", path])?;
 
     if command_res.trim().is_empty() {
