@@ -3,6 +3,7 @@
 ## 0.6.12-alpha.1 (2024-11-28)
 
 - PR: <https://github.com/iesahin/xvc/pull/261>
+- Began to use dtolnay/rust-toolchain for Github Actions
 - Fixed cache permissions issue
 - Add --include-git-files option to xvc file track and xvc file list commands
 - Don't track and list Git-tracked files by default
