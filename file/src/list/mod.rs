@@ -108,29 +108,38 @@ impl FromStr for ListFormat {
 
 conf!(ListFormat, "file.list.format");
 
+/// Specify how to sort file list
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
 pub enum ListSortCriteria {
     #[strum(serialize = "none")]
+    /// No sorting
     None,
     #[strum(serialize = "name-asc")]
+    /// Sort by name in ascending order
     NameAsc,
     #[strum(serialize = "name-desc")]
+    /// Sort by name in descending order
     NameDesc,
     #[strum(serialize = "size-asc")]
+    /// Sort by size in ascending order
     SizeAsc,
     #[strum(serialize = "size-desc")]
+    /// Sort by size in descending order
     SizeDesc,
     #[strum(serialize = "t-asc", serialize = "timestamp-asc", serialize = "ts-asc")]
+    /// Sort by timestamp in ascending order
     TimestampAsc,
     #[strum(
         serialize = "t-desc",
         serialize = "timestamp-desc",
         serialize = "ts-desc"
     )]
+    /// Sort by timestamp in descending order
     TimestampDesc,
 }
 conf!(ListSortCriteria, "file.list.sort");
 
+/// A single item in the list output
 #[derive(Debug, Clone, PartialEq)]
 pub struct ListRow {
     pub actual_content_digest_str: String,
