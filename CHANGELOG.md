@@ -1,6 +1,6 @@
 # Xvc Changelog
 
-## 0.6.12-alpha.1 (2024-11-28)
+## 0.6.12-alpha.2 (2024-11-29)
 
 - PR: <https://github.com/iesahin/xvc/pull/261>
 - Began to use dtolnay/rust-toolchain for Github Actions
