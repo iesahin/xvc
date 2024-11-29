@@ -81,7 +81,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust || 'stable' }}
-          components: llvm-tools-preview,llvm-cov
+          components: llvm-tools-preview
 
       - name: Build debug
         run: cargo build ${{ matrix.build-args }}
