@@ -59,7 +59,7 @@ glob = "^0.3"
 which = "^7.0"
 
 ## Logging and errors
-thiserror = "^1.0"
+thiserror = "^2.0"
 anyhow = "^1.0"
 log = "^0.4"
 peak_alloc = "^0.2"
