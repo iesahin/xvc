@@ -2,6 +2,7 @@
 
 ## 0.6.12-alpha.1 (2024-11-28)
 
+- PR: <https://github.com/iesahin/xvc/pull/261>
 - Fixed cache permissions issue
 - Add --include-git-files option to xvc file track and xvc file list commands
 - Don't track and list Git-tracked files by default
@@ -11,6 +12,7 @@
 
 ## 0.6.11 (2024-09-04)
 
+- PR: <https://github.com/iesahin/xvc/pull/260>
 - Bump dependencies
 - Replace globset with fast-glob for memory usage
 - Remove --details option from xvc check-ignore
