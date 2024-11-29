@@ -54,7 +54,13 @@ fn test_file_list() -> Result<()> {
         common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
-    let list_all = x(&["list", "--format", "{{name}}", "--show-dot-files"])?;
+    let list_all = x(&[
+        "list",
+        "--format",
+        "{{name}}",
+        "--show-dot-files",
+        "--include-git-files",
+    ])?;
 
     let count_all = list_all.trim().lines().count();
     // There must be 33 elements in total. 6 x 5: directories, 1 for .gitignore,
