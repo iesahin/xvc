@@ -77,7 +77,7 @@ strum_macros = "^0.26"
 lazy_static = "^1.5"
 uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
-cached = "^0.53"
+cached = "^0.54"
 derive_more = { version = "^1.0", features = ["full"] }
 itertools = "^0.13"
 

@@ -69,15 +69,15 @@ fn test_file_list() -> Result<()> {
 
     let list_no_dots = x(&["list", "--format", "{{name}}"])?;
     let count_no_dots = list_no_dots.trim().lines().count();
-    // There must be 31 elements in total. 6 x 5: directories another line for the summary and a
-    // space between them.
-    assert!(count_no_dots == 32, "count_no_dots: {}", count_no_dots);
+    // There must be 33 elements in total. 6 x 5: directories another line for the summary and a
+    // space between them and a final new line.
+    assert!(count_no_dots == 33, "count_no_dots: {}", count_no_dots);
 
     let list_no_dots_no_summary = x(&["list", "--format", "{{name}}", "--no-summary"])?;
     let count_no_dots_no_summary = list_no_dots_no_summary.trim().lines().count();
-    // There must be 31 elements in total. 6 x 5: directories another line for the summary.
+    // There must be 31 elements in total. 6 x 5: directories and a new line.
     assert!(
-        count_no_dots_no_summary == 30,
+        count_no_dots_no_summary == 31,
         "count_no_dots_no_summary: {}",
         count_no_dots_no_summary
     );
