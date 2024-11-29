@@ -58,7 +58,7 @@ jobs:
 
       - name: Install required packages
         run: |
-          brew install --head s3cmd # 2.3.0 has a bug with Python 3.12
+          brew install s3cmd
           brew install ripgrep
           brew install tree
           brew install lsd
@@ -74,9 +74,9 @@ jobs:
       - name: Write an ssh config to allow connection
         run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; chmod 400 $HOME/.ssh/config
 
-      - name: List .ssh contents
-        run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
-
+      # - name: List .ssh contents
+      #   run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
+      #
       - name: Install rust
         uses: dtolnay/rust-toolchain@master
         with:
@@ -91,11 +91,12 @@ jobs:
       - name: Add xvc to PATH
         run: echo "${GITHUB_WORKSPACE}/target/debug" >> $GITHUB_PATH
 
-      - name: Print contents of $GITHUB_WORKSPACE
-        run: tree $GITHUB_WORKSPACE
+      # - name: Print contents of $GITHUB_WORKSPACE
+      #   run: tree $GITHUB_WORKSPACE
 
       - name: Check if xvc is in PATH
-        run: tree $GITHUB_WORKSPACE && xvc --help
+        # run: tree $GITHUB_WORKSPACE && xvc --version
+        run: xvc --version
 
       - name: Run Current Dev Tests
         run: $GITHUB_WORKSPACE/run-tests.zsh
