@@ -4,7 +4,6 @@ use assert_fs::prelude::{FileTouch, FileWriteBin, PathChild};
 use assert_fs::TempDir;
 use common::*;
 use std::env;
-use std::ffi::OsString;
 use std::fs::remove_file;
 use std::path::PathBuf;
 use std::thread::{self, sleep};

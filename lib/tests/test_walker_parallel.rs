@@ -1,5 +1,4 @@
 use std::{
-    ffi::OsString,
     fs,
     path::{Path, PathBuf},
     sync::{Arc, RwLock},

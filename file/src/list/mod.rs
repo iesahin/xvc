@@ -142,23 +142,37 @@ conf!(ListSortCriteria, "file.list.sort");
 /// A single item in the list output
 #[derive(Debug, Clone, PartialEq)]
 pub struct ListRow {
+    /// The actual (on-disk) content digest of the file
     pub actual_content_digest_str: String,
+    /// The actual (on-disk) file size
     pub actual_size: u64,
+    /// The actual (on-disk) file size as a string
     pub actual_size_str: String,
+    /// The actual (on-disk) file modification timestamp
     pub actual_timestamp: SystemTime,
+    /// The actual (on-disk) file modification timestamp as a string
     pub actual_timestamp_str: String,
+    /// The actual (on-disk) file type
     pub actual_file_type: String,
 
+    /// The basename of the file
     pub name: String,
+    /// The cache status of the file
     pub cache_status: String,
 
+    /// The recheck method used to link to the cached file
     pub recorded_recheck_method: String,
+    /// The recorded content digest of the file
     pub recorded_content_digest_str: String,
+    /// The recorded size of the file
     pub recorded_size: u64,
+    /// The recorded size of the file as a string
     pub recorded_size_str: String,
-    // This can be used as a separate field to sort in the future
+    /// The recorded timestamp of the file
+    // FIXME: This can be used as a separate field to sort in the future
     #[allow(dead_code)]
     pub recorded_timestamp: SystemTime,
+    /// The recorded timestamp of the file as a string
     pub recorded_timestamp_str: String,
 }
 
@@ -339,14 +353,19 @@ struct PathMatch {
     recorded_recheck_method: Option<RecheckMethod>,
 }
 
+/// All rows of the file list and its format and sorting criteria
 #[derive(Debug, Clone, PartialEq)]
 pub struct ListRows {
+    /// How to format the file row. See [ListColumn] for the available columns.
     pub format: ListFormat,
+    /// How to sort the list. See [ListSortCriteria] for the available criteria.
     pub sort_criteria: ListSortCriteria,
+    /// All elements of the file list
     pub rows: Vec<ListRow>,
 }
 
 impl ListRows {
+    /// Create a new table with the specified params and sort it
     pub fn new(format: ListFormat, sort_criteria: ListSortCriteria, rows: Vec<ListRow>) -> Self {
         let mut s = Self {
             format,
@@ -357,6 +376,7 @@ impl ListRows {
         s
     }
 
+    /// Create an empty table without any rows, format or sorting criteria
     pub fn empty() -> Self {
         Self {
             format: ListFormat { columns: vec![] },
@@ -365,14 +385,17 @@ impl ListRows {
         }
     }
 
+    /// Number if file lines in the table
     pub fn total_lines(&self) -> usize {
         self.rows.len()
     }
 
+    /// Total size of the files in the table
     pub fn total_actual_size(&self) -> u64 {
         self.rows.iter().fold(0u64, |tot, r| tot + r.actual_size)
     }
 
+    /// Total size of the recorded files in the table
     pub fn total_cached_size(&self) -> u64 {
         let mut cached_sizes = HashMap::<String, u64>::new();
         self.rows.iter().for_each(|r| {
@@ -385,6 +408,7 @@ impl ListRows {
     }
 }
 
+/// Print a single row from the given element and the format
 pub fn build_row(row: &ListRow, format: &ListFormat) -> String {
     let mut output = String::new();
     for column in &format.columns {
@@ -421,10 +445,11 @@ pub fn build_row(row: &ListRow, format: &ListFormat) -> String {
     output
 }
 
-pub fn build_table(
-    list_rows: &ListRows,
-    build_row: Box<dyn Fn(&ListRow, &ListFormat) -> String>,
-) -> String {
+/// Fn type to decouple the build_row function from the build_table function
+type BuildRowFn = Box<dyn Fn(&ListRow, &ListFormat) -> String>;
+
+/// Build a table from the list of rows
+pub fn build_table(list_rows: &ListRows, build_row: BuildRowFn) -> String {
     let mut output = String::new();
 
     let format = &list_rows.format;
