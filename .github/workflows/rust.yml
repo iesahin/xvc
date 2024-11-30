@@ -21,17 +21,11 @@ jobs:
       matrix:
         build: [stable]
         include:
-          # - build: stable
-          #   benches: true
-          # - build: beta
-          #   rust: beta
           - build: stable
             rust: stable
             # rust: nightly-2024-01-01
             test-args: --features test-ci # --no-fail-fast
             ## for submitters other than me, I'll add another job here.
-            # test-args: --no-fail-fast
-            # test-args: --all-features
             # benches: true
             coverage: true
 
@@ -73,7 +67,7 @@ jobs:
       - name: Write the private key file for e1.xvc.dev connection
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
 
-      - name: Write an ssh config to allow connection
+      - name: Write an ssh config to allow connection without noise
         run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; echo '    LogLevel ERROR' >> $HOME/.ssh/config ;  chmod 400 $HOME/.ssh/config
 
       # - name: List .ssh contents
