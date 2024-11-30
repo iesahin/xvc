@@ -5,10 +5,11 @@ use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use crate::git_checkout_ref;
-use crate::handle_git_automation;
 use crate::init;
 use crate::XvcRootOpt;
+
+use xvc_core::git_checkout_ref;
+use xvc_core::handle_git_automation;
 
 use clap::Parser;
 use crossbeam::thread;
@@ -17,12 +18,13 @@ use log::LevelFilter;
 use std::io;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::types::xvcroot::XvcRootInner;
+use xvc_logging::XvcOutputSender;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
 use xvc_config::{XvcConfigParams, XvcVerbosity};
 use xvc_core::aliases;
 use xvc_core::check_ignore;
-use xvc_core::default_project_config;
+pub use xvc_core::default_project_config;
 use xvc_core::root;
 use xvc_core::CHANNEL_BOUND;
 use xvc_file as file;
@@ -117,7 +119,7 @@ pub struct XvcCLI {
 impl XvcCLI {
     /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
     /// [XvcCLI::command_string].
-    pub fn from_str_slice(args: &[&str]) -> Result<XvcCLI> {
+    pub fn from_str_slice(args: &[&str]) -> Result<Self> {
         let command_string = args.join(" ");
         let parsed = Self::parse_from(args);
         Ok(Self {
@@ -128,7 +130,7 @@ impl XvcCLI {
 
     /// Parse the given elements with [clap::Parser::parse_from] and merge them to set
     /// [XvcCLI::command_string].
-    pub fn from_string_slice(args: &[String]) -> Result<XvcCLI> {
+    pub fn from_string_slice(args: &[String]) -> Result<Self> {
         let command_string = args.join(" ");
         let parsed = Self::parse_from(args);
         Ok(Self {
@@ -139,7 +141,7 @@ impl XvcCLI {
 
     /// Parse the command line from the result of [`std::env::args_os`].
     /// This updates [XvcCLI::command_string] with the command line.
-    pub fn from_args_os(args_os: ArgsOs) -> Result<XvcCLI> {
+    pub fn from_args_os(args_os: ArgsOs) -> Result<Self> {
         let args: Vec<OsString> = args_os.collect();
         let args: Vec<String> = args
             .iter()
@@ -302,6 +304,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
             }
         }
         let xvc_root_opt_res = s.spawn(move |_| -> Result<XvcRootOpt> {
+            // FIXME: Use command matcher below instead of this
             let xvc_root_opt = match cli_opts.command {
                 XvcSubCommand::Init(opts) => {
                     let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
@@ -450,7 +453,8 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
     dispatch_with_root(cli_opts, xvc_root_opt)
 }
 
-fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
+/// Decide configuration sources  from CLI options
+pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
     XvcConfigParams {
         current_dir: AbsolutePath::from(&cli_opts.workdir),
         include_system_config: !cli_opts.no_system_config,
@@ -463,7 +467,8 @@ fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
     }
 }
 
-fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
+/// Convert verbosity to log level
+pub fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
     match verbosity {
         XvcVerbosity::Quiet => LevelFilter::Off,
         XvcVerbosity::Default => LevelFilter::Error,
@@ -474,7 +479,8 @@ fn get_term_log_level(verbosity: XvcVerbosity) -> LevelFilter {
     }
 }
 
-fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
+/// Convert verbosity value to XvcVerbosity
+pub fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
     if cli_opts.quiet {
         XvcVerbosity::Quiet
     } else {
@@ -485,5 +491,189 @@ fn get_verbosity(cli_opts: &XvcCLI) -> XvcVerbosity {
             3 => XvcVerbosity::Debug,
             _ => XvcVerbosity::Trace,
         }
+    }
+}
+
+/// Collect all output from the channel in a string and return
+// FIXME: Maybe move to xvc-logging
+pub fn collect_output(
+    output_rcv: &crossbeam_channel::Receiver<Option<XvcOutputLine>>,
+    term_log_level: LevelFilter,
+) -> String {
+    let mut output_str = String::new();
+    while let Ok(Some(output_line)) = output_rcv.recv() {
+        // output_str.push_str(&output_line);
+        match term_log_level {
+            LevelFilter::Off => match output_line {
+                XvcOutputLine::Output(_) => {}
+                XvcOutputLine::Info(_) => {}
+                XvcOutputLine::Warn(_) => {}
+                XvcOutputLine::Error(_) => {}
+                XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
+                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Debug(_) => {}
+            },
+            LevelFilter::Error => match output_line {
+                XvcOutputLine::Output(m) => output_str.push_str(&m),
+                XvcOutputLine::Info(_) => {}
+                XvcOutputLine::Warn(_) => {}
+                XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
+                XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
+                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Debug(_) => {}
+            },
+            LevelFilter::Warn => match output_line {
+                XvcOutputLine::Output(m) => output_str.push_str(&m),
+                XvcOutputLine::Warn(m) => output_str.push_str(&format!("[WARN] {}", m)),
+                XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
+                XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
+                XvcOutputLine::Info(_) => {}
+                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Debug(_) => {}
+            },
+            LevelFilter::Info => match output_line {
+                XvcOutputLine::Output(m) => output_str.push_str(&m),
+                XvcOutputLine::Info(m) => output_str.push_str(&format!("[INFO] {}", m)),
+                XvcOutputLine::Warn(m) => output_str.push_str(&format!("[WARN] {}", m)),
+                XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
+                XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
+                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Debug(_) => {}
+            },
+            LevelFilter::Debug => match output_line {
+                XvcOutputLine::Output(m) => output_str.push_str(&m),
+                XvcOutputLine::Info(m) => output_str.push_str(&format!("[INFO] {}", m)),
+                XvcOutputLine::Warn(m) => output_str.push_str(&format!("[WARN] {}", m)),
+                XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
+                XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
+                XvcOutputLine::Debug(m) => output_str.push_str(&format!("[DEBUG] {}", m)),
+                XvcOutputLine::Tick(_) => todo!(),
+            },
+            LevelFilter::Trace => match output_line {
+                XvcOutputLine::Output(m) => output_str.push_str(&m),
+                XvcOutputLine::Info(m) => output_str.push_str(&format!("[INFO] {}", m)),
+                XvcOutputLine::Warn(m) => output_str.push_str(&format!("[WARN] {}", m)),
+                XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
+                XvcOutputLine::Debug(m) => output_str.push_str(&format!("[DEBUG] {}", m)),
+                XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
+                XvcOutputLine::Tick(_) => todo!(),
+            },
+        }
+    }
+    output_str
+}
+
+/// Run the given command and return the modified [XvcRoot]
+pub fn command_matcher(
+    cli_opts: XvcCLI,
+    xvc_root_opt: XvcRootOpt,
+    output_snd: XvcOutputSender,
+) -> Result<XvcRootOpt> {
+    {
+        let res_xvc_root_opt: Result<XvcRootOpt> = match cli_opts.command {
+            XvcSubCommand::Init(opts) => {
+                let use_git = !opts.no_git;
+                let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
+
+                if use_git {
+                    handle_git_automation(
+                        &output_snd,
+                        &xvc_root,
+                        cli_opts.to_branch.as_deref(),
+                        &cli_opts.command_string,
+                    )?;
+                }
+                Ok(Some(xvc_root))
+            }
+
+            XvcSubCommand::Aliases(opts) => {
+                aliases::run(&output_snd, opts)?;
+                Ok(xvc_root_opt)
+            }
+
+            // following commands can only be run inside a repository
+            XvcSubCommand::Root(opts) => {
+                root::run(
+                    &output_snd,
+                    xvc_root_opt
+                        .as_ref()
+                        .ok_or_else(|| Error::RequiresXvcRepository)?,
+                    opts,
+                )?;
+
+                Ok(xvc_root_opt)
+            }
+
+            XvcSubCommand::File(opts) => {
+                file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
+                Ok(xvc_root_opt)
+            }
+
+            XvcSubCommand::Pipeline(opts) => {
+                // FIXME: We can replace this stdin with another channel
+                let stdin = io::stdin();
+                let input = stdin.lock();
+                pipeline::cmd_pipeline(
+                    input,
+                    &output_snd,
+                    xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
+                    opts,
+                )?;
+                Ok(xvc_root_opt)
+            }
+
+            XvcSubCommand::CheckIgnore(opts) => {
+                // FIXME: We can replace this stdin with another channel
+                let stdin = io::stdin();
+                let input = stdin.lock();
+
+                check_ignore::cmd_check_ignore(
+                    input,
+                    &output_snd,
+                    xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
+                    opts,
+                )?;
+
+                Ok(xvc_root_opt)
+            }
+
+            XvcSubCommand::Storage(opts) => {
+                let stdin = io::stdin();
+                let input = stdin.lock();
+                storage::cmd_storage(
+                    input,
+                    &output_snd,
+                    xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
+                    opts,
+                )?;
+
+                Ok(xvc_root_opt)
+            }
+        };
+
+        let xvc_root_opt = match res_xvc_root_opt {
+            Ok(xvc_root_opt) => xvc_root_opt,
+            Err(e) => {
+                error!(&output_snd, "{}", e);
+                None
+            }
+        };
+
+        if let Some(ref xvc_root) = xvc_root_opt {
+            if !cli_opts.skip_git {
+                xvc_root.record();
+                handle_git_automation(
+                    &output_snd,
+                    xvc_root,
+                    cli_opts.to_branch.as_deref(),
+                    &cli_opts.command_string,
+                    // FIXME: Handle this error more gracefully
+                )
+                .unwrap();
+            }
+        }
+
+        assert!(xvc_root_opt.is_some());
+        Ok(xvc_root_opt)
     }
 }

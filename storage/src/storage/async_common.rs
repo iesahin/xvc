@@ -1,4 +1,4 @@
-//! Home for async operations for S3 compatible storage services. 
+//! Home for async operations for S3 compatible storage services.
 use std::fs;
 use std::str::FromStr;
 
@@ -12,8 +12,8 @@ use xvc_core::XvcCachePath;
 use xvc_core::XvcRoot;
 use xvc_logging::error;
 use xvc_logging::info;
-use xvc_logging::watch;
 use xvc_logging::output;
+use xvc_logging::watch;
 use xvc_logging::XvcOutputSender;
 
 use crate::Error;
@@ -32,15 +32,15 @@ use super::XvcStorageTempDir;
 use super::XVC_STORAGE_GUID_FILENAME;
 
 /// Operations for S3 compatible storage services. Each service implements functions in this trait
-/// for xvc file send and xvc file bring commands to work with the common functions. 
+/// for xvc file send and xvc file bring commands to work with the common functions.
 pub(crate) trait XvcS3StorageOperations {
     /// Prefix within the storage bucket if you want to separate Xvc files from the rest of the
-    /// bucket. 
+    /// bucket.
     fn storage_prefix(&self) -> String;
-    /// GUID for the storage. This is generated when the storage is first initialized. 
+    /// GUID for the storage. This is generated when the storage is first initialized.
     fn guid(&self) -> &XvcStorageGuid;
     /// Get the bucket for the storage
-    fn get_bucket(&self) -> Result<Bucket>;
+    fn get_bucket(&self) -> Result<Box<Bucket>>;
     /// Get the credentials for the
     fn credentials(&self) -> Result<Credentials>;
     /// Name of the bucket
@@ -172,7 +172,12 @@ pub(crate) trait XvcS3StorageOperations {
 
             match res_response {
                 Ok(_) => {
-                    info!(output_snd, "{} -> {}", abs_cache_path, storage_path.as_str());
+                    info!(
+                        output_snd,
+                        "{} -> {}",
+                        abs_cache_path,
+                        storage_path.as_str()
+                    );
                     copied_paths.push(storage_path);
                     watch!(copied_paths.len());
                 }
@@ -211,7 +216,12 @@ pub(crate) trait XvcS3StorageOperations {
 
             match response_data_stream {
                 Ok(mut response) => {
-                    info!(output_snd, "{} -> {}", storage_path.as_str(), abs_cache_path);
+                    info!(
+                        output_snd,
+                        "{} -> {}",
+                        storage_path.as_str(),
+                        abs_cache_path
+                    );
                     let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
                     while let Some(chunk) = response.bytes().next().await {
                         async_cache_path.write_all(&chunk?).await?;
@@ -276,7 +286,9 @@ pub(crate) trait XvcS3StorageOperations {
 
         let expiration_seconds = duration.as_secs() as u32;
         let path = self.build_storage_path(path);
-        let signed_url = bucket.presign_get(path.as_str(), expiration_seconds, None).await?;
+        let signed_url = bucket
+            .presign_get(path.as_str(), expiration_seconds, None)
+            .await?;
         info!(output, "[SHARED] {}", path.as_str());
         output!(output, "{}", signed_url);
         Ok(super::XvcStorageExpiringShareEvent {

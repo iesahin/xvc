@@ -10,7 +10,6 @@ use anyhow::anyhow;
 use chrono;
 use clap::Parser;
 
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::fmt::{Display, Formatter};
 use std::path::Path;
@@ -25,39 +24,67 @@ use xvc_core::{
 use xvc_ecs::XvcEntity;
 use xvc_logging::{error, output, watch, XvcOutputSender};
 
+/// Format specifier for file list columns
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
-enum ListColumn {
+pub enum ListColumn {
+    /// Column for the actual content digest (base64 encoded).
     #[strum(serialize = "acd64")]
     ActualContentDigest64,
+
+    /// Column for the actual content digest (base8 encoded).
     #[strum(serialize = "acd8")]
     ActualContentDigest8,
+
+    /// Column for the actual file type.
     #[strum(serialize = "aft")]
     ActualFileType,
+
+    /// Column for the actual size of the file.
     #[strum(serialize = "asz")]
     ActualSize,
+
+    /// Column for the actual timestamp of the file.
     #[strum(serialize = "ats")]
     ActualTimestamp,
+
+    /// Column for the name of the file.
     #[strum(serialize = "name")]
     Name,
+
+    /// Column for the cache status of the file.
     #[strum(serialize = "cst")]
     CacheStatus,
+
+    /// Column for the recorded recheck method.
     #[strum(serialize = "rrm")]
     RecordedRecheckMethod,
+
+    /// Column for the recorded content digest (base64 encoded).
     #[strum(serialize = "rcd64")]
     RecordedContentDigest64,
+
+    /// Column for the recorded content digest (base8 encoded).
     #[strum(serialize = "rcd8")]
     RecordedContentDigest8,
+
+    /// Column for the recorded size of the file.
     #[strum(serialize = "rsz")]
     RecordedSize,
+
+    /// Column for the recorded timestamp of the file.
     #[strum(serialize = "rts")]
     RecordedTimestamp,
+
+    /// Column for a literal string value.
     #[strum(disabled)]
     Literal(String),
 }
 
+/// Represents the format of a list, including the columns to be displayed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct ListFormat {
-    columns: Vec<ListColumn>,
+pub struct ListFormat {
+    /// A vector of [ListColumn] enums representing the columns in the table.
+    pub columns: Vec<ListColumn>,
 }
 
 impl FromStr for ListFormat {
@@ -81,49 +108,72 @@ impl FromStr for ListFormat {
 
 conf!(ListFormat, "file.list.format");
 
+/// Specify how to sort file list
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
-enum ListSortCriteria {
+pub enum ListSortCriteria {
     #[strum(serialize = "none")]
+    /// No sorting
     None,
     #[strum(serialize = "name-asc")]
+    /// Sort by name in ascending order
     NameAsc,
     #[strum(serialize = "name-desc")]
+    /// Sort by name in descending order
     NameDesc,
     #[strum(serialize = "size-asc")]
+    /// Sort by size in ascending order
     SizeAsc,
     #[strum(serialize = "size-desc")]
+    /// Sort by size in descending order
     SizeDesc,
     #[strum(serialize = "t-asc", serialize = "timestamp-asc", serialize = "ts-asc")]
+    /// Sort by timestamp in ascending order
     TimestampAsc,
     #[strum(
         serialize = "t-desc",
         serialize = "timestamp-desc",
         serialize = "ts-desc"
     )]
+    /// Sort by timestamp in descending order
     TimestampDesc,
 }
 conf!(ListSortCriteria, "file.list.sort");
 
-#[derive(Debug, Clone)]
-struct ListRow {
-    actual_content_digest_str: String,
-    actual_size: u64,
-    actual_size_str: String,
-    actual_timestamp: SystemTime,
-    actual_timestamp_str: String,
-    actual_file_type: String,
+/// A single item in the list output
+#[derive(Debug, Clone, PartialEq)]
+pub struct ListRow {
+    /// The actual (on-disk) content digest of the file
+    pub actual_content_digest_str: String,
+    /// The actual (on-disk) file size
+    pub actual_size: u64,
+    /// The actual (on-disk) file size as a string
+    pub actual_size_str: String,
+    /// The actual (on-disk) file modification timestamp
+    pub actual_timestamp: SystemTime,
+    /// The actual (on-disk) file modification timestamp as a string
+    pub actual_timestamp_str: String,
+    /// The actual (on-disk) file type
+    pub actual_file_type: String,
 
-    name: String,
-    cache_status: String,
+    /// The basename of the file
+    pub name: String,
+    /// The cache status of the file
+    pub cache_status: String,
 
-    recorded_recheck_method: String,
-    recorded_content_digest_str: String,
-    recorded_size: u64,
-    recorded_size_str: String,
-    // This can be used as a separate field to sort in the future
+    /// The recheck method used to link to the cached file
+    pub recorded_recheck_method: String,
+    /// The recorded content digest of the file
+    pub recorded_content_digest_str: String,
+    /// The recorded size of the file
+    pub recorded_size: u64,
+    /// The recorded size of the file as a string
+    pub recorded_size_str: String,
+    /// The recorded timestamp of the file
+    // FIXME: This can be used as a separate field to sort in the future
     #[allow(dead_code)]
-    recorded_timestamp: SystemTime,
-    recorded_timestamp_str: String,
+    pub recorded_timestamp: SystemTime,
+    /// The recorded timestamp of the file as a string
+    pub recorded_timestamp_str: String,
 }
 
 impl ListRow {
@@ -303,108 +353,145 @@ struct PathMatch {
     recorded_recheck_method: Option<RecheckMethod>,
 }
 
-#[derive(Debug, Clone)]
-struct ListRows {
-    format: ListFormat,
-    sort_criteria: ListSortCriteria,
-    rows: RefCell<Vec<ListRow>>,
+/// All rows of the file list and its format and sorting criteria
+#[derive(Debug, Clone, PartialEq)]
+pub struct ListRows {
+    /// How to format the file row. See [ListColumn] for the available columns.
+    pub format: ListFormat,
+    /// How to sort the list. See [ListSortCriteria] for the available criteria.
+    pub sort_criteria: ListSortCriteria,
+    /// All elements of the file list
+    pub rows: Vec<ListRow>,
 }
 
 impl ListRows {
+    /// Create a new table with the specified params and sort it
     pub fn new(format: ListFormat, sort_criteria: ListSortCriteria, rows: Vec<ListRow>) -> Self {
-        Self {
+        let mut s = Self {
             format,
             sort_criteria,
-            rows: RefCell::new(rows),
-        }
-    }
-
-    fn build_row(&self, row: &ListRow) -> String {
-        let mut output = String::new();
-        for column in &self.format.columns {
-            match column {
-                ListColumn::RecordedRecheckMethod => output.push_str(&row.recorded_recheck_method),
-                ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
-                ListColumn::ActualSize => output.push_str(&row.actual_size_str),
-                ListColumn::ActualContentDigest64 => {
-                    output.push_str(&row.actual_content_digest_str)
-                }
-                ListColumn::ActualContentDigest8 => {
-                    output.push_str(if row.actual_content_digest_str.len() >= 8 {
-                        &row.actual_content_digest_str[..8]
-                    } else {
-                        &row.actual_content_digest_str
-                    })
-                }
-                ListColumn::ActualTimestamp => output.push_str(&row.actual_timestamp_str),
-                ListColumn::Name => output.push_str(&row.name),
-                ListColumn::RecordedSize => output.push_str(&row.recorded_size_str),
-                ListColumn::RecordedContentDigest64 => {
-                    output.push_str(&row.recorded_content_digest_str)
-                }
-                ListColumn::RecordedContentDigest8 => {
-                    output.push_str(if row.recorded_content_digest_str.len() >= 8 {
-                        &row.recorded_content_digest_str[..8]
-                    } else {
-                        &row.recorded_content_digest_str
-                    })
-                }
-                ListColumn::RecordedTimestamp => output.push_str(&row.recorded_timestamp_str),
-                ListColumn::CacheStatus => output.push_str(&row.cache_status),
-                ListColumn::Literal(literal) => output.push_str(literal),
-            }
-        }
-        output
-    }
-
-    pub fn build_table(&self, print_summary: bool) -> String {
-        let mut output = String::new();
-        let row_cmp = |a: &ListRow, b: &ListRow| match self.sort_criteria {
-            ListSortCriteria::NameAsc => a.name.cmp(&b.name),
-            ListSortCriteria::NameDesc => b.name.cmp(&a.name),
-            ListSortCriteria::SizeAsc => a.actual_size.cmp(&b.actual_size),
-            ListSortCriteria::SizeDesc => b.actual_size.cmp(&a.actual_size),
-            ListSortCriteria::TimestampAsc => a.actual_timestamp.cmp(&b.actual_timestamp),
-            ListSortCriteria::TimestampDesc => b.actual_timestamp.cmp(&a.actual_timestamp),
-            ListSortCriteria::None => std::cmp::Ordering::Equal,
+            rows,
         };
-        if self.sort_criteria != ListSortCriteria::None {
-            self.rows.borrow_mut().sort_unstable_by(row_cmp)
-        }
-
-        for row in self.rows.borrow().iter() {
-            let row_str = self.build_row(row);
-            output.push_str(&row_str);
-            output.push('\n');
-        }
-
-        if print_summary {
-            let total_lines = self.rows.borrow().len();
-            let total_actual_size = format_size(Some(
-                self.rows
-                    .borrow()
-                    .iter()
-                    .fold(0u64, |tot, r| tot + r.actual_size),
-            ));
-            let mut cached_sizes = HashMap::<String, u64>::new();
-            self.rows.borrow().iter().for_each(|r| {
-                if !r.recorded_content_digest_str.trim().is_empty() {
-                    cached_sizes.insert(r.recorded_content_digest_str.to_string(), r.recorded_size);
-                }
-            });
-
-            let total_cached_size = format_size(Some(cached_sizes.values().sum()));
-            output.push_str(
-                &format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n"),
-            )
-        }
-        output
+        sort_list_rows(&mut s);
+        s
     }
+
+    /// Create an empty table without any rows, format or sorting criteria
+    pub fn empty() -> Self {
+        Self {
+            format: ListFormat { columns: vec![] },
+            sort_criteria: ListSortCriteria::None,
+            rows: vec![],
+        }
+    }
+
+    /// Number if file lines in the table
+    pub fn total_lines(&self) -> usize {
+        self.rows.len()
+    }
+
+    /// Total size of the files in the table
+    pub fn total_actual_size(&self) -> u64 {
+        self.rows.iter().fold(0u64, |tot, r| tot + r.actual_size)
+    }
+
+    /// Total size of the recorded files in the table
+    pub fn total_cached_size(&self) -> u64 {
+        let mut cached_sizes = HashMap::<String, u64>::new();
+        self.rows.iter().for_each(|r| {
+            if !r.recorded_content_digest_str.trim().is_empty() {
+                cached_sizes.insert(r.recorded_content_digest_str.to_string(), r.recorded_size);
+            }
+        });
+
+        cached_sizes.values().sum()
+    }
+}
+
+/// Print a single row from the given element and the format
+pub fn build_row(row: &ListRow, format: &ListFormat) -> String {
+    let mut output = String::new();
+    for column in &format.columns {
+        match column {
+            ListColumn::RecordedRecheckMethod => output.push_str(&row.recorded_recheck_method),
+            ListColumn::ActualFileType => output.push_str(&row.actual_file_type),
+            ListColumn::ActualSize => output.push_str(&row.actual_size_str),
+            ListColumn::ActualContentDigest64 => output.push_str(&row.actual_content_digest_str),
+            ListColumn::ActualContentDigest8 => {
+                output.push_str(if row.actual_content_digest_str.len() >= 8 {
+                    &row.actual_content_digest_str[..8]
+                } else {
+                    &row.actual_content_digest_str
+                })
+            }
+            ListColumn::ActualTimestamp => output.push_str(&row.actual_timestamp_str),
+            ListColumn::Name => output.push_str(&row.name),
+            ListColumn::RecordedSize => output.push_str(&row.recorded_size_str),
+            ListColumn::RecordedContentDigest64 => {
+                output.push_str(&row.recorded_content_digest_str)
+            }
+            ListColumn::RecordedContentDigest8 => {
+                output.push_str(if row.recorded_content_digest_str.len() >= 8 {
+                    &row.recorded_content_digest_str[..8]
+                } else {
+                    &row.recorded_content_digest_str
+                })
+            }
+            ListColumn::RecordedTimestamp => output.push_str(&row.recorded_timestamp_str),
+            ListColumn::CacheStatus => output.push_str(&row.cache_status),
+            ListColumn::Literal(literal) => output.push_str(literal),
+        }
+    }
+    output
+}
+
+/// Fn type to decouple the build_row function from the build_table function
+type BuildRowFn = Box<dyn Fn(&ListRow, &ListFormat) -> String>;
+
+/// Build a table from the list of rows
+pub fn build_table(list_rows: &ListRows, build_row: BuildRowFn) -> String {
+    let mut output = String::new();
+
+    let format = &list_rows.format;
+    for row in list_rows.rows.iter() {
+        let row_str = build_row(row, format);
+        output.push_str(&row_str);
+        output.push('\n');
+    }
+
+    output
+}
+
+fn add_summary_line(list_rows: &ListRows) -> String {
+    let total_lines = list_rows.total_lines();
+    let total_actual_size = format_size(Some(list_rows.total_actual_size()));
+    let total_cached_size = format_size(Some(list_rows.total_cached_size()));
+
+    // TODO: Add a format string to this output similar to files
+    format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n")
+}
+
+fn sort_list_rows(list_rows: &mut ListRows) {
+    let row_cmp = match list_rows.sort_criteria {
+        ListSortCriteria::NameAsc => |a: &ListRow, b: &ListRow| a.name.cmp(&b.name),
+        ListSortCriteria::NameDesc => |a: &ListRow, b: &ListRow| b.name.cmp(&a.name),
+        ListSortCriteria::SizeAsc => |a: &ListRow, b: &ListRow| a.actual_size.cmp(&b.actual_size),
+        ListSortCriteria::SizeDesc => |a: &ListRow, b: &ListRow| b.actual_size.cmp(&a.actual_size),
+        ListSortCriteria::TimestampAsc => {
+            |a: &ListRow, b: &ListRow| a.actual_timestamp.cmp(&b.actual_timestamp)
+        }
+        ListSortCriteria::TimestampDesc => {
+            |a: &ListRow, b: &ListRow| b.actual_timestamp.cmp(&a.actual_timestamp)
+        }
+        ListSortCriteria::None => |_: &ListRow, _: &ListRow| std::cmp::Ordering::Equal,
+    };
+
+    list_rows.rows.sort_unstable_by(row_cmp);
 }
 
 impl Display for ListRows {
     fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.build_table(true))?;
+        write!(f, "{}", build_table(self, Box::new(build_row)))?;
         Ok(())
     }
 }
@@ -453,32 +540,38 @@ pub struct ListCLI {
     ///
     /// The default format can be set with file.list.format in the config file.
     #[arg(long, short = 'f', verbatim_doc_comment)]
-    format: Option<ListFormat>,
+    pub format: Option<ListFormat>,
     /// Sort criteria.
     ///
     /// It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
     ///
     /// The default option can be set with file.list.sort in the config file.
     #[arg(long, short = 's')]
-    sort: Option<ListSortCriteria>,
+    pub sort: Option<ListSortCriteria>,
 
     /// Don't show total number and size of the listed files.
     ///
     /// The default option can be set with file.list.no_summary in the config file.
     #[arg(long)]
-    no_summary: bool,
+    pub no_summary: bool,
 
     /// Don't hide dot files
     ///
     /// If not supplied, hides dot files like .gitignore and .xvcignore
     #[arg(long, short = 'a')]
-    show_dot_files: bool,
+    pub show_dot_files: bool,
+
+    /// List files tracked by Git.
+    ///
+    /// By default, Xvc doesn't list files tracked by Git. Supply this option to list them.
+    #[arg(long)]
+    pub include_git_files: bool,
 
     /// Files/directories to list.
     ///
     /// If not supplied, lists all files under the current directory.
     #[arg()]
-    targets: Option<Vec<String>>,
+    pub targets: Option<Vec<String>>,
 }
 
 impl UpdateFromXvcConfig for ListCLI {
@@ -494,9 +587,13 @@ impl UpdateFromXvcConfig for ListCLI {
         let sort_criteria = self
             .sort
             .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
+        let include_git_files =
+            self.include_git_files || conf.get_bool("file.list.include_git_files")?.option;
+
         Ok(Box::new(Self {
             no_summary,
             show_dot_files,
+            include_git_files,
             format: Some(format),
             sort: Some(sort_criteria),
             ..self
@@ -526,46 +623,193 @@ impl UpdateFromXvcConfig for ListCLI {
 /// TODO: - I: File is ignored
 
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
+    // FIXME: `opts` shouldn't be sent to the inner function, but we cannot make sure that it's
+    // updated from the config files in callers. A refactoring is good here.
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
+    let no_summary = opts.no_summary;
+    let list_rows = cmd_list_inner(output_snd, xvc_root, &opts)?;
+
+    // TODO: All output should be produced in a central location with implemented traits.
+    // [ListRows] could receive no_summary when it's built and implement Display
+    output!(
+        output_snd,
+        "{}",
+        build_table(&list_rows, Box::new(build_row))
+    );
+    if !no_summary {
+        output!(output_snd, "{}", add_summary_line(&list_rows));
+    }
+
+    Ok(())
+}
+
+/// The actual implementation moved here to get the listed elements separately to be used in
+/// desktop and server
+pub fn cmd_list_inner(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    opts: &ListCLI,
+) -> Result<ListRows> {
+    let conf = xvc_root.config();
 
     let current_dir = conf.current_dir()?;
+    let filter_git_paths = !opts.include_git_files;
 
-    // If targets are directories on disk, make sure they end with /
-
-    let all_from_disk = targets_from_disk(output_snd, xvc_root, current_dir, &opts.targets)?;
+    let all_from_disk = targets_from_disk(
+        output_snd,
+        xvc_root,
+        current_dir,
+        &opts.targets,
+        filter_git_paths,
+    )?;
     watch!(&all_from_disk);
-    let from_disk = if opts.show_dot_files {
-        all_from_disk
-    } else {
-        all_from_disk
-            .into_iter()
-            .filter_map(|(path, md)| {
-                let path_str = path.to_string();
-                if path_str.starts_with('.') || path_str.contains("./") {
-                    None
-                } else {
-                    Some((path, md))
-                }
-            })
-            .collect()
-    };
 
+    let from_disk = filter_dot_files(all_from_disk, opts.show_dot_files);
     watch!(from_disk);
+
     let from_store = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
     watch!(from_store);
+
     let stored_xvc_metadata = xvc_root.load_store::<XvcMetadata>()?;
     let stored_recheck_method = xvc_root.load_store::<RecheckMethod>()?;
 
+    let matches = match_store_and_disk_paths(
+        from_disk,
+        from_store,
+        stored_xvc_metadata,
+        stored_recheck_method,
+    );
+    watch!(matches);
+
+    let matches = if opts.format.as_ref().unwrap().columns.iter().any(|c| {
+        *c == ListColumn::RecordedContentDigest64 || *c == ListColumn::RecordedContentDigest8
+    }) {
+        fill_recorded_content_digests(xvc_root, matches)?
+    } else {
+        matches
+    };
+
+    let matches =
+        if opts.format.as_ref().unwrap().columns.iter().any(|c| {
+            *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
+        }) {
+            let algorithm = HashAlgorithm::from_conf(conf);
+            fill_actual_content_digests(output_snd, xvc_root, algorithm, matches)?
+        } else {
+            matches
+        };
+
+    let path_prefix = current_dir.strip_prefix(xvc_root.absolute_path())?;
+
+    let rows = build_rows_from_matches(output_snd, matches, path_prefix);
+    let format = opts
+        .format
+        .clone()
+        .expect("Option must be filled at this point");
+    let sort_criteria = opts.sort.expect("Option must be filled at this point");
+
+    let list_rows = ListRows::new(format, sort_criteria, rows);
+    Ok(list_rows)
+}
+
+fn build_rows_from_matches(
+    output_snd: &XvcOutputSender,
+    matches: Vec<PathMatch>,
+    path_prefix: &Path,
+) -> Vec<ListRow> {
+    matches
+        .into_iter()
+        .filter_map(|pm| match ListRow::new(path_prefix, pm) {
+            Ok(lr) => Some(lr),
+            Err(e) => {
+                error!(output_snd, "{}", e);
+                None
+            }
+        })
+        .collect()
+}
+
+fn fill_actual_content_digests(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    algorithm: HashAlgorithm,
+    matches: Vec<PathMatch>,
+) -> Result<Vec<PathMatch>> {
+    let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
+    Ok(matches
+        .into_iter()
+        .filter_map(|pm| {
+            if pm
+                .actual_path
+                .as_deref()
+                .and(pm.actual_metadata.map(|md| md.is_file()))
+                == Some(true)
+            {
+                let actual_path = pm.actual_path.as_ref().unwrap();
+                let path = actual_path.to_absolute_path(xvc_root);
+                let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
+                    text_or_binary_store
+                        .get(&xvc_entity)
+                        .copied()
+                        .unwrap_or_default()
+                } else {
+                    FileTextOrBinary::default()
+                };
+
+                match ContentDigest::new(&path, algorithm, text_or_binary.as_inner()) {
+                    Ok(digest) => Some(PathMatch {
+                        actual_digest: Some(digest),
+                        ..pm
+                    }),
+                    Err(e) => {
+                        error!(output_snd, "{}", e);
+                        None
+                    }
+                }
+            } else {
+                Some(pm)
+            }
+        })
+        .collect())
+}
+
+fn fill_recorded_content_digests(
+    xvc_root: &std::sync::Arc<xvc_core::types::xvcroot::XvcRootInner>,
+    matches: Vec<PathMatch>,
+) -> Result<Vec<PathMatch>> {
+    let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
+    let matches: Vec<PathMatch> = matches
+        .into_iter()
+        .map(|pm| {
+            if let Some(xvc_entity) = pm.xvc_entity {
+                let digest = content_digest_store.get(&xvc_entity).cloned();
+                PathMatch {
+                    recorded_digest: digest,
+                    ..pm
+                }
+            } else {
+                pm
+            }
+        })
+        .collect();
+    Ok(matches)
+}
+
+/// There are four groups of paths:
+/// 1. Paths that are in the store and on disk and have identical metadata
+/// 2. Paths that are in the store and on disk but have different metadata
+/// 3. Paths that are in the store but not on disk
+/// 4. Paths that are on disk but not in the store
+fn match_store_and_disk_paths(
+    from_disk: HashMap<XvcPath, XvcMetadata>,
+    from_store: xvc_ecs::HStore<XvcPath>,
+    stored_xvc_metadata: xvc_ecs::XvcStore<XvcMetadata>,
+    stored_recheck_method: xvc_ecs::XvcStore<RecheckMethod>,
+) -> Vec<PathMatch> {
     // Now match actual and recorded paths
 
     let mut matches = Vec::<PathMatch>::new();
-
-    // There are four groups of paths:
-    // 1. Paths that are in the store and on disk and have identical metadata
-    // 2. Paths that are in the store and on disk but have different metadata
-    // 3. Paths that are in the store but not on disk
-    // 4. Paths that are on disk but not in the store
 
     let mut found_entities = HashSet::<XvcEntity>::new();
 
@@ -631,89 +875,26 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
         };
         matches.push(pm);
     }
+    matches
+}
 
-    watch!(matches);
-
-    // Now fill in the digests if needed.
-    // We use rec content digest to identify cache paths and calculate cache
-    // size. So we always load and fill these values.
-    let content_digest_store = xvc_root.load_store::<ContentDigest>()?;
-    let matches: Vec<PathMatch> = matches
-        .into_iter()
-        .map(|pm| {
-            if let Some(xvc_entity) = pm.xvc_entity {
-                let digest = content_digest_store.get(&xvc_entity).cloned();
-                PathMatch {
-                    recorded_digest: digest,
-                    ..pm
+fn filter_dot_files(
+    all_from_disk: HashMap<XvcPath, XvcMetadata>,
+    show_dot_files: bool,
+) -> HashMap<XvcPath, XvcMetadata> {
+    if show_dot_files {
+        all_from_disk
+    } else {
+        all_from_disk
+            .into_iter()
+            .filter_map(|(path, md)| {
+                let path_str = path.to_string();
+                if path_str.starts_with('.') || path_str.contains("./") {
+                    None
+                } else {
+                    Some((path, md))
                 }
-            } else {
-                pm
-            }
-        })
-        .collect();
-
-    // Do not calculate actual content hashes if it's not requested in the
-    // format string.
-    let matches =
-        if opts.format.as_ref().unwrap().columns.iter().any(|c| {
-            *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
-        }) {
-            let algorithm = HashAlgorithm::from_conf(conf);
-            let text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
-            matches
-                .into_iter()
-                .filter_map(|pm| {
-                    if pm
-                        .actual_path
-                        .as_deref()
-                        .and(pm.actual_metadata.map(|md| md.is_file()))
-                        == Some(true)
-                    {
-                        let actual_path = pm.actual_path.as_ref().unwrap();
-                        let path = actual_path.to_absolute_path(xvc_root);
-                        let text_or_binary = if let Some(xvc_entity) = pm.xvc_entity {
-                            text_or_binary_store
-                                .get(&xvc_entity)
-                                .copied()
-                                .unwrap_or_default()
-                        } else {
-                            FileTextOrBinary::default()
-                        };
-
-                        match ContentDigest::new(&path, algorithm, text_or_binary.as_inner()) {
-                            Ok(digest) => Some(PathMatch {
-                                actual_digest: Some(digest),
-                                ..pm
-                            }),
-                            Err(e) => {
-                                error!(output_snd, "{}", e);
-                                None
-                            }
-                        }
-                    } else {
-                        Some(pm)
-                    }
-                })
-                .collect()
-        } else {
-            matches
-        };
-
-    let path_prefix = current_dir.strip_prefix(xvc_root.absolute_path())?;
-
-    let rows = matches
-        .into_iter()
-        .filter_map(|pm| match ListRow::new(path_prefix, pm) {
-            Ok(lr) => Some(lr),
-            Err(e) => {
-                error!(output_snd, "{}", e);
-                None
-            }
-        })
-        .collect();
-
-    let list_rows = ListRows::new(opts.format.unwrap(), opts.sort.unwrap(), rows);
-    output!(output_snd, "{}", list_rows.build_table(!opts.no_summary));
-    Ok(())
+            })
+            .collect()
+    }
 }

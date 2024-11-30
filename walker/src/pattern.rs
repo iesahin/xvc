@@ -8,8 +8,6 @@ pub use sync::{PathSync, PathSyncSingleton};
 
 pub use crate::notify::{make_watcher, PathEvent, RecommendedWatcher};
 
-// use glob::{MatchOptions, Pattern, PatternError};
-pub use fast_glob::Glob;
 use std::{fmt::Debug, path::PathBuf};
 
 use crate::error;
@@ -72,7 +70,10 @@ pub enum Source {
     },
 
     /// Pattern is from CLI
-    CommandLine { current_dir: PathBuf },
+    CommandLine {
+        /// Current directory
+        current_dir: PathBuf,
+    },
 }
 
 /// Pattern is generic and could be an instance of String, Glob, Regex or any other object.
@@ -96,6 +97,7 @@ pub struct Pattern {
 }
 
 impl Pattern {
+    /// Create a new pattern from a string and its source
     pub fn new(source: Source, original: &str) -> Self {
         let original = original.to_owned();
         let current_dir = match &source {
@@ -197,7 +199,7 @@ fn transform_pattern_for_glob(
     let directory_anywhere = |p| format!("**/{p}/**");
     let directory_relative = |p, directory| format!("{directory}/**/{p}/**");
 
-    let transformed_pattern = match (path_kind, relativity) {
+    match (path_kind, relativity) {
         (PathKind::Any, PatternRelativity::Anywhere) => anything_anywhere(original),
         (PathKind::Any, PatternRelativity::RelativeTo { directory }) => {
             anything_relative(original, directory)
@@ -206,11 +208,10 @@ fn transform_pattern_for_glob(
         (PathKind::Directory, PatternRelativity::RelativeTo { directory }) => {
             directory_relative(original, directory)
         }
-    };
-
-    transformed_pattern
+    }
 }
 
+/// Build a list of patterns from a list of strings
 pub fn build_pattern_list(patterns: Vec<String>, source: Source) -> Vec<Pattern> {
     patterns
         .iter()

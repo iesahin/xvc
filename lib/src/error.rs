@@ -75,11 +75,6 @@ pub enum Error {
 
     #[error("Process Error - stdout: {stdout}\nstderr: {stderr}")]
     ProcessError { stdout: String, stderr: String },
-    #[error("Process Exec Error: {source}")]
-    ProcessExecError {
-        #[from]
-        source: subprocess::PopenError,
-    },
     #[error("[E1004] Json Serialization Error: {source}")]
     JsonError {
         #[from]
@@ -112,14 +107,6 @@ pub enum Error {
         #[from]
         source: ParseIntError,
     },
-    #[error("Cannot Find Executable: {source}")]
-    WhichError {
-        #[from]
-        source: which::Error,
-    },
-
-    #[error("Git Process Error: \nSTDOUT: {stdout}\nSTDERR: {stderr}")]
-    GitProcessError { stdout: String, stderr: String },
 
     #[error("Fixture Error: {source}")]
     FixtureError {

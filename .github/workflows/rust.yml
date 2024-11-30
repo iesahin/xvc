@@ -19,21 +19,16 @@ jobs:
 
     strategy:
       matrix:
-        build: [nightly]
+        build: [stable]
         include:
-          # - build: stable
-          #   benches: true
-          # - build: beta
-          #   rust: beta
-          - build: nightly
-            rust: nightly
+          - build: stable
+            rust: stable
             # rust: nightly-2024-01-01
             test-args: --features test-ci # --no-fail-fast
             ## for submitters other than me, I'll add another job here.
-            # test-args: --no-fail-fast
-            # test-args: --all-features
             # benches: true
             coverage: true
+
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -52,17 +47,14 @@ jobs:
       # We don't run xvc-storage and how-to tests here
       XVC_TRYCMD_TESTS: core,file,pipeline,intro,start,storage
       XVC_TRYCMD_STORAGE_TESTS: minio,generic,local,
+
     steps:
       - name: Checkout
         uses: actions/checkout@v1
 
-      # - name: Install required packages
-      #
-      #   run: sudo apt install -y inotify-tools ripgrep s3cmd
-
       - name: Install required packages
         run: |
-          brew install --head s3cmd # 2.3.0 has a bug with Python 3.12
+          brew install s3cmd
           brew install ripgrep
           brew install tree
           brew install lsd
@@ -72,72 +64,73 @@ jobs:
       - name: Git config for automated Git tests
         run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
 
-      - name: Write the private key file for one.emresult.com connection
+      - name: Write the private key file for e1.xvc.dev connection
         run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
 
-      - name: Write an ssh config to allow connection
-        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; chmod 400 $HOME/.ssh/config
+      - name: Write an ssh config to allow connection without noise
+        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; echo '    LogLevel ERROR' >> $HOME/.ssh/config ;  chmod 400 $HOME/.ssh/config
 
-      - name: List .ssh contents
-        run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
-
+      # - name: List .ssh contents
+      #   run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
+      #
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust || 'stable' }}
-          profile: minimal
           components: llvm-tools-preview
-          override: true
 
       - name: Build debug
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: ${{ matrix.build-args }}
+        run: cargo build ${{ matrix.build-args }}
         env:
           RUSTFLAGS: "-A dead_code"
 
       - name: Add xvc to PATH
         run: echo "${GITHUB_WORKSPACE}/target/debug" >> $GITHUB_PATH
 
-      - name: Print contents of $GITHUB_WORKSPACE
-        run: tree $GITHUB_WORKSPACE
+      # - name: Print contents of $GITHUB_WORKSPACE
+      #   run: tree $GITHUB_WORKSPACE
 
       - name: Check if xvc is in PATH
-        run: tree $GITHUB_WORKSPACE && xvc --help
+        # run: tree $GITHUB_WORKSPACE && xvc --version
+        run: xvc --version
+
+      # - name: Test
+      #   if: matrix.coverage
+      #   run: cargo test ${{ matrix.test-args }}
+      #   env:
+      #     CARGO_INCREMENTAL: "0"
+      #     # To debug the output when commands fail
+      #     TRYCMD: "dump"
+      #     # RUSTFLAGS: "-Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
+      #     RUSTFLAGS: "-Cinstrument-coverage"
+      #     # RUSTDOCFLAGS: "-Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
+      #     LLVM_PROFILE_FILE: "${TMPDIR}/xvc-%p-%m.profraw"
+      #
+      - name: Install cargo-llvm-cov
+        if: matrix.coverage
+        uses: taiki-e/install-action@cargo-llvm-cov
 
       - name: Run Current Dev Tests
         run: $GITHUB_WORKSPACE/run-tests.zsh
 
-      - name: Test
-        if: matrix.coverage
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: ${{ matrix.test-args }}
-        env:
-          CARGO_INCREMENTAL: "0"
-          # To debug the output when commands fail
-          TRYCMD: "dump"
-          RUSTFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
-          RUSTDOCFLAGS: "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
-      - name: Coverage
+      - name: Test and Coverage
         id: coverage
         if: matrix.coverage
-        uses: actions-rs/grcov@v0.1
-      - name: Test all benches
-        if: matrix.benches
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --benches ${{ matrix.features }}
+        run: cargo llvm-cov ${{ matrix.test-args }} --workspace --lcov --output-path lcov.info
+        env:
+          # To debug the output when commands fail
+          TRYCMD: "dump"
 
       - name: Upload to codecov.io
         if: matrix.coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ steps.coverage.outputs.report }}
+
+      - name: Test all benches
+        if: matrix.benches
+        run: cargo test --benches ${{ matrix.features }}
 
   deploy-linux:
     name: deploy-linux
@@ -147,31 +140,28 @@ jobs:
     strategy:
       matrix:
         target: [x86_64-unknown-linux-gnu]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          profile: minimal
-          override: true
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
 
       - name: Build target
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: false
-          command: build
-          args: --release --target ${{ matrix.target }} --features=bundled-openssl
+        run: cargo build --release --target ${{ matrix.target }} --features=bundled-openssl
 
       - name: Package
         shell: bash
         run: |
           #strip target/${{ matrix.target }}/release/xvc
           cd target/${{ matrix.target }}/release
-          tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
+          tar czvf ../../../xvc-${{ github.ref_name }}-${{ matrix.target }}.tar.gz xvc
           cd -
+
       - name: Publish
         uses: softprops/action-gh-release@v1
         # TODO: if any of the build step fails, the release should be deleted.
@@ -191,20 +181,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          profile: minimal
-          override: true
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
 
       - name: Build target
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: false
-          command: build
-          args: --release --target ${{ matrix.target }} --features bundled-sqlite
+        run: cargo build --release --target ${{ matrix.target }} --features bundled-sqlite
 
       - name: Package
         shell: bash
@@ -213,6 +198,7 @@ jobs:
           cd target/${{ matrix.target }}/release
           tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
           cd -
+
       - name: Publish
         uses: softprops/action-gh-release@v1
         # TODO: if any of the build step fails, the release should be deleted.
@@ -220,6 +206,7 @@ jobs:
           files: "xvc*"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   deploy-macos:
     name: deploy-macos
     # needs: [coverage]
@@ -228,23 +215,19 @@ jobs:
     strategy:
       matrix:
         target: [x86_64-apple-darwin]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v1
+
       - name: Install rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          profile: minimal
-          override: true
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
 
       - name: Build target
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: false
-          command: build
-          args: --release --target ${{ matrix.target }}
+        run: cargo build --release --target ${{ matrix.target }}
 
       - name: Package
         shell: bash
@@ -253,6 +236,7 @@ jobs:
           cd target/${{ matrix.target }}/release
           tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
           cd -
+
       - name: Publish
         uses: softprops/action-gh-release@v1
         # TODO: if any of the build step fails, the release should be deleted.

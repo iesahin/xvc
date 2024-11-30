@@ -28,6 +28,11 @@ Options:
       --text-or-binary <TEXT_OR_BINARY>
           Calculate digests as text or binary file without checking contents, or by automatically. (Default: auto)
 
+      --include-git-files
+          Include git tracked files as well. (Default: false)
+          
+          Xvc doesn't track files that are already tracked by git by default. You can set files.track.include-git to true in the configuration file to change this behavior.
+
       --force
           Add targets even if they are already tracked
 
@@ -175,6 +180,7 @@ $ xvc file list dir-0004/
 FS        [..] ab361981 ab361981 dir-0004/file-0003.bin
 FS        [..] 493eeb65 493eeb65 dir-0004/file-0002.bin
 FS        [..] e517d6b9 e517d6b9 dir-0004/file-0001.bin
+
 Total #: 3 Workspace Size:        6006 Cached Size:        6006
 
 

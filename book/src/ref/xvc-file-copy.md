@@ -83,12 +83,14 @@ Note that, multiple copies of the same content don't add up to the cache size.
 ```console
 $ xvc file list data.txt
 FC          19 [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
 $ xvc file list 'data*'
 FC          19 [..] c85f3e81 c85f3e81 data2.txt
 FC          19 [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 2 Workspace Size:          38 Cached Size:          19
 
 
@@ -115,6 +117,7 @@ $ xvc file list another-set/
 FH          19 [..] c85f3e81 c85f3e81 another-set/data3.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data2.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data.txt
+
 Total #: 3 Workspace Size:          57 Cached Size:          19
 
 
@@ -169,7 +172,8 @@ FH          19 [..] c85f3e81 c85f3e81 another-set/data3.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data2.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data.txt
 DX         160 [..]                   another-set
-Total #: 9 Workspace Size:         [..] Cached Size:          19
+
+Total #: 9 Workspace Size:       [..] Cached Size:          19
 
 
 ```

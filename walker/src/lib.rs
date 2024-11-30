@@ -34,7 +34,6 @@ pub use ignore_rules::IgnoreRules;
 pub use ignore_rules::SharedIgnoreRules;
 
 pub use notify::make_watcher;
-use std::ffi::OsStr;
 pub use std::hash::Hash;
 pub use sync::{PathSync, PathSyncSingleton};
 use xvc_logging::warn;
@@ -42,18 +41,17 @@ use xvc_logging::warn;
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
 
+pub use fast_glob::Glob;
+
 use xvc_logging::watch;
 
-// use glob::{MatchOptions, Pattern, PatternError};
-pub use fast_glob::Glob;
 use std::{
-    ffi::OsString,
     fmt::Debug,
     fs::{self, Metadata},
     path::{Path, PathBuf},
 };
 
-use anyhow::{anyhow, Context};
+use anyhow::anyhow;
 
 static MAX_THREADS_PARALLEL_WALK: usize = 8;
 
@@ -213,6 +211,10 @@ pub fn content_to_patterns(
     patterns
 }
 
+/// Updates the ignore rules from a given directory.
+///
+/// Gets ignore filename from the ignore rules, concatenates it with the directory path and reads
+/// the file if it exists. Then updates the ignore rules with the new patterns.
 pub fn update_ignore_rules(dir: &Path, ignore_rules: &IgnoreRules) -> Result<()> {
     if let Some(ref ignore_filename) = ignore_rules.ignore_filename {
         let ignore_root = &ignore_rules.root;

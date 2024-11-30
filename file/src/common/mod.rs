@@ -2,12 +2,16 @@
 pub mod compare;
 pub mod gitignore;
 
+use std::collections::{HashMap, HashSet};
 use std::fs::{self};
 
 use std::{
     fs::Metadata,
     path::{Path, PathBuf},
 };
+
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 
 use crate::common::gitignore::IgnoreOperation;
 use crate::error::{Error, Result};
@@ -18,16 +22,18 @@ use serde::{Deserialize, Serialize};
 use xvc_config::{conf, FromConfigKey};
 use xvc_core::types::xvcpath::XvcCachePath;
 use xvc_core::util::file::make_symlink;
-use xvc_core::HashAlgorithm;
+use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::{
     all_paths_and_metadata, apply_diff, ContentDigest, DiffStore, RecheckMethod, TextOrBinary,
     XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
+use xvc_core::{get_absolute_git_command, get_git_tracked_files, HashAlgorithm};
 use xvc_ecs::ecs::event::EventLog;
 use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
+use xvc_walker::walk_serial::path_metadata_map_from_file_targets;
 use xvc_walker::{AbsolutePath, Glob, PathSync};
 
 use self::gitignore::IgnoreOp;
@@ -265,6 +271,7 @@ pub fn targets_from_disk(
     xvc_root: &XvcRoot,
     current_dir: &AbsolutePath,
     targets: &Option<Vec<String>>,
+    filter_git_paths: bool,
 ) -> Result<XvcPathMetadataMap> {
     watch!(current_dir);
     watch!(xvc_root.absolute_path());
@@ -274,6 +281,13 @@ pub fn targets_from_disk(
             .strip_prefix(xvc_root.absolute_path())?
             .to_str()
             .unwrap();
+
+        let cwd = if cwd.ends_with('/') {
+            cwd.to_owned()
+        } else {
+            format!("{cwd}/")
+        };
+
         let targets = match targets {
             Some(targets) => targets.iter().map(|t| format!("{cwd}{t}")).collect(),
             None => vec![cwd.to_string()],
@@ -284,15 +298,91 @@ pub fn targets_from_disk(
             xvc_root,
             xvc_root.absolute_path(),
             &Some(targets),
+            filter_git_paths,
         );
     }
-    // FIXME: If there are no globs/directories in the targets, no need to retrieve all the paths
+
+    let has_globs_or_dirs = targets
+        .as_ref()
+        .map(|targets| {
+            targets.iter().any(|t| {
+                t.contains('*') || t.ends_with('/') || t.contains('/') || PathBuf::from(t).is_dir()
+            })
+        })
+        // None means all paths
+        .unwrap_or(true);
+    // If there are no globs/directories in the targets, no need to retrieve all the paths
     // here.
-    let (all_paths, _) = all_paths_and_metadata(xvc_root);
+
+    let all_paths = if has_globs_or_dirs {
+        all_paths_and_metadata(xvc_root).0
+    } else {
+        // FIXME: Move this to a function
+        let (pmm, _) = path_metadata_map_from_file_targets(
+            output_snd,
+            COMMON_IGNORE_PATTERNS,
+            xvc_root,
+            // This should be ok as we checked empty condition on has_globs_or_dirs
+            targets.clone().unwrap(),
+            &xvc_walker::WalkOptions::xvcignore(),
+        )?;
+        let mut xpmm = HashMap::new();
+
+        pmm.into_iter().for_each(|pm| {
+            let md: XvcMetadata = XvcMetadata::from(pm.metadata);
+            let rxp = XvcPath::new(xvc_root, xvc_root.absolute_path(), &pm.path);
+            match rxp {
+                Ok(xvc_path) => {
+                    xpmm.insert(xvc_path, md);
+                }
+                Err(e) => {
+                    e.warn();
+                }
+            }
+        });
+        xpmm
+    };
 
     watch!(all_paths);
+    // Return false when the path is a git path
+
+    let git_files: HashSet<String> = if filter_git_paths {
+        let git_command_str = xvc_root.config().get_str("git.command")?.option;
+        let git_command = get_absolute_git_command(&git_command_str)?;
+        get_git_tracked_files(
+            &git_command,
+            xvc_root
+                .absolute_path()
+                .to_str()
+                .expect("xvc_root must have a path"),
+        )?
+        .into_iter()
+        .collect()
+    } else {
+        HashSet::new()
+    };
+
+    let mut git_path_filter: Box<dyn FnMut(&XvcPath) -> bool> = if filter_git_paths {
+        Box::new(|p: &XvcPath| {
+            let path_str = p.as_str();
+            let path_str = path_str
+                .strip_prefix(
+                    xvc_root
+                        .absolute_path()
+                        .to_str()
+                        .expect("xvc_root must have a path"),
+                )
+                .unwrap_or(path_str);
+            !git_files.contains(path_str)
+        })
+    } else {
+        Box::new(|_p: &XvcPath| true)
+    };
 
     if let Some(targets) = targets {
+        // FIXME: Is this a bug? When targets is empty, we can return all files.
+        // Targets should be None to return all paths but what about we pass Some([])?
+
         if targets.is_empty() {
             return Ok(XvcPathMetadataMap::new());
         }
@@ -301,10 +391,14 @@ pub fn targets_from_disk(
         watch!(glob_matcher);
         Ok(all_paths
             .into_iter()
+            .filter(|(p, _)| git_path_filter(p))
             .filter(|(p, _)| glob_matcher.is_match(p.as_str()))
             .collect())
     } else {
-        Ok(all_paths)
+        Ok(all_paths
+            .into_iter()
+            .filter(|(p, _)| git_path_filter(p))
+            .collect())
     }
 }
 
@@ -386,8 +480,6 @@ pub fn recheck_from_cache(
     watch!(path);
     watch!(recheck_method);
 
-    // TODO: Remove this when we set unix permissions in platform dependent fashion
-    #[allow(clippy::permissions_set_readonly_false)]
     match recheck_method {
         RecheckMethod::Copy => {
             copy_file(output_snd, cache_path, path)?;
@@ -440,17 +532,51 @@ fn copy_file(
     cache_path: AbsolutePath,
     path: AbsolutePath,
 ) -> Result<()> {
-    watch!("Before copy");
-    watch!(&cache_path);
-    watch!(&path);
     fs::copy(&cache_path, &path)?;
+    set_writable(&path)?;
     info!(output_snd, "[COPY] {} -> {}", cache_path, path);
+    Ok(())
+}
+
+#[cfg(not(unix))]
+pub fn set_writable(path: &Path) -> Result<()> {
     let mut perm = path.metadata()?.permissions();
     watch!(&perm);
-    // FIXME: Fix the clippy warning in the following line
     perm.set_readonly(false);
     watch!(&perm);
-    fs::set_permissions(&path, perm)?;
+    fs::set_permissions(path, perm)?;
+    Ok(())
+}
+
+#[cfg(not(unix))]
+pub fn set_readonly(path: &Path) -> Result<()> {
+    let mut perm = path.metadata()?.permissions();
+    watch!(&perm);
+    perm.set_readonly(true);
+    watch!(&perm);
+    fs::set_permissions(path, perm)?;
+    Ok(())
+}
+
+/// Set a path to user writable on unix systems.
+#[cfg(unix)]
+pub fn set_writable(path: &Path) -> Result<()> {
+    let mut permissions = path.metadata()?.permissions();
+    let mode = permissions.mode();
+    let new_mode = mode | 0o200;
+    permissions.set_mode(new_mode);
+    fs::set_permissions(path, permissions)?;
+    Ok(())
+}
+
+/// Set a path to readonly on unix systems.
+#[cfg(unix)]
+pub fn set_readonly(path: &Path) -> Result<()> {
+    let mut permissions = path.metadata()?.permissions();
+    let mode = permissions.mode();
+    let new_mode = mode & !0o200;
+    permissions.set_mode(new_mode);
+    fs::set_permissions(path, permissions)?;
     Ok(())
 }
 

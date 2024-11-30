@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.6.11"
+version = "0.6.12"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -21,12 +21,12 @@ test = true
 bench = true
 
 [dependencies]
-xvc-logging = { version = "0.6.11", path = "../logging" }
-xvc-config = { version = "0.6.11", path = "../config" }
-xvc-core = { version = "0.6.11", path = "../core" }
-xvc-ecs = { version = "0.6.11", path = "../ecs" }
-xvc-walker = { version = "0.6.11", path = "../walker" }
-xvc-storage = { version = "0.6.11", path = "../storage", default-features = false }
+xvc-logging = { version = "0.6.12", path = "../logging" }
+xvc-config = { version = "0.6.12", path = "../config" }
+xvc-core = { version = "0.6.12", path = "../core" }
+xvc-ecs = { version = "0.6.12", path = "../ecs" }
+xvc-walker = { version = "0.6.12", path = "../walker" }
+xvc-storage = { version = "0.6.12", path = "../storage", default-features = false }
 
 
 ## Cli and config
@@ -69,7 +69,7 @@ log = "^0.4"
 anyhow = "^1.0"
 peak_alloc = "^0.2"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
-fern = { version = "^0.6", features = ["colored"] }
+fern = { version = "^0.7", features = ["colored"] }
 
 
 ## macros
@@ -87,13 +87,13 @@ uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
 itertools = "^0.13"
-derive_more = "^0.99"
-parse-size = "^1.0"
+derive_more = { version = "^1.0", features = ["full"] }
+parse-size = "^1.1"
 
 [features]
 default = ["reflink"]
 reflink = ["dep:reflink"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.11", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.12", path = "../test_helper/" }
 shellfn = "^0.1"

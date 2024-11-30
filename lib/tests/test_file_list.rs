@@ -54,22 +54,36 @@ fn test_file_list() -> Result<()> {
         common::run_xvc(Some(&xvc_root), &c, XvcVerbosity::Trace)
     };
 
-    let list_all = x(&["list", "--format", "{{name}}", "--show-dot-files"])?;
-
-    let count_all = list_all.trim().lines().count();
-    // There must be 33 elements in total. 6 x 5: directories, 1 for .gitignore,
-    // 1 for .xvcignore, another line for the summary.
-    assert!(count_all == 33);
-
+    let count_lines = |s: &str| s.trim().lines().filter(|l| !l.trim().is_empty()).count();
     let list_no_dots = x(&["list", "--format", "{{name}}"])?;
-    let count_no_dots = list_no_dots.trim().lines().count();
-    // There must be 31 elements in total. 6 x 5: directories another line for the summary.
-    assert!(count_no_dots == 31);
+    let count_no_dots = count_lines(&list_no_dots);
+    // There must be 33 elements in total. 6 x 5: directories another line for the summary and a
+    // space between them.
+    assert!(count_no_dots == 31, "count_no_dots: {}", count_no_dots);
+
+    let list_all = x(&[
+        "list",
+        "--format",
+        "{{name}}",
+        "--show-dot-files",
+        "--include-git-files",
+    ])?;
+
+    let count_all = count_lines(&list_all);
+    // 6 x 5: directories, 1 for .gitignore, 1 for .xvcignore, another line for the summary and a
+    // space before summary.
+    assert!(count_all == 33, "count_all: {}", count_all);
 
     let list_no_dots_no_summary = x(&["list", "--format", "{{name}}", "--no-summary"])?;
-    let count_no_dots_no_summary = list_no_dots_no_summary.trim().lines().count();
-    // There must be 31 elements in total. 6 x 5: directories another line for the summary.
-    assert!(count_no_dots_no_summary == 30);
+    let count_no_dots_no_summary = count_lines(&list_no_dots_no_summary);
+
+    // There must be 31 elements in total. 6 x 5: directories and a new line.
+    assert!(
+        count_no_dots_no_summary == 30,
+        "count_no_dots_no_summary: {} {}",
+        count_no_dots_no_summary,
+        list_no_dots_no_summary
+    );
 
     // test all sort options
 

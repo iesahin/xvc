@@ -19,8 +19,8 @@ pub use xvc_logging::warn;
 pub use xvc_logging::watch;
 
 pub use xvc_config::XvcConfig;
-pub use xvc_config::XvcConfigParams;
 pub use xvc_config::XvcConfigOptionSource;
+pub use xvc_config::XvcConfigParams;
 
 pub use xvc_core::AbsolutePath;
 
@@ -64,12 +64,3 @@ pub use xvc_pipeline::cmd_step_new as pipeline_step_new;
 pub use xvc_pipeline::cmd_step_output as pipeline_step_output;
 pub use xvc_pipeline::cmd_step_show as pipeline_step_show;
 pub use xvc_pipeline::cmd_step_update as pipeline_step_update;
-
-pub use crate::git::exec_git;
-pub use crate::git::get_absolute_git_command;
-pub use crate::git::git_auto_commit;
-pub use crate::git::git_auto_stage;
-pub use crate::git::git_checkout_ref;
-pub use crate::git::handle_git_automation;
-pub use crate::git::stash_user_staged_files;
-pub use crate::git::unstash_user_staged_files;

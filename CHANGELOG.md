@@ -1,9 +1,20 @@
 # Xvc Changelog
 
-## Unreleased
+## 0.6.12 (2024-11-30)
+
+- PR: <https://github.com/iesahin/xvc/pull/262>
+- Add --include-git-files option to xvc file track and xvc file list commands
+- Don't track and list Git-tracked files by default
+- Add ListFormat::empty for default xvc file list format
+- Expose types from `xvc::file::list` to be used in GUI
+- Refactor `xvc file list` command handler for Xvc GUI
+- Began to use dtolnay/rust-toolchain for Github Actions
+- Began to use taiki-e/install-action@cargo-llvm-cov for codecov 
+- Fixed cache permissions issue
 
 ## 0.6.11 (2024-09-04)
 
+- PR: <https://github.com/iesahin/xvc/pull/260>
 - Bump dependencies
 - Replace globset with fast-glob for memory usage
 - Remove --details option from xvc check-ignore

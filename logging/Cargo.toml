@@ -1,6 +1,6 @@
 [package]
 name = "xvc-logging"
-version = "0.6.11"
+version = "0.6.12"
 edition = "2021"
 description = "Logging crate for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -22,6 +22,6 @@ peak_alloc = "^0.2"
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
 # We don't use sled anymore, keep the above note for future reference
-fern = { version = "^0.6", features = ["colored"] }
+fern = { version = "^0.7", features = ["colored"] }
 
 crossbeam-channel = "^0.5"

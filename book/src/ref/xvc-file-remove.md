@@ -58,6 +58,7 @@ $ xvc file track 'd*.txt'
 
 $ xvc file list
 FC        [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
@@ -116,6 +117,7 @@ $ xvc file carry-in --force data.txt
 
 $ xvc file list
 FC         [..] c85f3e81 c85f3e81 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
@@ -153,6 +155,7 @@ $ tree .xvc/b3/
 
 $ xvc file list
 FC         [..] 6602cff6 6602cff6 data.txt
+
 Total #: 1 Workspace Size:          19 Cached Size:          19
 
 
@@ -230,6 +233,7 @@ You can use this command to remove cached files from (remote) storages as well.
 
 ```console
 $ xvc-test-helper generate-random-file --seed 2 data.txt
+
 $ xvc file carry-in data.txt
 
 $ xvc storage new local --name local-storage --path '../local-storage'
@@ -275,6 +279,7 @@ $ xvc file copy data.txt data2.txt --as symlink
 $ xvc file list
 SS        [..] [..] 4a2e9d7c          data2.txt
 FC        1024 [..] 4a2e9d7c 4a2e9d7c data.txt
+
 Total #: 2 Workspace Size:        [..] Cached Size:        1024
 
 

@@ -4,7 +4,6 @@ use assert_fs::prelude::{FileTouch, FileWriteBin, PathChild};
 use assert_fs::TempDir;
 use common::*;
 use std::env;
-use std::ffi::OsString;
 use std::fs::remove_file;
 use std::path::PathBuf;
 use std::thread::{self, sleep};
@@ -47,8 +46,12 @@ fn test_notify() -> Result<()> {
 
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
 
-    let (initial_paths, all_rules) =
-        walk_serial(&output_sender, COMMON_IGNORE_PATTERNS, &temp_dir, &walk_options)?;
+    let (initial_paths, all_rules) = walk_serial(
+        &output_sender,
+        COMMON_IGNORE_PATTERNS,
+        &temp_dir,
+        &walk_options,
+    )?;
     watch!(all_rules);
     assert!(output_receiver.is_empty());
     let (watcher, receiver) = make_polling_watcher(all_rules)?;

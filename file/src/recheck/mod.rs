@@ -30,7 +30,7 @@ use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
 ///
 /// - If the workspace copy is missing.
 /// - If the workspace copy is not changed but the user wants to change recheck method. (e.g. from copy
-/// to symlink.)
+///   to symlink.)
 /// - If the `--force` is set.
 ///
 /// If the workspace copy of a file is changed, this command doesn't overwrite it by default. Set

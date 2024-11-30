@@ -25,7 +25,11 @@
 //!
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
+pub mod config_params;
 pub mod error;
+
+pub use config_params::XvcConfigParams;
+
 use directories_next::{BaseDirs, ProjectDirs, UserDirs};
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -149,44 +153,6 @@ pub struct XvcConfigMap {
     pub source: XvcConfigOptionSource,
     /// The key-value map for the options
     pub map: HashMap<String, TomlValue>,
-}
-
-/// How should we initialize the configuration?
-///
-/// It's possible to ignore certain sources by supplying `None` to their values here.
-#[derive(Debug, Clone)]
-pub struct XvcConfigParams {
-    /// The default configuration for the project.
-    /// It should contain all default values as a TOML document.
-    /// Xvc produces this in [xvc_core::default_configuration].
-    pub default_configuration: String,
-    /// The directory where the application runs.
-    /// This can be set by various Options.
-    /// It affects how paths are handled in general.
-    pub current_dir: AbsolutePath,
-    /// Should we include system configuration?
-    /// If `true`, it's read from [SYSTEM_CONFIG_DIRS].
-    pub include_system_config: bool,
-    /// Should the user's (home) config be included.
-    /// If `true`, it's read from [USER_CONFIG_DIRS].
-    pub include_user_config: bool,
-    /// Where should we load the project's (public) configuration?
-    /// It's loaded in [XvcRootInner::new]
-    /// TODO: Add a option to ignore this
-    pub project_config_path: Option<AbsolutePath>,
-    /// Where should we load the project's (private) configuration?
-    /// It's loaded in [XvcRootInner::new]
-    /// TODO: Add a option to ignore this
-    pub local_config_path: Option<AbsolutePath>,
-    /// Should we include configuration from the environment.
-    /// If `true`, look for all variables in the form
-    ///
-    /// `XVC_group.key=value`
-    ///
-    /// from the environment and put them into the configuration.
-    pub include_environment_config: bool,
-    /// Command line configuration
-    pub command_line_config: Option<Vec<String>>,
 }
 
 /// Keeps track of all Xvc configuration.

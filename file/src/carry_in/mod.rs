@@ -22,7 +22,7 @@ use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_
 use crate::common::gitignore::make_ignore_handler;
 use crate::common::{
     load_targets_from_store, move_xvc_path_to_cache, only_file_targets, recheck_from_cache,
-    xvc_path_metadata_map_from_disk,
+    set_writable, xvc_path_metadata_map_from_disk,
 };
 use crate::common::{update_store_records, FileTextOrBinary};
 use crate::error::Result;
@@ -241,8 +241,6 @@ pub fn carry_in(
     watch!(ignore_writer);
     watch!(ignore_thread);
 
-    // TODO: Remove this when we set unix permissions in platform dependent fashion
-    #[allow(clippy::permissions_set_readonly_false)]
     let copy_path_to_cache_and_recheck = |xe, xp| {
         let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
         watch!(cache_path);
@@ -251,20 +249,10 @@ pub fn carry_in(
         if abs_cache_path.exists() {
             if force {
                 let cache_dir = uwo!(abs_cache_path.parent(), output_snd);
-                watch!(cache_dir);
-                let mut dir_perm = uwr!(cache_dir.metadata(), output_snd).permissions();
-                watch!(dir_perm);
-                dir_perm.set_readonly(false);
-                watch!(dir_perm);
-                uwr!(fs::set_permissions(cache_dir, dir_perm), output_snd);
-                watch!(cache_dir);
-                let mut file_perm =
-                    uwr!(abs_cache_path.as_path().metadata(), output_snd).permissions();
-                watch!(file_perm);
-                watch!(abs_cache_path);
-                watch!(file_perm);
-                file_perm.set_readonly(false);
-                uwr!(fs::set_permissions(&abs_cache_path, file_perm), output_snd);
+                uwr!(set_writable(cache_dir), output_snd);
+                watch!(cache_dir.metadata().unwrap().permissions());
+                uwr!(set_writable(&abs_cache_path), output_snd);
+                watch!(abs_cache_path.metadata().unwrap().permissions());
                 /* let mut dir_perm = cache_dir.metadata()?.permissions(); */
                 /* dir_perm.set_readonly(true); */
                 uwr!(fs::remove_file(&abs_cache_path), output_snd);
