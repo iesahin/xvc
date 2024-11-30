@@ -111,7 +111,7 @@ jobs:
           # RUSTFLAGS: "-Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
           RUSTFLAGS: "-Cinstrument-coverage"
           # RUSTDOCFLAGS: "-Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
-          # LLVM_PROFILE_FILE: "xvc-%p-%m.profraw"
+          LLVM_PROFILE_FILE: "${TMPDIR}/xvc-%p-%m.profraw"
 
       - name: Install cargo-llvm-cov
         if: matrix.coverage
