@@ -98,9 +98,6 @@ jobs:
         # run: tree $GITHUB_WORKSPACE && xvc --version
         run: xvc --version
 
-      - name: Run Current Dev Tests
-        run: $GITHUB_WORKSPACE/run-tests.zsh
-
       # - name: Test
       #   if: matrix.coverage
       #   run: cargo test ${{ matrix.test-args }}
@@ -116,6 +113,9 @@ jobs:
       - name: Install cargo-llvm-cov
         if: matrix.coverage
         uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Run Current Dev Tests
+        run: $GITHUB_WORKSPACE/run-tests.zsh
 
       - name: Test and Coverage
         id: coverage
