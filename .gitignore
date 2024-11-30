@@ -19,3 +19,4 @@ workflow_tests/docs
 lib/docs
 # Ignore all profiling files
 *.profraw
+lcov.info
