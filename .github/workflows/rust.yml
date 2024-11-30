@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-gnu]
+        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu]
 
     steps:
       - name: Checkout
@@ -214,7 +214,8 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        target: [x86_64-apple-darwin]
+        target:
+          [x86_64-apple-darwin, aarch64-apple-darwin, x86_64-unknown-freebsd]
 
     steps:
       - name: Checkout

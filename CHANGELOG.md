@@ -1,5 +1,9 @@
 # Xvc Changelog
 
+## Unreleased
+
+- Added more targets to Github builds
+
 ## 0.6.12 (2024-11-30)
 
 - PR: <https://github.com/iesahin/xvc/pull/262>
