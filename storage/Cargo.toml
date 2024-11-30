@@ -1,6 +1,6 @@
 [package]
 name = "xvc-storage"
-version = "0.6.12-alpha.2"
+version = "0.6.12-alpha.3"
 edition = "2021"
 description = "Xvc remote and local storage management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,11 +16,11 @@ name = "xvc_storage"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.12-alpha.2", path = "../logging" }
-xvc-config = { version = "0.6.12-alpha.2", path = "../config" }
-xvc-core = { version = "0.6.12-alpha.2", path = "../core" }
-xvc-ecs = { version = "0.6.12-alpha.2", path = "../ecs" }
-xvc-walker = { version = "0.6.12-alpha.2", path = "../walker" }
+xvc-logging = { version = "0.6.12-alpha.3", path = "../logging" }
+xvc-config = { version = "0.6.12-alpha.3", path = "../config" }
+xvc-core = { version = "0.6.12-alpha.3", path = "../core" }
+xvc-ecs = { version = "0.6.12-alpha.3", path = "../ecs" }
+xvc-walker = { version = "0.6.12-alpha.3", path = "../walker" }
 
 ## Cli and config
 clap = { version = "^4.5", features = ["derive"] }
@@ -105,7 +105,7 @@ bundled-openssl = ["openssl/vendored"]
 
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.12-alpha.2", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.12-alpha.3", path = "../test_helper/" }
 shellfn = "^0.1"
 
 [package.metadata.cargo-udeps.ignore]
