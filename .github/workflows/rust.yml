@@ -134,12 +134,17 @@ jobs:
 
   deploy-linux:
     name: deploy-linux
-    # needs: [coverage]
+    needs: [coverage]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu]
+        target:
+          [
+            x86_64-unknown-linux-gnu,
+            aarch64-unknown-linux-gnu,
+            aarch64-linux-android,
+          ]
 
     steps:
       - name: Checkout
@@ -172,7 +177,7 @@ jobs:
 
   deploy-windows:
     name: deploy-windows
-    # needs: [coverage]
+    needs: [coverage]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: windows-latest
     strategy:
@@ -209,7 +214,7 @@ jobs:
 
   deploy-macos:
     name: deploy-macos
-    # needs: [coverage]
+    needs: [coverage]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: macos-latest
     strategy:
