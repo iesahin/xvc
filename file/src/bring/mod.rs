@@ -17,7 +17,7 @@ use clap::Parser;
 
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{debug, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{debug, error, uwr, warn, watch, XvcOutputSender};
 
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
@@ -138,10 +138,14 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
     for (_, cp) in cache_paths {
         let cache_path = cp.to_absolute_path(xvc_root);
         let temp_path = temp_dir.temp_cache_path(&cp)?;
-        uwr!(
-            move_to_cache(&temp_path, &cache_path, &path_sync),
-            output_snd
-        );
+        if temp_path.exists() {
+            uwr!(
+                move_to_cache(&temp_path, &cache_path, &path_sync),
+                output_snd
+            );
+        } else {
+            error!(output_snd, "Could not download {}", cp);
+        }
     }
 
     xvc_root.with_store_mut(|store: &mut XvcStore<XvcStorageEvent>| {
