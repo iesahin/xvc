@@ -527,9 +527,9 @@ pub struct ListCLI {
     ///   GB and TB to represent sizes larger than 1MB.
     /// - {{ats}}:  actual timestamp. The timestamp of the workspace file.
     /// - {{name}}: The name of the file or directory.
-    /// - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
+    /// - {{cst}}:  cache status. One of "=", ">", "<", or "X" to show
     ///   whether the file timestamp is the same as the cached timestamp, newer,
-    ///   older, not cached or not tracked.
+    ///   older, and not tracked.
     /// - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
     /// - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
     /// - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace

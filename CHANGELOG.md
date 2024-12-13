@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fixed xvc file list help text and added a test/example for ignored files
 - Added more targets to Github builds
 
 ## 0.6.12 (2024-11-30)

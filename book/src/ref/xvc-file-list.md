@@ -28,9 +28,9 @@ Options:
             GB and TB to represent sizes larger than 1MB.
           - {{ats}}:  actual timestamp. The timestamp of the workspace file.
           - {{name}}: The name of the file or directory.
-          - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
+          - {{cst}}:  cache status. One of "=", ">", "<", or "X" to show
             whether the file timestamp is the same as the cached timestamp, newer,
-            older, not cached or not tracked.
+            older, and not tracked.
           - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
           - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
@@ -457,7 +457,7 @@ Total #: 5 Workspace Size:       10015 Cached Size:       10015
 ```
 
 ```admonish info
-If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't calculate these hashes. If you have large number of files where the default format (that includes actual content hashes) runs slowly, you may customize it to not to include these columns.
+If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't calculate these hashes. If you have large number of files where the default format (that includes actual content hashes) runs slowly, you can customize it to not to include these columns.
 ```
 
 If you want to get a quick glimpse of what needs to carried in, or rechecked,
@@ -483,3 +483,40 @@ The cache status column shows `=` for unchanged files in the cache, `X` for
 untracked files, `>` for files that there is newer version in the cache, and `<`
 for files that there is a newer version in the workspace. The comparison is done
 between recorded timestamp and actual timestamp with an accuracy of 1 second.
+
+## Ignored Files
+
+Ignored files and directories in `.xvcignore` are not listed in the results. 
+
+```console
+$ zsh -c "echo 'dir-0005' > .xvcignore"
+
+$ xvc file list --format='{{name}}' --no-summary
+dir-0004/file-0005.bin
+dir-0004/file-0004.bin
+dir-0004/file-0003.bin
+dir-0004/file-0002.bin
+dir-0004/file-0001.bin
+dir-0004
+dir-0003/file-0005.bin
+dir-0003/file-0004.bin
+dir-0003/file-0003.bin
+dir-0003/file-0002.bin
+dir-0003/file-0001.bin
+dir-0003
+dir-0002/file-0005.bin
+dir-0002/file-0004.bin
+dir-0002/file-0003.bin
+dir-0002/file-0002.bin
+dir-0002/file-0001.bin
+dir-0002
+dir-0001/file-0005.bin
+dir-0001/file-0004.bin
+dir-0001/file-0003.bin
+dir-0001/file-0002.bin
+dir-0001/file-0001.bin
+dir-0001/a-new-file.bin
+dir-0001
+
+
+```
