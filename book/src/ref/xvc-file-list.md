@@ -174,6 +174,8 @@ Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 ```
 
+## Files tracked by Git
+
 This command doesn't list Git-tracked files by default. If you want to list them, use `--include-git-files` flag.
 ```console
 $ zsh -c 'echo "#!/bin/bash" > my-git-tracked-script.sh'
@@ -195,6 +197,21 @@ Total #: 1 Workspace Size:          12 Cached Size:           0
 
 
 ```
+
+````admonish warning 
+Xvc detects files tracked by git with the output of `git ls-files`. In default
+configuration Git encodes **UTF-8** file names in octal format. As Xvc uses
+UTF-8 internally to keep track of paths, it cannot identify files are tracked
+by Git if they have non-ASCII characters. 
+
+Please set 
+
+```shell
+git config core.quotepath off
+```
+
+in your Xvc repository to let Git list files in UTF-8.  
+````
 
 By default the command hides dotfiles too. If you also want to show them, you can use `--show-dot-files`/`-a` flag. If you want to show dotfiles also tracked by git, you may use `--show-dot-files` and `--include-git-files` together.
 
