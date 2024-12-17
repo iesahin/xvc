@@ -102,6 +102,29 @@ You can specify more than one target in a single command.
 $ xvc file track dir-0001/file-0002.bin dir-0001/file-0003.bin
 ```
 
+## Files tracked by Git
+
+By default, Xvc doesn't track files tracked by Git. You need to specify
+`--include-git-files` options to track files tracked by git.
+
+````admonish warning 
+Xvc detects files tracked by git with the output of `git ls-files`. In default
+configuration Git encodes **UTF-8** file names in octal format. As Xvc uses
+UTF-8 internally to keep track of paths, it cannot identify files are tracked
+by Git if they have non-ASCII characters. 
+
+Please set 
+
+```shell
+git config core.quotepath off
+```
+
+in your Xvc repository to let Git list files in UTF-8.  
+````
+
+
+## Caching
+
 When you track a file, Xvc moves the file to the cache directory under `.xvc/`
 and _connects_ the workspace file with the cached file. This _connection_ is
 called rechecking and analogous to Git checkout. For example, the above

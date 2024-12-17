@@ -140,11 +140,10 @@ pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: Remove
     } else {
         remove_targets
             .iter()
-            .map(|(xe, xp)| {
-                (
-                    *xe,
-                    XvcCachePath::new(xp, all_content_digests.get(xe).unwrap()).unwrap(),
-                )
+            .filter_map(|(xe, xp)| {
+                all_content_digests
+                    .get(xe)
+                    .map(|cd| (*xe, XvcCachePath::new(xp, cd).unwrap()))
             })
             .collect::<Vec<(XvcEntity, XvcCachePath)>>()
     };

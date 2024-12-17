@@ -28,9 +28,9 @@ Options:
             GB and TB to represent sizes larger than 1MB.
           - {{ats}}:  actual timestamp. The timestamp of the workspace file.
           - {{name}}: The name of the file or directory.
-          - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
+          - {{cst}}:  cache status. One of "=", ">", "<", or "X" to show
             whether the file timestamp is the same as the cached timestamp, newer,
-            older, not cached or not tracked.
+            older, and not tracked.
           - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
           - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
@@ -174,6 +174,8 @@ Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 ```
 
+## Files tracked by Git
+
 This command doesn't list Git-tracked files by default. If you want to list them, use `--include-git-files` flag.
 ```console
 $ zsh -c 'echo "#!/bin/bash" > my-git-tracked-script.sh'
@@ -195,6 +197,21 @@ Total #: 1 Workspace Size:          12 Cached Size:           0
 
 
 ```
+
+````admonish warning 
+Xvc detects files tracked by git with the output of `git ls-files`. In default
+configuration Git encodes **UTF-8** file names in octal format. As Xvc uses
+UTF-8 internally to keep track of paths, it cannot identify files are tracked
+by Git if they have non-ASCII characters. 
+
+Please set 
+
+```shell
+git config core.quotepath off
+```
+
+in your Xvc repository to let Git list files in UTF-8.  
+````
 
 By default the command hides dotfiles too. If you also want to show them, you can use `--show-dot-files`/`-a` flag. If you want to show dotfiles also tracked by git, you may use `--show-dot-files` and `--include-git-files` together.
 
@@ -457,7 +474,7 @@ Total #: 5 Workspace Size:       10015 Cached Size:       10015
 ```
 
 ```admonish info
-If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't calculate these hashes. If you have large number of files where the default format (that includes actual content hashes) runs slowly, you may customize it to not to include these columns.
+If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't calculate these hashes. If you have large number of files where the default format (that includes actual content hashes) runs slowly, you can customize it to not to include these columns.
 ```
 
 If you want to get a quick glimpse of what needs to carried in, or rechecked,
@@ -483,3 +500,40 @@ The cache status column shows `=` for unchanged files in the cache, `X` for
 untracked files, `>` for files that there is newer version in the cache, and `<`
 for files that there is a newer version in the workspace. The comparison is done
 between recorded timestamp and actual timestamp with an accuracy of 1 second.
+
+## Ignored Files
+
+Ignored files and directories in `.xvcignore` are not listed in the results. 
+
+```console
+$ zsh -c "echo 'dir-0005' > .xvcignore"
+
+$ xvc file list --format='{{name}}' --no-summary
+dir-0004/file-0005.bin
+dir-0004/file-0004.bin
+dir-0004/file-0003.bin
+dir-0004/file-0002.bin
+dir-0004/file-0001.bin
+dir-0004
+dir-0003/file-0005.bin
+dir-0003/file-0004.bin
+dir-0003/file-0003.bin
+dir-0003/file-0002.bin
+dir-0003/file-0001.bin
+dir-0003
+dir-0002/file-0005.bin
+dir-0002/file-0004.bin
+dir-0002/file-0003.bin
+dir-0002/file-0002.bin
+dir-0002/file-0001.bin
+dir-0002
+dir-0001/file-0005.bin
+dir-0001/file-0004.bin
+dir-0001/file-0003.bin
+dir-0001/file-0002.bin
+dir-0001/file-0001.bin
+dir-0001/a-new-file.bin
+dir-0001
+
+
+```

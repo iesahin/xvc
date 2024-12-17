@@ -1,5 +1,13 @@
 # Xvc Changelog
 
+## Unreleased
+
+- Handle missing files in xvc file bring more gracefully
+- Fixed git version string to also consider lightweight tags
+- Fixed xvc file remove bug that panics when content digests not found
+- Fixed xvc file list help text and added a test/example for ignored files
+- Added more targets to Github builds
+
 ## 0.6.12 (2024-11-30)
 
 - PR: <https://github.com/iesahin/xvc/pull/262>
