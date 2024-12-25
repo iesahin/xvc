@@ -87,7 +87,14 @@ pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -
 /// NOTE: Assumptions for this function:
 /// - No submodules
 pub fn get_git_tracked_files(git_command: &str, xvc_directory: &str) -> Result<Vec<String>> {
-    let git_ls_files_out = exec_git(git_command, xvc_directory, &["ls-files", "--full-name"])?;
+    let git_ls_files_out = exec_git(
+        git_command,
+        xvc_directory,
+        // XXX: When core.quotepath is in its default value, all UTF-8 paths are converted to octal
+        // strings and we lose the ability to match them. We supply a one off config value to set
+        // it to off.
+        &["-c", "core.quotepath=off", "ls-files", "--full-name"],
+    )?;
     watch!(git_ls_files_out);
     let git_ls_files_out = git_ls_files_out
         .lines()
