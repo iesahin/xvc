@@ -59,7 +59,12 @@ fn test_file_list() -> Result<()> {
     let count_no_dots = count_lines(&list_no_dots);
     // There must be 33 elements in total. 6 x 5: directories another line for the summary and a
     // space between them.
-    assert!(count_no_dots == 31, "count_no_dots: {}", count_no_dots);
+    assert!(
+        count_no_dots == 31,
+        "count_no_dots: {}; list_no_dots: {}",
+        count_no_dots,
+        list_no_dots
+    );
 
     let list_all = x(&[
         "list",
@@ -67,6 +72,7 @@ fn test_file_list() -> Result<()> {
         "{{name}}",
         "--show-dot-files",
         "--include-git-files",
+        "--show-directories",
     ])?;
 
     let count_all = count_lines(&list_all);
@@ -74,13 +80,30 @@ fn test_file_list() -> Result<()> {
     // space before summary.
     assert!(count_all == 33, "count_all: {}", count_all);
 
-    let list_no_dots_no_summary = x(&["list", "--format", "{{name}}", "--no-summary"])?;
+    let list_no_dots_no_dirs_no_summary = x(&["list", "--format", "{{name}}", "--no-summary"])?;
+    let count_no_dots_no_dirs_no_summary = count_lines(&list_no_dots_no_dirs_no_summary);
+
+    // There must be 25 elements in total. 5 x 5: files and a new line.
+    assert!(
+        count_no_dots_no_dirs_no_summary == 25,
+        "count_no_dots_no_dirs_no_summary: {} {}",
+        count_no_dots_no_dirs_no_summary,
+        list_no_dots_no_dirs_no_summary
+    );
+
+    let list_no_dots_no_summary = x(&[
+        "list",
+        "--format",
+        "{{name}}",
+        "--no-summary",
+        "--show-dirs",
+    ])?;
     let count_no_dots_no_summary = count_lines(&list_no_dots_no_summary);
 
-    // There must be 31 elements in total. 6 x 5: directories and a new line.
+    // There must be 30 elements in total. 6 x 5: directories and files
     assert!(
-        count_no_dots_no_summary == 30,
-        "count_no_dots_no_summary: {} {}",
+        count_no_dots_no_summary == 25,
+        "count_no_dots_no_dirs_no_summary: {} {}",
         count_no_dots_no_summary,
         list_no_dots_no_summary
     );
@@ -104,6 +127,7 @@ fn test_file_list() -> Result<()> {
             sort_option,
             "dir-0001",
         ])?;
+
         let top_line = cmd_res.lines().next().unwrap();
         assert!(
             top_line.ends_with(top_element),
