@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Set core.quotepath=off in git ls-files call to get paths in UTF-8 to match
 - Handle missing files in xvc file bring more gracefully
 - Fixed git version string to also consider lightweight tags
 - Fixed xvc file remove bug that panics when content digests not found
