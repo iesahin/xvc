@@ -57,10 +57,9 @@ fn test_file_list() -> Result<()> {
     let count_lines = |s: &str| s.trim().lines().filter(|l| !l.trim().is_empty()).count();
     let list_no_dots = x(&["list", "--format", "{{name}}"])?;
     let count_no_dots = count_lines(&list_no_dots);
-    // There must be 33 elements in total. 6 x 5: directories another line for the summary and a
-    // space between them.
+    // There must be 26 elements in total. 5 x 5: files and a line for the summary
     assert!(
-        count_no_dots == 31,
+        count_no_dots == 26,
         "count_no_dots: {}; list_no_dots: {}",
         count_no_dots,
         list_no_dots
