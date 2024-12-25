@@ -555,10 +555,16 @@ pub struct ListCLI {
     #[arg(long)]
     pub no_summary: bool,
 
+    /// Don't hide directories
+    ///
+    /// Directories are not listed by default. This flag lists them.
+    #[arg(long, short = 'd', aliases=&["show-dirs"])]
+    pub show_directories: bool,
+
     /// Don't hide dot files
     ///
     /// If not supplied, hides dot files like .gitignore and .xvcignore
-    #[arg(long, short = 'a')]
+    #[arg(long, short = 'D')]
     pub show_dot_files: bool,
 
     /// List files tracked by Git.
@@ -621,7 +627,6 @@ impl UpdateFromXvcConfig for ListCLI {
 /// - <: File is newer, xvc carry-in to update the cache
 ///
 /// TODO: - I: File is ignored
-
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
     // FIXME: `opts` shouldn't be sent to the inner function, but we cannot make sure that it's
     // updated from the config files in callers. A refactoring is good here.
@@ -665,7 +670,10 @@ pub fn cmd_list_inner(
     )?;
     watch!(&all_from_disk);
 
-    let from_disk = filter_dot_files(all_from_disk, opts.show_dot_files);
+    let from_disk = filter_directories(
+        filter_dot_files(all_from_disk, opts.show_dot_files),
+        opts.show_directories,
+    );
     watch!(from_disk);
 
     let from_store = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
@@ -878,23 +886,34 @@ fn match_store_and_disk_paths(
     matches
 }
 
+fn filter_paths(
+    all_paths: HashMap<XvcPath, XvcMetadata>,
+    run_filter_flag: bool,
+    filter_fn: impl Fn(&XvcPath, &XvcMetadata) -> bool,
+) -> HashMap<XvcPath, XvcMetadata> {
+    if run_filter_flag {
+        all_paths
+            .into_iter()
+            .filter(|(path, md)| filter_fn(path, md))
+            .collect()
+    } else {
+        all_paths
+    }
+}
+
 fn filter_dot_files(
-    all_from_disk: HashMap<XvcPath, XvcMetadata>,
+    all_paths: HashMap<XvcPath, XvcMetadata>,
     show_dot_files: bool,
 ) -> HashMap<XvcPath, XvcMetadata> {
-    if show_dot_files {
-        all_from_disk
-    } else {
-        all_from_disk
-            .into_iter()
-            .filter_map(|(path, md)| {
-                let path_str = path.to_string();
-                if path_str.starts_with('.') || path_str.contains("./") {
-                    None
-                } else {
-                    Some((path, md))
-                }
-            })
-            .collect()
-    }
+    filter_paths(all_paths, show_dot_files, |path, _| {
+        let path_str = path.to_string();
+        !path_str.starts_with('.') && !path_str.contains("./")
+    })
+}
+
+fn filter_directories(
+    all_paths: HashMap<XvcPath, XvcMetadata>,
+    show_directories: bool,
+) -> HashMap<XvcPath, XvcMetadata> {
+    filter_paths(all_paths, show_directories, |_, md| !md.is_dir())
 }
