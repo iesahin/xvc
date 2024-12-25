@@ -905,7 +905,7 @@ fn filter_dot_files(
     all_paths: HashMap<XvcPath, XvcMetadata>,
     show_dot_files: bool,
 ) -> HashMap<XvcPath, XvcMetadata> {
-    filter_paths(all_paths, show_dot_files, |path, _| {
+    filter_paths(all_paths, !show_dot_files, |path, _| {
         let path_str = path.to_string();
         !path_str.starts_with('.') && !path_str.contains("./")
     })
@@ -915,5 +915,5 @@ fn filter_directories(
     all_paths: HashMap<XvcPath, XvcMetadata>,
     show_directories: bool,
 ) -> HashMap<XvcPath, XvcMetadata> {
-    filter_paths(all_paths, show_directories, |_, md| !md.is_dir())
+    filter_paths(all_paths, !show_directories, |_, md| !md.is_dir())
 }
