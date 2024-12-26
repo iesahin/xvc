@@ -329,7 +329,7 @@ where
         &self.current
     }
 
-    /// Performs a join with [XvcEntity] keys.
+    /// Performs a left join with [XvcEntity] keys.
     ///
     /// The returned store contains `(T, Option<U>)` values that correspond to the identical
     /// `XvcEntity` values.
@@ -351,7 +351,7 @@ where
     ///
     /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
     /// relative to your use case.
-    pub fn join<U>(&self, other: XvcStore<U>) -> XvcStore<(T, Option<U>)>
+    pub fn left_join<U>(&self, other: XvcStore<U>) -> XvcStore<(T, Option<U>)>
     where
         U: Storable,
     {
