@@ -12,7 +12,6 @@ use xvc_test_helper::generate_filled_file;
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
     let temp_dir: XvcRoot = run_in_temp_xvc_dir()?;
-    watch!(temp_dir);
     // for checking the content hash
     generate_filled_file(&temp_dir.join(&PathBuf::from("file-0000.bin")), 10000, 100);
     // create_directory_tree(&temp_dir, 10, 10)?;
@@ -44,12 +43,10 @@ fn test_storage_new_local() -> Result<()> {
     ])?;
 
     assert!(storage_dir.join(XVC_STORAGE_GUID_FILENAME).exists());
-    watch!(out);
 
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
-    watch!(file_track_result);
 
     let n_storage_files_before = jwalk::WalkDir::new(&storage_dir)
         .into_iter()
@@ -61,7 +58,6 @@ fn test_storage_new_local() -> Result<()> {
         .count();
 
     let push_result = x(&["file", "send", "--to", "local-storage", the_file])?;
-    watch!(push_result);
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
@@ -75,7 +71,6 @@ fn test_storage_new_local() -> Result<()> {
         })
         .count();
 
-    watch!(n_storage_files_after);
     assert!(
         n_storage_files_before + 1 == n_storage_files_after,
         "{} - {}",
@@ -92,8 +87,6 @@ fn test_storage_new_local() -> Result<()> {
     ))?;
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "local-storage"])?;
-
-    watch!(fetch_result);
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -114,7 +107,6 @@ fn test_storage_new_local() -> Result<()> {
     fs::remove_file(the_file)?;
 
     let bring_result = x(&["file", "bring", "--from", "local-storage"])?;
-    watch!(bring_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -124,23 +116,17 @@ fn test_storage_new_local() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    watch!(n_local_files_after_pull);
     assert!(n_storage_files_after == n_local_files_after_pull);
-    watch!(the_file);
     let tree_result = sh("tree")?;
-    watch!(String::from_utf8(tree_result.stdout));
     assert!(PathBuf::from(the_file).exists());
 
     // When we reinit with the same storage path, it shouldn't update the GUID.
     // See https://github.com/iesahin/xvc/issues/123
     let current_guid = fs::read_to_string(storage_dir.join(XVC_STORAGE_GUID_FILENAME))?;
-    watch!(current_guid);
     // We'll use a separate process to run the following tests.
     // Entity counter cannot be loaded to the same process twice.
     let another_xvc_root = assert_fs::TempDir::new()?;
-    watch!(another_xvc_root);
     let mut xvc = assert_cmd::cmd::Command::cargo_bin("xvc")?;
-    watch!(xvc);
     xvc.current_dir(&another_xvc_root);
     xvc.arg("init").assert();
     xvc.args([

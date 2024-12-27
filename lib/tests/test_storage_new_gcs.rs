@@ -189,7 +189,6 @@ fn test_storage_new_gcs() -> Result<()> {
         &format!("ls --recursive s3://{bucket_name}"),
         &format!("| rg {storage_prefix} | rg 0.bin"),
     );
-    watch!(file_list_after);
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
@@ -208,8 +207,6 @@ fn test_storage_new_gcs() -> Result<()> {
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "gcs-storage"])?;
 
-    watch!(fetch_result);
-
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
         .filter(|f| {
@@ -226,7 +223,6 @@ fn test_storage_new_gcs() -> Result<()> {
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "gcs-storage"])?;
-    watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -248,7 +244,6 @@ fn test_storage_new_gcs() -> Result<()> {
     env::remove_var("GCS_SECRET_ACCESS_KEY");
 
     let pull_result_2 = x(&["file", "bring", "--from", "gcs-storage"])?;
-    watch!(pull_result_2);
 
     clean_up(&xvc_root)
 }

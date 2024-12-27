@@ -63,10 +63,6 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
     };
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
     let (res_paths, ignore_rules) = walk_serial(&output_sender, "", &root, &walk_options).unwrap();
-    watch!(ignore_rules.ignore_patterns.read().unwrap());
-    watch!(ignore_rules.whitelist_patterns.read().unwrap());
-    watch!(output_receiver);
-    watch!(res_paths);
     fs::remove_dir_all(&root).unwrap();
     let out_paths = res_paths
         .iter()
@@ -76,6 +72,5 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
             p.strip_prefix(&root.to_string()).unwrap_or(&p).to_owned()
         })
         .collect();
-    watch!(out_paths);
     out_paths
 }

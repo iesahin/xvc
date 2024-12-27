@@ -24,7 +24,6 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 fn sh(cmd: String) -> String {
-    watch!(cmd);
     Exec::shell(cmd).capture().unwrap().stdout_str()
 }
 
@@ -64,19 +63,15 @@ fn test_storage_new_rsync() -> Result<()> {
         &storage_dir_name,
     ])?;
 
-    watch!(out);
-
     let storage_list = sh(format!(
         "ssh {url} 'ls -l {storage_dir_name}{XVC_STORAGE_GUID_FILENAME}'"
     ));
 
-    watch!(storage_list);
     assert!(!storage_list.is_empty());
 
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
-    watch!(file_track_result);
 
     let n_storage_files_before = jwalk::WalkDir::new(local_test_dir)
         .into_iter()
@@ -87,10 +82,8 @@ fn test_storage_new_rsync() -> Result<()> {
         })
         .count();
     let push_result = x(&["file", "send", "--to", "rsync-storage", the_file])?;
-    watch!(push_result);
 
     let file_list = sh(format!("ssh {url} 'ls -1R {storage_dir_name} | grep bin'"));
-    watch!(file_list);
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
@@ -111,16 +104,11 @@ fn test_storage_new_rsync() -> Result<()> {
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "rsync-storage"])?;
 
-    watch!(fetch_result);
-
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
         .filter(|f| {
             f.as_ref()
-                .map(|f| {
-                    watch!(f);
-                    f.file_type().is_file()
-                })
+                .map(|f| f.file_type().is_file())
                 .unwrap_or_else(|_| false)
         })
         .count();
@@ -132,7 +120,6 @@ fn test_storage_new_rsync() -> Result<()> {
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "rsync-storage"])?;
-    watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
