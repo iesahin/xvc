@@ -122,9 +122,8 @@ $ xvc file move another-set/data5.txt data6.txt --no-recheck
 $ xvc file list
 XH                                 c85f3e81          data6.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data4.txt
-DX          96 [..]                   another-set
 
-Total #: 3 Workspace Size:         115 Cached Size:          19
+Total #: 2 Workspace Size:          19 Cached Size:          19
 
 
 ```

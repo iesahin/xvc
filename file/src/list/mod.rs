@@ -240,14 +240,11 @@ impl ListRow {
             None => str::repeat(" ", DIGEST_LENGTH * 2),
         };
 
-        watch!(&path_prefix);
         let name = if let Some(ap) = path_match.actual_path {
-            watch!(ap);
             ap.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
         } else if let Some(rp) = path_match.recorded_path {
-            watch!(rp);
             rp.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
@@ -670,14 +667,10 @@ pub fn cmd_list_inner(
         &opts.targets,
         filter_git_paths,
     )?;
-    watch!(&all_from_disk);
 
     let from_disk = filter_xvc_path_metadata_map(all_from_disk, opts);
 
-    watch!(from_disk);
-
     let from_store = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
-    watch!(from_store);
 
     let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
 
@@ -695,7 +688,6 @@ pub fn cmd_list_inner(
         xvc_metadata_store,
         recheck_method_store,
     );
-    watch!(matches);
 
     let matches = if opts.format.as_ref().unwrap().columns.iter().any(|c| {
         *c == ListColumn::RecordedContentDigest64 || *c == ListColumn::RecordedContentDigest8
@@ -897,19 +889,12 @@ fn filter_xvc_path_metadata_map(
     all_from_disk: HashMap<XvcPath, XvcMetadata>,
     opts: &ListCLI,
 ) -> HashMap<XvcPath, XvcMetadata> {
-    watch!(opts.show_dot_files);
-    watch!(opts.show_directories);
     let filter_fn = match (opts.show_dot_files, opts.show_directories) {
         (true, true) => |_, _| true,
 
-        (true, false) => |_, md: &XvcMetadata| {
-            watch!(md);
-            !md.is_dir()
-        },
+        (true, false) => |_, md: &XvcMetadata| !md.is_dir(),
         (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
         (false, false) => |path: &XvcPath, md: &XvcMetadata| {
-            watch!(path);
-            watch!(md);
             !(path.starts_with_str(".") || path.contains("./") || md.is_dir())
         },
     };
@@ -918,7 +903,6 @@ fn filter_xvc_path_metadata_map(
         .iter()
         .filter_map(|(path, md)| {
             if filter_fn(path, md) {
-                watch!(path);
                 Some((path.clone(), *md))
             } else {
                 None
@@ -942,14 +926,11 @@ fn filter_xvc_path_xvc_metadata_stores(
         },
     };
 
-    watch!(filter_fn);
-
     xvc_path_store
         .iter()
         .filter_map(|(xvc_entity, xvc_path)| {
             if let Some(xvc_metadata) = xvc_metadata_store.get(xvc_entity) {
                 if filter_fn(xvc_path, xvc_metadata) {
-                    watch!(xvc_path);
                     Some(*xvc_entity)
                 } else {
                     None
