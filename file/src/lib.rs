@@ -170,7 +170,6 @@ pub fn run(
     xvc_root: Option<&XvcRoot>,
     opts: XvcFileCLI,
 ) -> Result<()> {
-    watch!(opts);
     match opts.subcommand {
         XvcFileSubCommand::Track(opts) => cmd_track(
             output_snd,

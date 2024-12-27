@@ -26,7 +26,6 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 fn sh(cmd: String) -> String {
-    watch!(cmd);
     Exec::shell(cmd).capture().unwrap().stdout_str()
 }
 
@@ -58,9 +57,7 @@ fn test_file_track_serial() -> Result<()> {
         ".xvc/b3/a57/262/2134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1/0.bin";
     let file_0 = "file-0000.bin";
     let track_file_0 = x(&["track", file_0, "--no-parallel"])?;
-    watch!(track_file_0);
     let cache_path = xvc_root.absolute_path().join(images_cache_path);
-    watch!(cache_path);
 
     assert!(cache_path.exists());
 
@@ -73,7 +70,6 @@ fn test_file_track_serial() -> Result<()> {
     );
 
     let gitignore_1 = fs::read_to_string(&gitignore_file_1)?;
-    watch!(gitignore_1);
 
     assert!(
         gitignore_1.lines().filter(|l| l.ends_with(file_0)).count() == 1,
@@ -86,7 +82,6 @@ fn test_file_track_serial() -> Result<()> {
     let n_files_before = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
 
     let second_add = x(&["track", file_0, "--no-parallel"])?;
-    watch!(second_add);
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
     assert!(
@@ -115,12 +110,10 @@ fn test_file_track_serial() -> Result<()> {
         })
         .count();
     let track_dir_to_add = x(&["track", dir_to_add, "--no-parallel"])?;
-    watch!(track_dir_to_add);
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3")
         .into_iter()
         .filter(|f| {
-            watch!(f);
             f.as_ref()
                 .map(|f| f.file_type().is_file())
                 .unwrap_or_else(|_| false)

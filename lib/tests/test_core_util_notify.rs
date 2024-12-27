@@ -22,7 +22,6 @@ use xvc_walker::{walk_serial, WalkOptions};
 fn test_notify() -> Result<()> {
     let temp_dir = TempDir::new()?;
     env::set_current_dir(&temp_dir)?;
-    watch!(temp_dir);
     test_logging(log::LevelFilter::Trace);
     let walk_options = WalkOptions {
         ignore_filename: Some(XVCIGNORE_FILENAME.to_owned()),
@@ -39,7 +38,6 @@ fn test_notify() -> Result<()> {
     let files_len = files.len();
 
     files.iter().for_each(|f| {
-        watch!(f.path());
         f.touch().unwrap();
     });
     const MAX_ERROR_COUNT: usize = 10;
@@ -52,18 +50,13 @@ fn test_notify() -> Result<()> {
         &temp_dir,
         &walk_options,
     )?;
-    watch!(all_rules);
     assert!(output_receiver.is_empty());
     let (watcher, receiver) = make_polling_watcher(all_rules)?;
-    watch!(watcher);
-    watch!(initial_paths.len());
 
     let event_handler = thread::spawn(move || {
         let mut err_counter = MAX_ERROR_COUNT;
         loop {
-            watch!(receiver);
             let r = receiver.try_recv();
-            watch!(r);
             if let Ok(Some(pe)) = r {
                 err_counter = MAX_ERROR_COUNT;
                 match pe {
@@ -83,26 +76,21 @@ fn test_notify() -> Result<()> {
                 break;
             }
 
-            watch!(err_counter);
             sleep(Duration::from_millis(
                 ((MAX_ERROR_COUNT - err_counter) * 100) as u64,
             ));
         }
-        watch!(err_counter);
-        watch!(receiver);
     });
 
     sleep(Duration::from_millis(3000));
     let size_updated = 20;
 
     files.iter().for_each(|f| {
-        watch!(f.path());
         f.write_binary(&vec![0; size_updated]).unwrap();
     });
 
     sleep(Duration::from_millis(3000));
     files.iter().for_each(|f| {
-        watch!(f.path());
         remove_file(f.path()).unwrap();
     });
 
@@ -112,22 +100,18 @@ fn test_notify() -> Result<()> {
 
     {
         let created_paths = created_paths_rec.iter().collect::<Vec<PathBuf>>();
-        watch!(created_paths);
         let len = created_paths.len();
-        watch!(len);
         // This also gets the directory creation event itself
         assert!(len == files_len + 1);
     }
     // TODO: This is not working for some reason on macOS
     // {
     //     let updated_paths = updated_paths_rec.iter().collect::<Vec<PathBuf>>();
-    //     watch!(updated_paths);
     //     assert_eq!(updated_paths.len(), files_len);
     // }
 
     {
         let deleted_paths = deleted_paths_rec.iter().collect::<Vec<PathBuf>>();
-        watch!(deleted_paths);
         assert_eq!(deleted_paths.len(), files_len);
     }
 

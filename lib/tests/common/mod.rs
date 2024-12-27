@@ -34,16 +34,11 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
         XvcVerbosity::Trace => vec!["--debug", "-vvvvv"],
     };
 
-    // watch!(cmd);
-    // watch!(verbosity_opt);
-    // watch!(args);
-
     let prepared = match cwd {
         Some(cwd) => cmd.args(verbosity_opt).args(args).current_dir(cwd),
         None => cmd.args(verbosity_opt).args(args),
     };
 
-    watch!(prepared);
     let output = prepared.output()?;
 
     output!("{:?}", &output);
@@ -124,10 +119,8 @@ pub fn run_in_example_project() -> Result<PathBuf> {
 
 pub fn run_in_example_xvc(with_git: bool) -> Result<XvcRoot> {
     let example_project_dir = run_in_example_project()?;
-    watch!(example_project_dir);
     if with_git {
         let output = Command::new("git").arg("init").output()?;
-        watch!(output);
         let xvc_root = xvc::init::run(
             None,
             InitCLI {
@@ -136,7 +129,6 @@ pub fn run_in_example_xvc(with_git: bool) -> Result<XvcRoot> {
                 force: false,
             },
         )?;
-        watch!(xvc_root);
         Ok(xvc_root)
     } else {
         let xvc_root = xvc::init::run(
@@ -147,7 +139,6 @@ pub fn run_in_example_xvc(with_git: bool) -> Result<XvcRoot> {
                 force: false,
             },
         )?;
-        watch!(xvc_root);
         Ok(xvc_root)
     }
 }
@@ -155,7 +146,6 @@ pub fn run_in_example_xvc(with_git: bool) -> Result<XvcRoot> {
 /// Create a temporary Xvc directory that's also Git repository
 pub fn run_in_temp_xvc_dir() -> Result<XvcRoot> {
     let the_dir = run_in_temp_git_dir();
-    watch!(&the_dir);
     let xvc_root = xvc::init::run(
         None,
         InitCLI {
@@ -164,7 +154,6 @@ pub fn run_in_temp_xvc_dir() -> Result<XvcRoot> {
             force: false,
         },
     )?;
-    // watch!(xvc_root);
     Ok(xvc_root)
 }
 

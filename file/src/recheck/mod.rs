@@ -90,24 +90,17 @@ pub fn cmd_recheck(
     let conf = xvc_root.config();
     // We copy this before
     let requested_recheck_method = cli_opts.recheck_method;
-    watch!(requested_recheck_method);
 
     let opts = cli_opts.update_from_conf(conf)?;
     let current_dir = conf.current_dir()?;
     let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
-    watch!(targets);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
-    watch!(stored_xvc_path_store);
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
-    watch!(stored_xvc_metadata_store);
     let target_files = only_file_targets(&stored_xvc_metadata_store, &targets)?;
-    watch!(target_files);
     let target_xvc_path_metadata_map = xvc_path_metadata_map_from_disk(xvc_root, &target_files);
-    watch!(target_xvc_path_metadata_map);
 
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
-    watch!(stored_recheck_method_store);
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
     let default_recheck_method = RecheckMethod::from_conf(xvc_root.config());
@@ -145,9 +138,7 @@ pub fn cmd_recheck(
         !opts.no_parallel,
     );
 
-    watch!(content_digest_diff);
     recheck_method_targets.retain(|xe, _| {
-        watch!(content_digest_diff.get(xe));
         if content_digest_diff.contains_key(xe)
             && matches!(
                 content_digest_diff[xe],
@@ -170,28 +161,20 @@ pub fn cmd_recheck(
     let no_digest_targets =
         content_digest_diff.filter(|_, d| matches!(d, Diff::ActualMissing { .. }));
 
-    watch!(no_digest_targets);
     // We recheck files
     // - if they are not in the workspace
     // - if their recheck method is different from the current recheck method
     // - if they are in the workspace but force is set
 
-    watch!(target_files);
-
     let files_to_recheck = target_files.filter(|xe, _| {
         opts.force || recheck_method_targets.contains_key(xe) || no_digest_targets.contains_key(xe)
     });
-
-    watch!(files_to_recheck);
 
     // We only record the diffs if they are in files to recheck
     let recordable_recheck_method_diff =
         recheck_method_diff.subset(files_to_recheck.keys().copied())?;
     let recordable_content_digest_diff =
         content_digest_diff.subset(files_to_recheck.keys().copied())?;
-
-    watch!(recordable_recheck_method_diff);
-    watch!(recordable_content_digest_diff);
 
     let updated_recheck_method_store = apply_diff(
         &stored_recheck_method_store,
@@ -200,15 +183,12 @@ pub fn cmd_recheck(
         false,
     )?;
 
-    watch!(updated_recheck_method_store);
-
     let updated_content_digest_store = apply_diff(
         &stored_content_digest_store,
         &recordable_content_digest_diff,
         true,
         false,
     )?;
-    watch!(updated_content_digest_store);
 
     recheck(
         output_snd,
@@ -297,10 +277,8 @@ fn recheck(
     let inner = |xe, xvc_path: &XvcPath| -> Result<()> {
         let content_digest = content_digest_store[&xe];
         let cache_path = XvcCachePath::new(xvc_path, &content_digest)?;
-        watch!(cache_path);
         if cache_path.to_absolute_path(xvc_root).exists() {
             let target_path = xvc_path.to_absolute_path(xvc_root);
-            watch!(target_path);
             if target_path.exists() {
                 info!(output_snd, "[EXISTS] {target_path}");
                 fs::remove_file(&target_path)?;

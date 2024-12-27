@@ -106,7 +106,6 @@ where
                 Some(e) => e,
                 None => gen.next_element(),
             };
-            watch!(key);
             hstore.map.insert(key, value.clone());
         }
         hstore

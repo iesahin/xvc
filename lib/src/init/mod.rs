@@ -49,7 +49,6 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         .clone()
         .path
         .unwrap_or_else(|| env::current_dir().unwrap());
-    watch!(&path);
     // Check whether we are inside a repository
     match xvc_root_opt {
         Some(xvc_root) => {
@@ -95,10 +94,8 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         include_environment_config: true,
         command_line_config: None,
     };
-    watch!(config_opts);
 
     let xvc_root = init_xvc_root(&path, config_opts)?;
-    watch!(xvc_root);
     xvc_pipeline::init(&xvc_root)?;
     xvc_file::init(&xvc_root)?;
     Ok(xvc_root)

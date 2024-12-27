@@ -31,11 +31,9 @@ pub struct ShareCLI {
 pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCLI) -> Result<()> {
     // TODO: TIDY UP these implementation to reuse code in other places
     let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
-    watch!(storage);
     let current_dir = xvc_root.config().current_dir()?;
     let targets =
         load_targets_from_store(output_snd, xvc_root, current_dir, &Some(vec![opts.target]))?;
-    watch!(targets);
 
     let target_file_xvc_metadata = xvc_root
         .load_store::<XvcMetadata>()?
@@ -59,15 +57,9 @@ pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCL
 
     let target_content_digest = uwo!(content_digest_store.get(target_file_e), output_snd);
 
-    watch!(target_content_digest);
-
     let cache_path = XvcCachePath::new(target_file, target_content_digest)?;
 
-    watch!(cache_path);
-
     let duration = humantime::parse_duration(&opts.duration)?;
-
-    watch!(duration);
 
     storage.share(output_snd, xvc_root, &cache_path, duration)?;
     Ok(())

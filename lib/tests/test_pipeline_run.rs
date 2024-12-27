@@ -50,7 +50,6 @@ fn test_pipeline_run() -> Result<()> {
     };
 
     create_pipeline()?;
-    watch!("Before first");
     let _run_res = x(&["run"])?;
     println!("run_res: {}", _run_res);
     assert!(Path::new("src-files.txt").exists());

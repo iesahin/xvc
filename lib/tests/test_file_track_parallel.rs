@@ -52,9 +52,7 @@ fn test_file_track_parallel() -> Result<()> {
         ".xvc/b3/a57/262/2134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1/0.bin";
     let file_0 = "file-0000.bin";
     let track_file_0 = x(&["track", file_0])?;
-    watch!(track_file_0);
     let cache_path = xvc_root.absolute_path().join(images_cache_path);
-    watch!(cache_path);
 
     assert!(cache_path.exists());
 
@@ -67,7 +65,6 @@ fn test_file_track_parallel() -> Result<()> {
     );
 
     let gitignore_1 = fs::read_to_string(&gitignore_file_1)?;
-    watch!(gitignore_1);
 
     assert!(
         gitignore_1.lines().filter(|l| l.ends_with(file_0)).count() == 1,
@@ -87,7 +84,6 @@ fn test_file_track_parallel() -> Result<()> {
         .count();
 
     let track_dir_to_add = x(&["track", dir_to_add])?;
-    watch!(track_dir_to_add);
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3")
         .into_iter()
@@ -126,7 +122,6 @@ fn test_file_track_parallel() -> Result<()> {
     let n_files_before = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
     // re add should change n_files
     let second_add = x(&["track", file_0])?;
-    watch!(second_add);
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
     assert!(

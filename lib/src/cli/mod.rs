@@ -378,8 +378,6 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                 }
             };
 
-            watch!("Before handle_git_automation");
-
             match xvc_root_opt {
                 Some(ref xvc_root) => {
                     xvc_root.record();

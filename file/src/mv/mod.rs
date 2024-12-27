@@ -207,7 +207,6 @@ pub fn cmd_move(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: MoveCLI)
     })?;
 
     let mut recheck_entities = Vec::<XvcEntity>::new();
-    watch!(source_dest_store);
     xvc_root.with_store_mut(|recheck_method_store: &mut XvcStore<RecheckMethod>| {
         for (source_xe, dest_path) in source_dest_store.iter() {
             let source_path = stored_xvc_path_store.get(source_xe).unwrap();
@@ -225,8 +224,6 @@ pub fn cmd_move(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: MoveCLI)
             if dest_recheck_method != source_recheck_method {
                 recheck_method_store.update(*source_xe, dest_recheck_method);
             }
-            watch!(source_recheck_method);
-            watch!(dest_recheck_method);
             match (source_recheck_method, dest_recheck_method) {
                 // If both are copy, move the file
                 (RecheckMethod::Copy, RecheckMethod::Copy) => {
@@ -255,19 +252,15 @@ pub fn cmd_move(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: MoveCLI)
                 // Moving symlinks relatively etc. is too much complexity for little gain.
                 _ => {
                     let source_path = source_path.to_absolute_path(xvc_root);
-                    watch!(source_path);
                     if source_path.exists() {
                         uwr!(fs::remove_file(&source_path), output_snd);
                     }
                     recheck_entities.push(*source_xe);
-                    watch!(recheck_entities);
                 }
             }
         }
         Ok(())
     })?;
-
-    watch!(recheck_entities);
 
     if !opts.no_recheck {
         recheck_destination(output_snd, xvc_root, &recheck_entities)?;

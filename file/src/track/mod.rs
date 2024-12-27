@@ -138,7 +138,6 @@ pub fn cmd_track(
         &opts.targets,
         filter_git_files,
     )?;
-    watch!(targets);
     let requested_recheck_method = opts.recheck_method;
     let text_or_binary = opts.text_or_binary.unwrap_or_default();
     let no_parallel = opts.no_parallel;
@@ -203,15 +202,12 @@ pub fn cmd_track(
         !no_parallel,
     );
 
-    watch!(content_digest_diff);
-
     update_store_records(xvc_root, &xvc_path_diff, true, false)?;
     update_store_records(xvc_root, &xvc_metadata_diff, true, false)?;
     update_store_records(xvc_root, &recheck_method_diff, true, false)?;
     update_store_records(xvc_root, &text_or_binary_diff, true, false)?;
     update_store_records(xvc_root, &content_digest_diff, true, false)?;
 
-    watch!(targets);
     let file_targets: Vec<XvcPath> = targets
         .iter()
         .filter_map(|(xp, xmd)| {
@@ -240,9 +236,6 @@ pub fn cmd_track(
         .collect();
 
     let current_gitignore = build_gitignore(xvc_root)?;
-
-    watch!(file_targets);
-    watch!(dir_targets);
 
     update_dir_gitignores(xvc_root, &current_gitignore, &dir_targets)?;
     // We reload gitignores here to make sure we ignore the given dirs
@@ -283,7 +276,6 @@ pub fn cmd_track(
                 })
             })
             .collect();
-        watch!(xvc_paths_to_carry);
 
         let cache_paths = updated_content_digest_store
             .iter()

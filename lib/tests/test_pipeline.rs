@@ -2,8 +2,8 @@ mod common;
 
 use common::*;
 use xvc::error::Result;
-use xvc_config::XvcVerbosity;
 use xvc::watch;
+use xvc_config::XvcVerbosity;
 
 #[test]
 fn test_pipeline() -> Result<()> {
@@ -45,8 +45,6 @@ fn test_pipeline() -> Result<()> {
         "--command",
         "touch abc.txt",
     ])?;
-
-    watch!(res);
 
     x(&[
         "-p",

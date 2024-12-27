@@ -226,7 +226,6 @@ pub fn sorted_files(dir: &Path) -> Result<Vec<PathBuf>> {
 /// It gets files with [sorted_files] and returns the last one if there is one.
 /// If there are no files in a directory, this returns `Ok(None)`.
 pub fn most_recent_file(dir: &Path) -> Result<Option<PathBuf>> {
-    watch!(dir);
     if !dir.exists() {
         return Ok(None);
     }
@@ -236,7 +235,6 @@ pub fn most_recent_file(dir: &Path) -> Result<Option<PathBuf>> {
     if files.is_empty() {
         Ok(None)
     } else {
-        watch!(files);
         Ok(files.last().cloned())
     }
 }

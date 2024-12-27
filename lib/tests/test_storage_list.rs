@@ -42,11 +42,7 @@ fn test_storage_list() -> Result<()> {
         storage_dir.to_string_lossy().as_ref(),
     ])?;
 
-    watch!(out);
-
     let list_out = x(&["storage", "list"])?;
-
-    watch!(list_out);
 
     // The output table should contain
     // - name

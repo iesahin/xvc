@@ -67,7 +67,6 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
     let current_dir = xvc_root.config().current_dir()?;
     let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
     let force = opts.force;
-    watch!(targets);
 
     let target_xvc_metadata = xvc_root
         .load_store::<XvcMetadata>()?
@@ -82,7 +81,6 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
     let content_digest_store: XvcStore<ContentDigest> = xvc_root.load_store()?;
 
     let target_content_digests = content_digest_store.subset(target_files.keys().copied())?;
-    watch!(target_content_digests);
 
     assert! {
         target_content_digests.len() == target_files.len(),
@@ -115,8 +113,6 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
         })
         .collect();
 
-    watch!(cache_paths);
-
     let (temp_dir, event) = storage
         .receive(
             output_snd,
@@ -129,9 +125,6 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
             opts.force,
         )
         .map_err(|e| xvc_core::Error::from(anyhow::anyhow!("Remote error: {}", e)))?;
-
-    watch!(temp_dir);
-    watch!(event);
 
     let path_sync = PathSync::new();
     // Move the files from temp dir to cache
@@ -165,10 +158,8 @@ pub fn fetch(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: &BringCLI) 
 /// - [checkout][cmd_checkout] them from storage if `opts.no_checkout` is false. (default)
 pub fn cmd_bring(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: BringCLI) -> Result<()> {
     fetch(output_snd, xvc_root, &opts)?;
-    watch!("Fetch completed");
     if !opts.no_recheck {
         let recheck_targets = opts.targets.clone();
-        watch!(recheck_targets);
 
         let recheck_opts = RecheckCLI {
             recheck_method: opts.recheck_as,

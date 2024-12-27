@@ -35,10 +35,8 @@ pub struct SendCLI {
 /// Send a targets in `opts.targets` in `xvc_root`  to `opt.remote`
 pub fn cmd_send(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: SendCLI) -> Result<()> {
     let remote = get_storage_record(output_snd, xvc_root, &opts.storage)?;
-    watch!(remote);
     let current_dir = xvc_root.config().current_dir()?;
     let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
-    watch!(targets);
 
     let target_file_xvc_metadata = xvc_root
         .load_store::<XvcMetadata>()?
@@ -52,7 +50,6 @@ pub fn cmd_send(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: SendCLI)
     let content_digest_store: XvcStore<ContentDigest> = xvc_root.load_store()?;
 
     let target_content_digests = content_digest_store.subset(target_files.keys().copied())?;
-    watch!(target_content_digests);
 
     assert! {
         target_content_digests.len() == target_files.len(),
@@ -73,8 +70,6 @@ pub fn cmd_send(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: SendCLI)
             })
         })
         .collect();
-
-    watch!(cache_paths);
 
     remote
         .send(

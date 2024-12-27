@@ -103,7 +103,6 @@ pub fn cmd_untrack(
     if let Some(restore_dir) = opts.restore_versions {
         const VERSION_ID_LEN: usize = 15;
         let abs_restore_dir = current_dir.join(restore_dir);
-        watch!(abs_restore_dir);
         if abs_restore_dir.is_file() {
             panic!(
                 output_snd,
