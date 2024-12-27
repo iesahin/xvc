@@ -9,7 +9,7 @@ use rayon::iter::{FromParallelIterator, ParallelIterator};
 
 use std::collections::hash_map::IterMut;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
-
+use std::convert::From;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::iter::{FromIterator, Iterator};
@@ -229,6 +229,113 @@ impl<T> HStore<T> {
             }
         }
         imap
+    }
+
+    /// Performs a left join with [XvcEntity] keys.
+    ///
+    /// The returned store contains `(T, Option<U>)` values that correspond to the identical
+    /// `XvcEntity` values.
+    ///
+    /// ## Example
+    ///
+    /// If this store has
+    ///
+    /// `{10: "John Doe", 12: "George Mason", 19: "Ali Canfield"}`,
+    /// and the `other` store contains
+    /// `{10: "Carpenter", 17: "Developer", 19: "Artist" }`
+    ///
+    /// `left_join` will return
+    ///
+    /// `{10: ("John Doe", Some("Carpenter")), 12: ("George Mason", None), 19: ("Ali Canfield",
+    /// Some("Artist")}`
+    ///
+    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
+    /// if your stores don't use filtering
+    pub fn left_join<U>(&self, other: HStore<U>) -> HStore<(T, Option<U>)>
+    where
+        T: Storable,
+        U: Storable,
+    {
+        let mut joined = HStore::<(T, Option<U>)>::new();
+        for (entity, value) in self.map.iter() {
+            joined.insert(*entity, (value.clone(), other.get(entity).cloned()));
+        }
+
+        joined
+    }
+
+    /// Performs a full join with [XvcEntity] keys.
+    ///
+    /// The returned store contains `(Option<T>, Option<U>)` values that correspond to the
+    /// identical `XvcEntity` values.
+    ///
+    /// ## Example
+    ///
+    /// If this store has
+    ///
+    /// `{10: "John Doe", 12: "George Mason", 19: "Ali Canfield"}`,
+    /// and the `other` store contains
+    /// `{10: "Carpenter", 17: "Developer", 15: "Plumber",  19: "Artist" }`
+    ///
+    /// `full_join` will return
+    ///
+    /// `{10: (Some("John Doe"), Some("Carpenter")),
+    ///   12: (Some("George Mason"), None),
+    ///   15: (None, Some("Plumber"))
+    ///   19: (Some("Ali Canfield"), Some("Artist")}`
+    ///
+    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
+    /// if your stores don't use filtering
+    pub fn full_join<U>(&self, other: HStore<U>) -> HStore<(Option<T>, Option<U>)>
+    where
+        T: Storable,
+        U: Storable,
+    {
+        let all_keys = self.keys().chain(other.keys()).collect::<HashSet<_>>();
+        let mut joined = HStore::<(Option<T>, Option<U>)>::new();
+        for entity in all_keys.into_iter() {
+            joined.insert(
+                *entity,
+                (self.get(entity).cloned(), other.get(entity).cloned()),
+            );
+        }
+
+        joined
+    }
+
+    /// Performs a join with [XvcEntity] keys.
+    ///
+    /// The returned store contains `(T, U)` values that correspond to the
+    /// identical `XvcEntity` values for values that exist in both stores.
+    ///
+    /// ## Example
+    ///
+    /// If this store has
+    ///
+    /// `{10: "John Doe", 12: "George Mason", 19: "Ali Canfield"}`,
+    /// and the `other` store contains
+    /// `{10: "Carpenter", 17: "Developer", 15: "Plumber",  19: "Artist" }`
+    ///
+    /// `join` will return
+    ///
+    /// `{10: ("John Doe", "Carpenter"),
+    ///   19: ("Ali Canfield", "Artist")}`
+    ///
+    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
+    /// if your stores don't use filtering
+    pub fn join<U>(&self, other: HStore<U>) -> HStore<(T, U)>
+    where
+        T: Storable,
+        U: Storable,
+    {
+        let mut joined = HStore::<(T, U)>::new();
+        self.map.iter().for_each(|(entity, value)| {
+            if let Some(other_value) = other.get(entity) {
+                joined.insert(*entity, (value.clone(), other_value.clone()));
+            }
+        });
+
+        joined
     }
 
     /// returns a subset of the store defined by iterator of XvcEntity
