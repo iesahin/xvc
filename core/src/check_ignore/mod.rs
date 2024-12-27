@@ -63,16 +63,12 @@ pub fn cmd_check_ignore<R: BufRead>(
         &walk_options.ignore_filename.unwrap_or_default(),
     )?;
 
-    watch!(ignore_rules);
-    watch!(opts.targets);
-
     if !opts.targets.is_empty() {
         let xvc_paths = opts
             .targets
             .iter()
             .map(|p| XvcPath::new(xvc_root, current_dir, &PathBuf::from(p)))
             .collect::<Result<Vec<XvcPath>>>()?;
-        watch!(xvc_paths);
         check_ignore_paths(xvc_root, &ignore_rules, &xvc_paths)
     } else {
         check_ignore_stdin(input, output_snd, xvc_root, &ignore_rules)

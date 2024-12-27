@@ -73,13 +73,8 @@ pub fn load_xvc_root(config_opts: XvcConfigParams) -> Result<XvcRoot> {
     let path = config_opts.current_dir.as_ref();
 
     match XvcRootInner::find_root(path) {
-        Ok(absolute_path) => {
-            Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?))
-        }
-        Err(e) => {
-            watch!(&e);
-            Err(e)
-        }
+        Ok(absolute_path) => Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?)),
+        Err(e) => Err(e),
     }
 }
 
@@ -268,7 +263,6 @@ impl XvcRootInner {
         }
         Err(Error::CannotFindXvcRoot { path: path.into() })
     }
-
 
     /// Record the entity generator to the disk
     pub fn record(&self) {

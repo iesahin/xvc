@@ -38,7 +38,6 @@ pub fn run(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: RootCLI) -> R
         let rel_dir = RelativePath::new(&current_dir.to_string_lossy()).relative(
             RelativePath::new(&xvc_root.absolute_path().to_string_lossy()),
         );
-        watch!(rel_dir);
         if rel_dir == "" {
             output!(output_snd, ".");
         } else {
