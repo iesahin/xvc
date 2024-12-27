@@ -101,8 +101,8 @@ fn test_file_list() -> Result<()> {
 
     // There must be 30 elements in total. 6 x 5: directories and files
     assert!(
-        count_no_dots_no_summary == 25,
-        "count_no_dots_no_dirs_no_summary: {} {}",
+        count_no_dots_no_summary == 30,
+        "count_no_dots_no_summary: {} {}",
         count_no_dots_no_summary,
         list_no_dots_no_summary
     );
