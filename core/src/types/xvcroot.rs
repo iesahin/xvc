@@ -255,9 +255,7 @@ impl XvcRootInner {
 
         for parent in abs_path.ancestors() {
             let xvc_candidate = parent.join(XVC_DIR);
-            watch!(xvc_candidate);
             if parent.join(XVC_DIR).is_dir() {
-                watch!(parent);
                 return Ok(parent.into());
             }
         }

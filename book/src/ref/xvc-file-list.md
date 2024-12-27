@@ -265,7 +265,7 @@ Total #: 33 Workspace Size:       51455 Cached Size:           0
 You can also hide the summary below the list to get only the list of files.
 
 ```console
-DX         224 [..]                   dir-0001
+$ xvc file list --no-summary
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
 FX        2003 [..]          d2432259 dir-0001/file-0003.bin

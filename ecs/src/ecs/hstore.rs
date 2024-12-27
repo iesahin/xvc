@@ -102,7 +102,6 @@ where
     {
         let mut hstore = HStore::<T>::new();
         for value in values {
-            watch!(value);
             let key = match store.entity_by_value(&value) {
                 Some(e) => e,
                 None => gen.next_element(),

@@ -21,9 +21,6 @@ use crate::CHANNEL_BOUND;
 
 use crossbeam_channel::{bounded, Receiver, Sender};
 
-
-
-
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 
 use super::pmp::XvcPathMetadataProvider;
@@ -47,12 +44,7 @@ pub fn path_metadata_channel(sender: Sender<Result<PathMetadata>>, start_dir: &P
     let ignore_rules = Arc::new(RwLock::new(IgnoreRules::empty(start_dir, None)));
     let (w_sender, w_receiver) = bounded(CHANNEL_BOUND);
 
-    xvc_walker::walk_parallel::walk_parallel(
-        ignore_rules,
-        start_dir,
-        walk_options,
-        w_sender,
-    )?;
+    xvc_walker::walk_parallel::walk_parallel(ignore_rules, start_dir, walk_options, w_sender)?;
     for pm in w_receiver {
         sender.send(Ok(pm?))?;
     }
@@ -102,7 +94,6 @@ pub fn glob_paths(
     glob: &str,
 ) -> Result<XvcPathMetadataMap> {
     let full_glob = format!("{}{}", root_dir, glob);
-    watch!(full_glob);
     pmp.glob_paths(&full_glob)
 }
 

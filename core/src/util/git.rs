@@ -64,7 +64,6 @@ pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -
         .iter()
         .map(|s| OsString::from_str(s).unwrap())
         .collect();
-    watch!(args);
     let proc_res = Exec::cmd(git_command).args(&args).capture()?;
 
     match proc_res.exit_status {
@@ -95,7 +94,6 @@ pub fn get_git_tracked_files(git_command: &str, xvc_directory: &str) -> Result<V
         // it to off.
         &["-c", "core.quotepath=off", "ls-files", "--full-name"],
     )?;
-    watch!(git_ls_files_out);
     let git_ls_files_out = git_ls_files_out
         .lines()
         .map(|s| s.to_string())
@@ -115,8 +113,6 @@ pub fn stash_user_staged_files(
         xvc_directory,
         &["diff", "--name-only", "--cached"],
     )?;
-
-    watch!(git_diff_staged_out);
 
     // If so stash them
     if !git_diff_staged_out.trim().is_empty() {
@@ -234,7 +230,6 @@ pub fn git_auto_commit(
         ],
     ) {
         Ok(git_add_output) => {
-            watch!(git_add_output);
             if git_add_output.trim().is_empty() {
                 debug!(output_snd, "No files to commit");
                 return Ok(());
@@ -324,22 +319,14 @@ mod test {
     fn test_gitignore(path: &str, gitignore_path: &str, ignore_line: &str) -> M {
         test_logging(log::LevelFilter::Trace);
         let git_root = temp_git_dir();
-        watch!(git_root);
         let path = git_root.join(PathBuf::from(path));
-        watch!(path);
         let gitignore_path = git_root.join(PathBuf::from(gitignore_path));
-        watch!(gitignore_path);
         if let Some(ignore_dir) = gitignore_path.parent() {
-            watch!(ignore_dir);
             fs::create_dir_all(ignore_dir).unwrap();
-            watch!(ignore_dir.exists());
         }
         fs::write(&gitignore_path, format!("{}\n", ignore_line)).unwrap();
-        watch!(gitignore_path.exists());
 
         let gitignore = build_ignore_patterns("", &git_root, ".gitignore").unwrap();
-
-        watch!(gitignore);
 
         gitignore.check(&path)
     }

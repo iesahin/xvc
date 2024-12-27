@@ -38,11 +38,8 @@ pub fn stdin_channel() -> Receiver<String> {
                     break;
                 }
                 let mut input = stdin.lock();
-                watch!(&input);
                 let mut buf = Vec::<u8>::new();
-                watch!(&buf);
                 let read_bytes = input.read(&mut buf)?;
-                watch!(&buf);
                 if read_bytes > 0 {
                     let s = String::from_utf8(buf);
                     input_snd
@@ -51,11 +48,8 @@ pub fn stdin_channel() -> Receiver<String> {
                 }
                 drop(input);
                 sleep(Duration::from_millis(10));
-
-                watch!("Input looping");
             }
 
-            watch!("Exit input loop");
             Ok(())
         });
     })
