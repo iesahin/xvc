@@ -339,15 +339,14 @@ impl<T> HStore<T> {
     }
 
     /// returns a subset of the store defined by iterator of XvcEntity
-    pub fn subset<I>(&self, keys: I) -> Result<HStore<T>>
+    pub fn subset<I>(&self, keys: &[XvcEntity]) -> Result<HStore<T>>
     where
-        I: Iterator<Item = XvcEntity>,
         T: Clone,
     {
         let mut map = HashMap::<XvcEntity, T>::with_capacity(self.len());
         for e in keys {
-            if let Some(v) = self.get(&e) {
-                map.insert(e, v.clone());
+            if let Some(v) = self.get(e) {
+                map.insert(*e, v.clone());
             } else {
                 Error::CannotFindKeyInStore { key: e.to_string() }.warn();
             }
