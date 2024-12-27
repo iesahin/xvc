@@ -11,6 +11,8 @@ use chrono;
 use clap::Parser;
 
 use std::collections::{HashMap, HashSet};
+use std::fmt::Display;
+use std::fmt::Formatter;
 use std::path::Path;
 use std::str::FromStr;
 use std::time::SystemTime;
@@ -670,17 +672,7 @@ pub fn cmd_list_inner(
     )?;
     watch!(&all_from_disk);
 
-    let is_dot_path = |path_str| path_str.starts_with('.') || path_str.contains("./");
-
-    let path_filter_fn = match (opts.show_dot_files, opts.show_directories) {
-        (true, true) => |_, _| true,
-
-        (true, false) => |path, md: &XvcMetadata| !md.is_dir(),
-        (false, true) => |path, _| !path.is_dot_path(),
-        (false, false) => |path, md| !path.is_dot_path() && !md.is_dir(),
-    };
-
-    let from_disk = filter_xvc_path_metadata_map(all_from_disk, path_filter_fn);
+    let from_disk = filter_xvc_path_metadata_map(all_from_disk, opts);
 
     watch!(from_disk);
 
@@ -691,12 +683,11 @@ pub fn cmd_list_inner(
 
     let recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
 
-    let filter_keys =
-        filter_xvc_path_xvc_metadata_stores(&from_store, &xvc_metadata_store, path_filter_fn);
+    let filter_keys = filter_xvc_path_xvc_metadata_stores(&from_store, &xvc_metadata_store, opts);
 
-    let from_store = from_store.subset(&filter_keys)?;
-    let xvc_metadata_store = xvc_metadata_store.subset(&filter_keys)?;
-    let recheck_method_store = recheck_method_store.subset(&filter_keys)?;
+    let from_store = from_store.subset(filter_keys.iter().copied())?;
+    let xvc_metadata_store = xvc_metadata_store.subset(filter_keys.iter().copied())?;
+    let recheck_method_store = recheck_method_store.subset(filter_keys.into_iter())?;
 
     let matches = match_store_and_disk_paths(
         from_disk,
@@ -827,9 +818,9 @@ fn fill_recorded_content_digests(
 /// 4. Paths that are on disk but not in the store
 fn match_store_and_disk_paths(
     from_disk: HashMap<XvcPath, XvcMetadata>,
-    from_store: xvc_ecs::HStore<XvcPath>,
-    stored_xvc_metadata: xvc_ecs::XvcStore<XvcMetadata>,
-    stored_recheck_method: xvc_ecs::XvcStore<RecheckMethod>,
+    from_store: HStore<XvcPath>,
+    stored_xvc_metadata: HStore<XvcMetadata>,
+    stored_recheck_method: HStore<RecheckMethod>,
 ) -> Vec<PathMatch> {
     // Now match actual and recorded paths
 
@@ -904,25 +895,51 @@ fn match_store_and_disk_paths(
 
 fn filter_xvc_path_metadata_map(
     all_from_disk: HashMap<XvcPath, XvcMetadata>,
-    filter_fn: impl Fn(&XvcPath, &XvcMetadata) -> bool,
+    opts: &ListCLI,
 ) -> HashMap<XvcPath, XvcMetadata> {
+    let filter_fn = match (opts.show_dot_files, opts.show_directories) {
+        (true, true) => |_, _| true,
+
+        (true, false) => |_, md: &XvcMetadata| !md.is_dir(),
+        (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
+        (false, false) => |path: &XvcPath, md: &XvcMetadata| {
+            !(path.starts_with_str(".") || path.contains("./")) && !md.is_dir()
+        },
+    };
+
     all_from_disk
-        .into_iter()
-        .filter(|(path, md)| filter_fn(path, md))
+        .iter()
+        .filter_map(|(path, md)| {
+            if filter_fn(path, md) {
+                Some((path.clone(), md.clone()))
+            } else {
+                None
+            }
+        })
         .collect()
 }
 
 fn filter_xvc_path_xvc_metadata_stores(
     xvc_path_store: &HStore<XvcPath>,
     xvc_metadata_store: &XvcStore<XvcMetadata>,
-    filter_fn: impl Fn(&XvcPath, &XvcMetadata) -> bool,
+    opts: &ListCLI,
 ) -> HashSet<XvcEntity> {
+    let filter_fn = match (opts.show_dot_files, opts.show_directories) {
+        (true, true) => |_, _| true,
+
+        (true, false) => |_, md: &XvcMetadata| !md.is_dir(),
+        (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
+        (false, false) => |path: &XvcPath, md: &XvcMetadata| {
+            !(path.starts_with_str(".") || path.contains("./")) && !md.is_dir()
+        },
+    };
+
     xvc_path_store
         .iter()
         .filter_map(|(xvc_entity, xvc_path)| {
             if let Some(xvc_metadata) = xvc_metadata_store.get(xvc_entity) {
                 if filter_fn(xvc_path, xvc_metadata) {
-                    Some(xvc_entity)
+                    Some(*xvc_entity)
                 } else {
                     None
                 }
