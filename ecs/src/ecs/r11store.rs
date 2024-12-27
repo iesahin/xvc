@@ -67,7 +67,6 @@ where
     /// let entity: XvcEntity = (100u64, 200u64).into();
     /// rs.insert(&entity, "left component".into(), "right component".to_string());
     /// ```
-
     pub fn left_to_right(&self, entity: &XvcEntity) -> Option<(&XvcEntity, &U)> {
         self.right.get_key_value(entity)
     }
@@ -92,7 +91,6 @@ where
     /// rs.insert(&entity, "left component".into(), "right component".into());
     /// let t = rs.tuple(&entity);
     /// ```
-
     pub fn tuple(&self, entity: &XvcEntity) -> (Option<&T>, Option<&U>) {
         (self.left.get(entity), self.right.get(entity))
     }
@@ -141,6 +139,19 @@ where
             None => None,
             Some(xe) => self.left.get(&xe),
         }
+    }
+
+    /// Run a filter on the store and return elements selected by the predicate
+    pub fn filter(&self, predicate: impl Fn(&T, &U) -> bool) -> R11Store<T, U> {
+        let mut rs = R11Store::<T, U>::new();
+        for (entity, left) in self.left.iter() {
+            if let Some(right) = self.right.get(entity) {
+                if predicate(left, right) {
+                    rs.insert(entity, left.clone(), right.clone());
+                }
+            }
+        }
+        rs
     }
 }
 
