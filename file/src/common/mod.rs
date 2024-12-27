@@ -221,7 +221,6 @@ pub fn filter_paths_by_globs(
 ///
 /// This function will return an error if any of the glob patterns are invalid.
 ///
-
 pub fn build_glob_matcher(
     output_snd: &XvcOutputSender,
     dir: &Path,

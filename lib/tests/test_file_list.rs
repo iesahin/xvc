@@ -55,7 +55,7 @@ fn test_file_list() -> Result<()> {
     };
 
     let count_lines = |s: &str| s.trim().lines().filter(|l| !l.trim().is_empty()).count();
-    let list_no_dots = x(&["list", "--format", "{{name}}"])?;
+    let list_no_dots = x(&["list", "--format", "{{name}} {{rcd8}} {{acd8}}"])?;
     let count_no_dots = count_lines(&list_no_dots);
     // There must be 26 elements in total. 5 x 5: files and a line for the summary
     assert!(

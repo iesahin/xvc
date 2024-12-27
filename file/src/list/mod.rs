@@ -897,13 +897,18 @@ fn filter_xvc_path_metadata_map(
     all_from_disk: HashMap<XvcPath, XvcMetadata>,
     opts: &ListCLI,
 ) -> HashMap<XvcPath, XvcMetadata> {
+    watch!(opts.show_dot_files);
+    watch!(opts.show_directories);
     let filter_fn = match (opts.show_dot_files, opts.show_directories) {
         (true, true) => |_, _| true,
 
-        (true, false) => |_, md: &XvcMetadata| !md.is_dir(),
+        (true, false) => |_, md: &XvcMetadata| {
+            watch!(md);
+            !md.is_dir()
+        },
         (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
         (false, false) => |path: &XvcPath, md: &XvcMetadata| {
-            !(path.starts_with_str(".") || path.contains("./")) && !md.is_dir()
+            !(path.starts_with_str(".") || path.contains("./") || md.is_dir())
         },
     };
 
@@ -911,7 +916,8 @@ fn filter_xvc_path_metadata_map(
         .iter()
         .filter_map(|(path, md)| {
             if filter_fn(path, md) {
-                Some((path.clone(), md.clone()))
+                watch!(path);
+                Some((path.clone(), *md))
             } else {
                 None
             }
@@ -930,15 +936,18 @@ fn filter_xvc_path_xvc_metadata_stores(
         (true, false) => |_, md: &XvcMetadata| !md.is_dir(),
         (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
         (false, false) => |path: &XvcPath, md: &XvcMetadata| {
-            !(path.starts_with_str(".") || path.contains("./")) && !md.is_dir()
+            !(path.starts_with_str(".") || path.contains("./") || md.is_dir())
         },
     };
+
+    watch!(filter_fn);
 
     xvc_path_store
         .iter()
         .filter_map(|(xvc_entity, xvc_path)| {
             if let Some(xvc_metadata) = xvc_metadata_store.get(xvc_entity) {
                 if filter_fn(xvc_path, xvc_metadata) {
+                    watch!(xvc_path);
                     Some(*xvc_entity)
                 } else {
                     None

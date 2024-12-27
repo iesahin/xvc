@@ -100,8 +100,6 @@ impl UpdateFromXvcConfig for CarryInCLI {
 ///     XvcDigest --> CacheLocation
 ///
 /// ```
-///
-
 pub fn cmd_carry_in(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,

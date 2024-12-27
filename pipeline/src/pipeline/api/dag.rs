@@ -155,7 +155,9 @@ fn dep_identity(dep: &XvcDependency) -> Result<Identity> {
             id_from_string(&format!("{}::{}-{}", dep.path, dep.begin, dep.end))
         }
         XvcDependency::UrlDigest(dep) => id_from_string(dep.url.as_ref()),
-        XvcDependency::SqliteQueryDigest(dep) => id_from_string(&format!("{} {}", dep.path, dep.query)),
+        XvcDependency::SqliteQueryDigest(dep) => {
+            id_from_string(&format!("{} {}", dep.path, dep.query))
+        }
     }
 }
 
@@ -339,4 +341,3 @@ fn make_mermaid_graph(
 
     Ok(res_string)
 }
-
