@@ -3,7 +3,7 @@
 ## Unreleased
 
 
-## v0.6.13
+## v0.6.13 (2024-12-28)
 
 - Hide directories in xvc file list output by default and add --show-dirs option
 - Set core.quotepath=off in git ls-files call to get paths in UTF-8 to matchh
