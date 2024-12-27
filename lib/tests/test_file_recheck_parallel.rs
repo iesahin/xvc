@@ -29,9 +29,11 @@ fn test_file_recheck_parallel() -> Result<()> {
 
     let file_to_add = "file-0000.bin";
     let path_to_add = PathBuf::from(file_to_add);
+    x(&["file", "track", file_to_add])?;
     assert!(path_to_add.exists());
     fs::remove_file(file_to_add)?;
     assert!(!path_to_add.exists());
+    x(&["file", "recheck", file_to_add])?;
 
     assert!(
         PathBuf::from(file_to_add).exists(),
