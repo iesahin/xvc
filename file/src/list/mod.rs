@@ -908,6 +908,8 @@ fn filter_xvc_path_metadata_map(
         },
         (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
         (false, false) => |path: &XvcPath, md: &XvcMetadata| {
+            watch!(path);
+            watch!(md);
             !(path.starts_with_str(".") || path.contains("./") || md.is_dir())
         },
     };
