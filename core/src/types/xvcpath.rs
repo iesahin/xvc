@@ -112,6 +112,16 @@ impl XvcPath {
         self.0.starts_with(AsRef::<RelativePath>::as_ref(other))
     }
 
+    /// Checks whether this path starts with the given string
+    pub fn starts_with_str(&self, base: &str) -> bool {
+        self.0.starts_with(base)
+    }
+
+    /// Checks whether this path contains the given string
+    pub fn contains(&self, s: &str) -> bool {
+        self.0.as_str().contains(s)
+    }
+
     /// Calculates the content digest of the path
     pub fn digest(
         &self,
