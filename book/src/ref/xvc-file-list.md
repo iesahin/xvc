@@ -180,7 +180,16 @@ Total #: 25 Workspace Size:       50075 Cached Size:           0
 
 
 ```console
-$ xvc file list --show_directories
+$ xvc file list --show-directories
+? 2
+error: unexpected argument '--show_directories' found
+
+  tip: a similar argument exists: '--show-directories'
+
+Usage: xvc file list <--format <FORMAT>|--sort <SORT>|--no-summary|--show-directories|--show-dot-files|--include-git-files|TARGETS>
+
+For more information, try '--help'.
+
 ```
 
 
@@ -257,7 +266,7 @@ FX        2004 [..]          63535612 dir-0005/file-0004.bin
 FX        2005 [..]          447933dc dir-0005/file-0005.bin
 FX          12 [..]          6ecb3ffc my-git-tracked-script.sh
 
-Total #: 33 Workspace Size:       51455 Cached Size:           0
+Total #: 28 Workspace Size:       50335 Cached Size:           0
 
 
 ```

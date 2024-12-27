@@ -172,7 +172,7 @@ FH          19 [..] c85f3e81 c85f3e81 another-set/data3.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data2.txt
 FH          19 [..] c85f3e81 c85f3e81 another-set/data.txt
 
-Total #: 8 Workspace Size:         278 Cached Size:          19
+Total #: 8 Workspace Size:         276 Cached Size:          19
 
 
 ```
