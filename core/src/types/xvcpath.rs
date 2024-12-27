@@ -114,7 +114,7 @@ impl XvcPath {
 
     /// Checks whether this path starts with the given string
     pub fn starts_with_str(&self, base: &str) -> bool {
-        self.0.starts_with(base)
+        self.0.as_str().starts_with(base)
     }
 
     /// Checks whether this path contains the given string
