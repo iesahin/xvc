@@ -34,11 +34,12 @@ jobs:
             command: build
             args: "--release --features=bundled-openssl"
 
-          - os-name: Linux-riscv64
-            runs-on: ubuntu-20.04
-            target: riscv64gc-unknown-linux-gnu
-            command: build
-            args: "--release --features=bundled-openssl"
+          # FIXME: OpenSSL Compilation Errors
+          # - os-name: Linux-riscv64
+          #   runs-on: ubuntu-20.04
+          #   target: riscv64gc-unknown-linux-gnu
+          #   command: build
+          #   args: "--release --features=bundled-openssl"
 
           - os-name: Linux-aarch64
             runs-on: ubuntu-22.04
