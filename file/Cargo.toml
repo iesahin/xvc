@@ -98,7 +98,7 @@ derive_more = { version = "^1.0", features = [
 parse-size = "^1.1"
 
 [features]
-default = ["reflink"]
+default = []
 reflink = ["dep:reflink"]
 
 [dev-dependencies]
