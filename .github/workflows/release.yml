@@ -40,9 +40,27 @@ jobs:
             command: build
             args: "--release --features=bundled-openssl"
 
+          - os-name: Linux-aarch64
+            runs-on: ubuntu-22.04
+            target: aarch64-unknown-linux-musl
+            command: build
+            args: "--release --features=bundled-openssl"
+
+          - os-name: NetBSD-x86_64
+            runs-on: ubuntu-22.04
+            target: x86_64-unknown-netbsd
+            command: build
+            args: "--release --features=bundled-openssl"
+
           - os-name: Windows-x86_64
             runs-on: windows-latest
             target: x86_64-pc-windows-msvc
+            command: build
+            args: "--release --features=bundled-sqlite"
+
+          - os-name: Windows-aarch64
+            runs-on: windows-latest
+            target: aarch64-pc-windows-msvc
             command: build
             args: "--release --features=bundled-sqlite"
 
@@ -52,6 +70,11 @@ jobs:
             command: build
             args: "--release"
 
+          - os-name: macOS-aarch64
+            runs-on: macOS-latest
+            target: aarch64-apple-darwin
+            command: build
+            args: "--release"
           # more targets here ...
 
     runs-on: ${{ matrix.platform.runs-on }}
@@ -69,4 +92,5 @@ jobs:
         uses: houseabsolute/actions-rust-release@v0
         with:
           executable-name: xvc
+          changes-file: "CHANGELOG.md"
           target: ${{ matrix.platform.target }}
