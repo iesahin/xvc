@@ -24,7 +24,7 @@ xvc-config = { version = "0.6.13-alpha.4", path = "../config" }
 xvc-core = { version = "0.6.13-alpha.4", path = "../core" }
 xvc-logging = { version = "0.6.13-alpha.4", path = "../logging" }
 xvc-ecs = { version = "0.6.13-alpha.4", path = "../ecs" }
-xvc-file = { version = "0.6.13-alpha.4", path = "../file", default-features = false }
+xvc-file = { version = "0.6.13-alpha.4", path = "../file" }
 xvc-pipeline = { version = "0.6.13-alpha.4", path = "../pipeline" }
 xvc-walker = { version = "0.6.13-alpha.4", path = "../walker" }
 xvc-storage = { version = "0.6.13-alpha.4", path = "../storage", default-features = false }
@@ -91,7 +91,9 @@ predicates = "^3.1"
 
 
 [features]
-default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean", "reflink"]
+default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean"]
+# Dropped reflink from default features in 0.6.13
+reflink = ["xvc-file/reflink"]
 s3 = ["xvc-storage/s3"]
 minio = ["xvc-storage/minio"]
 r2 = ["xvc-storage/r2"]
@@ -100,7 +102,6 @@ wasabi = ["xvc-storage/wasabi"]
 digital-ocean = ["xvc-storage/digital-ocean"]
 bundled-sqlite = ["xvc-pipeline/bundled-sqlite"]
 bundled-openssl = ["xvc-storage/bundled-openssl"]
-reflink = ["xvc-file/reflink"]
 test-s3 = ["s3"]
 test-minio = ["minio"]
 test-r2 = ["r2"]
