@@ -47,11 +47,12 @@ jobs:
             command: build
             args: "--release --features=bundled-openssl"
 
-          - os-name: NetBSD-x86_64
-            runs-on: ubuntu-22.04
-            target: x86_64-unknown-netbsd
-            command: build
-            args: "--release --features=bundled-openssl"
+          # gh -R iesahin/xvc run view 12525597866 --log-failed
+          # - os-name: NetBSD-x86_64
+          #   runs-on: ubuntu-22.04
+          #   target: x86_64-unknown-netbsd
+          #   command: build
+          #   args: "--release --features=bundled-openssl"
 
           - os-name: Windows-x86_64
             runs-on: windows-latest
