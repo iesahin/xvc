@@ -20,32 +20,37 @@ jobs:
             runs-on: ubuntu-20.04
             target: x86_64-unknown-freebsd
             command: build
-            skip_tests: true
+            args: "--release --features=bundled-openssl"
 
           - os-name: Linux-x86_64
             runs-on: ubuntu-20.04
             target: x86_64-unknown-linux-musl
             command: build
+            args: "--release --features=bundled-openssl"
 
           - os-name: Linux-aarch64
             runs-on: ubuntu-20.04
             target: aarch64-unknown-linux-musl
             command: build
+            args: "--release --features=bundled-openssl"
 
           - os-name: Linux-riscv64
             runs-on: ubuntu-20.04
             target: riscv64gc-unknown-linux-gnu
             command: build
+            args: "--release --features=bundled-openssl"
 
           - os-name: Windows-x86_64
             runs-on: windows-latest
             target: x86_64-pc-windows-msvc
             command: build
+            args: "--release --features=bundled-sqlite"
 
           - os-name: macOS-x86_64
             runs-on: macOS-latest
             target: x86_64-apple-darwin
             command: build
+            args: "--release"
 
           # more targets here ...
 
@@ -58,7 +63,7 @@ jobs:
         with:
           command: ${{ matrix.platform.command }}
           target: ${{ matrix.platform.target }}
-          args: "--release"
+          args: ${{ matrix.platform.args }}
           strip: true
       - name: Publish artifacts and release
         uses: houseabsolute/actions-rust-release@v0
