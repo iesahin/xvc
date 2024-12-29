@@ -56,7 +56,7 @@ pub fn cmd_new_s3(
         Ok(())
     })?;
 
-    info!(output_snd, "S3 Storage Created: {#:?}", storage);
+    info!(output_snd, "S3 Storage Created: {:#?}", storage);
 
     Ok(())
 }

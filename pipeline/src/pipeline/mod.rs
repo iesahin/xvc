@@ -272,7 +272,6 @@ struct StepThreadParams<'a> {
 /// ```
 ///
 /// creates a dependency between `training` and `evaluation` steps.
-
 type StateTransition<'a> = Result<(XvcStepState, StepStateParams<'a>)>;
 
 pub fn the_grand_pipeline_loop(
@@ -627,7 +626,6 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     loop {
         // Send the state first
         step_state_sender.send(Some(step_state.clone()))?;
-        watch!(&step_state);
         if matches!(
             step_state,
             XvcStepState::DoneByRunning(_)
@@ -737,10 +735,7 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
             },
         };
 
-        watch!(step.name);
-        watch!(&r_next_state);
         step_state = r_next_state;
-        watch!(&step_state);
         step_params = next_params;
     }
 }
@@ -789,8 +784,6 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
             })
             .collect::<HStore<_>>();
 
-        watch!(dep_states);
-
         // if all dependencies are completed somehow (Done or Broken) move to checking run conditions
         if dep_states.iter().all(|(_, dep_state)| {
             matches!(
@@ -826,7 +819,6 @@ fn s_waiting_dependency_steps_f_dependency_steps_running<'a>(
                 params.output_snd,
                 "Dependency steps are running for step {}", params.step.name
             );
-            watch!(params.step.name);
             sleep(Duration::from_millis(params.process_poll_milliseconds));
         }
     }
@@ -918,7 +910,6 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
 
     // Check if the step dependencies have run
     {
-        watch!(params.step_dependencies);
         // Check if there are any step dependencies that we depend and done by running
         changed = params.step_dependencies.iter().any(|xe| {
             if let Ok(hstore) = params.current_states.read() {
@@ -956,7 +947,6 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
         }
     }
 
-    watch!(changed);
     if changed {
         Ok((s.diffs_has_changed(), params))
     } else {
@@ -969,13 +959,10 @@ fn s_checking_superficial_diffs<'a>(
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
     let parent_entity = params.step_e;
-    watch!(parent_entity);
     let deps = params.recorded_dependencies.children_of(&parent_entity)?;
 
-    watch!(deps);
     // if no dependencies, we assume the step needs to run always.
     if deps.is_empty() {
-        watch!(params.step.name);
         return Ok((s.superficial_diffs_changed(), params));
     }
 
@@ -989,19 +976,15 @@ fn s_checking_superficial_diffs<'a>(
             (*dep_e, cmp_diff)
         })
         .collect();
-    watch!(step_dependency_diffs);
     let mut changed = false;
 
     {
         let mut dependency_diffs = params.dependency_diffs.write()?;
         for (dep_e, diff) in step_dependency_diffs.into_iter() {
-            watch!(diff);
-            watch!(diff.changed());
             changed |= &diff.changed();
             dependency_diffs.insert(dep_e, diff);
         }
     }
-    watch!(changed);
     if changed {
         Ok((s.superficial_diffs_changed(), params))
     } else {
@@ -1026,7 +1009,6 @@ fn s_checking_thorough_diffs_f_superficial_diffs_changed<'a>(
 ) -> StateTransition<'a> {
     let parent_entity = params.step_e;
     let deps = params.recorded_dependencies.children_of(&parent_entity)?;
-    watch!(deps);
     // Normally this should be checked in the previous state, but we check it here just in case
     if deps.is_empty() {
         return Ok((s.thorough_diffs_changed(), params));
@@ -1073,7 +1055,6 @@ fn s_checking_thorough_diffs_f_superficial_diffs_ignored<'a>(
 ) -> StateTransition<'a> {
     let parent_entity = params.step_e;
     let deps = params.recorded_dependencies.children_of(&parent_entity)?;
-    watch!(deps);
     // Normally this should be checked in the previous state, but we check it here just in case
     if deps.is_empty() {
         return Ok((s.thorough_diffs_changed(), params));
@@ -1379,7 +1360,6 @@ fn s_running_f_wait_process<'a>(
     s: &RunningState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    watch!(params);
     let mut return_state: Option<XvcStepState>;
     let command_process = params.command_process.clone();
     let timeout = params.step_timeout;
@@ -1422,12 +1402,10 @@ fn s_running_f_wait_process<'a>(
                 .process
                 .as_mut()
                 .ok_or_else(|| anyhow!("Cannot find process"))?;
-            watch!(&process);
             let poll_result = process.poll();
             match poll_result {
                 // Still running:
                 None => {
-                    watch!(process);
                     if birth.elapsed() < *timeout {
                         debug!(
                             params.output_snd,
@@ -1474,13 +1452,9 @@ fn s_running_f_wait_process<'a>(
         sleep(sleep_duration);
     }
 
-    watch!(return_state);
-
     let available_slots = params.available_process_slots.clone();
     let mut available_slots = available_slots.write().unwrap();
     *available_slots += 1;
-
-    watch!(params);
 
     Ok((return_state.unwrap(), params))
 }
@@ -1489,7 +1463,6 @@ fn s_waiting_to_run_f_process_pool_full<'a>(
     s: &WaitingToRunState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    watch!(params);
     if params.available_process_slots.read()?.gt(&0) {
         Ok((s.start_process(), params))
     } else {
@@ -1500,7 +1473,6 @@ fn s_waiting_to_run_f_diffs_has_changed<'a>(
     s: &WaitingToRunState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    watch!(params);
     if params.available_process_slots.read()?.gt(&0) {
         Ok((s.start_process(), params))
     } else {
@@ -1512,7 +1484,6 @@ fn s_waiting_to_run_f_run_always<'a>(
     s: &WaitingToRunState,
     params: StepStateParams<'a>,
 ) -> StateTransition<'a> {
-    watch!(params);
     if params.available_process_slots.read()?.gt(&0) {
         Ok((s.start_process(), params))
     } else {

@@ -12,7 +12,6 @@ use std::os::windows::fs as windows_fs;
 
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
-use xvc_logging::watch;
 use xvc_walker::{IgnoreRules, PathMetadata, SharedIgnoreRules, WalkOptions};
 
 use crate::error::Error;

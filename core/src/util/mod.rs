@@ -12,7 +12,6 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use crossbeam_channel::{bounded, Receiver};
-use xvc_logging::watch;
 
 use crate::error::Result;
 use crate::{XvcMetadata, XvcPath, CHANNEL_BOUND};

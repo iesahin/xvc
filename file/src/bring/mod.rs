@@ -17,7 +17,7 @@ use clap::Parser;
 
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{debug, error, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{debug, error, uwr, warn, XvcOutputSender};
 
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};

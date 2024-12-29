@@ -29,7 +29,7 @@ use xvc_core::{
 };
 use xvc_core::{get_absolute_git_command, get_git_tracked_files, HashAlgorithm};
 use xvc_ecs::ecs::event::EventLog;
-use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{error, info, uwr, warn, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
@@ -253,7 +253,6 @@ pub fn build_glob_matcher(
 /// If some day we need to optimize first walking the ignores, then walking the
 /// directories in the targets, I'd be glad that this is used in very large
 /// repositories.
-
 pub fn targets_from_disk(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,

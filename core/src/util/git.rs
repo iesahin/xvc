@@ -3,7 +3,7 @@ use std::{ffi::OsString, path::PathBuf, str::FromStr};
 
 use crate::XvcRoot;
 use subprocess::Exec;
-use xvc_logging::{debug, watch, XvcOutputSender};
+use xvc_logging::{debug, XvcOutputSender};
 
 use crate::{Error, Result};
 use std::path::Path;
@@ -303,7 +303,6 @@ mod test {
     use super::*;
     use std::fs;
     use test_case::test_case;
-    use xvc_logging::watch;
     use xvc_test_helper::*;
     use xvc_walker::MatchResult as M;
 

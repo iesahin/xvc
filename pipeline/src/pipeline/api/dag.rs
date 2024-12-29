@@ -6,7 +6,7 @@ use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
 use xvc_config::FromConfigKey;
 use xvc_core::{XvcPath, XvcPathMetadataProvider, XvcRoot};
 use xvc_ecs::{HStore, R1NStore, XvcEntity};
-use xvc_logging::{info, output, watch, XvcOutputSender};
+use xvc_logging::{info, output, XvcOutputSender};
 
 use std::collections::HashMap;
 use std::{fs::File, io::Write};

@@ -10,7 +10,6 @@ use std::time::Instant;
 use subprocess as sp;
 
 use xvc_file::CHANNEL_CAPACITY;
-use xvc_logging::watch;
 
 use serde::{Deserialize, Serialize};
 use xvc_ecs::persist;

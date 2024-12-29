@@ -10,7 +10,6 @@ use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
 use xvc_core::XvcRoot;
-use xvc_logging::watch;
 use xvc_pipeline;
 use xvc_walker::AbsolutePath;
 

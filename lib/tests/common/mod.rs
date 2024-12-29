@@ -10,7 +10,7 @@ use xvc::init::InitCLI;
 use xvc_config::XvcVerbosity;
 
 use xvc_core::XvcRoot;
-use xvc_logging::{output, watch};
+use xvc_logging::output;
 
 use xvc::error::{Error, Result};
 
@@ -118,9 +118,9 @@ pub fn run_in_example_project() -> Result<PathBuf> {
 }
 
 pub fn run_in_example_xvc(with_git: bool) -> Result<XvcRoot> {
-    let example_project_dir = run_in_example_project()?;
+    run_in_example_project()?;
     if with_git {
-        let output = Command::new("git").arg("init").output()?;
+        Command::new("git").arg("init").output()?;
         let xvc_root = xvc::init::run(
             None,
             InitCLI {

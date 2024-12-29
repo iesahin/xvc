@@ -8,7 +8,7 @@ use crossbeam_channel::{bounded, Sender};
 
 use std::sync::{Arc, RwLock};
 use std::thread;
-use xvc_logging::{warn, watch, XvcOutputSender};
+use xvc_logging::{warn, XvcOutputSender};
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
 use xvc_walker::{Result as XvcWalkerResult, SharedIgnoreRules};
 

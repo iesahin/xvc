@@ -73,7 +73,6 @@ impl XvcStorageOperations for XvcLocalStorage {
     ) -> Result<XvcStorageInitEvent> {
         let guid_filename = self.path.join(XVC_STORAGE_GUID_FILENAME);
         // If guid filename exists, we can report a reinit and exit.
-        watch!(guid_filename);
 
         if guid_filename.exists() {
             let already_available_guid =
@@ -139,7 +138,6 @@ impl XvcStorageOperations for XvcLocalStorage {
             fs::create_dir_all(abs_storage_dir)?;
             fs::copy(&abs_cache_path, &abs_storage_path)?;
             copied_paths.push(storage_path);
-            watch!(copied_paths.len());
             info!(
                 output,
                 "{} -> {}",
@@ -175,9 +173,7 @@ impl XvcStorageOperations for XvcLocalStorage {
             let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             fs::create_dir_all(&abs_cache_dir)?;
             fs::copy(&abs_storage_path, &abs_cache_path)?;
-            watch!(abs_cache_path.exists());
             copied_paths.push(storage_path);
-            watch!(copied_paths.len());
             info!(
                 output,
                 "{} -> {}",

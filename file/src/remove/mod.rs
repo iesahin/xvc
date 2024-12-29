@@ -12,7 +12,7 @@ use itertools::Itertools;
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::XvcEntity;
-use xvc_logging::{output, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{output, uwr, warn, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 

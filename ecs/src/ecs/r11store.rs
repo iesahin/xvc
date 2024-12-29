@@ -35,7 +35,6 @@ where
     /// use xvc_ecs::R11Store;
     /// let rs = R11Store::<String, i32>::new();
     /// ```
-
     pub fn new() -> Self {
         Self {
             left: XvcStore::<T>::new(),

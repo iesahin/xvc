@@ -21,7 +21,7 @@ use xvc_core::{
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, panic, watch, XvcOutputSender};
+use xvc_logging::{debug, error, panic, XvcOutputSender};
 
 use super::FileTextOrBinary;
 
@@ -198,8 +198,7 @@ pub fn diff_file_content_digest(
             Diff::RecordMissing { actual } => {
                 let path = actual.to_absolute_path(xvc_root);
                 let actual_digest = ContentDigest::new(&path, algorithm, text_or_binary.0)?;
-                let res = compare_with_stored_digest(actual_digest);
-                res
+                compare_with_stored_digest(actual_digest)
             }
             // The path is changed. This can happen after a move
             // operation, for example.

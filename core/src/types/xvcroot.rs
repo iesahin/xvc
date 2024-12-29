@@ -254,7 +254,6 @@ impl XvcRootInner {
             .expect("Cannot canonicalize the path. Possible symlink loop.");
 
         for parent in abs_path.ancestors() {
-            let xvc_candidate = parent.join(XVC_DIR);
             if parent.join(XVC_DIR).is_dir() {
                 return Ok(parent.into());
             }

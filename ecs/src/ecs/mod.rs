@@ -27,7 +27,6 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use serde::{Deserialize, Serialize};
-use xvc_logging::watch;
 
 use crate::error::{Error as XvcError, Result};
 

@@ -398,8 +398,6 @@ impl XvcStorageOperations for XvcRsyncStorage {
                 Ok(cmd_output) => {
                     let stdout_str = cmd_output.stdout_str();
                     let stderr_str = cmd_output.stderr_str();
-                    watch!(stdout_str);
-                    watch!(stderr_str);
                     info!(output, "{}", stdout_str);
                     warn!(output, "{}", stderr_str);
                     let storage_path = XvcStoragePath::new(xvc_root, cache_path);

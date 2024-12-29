@@ -29,7 +29,6 @@ use xvc_core::root;
 use xvc_core::CHANNEL_BOUND;
 use xvc_file as file;
 use xvc_logging::setup_logging;
-use xvc_logging::watch;
 use xvc_pipeline as pipeline;
 use xvc_storage as storage;
 use xvc_walker::AbsolutePath;

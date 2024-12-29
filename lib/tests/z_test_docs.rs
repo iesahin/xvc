@@ -9,7 +9,7 @@ use anyhow::anyhow;
 use regex::Regex;
 
 use xvc::error::Result;
-use xvc_logging::{info, warn, watch};
+use xvc_logging::{info, warn};
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
@@ -188,13 +188,11 @@ fn make_output_dir_link(
     let source = templates_root.join(&dirname);
     if !source.exists() {
         let target = docs_target_dir.join(&dirname);
-        if target.exists() {
-            if target.read_link().unwrap() == source {
-                fs::remove_file(&target).unwrap_or_else(|e| {
-                    info!("Failed to remove file: {}", e);
-                    exit(1);
-                });
-            }
+        if target.exists() && target.read_link().unwrap() == source {
+            fs::remove_file(&target).unwrap_or_else(|e| {
+                info!("Failed to remove file: {}", e);
+                exit(1);
+            });
         }
         match make_symlink(&source, &target) {
             Ok(_) => (),

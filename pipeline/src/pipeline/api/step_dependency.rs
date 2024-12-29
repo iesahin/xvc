@@ -18,7 +18,7 @@ use regex::Regex;
 use url::Url;
 use xvc_core::{XvcPath, XvcRoot};
 use xvc_ecs::{R1NStore, XvcEntity};
-use xvc_logging::{debug, watch, XvcOutputSender};
+use xvc_logging::{debug, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};

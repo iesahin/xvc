@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
-use xvc_logging::{error, uwr, watch, XvcOutputSender};
+use xvc_logging::{error, uwr, XvcOutputSender};
 use xvc_walker::{build_ignore_patterns, make_watcher, IgnoreRules, MatchResult, PathEvent};
 
 use crate::error::Error;
@@ -27,6 +27,8 @@ pub struct XvcPathMetadataProvider {
     xvc_root: XvcRoot,
     path_map: Arc<RwLock<XvcPathMetadataMap>>,
     kill_signal_sender: Arc<Sender<bool>>,
+    // This is to keep the background thread and no one needs to read it currently
+    #[allow(dead_code)]
     background_thread: Arc<Mutex<JoinHandle<Result<()>>>>,
     output_sender: XvcOutputSender,
     ignore_rules: IgnoreRules,
@@ -53,6 +55,7 @@ impl XvcPathMetadataProvider {
             let fs_receiver = event_receiver_clone;
             let xvc_root = xvc_root_clone;
             // This is not used but to keep the watcher within the thread lifetime
+            #[allow(unused_variables)]
             let watcher = watcher;
 
             let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
@@ -205,10 +208,8 @@ impl XvcPathMetadataProvider {
         let mut matches = XvcPathMetadataMap::new();
         let pattern = glob::Pattern::new(glob)?;
         for (p, md) in self.path_map.read().unwrap().iter() {
-            if pattern.matches(p.as_str()) {
-                if !md.is_missing() {
-                    matches.insert(p.clone(), *md);
-                }
+            if pattern.matches(p.as_str()) && !md.is_missing() {
+                matches.insert(p.clone(), *md);
             }
         }
         Ok(matches)
