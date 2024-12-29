@@ -5,7 +5,7 @@ use log::LevelFilter;
 
 use common::*;
 use subprocess::Exec;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;

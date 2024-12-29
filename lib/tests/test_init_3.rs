@@ -7,7 +7,6 @@ use xvc::init::InitCLI;
 use xvc::error::Result;
 
 use common::*;
-use xvc::watch;
 
 // This tests the preexisting .gitignore rules bug
 // https://github.com/iesahin/xvc/issues/119

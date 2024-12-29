@@ -23,7 +23,7 @@ use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, output, watch, XvcOutputSender};
+use xvc_logging::{error, output, XvcOutputSender};
 
 /// Format specifier for file list columns
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
@@ -511,7 +511,6 @@ impl Display for ListRows {
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
 #[command(rename_all = "kebab-case")]
-
 pub struct ListCLI {
     /// A string for each row of the output table
     ///
@@ -625,7 +624,6 @@ impl UpdateFromXvcConfig for ListCLI {
 /// - <: File is newer, xvc carry-in to update the cache
 ///
 /// TODO: - I: File is ignored
-
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
     // FIXME: `opts` shouldn't be sent to the inner function, but we cannot make sure that it's
     // updated from the config files in callers. A refactoring is good here.
@@ -940,25 +938,4 @@ fn filter_xvc_path_xvc_metadata_stores(
             }
         })
         .collect()
-}
-
-fn filter_dot_files(
-    all_from_disk: HashMap<XvcPath, XvcMetadata>,
-    show_dot_files: bool,
-) -> HashMap<XvcPath, XvcMetadata> {
-    if show_dot_files {
-        all_from_disk
-    } else {
-        all_from_disk
-            .into_iter()
-            .filter_map(|(path, md)| {
-                let path_str = path.to_string();
-                if path_str.starts_with('.') || path_str.contains("./") {
-                    None
-                } else {
-                    Some((path, md))
-                }
-            })
-            .collect()
-    }
 }

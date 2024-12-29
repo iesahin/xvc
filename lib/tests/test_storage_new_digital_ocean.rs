@@ -206,7 +206,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     // remove all cache
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "do-storage"])?;
+    x(&["file", "bring", "--no-recheck", "--from", "do-storage"])?;
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -223,7 +223,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "do-storage"])?;
+    x(&["file", "bring", "--from", "do-storage"])?;
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -244,7 +244,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
     env::remove_var("DIGITAL_OCEAN_ACCESS_KEY_ID");
     env::remove_var("DIGITAL_OCEAN_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "do-storage"])?;
+    x(&["file", "bring", "--from", "do-storage"])?;
 
     clean_up(&xvc_root)
 }

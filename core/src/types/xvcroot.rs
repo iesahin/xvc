@@ -10,7 +10,6 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
-use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcConfigParams};

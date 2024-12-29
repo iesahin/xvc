@@ -8,7 +8,6 @@ use std::{fs, path::PathBuf};
 use crate::common::run_in_temp_xvc_dir;
 use regex::Regex;
 use xvc::error::{Error, Result};
-use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
@@ -51,7 +50,7 @@ fn test_file_track_parallel() -> Result<()> {
     let images_cache_path =
         ".xvc/b3/a57/262/2134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1/0.bin";
     let file_0 = "file-0000.bin";
-    let track_file_0 = x(&["track", file_0])?;
+    x(&["track", file_0])?;
     let cache_path = xvc_root.absolute_path().join(images_cache_path);
 
     assert!(cache_path.exists());
@@ -83,7 +82,7 @@ fn test_file_track_parallel() -> Result<()> {
         })
         .count();
 
-    let track_dir_to_add = x(&["track", dir_to_add])?;
+    x(&["track", dir_to_add])?;
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3")
         .into_iter()
@@ -121,7 +120,7 @@ fn test_file_track_parallel() -> Result<()> {
 
     let n_files_before = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
     // re add should change n_files
-    let second_add = x(&["track", file_0])?;
+    x(&["track", file_0])?;
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
     assert!(

@@ -8,7 +8,6 @@ use std::{fs, path::PathBuf};
 use regex::Regex;
 use subprocess::Exec;
 use xvc::error::{Error, Result};
-use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
@@ -109,7 +108,7 @@ fn test_file_track_serial() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let track_dir_to_add = x(&["track", dir_to_add, "--no-parallel"])?;
+    x(&["track", dir_to_add, "--no-parallel"])?;
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3")
         .into_iter()

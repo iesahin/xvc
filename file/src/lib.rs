@@ -52,7 +52,7 @@ use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::XvcRoot;
 use xvc_core::CHANNEL_BOUND;
-use xvc_logging::{setup_logging, watch};
+use xvc_logging::setup_logging;
 use xvc_logging::{XvcOutputLine, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 

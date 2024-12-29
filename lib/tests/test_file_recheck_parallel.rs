@@ -4,7 +4,6 @@ use log::LevelFilter;
 use std::{fs, path::PathBuf};
 
 use xvc::error::Result;
-use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};

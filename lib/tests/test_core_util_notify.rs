@@ -11,7 +11,6 @@ use std::time::Duration;
 
 use xvc::error::Result;
 
-use xvc::watch;
 use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::XVCIGNORE_FILENAME;
 
@@ -44,14 +43,14 @@ fn test_notify() -> Result<()> {
 
     let (output_sender, output_receiver) = crossbeam_channel::unbounded();
 
-    let (initial_paths, all_rules) = walk_serial(
+    let (_initial_paths, all_rules) = walk_serial(
         &output_sender,
         COMMON_IGNORE_PATTERNS,
         &temp_dir,
         &walk_options,
     )?;
     assert!(output_receiver.is_empty());
-    let (watcher, receiver) = make_polling_watcher(all_rules)?;
+    let (_watcher, receiver) = make_polling_watcher(all_rules)?;
 
     let event_handler = thread::spawn(move || {
         let mut err_counter = MAX_ERROR_COUNT;

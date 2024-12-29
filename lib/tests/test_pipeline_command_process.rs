@@ -7,7 +7,6 @@ use xvc_pipeline::{CommandProcess, XvcStep, XvcStepCommand};
 
 use xvc::error::Result;
 
-use xvc::watch;
 use xvc_test_helper::{create_directory_tree, test_logging};
 
 #[test]

@@ -4,7 +4,6 @@ use std::fs;
 use std::path::Path;
 
 use xvc::error::Result;
-use xvc::watch;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::create_directory_tree;
@@ -30,7 +29,7 @@ fn test_file_track_issue_104() -> Result<()> {
     };
 
     let dir_1 = "dir-0001/";
-    let track_dir_1 = x(&["track", dir_1, "--no-parallel"])?;
+    x(&["track", dir_1, "--no-parallel"])?;
     // Create dir-0001 and dir-0002 with files file-0001..0010.bin inside them.
 
     let root_gitignore = fs::read_to_string(xvc_root.join(Path::new(".gitignore")))?;

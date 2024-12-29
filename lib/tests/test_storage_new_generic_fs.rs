@@ -65,7 +65,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
+    x(&["file", "track", the_file])?;
 
     let n_storage_files_before = jwalk::WalkDir::new(&storage_dir)
         .into_iter()
@@ -76,7 +76,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
         })
         .count();
 
-    let push_result = x(&["file", "send", "--to", "generic-storage", the_file])?;
+    x(&["file", "send", "--to", "generic-storage", the_file])?;
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin

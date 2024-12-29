@@ -10,7 +10,6 @@ use xvc_walker::*;
 use test_case::test_case;
 
 use xvc::error::Result;
-use xvc_logging::watch;
 use xvc_test_helper::*;
 use xvc_walker::AbsolutePath;
 

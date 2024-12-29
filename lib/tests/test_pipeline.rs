@@ -2,7 +2,6 @@ mod common;
 
 use common::*;
 use xvc::error::Result;
-use xvc::watch;
 use xvc_config::XvcVerbosity;
 
 #[test]
@@ -35,7 +34,7 @@ fn test_pipeline() -> Result<()> {
     let pipelines_2 = x(&["list"])?;
     assert!(!pipelines_2.contains("pipeline-old"));
 
-    let res = x(&[
+    x(&[
         "-p",
         "pipeline-2",
         "step",

@@ -13,7 +13,7 @@ use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
 };
-use xvc_logging::{output, watch, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::common::pipe_path_digest;
