@@ -42,12 +42,6 @@ jobs:
           #   command: build
           #   args: "--release --features=bundled-openssl"
 
-          - os-name: Linux-aarch64
-            runs-on: ubuntu-22.04
-            target: aarch64-unknown-linux-musl
-            command: build
-            args: "--release --features=bundled-openssl,bundled-sqlite"
-
           # gh -R iesahin/xvc run view 12525734325 --log-failed
           # - os-name: Linux-Android
           #   runs-on: ubuntu-22.04
