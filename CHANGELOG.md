@@ -3,7 +3,7 @@
 ## Unreleased
 
 
-## v0.6.13 (2024-12-28)
+## v0.6.13 (2024-12-29)
 
 - Removed reflink from default features
 - Hide directories in xvc file list output by default and add --show-dirs option
