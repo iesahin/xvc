@@ -36,7 +36,10 @@ fn book_dirs_and_filters() -> Vec<(String, String)> {
 
     let mut howto_regex = ".*".to_owned();
     if trycmd_tests.contains("how-to") || trycmd_tests.contains("howto") {
-        watch!(std::env::var("XVC_TRYCMD_HOWTO_REGEX"));
+        info!(
+            "XVC_TRYCMD_HOWTO_REGEX: {:?}",
+            std::env::var("XVC_TRYCMD_HOWTO_REGEX")
+        );
         if let Ok(regex) = std::env::var("XVC_TRYCMD_HOWTO_REGEX") {
             howto_regex.push_str(&regex);
             howto_regex.push_str(".*");
@@ -75,9 +78,8 @@ fn link_to_docs() -> Result<()> {
 
     let templates_target_root = random_temp_dir(Some("xvc-trycmd"));
 
-    watch!(TEMPLATE_DIR);
-    watch!(templates_target_root);
-    watch!(Path::new(TEMPLATE_DIR).exists());
+    info!("TEMPLATE_DIR: {}", TEMPLATE_DIR);
+    info!("Templates Target Root: {:?}", templates_target_root);
 
     fs_extra::dir::copy(
         Path::new(TEMPLATE_DIR),
@@ -90,11 +92,9 @@ fn link_to_docs() -> Result<()> {
     .map_err(|e| anyhow::format_err!("Directory Error: {}", e))?;
 
     let docs_target_root = Path::new(DOCS_TARGET_DIR);
-    watch!(docs_target_root);
+
     remove_all_symlinks_under(docs_target_root)?;
     let book_dirs_and_filters = book_dirs_and_filters();
-
-    watch!(book_dirs_and_filters);
 
     for (doc_section_dir_name, filter_regex) in book_dirs_and_filters {
         let name_filter = Regex::new(&filter_regex).unwrap();
@@ -103,7 +103,6 @@ fn link_to_docs() -> Result<()> {
             filter_paths_under(docs_source_root, &doc_section_dir_name, name_filter);
 
         for doc_source_path in doc_source_paths {
-            watch!(doc_source_path);
             make_markdown_link(&doc_source_path, docs_target_root)?;
 
             make_input_dir_link(&doc_source_path, docs_target_root, &templates_target_root)?;
@@ -115,7 +114,6 @@ fn link_to_docs() -> Result<()> {
     Ok(())
 }
 fn markdown_link_name(doc_source_path: &Path) -> PathBuf {
-    watch!(doc_source_path);
     doc_source_path
         .to_string_lossy()
         .strip_prefix(DOCS_SOURCE_DIR)
@@ -149,9 +147,7 @@ fn output_dir_path(doc_source_path: &Path) -> PathBuf {
 
 fn make_markdown_link(doc_source_path: &Path, docs_target_dir: &Path) -> Result<PathBuf> {
     let target = docs_target_dir.join(markdown_link_name(doc_source_path));
-    watch!(&target);
     let source = Path::new("..").join(doc_source_path);
-    watch!(&source);
     if target.exists() && target.read_link().unwrap() == source {
         fs::remove_file(&target).unwrap_or_else(|e| {
             info!("Failed to remove file: {}", e);
@@ -169,12 +165,10 @@ fn make_input_dir_link(
 ) -> Result<PathBuf> {
     let dirname = input_dir_name(doc_source_path);
     let source = templates_root.join(&dirname);
-    watch!(&source);
     if !source.exists() {
         fs::create_dir_all(&source)?;
     }
     let target = docs_target_dir.join(&dirname);
-    watch!(&target);
     if target.exists() && target.read_link().unwrap() == source {
         fs::remove_file(&target).unwrap_or_else(|e| {
             info!("Failed to remove file: {}", e);
@@ -191,14 +185,10 @@ fn make_output_dir_link(
     templates_root: &Path,
 ) -> Result<PathBuf> {
     let dirname = output_dir_path(doc_source_path);
-    watch!(&dirname);
     let source = templates_root.join(&dirname);
-    watch!(source);
     if !source.exists() {
         let target = docs_target_dir.join(&dirname);
-        watch!(target.exists());
         if target.exists() {
-            watch!(target.read_link().unwrap());
             if target.read_link().unwrap() == source {
                 fs::remove_file(&target).unwrap_or_else(|e| {
                     info!("Failed to remove file: {}", e);
@@ -228,12 +218,9 @@ fn filter_paths_under(
         jwalk::WalkDir::new(test_doc_source_root.join(doc_section_dir_name))
             .into_iter()
             .filter_map(|f| {
-                watch!(f);
                 if let Ok(f) = f {
                     let file_name = f.file_name().to_string_lossy();
-                    watch!(file_name);
                     if f.metadata().unwrap().is_file() && name_filter.is_match(&file_name) {
-                        watch!((&name_filter, "matched", &file_name));
                         Some(f.path())
                     } else {
                         None
@@ -249,7 +236,6 @@ fn filter_paths_under(
 fn remove_all_symlinks_under(dir: &Path) -> Result<()> {
     //Remove all symlinks to create new ones
     jwalk::WalkDir::new(dir).into_iter().for_each(|f| {
-        watch!(f);
         if let Ok(f) = f {
             let path = f.path();
             if path.is_symlink() {
@@ -266,7 +252,6 @@ fn z_doc_tests() -> Result<()> {
     use std::time::Duration;
 
     link_to_docs()?;
-    watch!("Linking done");
 
     let xvc_th = escargot::CargoBuild::new()
         .bin("xvc-test-helper")
@@ -276,10 +261,7 @@ fn z_doc_tests() -> Result<()> {
         .run()
         .map_err(|e| anyhow!("Failed to build xvc-test-helper: {e:?}"))?;
 
-    watch!("Built xvc-test-helper");
-
     let path_to_xvc_test_helper = xvc_th.path().to_path_buf();
-    watch!(path_to_xvc_test_helper);
     assert!(path_to_xvc_test_helper.exists());
 
     let timeout = if let Ok(secs) = std::env::var("XVC_TRYCMD_DURATION") {
