@@ -11,11 +11,11 @@ use std::fmt::Display;
 use std::path::Path;
 use std::sync::Once;
 
-
 /// Debugging macro to print the given expression and its value, with the module, function and line number
 #[macro_export]
 macro_rules! watch {
     ( $( $x:expr ),* ) => {
+        // TODO: Use stdout for this and convert all tracing macros to trace!
         {
             $(
                ::log::trace!("{}: {}", stringify!($x), format!("{:#?}", $x).replace("\\n", "\n"));
@@ -98,6 +98,14 @@ macro_rules! trace {
     ( $channel:expr, $fmt:literal $(, $x:expr ),* ) => {
         {
             (&$channel).send(Some(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!())))).unwrap();
+        }
+    };
+
+    ( $( $x:expr ),* ) => {
+        {
+            $(
+               ::log::trace!("{}: {}", stringify!($x), format!("{:#?}", $x).replace("\\n", "\n"));
+            )*
         }
     };
 }
