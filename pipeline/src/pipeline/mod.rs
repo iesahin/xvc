@@ -25,7 +25,7 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use crossbeam_channel::{bounded, Receiver, Select, Sender};
 
-use xvc_logging::{debug, error, info, output, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{debug, error, info, output, trace, uwr, warn, watch, XvcOutputSender};
 
 use petgraph::algo::toposort;
 use petgraph::data::Build;
@@ -282,15 +282,13 @@ pub fn the_grand_pipeline_loop(
 ) -> Result<()> {
     let config = xvc_root.config();
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
-    watch!(pipeline_e);
 
     let pipeline_steps = xvc_root
         .load_r1nstore::<XvcPipeline, XvcStep>()?
         .children_of(&pipeline_e)?;
-    watch!(pipeline_steps);
+    trace!(pipeline_steps);
 
     let consider_changed = xvc_root.load_store::<XvcStepInvalidate>()?;
-    watch!(consider_changed);
 
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
@@ -322,7 +320,6 @@ pub fn the_grand_pipeline_loop(
         &all_deps,
         &mut dependency_graph,
     )?;
-    watch!(&dependency_graph);
     add_implicit_dependencies(
         output_snd,
         xvc_root,
@@ -333,8 +330,6 @@ pub fn the_grand_pipeline_loop(
         &pipeline_steps,
         &mut dependency_graph,
     )?;
-
-    watch!(&dependency_graph);
 
     let debug_output = Dot::new(&dependency_graph);
 
@@ -402,8 +397,6 @@ pub fn the_grand_pipeline_loop(
             .map(|(step_e, _)| (*step_e, step::XvcStepState::begin()))
             .collect(),
     ));
-
-    watch!(step_states);
 
     let process_pool_size: usize = xvc_root
         .config()
@@ -495,18 +488,14 @@ pub fn the_grand_pipeline_loop(
             })
             .collect();
 
-        watch!(&step_thread_store);
-
         // Join threads in the order we created
         step_thread_store.into_iter().for_each(|(step_e, jh)| {
-            watch!((step_e, &jh));
             if let Err(e) = jh.join() {
                 error!(output_snd, "Error in step thread: {:?}", e);
             }
         });
 
         kill_signal_sender.send(true)?;
-        watch!("Before state updater");
         state_updater.join().unwrap().unwrap();
 
         // if all of the steps are done, we can end
@@ -516,14 +505,11 @@ pub fn the_grand_pipeline_loop(
                 XvcStepState::DoneByRunning(_) | XvcStepState::DoneWithoutRunning(_)
             )
         }) {
-            watch!(step_states);
             Ok(true)
         } else {
-            watch!(step_states);
             Ok(false)
         }
     });
-    watch!(done_successfully);
     // We only save the stores if the pipeline was run successfully
     if let Ok(true) = done_successfully {
         xvc_root.with_store_mut(|store: &mut XvcStore<XvcDependency>| {
@@ -551,7 +537,6 @@ fn dependency_steps(
     dependency_graph: &DependencyGraph,
 ) -> Result<HashSet<XvcEntity>> {
     let dep_neighbors = dependency_graph.neighbors(step_e);
-    watch!(dep_neighbors);
     let mut dependencies = HashSet::new();
     for dep_neighbor in dep_neighbors {
         dependencies.insert(dep_neighbor);
@@ -600,9 +585,12 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
     let step_state_sender = params.state_sender;
     let current_states = params.current_states.clone();
     let mut step_state = XvcStepState::begin();
-    watch!(params.recorded_dependencies);
-    watch!(step_e);
-    watch!(dependency_steps(step_e, params.dependency_graph)?);
+    trace!(params.recorded_dependencies);
+
+    trace!(
+        "Dependency Steps: {:#?}",
+        dependency_steps(step_e, params.dependency_graph)?
+    );
     let step_dependencies = dependency_steps(step_e, params.dependency_graph)?;
     let step_outputs = params.recorded_outputs.children_of(&step_e)?;
     let step = &params.steps[&step_e];
