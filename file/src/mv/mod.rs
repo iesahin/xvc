@@ -17,7 +17,7 @@ use itertools::Itertools;
 use xvc_config::FromConfigKey;
 use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{info, uwr, watch, XvcOutputSender};
+use xvc_logging::{info, uwr, XvcOutputSender};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]

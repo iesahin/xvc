@@ -13,7 +13,7 @@ use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString};
-use xvc_logging::{output, uwr, watch, XvcOutputSender};
+use xvc_logging::{output, uwr, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use std::ops::Deref;

@@ -4,7 +4,7 @@ use crate::types::xvcroot::XvcRoot;
 use clap::Parser;
 
 use relative_path::RelativePath;
-use xvc_logging::{output, watch, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 
 #[derive(Debug, Parser, Clone)]
 #[command(name = "root")]

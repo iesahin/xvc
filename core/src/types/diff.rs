@@ -12,7 +12,7 @@ use std::collections::HashSet;
 use crate::Result;
 use serde::{Deserialize, Serialize};
 use xvc_ecs::{HStore, Storable, XvcEntity, XvcStore};
-use xvc_logging::{warn, watch};
+use xvc_logging::warn;
 
 /// Shows which information is identical, missing or different in diff calculations.
 ///
