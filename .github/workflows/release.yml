@@ -28,6 +28,7 @@ jobs:
             command: build
             args: "--release --features=bundled-openssl"
 
+            # FIXME: We need to install libsqlite in some of these targets but this is for later.
           - os-name: Linux-aarch64
             runs-on: ubuntu-20.04
             target: aarch64-unknown-linux-musl
@@ -47,11 +48,12 @@ jobs:
             command: build
             args: "--release --features=bundled-openssl,bundled-sqlite"
 
-          - os-name: Linux-Android
-            runs-on: ubuntu-22.04
-            target: aarch64-linux-android
-            command: build
-            args: "--release --features=bundled-openssl,bundled-sqlite"
+          # gh -R iesahin/xvc run view 12525734325 --log-failed
+          # - os-name: Linux-Android
+          #   runs-on: ubuntu-22.04
+          #   target: aarch64-linux-android
+          #   command: build
+          #   args: "--release --features=bundled-openssl,bundled-sqlite"
 
           # gh -R iesahin/xvc run view 12525597866 --log-failed
           # - os-name: NetBSD-x86_64
