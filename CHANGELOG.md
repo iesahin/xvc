@@ -13,6 +13,7 @@
 - Fixed xvc file remove bug that panics when content digests not found
 - Fixed xvc file list help text and added a test/example for ignored files
 - Added more targets to Github builds
+- Releases now use houseabsolute/actions-rust-cross@v0
 
 ## 0.6.12 (2024-11-30)
 
