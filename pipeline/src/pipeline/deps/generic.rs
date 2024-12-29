@@ -37,14 +37,10 @@ impl GenericDep {
     /// Run the command and update the output digest
     pub fn update_output_digest(self) -> Result<Self> {
         let generic_command = self.generic_command;
-        watch!(generic_command);
 
         let command_output = Exec::shell(generic_command.clone()).capture()?;
-        watch!(command_output);
         let stdout = String::from_utf8(command_output.stdout)?;
         let stderr = String::from_utf8(command_output.stderr)?;
-        watch!(stdout);
-        watch!(stderr);
         let algorithm = HashAlgorithm::Blake3;
         let return_code = command_output.exit_status;
         if !stderr.is_empty() || !return_code.success() {
@@ -69,8 +65,6 @@ impl Diffable for GenericDep {
     /// Compare the command and the output.
     /// WARN: Self::update_output_digest() must be called before this method.
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
-        watch!(record);
-        watch!(actual);
         if record == actual {
             Diff::Identical
         } else {

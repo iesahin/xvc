@@ -5,7 +5,8 @@ use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    glob_paths, ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcPathMetadataProvider, XvcRoot
+    glob_paths, ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcPathMetadataProvider,
+    XvcRoot,
 };
 use xvc_ecs::persist;
 use xvc_logging::watch;
@@ -38,7 +39,7 @@ impl GlobItemsDep {
     }
 
     /// Create a new [GlobItemsDep] with the given glob pattern and fill the metadata map from the
-    /// given pmp. The content digest map in the returned [Self] is empty. 
+    /// given pmp. The content digest map in the returned [Self] is empty.
     pub fn from_pmp(
         glob_root: &XvcPath,
         glob: String,
@@ -50,20 +51,16 @@ impl GlobItemsDep {
     }
 
     /// Update path list by rereading the file list from disk. This doesn't update content digests
-    /// of files. Use [Self::update_digests] for this. 
+    /// of files. Use [Self::update_digests] for this.
     pub fn update_paths(self, glob_root: &XvcPath, pmp: &XvcPathMetadataProvider) -> Result<Self> {
-        watch!(self.xvc_path_metadata_map);
-        let xvc_path_metadata_map = 
+        let xvc_path_metadata_map =
             glob_paths(pmp, glob_root, &self.glob).map(|paths| paths.into_iter().collect())?;
-        watch!(xvc_path_metadata_map);
 
         Ok(Self {
             xvc_path_metadata_map,
             ..self
         })
     }
-        
-
 
     /// Update the content digest map for each path in the metadata map. This doesn't update the
     /// file list defined by glob. Use [Self::update_paths] for this.  
@@ -85,7 +82,7 @@ impl GlobItemsDep {
     /// file list defined by glob. Use [Self::update_paths] for this.  
     ///
     /// Calculates content digests when the path metadata is different from record's. This way only
-    /// the changed path's content digest is calculated. 
+    /// the changed path's content digest is calculated.
     pub fn update_changed_paths_digests(
         mut self,
         record: &Self,
@@ -109,7 +106,6 @@ impl GlobItemsDep {
 
             xvc_path_content_digest_map.insert(xvc_path.clone(), content_digest);
         }
-        watch!(xvc_path_content_digest_map);
         Ok(Self {
             xvc_path_content_digest_map,
             ..self
@@ -122,9 +118,10 @@ persist!(GlobItemsDep, "glob-dependency");
 impl Diffable for GlobItemsDep {
     type Item = Self;
 
-    fn diff(record: Option<&Self::Item>, actual: Option<&Self::Item>) -> xvc_core::Diff<Self::Item> {
-        watch!(record);
-        watch!(actual);
+    fn diff(
+        record: Option<&Self::Item>,
+        actual: Option<&Self::Item>,
+    ) -> xvc_core::Diff<Self::Item> {
         match (record, actual) {
             (None, None) => std::unreachable!("Both record and actual are None"),
             (None, Some(actual)) => xvc_core::Diff::RecordMissing {
@@ -133,22 +130,23 @@ impl Diffable for GlobItemsDep {
             (Some(record), None) => xvc_core::Diff::ActualMissing {
                 record: record.clone(),
             },
-            (Some(record), Some(actual)) => {
-                match Self::diff_superficial(record, actual) {
-                    Diff::Identical => Diff::Identical,
-                    Diff::Skipped => Diff::Skipped,
-                    Diff::ActualMissing { .. } => std::unreachable!("We already checked this conditions above"),
-                    Diff::RecordMissing { .. } => std::unreachable!("We already checked this conditions above"),
-                    Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),
-                } 
-            }
+            (Some(record), Some(actual)) => match Self::diff_superficial(record, actual) {
+                Diff::Identical => Diff::Identical,
+                Diff::Skipped => Diff::Skipped,
+                Diff::ActualMissing { .. } => {
+                    std::unreachable!("We already checked this conditions above")
+                }
+                Diff::RecordMissing { .. } => {
+                    std::unreachable!("We already checked this conditions above")
+                }
+                Diff::Different { record, actual } => Self::diff_thorough(&record, &actual),
+            },
         }
     }
 
     /// Just compares the xvc_path_metadata_map field.
     fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> xvc_core::Diff<Self::Item> {
-        if record.xvc_path_metadata_map == actual.xvc_path_metadata_map
-        {
+        if record.xvc_path_metadata_map == actual.xvc_path_metadata_map {
             Diff::Identical
         } else {
             Diff::Different {
@@ -160,8 +158,7 @@ impl Diffable for GlobItemsDep {
 
     /// Just compares the xvc_content_digest_map field.
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> xvc_core::Diff<Self::Item> {
-        if record.xvc_path_content_digest_map == actual.xvc_path_content_digest_map
-        {
+        if record.xvc_path_content_digest_map == actual.xvc_path_content_digest_map {
             Diff::Identical
         } else {
             Diff::Different {
@@ -170,6 +167,4 @@ impl Diffable for GlobItemsDep {
             }
         }
     }
-
-
 }

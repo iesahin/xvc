@@ -233,10 +233,7 @@ pub fn thorough_compare_dependency(
     let diff = match stored {
         // Step dependencies are handled differently
         XvcDependency::Step(_) => Diff::Skipped,
-        XvcDependency::Generic(generic) => {
-            watch!(generic);
-            diff_of_dep(thorough_compare_generic(&generic)?)
-        }
+        XvcDependency::Generic(generic) => diff_of_dep(thorough_compare_generic(&generic)?),
         XvcDependency::File(file_dep) => diff_of_dep(thorough_compare_file(cmp_params, &file_dep)?),
         XvcDependency::GlobItems(glob_dep) => {
             diff_of_dep(thorough_compare_glob_items(cmp_params, &glob_dep)?)
@@ -254,7 +251,9 @@ pub fn thorough_compare_dependency(
         XvcDependency::Glob(dep) => diff_of_dep(thorough_compare_glob(cmp_params, &dep)?),
         XvcDependency::Regex(dep) => diff_of_dep(thorough_compare_regex(cmp_params, &dep)?),
         XvcDependency::Lines(dep) => diff_of_dep(thorough_compare_lines(cmp_params, &dep)?),
-        XvcDependency::SqliteQueryDigest(dep) => diff_of_dep(thorough_compare_query_digest(cmp_params, &dep)?)
+        XvcDependency::SqliteQueryDigest(dep) => {
+            diff_of_dep(thorough_compare_query_digest(cmp_params, &dep)?)
+        }
     };
 
     Ok(diff)
@@ -264,8 +263,6 @@ pub fn thorough_compare_dependency(
 fn thorough_compare_generic(record: &GenericDep) -> Result<Diff<GenericDep>> {
     let mut actual = GenericDep::new(record.generic_command.clone());
     actual = actual.update_output_digest()?;
-    watch!(record);
-    watch!(actual);
     Ok(GenericDep::diff_thorough(record, &actual))
 }
 
@@ -277,7 +274,6 @@ fn thorough_compare_file(cmp_params: &StepStateParams, record: &FileDep) -> Resu
         cmp_params.algorithm,
         TextOrBinary::Auto,
     )?;
-    watch!(actual);
     Ok(FileDep::diff_thorough(record, &actual))
 }
 
@@ -311,13 +307,14 @@ fn thorough_compare_glob_items(
     cmp_params: &StepStateParams,
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
-
     let glob_root = cmp_params.pipeline_rundir;
     let xvc_root = cmp_params.xvc_root;
     let pmp = cmp_params.pmp;
     let algorithm = cmp_params.algorithm;
     // Calls update_paths in the update_changed_paths_digests method
-    let actual = record.clone().update_changed_paths_digests(record, xvc_root, glob_root, pmp, algorithm)?;
+    let actual = record
+        .clone()
+        .update_changed_paths_digests(record, xvc_root, glob_root, pmp, algorithm)?;
     Ok(GlobItemsDep::diff(Some(record), Some(&actual)))
 }
 
@@ -445,12 +442,10 @@ pub fn superficial_compare_dependency(
                 stored_dependency_e
             ))
     }?;
-    watch!(&stored);
     let diff = match &stored {
         // Step dependencies are handled differently
         XvcDependency::Step(_) => Diff::Skipped,
         XvcDependency::Generic(generic) => {
-            watch!(generic);
             diff_of_dep(superficial_compare_generic(cmp_params, generic)?)
         }
         XvcDependency::File(file_dep) => {
@@ -470,7 +465,9 @@ pub fn superficial_compare_dependency(
         XvcDependency::Glob(dep) => diff_of_dep(superficial_compare_glob(cmp_params, dep)?),
         XvcDependency::Regex(dep) => diff_of_dep(superficial_compare_regex(cmp_params, dep)?),
         XvcDependency::Lines(dep) => diff_of_dep(superficial_compare_lines(cmp_params, dep)?),
-        XvcDependency::SqliteQueryDigest(dep) => diff_of_dep(superficial_compare_query_digest(cmp_params, dep)?),
+        XvcDependency::SqliteQueryDigest(dep) => {
+            diff_of_dep(superficial_compare_query_digest(cmp_params, dep)?)
+        }
     };
 
     Ok(diff)
@@ -492,13 +489,11 @@ fn superficial_compare_file(
     record: &FileDep,
 ) -> Result<Diff<FileDep>> {
     let actual = FileDep::from_pmp(&record.path, cmp_params.pmp)?;
-    watch!(actual);
     Ok(FileDep::diff_superficial(record, &actual))
 }
 
 fn superficial_compare_url(record: &UrlDigestDep) -> Result<Diff<UrlDigestDep>> {
     let actual = UrlDigestDep::new(record.url.clone()).update_headers()?;
-    watch!(actual);
     Ok(UrlDigestDep::diff_superficial(record, &actual))
 }
 
@@ -535,7 +530,9 @@ fn superficial_compare_glob_items(
     record: &GlobItemsDep,
 ) -> Result<Diff<GlobItemsDep>> {
     // We just compare the file list
-    let actual = record.clone().update_paths(cmp_params.pipeline_rundir, cmp_params.pmp)?;
+    let actual = record
+        .clone()
+        .update_paths(cmp_params.pipeline_rundir, cmp_params.pmp)?;
     Ok(GlobItemsDep::diff_superficial(record, &actual))
 }
 
@@ -544,7 +541,6 @@ fn superficial_compare_glob(
     record: &GlobDep,
 ) -> Result<Diff<GlobDep>> {
     let actual = GlobDep::new(record.glob.clone()).update_collection_digests(cmp_params.pmp)?;
-    watch!(actual);
     Ok(GlobDep::diff_superficial(record, &actual))
 }
 
@@ -554,9 +550,7 @@ fn superficial_compare_regex(
 ) -> Result<Diff<RegexDep>> {
     let actual = RegexDep::new(record.path.clone(), record.regex.clone())
         .update_metadata(cmp_params.pmp.get(&record.path));
-    watch!(actual);
     let diff = RegexDep::diff_superficial(record, &actual);
-    watch!(diff);
     Ok(diff)
 }
 
@@ -576,7 +570,6 @@ fn superficial_compare_query_digest(
 ) -> Result<Diff<SqliteQueryDep>> {
     let actual = SqliteQueryDep::new(record.path.clone(), record.query.clone())
         .update_metadata(cmp_params.pmp.get(&record.path));
-
 
     Ok(SqliteQueryDep::diff_superficial(record, &actual))
 }
