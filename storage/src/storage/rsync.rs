@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{error, info, trace, uwr, warn, watch, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -41,8 +41,6 @@ pub fn cmd_new_rsync(
         storage_dir,
     };
 
-    watch!(storage);
-
     let init_event = storage.init(output_snd, xvc_root)?;
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
@@ -56,6 +54,8 @@ pub fn cmd_new_rsync(
         );
         Ok(())
     })?;
+
+    info!(output_snd, "Created RSync Storage: {:#?}", storage);
 
     Ok(())
 }
@@ -89,13 +89,11 @@ impl XvcRsyncStorage {
 
     fn ssh_cmd(&self, ssh_executable: &AbsolutePath, cmd: &str) -> Result<CaptureData> {
         let ssh_url = self.ssh_url();
-        watch!(ssh_url);
+        trace!(ssh_url);
         let cmd_res = Exec::cmd(ssh_executable.as_path())
             .arg(ssh_url)
             .arg(cmd)
             .capture();
-
-        watch!(cmd_res);
 
         match cmd_res {
             Ok(res) => match res.exit_status {
@@ -183,8 +181,7 @@ impl XvcRsyncStorage {
         remote_url: &str,
         local_path: &AbsolutePath,
     ) -> Result<CaptureData> {
-        watch!(remote_url);
-        watch!(local_path);
+        trace!(remote_url);
 
         let rsync_opts = "-av";
 
@@ -193,8 +190,6 @@ impl XvcRsyncStorage {
             .arg(remote_url)
             .arg(local_path.to_string())
             .capture();
-
-        watch!(cmd_res);
 
         match cmd_res {
             Ok(res) => match res.exit_status {
@@ -256,22 +251,18 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let ssh_executable = Self::ssh_executable()?;
         let rsync_executable = Self::rsync_executable()?;
 
-        watch!(ssh_executable);
-        watch!(rsync_executable);
+        trace!(ssh_executable);
+        trace!(rsync_executable);
 
         self.ssh_cmd(&ssh_executable, &format!("mkdir -p '{}'", self.storage_dir))?;
 
         let local_guid_path = AbsolutePath::from(env::temp_dir().join(self.guid.to_string()));
         fs::write(&local_guid_path, format!("{}", self.guid))?;
-        watch!(local_guid_path);
 
         let storage_guid_path = self.rsync_path_url(XVC_STORAGE_GUID_FILENAME);
 
-        watch!(storage_guid_path);
-
         let rsync_result =
             self.rsync_copy_to_storage(&rsync_executable, &local_guid_path, &storage_guid_path)?;
-        watch!(rsync_result);
 
         info!(
             output,
@@ -344,7 +335,10 @@ impl XvcStorageOperations for XvcRsyncStorage {
         paths.iter().for_each(|cache_path| {
             let local_path = cache_path.to_absolute_path(xvc_root);
             let storage_url = self.rsync_cache_url(&xvc_guid, cache_path);
-            uwr!(self.create_storage_dir(&ssh_executable, &xvc_guid, cache_path), output);
+            uwr!(
+                self.create_storage_dir(&ssh_executable, &xvc_guid, cache_path),
+                output
+            );
             // TODO: Handle possible error.
             let cmd_output =
                 self.rsync_copy_to_storage(&rsync_executable, &local_path, &storage_url);
@@ -353,8 +347,6 @@ impl XvcStorageOperations for XvcRsyncStorage {
                 Ok(cmd_output) => {
                     let stdout_str = cmd_output.stdout_str();
                     let stderr_str = cmd_output.stderr_str();
-                    watch!(stdout_str);
-                    watch!(stderr_str);
                     info!(output, "{}", stdout_str);
                     warn!(output, "{}", stderr_str);
                     let storage_path = XvcStoragePath::new(xvc_root, cache_path);
@@ -392,13 +384,12 @@ impl XvcStorageOperations for XvcRsyncStorage {
             let local_path = temp_dir.temp_cache_path(cache_path).unwrap();
             let remote_url = self.rsync_cache_url(&xvc_guid, cache_path);
             let cache_dir = temp_dir.temp_cache_dir(cache_path).unwrap();
-            watch!(cache_dir);
+            trace!(cache_dir);
             if !cache_dir.exists() {
-                watch!(cache_dir);
                 uwr!(fs::create_dir_all(&cache_dir), output);
             }
 
-            watch!(remote_url);
+            trace!(remote_url);
 
             let cmd_output =
                 self.rsync_copy_from_storage(&rsync_executable, &remote_url, &local_path);

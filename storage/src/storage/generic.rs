@@ -47,7 +47,7 @@ pub fn cmd_storage_new_generic(
         max_processes,
     };
 
-    watch!(storage);
+    info!(output_snd, "Generic Storage: {:#?}", storage);
 
     let init_event = storage.init(output_snd, xvc_root)?;
 
