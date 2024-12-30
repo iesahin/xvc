@@ -267,23 +267,33 @@ impl<T> HStore<T> {
     /// The returned store contains `(Option<T>, Option<U>)` values that correspond to the
     /// identical `XvcEntity` values.
     ///
-    /// ## Example
-    ///
-    /// If this store has
-    ///
-    /// `{10: "John Doe", 12: "George Mason", 19: "Ali Canfield"}`,
-    /// and the `other` store contains
-    /// `{10: "Carpenter", 17: "Developer", 15: "Plumber",  19: "Artist" }`
-    ///
-    /// `full_join` will return
-    ///
-    /// `{10: (Some("John Doe"), Some("Carpenter")),
-    ///   12: (Some("George Mason"), None),
-    ///   15: (None, Some("Plumber"))
-    ///   19: (Some("Ali Canfield"), Some("Artist")}`
-    ///
     /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
     /// if your stores don't use filtering
+    ///
+    /// ```rust
+    ///
+    /// use xvc_ecs::{XvcEntity, HStore};
+    ///
+    /// let mut store1 = HStore::<String>::new();
+    /// store1.insert(10u128.into(), "John Doe".into());
+    /// store1.insert(12u128.into(), "George Mason".into());
+    /// store1.insert(19u128.into(), "Ali Canfield".into());
+    ///
+    /// let mut store2 = HStore::<String>::new();
+    /// store2.insert(10u128.into(), "Carpenter".into());
+    /// store2.insert(17u128.into(), "Developer".into());
+    /// store2.insert(15u128.into(), "Plumber".into());
+    /// store2.insert(19u128.into(), "Artist".into());
+    ///
+    /// let result = store1.full_join(store2);
+    ///
+    /// assert_eq!(result.len(), 5);
+    /// assert_eq!(result[&10u128.into()], (Some("John Doe".into()), Some("Carpenter".into())));
+    /// assert_eq!(result[&12u128.into()], (Some("George Mason".into()), None));
+    /// assert_eq!(result[&15u128.into()], (None, Some("Plumber".into())));
+    /// assert_eq!(result[&17u128.into()], (None, Some("Developer".into())));
+    /// assert_eq!(result[&19u128.into()], (Some("Ali Canfield".into()), Some("Artist".into())));
+    ///
     pub fn full_join<U>(&self, other: HStore<U>) -> HStore<(Option<T>, Option<U>)>
     where
         T: Storable,
@@ -321,6 +331,26 @@ impl<T> HStore<T> {
     ///
     /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
     /// if your stores don't use filtering
+    /// ```rust
+    ///
+    /// use xvc_ecs::{XvcEntity, HStore};
+    ///
+    /// let mut store1 = HStore::<String>::new();
+    /// store1.insert(10u128.into(), "John Doe".into());
+    /// store1.insert(12u128.into(), "George Mason".into());
+    /// store1.insert(19u128.into(), "Ali Canfield".into());
+    ///
+    /// let mut store2 = HStore::<String>::new();
+    /// store2.insert(10u128.into(), "Carpenter".into());
+    /// store2.insert(17u128.into(), "Developer".into());
+    /// store2.insert(15u128.into(), "Plumber".into());
+    /// store2.insert(19u128.into(), "Artist".into());
+    ///
+    /// let result = store1.join(store2);
+    ///
+    /// assert_eq!(result.len(), 2);
+    /// assert_eq!(result[&10u128.into()], ("John Doe".into(), "Carpenter".into()));
+    /// assert_eq!(result[&19u128.into()], ("Ali Canfield".into(), "Artist".into()));
     pub fn join<U>(&self, other: HStore<U>) -> HStore<(T, U)>
     where
         T: Storable,

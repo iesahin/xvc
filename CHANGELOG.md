@@ -3,7 +3,7 @@
 ## Unreleased
 
 
-## v0.6.13 (2024-12-29)
+## v0.6.13 (2024-12-30)
 
 - PR: <https://github.com/iesahin/xvc/pull/263>
 - Removed reflink from default features
