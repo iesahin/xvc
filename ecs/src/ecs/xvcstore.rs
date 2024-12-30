@@ -355,10 +355,10 @@ where
     ///
     /// let result = store1.left_join(store2);
     ///
-    /// assert_eq!(result.len(), 5);
-    /// assert_eq!(result[&10u128.into()], "John Doe".into(), Some("Carpenter".into()));
-    /// assert_eq!(result[&12u128.into()], "George Mason".into(), None);
-    /// assert_eq!(result[&19u128.into()], "Ali Canfield".into(), Some("Artist".into()));
+    /// assert_eq!(result.len(), 3);
+    /// assert_eq!(result[&10u128.into()], ("John Doe".into(), Some("Carpenter".into())));
+    /// assert_eq!(result[&12u128.into()], ("George Mason".into(), None));
+    /// assert_eq!(result[&19u128.into()], ("Ali Canfield".into(), Some("Artist".into())));
     ///
     /// ```
     ///
