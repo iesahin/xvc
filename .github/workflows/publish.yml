@@ -1,6 +1,7 @@
 name: Publish Crates
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*.*.*" # Matches tags like v0.6.10 but also v0.6.10-alpha.5
@@ -8,9 +9,14 @@ on:
 jobs:
   publish:
     # Don't publish alpha releases
-    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
+    # if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-')
     runs-on: ubuntu-latest
     steps:
+      - name: Install requirements
+        run: |
+          apt install libsqlite3-dev
+          apt install openssl-dev
+
       - name: Checkout code
         uses: actions/checkout@v2
 
