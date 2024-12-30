@@ -3,7 +3,7 @@ use std::{ffi::OsString, path::PathBuf, str::FromStr};
 
 use crate::XvcRoot;
 use subprocess::Exec;
-use xvc_logging::{debug, watch, XvcOutputSender};
+use xvc_logging::{debug, XvcOutputSender};
 
 use crate::{Error, Result};
 use std::path::Path;
@@ -64,7 +64,6 @@ pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -
         .iter()
         .map(|s| OsString::from_str(s).unwrap())
         .collect();
-    watch!(args);
     let proc_res = Exec::cmd(git_command).args(&args).capture()?;
 
     match proc_res.exit_status {
@@ -87,8 +86,14 @@ pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -
 /// NOTE: Assumptions for this function:
 /// - No submodules
 pub fn get_git_tracked_files(git_command: &str, xvc_directory: &str) -> Result<Vec<String>> {
-    let git_ls_files_out = exec_git(git_command, xvc_directory, &["ls-files", "--full-name"])?;
-    watch!(git_ls_files_out);
+    let git_ls_files_out = exec_git(
+        git_command,
+        xvc_directory,
+        // XXX: When core.quotepath is in its default value, all UTF-8 paths are converted to octal
+        // strings and we lose the ability to match them. We supply a one off config value to set
+        // it to off.
+        &["-c", "core.quotepath=off", "ls-files", "--full-name"],
+    )?;
     let git_ls_files_out = git_ls_files_out
         .lines()
         .map(|s| s.to_string())
@@ -108,8 +113,6 @@ pub fn stash_user_staged_files(
         xvc_directory,
         &["diff", "--name-only", "--cached"],
     )?;
-
-    watch!(git_diff_staged_out);
 
     // If so stash them
     if !git_diff_staged_out.trim().is_empty() {
@@ -227,7 +230,6 @@ pub fn git_auto_commit(
         ],
     ) {
         Ok(git_add_output) => {
-            watch!(git_add_output);
             if git_add_output.trim().is_empty() {
                 debug!(output_snd, "No files to commit");
                 return Ok(());
@@ -301,7 +303,6 @@ mod test {
     use super::*;
     use std::fs;
     use test_case::test_case;
-    use xvc_logging::watch;
     use xvc_test_helper::*;
     use xvc_walker::MatchResult as M;
 
@@ -317,22 +318,14 @@ mod test {
     fn test_gitignore(path: &str, gitignore_path: &str, ignore_line: &str) -> M {
         test_logging(log::LevelFilter::Trace);
         let git_root = temp_git_dir();
-        watch!(git_root);
         let path = git_root.join(PathBuf::from(path));
-        watch!(path);
         let gitignore_path = git_root.join(PathBuf::from(gitignore_path));
-        watch!(gitignore_path);
         if let Some(ignore_dir) = gitignore_path.parent() {
-            watch!(ignore_dir);
             fs::create_dir_all(ignore_dir).unwrap();
-            watch!(ignore_dir.exists());
         }
         fs::write(&gitignore_path, format!("{}\n", ignore_line)).unwrap();
-        watch!(gitignore_path.exists());
 
         let gitignore = build_ignore_patterns("", &git_root, ".gitignore").unwrap();
-
-        watch!(gitignore);
 
         gitignore.check(&path)
     }

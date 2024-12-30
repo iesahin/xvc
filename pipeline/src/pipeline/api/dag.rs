@@ -6,7 +6,7 @@ use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
 use xvc_config::FromConfigKey;
 use xvc_core::{XvcPath, XvcPathMetadataProvider, XvcRoot};
 use xvc_ecs::{HStore, R1NStore, XvcEntity};
-use xvc_logging::{output, watch, XvcOutputSender};
+use xvc_logging::{info, output, XvcOutputSender};
 
 use std::collections::HashMap;
 use std::{fs::File, io::Write};
@@ -62,8 +62,6 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
         .load_r1nstore::<XvcPipeline, XvcStep>()?
         .children_of(&pipeline_e)?;
 
-    watch!(pipeline_steps);
-
     let all_deps = xvc_root.load_r1nstore::<XvcStep, XvcDependency>()?;
     let all_outs = xvc_root.load_r1nstore::<XvcStep, XvcOutput>()?;
     let pmp = XvcPathMetadataProvider::new(output_snd, xvc_root)?;
@@ -83,7 +81,6 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
         XvcPath::root_path()?
     };
 
-    watch!(pipeline_steps);
     add_explicit_dependencies(
         output_snd,
         &pipeline_steps,
@@ -101,7 +98,7 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
         &mut dependency_graph,
     )?;
 
-    watch!(dependency_graph);
+    info!("Dependency Graph: {:#?}", dependency_graph);
 
     let out_string = match format {
         XvcPipelineDagFormat::Dot => make_dot_graph(&pipeline_steps, &all_deps, &all_outs)?,
@@ -109,7 +106,10 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
     };
 
     match file {
-        None => Ok(output!(output_snd, "{}", out_string)),
+        None => {
+            output!(output_snd, "{}", out_string);
+            Ok(())
+        }
         Some(file) => {
             let mut f = File::create(file)?;
             Ok(writeln!(f, "{}", out_string)?)
@@ -155,7 +155,9 @@ fn dep_identity(dep: &XvcDependency) -> Result<Identity> {
             id_from_string(&format!("{}::{}-{}", dep.path, dep.begin, dep.end))
         }
         XvcDependency::UrlDigest(dep) => id_from_string(dep.url.as_ref()),
-        XvcDependency::SqliteQueryDigest(dep) => id_from_string(&format!("{} {}", dep.path, dep.query)),
+        XvcDependency::SqliteQueryDigest(dep) => {
+            id_from_string(&format!("{} {}", dep.path, dep.query))
+        }
     }
 }
 
@@ -339,4 +341,3 @@ fn make_mermaid_graph(
 
     Ok(res_string)
 }
-

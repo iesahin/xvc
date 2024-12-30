@@ -10,7 +10,6 @@ use std::time::Instant;
 use subprocess as sp;
 
 use xvc_file::CHANNEL_CAPACITY;
-use xvc_logging::watch;
 
 use serde::{Deserialize, Serialize};
 use xvc_ecs::persist;
@@ -84,16 +83,13 @@ impl CommandProcess {
 
     /// Add an environment variable to inject to the shell that runs the command.
     pub fn add_environment_variable(&mut self, key: &str, value: &str) -> Result<&mut Self> {
-        watch!(self);
         self.environment.insert(key.to_owned(), value.to_owned());
-        watch!(self);
         Ok(self)
     }
 
     /// Start executing the command in a shell. Updates birth and process variables after
     /// detaching.
     pub fn run(&mut self) -> Result<()> {
-        watch!(self.environment);
         let process = sp::Exec::shell(self.step_command.command.clone())
             .stdout(sp::Redirection::Pipe)
             .stderr(sp::Redirection::Pipe)

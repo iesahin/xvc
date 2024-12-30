@@ -126,7 +126,6 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 fn sh(cmd: String) -> String {
-    watch!(cmd);
     Exec::shell(cmd).capture().unwrap().stdout_str()
 }
 
@@ -143,7 +142,6 @@ fn test_storage_new_s3() -> Result<()> {
     let region = "eu-central-1";
 
     let config_file_name = write_s3cmd_config(region, &access_key, &secret_key)?;
-    watch!(config_file_name);
 
     let s3cmd = |cmd: &str, append: &str| -> String {
         let sh_cmd = format!("s3cmd --config {config_file_name} {cmd} {append}");
@@ -155,7 +153,6 @@ fn test_storage_new_s3() -> Result<()> {
     };
 
     let aws_create_bucket = s3cmd(&format!("mb s3://{bucket_name}"), "");
-    watch!(aws_create_bucket);
     //
     let out = x(&[
         "storage",
@@ -171,19 +168,15 @@ fn test_storage_new_s3() -> Result<()> {
         region,
     ])?;
 
-    watch!(out);
-
     let s3_bucket_list = s3cmd(
         &format!("ls --recursive 's3://{bucket_name}/'"),
         &format!(" | rg {storage_prefix} | rg {XVC_STORAGE_GUID_FILENAME}"),
     );
-    watch!(s3_bucket_list);
     assert!(!s3_bucket_list.is_empty());
 
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
-    watch!(file_track_result);
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
@@ -191,17 +184,13 @@ fn test_storage_new_s3() -> Result<()> {
         &format!("ls --recursive {bucket_name}"),
         &format!(" | rg {storage_prefix} | rg 0.bin"),
     );
-    watch!(file_list_before);
     let n_storage_files_before = file_list_before.lines().count();
     let push_result = x(&["file", "send", "--to", "s3-storage", the_file])?;
-    watch!(push_result);
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
         &format!("| rg {storage_prefix} | rg 0.bin"),
     );
-
-    watch!(file_list_after);
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
@@ -220,8 +209,6 @@ fn test_storage_new_s3() -> Result<()> {
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "s3-storage"])?;
 
-    watch!(fetch_result);
-
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
         .filter(|f| {
@@ -238,7 +225,6 @@ fn test_storage_new_s3() -> Result<()> {
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "s3-storage"])?;
-    watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -260,7 +246,6 @@ fn test_storage_new_s3() -> Result<()> {
     env::remove_var("AWS_SECRET_ACCESS_KEY");
 
     let pull_result_2 = x(&["file", "bring", "--from", "s3-storage"])?;
-    watch!(pull_result_2);
 
     clean_up(&xvc_root)
 }

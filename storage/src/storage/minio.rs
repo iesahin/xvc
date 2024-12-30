@@ -44,10 +44,8 @@ pub fn cmd_new_minio(
         storage_prefix,
         endpoint,
     };
-    watch!(storage);
 
     let init_event = storage.init(output_snd, xvc_root)?;
-    watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();

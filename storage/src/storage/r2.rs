@@ -8,7 +8,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, watch, XvcOutputSender};
+use xvc_logging::{error, info, watch, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
@@ -42,10 +42,9 @@ pub fn cmd_new_r2(
         storage_prefix,
     };
 
-    watch!(storage);
+    info!(output_snd, "R2 Storage: {:#?}", storage);
 
     let init_event = storage.init(output_snd, xvc_root)?;
-    watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();

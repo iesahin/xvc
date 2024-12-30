@@ -13,11 +13,7 @@ fn test_root() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let xvc_root = run_in_temp_xvc_dir()?;
 
-    watch!(xvc_root);
-
     let rel = run_xvc(Some(&xvc_root), &["root"], XvcVerbosity::Default)?;
-    watch!(rel);
-    watch!("After root");
     // assert!(
     //     rel.trim().to_string() == ".".to_string(),
     //     "Relative: {}",
@@ -29,9 +25,7 @@ fn test_root() -> Result<()> {
         XvcVerbosity::Default,
     )?;
 
-    watch!(abs);
     assert!(AbsolutePath::from(abs.trim().to_string()) == xvc_root.absolute_path().clone());
     clean_up(&xvc_root).map_err(|e| anyhow::anyhow!("Cleanup error: {e:?}"))?;
-    watch!("cleaned up");
     Ok(())
 }

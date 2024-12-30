@@ -12,7 +12,7 @@ use itertools::Itertools;
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::XvcEntity;
-use xvc_logging::{output, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{output, uwr, warn, XvcOutputSender};
 use xvc_storage::storage::get_storage_record;
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
@@ -93,10 +93,8 @@ pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: Remove
     } else if let Some(version) = opts.only_version {
         // Return only the cache paths that match the version prefix
         let version_cmp_str = version.replace('-', "");
-        watch!(version_cmp_str);
         let version_cmp = |v: &&XvcCachePath| {
             let digest_str = v.digest_string(DIGEST_LENGTH).replace('-', "");
-            watch!(digest_str);
             // We skip the first two characters because they are the hash algorithm identifier
             digest_str[2..].starts_with(&version_cmp_str)
         };
@@ -118,12 +116,9 @@ pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: Remove
                 Vec::<(XvcEntity, XvcCachePath)>::new(),
                 |mut acc, (xe, vec_cp)| {
                     vec_cp.into_iter().for_each(|xcp| acc.push((xe, xcp)));
-                    watch!(acc);
                     acc
                 },
             );
-
-        watch!(paths);
 
         if paths.len() > 1 {
             return Err(anyhow::anyhow!(
@@ -140,16 +135,13 @@ pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: Remove
     } else {
         remove_targets
             .iter()
-            .map(|(xe, xp)| {
-                (
-                    *xe,
-                    XvcCachePath::new(xp, all_content_digests.get(xe).unwrap()).unwrap(),
-                )
+            .filter_map(|(xe, xp)| {
+                all_content_digests
+                    .get(xe)
+                    .map(|cd| (*xe, XvcCachePath::new(xp, cd).unwrap()))
             })
             .collect::<Vec<(XvcEntity, XvcCachePath)>>()
     };
-
-    watch!(candidate_paths);
 
     let mut entities_for_cache_path: HashMap<XvcCachePath, HashSet<XvcEntity>> = HashMap::new();
 
@@ -204,10 +196,9 @@ pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: Remove
     deletable_paths.sort_unstable();
 
     if opts.from_cache {
-        deletable_paths.iter().for_each(|xcp| {
-            watch!(xcp);
-            uwr!(xcp.remove(output_snd, xvc_root), output_snd)
-        });
+        deletable_paths
+            .iter()
+            .for_each(|xcp| uwr!(xcp.remove(output_snd, xvc_root), output_snd));
     }
 
     if let Some(storage) = opts.from_storage {

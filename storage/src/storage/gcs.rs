@@ -5,7 +5,7 @@ use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputSender};
+use xvc_logging::{info, watch, XvcOutputSender};
 
 use anyhow::anyhow;
 
@@ -39,7 +39,7 @@ pub fn cmd_new_gcs(
         storage_prefix,
     };
 
-    watch!(storage);
+    info!(output_snd, "New Storage: {:#?}", storage);
 
     let init_event = storage.init(output_snd, xvc_root)?;
     watch!(init_event);

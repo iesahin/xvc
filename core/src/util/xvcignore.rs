@@ -8,7 +8,7 @@ use crossbeam_channel::{bounded, Sender};
 
 use std::sync::{Arc, RwLock};
 use std::thread;
-use xvc_logging::{warn, watch, XvcOutputSender};
+use xvc_logging::{warn, XvcOutputSender};
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
 use xvc_walker::{Result as XvcWalkerResult, SharedIgnoreRules};
 
@@ -94,21 +94,17 @@ pub fn walk_parallel(
     include_dirs: bool,
 ) -> Result<(XvcPathMetadataMap, SharedIgnoreRules)> {
     let (sender, receiver) = bounded::<(XvcPath, XvcMetadata)>(CHANNEL_BOUND);
-    watch!(sender);
     let ignore_rules = Arc::new(RwLock::new(IgnoreRules::from_global_patterns(
         xvc_root,
         Some(XVCIGNORE_FILENAME),
         global_ignore_rules,
     )));
 
-    watch!(ignore_rules);
-
     walk_channel(xvc_root, ignore_rules.clone(), include_dirs, sender)?;
 
     let pmm = thread::spawn(move || {
         let mut pmm = XvcPathMetadataMap::new();
         for (path, md) in receiver.iter() {
-            watch!(path);
             pmm.insert(path, md);
         }
         pmm
@@ -167,9 +163,7 @@ pub fn walk_channel(
                 match result {
                     Ok(pm) => {
                         let md: XvcMetadata = XvcMetadata::from(pm.metadata);
-                        // watch!(&md);
                         let rxp = XvcPath::new(xvc_root, xvc_root.absolute_path(), &pm.path);
-                        // watch!(&rxp);
                         match rxp {
                             Ok(xvc_path) => match xpm_upstream.send((xvc_path, md)) {
                                 Ok(_) => {}

@@ -47,7 +47,7 @@ pub fn cmd_storage_new_generic(
         max_processes,
     };
 
-    watch!(storage);
+    info!(output_snd, "Generic Storage: {:#?}", storage);
 
     let init_event = storage.init(output_snd, xvc_root)?;
 
@@ -222,16 +222,12 @@ impl XvcGenericStorage {
         // TODO: Refactor to use XvcStoragePath and XvcCachePath in replacements
         paths.iter().for_each(|cache_path| {
             let pm = self.path_map_with_temp_dir(xvc_root, temp_dir, cache_path);
-            watch!(pm);
             let cmd = Self::replace_map_elements(prepared_cmd, &pm);
-            watch!(cmd);
             let cmd_output = Exec::shell(cmd).capture();
             match cmd_output {
                 Ok(cmd_output) => {
                     let stdout_str = cmd_output.stdout_str();
                     let stderr_str = cmd_output.stderr_str();
-                    watch!(stdout_str);
-                    watch!(stderr_str);
 
                     if cmd_output.success() {
                         info!(output_snd, "{}", stdout_str);
@@ -264,16 +260,12 @@ impl XvcGenericStorage {
         // TODO: Refactor to use XvcStoragePath and XvcCachePath in replacements
         paths.iter().for_each(|cache_path| {
             let pm = self.path_map(xvc_root, cache_path);
-            watch!(pm);
             let cmd = Self::replace_map_elements(prepared_cmd, &pm);
-            watch!(cmd);
             let cmd_output = Exec::shell(cmd).capture();
             match cmd_output {
                 Ok(cmd_output) => {
                     let stdout_str = cmd_output.stdout_str();
                     let stderr_str = cmd_output.stderr_str();
-                    watch!(stdout_str);
-                    watch!(stderr_str);
 
                     if cmd_output.success() {
                         info!(output, "{}", stdout_str);
@@ -307,9 +299,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         _xvc_root: &XvcRoot,
     ) -> Result<super::XvcStorageInitEvent> {
         let mut address_map = self.address_map();
-        watch!(address_map);
         let local_guid_path = env::temp_dir().join(self.guid.to_string());
-        watch!(local_guid_path);
 
         fs::write(&local_guid_path, format!("{}", self.guid))?;
 
@@ -326,12 +316,9 @@ impl XvcStorageOperations for XvcGenericStorage {
         address_map.insert("{STORAGE_GUID_FILE_PATH}", storage_guid_file_path);
 
         let prepared_init_cmd = Self::replace_map_elements(&self.init_command, &address_map);
-        watch!(prepared_init_cmd);
         let init_output = Exec::shell(prepared_init_cmd.clone())
             .capture()?
             .stdout_str();
-
-        watch!(init_output);
 
         info!(
             output,
@@ -390,11 +377,8 @@ impl XvcStorageOperations for XvcGenericStorage {
         _force: bool,
     ) -> Result<XvcStorageSendEvent> {
         let address_map = self.address_map();
-        watch!(address_map);
         let prepared_cmd = Self::replace_map_elements(&self.upload_command, &address_map);
-        watch!(prepared_cmd);
         let storage_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
-        watch!(storage_paths);
 
         Ok(XvcStorageSendEvent {
             guid: self.guid.clone(),
@@ -410,13 +394,10 @@ impl XvcStorageOperations for XvcGenericStorage {
         _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
         let address_map = self.address_map();
-        watch!(address_map);
         let temp_dir = XvcStorageTempDir::new()?;
         let prepared_cmd = Self::replace_map_elements(&self.download_command, &address_map);
-        watch!(prepared_cmd);
         let storage_paths =
             self.run_for_paths_in_temp_dir(output, xvc_root, &prepared_cmd, &temp_dir, paths);
-        watch!(storage_paths);
 
         Ok((
             temp_dir,

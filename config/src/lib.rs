@@ -647,7 +647,6 @@ pub fn toml_value_to_hashmap(key: String, value: TomlValue) -> HashMap<String, T
 }
 
 #[cfg(test)]
-
 mod tests {
 
     use super::*;

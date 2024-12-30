@@ -11,7 +11,8 @@ use chrono;
 use clap::Parser;
 
 use std::collections::{HashMap, HashSet};
-use std::fmt::{Display, Formatter};
+use std::fmt::Display;
+use std::fmt::Formatter;
 use std::path::Path;
 use std::str::FromStr;
 use std::time::SystemTime;
@@ -21,8 +22,8 @@ use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
 };
-use xvc_ecs::XvcEntity;
-use xvc_logging::{error, output, watch, XvcOutputSender};
+use xvc_ecs::{HStore, XvcEntity, XvcStore};
+use xvc_logging::{error, output, XvcOutputSender};
 
 /// Format specifier for file list columns
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
@@ -239,14 +240,11 @@ impl ListRow {
             None => str::repeat(" ", DIGEST_LENGTH * 2),
         };
 
-        watch!(&path_prefix);
         let name = if let Some(ap) = path_match.actual_path {
-            watch!(ap);
             ap.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
         } else if let Some(rp) = path_match.recorded_path {
-            watch!(rp);
             rp.strip_prefix(path_prefix.to_string_lossy().as_ref())
                 .map_err(|e| Error::RelativeStripPrefixError { e })?
                 .to_string()
@@ -513,7 +511,6 @@ impl Display for ListRows {
 
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
 #[command(rename_all = "kebab-case")]
-
 pub struct ListCLI {
     /// A string for each row of the output table
     ///
@@ -527,9 +524,9 @@ pub struct ListCLI {
     ///   GB and TB to represent sizes larger than 1MB.
     /// - {{ats}}:  actual timestamp. The timestamp of the workspace file.
     /// - {{name}}: The name of the file or directory.
-    /// - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
+    /// - {{cst}}:  cache status. One of "=", ">", "<", or "X" to show
     ///   whether the file timestamp is the same as the cached timestamp, newer,
-    ///   older, not cached or not tracked.
+    ///   older, and not tracked.
     /// - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
     /// - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
     /// - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
@@ -555,10 +552,16 @@ pub struct ListCLI {
     #[arg(long)]
     pub no_summary: bool,
 
+    /// Don't hide directories
+    ///
+    /// Directories are not listed by default. This flag lists them.
+    #[arg(long, short = 'd', aliases=&["show-dirs"])]
+    pub show_directories: bool,
+
     /// Don't hide dot files
     ///
     /// If not supplied, hides dot files like .gitignore and .xvcignore
-    #[arg(long, short = 'a')]
+    #[arg(long, short = 'D')]
     pub show_dot_files: bool,
 
     /// List files tracked by Git.
@@ -621,7 +624,6 @@ impl UpdateFromXvcConfig for ListCLI {
 /// - <: File is newer, xvc carry-in to update the cache
 ///
 /// TODO: - I: File is ignored
-
 pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: ListCLI) -> Result<()> {
     // FIXME: `opts` shouldn't be sent to the inner function, but we cannot make sure that it's
     // updated from the config files in callers. A refactoring is good here.
@@ -663,24 +665,27 @@ pub fn cmd_list_inner(
         &opts.targets,
         filter_git_paths,
     )?;
-    watch!(&all_from_disk);
 
-    let from_disk = filter_dot_files(all_from_disk, opts.show_dot_files);
-    watch!(from_disk);
+    let from_disk = filter_xvc_path_metadata_map(all_from_disk, opts);
 
     let from_store = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
-    watch!(from_store);
 
-    let stored_xvc_metadata = xvc_root.load_store::<XvcMetadata>()?;
-    let stored_recheck_method = xvc_root.load_store::<RecheckMethod>()?;
+    let xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
+
+    let recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
+
+    let filter_keys = filter_xvc_path_xvc_metadata_stores(&from_store, &xvc_metadata_store, opts);
+
+    let from_store = from_store.subset(filter_keys.iter().copied())?;
+    let xvc_metadata_store = xvc_metadata_store.subset(filter_keys.iter().copied())?;
+    let recheck_method_store = recheck_method_store.subset(filter_keys.into_iter())?;
 
     let matches = match_store_and_disk_paths(
         from_disk,
         from_store,
-        stored_xvc_metadata,
-        stored_recheck_method,
+        xvc_metadata_store,
+        recheck_method_store,
     );
-    watch!(matches);
 
     let matches = if opts.format.as_ref().unwrap().columns.iter().any(|c| {
         *c == ListColumn::RecordedContentDigest64 || *c == ListColumn::RecordedContentDigest8
@@ -803,9 +808,9 @@ fn fill_recorded_content_digests(
 /// 4. Paths that are on disk but not in the store
 fn match_store_and_disk_paths(
     from_disk: HashMap<XvcPath, XvcMetadata>,
-    from_store: xvc_ecs::HStore<XvcPath>,
-    stored_xvc_metadata: xvc_ecs::XvcStore<XvcMetadata>,
-    stored_recheck_method: xvc_ecs::XvcStore<RecheckMethod>,
+    from_store: HStore<XvcPath>,
+    stored_xvc_metadata: HStore<XvcMetadata>,
+    stored_recheck_method: HStore<RecheckMethod>,
 ) -> Vec<PathMatch> {
     // Now match actual and recorded paths
 
@@ -878,23 +883,59 @@ fn match_store_and_disk_paths(
     matches
 }
 
-fn filter_dot_files(
+fn filter_xvc_path_metadata_map(
     all_from_disk: HashMap<XvcPath, XvcMetadata>,
-    show_dot_files: bool,
+    opts: &ListCLI,
 ) -> HashMap<XvcPath, XvcMetadata> {
-    if show_dot_files {
-        all_from_disk
-    } else {
-        all_from_disk
-            .into_iter()
-            .filter_map(|(path, md)| {
-                let path_str = path.to_string();
-                if path_str.starts_with('.') || path_str.contains("./") {
-                    None
+    let filter_fn = match (opts.show_dot_files, opts.show_directories) {
+        (true, true) => |_, _| true,
+
+        (true, false) => |_, md: &XvcMetadata| !md.is_dir(),
+        (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
+        (false, false) => |path: &XvcPath, md: &XvcMetadata| {
+            !(path.starts_with_str(".") || path.contains("./") || md.is_dir())
+        },
+    };
+
+    all_from_disk
+        .iter()
+        .filter_map(|(path, md)| {
+            if filter_fn(path, md) {
+                Some((path.clone(), *md))
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
+fn filter_xvc_path_xvc_metadata_stores(
+    xvc_path_store: &HStore<XvcPath>,
+    xvc_metadata_store: &XvcStore<XvcMetadata>,
+    opts: &ListCLI,
+) -> HashSet<XvcEntity> {
+    let filter_fn = match (opts.show_dot_files, opts.show_directories) {
+        (true, true) => |_, _| true,
+
+        (true, false) => |_, md: &XvcMetadata| !md.is_dir(),
+        (false, true) => |path: &XvcPath, _| !(path.starts_with_str(".") || path.contains("./")),
+        (false, false) => |path: &XvcPath, md: &XvcMetadata| {
+            !(path.starts_with_str(".") || path.contains("./") || md.is_dir())
+        },
+    };
+
+    xvc_path_store
+        .iter()
+        .filter_map(|(xvc_entity, xvc_path)| {
+            if let Some(xvc_metadata) = xvc_metadata_store.get(xvc_entity) {
+                if filter_fn(xvc_path, xvc_metadata) {
+                    Some(*xvc_entity)
                 } else {
-                    Some((path, md))
+                    None
                 }
-            })
-            .collect()
-    }
+            } else {
+                None
+            }
+        })
+        .collect()
 }

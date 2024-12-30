@@ -38,10 +38,8 @@ pub fn cmd_new_digital_ocean(
         bucket_name,
         storage_prefix,
     };
-    watch!(storage);
 
     let init_event = storage.init(output_snd, xvc_root)?;
-    watch!(init_event);
 
     xvc_root.with_r1nstore_mut(|store: &mut R1NStore<XvcStorage, XvcStorageEvent>| {
         let store_e = xvc_root.new_entity();

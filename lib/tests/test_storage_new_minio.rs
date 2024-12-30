@@ -42,7 +42,6 @@ fn mc_config(alias: &str, endpoint: &str, access_key: &str, secret_key: &str) ->
 }
 
 fn sh(cmd: String) -> String {
-    watch!(cmd);
     Exec::shell(cmd).capture().unwrap().stdout_str()
 }
 
@@ -95,16 +94,12 @@ fn test_storage_new_minio() -> Result<()> {
         region,
     ])?;
 
-    watch!(out);
-
     let mc_bucket_list = mc("ls", &format!("| rg {bucket_name}"));
-    watch!(mc_bucket_list);
     assert!(!mc_bucket_list.is_empty());
 
     let the_file = "file-0000.bin";
 
     let file_track_result = x(&["file", "track", the_file])?;
-    watch!(file_track_result);
 
     let n_storage_files_before = jwalk::WalkDir::new(local_test_dir)
         .into_iter()
@@ -115,10 +110,8 @@ fn test_storage_new_minio() -> Result<()> {
         })
         .count();
     let push_result = x(&["file", "send", "--to", "minio-storage", the_file])?;
-    watch!(push_result);
 
     let file_list = mc("ls -r ", &format!("| rg {bucket_name}/{storage_prefix}"));
-    watch!(file_list);
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
@@ -141,12 +134,9 @@ fn test_storage_new_minio() -> Result<()> {
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "minio-storage"])?;
 
-    watch!(fetch_result);
-
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
         .filter(|f| {
-            watch!(f);
             f.as_ref()
                 .map(|f| f.file_type().is_file())
                 .unwrap_or_else(|_| false)
@@ -166,7 +156,6 @@ fn test_storage_new_minio() -> Result<()> {
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "minio-storage"])?;
-    watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -193,7 +182,6 @@ fn test_storage_new_minio() -> Result<()> {
     env::remove_var("MINIO_SECRET_ACCESS_KEY");
 
     let pull_result_2 = x(&["file", "bring", "--from", "minio-storage"])?;
-    watch!(pull_result_2);
 
     clean_up(&xvc_root)
 }

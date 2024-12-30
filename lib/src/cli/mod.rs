@@ -29,7 +29,6 @@ use xvc_core::root;
 use xvc_core::CHANNEL_BOUND;
 use xvc_file as file;
 use xvc_logging::setup_logging;
-use xvc_logging::watch;
 use xvc_pipeline as pipeline;
 use xvc_storage as storage;
 use xvc_walker::AbsolutePath;
@@ -38,7 +37,11 @@ use crate::cli;
 use crate::error::{Error, Result};
 
 use git_version::git_version;
-const GIT_VERSION: &str = git_version!(cargo_prefix = "", fallback = "unknown");
+const GIT_VERSION: &str = git_version!(
+    args = ["--always", "--dirty=modified", "--tags"],
+    cargo_prefix = "",
+    fallback = "unknown"
+);
 
 /// Xvc CLI to manage data and ML pipelines
 #[derive(Debug, Parser)]
@@ -373,8 +376,6 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                     xvc_root_opt
                 }
             };
-
-            watch!("Before handle_git_automation");
 
             match xvc_root_opt {
                 Some(ref xvc_root) => {

@@ -7,7 +7,7 @@ use clap::Parser;
 use log::trace;
 use std::io::BufRead;
 use std::path::{Path, PathBuf};
-use xvc_logging::{output, watch, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 use xvc_walker::{build_ignore_patterns, IgnoreRules, MatchResult, WalkOptions};
 
 // DIFFERENCES from DVC
@@ -63,16 +63,12 @@ pub fn cmd_check_ignore<R: BufRead>(
         &walk_options.ignore_filename.unwrap_or_default(),
     )?;
 
-    watch!(ignore_rules);
-    watch!(opts.targets);
-
     if !opts.targets.is_empty() {
         let xvc_paths = opts
             .targets
             .iter()
             .map(|p| XvcPath::new(xvc_root, current_dir, &PathBuf::from(p)))
             .collect::<Result<Vec<XvcPath>>>()?;
-        watch!(xvc_paths);
         check_ignore_paths(xvc_root, &ignore_rules, &xvc_paths)
     } else {
         check_ignore_stdin(input, output_snd, xvc_root, &ignore_rules)
@@ -124,7 +120,6 @@ fn check_ignore_paths(
 
 /// Check whether the records match to the full_path. It reports the details if
 /// set true. Non_matching inverts the reporting.
-
 fn check_ignore_line(ignore_rules: &IgnoreRules, absolute_path: &Path) -> String {
     match ignore_rules.check(absolute_path) {
         MatchResult::NoMatch => {

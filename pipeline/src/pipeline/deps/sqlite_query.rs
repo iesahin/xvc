@@ -1,18 +1,17 @@
 //! Implements dependencies on sqlite databases. [SqliteQueryDep] is a dependency that runs a query
 //! and checks whether the result of that query has changed. It doesn't run the query if the
-//! metadata of the database file hasn't changed. 
+//! metadata of the database file hasn't changed.
+use crate::XvcDependency;
+use fallible_iterator::FallibleIterator;
+use rusqlite::{Connection, OpenFlags};
 use serde::{Deserialize, Serialize};
 use xvc_logging::watch;
-use crate::XvcDependency;
-use rusqlite::{Connection, OpenFlags};
-use fallible_iterator::FallibleIterator;
 
+use crate::Result;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{ContentDigest, Diff, HashAlgorithm, XvcDigest, XvcMetadata, XvcPath, XvcRoot};
-use crate::Result;
 
 use xvc_ecs::persist;
-
 
 /// When a step depends to a regex search in a text file
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -27,7 +26,6 @@ pub struct SqliteQueryDep {
     pub xvc_metadata: Option<XvcMetadata>,
 }
 
-
 persist!(SqliteQueryDep, "sqlite-query-dependency");
 
 impl From<SqliteQueryDep> for XvcDependency {
@@ -35,7 +33,6 @@ impl From<SqliteQueryDep> for XvcDependency {
         XvcDependency::SqliteQueryDigest(val)
     }
 }
-
 
 impl SqliteQueryDep {
     /// Create a new SqliteQueryDep with empty metadata and digest
@@ -56,19 +53,19 @@ impl SqliteQueryDep {
     }
 
     /// Update the digest of the file by reading the file and collecting all lines that match the regex
-    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Result<Self> { let path = self.path.to_absolute_path(xvc_root);
+    pub fn update_digest(self, xvc_root: &XvcRoot, algorithm: HashAlgorithm) -> Result<Self> {
+        let path = self.path.to_absolute_path(xvc_root);
         let flags = OpenFlags::SQLITE_OPEN_READ_ONLY;
         let sqlite = Connection::open_with_flags(path, flags)?;
         let mut prepared = sqlite.prepare(&self.query)?;
         // TODO: Should we allow params in the queries?
         let query_res = prepared.raw_query();
-        let query_lines = query_res.map(|row|
-            {
+        let query_lines = query_res
+            .map(|row| {
                 let mut i = 0;
                 // TODO: Add salting with the repo id here?
                 let mut els = String::new();
                 while let Ok(col) = row.get_ref(i) {
-                    watch!(col);
                     match col.data_type() {
                         rusqlite::types::Type::Text => {
                             els.push_str(col.as_str()?);
@@ -86,9 +83,9 @@ impl SqliteQueryDep {
                     i += 1;
                 }
                 Ok(els)
-            }
-        ).collect::<Vec<String>>()?.join("\n");
-
+            })
+            .collect::<Vec<String>>()?
+            .join("\n");
 
         let query_digest = Some(XvcDigest::from_content(&query_lines, algorithm).into());
         Ok(Self {
@@ -96,7 +93,6 @@ impl SqliteQueryDep {
             ..self
         })
     }
-
 }
 
 impl Diffable for SqliteQueryDep {

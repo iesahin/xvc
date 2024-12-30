@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
-use xvc_logging::{error, uwr, watch, XvcOutputSender};
+use xvc_logging::{error, uwr, XvcOutputSender};
 use xvc_walker::{build_ignore_patterns, make_watcher, IgnoreRules, MatchResult, PathEvent};
 
 use crate::error::Error;
@@ -27,6 +27,8 @@ pub struct XvcPathMetadataProvider {
     xvc_root: XvcRoot,
     path_map: Arc<RwLock<XvcPathMetadataMap>>,
     kill_signal_sender: Arc<Sender<bool>>,
+    // This is to keep the background thread and no one needs to read it currently
+    #[allow(dead_code)]
     background_thread: Arc<Mutex<JoinHandle<Result<()>>>>,
     output_sender: XvcOutputSender,
     ignore_rules: IgnoreRules,
@@ -53,11 +55,10 @@ impl XvcPathMetadataProvider {
             let fs_receiver = event_receiver_clone;
             let xvc_root = xvc_root_clone;
             // This is not used but to keep the watcher within the thread lifetime
+            #[allow(unused_variables)]
             let watcher = watcher;
-            watch!(watcher);
 
-            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| {
-                match fs_event {
+            let handle_fs_event = |fs_event, pmm: Arc<RwLock<XvcPathMetadataMap>>| match fs_event {
                 PathEvent::Create { path, metadata } => {
                     let xvc_path = XvcPath::new(&xvc_root, &xvc_root, &path).unwrap();
                     let xvc_md = XvcMetadata::from(metadata);
@@ -80,23 +81,17 @@ impl XvcPathMetadataProvider {
                     let mut pmm = pmm.write().unwrap();
                     pmm.insert(xvc_path, xvc_md);
                 }
-            } };
+            };
 
             let mut sel = Select::new();
             let fs_event_index = sel.recv(&fs_receiver);
-            watch!(fs_event_index);
             let kill_signal_index = sel.recv(&kill_signal_receiver);
-            watch!(kill_signal_index);
 
             loop {
-                watch!("pmp background updater ticks");
                 if let Ok(selection) = sel.select_timeout(Duration::from_millis(100)) {
                     let index = selection.index();
-                    watch!(index);
                     if index == fs_event_index {
                         let fs_event = selection.recv(&fs_receiver);
-                        watch!(fs_event);
-                        watch!(path_map.read());
                         match fs_event {
                             Ok(Some(fs_event)) => {
                                 let pmm = path_map.clone();
@@ -125,7 +120,6 @@ impl XvcPathMetadataProvider {
                 }
             }
         })));
-        watch!(background_thread);
 
         Ok(Self {
             xvc_root,
@@ -139,14 +133,12 @@ impl XvcPathMetadataProvider {
 
     /// Returns the [XvcMetadata] for a given [XvcPath].
     pub fn get(&self, path: &XvcPath) -> Option<XvcMetadata> {
-        watch!(path);
         if !self.path_map.read().unwrap().contains_key(path) {
             uwr!(self.update_metadata(path), self.output_sender);
         }
         let pm = self.path_map.clone();
         let pm = uwr!(pm.read(), self.output_sender);
         let md = pm.get(path).cloned();
-        watch!(&md);
         md
     }
 
@@ -165,11 +157,8 @@ impl XvcPathMetadataProvider {
     }
 
     fn update_metadata(&self, xvc_path: &XvcPath) -> Result<()> {
-        watch!(xvc_path);
         let path = xvc_path.to_absolute_path(&self.xvc_root);
-        watch!(path);
         let md = path.symlink_metadata();
-        watch!(&md);
         self.path_map
             .write()
             .unwrap()
@@ -179,17 +168,14 @@ impl XvcPathMetadataProvider {
 
     /// Stop updating the paths by killing the background thread
     pub fn stop(&self) -> Result<()> {
-        watch!(self.background_thread);
         self.kill_signal_sender
             .clone()
             .send(true)
             .map_err(Error::from)?;
-        watch!(self.background_thread);
         Ok(())
     }
 
     fn update_with_glob(&self, glob: &str) -> Result<()> {
-        watch!(glob);
         for entry in glob::glob(glob)? {
             match entry {
                 Ok(entry) => {
@@ -197,12 +183,10 @@ impl XvcPathMetadataProvider {
                         continue;
                     } else {
                         let xvc_path = XvcPath::new(&self.xvc_root, &self.xvc_root, &entry)?;
-                        watch!(xvc_path);
                         if self.path_map.read().unwrap().contains_key(&xvc_path) {
                             continue;
                         } else {
                             let md = entry.symlink_metadata();
-                            watch!(&md);
                             self.path_map
                                 .write()
                                 .unwrap()
@@ -220,18 +204,12 @@ impl XvcPathMetadataProvider {
 
     /// Return all paths from the disk specified with glob
     pub fn glob_paths(&self, glob: &str) -> Result<XvcPathMetadataMap> {
-        watch!(glob);
         self.update_with_glob(glob)?;
-        watch!(self.path_map.read());
         let mut matches = XvcPathMetadataMap::new();
         let pattern = glob::Pattern::new(glob)?;
         for (p, md) in self.path_map.read().unwrap().iter() {
-            watch!(p);
-            if pattern.matches(p.as_str()) {
-                watch!("matched", p);
-                if !md.is_missing() {
-                    matches.insert(p.clone(), *md);
-                }
+            if pattern.matches(p.as_str()) && !md.is_missing() {
+                matches.insert(p.clone(), *md);
             }
         }
         Ok(matches)
@@ -247,7 +225,6 @@ impl XvcPathMetadataProvider {
 impl Drop for XvcPathMetadataProvider {
     /// Stop the background thread when quit
     fn drop(&mut self) {
-        watch!("Dropping XvcPathMetadataProvider", self);
         // Ignore if the channel is closed
         let _ = self.stop();
     }

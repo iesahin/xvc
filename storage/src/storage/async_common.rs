@@ -158,13 +158,10 @@ pub(crate) trait XvcS3StorageOperations {
         let bucket = self.get_bucket()?;
 
         for cache_path in paths {
-            watch!(cache_path);
             let storage_path = self.build_storage_path(cache_path);
             let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-            watch!(abs_cache_path);
 
             let mut path = tokio::fs::File::open(&abs_cache_path).await?;
-            watch!(path);
 
             let res_response = bucket
                 .put_object_stream(&mut path, storage_path.as_str())
@@ -179,7 +176,6 @@ pub(crate) trait XvcS3StorageOperations {
                         storage_path.as_str()
                     );
                     copied_paths.push(storage_path);
-                    watch!(copied_paths.len());
                 }
                 Err(err) => {
                     error!(output_snd, "{}", err);
@@ -206,12 +202,10 @@ pub(crate) trait XvcS3StorageOperations {
         let temp_dir = XvcStorageTempDir::new()?;
 
         for cache_path in paths {
-            watch!(cache_path);
             let storage_path = self.build_storage_path(cache_path);
             let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
             fs::create_dir_all(&abs_cache_dir)?;
             let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
-            watch!(abs_cache_path);
             let response_data_stream = bucket.get_object_stream(storage_path.as_str()).await;
 
             match response_data_stream {
@@ -227,7 +221,6 @@ pub(crate) trait XvcS3StorageOperations {
                         async_cache_path.write_all(&chunk?).await?;
                     }
                     copied_paths.push(storage_path);
-                    watch!(copied_paths.len());
                 }
                 Err(err) => {
                     error!(output_snd, "{}", err);
@@ -255,7 +248,6 @@ pub(crate) trait XvcS3StorageOperations {
         let bucket = self.get_bucket()?;
 
         for cache_path in paths {
-            watch!(cache_path);
             let storage_path = self.build_storage_path(cache_path);
             bucket.delete_object(storage_path.as_str()).await?;
             info!(output, "[DELETE] {}", storage_path.as_str());
@@ -309,7 +301,6 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         let rt = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .build()?;
-        watch!(rt);
         rt.block_on(self.a_init(output))
     }
 

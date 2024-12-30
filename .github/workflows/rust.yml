@@ -132,115 +132,121 @@ jobs:
         if: matrix.benches
         run: cargo test --benches ${{ matrix.features }}
 
-  deploy-linux:
-    name: deploy-linux
-    # needs: [coverage]
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target: [x86_64-unknown-linux-gnu]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - name: Install rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-          targets: ${{ matrix.target }}
-
-      - name: Build target
-        run: cargo build --release --target ${{ matrix.target }} --features=bundled-openssl
-
-      - name: Package
-        shell: bash
-        run: |
-          #strip target/${{ matrix.target }}/release/xvc
-          cd target/${{ matrix.target }}/release
-          tar czvf ../../../xvc-${{ github.ref_name }}-${{ matrix.target }}.tar.gz xvc
-          cd -
-
-      - name: Publish
-        uses: softprops/action-gh-release@v1
-        # TODO: if any of the build step fails, the release should be deleted.
-        with:
-          files: "xvc*"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy-windows:
-    name: deploy-windows
-    # needs: [coverage]
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        target: [x86_64-pc-windows-gnu]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - name: Install rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-          targets: ${{ matrix.target }}
-
-      - name: Build target
-        run: cargo build --release --target ${{ matrix.target }} --features bundled-sqlite
-
-      - name: Package
-        shell: bash
-        run: |
-          #strip target/${{ matrix.target }}/release/xvc
-          cd target/${{ matrix.target }}/release
-          tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
-          cd -
-
-      - name: Publish
-        uses: softprops/action-gh-release@v1
-        # TODO: if any of the build step fails, the release should be deleted.
-        with:
-          files: "xvc*"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy-macos:
-    name: deploy-macos
-    # needs: [coverage]
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        target: [x86_64-apple-darwin]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - name: Install rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-          targets: ${{ matrix.target }}
-
-      - name: Build target
-        run: cargo build --release --target ${{ matrix.target }}
-
-      - name: Package
-        shell: bash
-        run: |
-          #strip target/${{ matrix.target }}/release/xvc
-          cd target/${{ matrix.target }}/release
-          tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
-          cd -
-
-      - name: Publish
-        uses: softprops/action-gh-release@v1
-        # TODO: if any of the build step fails, the release should be deleted.
-        with:
-          files: "xvc*"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # deploy-linux:
+  #   name: deploy-linux
+  #   needs: [coverage]
+  #   if: startsWith(github.ref, 'refs/tags/')
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       target:
+  #         [
+  #           x86_64-unknown-linux-gnu,
+  #           aarch64-unknown-linux-gnu,
+  #           aarch64-linux-android,
+  #         ]
+  #
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v1
+  #
+  #     - name: Install rust
+  #       uses: dtolnay/rust-toolchain@master
+  #       with:
+  #         toolchain: stable
+  #         targets: ${{ matrix.target }}
+  #
+  #     - name: Build target
+  #       run: cargo build --release --target ${{ matrix.target }} --features=bundled-openssl
+  #
+  #     - name: Package
+  #       shell: bash
+  #       run: |
+  #         #strip target/${{ matrix.target }}/release/xvc
+  #         cd target/${{ matrix.target }}/release
+  #         tar czvf ../../../xvc-${{ github.ref_name }}-${{ matrix.target }}.tar.gz xvc
+  #         cd -
+  #
+  #     - name: Publish
+  #       uses: softprops/action-gh-release@v1
+  #       # TODO: if any of the build step fails, the release should be deleted.
+  #       with:
+  #         files: "xvc*"
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #
+  # deploy-windows:
+  #   name: deploy-windows
+  #   needs: [coverage]
+  #   if: startsWith(github.ref, 'refs/tags/')
+  #   runs-on: windows-latest
+  #   strategy:
+  #     matrix:
+  #       target: [x86_64-pc-windows-gnu]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v1
+  #
+  #     - name: Install rust
+  #       uses: dtolnay/rust-toolchain@master
+  #       with:
+  #         toolchain: stable
+  #         targets: ${{ matrix.target }}
+  #
+  #     - name: Build target
+  #       run: cargo build --release --target ${{ matrix.target }} --features bundled-sqlite
+  #
+  #     - name: Package
+  #       shell: bash
+  #       run: |
+  #         #strip target/${{ matrix.target }}/release/xvc
+  #         cd target/${{ matrix.target }}/release
+  #         tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
+  #         cd -
+  #
+  #     - name: Publish
+  #       uses: softprops/action-gh-release@v1
+  #       # TODO: if any of the build step fails, the release should be deleted.
+  #       with:
+  #         files: "xvc*"
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #
+  # deploy-macos:
+  #   name: deploy-macos
+  #   needs: [coverage]
+  #   if: startsWith(github.ref, 'refs/tags/')
+  #   runs-on: macos-latest
+  #   strategy:
+  #     matrix:
+  #       target:
+  #         [x86_64-apple-darwin, aarch64-apple-darwin, x86_64-unknown-freebsd]
+  #
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v1
+  #
+  #     - name: Install rust
+  #       uses: dtolnay/rust-toolchain@master
+  #       with:
+  #         toolchain: stable
+  #         targets: ${{ matrix.target }}
+  #
+  #     - name: Build target
+  #       run: cargo build --release --target ${{ matrix.target }}
+  #
+  #     - name: Package
+  #       shell: bash
+  #       run: |
+  #         #strip target/${{ matrix.target }}/release/xvc
+  #         cd target/${{ matrix.target }}/release
+  #         tar czvf ../../../xvc-${{ github.ref_name}}-${{ matrix.target }}.tar.gz xvc
+  #         cd -
+  #
+  #     - name: Publish
+  #       uses: softprops/action-gh-release@v1
+  #       # TODO: if any of the build step fails, the release should be deleted.
+  #       with:
+  #         files: "xvc*"
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

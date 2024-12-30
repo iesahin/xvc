@@ -79,8 +79,6 @@ impl Diffable for ParamDep {
     /// ⚠️ Call actual.update_metadata before calling this function ⚠️
     fn diff_superficial(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-        watch!(record);
-        watch!(actual);
         match (record.xvc_metadata, actual.xvc_metadata) {
             (Some(record_md), Some(actual_md)) => {
                 if record_md == actual_md {
@@ -105,8 +103,6 @@ impl Diffable for ParamDep {
     /// ⚠️ Call actual.update_metadata and actual.update_value before calling this function ⚠️
     fn diff_thorough(record: &Self::Item, actual: &Self::Item) -> Diff<Self::Item> {
         assert!(record.path == actual.path);
-        watch!(record);
-        watch!(actual);
         match Self::diff_superficial(record, actual) {
             Diff::Identical => Diff::Identical,
             Diff::Different { .. } => {
@@ -272,11 +268,10 @@ impl XvcParamValue {
     /// Loads the key (in the form of a.b.c) from a YAML document
     fn parse_yaml(all_content: &str, key: &str) -> Result<XvcParamValue> {
         let yaml_map: YamlValue = serde_yaml::from_str(all_content)?;
-        watch!(yaml_map);
+
         let nested_keys: Vec<&str> = key.split('.').collect();
         let mut current_scope: YamlValue = yaml_map;
         for k in &nested_keys {
-            watch!(k);
             if let Some(current_value) = current_scope.get(*k) {
                 match current_value {
                     YamlValue::Mapping(_) => {

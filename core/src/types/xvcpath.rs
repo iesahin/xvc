@@ -13,7 +13,7 @@ use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString};
-use xvc_logging::{output, uwr, watch, XvcOutputSender};
+use xvc_logging::{output, uwr, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use std::ops::Deref;
@@ -85,9 +85,6 @@ impl XvcPath {
         }
 
         let abs_path = path.absolutize_from(current_dir)?;
-        xvc_logging::watch!(abs_path);
-        xvc_logging::watch!(current_dir);
-        xvc_logging::watch!(xvc_root.absolute_path());
         let rel_path = abs_path.strip_prefix(xvc_root.absolute_path())?;
         Ok(XvcPath(RelativePathBuf::from_path(rel_path)?))
     }
@@ -110,6 +107,16 @@ impl XvcPath {
     /// Checks whether is a child path of `other`
     pub fn starts_with(&self, other: &XvcPath) -> bool {
         self.0.starts_with(AsRef::<RelativePath>::as_ref(other))
+    }
+
+    /// Checks whether this path starts with the given string
+    pub fn starts_with_str(&self, base: &str) -> bool {
+        self.0.as_str().starts_with(base)
+    }
+
+    /// Checks whether this path contains the given string
+    pub fn contains(&self, s: &str) -> bool {
+        self.0.as_str().contains(s)
     }
 
     /// Calculates the content digest of the path
@@ -279,11 +286,9 @@ impl XvcCachePath {
     #[allow(clippy::permissions_set_readonly_false)]
     pub fn remove(&self, output_snd: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<()> {
         let abs_cp = self.to_absolute_path(xvc_root);
-        watch!(abs_cp);
         if abs_cp.exists() {
             // Set to writable
             let parent = abs_cp.parent().unwrap();
-            watch!(parent);
             let mut dir_perm = parent.metadata()?.permissions();
             dir_perm.set_readonly(false);
             fs::set_permissions(parent, dir_perm)?;
@@ -297,10 +302,8 @@ impl XvcCachePath {
         }
 
         let mut rel_path = self.inner();
-        watch!(rel_path);
         while let Some(parent) = rel_path.parent() {
             let parent_abs_cp = parent.to_logical_path(xvc_root.xvc_dir());
-            watch!(parent_abs_cp);
             if parent_abs_cp.exists()
                 && parent_abs_cp.is_dir()
                 && parent_abs_cp.read_dir().unwrap().count() == 0

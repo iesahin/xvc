@@ -10,7 +10,6 @@ use xvc_walker::*;
 use test_case::test_case;
 
 use xvc::error::Result;
-use xvc_logging::watch;
 use xvc_test_helper::*;
 use xvc_walker::AbsolutePath;
 
@@ -46,7 +45,6 @@ fn new_dir_with_ignores(
 ) -> Result<IgnoreRules> {
     let patterns = create_patterns(root, dir, initial_patterns);
     let initialized = IgnoreRules::empty(&PathBuf::from(root), Some(".gitignore"));
-    watch!(patterns);
     initialized.add_patterns(patterns).unwrap();
     Ok(initialized)
 }
@@ -68,8 +66,6 @@ fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern
 #[test_case("", "*.bin\n!dir-0002/*" => it contains "dir-0002/file-0001.bin" ; "t3572817176" )]
 #[test_case("", "*.bin\n!dir-0002/**" => it contains "dir-0002/file-0001.bin" ; "t7772817176" )]
 fn test_walk_parallel(ignore_src: &str, ignore_content: &str) -> Vec<String> {
-    watch!(ignore_src);
-    watch!(ignore_content);
     test_logging(LevelFilter::Trace);
     let root = create_directory_hierarchy(true).unwrap();
     let (path_sender, path_receiver) = crossbeam_channel::unbounded();
@@ -100,6 +96,5 @@ fn test_walk_parallel(ignore_src: &str, ignore_content: &str) -> Vec<String> {
             Err(_) => None,
         })
         .collect();
-    watch!(paths);
     paths
 }

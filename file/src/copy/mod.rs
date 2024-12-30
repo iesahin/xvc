@@ -13,7 +13,7 @@ use clap::Parser;
 
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, watch, XvcOutputSender};
+use xvc_logging::{debug, error, XvcOutputSender};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]
@@ -289,7 +289,6 @@ pub(crate) fn recheck_destination(
     xvc_root: &XvcRoot,
     destination_entities: &[XvcEntity],
 ) -> Result<()> {
-    watch!(destination_entities);
     let (ignore_writer, ignore_thread) = make_ignore_handler(output_snd, xvc_root)?;
     let (recheck_handler, recheck_thread) =
         make_recheck_handler(output_snd, xvc_root, &ignore_writer)?;
@@ -337,9 +336,6 @@ pub fn cmd_copy(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: CopyCLI)
         &opts.destination,
     )?;
 
-    watch!(source_xvc_paths);
-    watch!(source_metadata);
-
     let source_dest_store = get_copy_source_dest_store(
         output_snd,
         xvc_root,
@@ -351,8 +347,6 @@ pub fn cmd_copy(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: CopyCLI)
         opts.name_only,
         opts.force,
     )?;
-
-    watch!(source_dest_store);
 
     xvc_root.with_r11store_mut(|store: &mut R11Store<XvcPath, XvcMetadata>| {
         for (source_xe, (dest_xe, dest_path)) in source_dest_store.iter() {

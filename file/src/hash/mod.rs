@@ -13,7 +13,7 @@ use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
 };
-use xvc_logging::{output, watch, XvcOutputSender};
+use xvc_logging::{output, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::common::pipe_path_digest;
@@ -82,7 +82,6 @@ pub fn cmd_hash(
     let targets = opts.targets;
 
     for t in targets {
-        watch!(t);
         if !t.exists() {
             Error::FileNotFound { path: t }.error();
             continue;
@@ -96,8 +95,6 @@ pub fn cmd_hash(
             pipe_path_digest(filtered_path_rec, digest_snd, algorithm, text_or_binary)?;
 
             for (path, digest) in digest_rec {
-                watch!(path);
-                watch!(digest);
                 output!(output_snd, "{digest}\t{}", path.to_string_lossy());
             }
         } else if t.is_file() {

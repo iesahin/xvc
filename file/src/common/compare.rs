@@ -21,7 +21,7 @@ use xvc_core::{
 };
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, panic, watch, XvcOutputSender};
+use xvc_logging::{debug, error, panic, XvcOutputSender};
 
 use super::FileTextOrBinary;
 
@@ -35,7 +35,6 @@ pub fn diff_xvc_path_metadata(
     stored_xvc_metadata_store: &XvcStore<XvcMetadata>,
     pmm: &XvcPathMetadataMap,
 ) -> DiffStore2<XvcPath, XvcMetadata> {
-    watch!(pmm);
     let actual_xvc_path_store: HStore<XvcPath> = HStore::from_storable(
         pmm.keys().cloned(),
         stored_xvc_path_store,
@@ -142,8 +141,6 @@ pub fn diff_file_content_digest(
             Ok(path)
         };
         let compare_with_stored_digest = |actual| -> Diff<ContentDigest> {
-            watch!(stored_content_digest);
-            watch!(actual);
             match stored_content_digest {
                 Some(record) => {
                     if actual != *record {
@@ -159,7 +156,6 @@ pub fn diff_file_content_digest(
             }
         };
 
-        watch!(xvc_path_diff);
         let diff_content_digest = match xvc_path_diff {
             Diff::Identical | Diff::Skipped => {
                 match xvc_metadata_diff {
@@ -200,14 +196,9 @@ pub fn diff_file_content_digest(
             }
             // The path is not recorded before.
             Diff::RecordMissing { actual } => {
-                watch!(actual);
                 let path = actual.to_absolute_path(xvc_root);
-                watch!(path);
                 let actual_digest = ContentDigest::new(&path, algorithm, text_or_binary.0)?;
-                watch!(actual_digest);
-                let res = compare_with_stored_digest(actual_digest);
-                watch!(res);
-                res
+                compare_with_stored_digest(actual_digest)
             }
             // The path is changed. This can happen after a move
             // operation, for example.
@@ -466,8 +457,6 @@ pub fn diff_content_digest(
         .copied()
         .collect::<HashSet<XvcEntity>>();
 
-    watch!(file_entities);
-
     let dir_entities = entities
         .iter()
         .filter(|xe| {
@@ -477,7 +466,6 @@ pub fn diff_content_digest(
         })
         .copied()
         .collect::<HashSet<XvcEntity>>();
-    watch!(dir_entities);
 
     entities
         .difference(&file_entities)
@@ -555,7 +543,6 @@ pub fn diff_content_digest(
         )
     };
 
-    watch!(file_content_digest_diff_store.keys());
     let mut diff_store = DiffStore::with_capacity(
         file_content_digest_diff_store.len() + dir_content_digest_diff_store.len(),
     );

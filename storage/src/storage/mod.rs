@@ -269,7 +269,6 @@ impl XvcStorageOperations for XvcStorage {
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        watch!(paths);
         match self {
             XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),

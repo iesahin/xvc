@@ -100,21 +100,15 @@ impl UpdateFromXvcConfig for CarryInCLI {
 ///     XvcDigest --> CacheLocation
 ///
 /// ```
-///
-
 pub fn cmd_carry_in(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
     cli_opts: CarryInCLI,
 ) -> Result<()> {
-    watch!(cli_opts);
-    watch!(xvc_root);
     let conf = xvc_root.config();
     let opts = cli_opts.update_from_conf(conf)?;
-    watch!(opts);
     let current_dir = conf.current_dir()?;
     let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
-    watch!(targets);
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
     let stored_xvc_metadata_store = xvc_root.load_store::<XvcMetadata>()?;
@@ -152,8 +146,6 @@ pub fn cmd_carry_in(
         None,
         !opts.no_parallel,
     );
-
-    watch!(content_digest_diff);
 
     let xvc_paths_to_carry = if opts.force {
         target_files
@@ -198,7 +190,6 @@ pub fn cmd_carry_in(
         .collect();
 
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
-    watch!(xvc_paths_to_carry);
     carry_in(
         output_snd,
         xvc_root,
@@ -238,21 +229,14 @@ pub fn carry_in(
 
     let path_sync = PathSync::new();
 
-    watch!(ignore_writer);
-    watch!(ignore_thread);
-
     let copy_path_to_cache_and_recheck = |xe, xp| {
         let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
-        watch!(cache_path);
         let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-        watch!(abs_cache_path);
         if abs_cache_path.exists() {
             if force {
                 let cache_dir = uwo!(abs_cache_path.parent(), output_snd);
                 uwr!(set_writable(cache_dir), output_snd);
-                watch!(cache_dir.metadata().unwrap().permissions());
                 uwr!(set_writable(&abs_cache_path), output_snd);
-                watch!(abs_cache_path.metadata().unwrap().permissions());
                 /* let mut dir_perm = cache_dir.metadata()?.permissions(); */
                 /* dir_perm.set_readonly(true); */
                 uwr!(fs::remove_file(&abs_cache_path), output_snd);
@@ -266,8 +250,6 @@ pub fn carry_in(
                 info!(output_snd, "[EXISTS] {abs_cache_path} for {xp}");
             }
         } else {
-            watch!(&cache_path);
-            watch!(&xp);
             uwr!(
                 move_xvc_path_to_cache(xvc_root, xp, &cache_path, &path_sync),
                 output_snd
@@ -275,7 +257,6 @@ pub fn carry_in(
             info!(output_snd, "[CARRY] {xp} -> {cache_path}");
         }
         let target_path = xp.to_absolute_path(xvc_root);
-        watch!(target_path);
         if target_path.exists() {
             uwr!(fs::remove_file(&target_path), output_snd);
             info!(output_snd, "[REMOVE] {target_path}");
@@ -292,9 +273,6 @@ pub fn carry_in(
             ),
             output_snd
         );
-        watch!(&cache_path);
-        watch!(recheck_method);
-        watch!(&xp);
         info!(output_snd, "[RECHECK] {cache_path} -> {xp}");
     };
 

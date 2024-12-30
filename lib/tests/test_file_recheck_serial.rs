@@ -4,7 +4,7 @@ use std::{fs, path::PathBuf};
 
 use crate::common::run_in_temp_xvc_dir;
 use log::LevelFilter;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
@@ -31,11 +31,11 @@ fn test_file_recheck_serial() -> Result<()> {
 
     let file_to_add = "file-0000.bin";
     let path_to_add = PathBuf::from(file_to_add);
-    watch!(x(&["file", "track", file_to_add])?);
+    x(&["file", "track", file_to_add])?;
     assert!(path_to_add.exists());
     fs::remove_file(file_to_add)?;
     assert!(!path_to_add.exists());
-    watch!(x(&["file", "recheck", "--no-parallel", file_to_add])?);
+    x(&["file", "recheck", "--no-parallel", file_to_add])?;
 
     assert!(PathBuf::from(file_to_add).exists());
 

@@ -59,17 +59,13 @@ fn test_storage_new_generic_fs() -> Result<()> {
 
     let storage_dir = PathBuf::from(temp_directory).join(storage_dir_name);
 
-    watch!(storage_dir);
-    watch!(out);
-
     assert!(storage_dir.exists());
 
     assert!(storage_dir.join(XVC_STORAGE_GUID_FILENAME).exists());
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
-    watch!(file_track_result);
+    x(&["file", "track", the_file])?;
 
     let n_storage_files_before = jwalk::WalkDir::new(&storage_dir)
         .into_iter()
@@ -80,10 +76,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
         })
         .count();
 
-    watch!(n_storage_files_before);
-
-    let push_result = x(&["file", "send", "--to", "generic-storage", the_file])?;
-    watch!(push_result);
+    x(&["file", "send", "--to", "generic-storage", the_file])?;
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin
@@ -96,7 +89,6 @@ fn test_storage_new_generic_fs() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    watch!(n_storage_files_after);
 
     assert!(
         n_storage_files_before + 1 == n_storage_files_after,
@@ -111,8 +103,6 @@ fn test_storage_new_generic_fs() -> Result<()> {
     sh(&format!("rm -rf {}", cache_dir.to_string_lossy()))?;
 
     let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "generic-storage"])?;
-
-    watch!(fetch_result);
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -130,7 +120,6 @@ fn test_storage_new_generic_fs() -> Result<()> {
     fs::remove_file(the_file)?;
 
     let pull_result = x(&["file", "bring", "--from", "generic-storage"])?;
-    watch!(pull_result);
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()

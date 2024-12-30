@@ -29,7 +29,7 @@ use xvc_core::{
 };
 use xvc_core::{get_absolute_git_command, get_git_tracked_files, HashAlgorithm};
 use xvc_ecs::ecs::event::EventLog;
-use xvc_logging::{error, info, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{error, info, uwr, warn, XvcOutputSender};
 
 use xvc_ecs::{persist, HStore, Storable, XvcStore};
 
@@ -140,12 +140,9 @@ pub fn filter_targets_from_store(
         );
     }
 
-    watch!(targets);
-
     if let Some(targets) = targets {
         let paths =
             filter_paths_by_globs(output_snd, xvc_root, xvc_path_store, targets.as_slice())?;
-        watch!(paths);
         Ok(paths)
     } else {
         Ok(xvc_path_store.into())
@@ -162,7 +159,6 @@ pub fn filter_paths_by_globs(
     paths: &XvcStore<XvcPath>,
     globs: &[String],
 ) -> Result<HStore<XvcPath>> {
-    watch!(globs);
     if globs.is_empty() {
         return Ok(paths.into());
     }
@@ -171,10 +167,8 @@ pub fn filter_paths_by_globs(
     let globs = globs
         .iter()
         .map(|g| {
-            watch!(g);
             if !g.ends_with('/') && !g.contains('*') {
                 let slashed = format!("{g}/");
-                watch!(slashed);
                 // We don't track directories. Instead we look for files that start with the directory.
                 if paths.any(|_, p| p.as_str().starts_with(&slashed)) {
                     slashed
@@ -187,9 +181,7 @@ pub fn filter_paths_by_globs(
         })
         .collect::<Vec<String>>();
 
-    watch!(globs);
     let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, &globs)?;
-    watch!(glob_matcher);
     let paths = paths
         .iter()
         .filter_map(|(e, p)| {
@@ -201,7 +193,6 @@ pub fn filter_paths_by_globs(
         })
         .collect();
 
-    watch!(paths);
     Ok(paths)
 }
 
@@ -221,7 +212,6 @@ pub fn filter_paths_by_globs(
 ///
 /// This function will return an error if any of the glob patterns are invalid.
 ///
-
 pub fn build_glob_matcher(
     output_snd: &XvcOutputSender,
     dir: &Path,
@@ -229,14 +219,12 @@ pub fn build_glob_matcher(
 ) -> Result<Glob> {
     let mut glob_matcher = Glob::default();
     globs.iter().for_each(|t| {
-        watch!(t);
         if t.ends_with('/') {
             if !glob_matcher.add(&format!("{t}**")) {
                 error!(output_snd, "Error in glob: {t}");
             }
         } else if !t.contains('*') {
             let abs_target = dir.join(Path::new(t));
-            watch!(abs_target);
             if abs_target.is_dir() {
                 if !glob_matcher.add(&format!("{t}/**")) {
                     error!(output_snd, "Error in glob: {t}")
@@ -265,7 +253,6 @@ pub fn build_glob_matcher(
 /// If some day we need to optimize first walking the ignores, then walking the
 /// directories in the targets, I'd be glad that this is used in very large
 /// repositories.
-
 pub fn targets_from_disk(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
@@ -273,8 +260,6 @@ pub fn targets_from_disk(
     targets: &Option<Vec<String>>,
     filter_git_paths: bool,
 ) -> Result<XvcPathMetadataMap> {
-    watch!(current_dir);
-    watch!(xvc_root.absolute_path());
     // If we are not in the root, we add current dir to all targets and recur.
     if *current_dir != *xvc_root.absolute_path() {
         let cwd = current_dir
@@ -292,7 +277,6 @@ pub fn targets_from_disk(
             Some(targets) => targets.iter().map(|t| format!("{cwd}{t}")).collect(),
             None => vec![cwd.to_string()],
         };
-        watch!(targets);
         return targets_from_disk(
             output_snd,
             xvc_root,
@@ -343,7 +327,6 @@ pub fn targets_from_disk(
         xpmm
     };
 
-    watch!(all_paths);
     // Return false when the path is a git path
 
     let git_files: HashSet<String> = if filter_git_paths {
@@ -388,7 +371,6 @@ pub fn targets_from_disk(
         }
 
         let mut glob_matcher = build_glob_matcher(output_snd, xvc_root, targets)?;
-        watch!(glob_matcher);
         Ok(all_paths
             .into_iter()
             .filter(|(p, _)| git_path_filter(p))
@@ -453,11 +435,8 @@ pub fn recheck_from_cache(
     ignore_writer: &Sender<IgnoreOp>,
 ) -> Result<()> {
     if let Some(parent) = xvc_path.parents().first() {
-        watch!(parent);
         let parent_dir = parent.to_absolute_path(xvc_root);
-        watch!(parent_dir);
         if !parent_dir.exists() {
-            watch!(&parent_dir);
             fs::create_dir_all(parent_dir)?;
             uwr!(
                 ignore_writer.send(Some(IgnoreOperation::IgnoreDir {
@@ -468,17 +447,11 @@ pub fn recheck_from_cache(
         }
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
-    watch!(cache_path);
     let path = xvc_path.to_absolute_path(xvc_root);
-    watch!(path);
     // If the file already exists, we delete it.
     if path.exists() {
-        watch!("exists!");
         fs::remove_file(&path)?;
     }
-
-    watch!(path);
-    watch!(recheck_method);
 
     match recheck_method {
         RecheckMethod::Copy => {
@@ -502,7 +475,6 @@ pub fn recheck_from_cache(
         })),
         output_snd
     );
-    watch!("Return recheck_from_cache");
     Ok(())
 }
 
@@ -541,9 +513,7 @@ fn copy_file(
 #[cfg(not(unix))]
 pub fn set_writable(path: &Path) -> Result<()> {
     let mut perm = path.metadata()?.permissions();
-    watch!(&perm);
     perm.set_readonly(false);
-    watch!(&perm);
     fs::set_permissions(path, perm)?;
     Ok(())
 }
@@ -551,9 +521,7 @@ pub fn set_writable(path: &Path) -> Result<()> {
 #[cfg(not(unix))]
 pub fn set_readonly(path: &Path) -> Result<()> {
     let mut perm = path.metadata()?.permissions();
-    watch!(&perm);
     perm.set_readonly(true);
-    watch!(&perm);
     fs::set_permissions(path, perm)?;
     Ok(())
 }
@@ -655,7 +623,6 @@ pub fn move_to_cache(
     let cache_dir = cache_path.parent().ok_or(Error::InternalError {
         message: "Cache path has no parent.".to_string(),
     })?;
-    watch!(cache_dir);
     // We don't lock the path_sync here because we don't want to block other threads.
     path_sync
         .with_sync_abs_path(path, |path| {
@@ -671,10 +638,8 @@ pub fn move_to_cache(
                 fs::rename(path, cache_path)
                     .map_err(|source| xvc_walker::Error::IoError { source })?;
                 let mut file_perm = cache_path.metadata()?.permissions();
-                watch!(&file_perm.clone());
                 file_perm.set_readonly(true);
                 fs::set_permissions(cache_path, file_perm.clone())?;
-                watch!(&file_perm.clone());
                 let mut dir_perm = cache_dir.metadata()?.permissions();
                 dir_perm.set_readonly(true);
                 fs::set_permissions(cache_dir, dir_perm)?;
@@ -693,9 +658,7 @@ pub fn move_xvc_path_to_cache(
     path_sync: &PathSync,
 ) -> Result<()> {
     let path = xvc_path.to_absolute_path(xvc_root);
-    watch!(path);
     let cache_path = cache_path.to_absolute_path(xvc_root);
-    watch!(cache_path);
     move_to_cache(&path, &cache_path, path_sync)
 }
 
@@ -712,9 +675,7 @@ where
     T: Storable,
 {
     let records = xvc_root.load_store::<T>()?;
-    watch!(records.len());
     let new_store = apply_diff(&records, diffs, add_new, remove_missing)?;
-    watch!(new_store.len());
     xvc_root.save_store(&new_store)?;
     Ok(())
 }

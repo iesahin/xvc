@@ -28,9 +28,9 @@ Options:
             GB and TB to represent sizes larger than 1MB.
           - {{ats}}:  actual timestamp. The timestamp of the workspace file.
           - {{name}}: The name of the file or directory.
-          - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
+          - {{cst}}:  cache status. One of "=", ">", "<", or "X" to show
             whether the file timestamp is the same as the cached timestamp, newer,
-            older, not cached or not tracked.
+            older, and not tracked.
           - {{rcd8}}:  recorded content digest stored in the cache. First 8 digits.
           - {{rcd64}}:  recorded content digest stored in the cache. All 64 digits.
           - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
@@ -53,7 +53,12 @@ Options:
           
           The default option can be set with file.list.no_summary in the config file.
 
-  -a, --show-dot-files
+  -d, --show-directories
+          Don't hide directories
+          
+          Directories are not listed by default. This flag lists them.
+
+  -D, --show-dot-files
           Don't hide dot files
           
           If not supplied, hides dot files like .gitignore and .xvcignore
@@ -71,7 +76,7 @@ Options:
 ## Examples
 
 For these examples, we'll create a directory tree with five directories, each
-having a file.
+having 5 files.
 
 ```console
 $ xvc-test-helper create-directory-tree --directories 5 --files 5 --seed 20230213
@@ -134,45 +139,87 @@ $ xvc init
 
 ```
 
-Now it lists all files and directories.
+Now it lists all files
 
 ```console
 $ xvc file list --sort name-asc
-DX         224 [..]                   dir-0001
-FX        2001 [..]          1953f05d dir-0001/file-0001.bin
-FX        2002 [..]          7e807161 dir-0001/file-0002.bin
-FX        2003 [..]          d2432259 dir-0001/file-0003.bin
-FX        2004 [..]          63535612 dir-0001/file-0004.bin
-FX        2005 [..]          447933dc dir-0001/file-0005.bin
-DX         224 [..]                   dir-0002
-FX        2001 [..]          1953f05d dir-0002/file-0001.bin
-FX        2002 [..]          7e807161 dir-0002/file-0002.bin
-FX        2003 [..]          d2432259 dir-0002/file-0003.bin
-FX        2004 [..]          63535612 dir-0002/file-0004.bin
-FX        2005 [..]          447933dc dir-0002/file-0005.bin
-DX         224 [..]                   dir-0003
-FX        2001 [..]          1953f05d dir-0003/file-0001.bin
-FX        2002 [..]          7e807161 dir-0003/file-0002.bin
-FX        2003 [..]          d2432259 dir-0003/file-0003.bin
-FX        2004 [..]          63535612 dir-0003/file-0004.bin
-FX        2005 [..]          447933dc dir-0003/file-0005.bin
-DX         224 [..]                   dir-0004
-FX        2001 [..]          1953f05d dir-0004/file-0001.bin
-FX        2002 [..]          7e807161 dir-0004/file-0002.bin
-FX        2003 [..]          d2432259 dir-0004/file-0003.bin
-FX        2004 [..]          63535612 dir-0004/file-0004.bin
-FX        2005 [..]          447933dc dir-0004/file-0005.bin
-DX         224 [..]                   dir-0005
-FX        2001 [..]          1953f05d dir-0005/file-0001.bin
-FX        2002 [..]          7e807161 dir-0005/file-0002.bin
-FX        2003 [..]          d2432259 dir-0005/file-0003.bin
-FX        2004 [..]          63535612 dir-0005/file-0004.bin
+FX        [..]          1953f05d dir-0001/file-0001.bin
+FX        [..]          7e807161 dir-0001/file-0002.bin
+FX        [..]          d2432259 dir-0001/file-0003.bin
+FX        [..]          63535612 dir-0001/file-0004.bin
+FX        [..]          447933dc dir-0001/file-0005.bin
+FX        [..]          1953f05d dir-0002/file-0001.bin
+FX        [..]          7e807161 dir-0002/file-0002.bin
+FX        [..]          d2432259 dir-0002/file-0003.bin
+FX        [..]          63535612 dir-0002/file-0004.bin
+FX        [..]          447933dc dir-0002/file-0005.bin
+FX        [..]          1953f05d dir-0003/file-0001.bin
+FX        [..]          7e807161 dir-0003/file-0002.bin
+FX        [..]          d2432259 dir-0003/file-0003.bin
+FX        [..]          63535612 dir-0003/file-0004.bin
+FX        [..]          447933dc dir-0003/file-0005.bin
+FX        [..]          1953f05d dir-0004/file-0001.bin
+FX        [..]          7e807161 dir-0004/file-0002.bin
+FX        [..]          d2432259 dir-0004/file-0003.bin
+FX        [..]          63535612 dir-0004/file-0004.bin
+FX        [..]          447933dc dir-0004/file-0005.bin
+FX        [..]          1953f05d dir-0005/file-0001.bin
+FX        [..]          7e807161 dir-0005/file-0002.bin
+FX        [..]          d2432259 dir-0005/file-0003.bin
+FX        [..]          63535612 dir-0005/file-0004.bin
+FX        [..]          447933dc dir-0005/file-0005.bin
+
+Total #: 25 Workspace Size:       50075 Cached Size:           0
+
+
+```
+
+## Listing Directories
+
+`xvc file list` doesn't list directories by default. If you want to list them, you can use `--show-directories`/`-d` flag.
+
+
+```console
+$ xvc file list --show-directories
 FX        2005 [..]          447933dc dir-0005/file-0005.bin
+FX        2004 [..]          63535612 dir-0005/file-0004.bin
+FX        2003 [..]          d2432259 dir-0005/file-0003.bin
+FX        2002 [..]          7e807161 dir-0005/file-0002.bin
+FX        2001 [..]          1953f05d dir-0005/file-0001.bin
+DX         224 [..]                   dir-0005
+FX        2005 [..]          447933dc dir-0004/file-0005.bin
+FX        2004 [..]          63535612 dir-0004/file-0004.bin
+FX        2003 [..]          d2432259 dir-0004/file-0003.bin
+FX        2002 [..]          7e807161 dir-0004/file-0002.bin
+FX        2001 [..]          1953f05d dir-0004/file-0001.bin
+DX         224 [..]                   dir-0004
+FX        2005 [..]          447933dc dir-0003/file-0005.bin
+FX        2004 [..]          63535612 dir-0003/file-0004.bin
+FX        2003 [..]          d2432259 dir-0003/file-0003.bin
+FX        2002 [..]          7e807161 dir-0003/file-0002.bin
+FX        2001 [..]          1953f05d dir-0003/file-0001.bin
+DX         224 [..]                   dir-0003
+FX        2005 [..]          447933dc dir-0002/file-0005.bin
+FX        2004 [..]          63535612 dir-0002/file-0004.bin
+FX        2003 [..]          d2432259 dir-0002/file-0003.bin
+FX        2002 [..]          7e807161 dir-0002/file-0002.bin
+FX        2001 [..]          1953f05d dir-0002/file-0001.bin
+DX         224 [..]                   dir-0002
+FX        2005 [..]          447933dc dir-0001/file-0005.bin
+FX        2004 [..]          63535612 dir-0001/file-0004.bin
+FX        2003 [..]          d2432259 dir-0001/file-0003.bin
+FX        2002 [..]          7e807161 dir-0001/file-0002.bin
+FX        2001 [..]          1953f05d dir-0001/file-0001.bin
+DX         224 [..]                   dir-0001
 
 Total #: 30 Workspace Size:       51195 Cached Size:           0
 
 
 ```
+
+
+
+## Files tracked by Git
 
 This command doesn't list Git-tracked files by default. If you want to list them, use `--include-git-files` flag.
 ```console
@@ -196,37 +243,47 @@ Total #: 1 Workspace Size:          12 Cached Size:           0
 
 ```
 
+````admonish warning 
+Xvc detects files tracked by git with the output of `git ls-files`. In default
+configuration Git encodes **UTF-8** file names in octal format. As Xvc uses
+UTF-8 internally to keep track of paths, it cannot identify files are tracked
+by Git if they have non-ASCII characters. 
+
+Please set 
+
+```shell
+git config core.quotepath off
+```
+
+in your Xvc repository to let Git list files in UTF-8.  
+````
+
 By default the command hides dotfiles too. If you also want to show them, you can use `--show-dot-files`/`-a` flag. If you want to show dotfiles also tracked by git, you may use `--show-dot-files` and `--include-git-files` together.
 
 ```console
 $ xvc file list --sort name-asc --show-dot-files --include-git-files
 FX         107 [..]          ce9fcf30 .gitignore
 FX         141 [..]          3054b812 .xvcignore
-DX         224 [..]                   dir-0001
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
 FX        2003 [..]          d2432259 dir-0001/file-0003.bin
 FX        2004 [..]          63535612 dir-0001/file-0004.bin
 FX        2005 [..]          447933dc dir-0001/file-0005.bin
-DX         224 [..]                   dir-0002
 FX        2001 [..]          1953f05d dir-0002/file-0001.bin
 FX        2002 [..]          7e807161 dir-0002/file-0002.bin
 FX        2003 [..]          d2432259 dir-0002/file-0003.bin
 FX        2004 [..]          63535612 dir-0002/file-0004.bin
 FX        2005 [..]          447933dc dir-0002/file-0005.bin
-DX         224 [..]                   dir-0003
 FX        2001 [..]          1953f05d dir-0003/file-0001.bin
 FX        2002 [..]          7e807161 dir-0003/file-0002.bin
 FX        2003 [..]          d2432259 dir-0003/file-0003.bin
 FX        2004 [..]          63535612 dir-0003/file-0004.bin
 FX        2005 [..]          447933dc dir-0003/file-0005.bin
-DX         224 [..]                   dir-0004
 FX        2001 [..]          1953f05d dir-0004/file-0001.bin
 FX        2002 [..]          7e807161 dir-0004/file-0002.bin
 FX        2003 [..]          d2432259 dir-0004/file-0003.bin
 FX        2004 [..]          63535612 dir-0004/file-0004.bin
 FX        2005 [..]          447933dc dir-0004/file-0005.bin
-DX         224 [..]                   dir-0005
 FX        2001 [..]          1953f05d dir-0005/file-0001.bin
 FX        2002 [..]          7e807161 dir-0005/file-0002.bin
 FX        2003 [..]          d2432259 dir-0005/file-0003.bin
@@ -234,7 +291,7 @@ FX        2004 [..]          63535612 dir-0005/file-0004.bin
 FX        2005 [..]          447933dc dir-0005/file-0005.bin
 FX          12 [..]          6ecb3ffc my-git-tracked-script.sh
 
-Total #: 33 Workspace Size:       51455 Cached Size:           0
+Total #: 28 Workspace Size:       50335 Cached Size:           0
 
 
 ```
@@ -242,32 +299,27 @@ Total #: 33 Workspace Size:       51455 Cached Size:           0
 You can also hide the summary below the list to get only the list of files.
 
 ```console
-$ xvc file list  --sort name-asc --no-summary
-DX         224 [..]                   dir-0001
+$ xvc file list --no-summary --sort name-asc
 FX        2001 [..]          1953f05d dir-0001/file-0001.bin
 FX        2002 [..]          7e807161 dir-0001/file-0002.bin
 FX        2003 [..]          d2432259 dir-0001/file-0003.bin
 FX        2004 [..]          63535612 dir-0001/file-0004.bin
 FX        2005 [..]          447933dc dir-0001/file-0005.bin
-DX         224 [..]                   dir-0002
 FX        2001 [..]          1953f05d dir-0002/file-0001.bin
 FX        2002 [..]          7e807161 dir-0002/file-0002.bin
 FX        2003 [..]          d2432259 dir-0002/file-0003.bin
 FX        2004 [..]          63535612 dir-0002/file-0004.bin
 FX        2005 [..]          447933dc dir-0002/file-0005.bin
-DX         224 [..]                   dir-0003
 FX        2001 [..]          1953f05d dir-0003/file-0001.bin
 FX        2002 [..]          7e807161 dir-0003/file-0002.bin
 FX        2003 [..]          d2432259 dir-0003/file-0003.bin
 FX        2004 [..]          63535612 dir-0003/file-0004.bin
 FX        2005 [..]          447933dc dir-0003/file-0005.bin
-DX         224 [..]                   dir-0004
 FX        2001 [..]          1953f05d dir-0004/file-0001.bin
 FX        2002 [..]          7e807161 dir-0004/file-0002.bin
 FX        2003 [..]          d2432259 dir-0004/file-0003.bin
 FX        2004 [..]          63535612 dir-0004/file-0004.bin
 FX        2005 [..]          447933dc dir-0004/file-0005.bin
-DX         224 [..]                   dir-0005
 FX        2001 [..]          1953f05d dir-0005/file-0001.bin
 FX        2002 [..]          7e807161 dir-0005/file-0002.bin
 FX        2003 [..]          d2432259 dir-0005/file-0003.bin
@@ -457,7 +509,7 @@ Total #: 5 Workspace Size:       10015 Cached Size:       10015
 ```
 
 ```admonish info
-If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't calculate these hashes. If you have large number of files where the default format (that includes actual content hashes) runs slowly, you may customize it to not to include these columns.
+If `{{acd8}}` or `{{acd64}}` is not present in the format string, Xvc doesn't calculate these hashes. If you have large number of files where the default format (that includes actual content hashes) runs slowly, you can customize it to not to include these columns.
 ```
 
 If you want to get a quick glimpse of what needs to carried in, or rechecked,
@@ -483,3 +535,36 @@ The cache status column shows `=` for unchanged files in the cache, `X` for
 untracked files, `>` for files that there is newer version in the cache, and `<`
 for files that there is a newer version in the workspace. The comparison is done
 between recorded timestamp and actual timestamp with an accuracy of 1 second.
+
+## Ignored Files
+
+Ignored files and directories in `.xvcignore` are not listed in the results. 
+
+```console
+$ zsh -c "echo 'dir-0005' > .xvcignore"
+
+$ xvc file list --format='{{name}}' --no-summary
+dir-0004/file-0005.bin
+dir-0004/file-0004.bin
+dir-0004/file-0003.bin
+dir-0004/file-0002.bin
+dir-0004/file-0001.bin
+dir-0003/file-0005.bin
+dir-0003/file-0004.bin
+dir-0003/file-0003.bin
+dir-0003/file-0002.bin
+dir-0003/file-0001.bin
+dir-0002/file-0005.bin
+dir-0002/file-0004.bin
+dir-0002/file-0003.bin
+dir-0002/file-0002.bin
+dir-0002/file-0001.bin
+dir-0001/file-0005.bin
+dir-0001/file-0004.bin
+dir-0001/file-0003.bin
+dir-0001/file-0002.bin
+dir-0001/file-0001.bin
+dir-0001/a-new-file.bin
+
+
+```

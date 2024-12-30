@@ -5,7 +5,7 @@ use log::LevelFilter;
 
 use common::*;
 use regex::Regex;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
@@ -32,7 +32,7 @@ fn test_storage_list() -> Result<()> {
         common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "local",
@@ -42,11 +42,7 @@ fn test_storage_list() -> Result<()> {
         storage_dir.to_string_lossy().as_ref(),
     ])?;
 
-    watch!(out);
-
     let list_out = x(&["storage", "list"])?;
-
-    watch!(list_out);
 
     // The output table should contain
     // - name

@@ -8,7 +8,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputSender};
+use xvc_logging::{info, watch, XvcOutputSender};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -41,8 +41,6 @@ pub fn cmd_new_s3(
         storage_prefix,
     };
 
-    watch!(storage);
-
     let init_event = storage.init(output_snd, xvc_root)?;
     watch!(init_event);
 
@@ -57,6 +55,8 @@ pub fn cmd_new_s3(
         );
         Ok(())
     })?;
+
+    info!(output_snd, "S3 Storage Created: {:#?}", storage);
 
     Ok(())
 }

@@ -14,7 +14,6 @@ fn test_pmp() -> Result<()> {
     test_logging(LevelFilter::Trace);
     let (output_sender, _) = crossbeam_channel::unbounded();
     let xvc_root = run_in_temp_xvc_dir()?;
-    watch!(xvc_root);
 
     // We create this directory tree BEFORE the pmp so that we'll assert that it won't be notified
     // and won't collect these.
@@ -49,10 +48,8 @@ fn test_pmp() -> Result<()> {
     let new_size = 200;
     generate_random_file(&path1, new_size, None);
     let xmd1_real = XvcMetadata::from(path1.symlink_metadata());
-    watch!(xmd1_real);
     sleep(Duration::from_millis(100));
     let xmd1 = pmp.get(&xpath1);
-    watch!(xmd1);
     assert!(xmd1.is_some());
     assert!(xmd1.unwrap().is_file());
     assert!(xmd1.unwrap().size == Some(new_size as u64), "{:?}", xmd1);
@@ -63,7 +60,6 @@ fn test_pmp() -> Result<()> {
     assert!(!pmp.path_present(&xpath1));
 
     let glob_paths = pmp.glob_paths("**/*.bin")?;
-    watch!(glob_paths);
     assert!(glob_paths.len() == n_dirs * n_files);
 
     remove_file(Path::new("dir-0001/file-0001.bin"))?;

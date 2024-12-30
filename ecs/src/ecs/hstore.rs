@@ -9,7 +9,7 @@ use rayon::iter::{FromParallelIterator, ParallelIterator};
 
 use std::collections::hash_map::IterMut;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
-
+use std::convert::From;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::iter::{FromIterator, Iterator};
@@ -102,12 +102,10 @@ where
     {
         let mut hstore = HStore::<T>::new();
         for value in values {
-            watch!(value);
             let key = match store.entity_by_value(&value) {
                 Some(e) => e,
                 None => gen.next_element(),
             };
-            watch!(key);
             hstore.map.insert(key, value.clone());
         }
         hstore
@@ -229,6 +227,143 @@ impl<T> HStore<T> {
             }
         }
         imap
+    }
+
+    /// Performs a left join with [XvcEntity] keys.
+    ///
+    /// The returned store contains `(T, Option<U>)` values that correspond to the identical
+    /// `XvcEntity` values.
+    ///
+    /// ## Example
+    ///
+    /// If this store has
+    ///
+    /// `{10: "John Doe", 12: "George Mason", 19: "Ali Canfield"}`,
+    /// and the `other` store contains
+    /// `{10: "Carpenter", 17: "Developer", 19: "Artist" }`
+    ///
+    /// `left_join` will return
+    ///
+    /// `{10: ("John Doe", Some("Carpenter")), 12: ("George Mason", None), 19: ("Ali Canfield",
+    /// Some("Artist")}`
+    ///
+    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
+    /// if your stores don't use filtering
+    pub fn left_join<U>(&self, other: HStore<U>) -> HStore<(T, Option<U>)>
+    where
+        T: Storable,
+        U: Storable,
+    {
+        let mut joined = HStore::<(T, Option<U>)>::new();
+        for (entity, value) in self.map.iter() {
+            joined.insert(*entity, (value.clone(), other.get(entity).cloned()));
+        }
+
+        joined
+    }
+
+    /// Performs a full join with [XvcEntity] keys.
+    ///
+    /// The returned store contains `(Option<T>, Option<U>)` values that correspond to the
+    /// identical `XvcEntity` values.
+    ///
+    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
+    /// if your stores don't use filtering
+    ///
+    /// ```rust
+    ///
+    /// use xvc_ecs::{XvcEntity, HStore};
+    ///
+    /// let mut store1 = HStore::<String>::new();
+    /// store1.insert(10u128.into(), "John Doe".into());
+    /// store1.insert(12u128.into(), "George Mason".into());
+    /// store1.insert(19u128.into(), "Ali Canfield".into());
+    ///
+    /// let mut store2 = HStore::<String>::new();
+    /// store2.insert(10u128.into(), "Carpenter".into());
+    /// store2.insert(17u128.into(), "Developer".into());
+    /// store2.insert(15u128.into(), "Plumber".into());
+    /// store2.insert(19u128.into(), "Artist".into());
+    ///
+    /// let result = store1.full_join(store2);
+    ///
+    /// assert_eq!(result.len(), 5);
+    /// assert_eq!(result[&10u128.into()], (Some("John Doe".into()), Some("Carpenter".into())));
+    /// assert_eq!(result[&12u128.into()], (Some("George Mason".into()), None));
+    /// assert_eq!(result[&15u128.into()], (None, Some("Plumber".into())));
+    /// assert_eq!(result[&17u128.into()], (None, Some("Developer".into())));
+    /// assert_eq!(result[&19u128.into()], (Some("Ali Canfield".into()), Some("Artist".into())));
+    /// ```
+    pub fn full_join<U>(&self, other: HStore<U>) -> HStore<(Option<T>, Option<U>)>
+    where
+        T: Storable,
+        U: Storable,
+    {
+        let all_keys = self.keys().chain(other.keys()).collect::<HashSet<_>>();
+        let mut joined = HStore::<(Option<T>, Option<U>)>::new();
+        for entity in all_keys.into_iter() {
+            joined.insert(
+                *entity,
+                (self.get(entity).cloned(), other.get(entity).cloned()),
+            );
+        }
+
+        joined
+    }
+
+    /// Performs a join with [XvcEntity] keys.
+    ///
+    /// The returned store contains `(T, U)` values that correspond to the
+    /// identical `XvcEntity` values for values that exist in both stores.
+    ///
+    /// ## Example
+    ///
+    /// If this store has
+    ///
+    /// `{10: "John Doe", 12: "George Mason", 19: "Ali Canfield"}`,
+    /// and the `other` store contains
+    /// `{10: "Carpenter", 17: "Developer", 15: "Plumber",  19: "Artist" }`
+    ///
+    /// `join` will return
+    ///
+    /// `{10: ("John Doe", "Carpenter"),
+    ///   19: ("Ali Canfield", "Artist")}`
+    ///
+    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
+    /// if your stores don't use filtering
+    /// ```rust
+    ///
+    /// use xvc_ecs::{XvcEntity, HStore};
+    ///
+    /// let mut store1 = HStore::<String>::new();
+    /// store1.insert(10u128.into(), "John Doe".into());
+    /// store1.insert(12u128.into(), "George Mason".into());
+    /// store1.insert(19u128.into(), "Ali Canfield".into());
+    ///
+    /// let mut store2 = HStore::<String>::new();
+    /// store2.insert(10u128.into(), "Carpenter".into());
+    /// store2.insert(17u128.into(), "Developer".into());
+    /// store2.insert(15u128.into(), "Plumber".into());
+    /// store2.insert(19u128.into(), "Artist".into());
+    ///
+    /// let result = store1.join(store2);
+    ///
+    /// assert_eq!(result.len(), 2);
+    /// assert_eq!(result[&10u128.into()], ("John Doe".into(), "Carpenter".into()));
+    /// assert_eq!(result[&19u128.into()], ("Ali Canfield".into(), "Artist".into()));
+    pub fn join<U>(&self, other: HStore<U>) -> HStore<(T, U)>
+    where
+        T: Storable,
+        U: Storable,
+    {
+        let mut joined = HStore::<(T, U)>::new();
+        self.map.iter().for_each(|(entity, value)| {
+            if let Some(other_value) = other.get(entity) {
+                joined.insert(*entity, (value.clone(), other_value.clone()));
+            }
+        });
+
+        joined
     }
 
     /// returns a subset of the store defined by iterator of XvcEntity

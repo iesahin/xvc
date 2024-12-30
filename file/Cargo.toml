@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.6.12"
+version = "0.6.13-alpha.5"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -21,12 +21,12 @@ test = true
 bench = true
 
 [dependencies]
-xvc-logging = { version = "0.6.12", path = "../logging" }
-xvc-config = { version = "0.6.12", path = "../config" }
-xvc-core = { version = "0.6.12", path = "../core" }
-xvc-ecs = { version = "0.6.12", path = "../ecs" }
-xvc-walker = { version = "0.6.12", path = "../walker" }
-xvc-storage = { version = "0.6.12", path = "../storage", default-features = false }
+xvc-logging = { version = "0.6.13-alpha.5", path = "../logging" }
+xvc-config = { version = "0.6.13-alpha.5", path = "../config" }
+xvc-core = { version = "0.6.13-alpha.5", path = "../core" }
+xvc-ecs = { version = "0.6.13-alpha.5", path = "../ecs" }
+xvc-walker = { version = "0.6.13-alpha.5", path = "../walker" }
+xvc-storage = { version = "0.6.13-alpha.5", path = "../storage", default-features = false }
 
 
 ## Cli and config
@@ -87,13 +87,20 @@ uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
 itertools = "^0.13"
-derive_more = { version = "^1.0", features = ["full"] }
+# FIXME: These are mostly used in file/src/common/mod.rs and TextOrBinary wrapper. 
+derive_more = { version = "^1.0", features = [
+  "from",
+  "display",
+  "as_ref",
+  "deref",
+  "from_str",
+] }
 parse-size = "^1.1"
 
 [features]
-default = ["reflink"]
+default = []
 reflink = ["dep:reflink"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.12", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.13-alpha.5", path = "../test_helper/" }
 shellfn = "^0.1"
