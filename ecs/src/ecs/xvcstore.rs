@@ -334,23 +334,32 @@ where
     /// The returned store contains `(T, Option<U>)` values that correspond to the identical
     /// `XvcEntity` values.
     ///
-    /// ## Example
-    ///
-    /// If this store has
-    ///
-    /// `{10: "John Doe", 12: "George Mason", 19: "Ali Canfield"}`,
-    /// and the `other` store contains
-    /// `{10: "Carpenter", 17: "Developer", 19: "Artist" }`
-    ///
-    /// `join` will return
-    ///
-    /// `{10: ("John Doe", Some("Carpenter")), 12: ("George Mason", None), 19: ("Ali Canfield",
-    /// Some("Artist")}`
-    ///
     /// In SQL terms, this is a LEFT JOIN.
     ///
-    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store]
-    /// relative to your use case.
+    /// Note that, it may be more convenient to keep this relationship in a [crate::R11Store] relative to your use case.
+    ///
+    /// ```rust
+    ///
+    /// use xvc_ecs::{XvcEntity, XvcStore};
+    ///
+    /// let mut store1 = XvcStore::<String>::new();
+    /// store1.insert(10u128.into(), "John Doe".into());
+    /// store1.insert(12u128.into(), "George Mason".into());
+    /// store1.insert(19u128.into(), "Ali Canfield".into());
+    ///
+    /// let mut store2 = XvcStore::<String>::new();
+    /// store2.insert(10u128.into(), "Carpenter".into());
+    /// store2.insert(17u128.into(), "Developer".into());
+    /// store2.insert(15u128.into(), "Plumber".into());
+    /// store2.insert(19u128.into(), "Artist".into());
+    ///
+    /// let result = store1.left_join(store2);
+    ///
+    /// assert_eq!(result.len(), 5);
+    /// assert_eq!(result[&10u128.into()], "John Doe".into(), Some("Carpenter".into())));
+    /// assert_eq!(result[&12u128.into()], "George Mason".into(), None));
+    /// assert_eq!(result[&19u128.into()], "Ali Canfield".into(), Some("Artist".into())));
+    /// ```
     pub fn left_join<U>(&self, other: XvcStore<U>) -> XvcStore<(T, Option<U>)>
     where
         U: Storable,

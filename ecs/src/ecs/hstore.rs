@@ -293,7 +293,7 @@ impl<T> HStore<T> {
     /// assert_eq!(result[&15u128.into()], (None, Some("Plumber".into())));
     /// assert_eq!(result[&17u128.into()], (None, Some("Developer".into())));
     /// assert_eq!(result[&19u128.into()], (Some("Ali Canfield".into()), Some("Artist".into())));
-    ///
+    /// ```
     pub fn full_join<U>(&self, other: HStore<U>) -> HStore<(Option<T>, Option<U>)>
     where
         T: Storable,
