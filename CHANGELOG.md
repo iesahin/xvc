@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added experimental homebrew tap
 
 ## v0.6.13 (2024-12-30)
 
