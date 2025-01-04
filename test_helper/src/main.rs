@@ -1,6 +1,8 @@
+use std::io;
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{CommandFactory, Parser};
+use clap_complete::{aot::Shell, generate};
 use xvc_test_helper::{
     create_directory_tree, create_temp_dir, generate_filled_file, generate_random_file,
     generate_random_text_file, random_dir_name, random_temp_dir, temp_git_dir,
@@ -32,6 +34,7 @@ enum XvcTestHelperSubcommandCLI {
         /// The number of files to create
         #[arg(short, long, default_value = "1")]
         files: usize,
+        /// Minimum size of the file
         #[arg(short = 's', long, default_value = "1000")]
         min_size: usize,
         /// Fill value
@@ -39,19 +42,23 @@ enum XvcTestHelperSubcommandCLI {
         seed: Option<u64>,
     },
 
+    /// A random directory name to use as a suffix
     RandomDirName {
         /// The seed to supply to the random number generator
         #[arg(short, long)]
         seed: Option<u64>,
-        #[arg(short, long)]
-        prefix: Option<String>,
+        /// Prefix to be used
+        #[arg(short, long, default_value = "xvc-test-helper")]
+        prefix: String,
     },
 
+    /// A random temporary directory
     RandomTempDir {
         #[arg(short, long)]
         prefix: Option<String>,
     },
 
+    /// Generate a file filled with random content
     GenerateRandomFile {
         /// The size of the file to generate
         #[arg(short, long, default_value = "1024")]
@@ -64,6 +71,7 @@ enum XvcTestHelperSubcommandCLI {
         filename: PathBuf,
     },
 
+    /// Generate a file filled with the given byte value
     GenerateFilledFile {
         /// The size of the file to generate
         #[arg(short, long, default_value = "1024")]
@@ -76,12 +84,21 @@ enum XvcTestHelperSubcommandCLI {
         filename: PathBuf,
     },
 
+    /// Generate a random text file having number of lines
     GenerateRandomTextFile {
         /// The number of lines to generate
         #[arg(short, long, default_value = "1")]
         lines: usize,
+        /// Filename
         #[arg(short, long)]
         filename: String,
+    },
+
+    /// Generate shell completion scripts
+    Completions {
+        /// The shell to generate the script for
+        #[arg()]
+        shell: Shell,
     },
 }
 
@@ -105,10 +122,7 @@ fn main() -> Result<()> {
             create_directory_tree(&root, directories, files, min_size, seed)?;
         }
         XvcTestHelperSubcommandCLI::RandomDirName { seed, prefix } => {
-            let name = random_dir_name(
-                &prefix.unwrap_or_else(|| "xvc-test-helper".to_string()),
-                seed,
-            );
+            let name = random_dir_name(&prefix, seed);
             println!("{}", name);
         }
         XvcTestHelperSubcommandCLI::RandomTempDir { prefix } => {
@@ -134,6 +148,12 @@ fn main() -> Result<()> {
             let path = PathBuf::from(filename);
             generate_random_text_file(&path, lines);
         }
+        XvcTestHelperSubcommandCLI::Completions { shell } => generate(
+            shell,
+            &mut XvcTestHelperCLI::command(),
+            "xvc-test-helper",
+            &mut io::stdout(),
+        ),
     }
 
     Ok(())
