@@ -15,7 +15,7 @@ use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
 use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
-use xvc_logging::{watch, XvcOutputSender};
+use xvc_logging::XvcOutputSender;
 
 use crate::carry_in::carry_in;
 use crate::common::compare::{

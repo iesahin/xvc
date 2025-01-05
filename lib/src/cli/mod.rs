@@ -5,6 +5,7 @@ use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use crate::completions;
 use crate::init;
 use crate::XvcRootOpt;
 
@@ -12,6 +13,7 @@ use xvc_core::git_checkout_ref;
 use xvc_core::handle_git_automation;
 
 use clap::Parser;
+
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use log::LevelFilter;
@@ -22,7 +24,6 @@ use xvc_logging::XvcOutputSender;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
 use xvc_config::{XvcConfigParams, XvcVerbosity};
-use xvc_core::aliases;
 use xvc_core::check_ignore;
 pub use xvc_core::default_project_config;
 use xvc_core::root;
@@ -204,8 +205,8 @@ pub enum XvcSubCommand {
     Root(xvc_core::root::RootCLI),
     /// Check whether files are ignored with `.xvcignore`
     CheckIgnore(xvc_core::check_ignore::CheckIgnoreCLI),
-    /// Print command aliases to be sourced in shell files
-    Aliases(xvc_core::aliases::AliasesCLI),
+    /// Print shell completions to be sourced in shell files
+    Completions(completions::CompletionsCLI),
 }
 
 /// Runs the supplied xvc command.
@@ -314,8 +315,8 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                     Some(xvc_root)
                 }
 
-                XvcSubCommand::Aliases(opts) => {
-                    aliases::run(&output_snd, opts)?;
+                XvcSubCommand::Completions(opts) => {
+                    completions::run(&output_snd, opts)?;
                     xvc_root_opt
                 }
 
@@ -418,11 +419,13 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
 
 /// Dispatch commands to respective functions in the API
 ///
+/// If we have `--completions` option, it generates the completions and quits. No other operation
+/// is done in this case.
+///
 /// It sets output verbosity with [XvcCLI::verbosity].
 /// Determines configuration sources by filling [XvcConfigInitParams].
 /// Tries to create an XvcRoot to determine whether we're inside one.
-/// Creates two threads: One for running the API function, one for getting strings from output
-/// channel.
+/// It calls [dispatch_with_root] with an optional root.
 ///
 /// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
 /// It doesn't recreate the whole configuration and this prevents errors regarding multiple
@@ -587,8 +590,8 @@ pub fn command_matcher(
                 Ok(Some(xvc_root))
             }
 
-            XvcSubCommand::Aliases(opts) => {
-                aliases::run(&output_snd, opts)?;
+            XvcSubCommand::Completions(opts) => {
+                completions::run(&output_snd, opts)?;
                 Ok(xvc_root_opt)
             }
 
