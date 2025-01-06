@@ -194,17 +194,27 @@ impl FromStr for XvcCLI {
 #[command(rename_all = "kebab-case")]
 pub enum XvcSubCommand {
     /// File and directory management commands
+    #[command(visible_aliases=&["f"])]
     File(xvc_file::XvcFileCLI),
+
+    /// Pipeline management commands
+    #[command(visible_aliases=&["p"])]
+    Pipeline(xvc_pipeline::PipelineCLI),
+
+    /// Storage (cloud) management commands
+    #[command(visible_aliases=&["s"])]
+    Storage(xvc_storage::StorageCLI),
+
+    /// Find the root directory of a project
+    #[command(visible_aliases=&["r"])]
+    Root(xvc_core::root::RootCLI),
+
     /// Initialize an Xvc project
     Init(crate::init::InitCLI),
-    /// Pipeline management commands
-    Pipeline(xvc_pipeline::PipelineCLI),
-    /// Storage (cloud) management commands
-    Storage(xvc_storage::StorageCLI),
-    /// Find the root directory of a project
-    Root(xvc_core::root::RootCLI),
+
     /// Check whether files are ignored with `.xvcignore`
     CheckIgnore(xvc_core::check_ignore::CheckIgnoreCLI),
+
     /// Print shell completions to be sourced in shell files
     Completions(completions::CompletionsCLI),
 }
