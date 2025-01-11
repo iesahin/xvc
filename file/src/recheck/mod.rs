@@ -12,6 +12,7 @@ use crate::common::{
     load_targets_from_store, only_file_targets, xvc_path_metadata_map_from_disk, FileTextOrBinary,
 };
 use crate::{common::recheck_from_cache, Result};
+use clap::builder::TypedValueParser;
 use clap::Parser;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};

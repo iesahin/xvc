@@ -33,7 +33,7 @@ pub struct StepCLI {
 #[allow(clippy::large_enum_variant)]
 pub enum StepSubCommand {
     /// List steps in a pipeline
-    #[command()]
+    #[command(visible_aliases=&["l"])]
     List {
         /// Show only the names, otherwise print commands as well.
         #[arg(long)]
@@ -41,7 +41,7 @@ pub enum StepSubCommand {
     },
 
     /// Add a new step
-    #[command()]
+    #[command(visible_aliases=&["n"])]
     New {
         /// Name of the new step
         #[arg(long, short)]
@@ -58,7 +58,7 @@ pub enum StepSubCommand {
     },
 
     /// Remove a step from a pipeline
-    #[command()]
+    #[command(visible_aliases=&["R"])]
     Remove {
         /// Name of the step to remove
         #[arg(long, short)]
@@ -66,7 +66,7 @@ pub enum StepSubCommand {
     },
 
     /// Update a step's command or when options.
-    #[command(about = "Update step options")]
+    #[command(visible_aliases=&["U"])]
     Update {
         /// Name of the step to update. The step should already be defined.
         #[arg(long, short)]
@@ -82,30 +82,29 @@ pub enum StepSubCommand {
         when: Option<XvcStepInvalidate>,
     },
 
-
     /// Add a dependency to a step
-    #[command()]
+    #[command(visible_aliases=&["d"])]
     Dependency {
         /// Name of the step to add the dependency to
-        #[arg(long, short, aliases = &["for", "to"])]
+        #[arg(long, short, visible_aliases= &["for", "to"])]
         step_name: String,
 
         /// Add a generic command output as a dependency. Can be used multiple times.
         /// Please delimit the command with ' ' to avoid shell expansion.
-        #[arg(long = "generic")]
+        #[arg(long = "generic", short = 'G')]
         generics: Option<Vec<String>>,
 
         /// Add a URL dependency to the step. Can be used multiple times.
-        #[arg(long = "url")]
+        #[arg(long = "url", short)]
         urls: Option<Vec<String>>,
 
         /// Add a file dependency to the step. Can be used multiple times.
-        #[arg(long = "file")]
+        #[arg(long = "file", short)]
         files: Option<Vec<String>>,
 
         /// Add a step dependency to a step. Can be used multiple times.
         /// Steps are referred with their names.
-        #[arg(long = "step")]
+        #[arg(long = "step", short = 'S')]
         steps: Option<Vec<String>>,
 
         /// Add a glob items dependency to the step.
@@ -117,7 +116,7 @@ pub enum StepSubCommand {
         /// to use ${XVC_GLOB_ITEMS}, ${XVC_ADDED_GLOB_ITEMS}, or ${XVC_REMOVED_GLOB_ITEMS}
         /// environment variables in the step command, use the glob-items dependency. Otherwise,
         /// you can use the glob option to save disk space.
-        #[arg(long = "glob_items", aliases=&["glob-items", "glob-i"])]
+        #[arg(long = "glob_items", visible_aliases=&["glob-items", "glob-i"])]
         glob_items: Option<Vec<String>>,
 
         /// Add a glob dependency to the step. Can be used multiple times.
@@ -133,7 +132,7 @@ pub enum StepSubCommand {
         /// Add a parameter dependency to the step in the form filename.yaml::model.units
         ///
         /// The file can be a JSON, TOML, or YAML file. You can specify hierarchical keys like
-        /// my.dict.key 
+        /// my.dict.key
         #[arg(long = "param", aliases = &["params"])]
         params: Option<Vec<String>>,
 
@@ -187,10 +186,10 @@ pub enum StepSubCommand {
         lines: Option<Vec<String>>,
 
         /// Add a sqlite query dependency to the step with the file and the query. Can be used
-        /// once. 
+        /// once.
         ///
         /// The step is invalidated when the query run and the result is different from previous
-        /// runs, e.g. when an aggregate changed or a new row added to a table. 
+        /// runs, e.g. when an aggregate changed or a new row added to a table.
         #[arg(
             long = "sqlite-query",
             aliases = &["sqlite_query", "sqlite_query_digest", "sqlite-query-digest"],
@@ -201,7 +200,7 @@ pub enum StepSubCommand {
     },
 
     /// Add an output to a step
-    #[command()]
+    #[command(visible_aliases=&["o"])]
     Output {
         /// Name of the step to add the output to
         #[arg(long, short)]
@@ -221,7 +220,7 @@ pub enum StepSubCommand {
     },
 
     /// Print step configuration
-    #[command()]
+    #[command(visible_aliases=&["s"])]
     Show {
         /// Name of the step to show
         #[arg(long, short)]
@@ -467,4 +466,3 @@ state_machine! {
     }
 
 }
-

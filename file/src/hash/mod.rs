@@ -41,6 +41,7 @@ pub struct HashCLI {
     targets: Vec<PathBuf>,
 }
 
+
 impl UpdateFromXvcConfig for HashCLI {
     fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
         let algorithm = self

@@ -69,31 +69,39 @@ pub struct PipelineCLI {
 #[allow(clippy::large_enum_variant)]
 pub enum PipelineSubCommand {
     /// Create a new pipeline
+    #[command(visible_aliases=&["n"])]
     New(NewCLI),
 
     /// Update the name and other attributes of a pipeline
+    #[command(visible_aliases=&["u"])]
     Update(UpdateCLI),
 
     /// Delete a pipeline
+    #[command(visible_aliases=&["D"])]
     Delete(DeleteCLI),
 
     /// Run a pipeline
+    #[command(visible_aliases=&["r"])]
     Run(RunCLI),
 
     /// List all pipelines
+    #[command(visible_aliases=&["l"])]
     List,
 
     /// Generate a dot or mermaid diagram for the pipeline
+    #[command(visible_aliases=&["d"])]
     Dag(DagCLI),
 
     /// Export the pipeline to a YAML or JSON file to edit
+    #[command(visible_aliases=&["l"])]
     Export(ExportCLI),
 
     /// Import the pipeline from a file
+    #[command(visible_aliases=&["i"])]
     Import(ImportCLI),
 
     /// Step creation, dependency, output commands
-    #[command()]
+    #[command(visible_aliases=&["s"])]
     Step(StepCLI),
 }
 
@@ -207,4 +215,3 @@ pub fn cmd_pipeline<R: BufRead>(
         }
     }
 }
-

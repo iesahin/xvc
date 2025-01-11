@@ -9,10 +9,13 @@ use crate::completions;
 use crate::init;
 use crate::XvcRootOpt;
 
+use clap_complete::CompletionCandidate;
+use rand::Rng;
 use xvc_core::git_checkout_ref;
 use xvc_core::handle_git_automation;
 
 use clap::Parser;
+use clap_complete::engine::ArgValueCompleter;
 
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -103,7 +106,10 @@ pub struct XvcCLI {
     /// Checkout the given Git reference (branch, tag, commit etc.) before performing the Xvc
     /// operation.
     /// This runs `git checkout <given-value>` before running the command.
-    #[arg(long, conflicts_with("skip_git"))]
+    #[arg(
+        long,
+        conflicts_with("skip_git"),
+        add = ArgValueCompleter::new(git_reference_completer))]
     pub from_ref: Option<String>,
 
     /// If given, create (or checkout) the given branch before committing results of the operation.
@@ -427,6 +433,31 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
     xvc_root_opt
 }
 
+fn generate_random_string(length: usize) -> String {
+    rand::thread_rng()
+        .sample_iter(&rand::distributions::Alphanumeric)
+        .take(length)
+        .map(char::from)
+        .collect()
+}
+
+fn git_reference_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
+    vec![CompletionCandidate::new("sza")]
+    // let mut completions = vec![];
+    //
+    // let Some(current) = current.to_str() else {
+    //     return completions;
+    // };
+    //
+    // println!("Current: {}", current);
+    // completions.push(CompletionCandidate::new(format!(
+    //     "{}{}",
+    //     current,
+    //     generate_random_string(10)
+    // )));
+    //
+    // completions
+}
 /// Dispatch commands to respective functions in the API
 ///
 /// If we have `--completions` option, it generates the completions and quits. No other operation

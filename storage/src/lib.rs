@@ -38,20 +38,21 @@ pub struct StorageCLI {
 #[command(about = "Manage storages containing tracked file content")]
 pub enum StorageSubCommand {
     /// List all configured storages
-    #[command()]
+    #[command(visible_aliases=&["l"])]
     List,
+
     /// Remove a storage configuration.
     ///
     /// This doesn't delete any files in the storage.
-    #[command()]
+    #[command(visible_aliases=&["R"])]
     Remove {
         /// Name of the storage to be deleted
-        #[arg(long)]
+        #[arg(short, long)]
         name: String,
     },
 
     /// Configure a new storage
-    #[command(subcommand)]
+    #[command(subcommand, visible_aliases=&["n"])]
     New(StorageNewSubCommand),
 }
 
