@@ -42,6 +42,8 @@ pub use xvc_walker as walker;
 pub use error::Error;
 pub use error::Result;
 
+pub use util::git;
+
 pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_paths};
 pub use util::git::{
     build_gitignore, exec_git, get_absolute_git_command, get_git_tracked_files, git_auto_commit,
