@@ -1,6 +1,6 @@
 [package]
 name = "xvc-walker"
-version = "0.6.14-alpha.5"
+version = "0.6.14-alpha.6"
 edition = "2021"
 description = "Xvc parallel file system walker with ignore features"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,7 +16,7 @@ name = "xvc_walker"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.14-alpha.5", path = "../logging" }
+xvc-logging = { version = "0.6.14-alpha.6", path = "../logging" }
 # NOTE: 0.4 removes Glob struct and this should be handled with care
 fast-glob = "^0.3"
 
@@ -42,7 +42,7 @@ itertools = "^0.14"
 regex = "^1.10"
 
 [dev-dependencies]
-xvc-test-helper = { path = "../test_helper/", version = "0.6.14-alpha.5" }
+xvc-test-helper = { path = "../test_helper/", version = "0.6.14-alpha.6" }
 test-case = "^3.3"
 
 [package.metadata.cargo-udeps.ignore]
