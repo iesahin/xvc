@@ -151,6 +151,21 @@ pub enum Error {
 
     #[error("Poison Error: {cause:?}")]
     PoisonError { cause: String },
+
+    #[error("Gix Repository Error: {cause}")]
+    GixError { cause: String },
+
+    #[error("Gix References Error: {source}")]
+    GixReferencesError {
+        #[from]
+        source: gix::reference::iter::Error,
+    },
+
+    #[error("Gix Init Error: {source}")]
+    GixReferenceInitError {
+        #[from]
+        source: gix::reference::iter::init::Error,
+    },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
