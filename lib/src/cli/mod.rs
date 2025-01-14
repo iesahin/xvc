@@ -1,21 +1,24 @@
 //! Main CLI interface for Xvc
+use std::env;
 use std::env::ArgsOs;
 
 use std::ffi::OsString;
+use std::iter;
+use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use crate::completions;
 use crate::init;
 use crate::XvcRootOpt;
 
-use clap_complete::CompletionCandidate;
-use rand::Rng;
+use clap::Command;
 use xvc_core::git_checkout_ref;
 use xvc_core::handle_git_automation;
 
 use clap::Parser;
+
 use clap_complete::engine::ArgValueCompleter;
+use clap_complete::CompletionCandidate;
 
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -48,7 +51,7 @@ const GIT_VERSION: &str = git_version!(
 );
 
 /// Xvc CLI to manage data and ML pipelines
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(
     rename_all = "kebab-case",
     author,
@@ -114,7 +117,7 @@ pub struct XvcCLI {
 
     /// If given, create (or checkout) the given branch before committing results of the operation.
     /// This runs `git checkout --branch <given-value>` before committing the changes.
-    #[arg(long, conflicts_with("skip_git"))]
+    #[arg(long, conflicts_with("skip_git"), add=ArgValueCompleter::new(git_branch_completer))]
     pub to_branch: Option<String>,
 
     /// The subcommand to run
@@ -195,6 +198,90 @@ impl FromStr for XvcCLI {
     }
 }
 
+fn convert_args_to_string(
+    app: &Command,
+    args_os: impl IntoIterator<Item = OsString>,
+) -> Result<Vec<String>> {
+    let mut string_args: Vec<String> = vec![];
+    for arg_os in args_os {
+        if let Some(string_arg) = arg_os.to_str() {
+            string_args.push(string_arg.to_owned());
+        } else {
+            return Err(Error::NonUtf8Argument(arg_os));
+        }
+    }
+
+    resolve_default_command(app, string_args)
+}
+
+fn resolve_default_command(app: &Command, mut string_args: Vec<String>) -> Result<Vec<String>> {
+    const PRIORITY_FLAGS: &[&str] = &["--help", "-h", "--version", "-V"];
+
+    let has_priority_flag = string_args
+        .iter()
+        .any(|arg| PRIORITY_FLAGS.contains(&arg.as_str()));
+    if has_priority_flag {
+        return Ok(string_args);
+    }
+
+    let app_clone = app
+        .clone()
+        .allow_external_subcommands(true)
+        .ignore_errors(true);
+    let matches = app_clone.try_get_matches_from(&string_args).ok();
+
+    if let Some(matches) = matches {
+        if matches.subcommand_name().is_none() {
+            string_args.push("-h".into());
+            return Ok(string_args);
+        }
+    }
+    Ok(string_args)
+}
+
+pub fn handle_shell_completion(app: &Command, cwd: &Path) -> Result<()> {
+    let mut args = vec![];
+    // Take the first two arguments as is, they must be passed to clap_complete
+    // without any changes. They are usually "xvc --".
+    args.extend(env::args_os().take(2));
+
+    // Make sure aliases are expanded before passing them to clap_complete. We
+    // skip the first two args ("jj" and "--") for alias resolution, then we
+    // stitch the args back together, like clap_complete expects them.
+    let orig_args = env::args_os().skip(2);
+    if orig_args.len() > 0 {
+        let arg_index: Option<usize> = env::var("_CLAP_COMPLETE_INDEX")
+            .ok()
+            .and_then(|s| s.parse().ok());
+        let resolved_aliases = if let Some(index) = arg_index {
+            // As of clap_complete 4.5.38, zsh completion script doesn't pad an
+            // empty arg at the complete position. If the args doesn't include a
+            // command name, the default command would be expanded at that
+            // position. Therefore, no other command names would be suggested.
+            let pad_len = usize::saturating_sub(index + 1, orig_args.len());
+            let padded_args = orig_args.chain(iter::repeat(OsString::new()).take(pad_len));
+            convert_args_to_string(app, padded_args)?
+        } else {
+            convert_args_to_string(app, orig_args)?
+        };
+        args.extend(resolved_aliases.into_iter().map(OsString::from));
+    }
+
+    let ran_completion = clap_complete::CompleteEnv::with_factory(|| {
+        app.clone()
+            // for completing aliases
+            .allow_external_subcommands(true)
+    })
+    .try_complete(args.iter(), Some(cwd))?;
+
+    assert!(
+        ran_completion,
+        "This function should not be called without the COMPLETE variable set."
+    );
+
+    Ok(())
+}
+
 /// Xvc subcommands
 #[derive(Debug, Parser, Clone)]
 #[command(rename_all = "kebab-case")]
@@ -220,9 +307,6 @@ pub enum XvcSubCommand {
 
     /// Check whether files are ignored with `.xvcignore`
     CheckIgnore(xvc_core::check_ignore::CheckIgnoreCLI),
-
-    /// Print shell completions to be sourced in shell files
-    Completions(completions::CompletionsCLI),
 }
 
 /// Runs the supplied xvc command.
@@ -316,7 +400,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
         });
 
         if let Some(ref xvc_root) = xvc_root_opt {
-            if let Some(from_ref) = cli_opts.from_ref {
+            if let Some(ref from_ref) = cli_opts.from_ref {
                 uwr!(
                     git_checkout_ref(&output_snd, xvc_root, from_ref),
                     output_snd
@@ -324,75 +408,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
             }
         }
         let xvc_root_opt_res = s.spawn(move |_| -> Result<XvcRootOpt> {
-            // FIXME: Use command matcher below instead of this
-            let xvc_root_opt = match cli_opts.command {
-                XvcSubCommand::Init(opts) => {
-                    let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
-                    Some(xvc_root)
-                }
-
-                XvcSubCommand::Completions(opts) => {
-                    completions::run(&output_snd, opts)?;
-                    xvc_root_opt
-                }
-
-                // following commands can only be run inside a repository
-                XvcSubCommand::Root(opts) => {
-                    root::run(
-                        &output_snd,
-                        xvc_root_opt
-                            .as_ref()
-                            .ok_or_else(|| Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::File(opts) => {
-                    file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::Pipeline(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-                    pipeline::cmd_pipeline(
-                        input,
-                        &output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::CheckIgnore(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-
-                    check_ignore::cmd_check_ignore(
-                        input,
-                        &output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::Storage(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-                    storage::cmd_storage(
-                        input,
-                        &output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-
-                    xvc_root_opt
-                }
-            };
+            let xvc_root_opt = command_matcher(cli_opts.clone(), xvc_root_opt, &output_snd)?;
 
             match xvc_root_opt {
                 Some(ref xvc_root) => {
@@ -433,31 +449,40 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
     xvc_root_opt
 }
 
-fn generate_random_string(length: usize) -> String {
-    rand::thread_rng()
-        .sample_iter(&rand::distributions::Alphanumeric)
-        .take(length)
-        .map(char::from)
-        .collect()
+fn git_reference_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
+    let current = current.to_string_lossy();
+    xvc_core::git::gix_list_references(Path::new("."))
+        .map(|refs| {
+            refs.iter()
+                .filter_map(|r| {
+                    if r.starts_with(current.as_ref()) {
+                        Some(CompletionCandidate::new(r))
+                    } else {
+                        None
+                    }
+                })
+                .collect()
+        })
+        .unwrap_or_default()
 }
 
-fn git_reference_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
-    vec![CompletionCandidate::new("sza")]
-    // let mut completions = vec![];
-    //
-    // let Some(current) = current.to_str() else {
-    //     return completions;
-    // };
-    //
-    // println!("Current: {}", current);
-    // completions.push(CompletionCandidate::new(format!(
-    //     "{}{}",
-    //     current,
-    //     generate_random_string(10)
-    // )));
-    //
-    // completions
+fn git_branch_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
+    let current = current.to_string_lossy();
+    xvc_core::git::gix_list_branches(Path::new("."))
+        .map(|refs| {
+            refs.iter()
+                .filter_map(|r| {
+                    if r.starts_with(current.as_ref()) {
+                        Some(CompletionCandidate::new(r))
+                    } else {
+                        None
+                    }
+                })
+                .collect()
+        })
+        .unwrap_or_default()
 }
+
 /// Dispatch commands to respective functions in the API
 ///
 /// If we have `--completions` option, it generates the completions and quits. No other operation
@@ -612,7 +637,7 @@ pub fn collect_output(
 pub fn command_matcher(
     cli_opts: XvcCLI,
     xvc_root_opt: XvcRootOpt,
-    output_snd: XvcOutputSender,
+    output_snd: &XvcOutputSender,
 ) -> Result<XvcRootOpt> {
     {
         let res_xvc_root_opt: Result<XvcRootOpt> = match cli_opts.command {
@@ -622,7 +647,7 @@ pub fn command_matcher(
 
                 if use_git {
                     handle_git_automation(
-                        &output_snd,
+                        output_snd,
                         &xvc_root,
                         cli_opts.to_branch.as_deref(),
                         &cli_opts.command_string,
@@ -631,15 +656,10 @@ pub fn command_matcher(
                 Ok(Some(xvc_root))
             }
 
-            XvcSubCommand::Completions(opts) => {
-                completions::run(&output_snd, opts)?;
-                Ok(xvc_root_opt)
-            }
-
             // following commands can only be run inside a repository
             XvcSubCommand::Root(opts) => {
                 root::run(
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt
                         .as_ref()
                         .ok_or_else(|| Error::RequiresXvcRepository)?,
@@ -650,7 +670,7 @@ pub fn command_matcher(
             }
 
             XvcSubCommand::File(opts) => {
-                file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
+                file::run(output_snd, xvc_root_opt.as_ref(), opts)?;
                 Ok(xvc_root_opt)
             }
 
@@ -660,7 +680,7 @@ pub fn command_matcher(
                 let input = stdin.lock();
                 pipeline::cmd_pipeline(
                     input,
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                     opts,
                 )?;
@@ -674,7 +694,7 @@ pub fn command_matcher(
 
                 check_ignore::cmd_check_ignore(
                     input,
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                     opts,
                 )?;
@@ -687,7 +707,7 @@ pub fn command_matcher(
                 let input = stdin.lock();
                 storage::cmd_storage(
                     input,
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                     opts,
                 )?;
@@ -708,7 +728,7 @@ pub fn command_matcher(
             if !cli_opts.skip_git {
                 xvc_root.record();
                 handle_git_automation(
-                    &output_snd,
+                    output_snd,
                     xvc_root,
                     cli_opts.to_branch.as_deref(),
                     &cli_opts.command_string,
