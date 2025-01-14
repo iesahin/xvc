@@ -16,7 +16,7 @@ fn main() -> Result<()> {
     let current_dir = env::current_dir().unwrap();
 
     if env::var_os("COMPLETE").is_some() {
-        return xvc::cli::handle_shell_completion(&cmd, &current_dir);
+        return xvc::completions::handle_shell_completion(&cmd, &current_dir);
     }
 
     let cli_opts = xvc::cli::XvcCLI::from_args_os(std::env::args_os())?;

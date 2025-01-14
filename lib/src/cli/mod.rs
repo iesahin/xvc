@@ -1,24 +1,20 @@
 //! Main CLI interface for Xvc
-use std::env;
 use std::env::ArgsOs;
 
 use std::ffi::OsString;
-use std::iter;
-use std::path::Path;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use crate::completions;
 use crate::init;
 use crate::XvcRootOpt;
 
-use clap::Command;
 use xvc_core::git_checkout_ref;
 use xvc_core::handle_git_automation;
 
 use clap::Parser;
 
 use clap_complete::engine::ArgValueCompleter;
-use clap_complete::CompletionCandidate;
 
 use crossbeam::thread;
 use crossbeam_channel::bounded;
@@ -112,12 +108,12 @@ pub struct XvcCLI {
     #[arg(
         long,
         conflicts_with("skip_git"),
-        add = ArgValueCompleter::new(git_reference_completer))]
+        add = ArgValueCompleter::new(completions::git_reference_completer))]
     pub from_ref: Option<String>,
 
     /// If given, create (or checkout) the given branch before committing results of the operation.
     /// This runs `git checkout --branch <given-value>` before committing the changes.
-    #[arg(long, conflicts_with("skip_git"), add=ArgValueCompleter::new(git_branch_completer))]
+    #[arg(long, conflicts_with("skip_git"), add=ArgValueCompleter::new(completions::git_branch_completer))]
     pub to_branch: Option<String>,
 
     /// The subcommand to run
@@ -196,90 +192,6 @@ impl FromStr for XvcCLI {
             ..parsed
         })
     }
-}
-
-fn convert_args_to_string(
-    app: &Command,
-    args_os: impl IntoIterator<Item = OsString>,
-) -> Result<Vec<String>> {
-    let mut string_args: Vec<String> = vec![];
-    for arg_os in args_os {
-        if let Some(string_arg) = arg_os.to_str() {
-            string_args.push(string_arg.to_owned());
-        } else {
-            return Err(Error::NonUtf8Argument(arg_os));
-        }
-    }
-
-    resolve_default_command(app, string_args)
-}
-
-fn resolve_default_command(app: &Command, mut string_args: Vec<String>) -> Result<Vec<String>> {
-    const PRIORITY_FLAGS: &[&str] = &["--help", "-h", "--version", "-V"];
-
-    let has_priority_flag = string_args
-        .iter()
-        .any(|arg| PRIORITY_FLAGS.contains(&arg.as_str()));
-    if has_priority_flag {
-        return Ok(string_args);
-    }
-
-    let app_clone = app
-        .clone()
-        .allow_external_subcommands(true)
-        .ignore_errors(true);
-    let matches = app_clone.try_get_matches_from(&string_args).ok();
-
-    if let Some(matches) = matches {
-        if matches.subcommand_name().is_none() {
-            string_args.push("-h".into());
-            return Ok(string_args);
-        }
-    }
-    Ok(string_args)
-}
-
-pub fn handle_shell_completion(app: &Command, cwd: &Path) -> Result<()> {
-    let mut args = vec![];
-    // Take the first two arguments as is, they must be passed to clap_complete
-    // without any changes. They are usually "xvc --".
-    args.extend(env::args_os().take(2));
-
-    // Make sure aliases are expanded before passing them to clap_complete. We
-    // skip the first two args ("jj" and "--") for alias resolution, then we
-    // stitch the args back together, like clap_complete expects them.
-    let orig_args = env::args_os().skip(2);
-    if orig_args.len() > 0 {
-        let arg_index: Option<usize> = env::var("_CLAP_COMPLETE_INDEX")
-            .ok()
-            .and_then(|s| s.parse().ok());
-        let resolved_aliases = if let Some(index) = arg_index {
-            // As of clap_complete 4.5.38, zsh completion script doesn't pad an
-            // empty arg at the complete position. If the args doesn't include a
-            // command name, the default command would be expanded at that
-            // position. Therefore, no other command names would be suggested.
-            let pad_len = usize::saturating_sub(index + 1, orig_args.len());
-            let padded_args = orig_args.chain(iter::repeat(OsString::new()).take(pad_len));
-            convert_args_to_string(app, padded_args)?
-        } else {
-            convert_args_to_string(app, orig_args)?
-        };
-        args.extend(resolved_aliases.into_iter().map(OsString::from));
-    }
-
-    let ran_completion = clap_complete::CompleteEnv::with_factory(|| {
-        app.clone()
-            // for completing aliases
-            .allow_external_subcommands(true)
-    })
-    .try_complete(args.iter(), Some(cwd))?;
-
-    assert!(
-        ran_completion,
-        "This function should not be called without the COMPLETE variable set."
-    );
-
-    Ok(())
 }
 
 /// Xvc subcommands
@@ -449,44 +361,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
     xvc_root_opt
 }
 
-fn git_reference_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
-    let current = current.to_string_lossy();
-    xvc_core::git::gix_list_references(Path::new("."))
-        .map(|refs| {
-            refs.iter()
-                .filter_map(|r| {
-                    if r.starts_with(current.as_ref()) {
-                        Some(CompletionCandidate::new(r))
-                    } else {
-                        None
-                    }
-                })
-                .collect()
-        })
-        .unwrap_or_default()
-}
-
-fn git_branch_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
-    let current = current.to_string_lossy();
-    xvc_core::git::gix_list_branches(Path::new("."))
-        .map(|refs| {
-            refs.iter()
-                .filter_map(|r| {
-                    if r.starts_with(current.as_ref()) {
-                        Some(CompletionCandidate::new(r))
-                    } else {
-                        None
-                    }
-                })
-                .collect()
-        })
-        .unwrap_or_default()
-}
-
 /// Dispatch commands to respective functions in the API
-///
-/// If we have `--completions` option, it generates the completions and quits. No other operation
-/// is done in this case.
 ///
 /// It sets output verbosity with [XvcCLI::verbosity].
 /// Determines configuration sources by filling [XvcConfigInitParams].
