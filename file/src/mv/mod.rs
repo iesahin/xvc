@@ -26,6 +26,8 @@ pub struct MoveCLI {
     /// How the destination should be rechecked: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
+    ///
+    /// TODO: Add recheck_methods completion
     #[arg(long, alias = "as")]
     pub recheck_method: Option<RecheckMethod>,
 
@@ -41,6 +43,8 @@ pub struct MoveCLI {
     /// files in that directory are copied.
     ///
     /// If there are multiple source files, the destination must be a directory.
+    ///
+    /// TODO: Add tracked_targets completion
     #[arg()]
     pub source: String,
 

@@ -12,22 +12,18 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 #[derive(Debug, Clone, Parser)]
 #[command(name = "new")]
 pub struct NewCLI {
-    /// Name of the pipeline this command applies to
-    #[arg(long, short)]
-    pipeline_name: String,
-
     /// Default working directory
-    #[arg(short, long)]
+    #[arg(short, long, value_hint = clap::ValueHint::DirPath)]
     workdir: Option<PathBuf>,
 }
 
 /// Entry point for `xvc pipeline new` command.
 /// It creates a new pipeline with the given name.
 /// If `workdir` is None, uses the default workdir.
-pub fn cmd_new(xvc_root: &XvcRoot, opts: NewCLI) -> Result<()> {
+pub fn cmd_new(xvc_root: &XvcRoot, pipeline_name: &str, opts: NewCLI) -> Result<()> {
     Ok(
         xvc_root.with_r11store_mut(|rs: &mut R11Store<XvcPipeline, XvcPipelineRunDir>| {
-            let name = opts.pipeline_name.clone();
+            let name = pipeline_name.to_string();
             if rs.left.iter().any(|(_, p)| p.name == name) {
                 Err(EcsError::KeyAlreadyFound {
                     key: name,
@@ -51,4 +47,3 @@ pub fn cmd_new(xvc_root: &XvcRoot, opts: NewCLI) -> Result<()> {
         })?,
     )
 }
-

@@ -2,7 +2,6 @@
 use crate::{Error, Result};
 
 use clap::Command;
-use clap_complete::CompletionCandidate;
 
 use std::env;
 use std::ffi::OsString;
@@ -106,42 +105,4 @@ fn resolve_default_command(app: &Command, mut string_args: Vec<String>) -> Resul
         }
     }
     Ok(string_args)
-}
-
-/// Return completions for all Git references starting with `current` in the current directory
-/// Used in `--from-ref` option.
-pub fn git_reference_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
-    let current = current.to_string_lossy();
-    xvc_core::git::gix_list_references(Path::new("."))
-        .map(|refs| {
-            refs.iter()
-                .filter_map(|r| {
-                    if r.starts_with(current.as_ref()) {
-                        Some(CompletionCandidate::new(r))
-                    } else {
-                        None
-                    }
-                })
-                .collect()
-        })
-        .unwrap_or_default()
-}
-
-/// Return completions for all Git branches starting with `current` in the current directory
-/// Used in `--to-branch` option
-pub fn git_branch_completer(current: &std::ffi::OsStr) -> Vec<CompletionCandidate> {
-    let current = current.to_string_lossy();
-    xvc_core::git::gix_list_branches(Path::new("."))
-        .map(|refs| {
-            refs.iter()
-                .filter_map(|r| {
-                    if r.starts_with(current.as_ref()) {
-                        Some(CompletionCandidate::new(r))
-                    } else {
-                        None
-                    }
-                })
-                .collect()
-        })
-        .unwrap_or_default()
 }

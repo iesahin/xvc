@@ -47,6 +47,8 @@ pub enum StorageSubCommand {
     #[command(visible_aliases=&["R"])]
     Remove {
         /// Name of the storage to be deleted
+        ///
+        /// TODO: Add a storage_name_completer
         #[arg(short, long)]
         name: String,
     },
@@ -67,8 +69,9 @@ pub enum StorageNewSubCommand {
     #[command()]
     Local {
         /// Directory (outside the repository) to be set as a storage
-        #[arg(long)]
+        #[arg(long, value_hint=clap::ValueHint::DirPath)]
         path: PathBuf,
+
         /// Name of the storage.
         ///
         /// Recommended to keep this name unique to refer easily.
@@ -94,32 +97,32 @@ pub enum StorageNewSubCommand {
         /// This command is run once after defining the storage.
         ///
         /// You can use {URL} and {STORAGE_DIR}  as shortcuts.
-        #[arg(long = "init", short = 'i')]
+        #[arg(long = "init", short = 'i', value_hint=clap::ValueHint::CommandString)]
         init_command: String,
         /// Command to list the files in storage
         ///
         /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
-        #[arg(long = "list", short = 'l')]
+        #[arg(long = "list", short = 'l', value_hint=clap::ValueHint::CommandString)]
         list_command: String,
         /// Command to download a file from storage.
         ///
         /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
-        #[arg(long = "download", short = 'd')]
+        #[arg(long = "download", short = 'd', value_hint=clap::ValueHint::CommandString)]
         download_command: String,
         /// Command to upload a file to storage.
         ///
         /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
-        #[arg(long = "upload", short = 'u')]
+        #[arg(long = "upload", short = 'u',value_hint=clap::ValueHint::CommandString )]
         upload_command: String,
         /// The delete command to remove a file from storage
         /// You can use {URL} and {STORAGE_DIR} placeholders and define values for these with --url and --storage_dir options.
-        #[arg(long = "delete", short = 'D')]
+        #[arg(long = "delete", short = 'D',value_hint=clap::ValueHint::CommandString )]
         delete_command: String,
         /// Number of maximum processes to run simultaneously
         #[arg(long = "processes", short = 'M', default_value_t = 1)]
         max_processes: usize,
         /// You can set a string to replace {URL} placeholder in commands
-        #[arg(long)]
+        #[arg(long, value_hint=clap::ValueHint::Url)]
         url: Option<String>,
         /// You can set a string to replace {STORAGE_DIR} placeholder in commands
         #[arg(long)]
@@ -139,7 +142,7 @@ pub enum StorageNewSubCommand {
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Hostname for the connection in the form host.example.com  (without @, : or protocol)
-        #[arg(long)]
+        #[arg(long, value_hint=clap::ValueHint::Hostname)]
         host: String,
         /// Port number for the connection in the form 22.
         /// Doesn't add port number to connection string if not given.
@@ -148,7 +151,7 @@ pub enum StorageNewSubCommand {
         /// User name for the connection, the part before @ in user@example.com (without @,
         /// hostname).
         /// User name isn't included in connection strings if not given.
-        #[arg(long)]
+        #[arg(long, value_hint=clap::ValueHint::Username)]
         user: Option<String>,
         /// storage directory in the host to store the files.
         #[arg(long)]
@@ -193,7 +196,7 @@ pub enum StorageNewSubCommand {
         #[arg(long = "name", short = 'n')]
         name: String,
         /// Minio server url in the form https://myserver.example.com:9090
-        #[arg(long)]
+        #[arg(long, value_hint=clap::ValueHint::Url)]
         endpoint: String,
         /// Bucket name
         #[arg(long)]

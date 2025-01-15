@@ -16,12 +16,17 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 #[command(rename_all = "kebab-case")]
 pub struct ShareCLI {
     /// Storage name or guid to send the files
+    ///
+    /// TODO: Add a storage_identifier completer
     #[arg(long, short, alias = "from")]
     storage: StorageIdentifier,
+
     /// Period to send the files to. You can use s, m, h, d, w suffixes.
     #[arg(long, short, default_value = "24h")]
     duration: String,
     /// File to send/push/upload to storage
+    ///
+    /// TODO: Add a tracked_targets completer
     #[arg()]
     target: String,
 }

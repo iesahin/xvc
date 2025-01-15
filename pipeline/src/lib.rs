@@ -56,8 +56,11 @@ pub use crate::pipeline::api::run::RunCLI;
 #[command(name = "pipeline")]
 pub struct PipelineCLI {
     /// Name of the pipeline this command applies to
-    #[arg(long, short)]
+    ///
+    /// TODO: Add a pipeline_name completer
+    #[arg(long, short, global = true)]
     pub pipeline_name: Option<String>,
+
     /// Subcommand to run
     #[command(subcommand)]
     pub subcommand: PipelineSubCommand,
@@ -88,7 +91,7 @@ pub enum PipelineSubCommand {
     #[command(visible_aliases=&["l"])]
     List,
 
-    /// Generate a dot or mermaid diagram for the pipeline
+    /// Generate a Graphviz or mermaid diagram of the pipeline
     #[command(visible_aliases=&["d"])]
     Dag(DagCLI),
 
@@ -202,14 +205,14 @@ pub fn cmd_pipeline<R: BufRead>(
     // This should already be filled from the conf if not given
     let pipeline_name = command.pipeline_name.unwrap();
     match command.subcommand {
-        PipelineSubCommand::Run(opts) => cmd_run(output_snd, xvc_root, opts),
-        PipelineSubCommand::New(opts) => cmd_new(xvc_root, opts),
-        PipelineSubCommand::Update(opts) => cmd_update(xvc_root, opts),
+        PipelineSubCommand::Run(opts) => cmd_run(output_snd, xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::New(opts) => cmd_new(xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Update(opts) => cmd_update(xvc_root, &pipeline_name, opts),
         PipelineSubCommand::List => cmd_list(output_snd, xvc_root),
-        PipelineSubCommand::Delete(opts) => cmd_delete(xvc_root, opts),
-        PipelineSubCommand::Export(opts) => cmd_export(output_snd, xvc_root, opts),
-        PipelineSubCommand::Dag(opts) => cmd_dag(output_snd, xvc_root, opts),
-        PipelineSubCommand::Import(opts) => cmd_import(input, xvc_root, opts),
+        PipelineSubCommand::Delete(opts) => cmd_delete(xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Export(opts) => cmd_export(output_snd, xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Dag(opts) => cmd_dag(output_snd, xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Import(opts) => cmd_import(input, xvc_root, &pipeline_name, opts),
         PipelineSubCommand::Step(step_cli) => {
             handle_step_cli(output_snd, xvc_root, &pipeline_name, step_cli)
         }

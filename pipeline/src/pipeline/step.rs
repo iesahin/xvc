@@ -44,15 +44,19 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["n"])]
     New {
         /// Name of the new step
+        ///
+        /// TODO: Add a step_name_completer
         #[arg(long, short)]
         step_name: String,
 
         /// Step command to run
-        #[arg(long, short)]
+        #[arg(long, short, value_hint = clap::ValueHint::CommandString)]
         command: String,
 
         /// When to run the command. One of always, never, by_dependencies (default).
         /// This is used to freeze or invalidate a step manually.
+        ///
+        /// TODO: Add an xvc_step_invalidate_completer
         #[arg(long)]
         when: Option<XvcStepInvalidate>,
     },
@@ -61,6 +65,8 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["R"])]
     Remove {
         /// Name of the step to remove
+        ///
+        /// TODO: Add a step_name_completer
         #[arg(long, short)]
         step_name: String,
     },
@@ -69,15 +75,19 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["U"])]
     Update {
         /// Name of the step to update. The step should already be defined.
+        ///
+        /// TODO: Add a step_name_completer
         #[arg(long, short)]
         step_name: String,
 
         /// Step command to run
-        #[arg(long, short)]
+        #[arg(long, short, value_hint = clap::ValueHint::CommandString)]
         command: Option<String>,
 
         /// When to run the command. One of always, never, by_dependencies (default).
         /// This is used to freeze or invalidate a step manually.
+        ///
+        /// TODO: Add an xvc_step_invalidate_completer
         #[arg(long)]
         when: Option<XvcStepInvalidate>,
     },
@@ -86,6 +96,8 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["d"])]
     Dependency {
         /// Name of the step to add the dependency to
+        ///
+        /// TODO: Add a step_name_completer
         #[arg(long, short, visible_aliases= &["for", "to"])]
         step_name: String,
 
@@ -99,11 +111,13 @@ pub enum StepSubCommand {
         urls: Option<Vec<String>>,
 
         /// Add a file dependency to the step. Can be used multiple times.
-        #[arg(long = "file", short)]
+        #[arg(long = "file", short, value_hint = clap::ValueHint::FilePath)]
         files: Option<Vec<String>>,
 
         /// Add a step dependency to a step. Can be used multiple times.
         /// Steps are referred with their names.
+        ///
+        /// TODO: Add a step_name_completer
         #[arg(long = "step", short = 'S')]
         steps: Option<Vec<String>>,
 
@@ -133,6 +147,8 @@ pub enum StepSubCommand {
         ///
         /// The file can be a JSON, TOML, or YAML file. You can specify hierarchical keys like
         /// my.dict.key
+        ///
+        /// TODO: Add a pipeline_step_params completer
         #[arg(long = "param", aliases = &["params"])]
         params: Option<Vec<String>>,
 
@@ -203,19 +219,21 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["o"])]
     Output {
         /// Name of the step to add the output to
+        ///
+        /// TODO: Add a step_name_completer
         #[arg(long, short)]
         step_name: String,
 
         /// Add a file output to the step. Can be used multiple times.
-        #[arg(long = "output-file")]
+        #[arg(long = "output-file", value_hint = clap::ValueHint::FilePath)]
         files: Option<Vec<String>>,
 
         /// Add a metric output to the step. Can be used multiple times.
-        #[arg(long = "output-metric")]
+        #[arg(long = "output-metric", value_hint = clap::ValueHint::FilePath)]
         metrics: Option<Vec<String>>,
 
         /// Add an image output to the step. Can be used multiple times.
-        #[arg(long = "output-image")]
+        #[arg(long = "output-image", value_hint = clap::ValueHint::FilePath)]
         images: Option<Vec<String>>,
     },
 
@@ -223,6 +241,8 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["s"])]
     Show {
         /// Name of the step to show
+        ///
+        /// TODO: Add a step_name_completer
         #[arg(long, short)]
         step_name: String,
     },

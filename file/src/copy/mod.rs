@@ -11,6 +11,8 @@ use crate::Result;
 use anyhow::anyhow;
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
+use xvc_core::util::completer::strum_variants_completer;
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
 use xvc_logging::{debug, error, XvcOutputSender};
@@ -22,7 +24,7 @@ pub struct CopyCLI {
     /// How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long, alias = "as")]
+    #[arg(long, alias = "as", add = ArgValueCompleter::new(strum_variants_completer::<RecheckMethod>) )]
     pub recheck_method: Option<RecheckMethod>,
 
     /// Force even if target exists.
@@ -46,6 +48,8 @@ pub struct CopyCLI {
     /// files in that directory are copied.
     ///
     /// If the number of source files is more than one, the destination must be a directory.
+    ///
+    /// TODO: Add tracked_targets completion
     #[arg()]
     pub source: String,
 

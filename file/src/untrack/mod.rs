@@ -29,6 +29,8 @@ pub struct UntrackCLI {
     restore_versions: Option<String>,
 
     /// Files/directories to untrack
+    ///
+    /// TODO: Add a tracked_targets completer
     #[arg()]
     targets: Vec<String>,
 }

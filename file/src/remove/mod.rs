@@ -25,6 +25,8 @@ pub struct RemoveCLI {
     from_cache: bool,
 
     /// Remove files from storage
+    ///
+    /// TODO: Add a storage_identifier completer
     #[arg(long, required_unless_present = "from_cache")]
     from_storage: Option<StorageIdentifier>,
 
@@ -40,11 +42,13 @@ pub struct RemoveCLI {
     #[arg(long, conflicts_with = "all_versions")]
     only_version: Option<String>,
 
-    /// Remove the targets even if they are used by other targets (via deduplication)
+    /// Remove file versions even if they are also pointed by other targets (via deduplication)
     #[arg(long)]
     force: bool,
 
     /// Files/directories to remove
+    ///
+    /// TODO: Add a tracked_targets completer
     #[arg()]
     targets: Vec<String>,
 }

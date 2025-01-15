@@ -42,6 +42,8 @@ pub struct RecheckCLI {
     ///
     /// Note: Reflink support requires "reflink" feature to be enabled and uses copy if the
     /// underlying file system doesn't support it.
+    ///
+    /// TODO: Add recheck_methods completion
     #[arg(long, alias = "as")]
     pub recheck_method: Option<RecheckMethod>,
 
@@ -54,6 +56,8 @@ pub struct RecheckCLI {
     pub force: bool,
 
     /// Files/directories to recheck
+    ///
+    /// TODO: Add tracked_targets completion
     #[arg()]
     pub targets: Option<Vec<String>>,
 }

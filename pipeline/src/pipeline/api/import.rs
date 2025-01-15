@@ -2,7 +2,6 @@ use crate::error::{Error, Result};
 use clap::Parser;
 use log::warn;
 use std::{fs, io::BufRead, path::PathBuf};
-use xvc_config::FromConfigKey;
 use xvc_core::XvcRoot;
 use xvc_ecs::{R11Store, R1NStore};
 
@@ -15,18 +14,15 @@ use crate::{
 #[derive(Debug, Clone, Parser)]
 #[command(name = "import")]
 pub struct ImportCLI {
-    /// Name of the pipeline to import.
-    /// If not set, the name from the file is used.
-    #[arg(long, short)]
-    pipeline_name: Option<String>,
-
     /// File to read the pipeline. Use stdin if not specified.
-    #[arg(long)]
+    #[arg(long, value_hint = clap::ValueHint::FilePath)]
     file: Option<PathBuf>,
 
     /// Input format. One of json or yaml. If not set, the format is
     /// guessed from the file extension. If the file extension is not set,
     /// json is used as default.
+    ///
+    /// TODO: Add xvc_pipeline_schema_format_completer
     #[arg(long)]
     format: Option<XvcSchemaSerializationFormat>,
 
@@ -41,9 +37,12 @@ pub struct ImportCLI {
 /// If `file` is None, reads from stdin.
 /// If `format` is None, uses the file extension to determine the format.
 /// If `overwrite` is true, overwrites the pipeline if it already exists.
-pub fn cmd_import<R: BufRead>(input: R, xvc_root: &XvcRoot, opts: ImportCLI) -> Result<()> {
-    let pipeline = XvcPipeline::from_conf(xvc_root.config());
-    let pipeline_name = opts.pipeline_name.unwrap_or(pipeline.name);
+pub fn cmd_import<R: BufRead>(
+    input: R,
+    xvc_root: &XvcRoot,
+    pipeline_name: &str,
+    opts: ImportCLI,
+) -> Result<()> {
     let file = opts.file;
     let format = opts.format;
     let overwrite = opts.overwrite;
@@ -83,7 +82,7 @@ pub fn cmd_import<R: BufRead>(input: R, xvc_root: &XvcRoot, opts: ImportCLI) -> 
 
     assert!(schema.version == 1);
 
-    if let Ok((pipeline_e, pipeline)) = XvcPipeline::from_name(xvc_root, &pipeline_name) {
+    if let Ok((pipeline_e, pipeline)) = XvcPipeline::from_name(xvc_root, pipeline_name) {
         if !overwrite {
             return Err(Error::PipelineAlreadyFound {
                 name: pipeline.name,
@@ -100,7 +99,7 @@ pub fn cmd_import<R: BufRead>(input: R, xvc_root: &XvcRoot, opts: ImportCLI) -> 
 
     let pipeline_e = xvc_root.new_entity();
     let pipeline = XvcPipeline {
-        name: pipeline_name,
+        name: pipeline_name.to_owned(),
     };
     xvc_root.with_r11store_mut(|rs: &mut R11Store<XvcPipeline, XvcPipelineRunDir>| {
         let run_dir = XvcPipelineRunDir {

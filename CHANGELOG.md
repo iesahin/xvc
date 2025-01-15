@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Added experimental homebrew tap
+- Renamed xvc pipeline dag --format dot to graphviz
 
 ## v0.6.13 (2024-12-30)
 

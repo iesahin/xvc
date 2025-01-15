@@ -1,4 +1,5 @@
 //! Various utility functions
+pub mod completer;
 pub mod file;
 pub mod git;
 pub mod pmp;

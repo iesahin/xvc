@@ -3,7 +3,6 @@ use itertools::Itertools;
 use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{color, label, shape, Color, Shape};
 use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
-use xvc_config::FromConfigKey;
 use xvc_core::{XvcPath, XvcPathMetadataProvider, XvcRoot};
 use xvc_ecs::{HStore, R1NStore, XvcEntity};
 use xvc_logging::{info, output, XvcOutputSender};
@@ -25,16 +24,14 @@ use crate::{
 #[derive(Debug, Clone, Parser)]
 #[command(name = "dag")]
 pub struct DagCLI {
-    /// Name of the pipeline to generate the diagram
-    #[arg(long, short)]
-    pipeline_name: Option<String>,
-
     /// Output file. Writes to stdout if not set.
     #[arg(long)]
     file: Option<PathBuf>,
 
-    /// Format for graph. Either dot or mermaid.
-    #[arg(long, default_value = "dot")]
+    /// Format for graph. Either graphviz or mermaid.
+    ///
+    /// TODO: Add dag_format_completer
+    #[arg(long, default_value = "graphviz")]
     format: XvcPipelineDagFormat,
 }
 
@@ -42,15 +39,18 @@ pub struct DagCLI {
 #[strum(serialize_all = "lowercase")]
 pub enum XvcPipelineDagFormat {
     #[default]
-    Dot,
+    GraphViz,
     Mermaid,
 }
 
 /// Entry point for `xvc pipeline dag` command.
 /// Create a graph of the pipeline and output it in the specified format.
-pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -> Result<()> {
-    let pipeline = XvcPipeline::from_conf(xvc_root.config());
-    let pipeline_name = opts.pipeline_name.unwrap_or(pipeline.name);
+pub fn cmd_dag(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    pipeline_name: &str,
+    opts: DagCLI,
+) -> Result<()> {
     let file = opts.file;
     let format = opts.format;
     let _conf = xvc_root.config();
@@ -101,7 +101,7 @@ pub fn cmd_dag(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: DagCLI) -
     info!("Dependency Graph: {:#?}", dependency_graph);
 
     let out_string = match format {
-        XvcPipelineDagFormat::Dot => make_dot_graph(&pipeline_steps, &all_deps, &all_outs)?,
+        XvcPipelineDagFormat::GraphViz => make_dot_graph(&pipeline_steps, &all_deps, &all_outs)?,
         XvcPipelineDagFormat::Mermaid => make_mermaid_graph(&pipeline_steps, &all_deps, &all_outs)?,
     };
 

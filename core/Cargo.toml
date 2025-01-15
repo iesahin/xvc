@@ -52,6 +52,9 @@ crossbeam = "^0.8"
 ## Git Operations
 gix = "^0.69"
 
+## Utilities to complete commands
+clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
+
 ## File system
 subprocess = "^0.2"
 jwalk = "^0.8"

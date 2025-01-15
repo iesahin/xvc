@@ -12,7 +12,7 @@ use derive_more::Display as DeriveDisplay;
 use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display, EnumString};
+use strum_macros::{Display, EnumString, VariantNames};
 use xvc_logging::{output, uwr, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
@@ -203,6 +203,7 @@ impl XvcPath {
     Hash,
     Display,
     Copy,
+    VariantNames,
 )]
 #[strum(serialize_all = "lowercase")]
 pub enum TextOrBinary {

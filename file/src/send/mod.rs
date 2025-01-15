@@ -22,12 +22,18 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 #[command(rename_all = "kebab-case")]
 pub struct SendCLI {
     /// Storage name or guid to send the files
+    ///
+    /// TODO: Add a storage_identifier completer
     #[arg(long, short, alias = "to")]
     storage: StorageIdentifier,
+
     /// Force even if the files are already present in the storage
     #[arg(long)]
     force: bool,
+
     /// Targets to send/push/upload to storage
+    ///
+    /// TODO: Add a tracked_targets completer
     #[arg()]
     targets: Option<Vec<String>>,
 }

@@ -13,15 +13,13 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 #[derive(Debug, Clone, Parser)]
 #[command(name = "update")]
 pub struct UpdateCLI {
-    /// Name of the pipeline this command applies to
-    #[arg(long, short)]
-    pipeline_name: Option<String>,
-
     /// Rename the pipeline to
     #[arg(long)]
     rename: Option<String>,
 
     /// Set the working directory
+    ///
+    /// TODO: Add a repository_dirs completer
     #[arg(long)]
     workdir: Option<PathBuf>,
 
@@ -33,14 +31,13 @@ pub struct UpdateCLI {
 /// Entry point for `xvc pipeline update` command.
 /// Can rename the pipeline, change the working directory or set the pipeline as
 /// default.
-pub fn cmd_update(xvc_root: &XvcRoot, opts: UpdateCLI) -> Result<()> {
-    let name = opts.pipeline_name.expect("Pipeline name is required");
+pub fn cmd_update(xvc_root: &XvcRoot, pipeline_name: &str, opts: UpdateCLI) -> Result<()> {
     let rename = opts.rename;
     let workdir = opts.workdir;
     let default = opts.set_default;
     Ok(
         xvc_root.with_r11store_mut(|rs: &mut R11Store<XvcPipeline, XvcPipelineRunDir>| {
-            let name = name.to_owned();
+            let name = pipeline_name.to_owned();
             let pipeline_subset_store = rs.left.filter(|_, p| p.name == name);
             if pipeline_subset_store.is_empty() {
                 Err(EcsError::KeyNotFound { key: name }.into())

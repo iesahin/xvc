@@ -5,7 +5,6 @@ use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use crate::completions;
 use crate::init;
 use crate::XvcRootOpt;
 
@@ -19,9 +18,11 @@ use clap_complete::engine::ArgValueCompleter;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use log::LevelFilter;
+use xvc_core::util::completer::git_branch_completer;
 use std::io;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::types::xvcroot::XvcRootInner;
+use xvc_core::util::completer::git_reference_completer;
 use xvc_logging::XvcOutputSender;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
@@ -108,12 +109,12 @@ pub struct XvcCLI {
     #[arg(
         long,
         conflicts_with("skip_git"),
-        add = ArgValueCompleter::new(completions::git_reference_completer))]
+        add = ArgValueCompleter::new(git_reference_completer))]
     pub from_ref: Option<String>,
 
     /// If given, create (or checkout) the given branch before committing results of the operation.
     /// This runs `git checkout --branch <given-value>` before committing the changes.
-    #[arg(long, conflicts_with("skip_git"), add=ArgValueCompleter::new(completions::git_branch_completer))]
+    #[arg(long, conflicts_with("skip_git"), add=ArgValueCompleter::new(git_branch_completer))]
     pub to_branch: Option<String>,
 
     /// The subcommand to run
