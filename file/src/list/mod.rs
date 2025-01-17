@@ -547,8 +547,6 @@ pub struct ListCLI {
     /// It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
     ///
     /// The default option can be set with file.list.sort in the config file.
-    ///
-    /// TODO: Add sort_criteria_completion
     #[arg(long, short = 's', add = ArgValueCompleter::new(strum_variants_completer::<ListSortCriteria>))]
     pub sort: Option<ListSortCriteria>,
 

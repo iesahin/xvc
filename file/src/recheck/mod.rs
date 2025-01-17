@@ -13,10 +13,12 @@ use crate::common::{
 };
 use crate::{common::recheck_from_cache, Result};
 use clap::Parser;
+use clap_complete::ArgValueCompleter;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
+use xvc_core::util::completer::strum_variants_completer;
 use xvc_core::{
     apply_diff, ContentDigest, Diff, DiffStore, HashAlgorithm, RecheckMethod, XvcCachePath,
     XvcMetadata, XvcPath, XvcRoot,
@@ -42,9 +44,7 @@ pub struct RecheckCLI {
     ///
     /// Note: Reflink support requires "reflink" feature to be enabled and uses copy if the
     /// underlying file system doesn't support it.
-    ///
-    /// TODO: Add recheck_methods completion
-    #[arg(long, alias = "as")]
+    #[arg(long, alias = "as", add = ArgValueCompleter::new(strum_variants_completer::<RecheckMethod>) )]
     pub recheck_method: Option<RecheckMethod>,
 
     /// Don't use parallelism

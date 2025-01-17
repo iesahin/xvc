@@ -65,6 +65,8 @@ impl AsRef<RelativePath> for XvcPath {
     }
 }
 
+// TODO: Why don't we have an AsRef<Path> for XvcPath?
+
 impl XvcPath {
     /// Given the current_dir and path, create an XvcPath relative to `xvc_root`
     /// and return it.

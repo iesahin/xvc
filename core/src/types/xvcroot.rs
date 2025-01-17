@@ -235,10 +235,13 @@ impl XvcRootInner {
 
     /// The name for the repository metadata directory.
     const XVC_DIR: &'static str = ".xvc";
+
     /// The file name for the git-ignored configuration.
     const LOCAL_CONFIG_PATH: &'static str = "config.local.toml";
+
     /// The file name for the git-tracked configuration.
     const PROJECT_CONFIG_PATH: &'static str = "config.toml";
+
     /// The directory name for the entity generator.
     const ENTITY_GENERATOR_PATH: &'static str = "ec";
 

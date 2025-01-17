@@ -2,7 +2,6 @@
 #![forbid(unsafe_code)]
 //! The main dispatching functions for the entire Xvc CLI
 pub mod cli;
-pub mod completions;
 pub mod error;
 pub mod init;
 

@@ -4,8 +4,6 @@ use xvc_config::XvcVerbosity;
 use xvc_test_helper::test_logging;
 use xvc_walker::AbsolutePath;
 
-use xvc_logging::watch;
-
 use xvc::error::Result;
 
 #[test]

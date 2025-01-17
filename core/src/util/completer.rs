@@ -59,3 +59,5 @@ pub fn strum_variants_completer<T: strum::VariantNames>(
         })
         .collect()
 }
+
+pub fn load_store_for_completion<T: Storable>(current_dir: &Path) -ZZ

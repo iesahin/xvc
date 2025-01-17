@@ -13,8 +13,10 @@ use crate::Result;
 use anyhow::anyhow;
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use xvc_config::FromConfigKey;
+use xvc_core::util::completer::strum_variants_completer;
 use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::{info, uwr, XvcOutputSender};
@@ -27,8 +29,7 @@ pub struct MoveCLI {
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
     ///
-    /// TODO: Add recheck_methods completion
-    #[arg(long, alias = "as")]
+    #[arg(long, alias = "as", add = ArgValueCompleter::new(strum_variants_completer::<RecheckMethod>) )]
     pub recheck_method: Option<RecheckMethod>,
 
     /// Do not recheck the destination files
