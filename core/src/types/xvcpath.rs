@@ -75,6 +75,7 @@ impl XvcPath {
     ///
     /// - path shouldn't be empty
     /// - if path is absolute, it must have current_dir as prefix.
+    /// FIXME: This doesn't have to rely on [XvcRoot], Any absolute path should work for root.
     pub fn new(xvc_root: &XvcRoot, current_dir: &AbsolutePath, path: &Path) -> Result<XvcPath> {
         let path = if path.is_absolute() {
             path.strip_prefix(current_dir.as_path())?
