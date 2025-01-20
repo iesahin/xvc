@@ -71,7 +71,7 @@ impl Deref for XvcRootInner {
 pub fn load_xvc_root(config_opts: XvcConfigParams) -> Result<XvcRoot> {
     let path = config_opts.current_dir.as_ref();
 
-    match XvcRootInner::find_root(path) {
+    match find_root(path) {
         Ok(absolute_path) => Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?)),
         Err(e) => Err(e),
     }
@@ -80,7 +80,7 @@ pub fn load_xvc_root(config_opts: XvcConfigParams) -> Result<XvcRoot> {
 /// Creates a new .xvc dir in `path` and initializes a directory.
 /// *Warning:* This should only be used in `xvc init`, not in other commands.
 pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoot> {
-    match XvcRootInner::find_root(path) {
+    match find_root(path) {
         Ok(abs_path) => Err(Error::CannotNestXvcRepositories {
             path: abs_path.to_path_buf(),
         }),
@@ -234,7 +234,7 @@ impl XvcRootInner {
     }
 
     /// The name for the repository metadata directory.
-    const XVC_DIR: &'static str = ".xvc";
+    pub const XVC_DIR: &'static str = ".xvc";
 
     /// The file name for the git-ignored configuration.
     const LOCAL_CONFIG_PATH: &'static str = "config.local.toml";
@@ -246,22 +246,7 @@ impl XvcRootInner {
     const ENTITY_GENERATOR_PATH: &'static str = "ec";
 
     /// The directory name for the store.
-    const STORE_DIR: &'static str = "store";
-
-    /// Finds the root of the xvc repository by looking for the .xvc directory
-    /// in parents of a given path.
-    pub fn find_root(path: &Path) -> Result<AbsolutePath> {
-        let abs_path = PathBuf::from(path)
-            .canonicalize()
-            .expect("Cannot canonicalize the path. Possible symlink loop.");
-
-        for parent in abs_path.ancestors() {
-            if parent.join(XVC_DIR).is_dir() {
-                return Ok(parent.into());
-            }
-        }
-        Err(Error::CannotFindXvcRoot { path: path.into() })
-    }
+    pub const STORE_DIR: &'static str = "store";
 
     /// Record the entity generator to the disk
     pub fn record(&self) {
@@ -272,6 +257,21 @@ impl XvcRootInner {
             }
         }
     }
+}
+
+/// Finds the root of the xvc repository by looking for the .xvc directory
+/// in parents of a given path.
+pub fn find_root(path: &Path) -> Result<AbsolutePath> {
+    let abs_path = PathBuf::from(path)
+        .canonicalize()
+        .expect("Cannot canonicalize the path. Possible symlink loop.");
+
+    for parent in abs_path.ancestors() {
+        if parent.join(XVC_DIR).is_dir() {
+            return Ok(parent.into());
+        }
+    }
+    Err(Error::CannotFindXvcRoot { path: path.into() })
 }
 
 impl Drop for XvcRootInner {
