@@ -7,9 +7,11 @@ use crate::common::{cache_paths_for_xvc_paths, filter_targets_from_store};
 use crate::Result;
 
 use clap::Parser;
+use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
+use xvc_core::util::completer::xvc_path_completer;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::XvcEntity;
 use xvc_logging::{output, uwr, warn, XvcOutputSender};
@@ -48,8 +50,8 @@ pub struct RemoveCLI {
 
     /// Files/directories to remove
     ///
-    /// TODO: Add a tracked_targets completer
-    #[arg()]
+    /// FIXME: Is this the same as tracked targets?
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Vec<String>,
 }
 

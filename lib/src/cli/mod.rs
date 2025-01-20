@@ -18,10 +18,11 @@ use clap_complete::engine::ArgValueCompleter;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use log::LevelFilter;
-use xvc_core::util::completer::git_branch_completer;
 use std::io;
+use xvc_core::types::xvcroot::find_root;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::types::xvcroot::XvcRootInner;
+use xvc_core::util::completer::git_branch_completer;
 use xvc_core::util::completer::git_reference_completer;
 use xvc_logging::XvcOutputSender;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
@@ -236,10 +237,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
         xvc_root_opt.as_ref().is_none()
             || xvc_root_opt
                 .as_ref()
-                .map(
-                    |xvc_root| XvcRootInner::find_root(&cli_opts.workdir).unwrap()
-                        == *xvc_root.absolute_path()
-                )
+                .map(|xvc_root| find_root(&cli_opts.workdir).unwrap() == *xvc_root.absolute_path())
                 .unwrap()
     );
 

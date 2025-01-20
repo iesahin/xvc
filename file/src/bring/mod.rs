@@ -16,7 +16,7 @@ use crate::{
 use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
-use xvc_core::util::completer::strum_variants_completer;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{debug, error, uwr, warn, XvcOutputSender};
@@ -56,8 +56,8 @@ pub struct BringCLI {
 
     /// Targets to bring from the storage
     ///
-    /// TODO: Add a tracked_targets completer
-    #[arg()]
+    /// FIXME: Is tracked_targets the same as xvc_paths?
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Option<Vec<String>>,
 }
 

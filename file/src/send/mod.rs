@@ -7,7 +7,11 @@ use crate::Result;
 
 use clap::Parser;
 
-use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
+use clap_complete::ArgValueCompleter;
+use xvc_core::{
+    util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
+    XvcRoot,
+};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{error, XvcOutputSender};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
@@ -32,9 +36,7 @@ pub struct SendCLI {
     force: bool,
 
     /// Targets to send/push/upload to storage
-    ///
-    /// TODO: Add a tracked_targets completer
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Option<Vec<String>>,
 }
 

@@ -10,7 +10,7 @@ use anyhow::anyhow;
 use chrono;
 use clap::Parser;
 use clap_complete::ArgValueCompleter;
-use xvc_core::util::completer::strum_variants_completer;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 
 use std::collections::{HashMap, HashSet};
 use std::fmt::Display;
@@ -577,9 +577,7 @@ pub struct ListCLI {
     /// Files/directories to list.
     ///
     /// If not supplied, lists all files under the current directory.
-    ///
-    /// TODO: Add a tracked_targets completer
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     pub targets: Option<Vec<String>>,
 }
 
