@@ -55,9 +55,7 @@ pub enum StepSubCommand {
 
         /// When to run the command. One of always, never, by_dependencies (default).
         /// This is used to freeze or invalidate a step manually.
-        ///
-        /// TODO: Add an xvc_step_invalidate_completer
-        #[arg(long)]
+        #[arg(long, add = ArgValueCompleter::new(strum_variants_completer::<XvcStepInvalidate>))]
         when: Option<XvcStepInvalidate>,
     },
 
@@ -88,7 +86,7 @@ pub enum StepSubCommand {
         /// This is used to freeze or invalidate a step manually.
         ///
         /// TODO: Add an xvc_step_invalidate_completer
-        #[arg(long)]
+        #[arg(long, add = ArgValueCompleter::new(strum_variants_completer::<XvcStepInvalidate>))]
         when: Option<XvcStepInvalidate>,
     },
 

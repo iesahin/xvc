@@ -1,8 +1,9 @@
 use crate::error::{Error, Result};
 use clap::Parser;
+use clap_complete::ArgValueCompleter;
 use log::warn;
 use std::{fs, io::BufRead, path::PathBuf};
-use xvc_core::XvcRoot;
+use xvc_core::{util::completer::strum_variants_completer, XvcRoot};
 use xvc_ecs::{R11Store, R1NStore};
 
 use crate::{
@@ -22,8 +23,9 @@ pub struct ImportCLI {
     /// guessed from the file extension. If the file extension is not set,
     /// json is used as default.
     ///
-    /// TODO: Add xvc_pipeline_schema_format_completer
-    #[arg(long)]
+    #[arg(long,
+          add = ArgValueCompleter::new(strum_variants_completer::<XvcSchemaSerializationFormat>),
+    )]
     format: Option<XvcSchemaSerializationFormat>,
 
     /// Overwrite the pipeline even if the name already exists

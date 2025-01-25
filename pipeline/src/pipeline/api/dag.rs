@@ -1,8 +1,10 @@
 use clap::Parser;
+use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{color, label, shape, Color, Shape};
 use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
+use xvc_core::util::completer::strum_variants_completer;
 use xvc_core::{XvcPath, XvcPathMetadataProvider, XvcRoot};
 use xvc_ecs::{HStore, R1NStore, XvcEntity};
 use xvc_logging::{info, output, XvcOutputSender};
@@ -29,9 +31,10 @@ pub struct DagCLI {
     file: Option<PathBuf>,
 
     /// Format for graph. Either graphviz or mermaid.
-    ///
-    /// TODO: Add dag_format_completer
-    #[arg(long, default_value = "graphviz")]
+    #[arg(long,
+         add = ArgValueCompleter::new(strum_variants_completer::<XvcPipelineDagFormat>),
+         default_value = XvcPipelineDagFormat::GraphViz)
+        ]
     format: XvcPipelineDagFormat,
 }
 
