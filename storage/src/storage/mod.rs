@@ -1,6 +1,9 @@
 //! Cloud storage implementations for xvc.
+pub mod common_ops;
+
 #[cfg(feature = "async")]
 pub mod async_common;
+
 #[cfg(feature = "digital-ocean")]
 pub mod digital_ocean;
 pub mod event;
@@ -18,7 +21,7 @@ pub mod s3;
 #[cfg(feature = "wasabi")]
 pub mod wasabi;
 
-use std::{str::FromStr, time::Duration};
+use std::{env, ffi::OsStr, str::FromStr};
 
 use derive_more::Display;
 pub use event::{
@@ -31,14 +34,16 @@ pub use local::XvcLocalStorage;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{error, watch, XvcOutputSender};
+use xvc_logging::{error, XvcOutputSender};
 use xvc_walker::AbsolutePath;
+
+use clap_complete::CompletionCandidate;
 
 use crate::{Error, Result, StorageIdentifier};
 
 use relative_path::{RelativePath, RelativePathBuf};
 
-use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_core::{util::completer::load_store_for_completion, XvcCachePath, XvcRoot};
 use xvc_ecs::{persist, XvcStore};
 
 use self::generic::XvcGenericStorage;
@@ -73,6 +78,48 @@ pub enum XvcStorage {
     DigitalOcean(digital_ocean::XvcDigitalOceanStorage),
 }
 persist!(XvcStorage, "storage");
+
+impl XvcStorage {
+    pub fn name(&self) -> String {
+        match &self {
+            XvcStorage::Local(s) => s.name,
+            XvcStorage::Generic(s) => s.name,
+            XvcStorage::Rsync(s) => s.name,
+            #[cfg(feature = "s3")]
+            XvcStorage::S3(s) => s.name,
+            #[cfg(feature = "minio")]
+            XvcStorage::Minio(s) => s.name,
+            #[cfg(feature = "r2")]
+            XvcStorage::R2(s) => s.name,
+            #[cfg(feature = "gcs")]
+            XvcStorage::Gcs(s) => s.name,
+            #[cfg(feature = "wasabi")]
+            XvcStorage::Wasabi(s) => s.name,
+            #[cfg(feature = "digital-ocean")]
+            XvcStorage::DigitalOcean(s) => s.name,
+        }
+    }
+
+    pub fn guid(&self) -> String {
+        match &self {
+            XvcStorage::Local(s) => s.guid,
+            XvcStorage::Generic(s) => s.guid,
+            XvcStorage::Rsync(s) => s.guid,
+            #[cfg(feature = "s3")]
+            XvcStorage::S3(s) => s.guid,
+            #[cfg(feature = "minio")]
+            XvcStorage::Minio(s) => s.guid,
+            #[cfg(feature = "r2")]
+            XvcStorage::R2(s) => s.guid,
+            #[cfg(feature = "gcs")]
+            XvcStorage::Gcs(s) => s.guid,
+            #[cfg(feature = "wasabi")]
+            XvcStorage::Wasabi(s) => s.guid,
+            #[cfg(feature = "digital-ocean")]
+            XvcStorage::DigitalOcean(s) => s.guid,
+        }
+    }
+}
 
 impl std::fmt::Display for XvcStorage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -142,200 +189,6 @@ impl std::fmt::Display for XvcStorage {
                 "DO:      {}\t{}\t{}.{}/{}",
                 dor.name, dor.guid, dor.region, dor.bucket_name, dor.storage_prefix
             ),
-        }
-    }
-}
-
-/// All storages implement this trait. xvc storage new   and xvc file send / bring / remove
-/// commands use this trait to communicate with the storages.
-pub trait XvcStorageOperations {
-    /// The init operation is creates a directory with the "short guid" of the Xvc repository and
-    /// adds a .xvc-guid file with the guid of the storage.
-    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
-    where
-        Self: Sized;
-
-    /// Used by xvc file list command to list the contents of a directory in the storage.
-    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent>;
-    /// Used by xvc file send command to send files to the storage.
-    fn send(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        paths: &[XvcCachePath],
-        force: bool,
-    ) -> Result<XvcStorageSendEvent>;
-    /// Used by xvc file bring command to bring files from the storage.
-    fn receive(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        paths: &[XvcCachePath],
-        force: bool,
-    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)>;
-    /// Used by xvc file remove command to remove files from the storage.
-    fn delete(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        paths: &[XvcCachePath],
-    ) -> Result<XvcStorageDeleteEvent>;
-
-    /// Used to share files from S3 compatible storages with a signed URL.
-    fn share(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        path: &XvcCachePath,
-        period: Duration,
-    ) -> Result<XvcStorageExpiringShareEvent>;
-}
-
-impl XvcStorageOperations for XvcStorage {
-    fn init(
-        &mut self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-    ) -> Result<XvcStorageInitEvent> {
-        match self {
-            XvcStorage::Local(ref mut r) => r.init(output, xvc_root),
-            XvcStorage::Generic(ref mut r) => r.init(output, xvc_root),
-            XvcStorage::Rsync(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(ref mut r) => r.init(output, xvc_root),
-        }
-    }
-
-    fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
-        match self {
-            XvcStorage::Local(lr) => lr.list(output, xvc_root),
-            XvcStorage::Generic(gr) => gr.list(output, xvc_root),
-            XvcStorage::Rsync(r) => r.list(output, xvc_root),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.list(output, xvc_root),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.list(output, xvc_root),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.list(output, xvc_root),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.list(output, xvc_root),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.list(output, xvc_root),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.list(output, xvc_root),
-        }
-    }
-
-    fn send(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        paths: &[XvcCachePath],
-        force: bool,
-    ) -> Result<XvcStorageSendEvent> {
-        match self {
-            XvcStorage::Local(lr) => lr.send(output, xvc_root, paths, force),
-            XvcStorage::Generic(gr) => gr.send(output, xvc_root, paths, force),
-            XvcStorage::Rsync(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.send(output, xvc_root, paths, force),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.send(output, xvc_root, paths, force),
-        }
-    }
-
-    fn receive(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        paths: &[XvcCachePath],
-        force: bool,
-    ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        match self {
-            XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
-            XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
-            XvcStorage::Rsync(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.receive(output, xvc_root, paths, force),
-        }
-    }
-
-    fn delete(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        paths: &[XvcCachePath],
-    ) -> Result<XvcStorageDeleteEvent> {
-        match self {
-            XvcStorage::Local(lr) => lr.delete(output, xvc_root, paths),
-            XvcStorage::Generic(gr) => gr.delete(output, xvc_root, paths),
-            XvcStorage::Rsync(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.delete(output, xvc_root, paths),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.delete(output, xvc_root, paths),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.delete(output, xvc_root, paths),
-        }
-    }
-
-    fn share(
-        &self,
-        output: &XvcOutputSender,
-        xvc_root: &XvcRoot,
-        path: &XvcCachePath,
-        period: Duration,
-    ) -> Result<XvcStorageExpiringShareEvent> {
-        match self {
-            XvcStorage::Local(_) | XvcStorage::Generic(_) | XvcStorage::Rsync(_) => {
-                Err(Error::StorageDoesNotSupportSignedUrls)
-            }
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.share(output, xvc_root, path, period),
         }
     }
 }
@@ -509,4 +362,33 @@ pub fn get_storage_record(
                 identifier: identifier.clone(),
             })?;
     Ok(storage.clone())
+}
+
+pub fn storage_identifier_completer(prefix: &OsStr) -> Vec<CompletionCandidate> {
+    // This must be safe as we don't allow Non-UTF-8 strings for storage identifiers
+    let prefix = prefix.to_str().unwrap_or("");
+    env::current_dir()
+        .map_err(Error::from)
+        .and_then(|current_dir| {
+            load_store_for_completion::<XvcStorage>(&current_dir)
+                .map(|xvc_storage_store| {
+                    let filtered_by_name: Vec<String> = xvc_storage_store
+                        .filter(|_, xs| xs.name().starts_with(prefix))
+                        .iter()
+                        .map(|_, xs| xs.name())
+                        .collect();
+                    let filtered_by_guid: Vec<String> = xvc_storage_store
+                        .filter(|_, xs| xs.guid().starts_with(prefix))
+                        .iter()
+                        .map(|_, xs| xs.guid())
+                        .collect();
+
+                    filtered_by_name
+                        .iter()
+                        .chain(filtered_by_guid.iter())
+                        .map(|xs| xs.into())
+                        .collect()
+                })
+                .unwrap_or_default()
+        })
 }
