@@ -88,8 +88,8 @@ pub fn xvc_path_completer(prefix: &OsStr) -> Vec<CompletionCandidate> {
         .and_then(|current_dir| {
             load_store_for_completion::<XvcPath>(&current_dir).and_then(|xvc_path_store| {
                 // FIXME: This doesn't consider current dir to filter the elements
-                let elements = xvc_path_store.filter(|_, xp| xp.starts_with_str(&prefix));
-                Ok(elements
+                let filtered = xvc_path_store.filter(|_, xp| xp.starts_with_str(&prefix));
+                Ok(filtered
                     .iter()
                     .map(|(_, xp)| xp.to_string().into())
                     .collect())
