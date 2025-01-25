@@ -4,7 +4,10 @@ use crate::{common::load_targets_from_store, error, Result};
 use clap::{command, Parser};
 use clap_complete::ArgValueCompleter;
 use humantime;
-use xvc_core::{util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
+use xvc_core::{
+    util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
+    XvcRoot,
+};
 use xvc_ecs::XvcStore;
 use xvc_logging::{uwo, watch, XvcOutputSender};
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};

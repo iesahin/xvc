@@ -59,9 +59,7 @@ pub struct CarryInCLI {
     no_parallel: bool,
 
     /// Files/directories to carry in to the cache
-    ///
-    /// TODO: Add tracked_targets completion
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Option<Vec<String>>,
 }
 

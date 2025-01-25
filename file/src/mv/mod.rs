@@ -16,7 +16,7 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use xvc_config::FromConfigKey;
-use xvc_core::util::completer::strum_variants_completer;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::{info, uwr, XvcOutputSender};
@@ -44,9 +44,7 @@ pub struct MoveCLI {
     /// files in that directory are copied.
     ///
     /// If there are multiple source files, the destination must be a directory.
-    ///
-    /// TODO: Add tracked_targets completion
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     pub source: String,
 
     /// Location we move file(s) to within the workspace.

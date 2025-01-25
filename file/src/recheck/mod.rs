@@ -18,7 +18,7 @@ use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
-use xvc_core::util::completer::strum_variants_completer;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{
     apply_diff, ContentDigest, Diff, DiffStore, HashAlgorithm, RecheckMethod, XvcCachePath,
     XvcMetadata, XvcPath, XvcRoot,
@@ -56,9 +56,7 @@ pub struct RecheckCLI {
     pub force: bool,
 
     /// Files/directories to recheck
-    ///
-    /// TODO: Add tracked_targets completion
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     pub targets: Option<Vec<String>>,
 }
 

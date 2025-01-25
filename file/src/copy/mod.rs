@@ -12,7 +12,7 @@ use anyhow::anyhow;
 use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
-use xvc_core::util::completer::strum_variants_completer;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
 use xvc_logging::{debug, error, XvcOutputSender};
@@ -48,9 +48,7 @@ pub struct CopyCLI {
     /// files in that directory are copied.
     ///
     /// If the number of source files is more than one, the destination must be a directory.
-    ///
-    /// TODO: Add tracked_targets completion
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     pub source: String,
 
     /// Location we copy file(s) to within the workspace.
@@ -59,6 +57,7 @@ pub struct CopyCLI {
     /// created if it doesn't exist.
     ///
     /// If the number of source files is more than one, the destination must be a directory.
+    /// TODO: Add a tracked directory completer
     #[arg()]
     pub destination: String,
 }
