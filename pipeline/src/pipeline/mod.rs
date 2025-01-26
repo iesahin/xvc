@@ -5,6 +5,7 @@ pub mod deps;
 pub mod outs;
 pub mod schema;
 pub mod step;
+pub mod util;
 
 use self::command::XvcStepCommand;
 use self::deps::compare::superficial_compare_dependency;
@@ -40,7 +41,7 @@ use std::fmt::Debug;
 use std::sync::{Arc, RwLock};
 use std::thread::{self, sleep, ScopedJoinHandle};
 use std::time::Duration;
-use strum_macros::{Display, EnumString};
+use strum_macros::{Display, EnumString, VariantNames};
 use xvc_config::FromConfigKey;
 use xvc_core::{update_with_actual, Diff, HashAlgorithm, XvcPath, XvcRoot};
 
@@ -63,6 +64,7 @@ use subprocess as sp;
     Serialize,
     Deserialize,
     Default,
+    VariantNames,
 )]
 #[strum(serialize_all = "snake_case")]
 pub enum XvcStepInvalidate {

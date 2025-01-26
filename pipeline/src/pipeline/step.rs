@@ -1,6 +1,8 @@
 #![allow(clippy::enum_variant_names)]
 
+use clap_complete::ArgValueCompleter;
 use derive_more::Display;
+use xvc_core::util::completer::strum_variants_completer;
 
 use crate::error::{Error, Result};
 use crate::{
@@ -15,6 +17,7 @@ use xvc_logging::XvcOutputSender;
 
 use super::api::step_list::cmd_step_list;
 use super::api::step_remove::cmd_step_remove;
+use super::util::step_name_completer;
 use super::XvcStepInvalidate;
 
 /// Step creation, dependency, output commands
@@ -44,9 +47,7 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["n"])]
     New {
         /// Name of the new step
-        ///
-        /// TODO: Add a step_name_completer
-        #[arg(long, short)]
+        #[arg(long, short, add = ArgValueCompleter::new(step_name_completer))]
         step_name: String,
 
         /// Step command to run
@@ -63,9 +64,7 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["R"])]
     Remove {
         /// Name of the step to remove
-        ///
-        /// TODO: Add a step_name_completer
-        #[arg(long, short)]
+        #[arg(long, short,add = ArgValueCompleter::new(step_name_completer))]
         step_name: String,
     },
 
@@ -73,9 +72,7 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["U"])]
     Update {
         /// Name of the step to update. The step should already be defined.
-        ///
-        /// TODO: Add a step_name_completer
-        #[arg(long, short)]
+        #[arg(long, short, add = ArgValueCompleter::new(step_name_completer))]
         step_name: String,
 
         /// Step command to run
@@ -84,8 +81,6 @@ pub enum StepSubCommand {
 
         /// When to run the command. One of always, never, by_dependencies (default).
         /// This is used to freeze or invalidate a step manually.
-        ///
-        /// TODO: Add an xvc_step_invalidate_completer
         #[arg(long, add = ArgValueCompleter::new(strum_variants_completer::<XvcStepInvalidate>))]
         when: Option<XvcStepInvalidate>,
     },
@@ -94,9 +89,7 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["d"])]
     Dependency {
         /// Name of the step to add the dependency to
-        ///
-        /// TODO: Add a step_name_completer
-        #[arg(long, short, visible_aliases= &["for", "to"])]
+        #[arg(long, short, visible_aliases= &["for", "to"],add = ArgValueCompleter::new(step_name_completer) )]
         step_name: String,
 
         /// Add a generic command output as a dependency. Can be used multiple times.
@@ -114,9 +107,7 @@ pub enum StepSubCommand {
 
         /// Add a step dependency to a step. Can be used multiple times.
         /// Steps are referred with their names.
-        ///
-        /// TODO: Add a step_name_completer
-        #[arg(long = "step", short = 'S')]
+        #[arg(long = "step", short = 'S',add = ArgValueCompleter::new(step_name_completer))]
         steps: Option<Vec<String>>,
 
         /// Add a glob items dependency to the step.
@@ -217,9 +208,7 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["o"])]
     Output {
         /// Name of the step to add the output to
-        ///
-        /// TODO: Add a step_name_completer
-        #[arg(long, short)]
+        #[arg(long, short, add = ArgValueCompleter::new(step_name_completer))]
         step_name: String,
 
         /// Add a file output to the step. Can be used multiple times.
@@ -239,9 +228,7 @@ pub enum StepSubCommand {
     #[command(visible_aliases=&["s"])]
     Show {
         /// Name of the step to show
-        ///
-        /// TODO: Add a step_name_completer
-        #[arg(long, short)]
+        #[arg(long, short, add = ArgValueCompleter::new(step_name_completer))]
         step_name: String,
     },
 }

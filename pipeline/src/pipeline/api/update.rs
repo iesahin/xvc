@@ -18,9 +18,7 @@ pub struct UpdateCLI {
     rename: Option<String>,
 
     /// Set the working directory
-    ///
-    /// TODO: Add a repository_dirs completer
-    #[arg(long)]
+    #[arg(long, value_hint=clap::ValueHint::DirPath)]
     workdir: Option<PathBuf>,
 
     /// Set this pipeline as default

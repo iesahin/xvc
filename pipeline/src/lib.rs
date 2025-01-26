@@ -17,6 +17,7 @@ pub use crate::pipeline::api::{
 
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
 use pipeline::api::dag::DagCLI;
 use pipeline::api::delete::DeleteCLI;
 use pipeline::api::export::ExportCLI;
@@ -27,6 +28,7 @@ pub use pipeline::deps;
 
 use pipeline::step::handle_step_cli;
 use pipeline::step::StepCLI;
+use pipeline::util::pipeline_name_completer;
 use serde::{Deserialize, Serialize};
 use std::io::BufRead;
 use std::str::FromStr;
@@ -56,9 +58,7 @@ pub use crate::pipeline::api::run::RunCLI;
 #[command(name = "pipeline")]
 pub struct PipelineCLI {
     /// Name of the pipeline this command applies to
-    ///
-    /// TODO: Add a pipeline_name completer
-    #[arg(long, short, global = true)]
+    #[arg(long, short, global = true, add = ArgValueCompleter::new(pipeline_name_completer))]
     pub pipeline_name: Option<String>,
 
     /// Subcommand to run

@@ -4,12 +4,12 @@ use crate::error::{Error, Result};
 use crate::pipeline::deps::XvcDependency;
 use crate::pipeline::XvcOutput;
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display, EnumString, IntoStaticStr};
+use strum_macros::{Display, EnumString, IntoStaticStr, VariantNames};
 use xvc_core::XvcPath;
 
 use super::XvcStepInvalidate;
 
-#[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr)]
+#[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr, VariantNames)]
 #[strum(serialize_all = "lowercase")]
 pub enum XvcSchemaSerializationFormat {
     Json,

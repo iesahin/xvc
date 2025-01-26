@@ -16,7 +16,7 @@ use crate::error::Result;
 
 use std::path::PathBuf;
 
-use strum_macros::{Display, EnumString, IntoStaticStr};
+use strum_macros::{Display, EnumString, IntoStaticStr, VariantArray, VariantNames};
 
 use crate::{
     pipeline::{add_explicit_dependencies, add_implicit_dependencies},
@@ -33,12 +33,14 @@ pub struct DagCLI {
     /// Format for graph. Either graphviz or mermaid.
     #[arg(long,
          add = ArgValueCompleter::new(strum_variants_completer::<XvcPipelineDagFormat>),
-         default_value = XvcPipelineDagFormat::GraphViz)
+         default_value = "graphviz")
         ]
     format: XvcPipelineDagFormat,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr, Default)]
+#[derive(
+    Debug, Clone, Eq, PartialEq, EnumString, Display, IntoStaticStr, Default, VariantNames,
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum XvcPipelineDagFormat {
     #[default]

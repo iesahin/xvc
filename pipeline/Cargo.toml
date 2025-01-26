@@ -28,6 +28,7 @@ xvc-file = { version = "0.6.14-alpha.7", path = "../file", default-features = fa
 
 ## Cli and config
 clap = { version = "^4.5", features = ["derive"] }
+clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
 directories-next = "2.0"
 
 ## Hashing
