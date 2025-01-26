@@ -1,6 +1,23 @@
 //! Common trait for all storage operations
 //! See also async_common.rs for async operations with network storages
 
+use std::time::Duration;
+
+use crate::storage::{
+    XvcStorageDeleteEvent, XvcStorageExpiringShareEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStorageReceiveEvent, XvcStorageSendEvent,
+};
+
+use xvc_logging::XvcOutputSender;
+
+use crate::{Error, Result};
+
+use xvc_core::{XvcCachePath, XvcRoot};
+
+use crate::XvcStorage;
+
+use super::XvcStorageTempDir;
+
 /// All storages implement this trait. xvc storage new   and xvc file send / bring / remove
 /// commands use this trait to communicate with the storages.
 pub trait XvcStorageOperations {

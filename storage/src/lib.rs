@@ -14,7 +14,9 @@ use std::str::FromStr;
 pub use crate::error::{Error, Result};
 use clap::{Parser, Subcommand};
 
+use clap_complete::ArgValueCompleter;
 use derive_more::Display;
+use storage::storage_identifier_completer;
 pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
@@ -47,9 +49,7 @@ pub enum StorageSubCommand {
     #[command(visible_aliases=&["R"])]
     Remove {
         /// Name of the storage to be deleted
-        ///
-        /// TODO: Add a storage_name_completer
-        #[arg(short, long)]
+        #[arg(short, long, add = ArgValueCompleter::new(storage_identifier_completer))]
         name: String,
     },
 

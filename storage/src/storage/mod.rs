@@ -23,6 +23,8 @@ pub mod wasabi;
 
 use std::{env, ffi::OsStr, str::FromStr};
 
+pub use common_ops::XvcStorageOperations;
+
 use derive_more::Display;
 pub use event::{
     XvcStorageDeleteEvent, XvcStorageEvent, XvcStorageExpiringShareEvent, XvcStorageInitEvent,
@@ -82,41 +84,41 @@ persist!(XvcStorage, "storage");
 impl XvcStorage {
     pub fn name(&self) -> String {
         match &self {
-            XvcStorage::Local(s) => s.name,
-            XvcStorage::Generic(s) => s.name,
-            XvcStorage::Rsync(s) => s.name,
+            XvcStorage::Local(s) => s.name.clone(),
+            XvcStorage::Generic(s) => s.name.clone(),
+            XvcStorage::Rsync(s) => s.name.clone(),
             #[cfg(feature = "s3")]
-            XvcStorage::S3(s) => s.name,
+            XvcStorage::S3(s) => s.name.clone(),
             #[cfg(feature = "minio")]
-            XvcStorage::Minio(s) => s.name,
+            XvcStorage::Minio(s) => s.name.clone(),
             #[cfg(feature = "r2")]
-            XvcStorage::R2(s) => s.name,
+            XvcStorage::R2(s) => s.name.clone(),
             #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(s) => s.name,
+            XvcStorage::Gcs(s) => s.name.clone(),
             #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(s) => s.name,
+            XvcStorage::Wasabi(s) => s.name.clone(),
             #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(s) => s.name,
+            XvcStorage::DigitalOcean(s) => s.name.clone(),
         }
     }
 
     pub fn guid(&self) -> String {
         match &self {
-            XvcStorage::Local(s) => s.guid,
-            XvcStorage::Generic(s) => s.guid,
-            XvcStorage::Rsync(s) => s.guid,
+            XvcStorage::Local(s) => s.guid.to_string(),
+            XvcStorage::Generic(s) => s.guid.to_string(),
+            XvcStorage::Rsync(s) => s.guid.to_string(),
             #[cfg(feature = "s3")]
-            XvcStorage::S3(s) => s.guid,
+            XvcStorage::S3(s) => s.guid.to_string(),
             #[cfg(feature = "minio")]
-            XvcStorage::Minio(s) => s.guid,
+            XvcStorage::Minio(s) => s.guid.to_string(),
             #[cfg(feature = "r2")]
-            XvcStorage::R2(s) => s.guid,
+            XvcStorage::R2(s) => s.guid.to_string(),
             #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(s) => s.guid,
+            XvcStorage::Gcs(s) => s.guid.to_string(),
             #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(s) => s.guid,
+            XvcStorage::Wasabi(s) => s.guid.to_string(),
             #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(s) => s.guid,
+            XvcStorage::DigitalOcean(s) => s.guid.to_string(),
         }
     }
 }
@@ -369,26 +371,28 @@ pub fn storage_identifier_completer(prefix: &OsStr) -> Vec<CompletionCandidate> 
     let prefix = prefix.to_str().unwrap_or("");
     env::current_dir()
         .map_err(Error::from)
-        .and_then(|current_dir| {
+        .map(|current_dir| {
             load_store_for_completion::<XvcStorage>(&current_dir)
                 .map(|xvc_storage_store| {
                     let filtered_by_name: Vec<String> = xvc_storage_store
                         .filter(|_, xs| xs.name().starts_with(prefix))
                         .iter()
-                        .map(|_, xs| xs.name())
+                        .map(|(_, xs)| xs.name())
                         .collect();
+
                     let filtered_by_guid: Vec<String> = xvc_storage_store
                         .filter(|_, xs| xs.guid().starts_with(prefix))
                         .iter()
-                        .map(|_, xs| xs.guid())
+                        .map(|(_, xs)| xs.guid())
                         .collect();
 
                     filtered_by_name
-                        .iter()
-                        .chain(filtered_by_guid.iter())
+                        .into_iter()
+                        .chain(filtered_by_guid)
                         .map(|xs| xs.into())
                         .collect()
                 })
                 .unwrap_or_default()
         })
+        .unwrap_or_default()
 }
