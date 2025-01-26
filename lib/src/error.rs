@@ -141,6 +141,9 @@ pub enum Error {
     },
     #[error("Non-UTF-8 argument: {0:?}")]
     NonUtf8Argument(OsString),
+
+    #[error("Shell Completion Error")]
+    CompletionError,
 }
 
 impl Error {

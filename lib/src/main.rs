@@ -19,8 +19,11 @@ fn main() -> Result<()> {
             .try_complete(env::args_os(), current_dir.as_deref())
             .map_err(Error::from)?;
 
-        if !ran_completion {
+        if ran_completion {
+            return Ok(());
+        } else {
             eprintln!("Something is broken with completions. Please undefine COMPLETE environment variable (if there is one) and report this.");
+            return Err(Error::CompletionError);
         }
     }
 
