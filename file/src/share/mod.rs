@@ -10,7 +10,10 @@ use xvc_core::{
 };
 use xvc_ecs::XvcStore;
 use xvc_logging::{uwo, watch, XvcOutputSender};
-use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
+use xvc_storage::{
+    storage::{get_storage_record, storage_identifier_completer},
+    StorageIdentifier, XvcStorageOperations,
+};
 
 /// Share (uploaded and tracked) files from an S3 compatible storage
 ///
@@ -20,9 +23,7 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 #[command(rename_all = "kebab-case")]
 pub struct ShareCLI {
     /// Storage name or guid to send the files
-    ///
-    /// TODO: Add a storage_identifier completer
-    #[arg(long, short, alias = "from")]
+    #[arg(long, short, alias = "from", add = ArgValueCompleter::new(storage_identifier_completer))]
     storage: StorageIdentifier,
 
     /// Period to send the files to. You can use s, m, h, d, w suffixes.

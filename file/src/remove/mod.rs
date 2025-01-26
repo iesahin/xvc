@@ -15,7 +15,7 @@ use xvc_core::util::completer::xvc_path_completer;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::XvcEntity;
 use xvc_logging::{output, uwr, warn, XvcOutputSender};
-use xvc_storage::storage::get_storage_record;
+use xvc_storage::storage::{get_storage_record, storage_identifier_completer};
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
 /// Remove files from Xvc cache or storage
@@ -27,9 +27,7 @@ pub struct RemoveCLI {
     from_cache: bool,
 
     /// Remove files from storage
-    ///
-    /// TODO: Add a storage_identifier completer
-    #[arg(long, required_unless_present = "from_cache")]
+    #[arg(long, required_unless_present = "from_cache", add = ArgValueCompleter::new(storage_identifier_completer))]
     from_storage: Option<StorageIdentifier>,
 
     /// Remove all versions of the file
@@ -49,8 +47,6 @@ pub struct RemoveCLI {
     force: bool,
 
     /// Files/directories to remove
-    ///
-    /// FIXME: Is this the same as tracked targets?
     #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Vec<String>,
 }

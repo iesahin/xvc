@@ -14,7 +14,10 @@ use xvc_core::{
 };
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{error, XvcOutputSender};
-use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
+use xvc_storage::{
+    storage::{get_storage_record, storage_identifier_completer},
+    StorageIdentifier, XvcStorageOperations,
+};
 
 /// Send (upload) tracked files to storage
 ///
@@ -26,9 +29,7 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 #[command(rename_all = "kebab-case")]
 pub struct SendCLI {
     /// Storage name or guid to send the files
-    ///
-    /// TODO: Add a storage_identifier completer
-    #[arg(long, short, alias = "to")]
+    #[arg(long, short, alias = "to", add = ArgValueCompleter::new(storage_identifier_completer))]
     storage: StorageIdentifier,
 
     /// Force even if the files are already present in the storage

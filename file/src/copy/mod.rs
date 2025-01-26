@@ -58,6 +58,9 @@ pub struct CopyCLI {
     ///
     /// If the number of source files is more than one, the destination must be a directory.
     /// TODO: Add a tracked directory completer
+    /// we can have a file or a directory that we track and not available or we don't track and
+    /// available. It's similar situation to xvc_path_completer but we also need to check the local
+    /// paths.
     #[arg()]
     pub destination: String,
 }

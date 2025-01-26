@@ -21,6 +21,7 @@ use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetad
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{debug, error, uwr, warn, XvcOutputSender};
 
+use xvc_storage::storage::storage_identifier_completer;
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 use xvc_walker::PathSync;
@@ -33,9 +34,7 @@ use xvc_walker::PathSync;
 #[command(rename_all = "kebab-case")]
 pub struct BringCLI {
     /// Storage name or guid to send the files
-    ///
-    /// TODO: Add a storage_identifier completer
-    #[arg(long, short, alias = "from")]
+    #[arg(long, short, alias = "from", add = ArgValueCompleter::new(storage_identifier_completer))]
     storage: StorageIdentifier,
 
     /// Force even if the files are already present in the workspace
@@ -55,8 +54,6 @@ pub struct BringCLI {
     recheck_as: Option<RecheckMethod>,
 
     /// Targets to bring from the storage
-    ///
-    /// FIXME: Is tracked_targets the same as xvc_paths?
     #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Option<Vec<String>>,
 }

@@ -6,7 +6,7 @@
 
 use clap_complete::ArgValueCompleter;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use xvc_core::util::completer::strum_variants_completer;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_walker::PathSync;
 
 use std::collections::HashSet;
