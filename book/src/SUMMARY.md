@@ -2,6 +2,7 @@
 
 - [Introduction](./intro/index.md)
   - [Installation](./intro/install.md)
+  - [Completions](./intro/completions.md)
   - [Compile without default features](./intro/compile-without-default-features.md)
   - [Configuration](./intro/configuration.md)
 - [Get Started](./start/index.md)
