@@ -4,7 +4,7 @@
 
 ```console
 $ xvc file untrack --help
-Untrack (delete) files from Xvc and possibly storages
+Untrack (delete) files from Xvc and storages
 
 Usage: xvc file untrack [OPTIONS] [TARGETS]...
 

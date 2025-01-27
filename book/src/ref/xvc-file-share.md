@@ -4,7 +4,7 @@
 
 ```console
 $ xvc file share --help
-Share a file from S3 compatible storage for a limited time
+Share a file from (S3 compatible) storage for a limited time
 
 Usage: xvc file share [OPTIONS] --storage <STORAGE> <TARGET>
 
