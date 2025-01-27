@@ -15,7 +15,7 @@ This doesn't delete any files in the storage.
 Usage: xvc storage remove --name <NAME>
 
 Options:
-      --name <NAME>
+  -n, --name <NAME>
           Name of the storage to be deleted
 
   -h, --help

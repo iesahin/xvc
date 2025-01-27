@@ -9,8 +9,8 @@ Export the pipeline to a YAML or JSON file to edit
 Usage: xvc pipeline export [OPTIONS]
 
 Options:
-  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline to export
       --file <FILE>                    File to write the pipeline. Writes to stdout if not set
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
       --format <FORMAT>                Output format. One of json or yaml. If not set, the format is guessed from the file extension. If the file extension is not set, json is used as default
   -h, --help                           Print help
 
