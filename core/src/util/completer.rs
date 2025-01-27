@@ -1,7 +1,7 @@
 //! Completion helpers for commands and options
 use crate::{
     types::xvcroot::{find_root, XvcRootInner},
-    Error, Result, XvcPath,
+    Result, XvcPath,
 };
 use std::{env, ffi::OsStr, path::Path};
 
@@ -83,17 +83,18 @@ pub fn load_store_for_completion<T: Storable>(current_dir: &Path) -> Result<XvcS
 pub fn xvc_path_completer(prefix: &OsStr) -> Vec<CompletionCandidate> {
     // FIXME: What should we do for Non-UTF-8 paths?
     let prefix = prefix.to_str().unwrap_or("");
-    env::current_dir()
-        .map_err(Error::from)
-        .and_then(|current_dir| {
-            load_store_for_completion::<XvcPath>(&current_dir).and_then(|xvc_path_store| {
+    if let Ok(current_dir) = env::current_dir() {
+        load_store_for_completion::<XvcPath>(&current_dir)
+            .map(|xvc_path_store| {
                 // FIXME: This doesn't consider current dir to filter the elements
-                let filtered = xvc_path_store.filter(|_, xp| xp.starts_with_str(&prefix));
-                Ok(filtered
+                let filtered = xvc_path_store.filter(|_, xp| xp.starts_with_str(prefix));
+                filtered
                     .iter()
                     .map(|(_, xp)| xp.to_string().into())
-                    .collect())
+                    .collect()
             })
-        })
-        .unwrap_or_default()
+            .unwrap_or_default()
+    } else {
+        vec![]
+    }
 }

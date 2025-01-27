@@ -96,7 +96,7 @@ pub enum PipelineSubCommand {
     Dag(DagCLI),
 
     /// Export the pipeline to a YAML or JSON file to edit
-    #[command(visible_aliases=&["l"])]
+    #[command(visible_aliases=&["e"])]
     Export(ExportCLI),
 
     /// Import the pipeline from a file

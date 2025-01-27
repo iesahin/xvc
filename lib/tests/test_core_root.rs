@@ -12,11 +12,7 @@ fn test_root() -> Result<()> {
     let xvc_root = run_in_temp_xvc_dir()?;
 
     let rel = run_xvc(Some(&xvc_root), &["root"], XvcVerbosity::Default)?;
-    // assert!(
-    //     rel.trim().to_string() == ".".to_string(),
-    //     "Relative: {}",
-    //     rel
-    // );
+    assert!(rel.trim() == ".", "Relative: {}", rel);
     let abs = run_xvc(
         Some(&xvc_root),
         &["root", "--absolute"],

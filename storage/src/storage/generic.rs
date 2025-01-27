@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, warn, watch, XvcOutputSender};
+use xvc_logging::{error, info, warn, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
@@ -173,7 +173,6 @@ impl XvcGenericStorage {
     /// - `{ABSOLUTE_CACHE_DIR}` Directory that contains the file in temp directory
     /// - `{FULL_STORAGE_PATH}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}`
     /// - `{FULL_STORAGE_DIR}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}`
-
     fn path_map_with_temp_dir(
         &self,
         xvc_root: &XvcRoot,

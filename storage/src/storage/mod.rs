@@ -82,6 +82,7 @@ pub enum XvcStorage {
 persist!(XvcStorage, "storage");
 
 impl XvcStorage {
+    /// Return the user visible name of storage
     pub fn name(&self) -> String {
         match &self {
             XvcStorage::Local(s) => s.name.clone(),
@@ -102,6 +103,7 @@ impl XvcStorage {
         }
     }
 
+    /// Return guid Xvc generates for all storages
     pub fn guid(&self) -> String {
         match &self {
             XvcStorage::Local(s) => s.guid.to_string(),
@@ -366,6 +368,8 @@ pub fn get_storage_record(
     Ok(storage.clone())
 }
 
+/// Complete storage names or identifiers by loading the store and finding all names starting with
+/// `prefix`
 pub fn storage_identifier_completer(prefix: &OsStr) -> Vec<CompletionCandidate> {
     // This must be safe as we don't allow Non-UTF-8 strings for storage identifiers
     let prefix = prefix.to_str().unwrap_or("");

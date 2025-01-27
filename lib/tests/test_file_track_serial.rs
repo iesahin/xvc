@@ -55,7 +55,7 @@ fn test_file_track_serial() -> Result<()> {
     let images_cache_path =
         ".xvc/b3/a57/262/2134fcb28679d2de66d225cc2a41c2594baa909781c0726eb7702baeb1/0.bin";
     let file_0 = "file-0000.bin";
-    let track_file_0 = x(&["track", file_0, "--no-parallel"])?;
+    x(&["track", file_0, "--no-parallel"])?;
     let cache_path = xvc_root.absolute_path().join(images_cache_path);
 
     assert!(cache_path.exists());
@@ -80,7 +80,7 @@ fn test_file_track_serial() -> Result<()> {
     // re add should change n_files
     let n_files_before = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
 
-    let second_add = x(&["track", file_0, "--no-parallel"])?;
+    x(&["track", file_0, "--no-parallel"])?;
 
     let n_files_after = jwalk::WalkDir::new(".xvc/b3").into_iter().count();
     assert!(

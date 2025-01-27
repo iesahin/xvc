@@ -16,7 +16,7 @@ use crate::error::Result;
 
 use std::path::PathBuf;
 
-use strum_macros::{Display, EnumString, IntoStaticStr, VariantArray, VariantNames};
+use strum_macros::{Display, EnumString, IntoStaticStr, VariantNames};
 
 use crate::{
     pipeline::{add_explicit_dependencies, add_implicit_dependencies},
@@ -60,7 +60,7 @@ pub fn cmd_dag(
     let format = opts.format;
     let _conf = xvc_root.config();
 
-    let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, &pipeline_name)?;
+    let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, pipeline_name)?;
 
     // This is mutable to allow adding start and end nodes
     let pipeline_steps = xvc_root

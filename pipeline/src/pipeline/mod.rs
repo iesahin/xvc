@@ -26,7 +26,7 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use crossbeam_channel::{bounded, Receiver, Select, Sender};
 
-use xvc_logging::{debug, error, info, output, trace, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{debug, error, info, output, trace, uwr, warn, XvcOutputSender};
 
 use petgraph::algo::toposort;
 use petgraph::data::Build;
@@ -490,7 +490,7 @@ pub fn the_grand_pipeline_loop(
             .collect();
 
         // Join threads in the order we created
-        step_thread_store.into_iter().for_each(|(step_e, jh)| {
+        step_thread_store.into_iter().for_each(|(_, jh)| {
             if let Err(e) = jh.join() {
                 error!(output_snd, "Error in step thread: {:?}", e);
             }

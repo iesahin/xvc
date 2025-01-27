@@ -23,36 +23,42 @@ pub use xvc_test_helper::{
 const EXAMPLE_PROJECT_NAME: &str = "example-xvc";
 
 pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Result<String> {
-    let mut cmd = Command::cargo_bin("xvc").unwrap();
+    match Command::cargo_bin("xvc") {
+        Ok(mut cmd) => {
+            let verbosity_opt = match verbosity {
+                XvcVerbosity::Quiet => vec!["--quiet"],
+                XvcVerbosity::Default => vec![],
+                XvcVerbosity::Warn => vec!["-v"],
+                XvcVerbosity::Info => vec!["-vv"],
+                XvcVerbosity::Debug => vec!["-vvv"],
+                XvcVerbosity::Trace => vec!["--debug", "-vvvvv"],
+            };
 
-    let verbosity_opt = match verbosity {
-        XvcVerbosity::Quiet => vec!["--quiet"],
-        XvcVerbosity::Default => vec![],
-        XvcVerbosity::Warn => vec!["-v"],
-        XvcVerbosity::Info => vec!["-vv"],
-        XvcVerbosity::Debug => vec!["-vvv"],
-        XvcVerbosity::Trace => vec!["--debug", "-vvvvv"],
-    };
+            let prepared = match cwd {
+                Some(cwd) => cmd.args(verbosity_opt).args(args).current_dir(cwd),
+                None => cmd.args(verbosity_opt).args(args),
+            };
 
-    let prepared = match cwd {
-        Some(cwd) => cmd.args(verbosity_opt).args(args).current_dir(cwd),
-        None => cmd.args(verbosity_opt).args(args),
-    };
+            let output = prepared.output()?;
 
-    let output = prepared.output()?;
+            output!("{:?}", &output);
+            output!("{:?}", &output.status);
+            assert!(output.status.success(), "Command failed: {:?}", prepared);
 
-    output!("{:?}", &output);
-    output!("{:?}", &output.status);
-    assert!(output.status.success(), "Command failed: {:?}", prepared);
-
-    let output_str = String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n");
-    let debug_output_str = format!(
-        "Command: {prepared:#?}\nStdout: {}\nStderr: {}",
-        output_str,
-        String::from_utf8_lossy(&output.stderr).replace("\\\n", "\n"),
-    );
-    println!("{}", debug_output_str);
-    Ok(output_str)
+            let output_str = String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n");
+            let debug_output_str = format!(
+                "Command: {prepared:#?}\nStdout: {}\nStderr: {}",
+                output_str,
+                String::from_utf8_lossy(&output.stderr).replace("\\\n", "\n"),
+            );
+            println!("{}", debug_output_str);
+            Ok(output_str)
+        }
+        Err(e) => {
+            println!("{}", e);
+            Err(e.into())
+        }
+    }
 }
 
 pub fn example_project_url() -> Result<String> {

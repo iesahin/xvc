@@ -9,8 +9,6 @@ use xvc_test_helper::test_logging;
 
 use std::{collections::HashSet, path::Path, time::Duration};
 
-use xvc_logging::watch;
-
 use xvc::error::Result;
 
 #[test]
@@ -45,8 +43,6 @@ fn test_walk() -> Result<()> {
     while let Ok(Some(l)) = output_receiver.recv_timeout(Duration::from_secs(1)) {
         output_lines.push(l.to_string());
     }
-
-    let output = output_lines.into_iter().collect::<Vec<String>>().join("\n");
 
     for (p, m) in pmp1 {
         assert!(pmp2[&p] == m)

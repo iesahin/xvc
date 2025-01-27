@@ -209,7 +209,6 @@ impl IgnoreRules {
     /// # Arguments
     ///
     /// * `patterns` - A vector of patterns to be added to the ignore rules.
-
     pub fn add_patterns(&self, patterns: Vec<Pattern>) -> Result<()> {
         let other = IgnoreRules::from_patterns(&self.root, None, patterns);
         self.merge_with(&other)

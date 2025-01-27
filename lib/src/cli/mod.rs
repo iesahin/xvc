@@ -21,7 +21,6 @@ use log::LevelFilter;
 use std::io;
 use xvc_core::types::xvcroot::find_root;
 use xvc_core::types::xvcroot::load_xvc_root;
-use xvc_core::types::xvcroot::XvcRootInner;
 use xvc_core::util::completer::git_branch_completer;
 use xvc_core::util::completer::git_reference_completer;
 use xvc_logging::XvcOutputSender;

@@ -57,7 +57,7 @@ pub fn cmd_export(
     });
 
     xvc_root.with_store(|bs: &XvcStore<XvcPipeline>| {
-        let name = name.clone();
+        let name = name.to_string();
         if let Some((e, p)) = bs.iter().find(|(_, p)| p.name == name) {
             p_res = Ok((*e, p.clone()));
         }
