@@ -21,7 +21,7 @@ Arguments:
           
           If the target ends with a slash, it's considered a directory and created if it doesn't exist.
           
-          If the number of source files is more than one, the destination must be a directory.
+          If the number of source files is more than one, the destination must be a directory. TODO: Add a tracked directory completer we can have a file or a directory that we track and not available or we don't track and available. It's similar situation to xvc_path_completer but we also need to check the local paths.
 
 Options:
       --recheck-method <RECHECK_METHOD>
@@ -130,10 +130,8 @@ $ perl -i -pe 's/a/ee/g' data.txt
 
 $ xvc file copy data.txt data5.txt
 ? 1
-[ERROR] File Error: Sources have changed, please carry-in or recheck following files before copying:
-data.txt
-Error: FileError { source: AnyhowError { source: Sources have changed, please carry-in or recheck following files before copying:
-data.txt } }
+[ERROR] File Error: Sources have changed, please carry-in or recheck following files before copying: data.txt
+Error: FileError { source: SourcesHaveChanged { message: "Sources have changed, please carry-in or recheck following files before copying", files: "data.txt" } }
 
 ```
 

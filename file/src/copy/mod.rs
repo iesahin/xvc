@@ -6,6 +6,7 @@ use std::path::Path;
 use crate::common::compare::{diff_content_digest, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;
 use crate::common::{filter_targets_from_store, xvc_path_metadata_map_from_disk, FileTextOrBinary};
+use crate::error::Error;
 use crate::recheck::{make_recheck_handler, RecheckOperation};
 use crate::Result;
 use anyhow::anyhow;
@@ -161,15 +162,16 @@ pub(crate) fn check_if_sources_have_changed(
         .collect::<HStore<XvcPath>>();
 
     if !changed_path_entities.is_empty() {
-        Err(anyhow!(format!(
-            "Sources have changed, please carry-in or recheck following files before copying:\n{}",
-            changed_path_entities
+        Err(Error::SourcesHaveChanged {
+            message:
+                "Sources have changed, please carry-in or recheck following files before copying"
+                    .into(),
+            files: changed_path_entities
                 .values()
                 .map(|p| p.to_string())
                 .collect::<Vec<String>>()
-                .join("\n")
-        ))
-        .into())
+                .join("\n"),
+        })
     } else {
         Ok(())
     }
