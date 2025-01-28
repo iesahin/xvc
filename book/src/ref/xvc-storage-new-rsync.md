@@ -71,10 +71,10 @@ You can define a storage bucket as storage and begin to use it.
 ```console
 $ xvc storage new rsync --name backup --host e1.xvc.dev --user iex --storage-dir /tmp/xvc-backup/
 Transfer starting: 1 files
-9b874571-345e-4b84-a73c-137e7ef60d0f
+[...]
 
-sent 190 bytes  received 48 bytes  158 bytes/sec
-total size is 36  speedup is 0.15
+sent [...]
+total [...]
 
 ```
 
@@ -85,18 +85,18 @@ $ xvc file send dir-0001 --to backup
 Transfer starting: 1 files
 0.bin
 
-sent 2126 bytes  received 42 bytes  1445 bytes/sec
-total size is 2003  speedup is 0.92
+sent [...]
+total size is [...]  speedup [...]
 Transfer starting: 1 files
 0.bin
 
-sent 2124 bytes  received 42 bytes  333 bytes/sec
-total size is 2001  speedup is 0.92
+sent [...]
+total size is [...]  speedup is [...]
 Transfer starting: 1 files
 0.bin
 
-sent 2125 bytes  received 42 bytes  288 bytes/sec
-total size is 2002  speedup is 0.92
+sent [...]
+total size is [...]
 
 ```
 
@@ -128,18 +128,13 @@ $ xvc file bring --from backup dir-0001
 Transfer starting: 1 files
 0.bin (2.0 KB, 100.0% downloaded)
 
-sent 38 bytes  received 2131 bytes  4338 bytes/sec
-total size is 2001  speedup is 0.92
+sent [...]
+total [...]
 Transfer starting: 1 files
-0.bin (2.0 KB, 100.0% downloaded)
+0.bin [...]
 
-sent 38 bytes  received 2133 bytes  4342 bytes/sec
-total size is 2003  speedup is 0.92
-Transfer starting: 1 files
-0.bin (2.0 KB, 100.0% downloaded)
-
-sent 38 bytes  received 2132 bytes  4340 bytes/sec
-total size is 2002  speedup is 0.92
+sent [...]
+total [...]
 
 $ tree dir-0001
 dir-0001
