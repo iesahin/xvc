@@ -10,18 +10,18 @@ File and directory management commands
 Usage: xvc file [OPTIONS] <COMMAND>
 
 Commands:
-  track     Add file and directories to Xvc
-  hash      Get digest hash of files with the supported algorithms
-  recheck   Get files from cache by copy or *link
-  carry-in  Carry (commit) changed files to cache
-  copy      Copy from source to another location in the workspace
-  move      Move files to another location in the workspace
-  list      List tracked and untracked elements in the workspace
-  send      Send (push, upload) files to external storages
-  bring     Bring (download, pull, fetch) files from external storages
-  remove    Remove files from Xvc and possibly storages
-  untrack   Untrack (delete) files from Xvc and possibly storages
-  share     Share a file from S3 compatible storage for a limited time
+  track     Add file and directories to Xvc [aliases: t]
+  hash      Get digest hash of files with the supported algorithms [aliases: h]
+  recheck   Get files from cache by copy or *link [aliases: checkout, r]
+  carry-in  Carry in changed files to cache [aliases: commit, c]
+  copy      Copy from source to another location in the workspace [aliases: C]
+  move      Move files to another location in the workspace [aliases: M]
+  list      List tracked and untracked elements in the workspace [aliases: l]
+  send      Send files to external storages [aliases: s, upload, push]
+  bring     Bring files from external storages [aliases: b, download, pull]
+  remove    Remove files from Xvc cache and storages [aliases: R]
+  untrack   Untrack (delete) files from Xvc and storages [aliases: U]
+  share     Share a file from (S3 compatible) storage for a limited time [aliases: S]
   help      Print this message or the help of the given subcommand(s)
 
 Options:

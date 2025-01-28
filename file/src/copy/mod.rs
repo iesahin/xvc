@@ -427,6 +427,7 @@ pub fn cmd_copy(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: CopyCLI)
     })?;
 
     // Recheck destination files
+    //
     // TODO: We can interleave this operation with the copy operation above
     // to speed things up. This looks premature optimization now.
 
