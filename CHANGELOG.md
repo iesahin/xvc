@@ -1,6 +1,6 @@
 # Xvc Changelog
 
-## v0.6.14-alpha.8
+## v0.6.14-alpha.9
 
 - Added experimental homebrew tap
 - Renamed xvc pipeline dag --format dot to graphviz
