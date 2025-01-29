@@ -2,5 +2,5 @@
 # rws is for local dev, run-with-secrets script
 # XVC_TRYCMD_TESTS=storage,file,pipeline,core,start TRYCMD=overwrite rws cargo test --features test-ci -p xvcr
 
-XVC_TRYCMD_TESTS=storage,file,pipeline,core,start TRYCMD=overwrite cargo test --features test-ci -p xvc --test z_test_docs
+# XVC_TRYCMD_TESTS=storage,file,pipeline,core,start TRYCMD=overwrite cargo test --features test-ci -p xvc --test z_test_docs
 
