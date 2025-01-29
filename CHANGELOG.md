@@ -1,11 +1,12 @@
 # Xvc Changelog
 
-## v0.6.14-alpha.10
+## v0.6.14 (2025-01-29)
 
-- Added experimental homebrew tap
-- Renamed xvc pipeline dag --format dot to graphviz
+- PR: <https://github.com/iesahin/xvc/pull/265>
 - Added command completions for subcommands and options
 - Added dynamic completions for xvc_paths, storages, pipelines, pipeline steps, etc. 
+- Renamed xvc pipeline dag --format dot to graphviz
+- Added experimental homebrew tap
 
 ## v0.6.13 (2024-12-30)
 
