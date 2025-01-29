@@ -14,8 +14,7 @@ jobs:
     steps:
       - name: Install requirements
         run: |
-          apt install libsqlite3-dev
-          apt install openssl-dev
+          sudo apt-update && sudo apt install libsqlite3-dev openssl-dev
 
       - name: Checkout code
         uses: actions/checkout@v2
