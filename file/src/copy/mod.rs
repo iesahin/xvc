@@ -6,11 +6,14 @@ use std::path::Path;
 use crate::common::compare::{diff_content_digest, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;
 use crate::common::{filter_targets_from_store, xvc_path_metadata_map_from_disk, FileTextOrBinary};
+use crate::error::Error;
 use crate::recheck::{make_recheck_handler, RecheckOperation};
 use crate::Result;
 use anyhow::anyhow;
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
 use xvc_logging::{debug, error, XvcOutputSender};
@@ -22,7 +25,7 @@ pub struct CopyCLI {
     /// How the targets should be rechecked: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long, alias = "as")]
+    #[arg(long, alias = "as", add = ArgValueCompleter::new(strum_variants_completer::<RecheckMethod>) )]
     pub recheck_method: Option<RecheckMethod>,
 
     /// Force even if target exists.
@@ -46,7 +49,7 @@ pub struct CopyCLI {
     /// files in that directory are copied.
     ///
     /// If the number of source files is more than one, the destination must be a directory.
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     pub source: String,
 
     /// Location we copy file(s) to within the workspace.
@@ -55,6 +58,10 @@ pub struct CopyCLI {
     /// created if it doesn't exist.
     ///
     /// If the number of source files is more than one, the destination must be a directory.
+    /// TODO: Add a tracked directory completer
+    /// we can have a file or a directory that we track and not available or we don't track and
+    /// available. It's similar situation to xvc_path_completer but we also need to check the local
+    /// paths.
     #[arg()]
     pub destination: String,
 }
@@ -155,15 +162,16 @@ pub(crate) fn check_if_sources_have_changed(
         .collect::<HStore<XvcPath>>();
 
     if !changed_path_entities.is_empty() {
-        Err(anyhow!(format!(
-            "Sources have changed, please carry-in or recheck following files before copying:\n{}",
-            changed_path_entities
+        Err(Error::SourcesHaveChanged {
+            message:
+                "Sources have changed, please carry-in or recheck following files before copying"
+                    .into(),
+            files: changed_path_entities
                 .values()
                 .map(|p| p.to_string())
                 .collect::<Vec<String>>()
-                .join("\n")
-        ))
-        .into())
+                .join("\n"),
+        })
     } else {
         Ok(())
     }
@@ -421,6 +429,7 @@ pub fn cmd_copy(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: CopyCLI)
     })?;
 
     // Recheck destination files
+    //
     // TODO: We can interleave this operation with the copy operation above
     // to speed things up. This looks premature optimization now.
 

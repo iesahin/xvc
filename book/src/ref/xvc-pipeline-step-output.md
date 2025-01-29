@@ -13,11 +13,12 @@ Add an output to a step
 Usage: xvc pipeline step output [OPTIONS] --step-name <STEP_NAME>
 
 Options:
-  -s, --step-name <STEP_NAME>    Name of the step to add the output to
-      --output-file <FILES>      Add a file output to the step. Can be used multiple times
-      --output-metric <METRICS>  Add a metric output to the step. Can be used multiple times
-      --output-image <IMAGES>    Add an image output to the step. Can be used multiple times
-  -h, --help                     Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+  -s, --step-name <STEP_NAME>          Name of the step to add the output to
+      --output-file <FILES>            Add a file output to the step. Can be used multiple times
+      --output-metric <METRICS>        Add a metric output to the step. Can be used multiple times
+      --output-image <IMAGES>          Add an image output to the step. Can be used multiple times
+  -h, --help                           Print help
 
 ```
 

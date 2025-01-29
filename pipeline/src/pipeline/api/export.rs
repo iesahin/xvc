@@ -1,12 +1,15 @@
 use crate::error::{Error, Result};
 
 use clap::Parser;
+use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use std::{fs, path::PathBuf};
-use xvc_config::FromConfigKey;
 
 use xvc_core::{
-    util::serde::{to_json, to_yaml},
+    util::{
+        completer::strum_variants_completer,
+        serde::{to_json, to_yaml},
+    },
     XvcPath, XvcRoot,
 };
 use xvc_ecs::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
@@ -21,10 +24,6 @@ use crate::{
 #[derive(Debug, Clone, Parser)]
 #[command(name = "export")]
 pub struct ExportCLI {
-    /// Name of the pipeline to export
-    #[arg(long, short)]
-    pipeline_name: Option<String>,
-
     /// File to write the pipeline. Writes to stdout if not set.
     #[arg(long)]
     file: Option<PathBuf>,
@@ -32,7 +31,9 @@ pub struct ExportCLI {
     /// Output format. One of json or yaml. If not set, the format is
     /// guessed from the file extension. If the file extension is not set,
     /// json is used as default.
-    #[arg(long)]
+    #[arg(long,
+         add = ArgValueCompleter::new(strum_variants_completer::<XvcSchemaSerializationFormat>),
+    )]
     format: Option<XvcSchemaSerializationFormat>,
 }
 
@@ -42,16 +43,21 @@ pub struct ExportCLI {
 /// If `file` is None, prints to stdout.
 /// If `name` is None, uses the default pipeline name from the config.
 /// If `format` is None, uses the default format from [XvcSchemaSerializationFormat::default()]
-pub fn cmd_export(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ExportCLI) -> Result<()> {
-    let pipeline = XvcPipeline::from_conf(xvc_root.config());
-    let name = opts.pipeline_name.unwrap_or(pipeline.name);
+pub fn cmd_export(
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    pipeline_name: &str,
+    opts: ExportCLI,
+) -> Result<()> {
+    let name = pipeline_name;
     let file = opts.file;
     let format = opts.format;
-    let mut p_res: Result<(XvcEntity, XvcPipeline)> =
-        Err(Error::CannotFindPipeline { name: name.clone() });
+    let mut p_res: Result<(XvcEntity, XvcPipeline)> = Err(Error::CannotFindPipeline {
+        name: name.to_owned(),
+    });
 
     xvc_root.with_store(|bs: &XvcStore<XvcPipeline>| {
-        let name = name.clone();
+        let name = name.to_string();
         if let Some((e, p)) = bs.iter().find(|(_, p)| p.name == name) {
             p_res = Ok((*e, p.clone()));
         }

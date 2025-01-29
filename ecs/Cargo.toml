@@ -1,6 +1,6 @@
 [package]
 name = "xvc-ecs"
-version = "0.6.13"
+version = "0.6.14"
 edition = "2021"
 description = "Entity-Component System for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,7 +16,7 @@ name = "xvc_ecs"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.13", path = "../logging" }
+xvc-logging = { version = "0.6.14", path = "../logging" }
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }
@@ -32,7 +32,7 @@ crossbeam-channel = "^0.5"
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
 fern = { version = "^0.7", features = ["colored"] }
-thiserror = "^1.0"
+thiserror = "^2.0"
 
 ## Misc
 lazy_static = "^1.5"

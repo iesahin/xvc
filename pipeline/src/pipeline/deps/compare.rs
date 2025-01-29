@@ -9,7 +9,6 @@ use xvc_core::XvcPathMetadataMap;
 
 use xvc_core::{Diff, HashAlgorithm, TextOrBinary, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, Storable};
-use xvc_logging::watch;
 
 use super::glob::GlobDep;
 use super::line_items::LineItemsDep;

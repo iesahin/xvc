@@ -7,13 +7,15 @@ use crate::common::{cache_paths_for_xvc_paths, filter_targets_from_store};
 use crate::Result;
 
 use clap::Parser;
+use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
+use xvc_core::util::completer::xvc_path_completer;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::XvcEntity;
 use xvc_logging::{output, uwr, warn, XvcOutputSender};
-use xvc_storage::storage::get_storage_record;
+use xvc_storage::storage::{get_storage_record, storage_identifier_completer};
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
 /// Remove files from Xvc cache or storage
@@ -25,7 +27,7 @@ pub struct RemoveCLI {
     from_cache: bool,
 
     /// Remove files from storage
-    #[arg(long, required_unless_present = "from_cache")]
+    #[arg(long, required_unless_present = "from_cache", add = ArgValueCompleter::new(storage_identifier_completer))]
     from_storage: Option<StorageIdentifier>,
 
     /// Remove all versions of the file
@@ -40,12 +42,12 @@ pub struct RemoveCLI {
     #[arg(long, conflicts_with = "all_versions")]
     only_version: Option<String>,
 
-    /// Remove the targets even if they are used by other targets (via deduplication)
+    /// Remove file versions even if they are also pointed by other targets (via deduplication)
     #[arg(long)]
     force: bool,
 
     /// Files/directories to remove
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Vec<String>,
 }
 

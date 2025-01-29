@@ -7,10 +7,17 @@ use crate::Result;
 
 use clap::Parser;
 
-use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
+use clap_complete::ArgValueCompleter;
+use xvc_core::{
+    util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
+    XvcRoot,
+};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{error, XvcOutputSender};
-use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
+use xvc_storage::{
+    storage::{get_storage_record, storage_identifier_completer},
+    StorageIdentifier, XvcStorageOperations,
+};
 
 /// Send (upload) tracked files to storage
 ///
@@ -22,13 +29,15 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 #[command(rename_all = "kebab-case")]
 pub struct SendCLI {
     /// Storage name or guid to send the files
-    #[arg(long, short, alias = "to")]
+    #[arg(long, short, alias = "to", add = ArgValueCompleter::new(storage_identifier_completer))]
     storage: StorageIdentifier,
+
     /// Force even if the files are already present in the storage
     #[arg(long)]
     force: bool,
+
     /// Targets to send/push/upload to storage
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Option<Vec<String>>,
 }
 

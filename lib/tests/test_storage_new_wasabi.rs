@@ -244,7 +244,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     env::remove_var("WASABI_ACCESS_KEY_ID");
     env::remove_var("WASABI_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "wasabi-storage"])?;
+    x(&["file", "bring", "--from", "wasabi-storage"])?;
 
     clean_up(&xvc_root)
 }

@@ -6,7 +6,9 @@
 //!   update `.gitignore` files with the tracked paths.
 //! - [`carry_in`] is a specialized carry in function for `xvc file track`.
 
+use clap_complete::ArgValueCompleter;
 use derive_more::From;
+use xvc_core::util::completer::strum_variants_completer;
 
 use std::collections::HashSet;
 
@@ -14,8 +16,10 @@ use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
 
-use xvc_core::{ContentDigest, HashAlgorithm, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
-use xvc_logging::{watch, XvcOutputSender};
+use xvc_core::{
+    ContentDigest, HashAlgorithm, TextOrBinary, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot,
+};
+use xvc_logging::XvcOutputSender;
 
 use crate::carry_in::carry_in;
 use crate::common::compare::{
@@ -39,7 +43,7 @@ pub struct TrackCLI {
     /// How to track the file contents in cache: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long, alias = "as")]
+    #[arg(long, alias = "as", add = ArgValueCompleter::new(strum_variants_completer::<RecheckMethod>))]
     recheck_method: Option<RecheckMethod>,
 
     /// Do not copy/link added files to the file cache
@@ -47,7 +51,7 @@ pub struct TrackCLI {
     no_commit: bool,
     /// Calculate digests as text or binary file without checking contents, or by automatically. (Default:
     /// auto)
-    #[arg(long)]
+    #[arg(long, add = ArgValueCompleter::new(strum_variants_completer::<TextOrBinary>))]
     text_or_binary: Option<FileTextOrBinary>,
 
     /// Include git tracked files as well. (Default: false)
@@ -65,8 +69,9 @@ pub struct TrackCLI {
     /// Don't use parallelism
     #[arg(long)]
     no_parallel: bool,
+
     /// Files/directories to track
-    #[arg()]
+    #[arg(value_hint=clap::ValueHint::AnyPath)]
     targets: Option<Vec<String>>,
 }
 

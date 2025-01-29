@@ -9,7 +9,7 @@ Run a pipeline
 Usage: xvc pipeline run [OPTIONS]
 
 Options:
-  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline to run
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
   -h, --help                           Print help
 
 ```

@@ -70,13 +70,14 @@ You can define a storage bucket as storage and begin to use it.
 
 ```console
 $ xvc storage new rsync --name backup --host e1.xvc.dev --user iex --storage-dir /tmp/xvc-backup/
-
+...
 ```
 
 Send files to this storage.
 
 ```console
 $ xvc file send dir-0001 --to backup
+...
 
 ```
 
@@ -105,6 +106,7 @@ Then get back them from the storage.
 
 ```console
 $ xvc file bring --from backup dir-0001
+...
 
 $ tree dir-0001
 dir-0001

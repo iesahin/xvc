@@ -5,6 +5,7 @@ pub mod deps;
 pub mod outs;
 pub mod schema;
 pub mod step;
+pub mod util;
 
 use self::command::XvcStepCommand;
 use self::deps::compare::superficial_compare_dependency;
@@ -25,7 +26,7 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use crossbeam_channel::{bounded, Receiver, Select, Sender};
 
-use xvc_logging::{debug, error, info, output, trace, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{debug, error, info, output, trace, uwr, warn, XvcOutputSender};
 
 use petgraph::algo::toposort;
 use petgraph::data::Build;
@@ -40,7 +41,7 @@ use std::fmt::Debug;
 use std::sync::{Arc, RwLock};
 use std::thread::{self, sleep, ScopedJoinHandle};
 use std::time::Duration;
-use strum_macros::{Display, EnumString};
+use strum_macros::{Display, EnumString, VariantNames};
 use xvc_config::FromConfigKey;
 use xvc_core::{update_with_actual, Diff, HashAlgorithm, XvcPath, XvcRoot};
 
@@ -63,6 +64,7 @@ use subprocess as sp;
     Serialize,
     Deserialize,
     Default,
+    VariantNames,
 )]
 #[strum(serialize_all = "snake_case")]
 pub enum XvcStepInvalidate {
@@ -488,7 +490,7 @@ pub fn the_grand_pipeline_loop(
             .collect();
 
         // Join threads in the order we created
-        step_thread_store.into_iter().for_each(|(step_e, jh)| {
+        step_thread_store.into_iter().for_each(|(_, jh)| {
             if let Err(e) = jh.join() {
                 error!(output_snd, "Error in step thread: {:?}", e);
             }

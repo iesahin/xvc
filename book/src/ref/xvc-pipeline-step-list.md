@@ -13,8 +13,9 @@ List steps in a pipeline
 Usage: xvc pipeline step list [OPTIONS]
 
 Options:
-      --names-only  Show only the names, otherwise print commands as well
-  -h, --help        Print help
+      --names-only                     Show only the names, otherwise print commands as well
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+  -h, --help                           Print help
 
 ```
 

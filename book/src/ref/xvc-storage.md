@@ -15,9 +15,9 @@ Storage (cloud) management commands
 Usage: xvc storage <COMMAND>
 
 Commands:
-  list    List all configured storages
-  remove  Remove a storage configuration
-  new     Configure a new storage
+  list    List all configured storages [aliases: l]
+  remove  Remove a storage configuration [aliases: R]
+  new     Configure a new storage [aliases: n]
   help    Print this message or the help of the given subcommand(s)
 
 Options:

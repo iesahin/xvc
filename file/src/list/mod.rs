@@ -9,6 +9,8 @@ use crate::Result;
 use anyhow::anyhow;
 use chrono;
 use clap::Parser;
+use clap_complete::ArgValueCompleter;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 
 use std::collections::{HashMap, HashSet};
 use std::fmt::Display;
@@ -16,7 +18,7 @@ use std::fmt::Formatter;
 use std::path::Path;
 use std::str::FromStr;
 use std::time::SystemTime;
-use strum_macros::{Display as EnumDisplay, EnumString};
+use strum_macros::{Display as EnumDisplay, EnumString, VariantNames};
 use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig};
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::{
@@ -110,7 +112,7 @@ impl FromStr for ListFormat {
 conf!(ListFormat, "file.list.format");
 
 /// Specify how to sort file list
-#[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq, VariantNames)]
 pub enum ListSortCriteria {
     #[strum(serialize = "none")]
     /// No sorting
@@ -536,6 +538,8 @@ pub struct ListCLI {
     /// - {{rts}}:  recorded timestamp. The timestamp of the cached content.
     ///
     /// The default format can be set with file.list.format in the config file.
+    ///
+    /// TODO: Think how to add a completion to ListFormat
     #[arg(long, short = 'f', verbatim_doc_comment)]
     pub format: Option<ListFormat>,
     /// Sort criteria.
@@ -543,7 +547,7 @@ pub struct ListCLI {
     /// It can be one of none (default), name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
     ///
     /// The default option can be set with file.list.sort in the config file.
-    #[arg(long, short = 's')]
+    #[arg(long, short = 's', add = ArgValueCompleter::new(strum_variants_completer::<ListSortCriteria>))]
     pub sort: Option<ListSortCriteria>,
 
     /// Don't show total number and size of the listed files.
@@ -573,7 +577,7 @@ pub struct ListCLI {
     /// Files/directories to list.
     ///
     /// If not supplied, lists all files under the current directory.
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     pub targets: Option<Vec<String>>,
 }
 

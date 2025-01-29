@@ -1,7 +1,6 @@
 //! Xvc Core Library for common operations
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
-pub mod aliases;
 pub mod check_ignore;
 pub mod error;
 pub mod root;
@@ -42,6 +41,8 @@ pub use xvc_walker as walker;
 
 pub use error::Error;
 pub use error::Result;
+
+pub use util::git;
 
 pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_paths};
 pub use util::git::{

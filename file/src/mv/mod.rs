@@ -13,8 +13,10 @@ use crate::Result;
 use anyhow::anyhow;
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use xvc_config::FromConfigKey;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
 use xvc_logging::{info, uwr, XvcOutputSender};
@@ -26,7 +28,8 @@ pub struct MoveCLI {
     /// How the destination should be rechecked: One of copy, symlink, hardlink, reflink.
     ///
     /// Note: Reflink uses copy if the underlying file system doesn't support it.
-    #[arg(long, alias = "as")]
+    ///
+    #[arg(long, alias = "as", add = ArgValueCompleter::new(strum_variants_completer::<RecheckMethod>) )]
     pub recheck_method: Option<RecheckMethod>,
 
     /// Do not recheck the destination files
@@ -41,7 +44,7 @@ pub struct MoveCLI {
     /// files in that directory are copied.
     ///
     /// If there are multiple source files, the destination must be a directory.
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     pub source: String,
 
     /// Location we move file(s) to within the workspace.

@@ -152,7 +152,7 @@ fn test_storage_new_gcs() -> Result<()> {
         common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
     };
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "gcs",
@@ -174,7 +174,7 @@ fn test_storage_new_gcs() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
+    x(&["file", "track", the_file])?;
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
@@ -222,7 +222,7 @@ fn test_storage_new_gcs() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "gcs-storage"])?;
+    x(&["file", "bring", "--from", "gcs-storage"])?;
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -243,7 +243,7 @@ fn test_storage_new_gcs() -> Result<()> {
     env::remove_var("GCS_ACCESS_KEY_ID");
     env::remove_var("GCS_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "gcs-storage"])?;
+    x(&["file", "bring", "--from", "gcs-storage"])?;
 
     clean_up(&xvc_root)
 }

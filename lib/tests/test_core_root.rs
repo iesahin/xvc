@@ -4,8 +4,6 @@ use xvc_config::XvcVerbosity;
 use xvc_test_helper::test_logging;
 use xvc_walker::AbsolutePath;
 
-use xvc_logging::watch;
-
 use xvc::error::Result;
 
 #[test]
@@ -14,11 +12,7 @@ fn test_root() -> Result<()> {
     let xvc_root = run_in_temp_xvc_dir()?;
 
     let rel = run_xvc(Some(&xvc_root), &["root"], XvcVerbosity::Default)?;
-    // assert!(
-    //     rel.trim().to_string() == ".".to_string(),
-    //     "Relative: {}",
-    //     rel
-    // );
+    assert!(rel.trim() == ".", "Relative: {}", rel);
     let abs = run_xvc(
         Some(&xvc_root),
         &["root", "--absolute"],

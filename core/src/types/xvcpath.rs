@@ -12,7 +12,7 @@ use derive_more::Display as DeriveDisplay;
 use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display, EnumString};
+use strum_macros::{Display, EnumString, VariantNames};
 use xvc_logging::{output, uwr, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
@@ -65,6 +65,8 @@ impl AsRef<RelativePath> for XvcPath {
     }
 }
 
+// TODO: Why don't we have an AsRef<Path> for XvcPath?
+
 impl XvcPath {
     /// Given the current_dir and path, create an XvcPath relative to `xvc_root`
     /// and return it.
@@ -73,6 +75,8 @@ impl XvcPath {
     ///
     /// - path shouldn't be empty
     /// - if path is absolute, it must have current_dir as prefix.
+    ///
+    ///  FIXME: This doesn't have to rely on [XvcRoot], Any absolute path should work for root.
     pub fn new(xvc_root: &XvcRoot, current_dir: &AbsolutePath, path: &Path) -> Result<XvcPath> {
         let path = if path.is_absolute() {
             path.strip_prefix(current_dir.as_path())?
@@ -203,6 +207,7 @@ impl XvcPath {
     Hash,
     Display,
     Copy,
+    VariantNames,
 )]
 #[strum(serialize_all = "lowercase")]
 pub enum TextOrBinary {

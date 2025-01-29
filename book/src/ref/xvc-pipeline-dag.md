@@ -4,14 +4,14 @@
 
 ```console
 $ xvc pipeline dag --help
-Generate a dot or mermaid diagram for the pipeline
+Generate a Graphviz or mermaid diagram of the pipeline
 
 Usage: xvc pipeline dag [OPTIONS]
 
 Options:
-  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline to generate the diagram
       --file <FILE>                    Output file. Writes to stdout if not set
-      --format <FORMAT>                Format for graph. Either dot or mermaid [default: dot]
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+      --format <FORMAT>                Format for graph. Either graphviz or mermaid [default: graphviz]
   -h, --help                           Print help
 
 ```

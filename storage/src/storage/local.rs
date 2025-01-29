@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use xvc_core::XvcRoot;
 use xvc_ecs::R1NStore;
-use xvc_logging::{info, watch, XvcOutputSender};
+use xvc_logging::{info, XvcOutputSender};
 
 use super::{
     XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent, XvcStorageListEvent,

@@ -40,6 +40,8 @@ Options:
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
           
           The default format can be set with file.list.format in the config file.
+          
+          TODO: Think how to add a completion to ListFormat
 
   -s, --sort <SORT>
           Sort criteria.

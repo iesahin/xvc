@@ -7,10 +7,11 @@
 $ xvc pipeline list --help
 List all pipelines
 
-Usage: xvc pipeline list
+Usage: xvc pipeline list [OPTIONS]
 
 Options:
-  -h, --help  Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+  -h, --help                           Print help
 
 ```
 

@@ -101,6 +101,9 @@ pub enum Error {
         #[from]
         source: humantime::DurationError,
     },
+
+    #[error("{message}: {files}")]
+    SourcesHaveChanged { message: String, files: String },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

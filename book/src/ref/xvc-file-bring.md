@@ -4,7 +4,7 @@
 
 ```console
 $ xvc file bring --help
-Bring (download, pull, fetch) files from external storages
+Bring files from external storages
 
 Usage: xvc file bring [OPTIONS] --storage <STORAGE> [TARGETS]...
 

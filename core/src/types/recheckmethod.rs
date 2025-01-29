@@ -1,7 +1,7 @@
 //! Recheck methods denote how a cached file put into the working directory.
 //! See [CacheType] for different types
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
+use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr, VariantNames};
 use xvc_config::{conf, FromConfigKey};
 
 use xvc_ecs::persist;
@@ -43,6 +43,7 @@ use xvc_ecs::persist;
     EnumString,
     EnumDisplay,
     IntoStaticStr,
+    VariantNames,
 )]
 #[strum(serialize_all = "lowercase")]
 pub enum RecheckMethod {

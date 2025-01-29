@@ -15,10 +15,13 @@ use crate::{
 
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
 use xvc_ecs::{HStore, XvcStore};
 use xvc_logging::{debug, error, uwr, warn, XvcOutputSender};
 
+use xvc_storage::storage::storage_identifier_completer;
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
 use xvc_walker::PathSync;
@@ -31,7 +34,7 @@ use xvc_walker::PathSync;
 #[command(rename_all = "kebab-case")]
 pub struct BringCLI {
     /// Storage name or guid to send the files
-    #[arg(long, short, alias = "from")]
+    #[arg(long, short, alias = "from", add = ArgValueCompleter::new(storage_identifier_completer))]
     storage: StorageIdentifier,
 
     /// Force even if the files are already present in the workspace
@@ -47,11 +50,11 @@ pub struct BringCLI {
 
     /// Recheck (checkout) the file in one of the four alternative ways.
     /// (See `xvc file recheck`) and [RecheckMethod]
-    #[arg(long, alias = "as")]
+    #[arg(long, alias = "as", add = ArgValueCompleter::new(strum_variants_completer::<RecheckMethod>))]
     recheck_as: Option<RecheckMethod>,
 
     /// Targets to bring from the storage
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Option<Vec<String>>,
 }
 

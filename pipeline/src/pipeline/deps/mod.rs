@@ -9,9 +9,9 @@ pub mod lines;
 pub mod param;
 pub mod regex;
 pub mod regex_items;
+pub mod sqlite_query;
 pub mod step;
 pub mod url;
-pub mod sqlite_query;
 
 use std::fmt::{Display, Formatter};
 
@@ -34,9 +34,9 @@ pub use self::line_items::LineItemsDep;
 pub use self::lines::LinesDep;
 pub use self::regex::RegexDep;
 pub use self::regex_items::RegexItemsDep;
+pub use self::sqlite_query::SqliteQueryDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
-pub use self::sqlite_query::SqliteQueryDep;
 
 /// Return default name for the params file from the config
 pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
@@ -70,13 +70,12 @@ pub enum XvcDependency {
     LineItems(LineItemsDep),
     /// A dependenci to a set of lines defined by a range. Doesn't keep track of individual lines.
     Lines(LinesDep),
-    
+
     /// A dependency to a URL's content
     UrlDigest(UrlDigestDep),
 
     /// A dependency to an SQLite Query, that invalidates when the query results change
     SqliteQueryDigest(SqliteQueryDep),
-
     // TODO: Slice {path, begin, length} to specify portions of binary files
     // TODO: DatabaseTable { database, table } to specify particular tables from databases
     // TODO: DatabaseQuery { database, query } to specify the result of queries
@@ -110,7 +109,9 @@ impl Display for XvcDependency {
                 write!(f, "lines({}::{}-{})", dep.path, dep.begin, dep.end)
             }
             XvcDependency::UrlDigest(dep) => write!(f, "url-digest({})", dep.url),
-            XvcDependency::SqliteQueryDigest(dep) => write!(f, "sqlite({}:\"{}\")", dep.path, dep.query)
+            XvcDependency::SqliteQueryDigest(dep) => {
+                write!(f, "sqlite({}:\"{}\")", dep.path, dep.query)
+            }
         }
     }
 }
@@ -169,7 +170,6 @@ impl XvcDependency {
 /// checks whether the step actually depends to `to_path`, but as we don't have outputs that are
 /// described more granular than a file, it simply assumes if `step-A` writes to `file-A`, any
 /// other step that depends on `file-A` is a dependency to `step-A`.
-
 pub fn dependencies_to_path(
     xvc_root: &XvcRoot,
     pmp: &XvcPathMetadataProvider,

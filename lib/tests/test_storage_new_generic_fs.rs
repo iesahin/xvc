@@ -4,7 +4,7 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use common::*;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
@@ -33,7 +33,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
         common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "generic",
@@ -102,7 +102,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     sh(&format!("rm -rf {}", cache_dir.to_string_lossy()))?;
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "generic-storage"])?;
+    x(&["file", "bring", "--no-recheck", "--from", "generic-storage"])?;
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -119,7 +119,7 @@ fn test_storage_new_generic_fs() -> Result<()> {
     sh(&format!("rm -rf {}", cache_dir.to_string_lossy()))?;
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "generic-storage"])?;
+    x(&["file", "bring", "--from", "generic-storage"])?;
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()

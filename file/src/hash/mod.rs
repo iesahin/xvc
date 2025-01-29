@@ -37,6 +37,8 @@ pub struct HashCLI {
     text_or_binary: TextOrBinary,
 
     /// Files to process
+    ///
+    /// NOTE: This uses the default completion as the command can work anywhere with any file
     #[arg()]
     targets: Vec<PathBuf>,
 }

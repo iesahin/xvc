@@ -4,7 +4,9 @@
 //! It is used after [`xvc file track`][crate::track] or separately to update
 //! the cache with changed files.
 
+use clap_complete::ArgValueCompleter;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_walker::PathSync;
 
 use std::collections::HashSet;
@@ -13,8 +15,8 @@ use std::fs;
 use xvc_config::FromConfigKey;
 use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 
-use xvc_core::ContentDigest;
 use xvc_core::XvcRoot;
+use xvc_core::{ContentDigest, TextOrBinary};
 use xvc_core::{Diff, XvcCachePath};
 use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputSender};
 
@@ -43,18 +45,21 @@ use xvc_ecs::{HStore, XvcStore};
 pub struct CarryInCLI {
     /// Calculate digests as text or binary file without checking contents, or by automatically. (Default:
     /// auto)
-    #[arg(long)]
+    #[arg(long, add = ArgValueCompleter::new(strum_variants_completer::<TextOrBinary>))]
     text_or_binary: Option<FileTextOrBinary>,
+
     /// Carry in targets even their content digests are not changed.
     ///
     /// This removes the file in cache and re-adds it.
     #[arg(long)]
     force: bool,
+
     /// Don't use parallelism
     #[arg(long)]
     no_parallel: bool,
-    /// Files/directories to add
-    #[arg()]
+
+    /// Files/directories to carry in to the cache
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Option<Vec<String>>,
 }
 

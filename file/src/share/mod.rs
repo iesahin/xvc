@@ -2,11 +2,18 @@
 
 use crate::{common::load_targets_from_store, error, Result};
 use clap::{command, Parser};
+use clap_complete::ArgValueCompleter;
 use humantime;
-use xvc_core::{ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
+use xvc_core::{
+    util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
+    XvcRoot,
+};
 use xvc_ecs::XvcStore;
 use xvc_logging::{uwo, watch, XvcOutputSender};
-use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
+use xvc_storage::{
+    storage::{get_storage_record, storage_identifier_completer},
+    StorageIdentifier, XvcStorageOperations,
+};
 
 /// Share (uploaded and tracked) files from an S3 compatible storage
 ///
@@ -16,13 +23,14 @@ use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOper
 #[command(rename_all = "kebab-case")]
 pub struct ShareCLI {
     /// Storage name or guid to send the files
-    #[arg(long, short, alias = "from")]
+    #[arg(long, short, alias = "from", add = ArgValueCompleter::new(storage_identifier_completer))]
     storage: StorageIdentifier,
+
     /// Period to send the files to. You can use s, m, h, d, w suffixes.
     #[arg(long, short, default_value = "24h")]
     duration: String,
     /// File to send/push/upload to storage
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     target: String,
 }
 

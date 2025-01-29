@@ -8,7 +8,7 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{watch, XvcOutputSender};
+use xvc_logging::XvcOutputSender;
 
 use crate::{Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};

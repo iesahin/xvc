@@ -10,7 +10,6 @@ use toml::Value as TomlValue;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{Diff, XvcMetadata, XvcPath, XvcPathMetadataProvider, XvcRoot};
 use xvc_ecs::persist;
-use xvc_logging::watch;
 
 use log::{error, warn};
 use serde::{Deserialize, Serialize};
@@ -300,7 +299,6 @@ impl XvcParamValue {
 
     /// Loads a TOML file and returns the `XvcParamPair::TOML(TomlValue)`
     /// associated with the key
-
     fn parse_toml(all_content: &str, key: &str) -> Result<Self> {
         let toml_map = all_content.parse::<TomlValue>()?;
         let nested_keys: Vec<&str> = key.split('.').collect();

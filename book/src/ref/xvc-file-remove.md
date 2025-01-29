@@ -4,7 +4,7 @@
 
 ```console
 $ xvc file remove --help
-Remove files from Xvc and possibly storages
+Remove files from Xvc cache and storages
 
 Usage: xvc file remove [OPTIONS] [TARGETS]...
 
@@ -28,7 +28,7 @@ Options:
           Versions are specified with the content hash 123-456-789abcd. Dashes are optional. Prefix must be unique. If the prefix is not unique, the command will fail.
 
       --force
-          Remove the targets even if they are used by other targets (via deduplication)
+          Remove file versions even if they are also pointed by other targets (via deduplication)
 
   -h, --help
           Print help (see a summary with '-h')

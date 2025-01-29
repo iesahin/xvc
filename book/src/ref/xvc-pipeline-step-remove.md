@@ -10,11 +10,12 @@ Remove a step and all its dependencies and outputs from the pipeline.
 $ xvc pipeline step remove --help
 Remove a step from a pipeline
 
-Usage: xvc pipeline step remove --step-name <STEP_NAME>
+Usage: xvc pipeline step remove [OPTIONS] --step-name <STEP_NAME>
 
 Options:
-  -s, --step-name <STEP_NAME>  Name of the step to remove
-  -h, --help                   Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+  -s, --step-name <STEP_NAME>          Name of the step to remove
+  -h, --help                           Print help
 
 ```
 

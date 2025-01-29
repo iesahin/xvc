@@ -17,6 +17,7 @@ pub use crate::pipeline::api::{
 
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
 use pipeline::api::dag::DagCLI;
 use pipeline::api::delete::DeleteCLI;
 use pipeline::api::export::ExportCLI;
@@ -27,6 +28,7 @@ pub use pipeline::deps;
 
 use pipeline::step::handle_step_cli;
 use pipeline::step::StepCLI;
+use pipeline::util::pipeline_name_completer;
 use serde::{Deserialize, Serialize};
 use std::io::BufRead;
 use std::str::FromStr;
@@ -56,8 +58,9 @@ pub use crate::pipeline::api::run::RunCLI;
 #[command(name = "pipeline")]
 pub struct PipelineCLI {
     /// Name of the pipeline this command applies to
-    #[arg(long, short)]
+    #[arg(long, short, global = true, add = ArgValueCompleter::new(pipeline_name_completer))]
     pub pipeline_name: Option<String>,
+
     /// Subcommand to run
     #[command(subcommand)]
     pub subcommand: PipelineSubCommand,
@@ -69,31 +72,39 @@ pub struct PipelineCLI {
 #[allow(clippy::large_enum_variant)]
 pub enum PipelineSubCommand {
     /// Create a new pipeline
+    #[command(visible_aliases=&["n"])]
     New(NewCLI),
 
     /// Update the name and other attributes of a pipeline
+    #[command(visible_aliases=&["u"])]
     Update(UpdateCLI),
 
     /// Delete a pipeline
+    #[command(visible_aliases=&["D"])]
     Delete(DeleteCLI),
 
     /// Run a pipeline
+    #[command(visible_aliases=&["r"])]
     Run(RunCLI),
 
     /// List all pipelines
+    #[command(visible_aliases=&["l"])]
     List,
 
-    /// Generate a dot or mermaid diagram for the pipeline
+    /// Generate a Graphviz or mermaid diagram of the pipeline
+    #[command(visible_aliases=&["d"])]
     Dag(DagCLI),
 
     /// Export the pipeline to a YAML or JSON file to edit
+    #[command(visible_aliases=&["e"])]
     Export(ExportCLI),
 
     /// Import the pipeline from a file
+    #[command(visible_aliases=&["i"])]
     Import(ImportCLI),
 
     /// Step creation, dependency, output commands
-    #[command()]
+    #[command(visible_aliases=&["s"])]
     Step(StepCLI),
 }
 
@@ -194,17 +205,16 @@ pub fn cmd_pipeline<R: BufRead>(
     // This should already be filled from the conf if not given
     let pipeline_name = command.pipeline_name.unwrap();
     match command.subcommand {
-        PipelineSubCommand::Run(opts) => cmd_run(output_snd, xvc_root, opts),
-        PipelineSubCommand::New(opts) => cmd_new(xvc_root, opts),
-        PipelineSubCommand::Update(opts) => cmd_update(xvc_root, opts),
+        PipelineSubCommand::Run(opts) => cmd_run(output_snd, xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::New(opts) => cmd_new(xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Update(opts) => cmd_update(xvc_root, &pipeline_name, opts),
         PipelineSubCommand::List => cmd_list(output_snd, xvc_root),
-        PipelineSubCommand::Delete(opts) => cmd_delete(xvc_root, opts),
-        PipelineSubCommand::Export(opts) => cmd_export(output_snd, xvc_root, opts),
-        PipelineSubCommand::Dag(opts) => cmd_dag(output_snd, xvc_root, opts),
-        PipelineSubCommand::Import(opts) => cmd_import(input, xvc_root, opts),
+        PipelineSubCommand::Delete(opts) => cmd_delete(xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Export(opts) => cmd_export(output_snd, xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Dag(opts) => cmd_dag(output_snd, xvc_root, &pipeline_name, opts),
+        PipelineSubCommand::Import(opts) => cmd_import(input, xvc_root, &pipeline_name, opts),
         PipelineSubCommand::Step(step_cli) => {
             handle_step_cli(output_snd, xvc_root, &pipeline_name, step_cli)
         }
     }
 }
-

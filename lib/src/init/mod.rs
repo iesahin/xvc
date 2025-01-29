@@ -17,16 +17,18 @@ use xvc_walker::AbsolutePath;
 #[derive(Debug, Clone, Parser)]
 #[command(author, version)]
 pub struct InitCLI {
-    #[arg(long)]
     /// Path to the directory to be intialized. (default: current directory)
+    #[arg(long, value_hint=clap::ValueHint::DirPath)]
     pub path: Option<PathBuf>,
-    #[arg(long)]
+
     /// Don't require Git
-    pub no_git: bool,
     #[arg(long)]
+    pub no_git: bool,
+
     /// Create the repository even if already initialized.
     /// Overwrites the current .xvc directory
     /// Resets all data and guid, etc.
+    #[arg(long)]
     pub force: bool,
 }
 

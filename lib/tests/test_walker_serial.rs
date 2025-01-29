@@ -5,7 +5,6 @@ use xvc_walker::*;
 use test_case::test_case;
 
 use xvc::error::Result;
-use xvc_logging::watch;
 use xvc_test_helper::*;
 use xvc_walker::AbsolutePath;
 
@@ -61,8 +60,8 @@ fn test_walk_serial(ignore_src: &str, ignore_content: &str) -> Vec<String> {
         ignore_filename: Some(".gitignore".to_owned()),
         include_dirs: true,
     };
-    let (output_sender, output_receiver) = crossbeam_channel::unbounded();
-    let (res_paths, ignore_rules) = walk_serial(&output_sender, "", &root, &walk_options).unwrap();
+    let (output_sender, _output_receiver) = crossbeam_channel::unbounded();
+    let (res_paths, _ignore_rules) = walk_serial(&output_sender, "", &root, &walk_options).unwrap();
     fs::remove_dir_all(&root).unwrap();
     let out_paths = res_paths
         .iter()

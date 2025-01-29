@@ -11,14 +11,16 @@ use crate::recheck::{make_recheck_handler, RecheckOperation};
 use crate::Result;
 use clap::Parser;
 
+use clap_complete::ArgValueCompleter;
 use derive_more::From;
 use itertools::Itertools;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
+use xvc_core::util::completer::xvc_path_completer;
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcMetadata, XvcPath, XvcRoot};
 
 use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, output, panic, uwr, watch, XvcOutputSender};
+use xvc_logging::{debug, output, panic, uwr, XvcOutputSender};
 
 /// Remove files from tracking and possibly delete them
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
@@ -29,7 +31,7 @@ pub struct UntrackCLI {
     restore_versions: Option<String>,
 
     /// Files/directories to untrack
-    #[arg()]
+    #[arg(add = ArgValueCompleter::new(xvc_path_completer))]
     targets: Vec<String>,
 }
 

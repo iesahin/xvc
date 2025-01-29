@@ -9,7 +9,6 @@ use xvc_core::{
     XvcRoot,
 };
 use xvc_ecs::persist;
-use xvc_logging::watch;
 
 /// A path collection where each item is tracked separately.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]

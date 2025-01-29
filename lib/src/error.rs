@@ -94,6 +94,13 @@ pub enum Error {
         #[from]
         source: io::Error,
     },
+
+    #[error("CLI parse error: {source}")]
+    ClapError {
+        #[from]
+        source: clap::Error,
+    },
+
     #[error("Path is not in Xvc Repository: {path:?}")]
     PathNotInXvcRepository { path: OsString },
     #[error("Path has no parent: {path:?}")]
@@ -132,6 +139,11 @@ pub enum Error {
         #[from]
         source: FromUtf8Error,
     },
+    #[error("Non-UTF-8 argument: {0:?}")]
+    NonUtf8Argument(OsString),
+
+    #[error("Shell Completion Error")]
+    CompletionError,
 }
 
 impl Error {

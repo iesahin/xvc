@@ -6,7 +6,7 @@
 $ xvc pipeline new --help
 Create a new pipeline
 
-Usage: xvc pipeline new [OPTIONS] --pipeline-name <PIPELINE_NAME>
+Usage: xvc pipeline new [OPTIONS]
 
 Options:
   -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to

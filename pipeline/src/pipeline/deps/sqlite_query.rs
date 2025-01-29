@@ -5,7 +5,6 @@ use crate::XvcDependency;
 use fallible_iterator::FallibleIterator;
 use rusqlite::{Connection, OpenFlags};
 use serde::{Deserialize, Serialize};
-use xvc_logging::watch;
 
 use crate::Result;
 use xvc_core::types::diff::Diffable;

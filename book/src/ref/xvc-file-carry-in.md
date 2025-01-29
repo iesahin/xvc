@@ -6,13 +6,13 @@ Copies the file changes to cache.
 
 ```console
 $ xvc file carry-in --help
-Carry (commit) changed files to cache
+Carry in changed files to cache
 
 Usage: xvc file carry-in [OPTIONS] [TARGETS]...
 
 Arguments:
   [TARGETS]...
-          Files/directories to add
+          Files/directories to carry in to the cache
 
 Options:
       --text-or-binary <TEXT_OR_BINARY>

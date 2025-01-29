@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.6.13"
+version = "0.6.14"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -21,16 +21,17 @@ test = true
 bench = true
 
 [dependencies]
-xvc-logging = { version = "0.6.13", path = "../logging" }
-xvc-config = { version = "0.6.13", path = "../config" }
-xvc-core = { version = "0.6.13", path = "../core" }
-xvc-ecs = { version = "0.6.13", path = "../ecs" }
-xvc-walker = { version = "0.6.13", path = "../walker" }
-xvc-storage = { version = "0.6.13", path = "../storage", default-features = false }
+xvc-logging = { version = "0.6.14", path = "../logging" }
+xvc-config = { version = "0.6.14", path = "../config" }
+xvc-core = { version = "0.6.14", path = "../core" }
+xvc-ecs = { version = "0.6.14", path = "../ecs" }
+xvc-walker = { version = "0.6.14", path = "../walker" }
+xvc-storage = { version = "0.6.14", path = "../storage", default-features = false }
 
 
 ## Cli and config
-clap = { version = "^4.5", features = ["derive"] }
+clap = { version = "^4.5", features = ["derive", "string"] }
+clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
 directories-next = "2.0"
 
 ## Hashing
@@ -64,7 +65,7 @@ path-absolutize = "^3.1"
 glob = "^0.3"
 
 ## Logging and errors
-thiserror = "^1.0"
+thiserror = "^2.0"
 log = "^0.4"
 anyhow = "^1.0"
 peak_alloc = "^0.2"
@@ -86,7 +87,7 @@ lazy_static = "^1.5"
 uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
-itertools = "^0.13"
+itertools = "^0.14"
 # FIXME: These are mostly used in file/src/common/mod.rs and TextOrBinary wrapper. 
 derive_more = { version = "^1.0", features = [
   "from",
@@ -102,5 +103,5 @@ default = []
 reflink = ["dep:reflink"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.13", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.14", path = "../test_helper/" }
 shellfn = "^0.1"

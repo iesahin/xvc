@@ -5,7 +5,7 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use subprocess::Exec;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
@@ -78,7 +78,7 @@ fn test_storage_new_minio() -> Result<()> {
         common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "minio",
@@ -99,7 +99,7 @@ fn test_storage_new_minio() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
+    x(&["file", "track", the_file])?;
 
     let n_storage_files_before = jwalk::WalkDir::new(local_test_dir)
         .into_iter()
@@ -109,7 +109,7 @@ fn test_storage_new_minio() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "send", "--to", "minio-storage", the_file])?;
+    x(&["file", "send", "--to", "minio-storage", the_file])?;
 
     let file_list = mc("ls -r ", &format!("| rg {bucket_name}/{storage_prefix}"));
 
@@ -132,7 +132,7 @@ fn test_storage_new_minio() -> Result<()> {
     sh(format!("chmod -R +w {}", cache_dir.to_string_lossy()));
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "minio-storage"])?;
+    x(&["file", "bring", "--no-recheck", "--from", "minio-storage"])?;
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -155,7 +155,7 @@ fn test_storage_new_minio() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "minio-storage"])?;
+    x(&["file", "bring", "--from", "minio-storage"])?;
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -181,7 +181,7 @@ fn test_storage_new_minio() -> Result<()> {
     env::remove_var("MINIO_ACCESS_KEY_ID");
     env::remove_var("MINIO_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "minio-storage"])?;
+    x(&["file", "bring", "--from", "minio-storage"])?;
 
     clean_up(&xvc_root)
 }

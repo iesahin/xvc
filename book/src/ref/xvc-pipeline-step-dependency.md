@@ -13,19 +13,24 @@ Add a dependency to a step
 Usage: xvc pipeline step dependency [OPTIONS] --step-name <STEP_NAME>
 
 Options:
+  -p, --pipeline-name <PIPELINE_NAME>
+          Name of the pipeline this command applies to
+
   -s, --step-name <STEP_NAME>
           Name of the step to add the dependency to
+          
+          [aliases: for, to]
 
-      --generic <GENERICS>
+  -G, --generic <GENERICS>
           Add a generic command output as a dependency. Can be used multiple times. Please delimit the command with ' ' to avoid shell expansion
 
-      --url <URLS>
+  -u, --url <URLS>
           Add a URL dependency to the step. Can be used multiple times
 
-      --file <FILES>
+  -f, --file <FILES>
           Add a file dependency to the step. Can be used multiple times
 
-      --step <STEPS>
+  -S, --step <STEPS>
           Add a step dependency to a step. Can be used multiple times. Steps are referred with their names
 
       --glob_items <GLOB_ITEMS>
@@ -34,6 +39,8 @@ Options:
           You can depend on multiple files and directories with this dependency.
           
           The difference between this and the glob option is that this option keeps track of all matching files, but glob only keeps track of the matched files' digest. When you want to use ${XVC_GLOB_ITEMS}, ${XVC_ADDED_GLOB_ITEMS}, or ${XVC_REMOVED_GLOB_ITEMS} environment variables in the step command, use the glob-items dependency. Otherwise, you can use the glob option to save disk space.
+          
+          [aliases: glob-items, glob-i]
 
       --glob <GLOBS>
           Add a glob dependency to the step. Can be used multiple times.
@@ -46,6 +53,8 @@ Options:
           Add a parameter dependency to the step in the form filename.yaml::model.units
           
           The file can be a JSON, TOML, or YAML file. You can specify hierarchical keys like my.dict.key
+          
+          TODO: Add a pipeline_step_params completer
 
       --regex_items <REGEX_ITEMS>
           Add a regex dependency in the form filename.txt:/^regex/ . Can be used multiple times.

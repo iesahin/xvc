@@ -2,6 +2,7 @@
 
 - [Introduction](./intro/index.md)
   - [Installation](./intro/install.md)
+  - [Completions](./intro/completions.md)
   - [Compile without default features](./intro/compile-without-default-features.md)
   - [Configuration](./intro/configuration.md)
 - [Get Started](./start/index.md)
@@ -68,8 +69,8 @@
   - [Utilities](./ref/utilities.md)
     - [`xvc root`](./ref/xvc-root.md)
     - [`xvc check-ignore`](./ref/xvc-check-ignore.md)
-    - [`xvc aliases`](./ref/xvc-aliases.md)
     - [`xvc deinit`](./ref/xvc-deinit.md)
+    - [`xvc completions`](./ref/xvc-completions.md)
 
 - [Rust API](./api/index.md)
 

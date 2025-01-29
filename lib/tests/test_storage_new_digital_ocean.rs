@@ -6,7 +6,7 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use subprocess::Exec;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
@@ -153,7 +153,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
 
     let x = |cmd: &[&str]| -> Result<String> { run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace) };
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "digital-ocean",
@@ -175,7 +175,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
+    x(&["file", "track", the_file])?;
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
@@ -184,7 +184,7 @@ fn test_storage_new_digital_ocean() -> Result<()> {
         &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "do-storage", the_file])?;
+    x(&["file", "send", "--to", "do-storage", the_file])?;
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),

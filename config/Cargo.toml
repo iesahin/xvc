@@ -1,6 +1,6 @@
 [package]
 name = "xvc-config"
-version = "0.6.13"
+version = "0.6.14"
 edition = "2021"
 description = "Xvc configuration management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,8 +16,8 @@ name = "xvc_config"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.13", path = "../logging" }
-xvc-walker = { version = "0.6.13", path = "../walker" }
+xvc-logging = { version = "0.6.14", path = "../logging" }
+xvc-walker = { version = "0.6.14", path = "../walker" }
 
 
 ## Cli and config
@@ -36,7 +36,7 @@ crossbeam = "^0.8"
 walkdir = "^2.5"
 
 ## Logging and errors
-thiserror = "^1.0"
+thiserror = "^2.0"
 log = "^0.4"
 ### meta-logging-in-format is required for sled: https://github.com/spacejam/sled/issues/1384
 fern = { version = "^0.7", features = ["colored"] }

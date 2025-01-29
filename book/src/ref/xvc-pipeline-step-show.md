@@ -10,11 +10,12 @@ Print the steps of a pipeline.
 $ xvc pipeline step show --help
 Print step configuration
 
-Usage: xvc pipeline step show --step-name <STEP_NAME>
+Usage: xvc pipeline step show [OPTIONS] --step-name <STEP_NAME>
 
 Options:
-  -s, --step-name <STEP_NAME>  Name of the step to show
-  -h, --help                   Print help
+  -p, --pipeline-name <PIPELINE_NAME>  Name of the pipeline this command applies to
+  -s, --step-name <STEP_NAME>          Name of the step to show
+  -h, --help                           Print help
 
 ```
 

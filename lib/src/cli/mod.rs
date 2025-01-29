@@ -12,17 +12,21 @@ use xvc_core::git_checkout_ref;
 use xvc_core::handle_git_automation;
 
 use clap::Parser;
+
+use clap_complete::engine::ArgValueCompleter;
+
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 use log::LevelFilter;
 use std::io;
+use xvc_core::types::xvcroot::find_root;
 use xvc_core::types::xvcroot::load_xvc_root;
-use xvc_core::types::xvcroot::XvcRootInner;
+use xvc_core::util::completer::git_branch_completer;
+use xvc_core::util::completer::git_reference_completer;
 use xvc_logging::XvcOutputSender;
 use xvc_logging::{debug, error, uwr, XvcOutputLine};
 
 use xvc_config::{XvcConfigParams, XvcVerbosity};
-use xvc_core::aliases;
 use xvc_core::check_ignore;
 pub use xvc_core::default_project_config;
 use xvc_core::root;
@@ -44,7 +48,7 @@ const GIT_VERSION: &str = git_version!(
 );
 
 /// Xvc CLI to manage data and ML pipelines
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Clone)]
 #[command(
     rename_all = "kebab-case",
     author,
@@ -102,12 +106,15 @@ pub struct XvcCLI {
     /// Checkout the given Git reference (branch, tag, commit etc.) before performing the Xvc
     /// operation.
     /// This runs `git checkout <given-value>` before running the command.
-    #[arg(long, conflicts_with("skip_git"))]
+    #[arg(
+        long,
+        conflicts_with("skip_git"),
+        add = ArgValueCompleter::new(git_reference_completer))]
     pub from_ref: Option<String>,
 
     /// If given, create (or checkout) the given branch before committing results of the operation.
     /// This runs `git checkout --branch <given-value>` before committing the changes.
-    #[arg(long, conflicts_with("skip_git"))]
+    #[arg(long, conflicts_with("skip_git"), add=ArgValueCompleter::new(git_branch_completer))]
     pub to_branch: Option<String>,
 
     /// The subcommand to run
@@ -193,19 +200,26 @@ impl FromStr for XvcCLI {
 #[command(rename_all = "kebab-case")]
 pub enum XvcSubCommand {
     /// File and directory management commands
+    #[command(visible_aliases=&["f"])]
     File(xvc_file::XvcFileCLI),
+
+    /// Pipeline management commands
+    #[command(visible_aliases=&["p"])]
+    Pipeline(xvc_pipeline::PipelineCLI),
+
+    /// Storage (cloud) management commands
+    #[command(visible_aliases=&["s"])]
+    Storage(xvc_storage::StorageCLI),
+
+    /// Find the root directory of a project
+    #[command(visible_aliases=&["r"])]
+    Root(xvc_core::root::RootCLI),
+
     /// Initialize an Xvc project
     Init(crate::init::InitCLI),
-    /// Pipeline management commands
-    Pipeline(xvc_pipeline::PipelineCLI),
-    /// Storage (cloud) management commands
-    Storage(xvc_storage::StorageCLI),
-    /// Find the root directory of a project
-    Root(xvc_core::root::RootCLI),
+
     /// Check whether files are ignored with `.xvcignore`
     CheckIgnore(xvc_core::check_ignore::CheckIgnoreCLI),
-    /// Print command aliases to be sourced in shell files
-    Aliases(xvc_core::aliases::AliasesCLI),
 }
 
 /// Runs the supplied xvc command.
@@ -222,10 +236,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
         xvc_root_opt.as_ref().is_none()
             || xvc_root_opt
                 .as_ref()
-                .map(
-                    |xvc_root| XvcRootInner::find_root(&cli_opts.workdir).unwrap()
-                        == *xvc_root.absolute_path()
-                )
+                .map(|xvc_root| find_root(&cli_opts.workdir).unwrap() == *xvc_root.absolute_path())
                 .unwrap()
     );
 
@@ -299,7 +310,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
         });
 
         if let Some(ref xvc_root) = xvc_root_opt {
-            if let Some(from_ref) = cli_opts.from_ref {
+            if let Some(ref from_ref) = cli_opts.from_ref {
                 uwr!(
                     git_checkout_ref(&output_snd, xvc_root, from_ref),
                     output_snd
@@ -307,75 +318,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
             }
         }
         let xvc_root_opt_res = s.spawn(move |_| -> Result<XvcRootOpt> {
-            // FIXME: Use command matcher below instead of this
-            let xvc_root_opt = match cli_opts.command {
-                XvcSubCommand::Init(opts) => {
-                    let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
-                    Some(xvc_root)
-                }
-
-                XvcSubCommand::Aliases(opts) => {
-                    aliases::run(&output_snd, opts)?;
-                    xvc_root_opt
-                }
-
-                // following commands can only be run inside a repository
-                XvcSubCommand::Root(opts) => {
-                    root::run(
-                        &output_snd,
-                        xvc_root_opt
-                            .as_ref()
-                            .ok_or_else(|| Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::File(opts) => {
-                    file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::Pipeline(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-                    pipeline::cmd_pipeline(
-                        input,
-                        &output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::CheckIgnore(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-
-                    check_ignore::cmd_check_ignore(
-                        input,
-                        &output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-
-                    xvc_root_opt
-                }
-
-                XvcSubCommand::Storage(opts) => {
-                    let stdin = io::stdin();
-                    let input = stdin.lock();
-                    storage::cmd_storage(
-                        input,
-                        &output_snd,
-                        xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
-                        opts,
-                    )?;
-
-                    xvc_root_opt
-                }
-            };
+            let xvc_root_opt = command_matcher(cli_opts.clone(), xvc_root_opt, &output_snd)?;
 
             match xvc_root_opt {
                 Some(ref xvc_root) => {
@@ -421,8 +364,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
 /// It sets output verbosity with [XvcCLI::verbosity].
 /// Determines configuration sources by filling [XvcConfigInitParams].
 /// Tries to create an XvcRoot to determine whether we're inside one.
-/// Creates two threads: One for running the API function, one for getting strings from output
-/// channel.
+/// It calls [dispatch_with_root] with an optional root.
 ///
 /// A corresponding function to reuse the same [XvcRoot] object is [test_dispatch].
 /// It doesn't recreate the whole configuration and this prevents errors regarding multiple
@@ -568,7 +510,7 @@ pub fn collect_output(
 pub fn command_matcher(
     cli_opts: XvcCLI,
     xvc_root_opt: XvcRootOpt,
-    output_snd: XvcOutputSender,
+    output_snd: &XvcOutputSender,
 ) -> Result<XvcRootOpt> {
     {
         let res_xvc_root_opt: Result<XvcRootOpt> = match cli_opts.command {
@@ -578,7 +520,7 @@ pub fn command_matcher(
 
                 if use_git {
                     handle_git_automation(
-                        &output_snd,
+                        output_snd,
                         &xvc_root,
                         cli_opts.to_branch.as_deref(),
                         &cli_opts.command_string,
@@ -587,15 +529,10 @@ pub fn command_matcher(
                 Ok(Some(xvc_root))
             }
 
-            XvcSubCommand::Aliases(opts) => {
-                aliases::run(&output_snd, opts)?;
-                Ok(xvc_root_opt)
-            }
-
             // following commands can only be run inside a repository
             XvcSubCommand::Root(opts) => {
                 root::run(
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt
                         .as_ref()
                         .ok_or_else(|| Error::RequiresXvcRepository)?,
@@ -606,7 +543,7 @@ pub fn command_matcher(
             }
 
             XvcSubCommand::File(opts) => {
-                file::run(&output_snd, xvc_root_opt.as_ref(), opts)?;
+                file::run(output_snd, xvc_root_opt.as_ref(), opts)?;
                 Ok(xvc_root_opt)
             }
 
@@ -616,7 +553,7 @@ pub fn command_matcher(
                 let input = stdin.lock();
                 pipeline::cmd_pipeline(
                     input,
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                     opts,
                 )?;
@@ -630,7 +567,7 @@ pub fn command_matcher(
 
                 check_ignore::cmd_check_ignore(
                     input,
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                     opts,
                 )?;
@@ -643,7 +580,7 @@ pub fn command_matcher(
                 let input = stdin.lock();
                 storage::cmd_storage(
                     input,
-                    &output_snd,
+                    output_snd,
                     xvc_root_opt.as_ref().ok_or(Error::RequiresXvcRepository)?,
                     opts,
                 )?;
@@ -664,7 +601,7 @@ pub fn command_matcher(
             if !cli_opts.skip_git {
                 xvc_root.record();
                 handle_git_automation(
-                    &output_snd,
+                    output_snd,
                     xvc_root,
                     cli_opts.to_branch.as_deref(),
                     &cli_opts.command_string,

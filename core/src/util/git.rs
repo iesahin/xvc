@@ -145,14 +145,14 @@ pub fn unstash_user_staged_files(
 pub fn git_checkout_ref(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
-    from_ref: String,
+    from_ref: &str,
 ) -> Result<()> {
     let xvc_directory = xvc_root.as_path().to_str().unwrap();
     let git_command_option = xvc_root.config().get_str("git.command")?.option;
     let git_command = get_absolute_git_command(&git_command_option)?;
 
     let git_diff_staged_out = stash_user_staged_files(output_snd, &git_command, xvc_directory)?;
-    exec_git(&git_command, xvc_directory, &["checkout", &from_ref])?;
+    exec_git(&git_command, xvc_directory, &["checkout", from_ref])?;
 
     if !git_diff_staged_out.trim().is_empty() {
         debug!("Unstashing user staged files: {git_diff_staged_out}");
@@ -296,6 +296,50 @@ pub fn git_ignored(git_command: &str, xvc_root_str: &str, path: &str) -> Result<
     } else {
         Ok(true)
     }
+}
+
+/// Return all tags and branches from a repository using Gix
+///
+/// TODO: We can add prefix listing if there is a performance issue for large repos here
+pub fn gix_list_references(repo_path: &Path) -> Result<Vec<String>> {
+    // We use map error because gix::discover::Error is a large struct
+    let repo = gix::discover(repo_path).map_err(|e| Error::GixError {
+        cause: e.to_string(),
+    })?;
+    let mut refs = Vec::new();
+
+    let ref_platform = repo.references()?;
+    ref_platform.all().map(|all| {
+        all.for_each(|reference| {
+            if let Ok(reference) = reference {
+                if let Some((_, name)) = reference.name().category_and_short_name() {
+                    refs.push(name.to_string());
+                }
+            }
+        });
+        Ok(refs)
+    })?
+}
+
+/// List local branches in a Git repository
+pub fn gix_list_branches(repo_path: &Path) -> Result<Vec<String>> {
+    // We use map error because gix::discover::Error is a large struct
+    let repo = gix::discover(repo_path).map_err(|e| Error::GixError {
+        cause: e.to_string(),
+    })?;
+    let mut refs = Vec::new();
+
+    let ref_platform = repo.references()?;
+    ref_platform.local_branches().map(|all| {
+        all.for_each(|reference| {
+            if let Ok(reference) = reference {
+                if let Some((_, name)) = reference.name().category_and_short_name() {
+                    refs.push(name.to_string());
+                }
+            }
+        });
+        Ok(refs)
+    })?
 }
 
 #[cfg(test)]

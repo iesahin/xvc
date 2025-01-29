@@ -75,30 +75,51 @@ use clap::Parser;
 #[command(author, version)]
 pub enum XvcFileSubCommand {
     /// Add file and directories to Xvc
+    #[command(visible_aliases=&["t"])]
     Track(TrackCLI),
+
     /// Get digest hash of files with the supported algorithms
+    #[command(visible_aliases=&["h"])]
     Hash(HashCLI),
+
     /// Get files from cache by copy or *link
-    #[command(alias = "checkout")]
+    #[command(visible_aliases=&["checkout", "r"])]
     Recheck(RecheckCLI),
-    /// Carry (commit) changed files to cache
-    #[command(alias = "commit")]
+
+    /// Carry in changed files to cache
+    #[command(visible_aliases = &[ "commit", "c"])]
     CarryIn(CarryInCLI),
+
     /// Copy from source to another location in the workspace
+    #[command(visible_aliases=&["C"])]
     Copy(CopyCLI),
+
     /// Move files to another location in the workspace
+    #[command(visible_aliases=&["M"])]
     Move(MoveCLI),
+
     /// List tracked and untracked elements in the workspace
+    #[command(visible_aliases=&["l"])]
     List(ListCLI),
-    /// Send (push, upload) files to external storages
+
+    /// Send files to external storages
+    #[command(visible_aliases=&["s", "upload", "push"])]
     Send(SendCLI),
-    /// Bring (download, pull, fetch) files from external storages
+
+    /// Bring files from external storages
+    #[command(visible_aliases=&["b", "download", "pull"])]
     Bring(BringCLI),
-    /// Remove files from Xvc and possibly storages
+
+    /// Remove files from Xvc cache and storages
+    #[command(visible_aliases=&["R"])]
     Remove(RemoveCLI),
-    /// Untrack (delete) files from Xvc and possibly storages
+
+    /// Untrack (delete) files from Xvc and storages
+    #[command(visible_aliases=&["U"])]
     Untrack(UntrackCLI),
-    /// Share a file from S3 compatible storage for a limited time
+
+    /// Share a file from (S3 compatible) storage for a limited time
+    #[command(visible_aliases=&["S"])]
     Share(ShareCLI),
 }
 

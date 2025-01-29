@@ -8,7 +8,6 @@ use xvc_core::{
     XvcPathMetadataProvider, XvcRoot,
 };
 use xvc_ecs::persist;
-use xvc_logging::watch;
 
 use crate::XvcDependency;
 

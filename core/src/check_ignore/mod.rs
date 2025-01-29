@@ -26,7 +26,7 @@ pub struct CheckIgnoreCLI {
     /// This can be set to .gitignore to test whether Git and Xvc work the same way.
     ignore_filename: String,
 
-    #[arg()]
+    #[arg(value_hint=clap::ValueHint::AnyPath)]
     /// Targets to check.
     /// If no targets are provided, they are read from stdin.
     targets: Vec<String>,

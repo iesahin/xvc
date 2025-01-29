@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, trace, uwr, warn, watch, XvcOutputSender};
+use xvc_logging::{error, info, trace, uwr, warn, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
