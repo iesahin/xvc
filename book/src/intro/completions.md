@@ -40,4 +40,15 @@ Remove-Item Env:\COMPLETE
 echo "source <(COMPLETE=zsh xvc)" >> ~/.zshrc
 ```
 
+## Nushell (without dynamic completions)
+
+Until [`clap_complete_nushell`](https://lib.rs/crates/clap_complete_nushell) supports dynamic completions, similar to the above, you can create a completion script with `xvc` and use it on your shell. 
+
+```nu
+$ xvc _comp generate-nushell | save ($nu.config-path | path dirname | path join "xvc-completions.nu")
+$ use ($nu.config-path | path dirname | path join "xvc-completions.nu") *
+```
+
+This will provide completions for commands and options. It won't work for dynamic completions like pipelines names, storage id's etc. 
+
 
