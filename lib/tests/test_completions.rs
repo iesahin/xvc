@@ -10,6 +10,11 @@ fn test_completions() -> Result<()> {
     // let help_text = run_xvc(None, &[], XvcVerbosity::Default)?;
     // assert!(!help_text.is_empty());
 
+    // Nushell only has static completions for the time.
+    let nushell_completions = run_xvc(None, &["_comp", "generate-nushell"], XvcVerbosity::Default)?;
+
+    assert!(!nushell_completions.is_empty());
+
     let shells = ["bash", "elvish", "fish", "powershell", "zsh"];
 
     for s in shells {
@@ -19,10 +24,6 @@ fn test_completions() -> Result<()> {
         assert!(!complete_script.is_empty());
         // assert!(complete_script != help_text);
     }
-
-    // Nushell only has static completions for the time.
-    let nushell_completions = run_xvc(None, &["_comp", "generate-nushell"], XvcVerbosity::Default)?;
-    assert!(!nushell_completions.is_empty());
 
     Ok(())
 }
