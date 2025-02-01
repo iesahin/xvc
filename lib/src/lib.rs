@@ -5,6 +5,8 @@ pub mod cli;
 pub mod error;
 pub mod init;
 
+mod comp;
+
 pub mod api;
 
 pub use api::*;

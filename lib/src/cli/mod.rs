@@ -5,6 +5,7 @@ use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use crate::comp;
 use crate::init;
 use crate::XvcRootOpt;
 
@@ -216,10 +217,16 @@ pub enum XvcSubCommand {
     Root(xvc_core::root::RootCLI),
 
     /// Initialize an Xvc project
+    #[command()]
     Init(crate::init::InitCLI),
 
     /// Check whether files are ignored with `.xvcignore`
+    #[command()]
     CheckIgnore(xvc_core::check_ignore::CheckIgnoreCLI),
+
+    /// Completion Helpers
+    #[command(name = "_comp")]
+    _Comp(crate::comp::CompCLI),
 }
 
 /// Runs the supplied xvc command.
@@ -587,6 +594,11 @@ pub fn command_matcher(
 
                 Ok(xvc_root_opt)
             }
+
+            XvcSubCommand::_Comp(comp_cli) => {
+                comp::run(comp_cli)?;
+                Ok(xvc_root_opt)
+            }
         };
 
         let xvc_root_opt = match res_xvc_root_opt {
@@ -611,7 +623,6 @@ pub fn command_matcher(
             }
         }
 
-        assert!(xvc_root_opt.is_some());
         Ok(xvc_root_opt)
     }
 }
