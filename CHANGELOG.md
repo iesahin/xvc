@@ -1,7 +1,8 @@
 # Xvc Changelog
 
-## v0.6.15-alpha.4
+## v0.6.15 (2025-02-01)
 
+- PR: <https://github.com/iesahin/xvc/pull/266>
 - Fixed a bug preventing Xvc to be run outside of repos
 - Added static nushell completions
 
