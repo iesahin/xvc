@@ -20,5 +20,9 @@ fn test_completions() -> Result<()> {
         // assert!(complete_script != help_text);
     }
 
+    // Nushell only has static completions for the time.
+    let nushell_completions = run_xvc(None, &["_comp", "generate-nushell"], XvcVerbosity::Default)?;
+    assert!(!nushell_completions.is_empty());
+
     Ok(())
 }
