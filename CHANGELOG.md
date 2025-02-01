@@ -1,6 +1,6 @@
 # Xvc Changelog
 
-## v0.6.15-alpha.2 
+## v0.6.15-alpha.3
 
 - Fixed a bug preventing Xvc to be run outside of repos
 - Added static nushell completions
