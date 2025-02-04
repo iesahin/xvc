@@ -6,24 +6,18 @@
 [![docs.rs](https://img.shields.io/docsrs/xvc)](https://docs.rs/xvc/)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 
-A fast and robust MLOps tool to manage data and pipelines
+Manage your unstructured data next to code in Git repositories and run commands when they change. 
 
-## ⌛ When to use xvc?
+## ⌛ Why Xvc?
 
-- When you have a photo, audio, media, or document collection to backup/version with Git, but don't want to copy that huge data to all Git clones.
-- When you manage a large number of _unstructured_ data, like images, documents, and audio files.
-- When you want to version data files, and want to track versions across datasets.
-- When you want to store this data in local, SSH-accessible, or S3-compatible cloud storage.
-- When you create data pipelines on top of this data and want to run these pipelines when the data, code, or other dependencies change.
-- When you want to track which subset of the data you're working with, and how it changes by your operations.
-- When you have binary artifacts that you use as dependencies and would like to have a `make` alternative that considers _content changes_ rather than timestamps.
+- You have image, audio, media, document or asset files to [track/version/backup](https://docs.xvc.dev/ref/xvc-file-track) along with the code, but [don't want to copy](https://docs.xvc.dev/ref/xvc-file-recheck) that huge data to all Git clones.
+- You want to [manage](https://docs.xvc.dev/ref/xvc-file-list) unstructured data in multiple places with [multiple subsets](https://docs.xvc.dev/ref/xvc-file-copy), some (e.g. data) being read-only and some (e.g. models, executables) change frequently. 
+- You want to store this data in local, SSH-accessible, or S3-compatible cloud storages to share along the repository. 
+- You want write commands that run when only this data changes, define pipelines with steps that run when only their dependencies change.
+- You want to define these dependencies with files, globs spanning multiple files, ext file lines described by regexes, URLs, parameters in the YAML or JSON files, SQLite queries or any command that produces output. You want to run the pipeline commands only when their dependencies change. 
 
-## ✳️ What is xvc for?
-
-- (for x = files) Track large files on Git, store them in the cloud, create view-only subsets, retrieve them only when necessary.
-- (for x = pipelines) Define and run data -> model pipelines whose dependencies may be files, hyperparameters, regex searches, arbitrary URLs, and more.
-
-## 🔽 Installation
+<details>
+  <summary>## 🔽 Installation</summary>
 
 You can get the binary files for Linux, macOS, and Windows from [releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and copy the file to your `$PATH`.
 
@@ -41,7 +35,53 @@ If you want to use Xvc with Python console and Jupyter notebooks, you can also i
 $ pip install xvc
 ```
 
-Note that pip installation doesn't make `xvc` available as a shell command. Please see [xvc.py](https://github.com/iesahin/xvc.py) for usage details.
+Note that pip installation doesn't make `xvc` available as a shell command. Please see [xvc.py](https://github.com/iesahin/xvc.py) for details.
+
+
+### Completions
+
+
+Xvc supports dynamic completions for bash, zsh, elvish, fish and powershell. For bash, run the following to add completions. 
+
+```bash
+echo "source <(COMPLETE=bash xvc)" >> ~/.bashrc
+```
+
+For others, see [Completions](https://docs.xvc.dev/intro/completions)
+
+</details>
+
+<details>
+<summary>Track Binary Files</summary>
+</details>
+
+<details>
+<summary>Checkout a subset of files as symlinks</summary>
+</details>
+
+<details>
+<summary>Send Files to S3 (and compatible) services</summary>
+</details>
+
+<details>
+<summary>Get Files from S3 (and compatible) services</summary>
+</details>
+
+<details>
+<summary>Create a pipeline</summary>
+</details>
+
+<details>
+<summary>Add a dependency to a pipeline step</summary>
+</details>
+
+<details>
+<summary>Run pipeline</summary>
+</details>
+
+<details>
+<summary>Add fine grained dependencies to steps</summary>
+</details>
 
 ## 🏃🏾 Quicktart
 
