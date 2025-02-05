@@ -119,7 +119,7 @@ $ xvc file recheck another-view-to-my-data/ --as symlink
 Configure a cloud storage to share the files you track with Xvc.
 
 ```shell
-$ xvc storage new s3 --name my-storage --region us-east-1 --bucket-name my-xvc-remote
+$ xvc storage new s3 --name my-storage --region us-east-1 --bucket-name xvc
 ```
 
 You can send the files to this storage.
@@ -131,7 +131,7 @@ $ xvc file send --to my-storage
 You can also send a subset of the files.
 
 ```shell
-$ xvc file send 'my-data/training/*' --to my-xvc-remote
+$ xvc file send 'my-data/training/*' --to my-storage
 ```
 
 Xvc [supports](https://docs.xvc.dev/ref/xvc-storage-new) [external directories](https://docs.xvc.dev/ref/xvc-storage-new-local), [Rsync](https://docs.xvc.dev/ref/xvc-storage-new-rsync), [AWS S3](https://docs.xvc.dev/ref/xvc-storage-new-s3), [Google Cloud Storage](https://docs.xvc.dev/ref/xvc-storage-new-gcs), [MinIO](https://docs.xvc.dev/ref/xvc-storage-new-minio), [Cloudflare R2](https://docs.xvc.dev/ref/xvc-storage-new-r2), [Wasabi](https://docs.xvc.dev/ref/xvc-storage-new-wasabi), [Digital Ocean Spaces](https://docs.xvc.dev/ref/xvc-storage-new-digital-ocean). Please [create an issue](https://github.com/iesahin/xvc/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) if you want Xvc to support another cloud storage service.
@@ -142,19 +142,21 @@ Xvc [supports](https://docs.xvc.dev/ref/xvc-storage-new) [external directories](
 > specify a [generic](https://docs.xvc.dev/ref/xvc-storage-new-generic)
 > storage by supplying shell commands to upload and download. 
 
-> [!WARNING]
+> [!IMPORTANT]
 > Xvc never stores credentials to your connections and expects them to be
 > available in the environment. It never makes remote connections without cloud
-> related commands (to track usage, etc.) and you can compile without cloud
-> connection support in case you want to make sure that it makes no connections
-> to outside services.
+> related commands (for tracking, statistics, etc.) and you can
+> [compile](https://docs.xvc.dev/intro/compile-without-default-features)
+> without cloud connection support in case you want to make sure that it makes
+> no connections to outside services.
 
 </details>
 
 <details>
-<summary>Get Files from S3 (and compatible) services</summary>
-When you (or someone else) want to access these files later, you can clone the Git repository and get the files from the
-storage.
+<summary>Get Files from cloud services</summary>
+
+When you (or someone else) want to access these files later, you can clone the
+Git repository and get the files from the storage.
 
 ```shell
 $ git clone https://example.com/my-machine-learning-project
@@ -165,18 +167,30 @@ $ xvc file bring my-data/ --from my-storage
 
 ```
 
-This approach ensures convenient access to files from the shared storage when needed.
+This approach ensures convenient access to files from the shared storage when
+needed.
 
-You don't have to reconfigure the storage after cloning, but you need to have valid credentials as environment variables
-to access the storage.
-Xvc never stores any credentials.
+  > [!TIP]
+  > You don't have to reconfigure the storage after cloning, but you need to
+  > have valid credentials as environment variables to access the storage. Xvc
+  > never stores any credentials.
+
 </details>
 
 <details>
-<summary>>Share files for a limited time from cloud storages</summary>
+<summary>Share files for a limited time from cloud storages</summary>
+
+  You can share Xvc tracked files from S3 compatible storages for a specified period.
+
+```shell
+$ xvc file share --storage my-storage dir-0001/file-0001.bin --duration 1h
+https://my-storage.s3.eu-central-1.amazonaws.com/xvc....
+```
+
+You can share the link with others and they will be able to access to the file for 1 hour.
+
+  
 </details>
-
-
 <details>
 <summary>Create a pipeline</summary>
 
@@ -555,5 +569,4 @@ Given that I'm working on this for the last two years for pure technical bliss, 
 This software is fresh and ambitious. Although I use it and test it close to real-world conditions, it didn't go under
 the test of time. **Xvc can eat your files and spit them into the eternal void!** Please take backups.
 
-## TODO
 
