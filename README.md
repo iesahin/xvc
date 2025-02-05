@@ -17,7 +17,7 @@ Manage your unstructured data next to code in Git repositories and run commands 
 - You want to define these dependencies with files, globs spanning multiple files, ext file lines described by regexes, URLs, parameters in the YAML or JSON files, SQLite queries or any command that produces output. You want to run the pipeline commands only when their dependencies change. 
 
 <details>
-  <summary>## 🔽 Installation</summary>
+  <summary> <strong> 🔽 Installation</strong></summary>
 
 You can get the binary files for Linux, macOS, and Windows from [releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and copy the file to your `$PATH`.
 
@@ -38,54 +38,20 @@ $ pip install xvc
 Note that pip installation doesn't make `xvc` available as a shell command. Please see [xvc.py](https://github.com/iesahin/xvc.py) for details.
 
 
-### Completions
+### Completions
 
-
-Xvc supports dynamic completions for bash, zsh, elvish, fish and powershell. For bash, run the following to add completions. 
+Xvc supports dynamic completions for bash, zsh, elvish, fish and powershell. For example, run the following to add completions for bash:
 
 ```bash
 echo "source <(COMPLETE=bash xvc)" >> ~/.bashrc
 ```
 
-For others, see [Completions](https://docs.xvc.dev/intro/completions)
+See [Completions](https://docs.xvc.dev/intro/completions) for others.
 
 </details>
 
 <details>
-<summary>Track Binary Files</summary>
-</details>
-
-<details>
-<summary>Checkout a subset of files as symlinks</summary>
-</details>
-
-<details>
-<summary>Send Files to S3 (and compatible) services</summary>
-</details>
-
-<details>
-<summary>Get Files from S3 (and compatible) services</summary>
-</details>
-
-<details>
-<summary>Create a pipeline</summary>
-</details>
-
-<details>
-<summary>Add a dependency to a pipeline step</summary>
-</details>
-
-<details>
-<summary>Run pipeline</summary>
-</details>
-
-<details>
-<summary>Add fine grained dependencies to steps</summary>
-</details>
-
-## 🏃🏾 Quicktart
-
-Xvc seamlessly monitors your files and directories on top of Git. To commence, execute the following command within the repository:
+  <summary><strong>🚀 Initialize a directory for Xvc</strong></summary>
 
 ```console
 $ git init # if you're not already in a Git repository
@@ -96,22 +62,61 @@ $ xvc init
 
 This command initializes the `.xvc/` directory and adds a `.xvcignore` file for specifying paths you wish to conceal from Xvc.
 
+  > [!TIP]
+  > Git is **not required** to run Xvc. However running Xvc with Git is usually a
+  > good idea. Xvc can stage/commit metadata files (under `.xvc/`) used to track
+  > binary files and you can use branches for versioning as well.
+  > 
+  > If you don't want to use Xvc with Git, use `--no-git` option when
+  > initializing.
+
+</details>
+
+<details>
+  <summary>🕵️ Track Files</summary>
+
 Include your data files and directories for tracking:
 
 ```shell
-$ xvc file track my-data/ --as symlink
+$ xvc file track my-data/
 ```
 
-This command calculates content hashes for data (using BLAKE-3, by default) and logs them. The changes are committed to Git, and the files are copied to content-addressed directories within `.xvc/b3`. Additionally, read-only symbolic links to these directories are created.
+This command calculates content hashes for data (using BLAKE-3, by default) and logs them. Files are copied to content-addressed directories within `.xvc/b3`. Then, they are copied to the workspace. 
 
-You can specify different [recheck (checkout) methods](https://docs.xvc.dev/ref/xvc-file-recheck/) for files and directories, depending on your use case.
-If you need to track model files that change frequently, you can set recheck method `--as copy` (the default).
+  > [!TIP]
+  > You can specify different [recheck (checkout)
+  > methods](https://docs.xvc.dev/ref/xvc-file-recheck/) for files and
+  > directories, depending on your use case. Symlinks and hardlinks to the
+  > files under Xvc cache don't consume additional space but they are readonly.
+  > You can also use (copy-on-write) reflinks if your file system supports it
+  > and Xvc is built with `reflink` feature. 
 
-```shell
-$ xvc file track my-models/ --as copy
+</details>
+
+<details>
+<summary>🫧 Checkout a subset of files as symlinks</summary>
+
+  You can copy and recheck (checkout) subsets of files from Xvc cache as symlinks to create multiple _views_. 
+
+```console
+$ xvc file copy my-data/ another-view-to-my-data/
+$ xvc file recheck another-view-to-my-data/ --as symlink
 ```
+  > [!TIP]
+  > `xvc file copy` and `xvc file move` doesn't require file contents to be
+  > available. Xvc works only with their metadata and you can organize files
+  > without their content copied to workspace or cache. 
+  
+  > [!TIP]
+  > If you installed completions to your shell, Xvc completes file names even
+  > if they are not available in the workspace. 
 
-Configure a cloud storage to share the files you added.
+</details>
+
+<details>
+<summary>🌁 Send files to the cloud services</summary>
+
+Configure a cloud storage to share the files you track with Xvc.
 
 ```shell
 $ xvc storage new s3 --name my-storage --region us-east-1 --bucket-name my-xvc-remote
@@ -123,6 +128,31 @@ You can send the files to this storage.
 $ xvc file send --to my-storage
 ```
 
+You can also send a subset of the files.
+
+```shell
+$ xvc file send 'my-data/training/*' --to my-xvc-remote
+```
+
+Xvc [supports](https://docs.xvc.dev/ref/xvc-storage-new) [external directories](https://docs.xvc.dev/ref/xvc-storage-new-local), [Rsync](https://docs.xvc.dev/ref/xvc-storage-new-rsync), [AWS S3](https://docs.xvc.dev/ref/xvc-storage-new-s3), [Google Cloud Storage](https://docs.xvc.dev/ref/xvc-storage-new-gcs), [MinIO](https://docs.xvc.dev/ref/xvc-storage-new-minio), [Cloudflare R2](https://docs.xvc.dev/ref/xvc-storage-new-r2), [Wasabi](https://docs.xvc.dev/ref/xvc-storage-new-wasabi), [Digital Ocean Spaces](https://docs.xvc.dev/ref/xvc-storage-new-digital-ocean). Please [create an issue](https://github.com/iesahin/xvc/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) if you want Xvc to support another cloud storage service.
+
+> [!TIP]
+> Xvc supports any command to upload/download files. If your favorite service
+> is not listed or you want to use another tool (s5cmd, rclone, etc.), you can
+> specify a [generic](https://docs.xvc.dev/ref/xvc-storage-new-generic)
+> storage by supplying shell commands to upload and download. 
+
+> [!WARNING]
+> Xvc never stores credentials to your connections and expects them to be
+> available in the environment. It never makes remote connections without cloud
+> related commands (to track usage, etc.) and you can compile without cloud
+> connection support in case you want to make sure that it makes no connections
+> to outside services.
+
+</details>
+
+<details>
+<summary>Get Files from S3 (and compatible) services</summary>
 When you (or someone else) want to access these files later, you can clone the Git repository and get the files from the
 storage.
 
@@ -140,8 +170,15 @@ This approach ensures convenient access to files from the shared storage when ne
 You don't have to reconfigure the storage after cloning, but you need to have valid credentials as environment variables
 to access the storage.
 Xvc never stores any credentials.
+</details>
 
-If you have commands that depend on data or code elements, you can configure a pipeline.
+<details>
+<summary>>Share files for a limited time from cloud storages</summary>
+</details>
+
+
+<details>
+<summary>Create a pipeline</summary>
 
 For this example, we'll use [a Python script](https://github.com/iesahin/xvc/blob/main/workflow_tests/templates/README.in/generate_data.py) to generate a data set with random names with random IQ scores.
 
@@ -150,6 +187,13 @@ The script uses the Faker library and this library must be available where you r
 ```console
 $ xvc pipeline step new --step-name install-deps --command 'python3 -m pip install --quiet --user -r requirements.txt'
 ```
+
+</details>
+
+<details>
+<summary>Add a dependency to a pipeline step</summary>
+
+If you have commands that depend on data or code elements, you can configure a pipeline.
 
 We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run.
 
@@ -165,6 +209,10 @@ Now we create a step to run the script and make `install-deps` step a dependency
 $ xvc pipeline step new --step-name generate-data --command 'python3 generate_data.py'
 $ xvc pipeline step dependency --step-name generate-data --step install-deps
 ```
+</details>
+
+<details>
+<summary>Run pipeline</summary>
 
 After you define the pipeline, you can run it by:
 
@@ -177,7 +225,12 @@ $ xvc pipeline run
 
 ```
 
-Xvc allows many kinds of dependnecies, like [files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependencies),
+</details>
+
+<details>
+<summary>Add fine grained dependencies to steps</summary>
+
+Xvc allows many kinds of dependencies, like [files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependencies),
 [groups of files and directories defined by globs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-dependencies),
 [regular expression searches in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-dependencies),
 [line ranges in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-dependencies),
@@ -243,14 +296,30 @@ $ xvc pipeline run
 [ERROR] Step visualize finished UNSUCCESSFULLY with command python3 visualize.py
 
 ```
+</details>
+
+
+<details>
+<summary>Visualize a pipeline in Graphviz or Mermaid</summary>
 
 You can get the pipeline in Graphviz DOT format to convert to an image.
 
 ```console
-$ zsh -cl 'xvc pipeline dag | dot -opipeline.png'
+$ zsh -cl 'xvc pipeline dag --format graphviz | dot -opipeline.png'
 
 ```
 
+You can also ask for a [mermaid.js]() diagram;
+
+
+```console
+xvc pipeline dag --format mermaid
+```
+
+</details>
+
+<details>
+<summary>Export a pipeline in YAML or JSON format</summary>
 You can also export and import the pipeline to JSON to edit in your editor.
 
 ```console
@@ -389,45 +458,17 @@ $ cat my-pipeline.json
 ```
 
 You can edit the file to change commands, add new dependencies, etc. and import it back to Xvc.
+</details>
+
+<details>
+  <summary>Import a pipeline from JSON or YAML files</summary>
 
 ```console
 $ xvc pipeline import --file my-pipeline.json --overwrite
 ```
 
-Lastly, if you noticed that the commands are long to type, there is an `xvc aliases` command that prints a set of aliases for commands. You can source the output in your `.zshrc` or `.bashrc`, and use the following commands instead, e.g., `xvc pipelines run` becomes `pvc run`.
-
-```console
-$ xvc aliases
-
-alias xls='xvc file list'
-alias pvc='xvc pipeline'
-alias fvc='xvc file'
-alias xvcf='xvc file'
-alias xvcft='xvc file track'
-alias xvcfl='xvc file list'
-alias xvcfs='xvc file send'
-alias xvcfb='xvc file bring'
-alias xvcfh='xvc file hash'
-alias xvcfco='xvc file checkout'
-alias xvcfr='xvc file recheck'
-alias xvcp='xvc pipeline'
-alias xvcpr='xvc pipeline run'
-alias xvcps='xvc pipeline step'
-alias xvcpsn='xvc pipeline step new'
-alias xvcpsd='xvc pipeline step dependency'
-alias xvcpso='xvc pipeline step output'
-alias xvcpi='xvc pipeline import'
-alias xvcpe='xvc pipeline export'
-alias xvcpl='xvc pipeline list'
-alias xvcpn='xvc pipeline new'
-alias xvcpu='xvc pipeline update'
-alias xvcpd='xvc pipeline dag'
-alias xvcs='xvc storage'
-alias xvcsn='xvc storage new'
-alias xvcsl='xvc storage list'
-alias xvcsr='xvc storage remove'
-
-```
+</details>
+## 🏃🏾 Quicktart
 
 Please create an issue or discussion for any other kinds of dependencies that you'd like to be included.
 
@@ -513,3 +554,6 @@ Given that I'm working on this for the last two years for pure technical bliss, 
 
 This software is fresh and ambitious. Although I use it and test it close to real-world conditions, it didn't go under
 the test of time. **Xvc can eat your files and spit them into the eternal void!** Please take backups.
+
+## TODO
+
