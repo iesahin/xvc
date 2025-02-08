@@ -218,17 +218,20 @@ $ xvc file share --storage my-storage dir-0001/file-0001.bin --duration 1h
 https://my-storage.s3.eu-central-1.amazonaws.com/xvc....
 ```
 
-You can share the link with others and they will be able to access to the file hour. The default period is 24 hours.
+You can share the link with others and they will be able to access to the file
+hour. The default period is 24 hours.
 
 </details>
 
 <details>
 <summary> 🥤<strong>Create a data pipeline</strong></summary>
 
-Suppose you have a script to preprocess files in a directory and you want to run this when the files in `my-data/train` directory changes. We first define a step in the pipeline that will run the script.
+Suppose you have a script to preprocess files in a directory and you want to
+run this when the files in `my-data/train` directory changes. We first define a
+step in the pipeline that will run the script.
 
 ```console
-$ xvc pipeline step new --step-name install-deps --command 'python3 src/preprocess.py'
+$ xvc pipeline step new --step-name preprocess --command 'python3 src/preprocess.py'
 ```
 
 Each command is associated with a step and each step has a command.
@@ -238,22 +241,28 @@ Each command is associated with a step and each step has a command.
 <details>
 <summary> 🔗 <strong>Add a dependency to a pipeline step</strong></summary>
 
-When we want to create a dependency for a command, we use 
+When we want to create a dependency for a command, we use [`xvc pipeline step
+dependency`][xvc-pipeline-step-dependency] command with various parameters. 
 
-We'll make this this step to depend on `requirements.txt` file, so when the file changes it will make the step run.
+We want to define to dependencies for the `preprocess` step we created previously. 
+We'll make `preprocess` step to depend on:
 
-```console
-$ xvc pipeline step dependency --step-name install-deps --file requirements.txt
-```
-
-Xvc allows to create dependencies between pipeline steps. Dependent steps wait for dependencies to finish successfully.
-
-Now we create a step to run the script and make `install-deps` step a dependency of it.
+- The `src/preprocess.py` source file itself, so when we change the script, we'll run the step again
 
 ```console
-$ xvc pipeline step new --step-name generate-data --command 'python3 generate_data.py'
-$ xvc pipeline step dependency --step-name generate-data --step install-deps
+$ xvc pipeline step dependency --step-name preprocess --file src/preprocess.py
 ```
+
+- `data/raw/*.jpg` files that the script works on.
+
+```console
+$ xvc pipeline step dependency -s preprocess --glob 'data/raw/*jpg'
+```
+
+> ⚠️ Most of the shells expand globs before running the command, so you need to
+> quote glob to pass these as strings without expansion. Xvc expands these
+> globs itself. 
+
 </details>
 
 <details>
