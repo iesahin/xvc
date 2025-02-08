@@ -33,6 +33,7 @@
     - [`xvc file carry-in`](./ref/xvc-file-carry-in.md)
     - [`xvc file send`](./ref/xvc-file-send.md)
     - [`xvc file bring`](./ref/xvc-file-bring.md)
+    - [`xvc file share`](./ref/xvc-file-share.md)
     - [`xvc file move`](./ref/xvc-file-move.md)
     - [`xvc file copy`](./ref/xvc-file-copy.md)
     - [`xvc file remove`](./ref/xvc-file-remove.md)

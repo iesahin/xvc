@@ -1,4 +1,4 @@
-# xvc file send
+# xvc file share
 
 ## Synopsis
 
