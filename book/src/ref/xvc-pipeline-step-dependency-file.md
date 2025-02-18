@@ -1,4 +1,4 @@
-### File Dependencies
+### File
 
 This command works only in Xvc repositories.
 

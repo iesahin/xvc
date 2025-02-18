@@ -1,4 +1,4 @@
-### URL Dependencies
+### URL
 
 This command works only in Xvc repositories.
 
