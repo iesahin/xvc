@@ -1,4 +1,4 @@
-### SQLite Query Dependency
+### SQLite Query
 
 You can create a step dependency with an SQLite query. When the query results
 change, the step is invalidated.

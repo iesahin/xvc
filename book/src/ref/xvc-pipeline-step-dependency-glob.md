@@ -1,4 +1,4 @@
-### Glob Dependencies
+### Glob
 
 A step can depend on multiple files specified with globs. The difference with
 this and [glob-items dependency](./xvc-pipeline-step-dependency-glob-items.md)

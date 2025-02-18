@@ -1,4 +1,4 @@
-### Generic Command Dependencies
+### Generic Command
 
 This command works only in Xvc repositories.
 

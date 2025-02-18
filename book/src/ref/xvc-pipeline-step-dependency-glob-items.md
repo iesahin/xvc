@@ -1,4 +1,4 @@
-### Glob Items Dependency
+### Glob Items
 
 A step can depend on multiple files specified with globs. When any of the files change, or a new file is added or
 removed from the files specified by glob, the step is invalidated.

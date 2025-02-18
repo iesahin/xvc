@@ -67,7 +67,7 @@ See [completions] section in the docs for others.
     <strong> Initialize a directory for Xvc</strong>
   </summary>
 
-```console
+```bash
 $ git init # if you're not already in a Git repository
 Initialized empty Git repository in [CWD]/.git/
 
@@ -124,7 +124,7 @@ You can copy and recheck (checkout) subsets of files from Xvc cache as symlinks
 to create multiple _views_. This is useful when you need a read-only access
 that won't consume additional space.
 
-```console
+```bash
 $ xvc file copy my-data/ another-view-to-my-data/
 $ xvc file recheck another-view-to-my-data/ --as symlink
 ```
@@ -230,7 +230,7 @@ Suppose you have a script to preprocess files in a directory and you want to
 run this when the files in `my-data/train` directory changes. We first define a
 step in the pipeline that will run the script.
 
-```console
+```bash
 $ xvc pipeline step new --step-name preprocess --command 'python3 src/preprocess.py'
 ```
 
@@ -249,13 +249,13 @@ We'll make `preprocess` step to depend on:
 
 - The `src/preprocess.py` source file itself, so when we change the script, we'll run the step again
 
-```console
+```bash
 $ xvc pipeline step dependency --step-name preprocess --file src/preprocess.py
 ```
 
 - `data/raw/*.jpg` files that the script works on.
 
-```console
+```bash
 $ xvc pipeline step dependency -s preprocess --glob 'data/raw/*jpg'
 ```
 
@@ -270,46 +270,151 @@ $ xvc pipeline step dependency -s preprocess --glob 'data/raw/*jpg'
 
 After you define the pipeline, you can run it by:
 
-```console
+```bash
 $ xvc pipeline run
-[DONE] install-deps (python3 -m pip install --quiet --user -r requirements.txt)
-[OUT] [generate-data] CSV file generated successfully.
+[DONE] preprocess (python3 src/preprocess.py)
+[OUT] [preprocess] 
+...
 
-[DONE] generate-data (python3 generate_data.py)
+[DONE] preprocess (python3 src/preprocess.py)
 
 ```
+
+> 💡 Xvc runs pipeline steps in parallel if they are not interdependent. You
+> can specify the maximum number of parallel processes.
 
 </details>
 
 <details>
-<summary> 🪡 <strong>Add fine grained dependencies to steps</strong></summary>
+  <summary> 🪡 
+    <strong>Add fine grained dependencies to steps</strong>
+  </summary>
 
-Xvc allows many kinds of dependencies, like [files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependencies),
-[groups of files and directories defined by globs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-dependencies),
-[regular expression searches in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-dependencies),
-[line ranges in files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-dependencies),
-[hyper-parameters defined in YAML, JSON or TOML files](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#hyper-parameter-dependencies)
-[HTTP URLs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#url-dependencies),
-[shell command outputs](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic-command-dependencies),
-and [other steps](https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dependencies).
+Xvc allows many kinds of dependencies: 
 
-Suppose you're only interested in the IQ scores of those with _Dr._ in front of their names and how they differ from the rest in the dataset we created. Let's create a regex search dependency to the data file that will show all _doctors_ IQ scores.
+- Steps can explicitly depend on [other steps][xvc-p-s-d-step] when they are required to run serially. 
 
-```console
+- Steps can depend on [single files][xvc-p-s-d-file] or groups of files defined
+by [globs][xvc-p-s-d-glob]. For globs, you can also get which files are added,
+deleted or updated with [glob-items][xvc-p-s-d-glob-items].
+
+  > 💡 Similar to Git, Xvc doesn't track directories per se. You can define
+  > glob dependencies that describe files in directory like `dir/*` when you
+  > want to track all files in in. 
+
+[xvc-p-s-d-step]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dependency
+[xvc-p-s-d-file]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependency
+[xvc-p-s-d-glob]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-dependency
+[xvc-p-s-d-glob-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-items-dependency
+
+- You can specify steps to depend only to a subset of lines in a file with
+[line ranges][xvc-p-s-d-line] or [regular expressions][xvc-p-s-d-regex]. You
+can also get which lines are added, deleted or updated with more granular
+[line-items][xvc-p-s-d-line-items] or [regex-items][xvc-p-s-d-regex-items]
+dependencies. 
+
+[xvc-p-s-d-regex]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-dependency
+[xvc-p-s-d-regex-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-items-dependency
+[xvc-p-s-d-line]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-dependency
+[xvc-p-s-d-line-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-items-dependency
+
+- If you track (hyper)parameters for building/model training process in JSON or
+YAML files, you can specify steps to [depend on these parameters][xvc-p-s-d-params]. 
+
+[xvc-p-s-d-params]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#hyper-parameter-dependencies
+
+- If you want your steps to run when an HTTP(S) URL's content change, you can
+specify this with [URL dependencies][xvc-p-s-d-url]
+
+[xvc-p-s-d-url]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#url-dependencies
+
+- If you want your step to run when the output from an SQLite query change, you can specify it with [SQLite dependencies.][xvc-p-s-d-sqlite]
+
+[xvc-p-s-d-sqlite]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#sqlite-query-dependency
+
+- If none of the dependency types are fit for your needs, you can also specify a [command][xvc-p-s-d-generic] that will be run to check if a step is invalidated. 
+
+[xvc-p-s-d-generic]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic
+
+<details>
+<summary> 🖇️ <strong>Example to add a dependency when only certain lines in a file change</strong></summary>
+
+Suppose you have a list of IQ scores in a file. 
+
+```csv
+Ada Harris,128
+Alan Thompson,125
+Brian Shaffer,122
+Brian Wilson,94
+Dr. Brittany Chang,103
+Brittany Smith,104
+David Brown,113
+Emily Davis,97
+Grace White,130
+James Taylor,101
+Dr. Jane Doe,105
+Jessica Lee,102
+John Smith,110
+Laura Martinez,110
+Dr. Linus Martin,118
+Mallory Johnson,105
+Mallory Payne MD,99
+Margaret Clark,122
+Michael Johnson,92
+Robert Anderson,105
+Sarah Wilson,104
+Sherry Brown,115
+Sherry Leonard,117
+Susan Davis,107
+Dr. Susan Swanson,132
+```
+
+
+We're only interested in the IQ scores of those with _Dr._ in front of
+their names. Let's create a regex search dependency to run a command when only
+a line with a _Dr._ title is added to the file. 
+
+
+Our command will be collecting all lines with an initial _Dr._ to another file. 
+
+```bash
 $ xvc pipeline step new --step-name dr-iq --command 'echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv '
-$ xvc pipeline step dependency --step-name dr-iq --regex-items 'random_names_iq_scores.csv:/^Dr\..*'
+$ xvc pipeline step dependency --step-name dr-iq --regex-items 'iq-scores.csv:/^Dr\..*'
 ```
 
-The first line specifies a command, when run writes `${XVC_ADDED_REGEX_ITEMS}` environment variable to `dr-iq-scores.csv` file.
-The second line specifies the dependency which will also populate the `$[XVC_ADDED_REGEX_ITEMS]` environment variable in the command.
+The first line specifies a command, when run writes `${XVC_ADDED_REGEX_ITEMS}`
+environment variable to `dr-iq-scores.csv` file.
 
-Some dependency types like [regex items],
-[line items] and [glob items] inject environment variables in the commands they are a dependency.
-For example, if you have two million files specified with a glob, but want to run a script only on the added files after the last run, you can use these environment variables.
+The second line specifies the dependency which will also populate the
+`${XVC_ADDED_REGEX_ITEMS}` environment variable in the command.
 
-When you run the pipeline again, a file named `dr-iq-scores.csv` will be created. Note that, as `requirements.txt` didn't change `install-deps` step and its dependent `generate-data` steps didn't run.
+Some dependency types like [regex items][xvc-p-s-d-regex-items], [line
+items][xvc-p-s-d-line-items] and [glob items][xvc-p-s-d-glob-items] inject
+environment variables to the shells running the step commands. If you have
+thousands of files specified by a glob, but want to run a script only on the
+added files after the last run, you can use these environment variables.
 
-```console
+When you run the pipeline, a file named `dr-iq-scores.csv` will be created. 
+
+```bash
+$ xvc pipeline run
+[DONE] dr-iq (echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv )
+
+$ cat dr-iq-scores.csv
+Dr. Brittany Chang,103
+Dr. Jane Doe,105
+Dr. Linus Martin,118
+Dr. Susan Swanson,132
+
+```
+
+When the file changes, e.g. another line matching the dependency regex added
+to the `iq-scores.csv` file, the command will add to
+`dr-iq-scores.csv` file.
+
+```bash
+$ zsh -cl 'echo "Dr. John Doe,123" >> iq-scores.csv'
+
 $ xvc pipeline run
 [DONE] dr-iq (echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv )
 
@@ -319,64 +424,30 @@ Dr. Brittany Chang,82
 Dr. Mallory Payne MD,70
 Dr. Sherry Leonard,93
 Dr. Susan Swanson,81
+Dr. John Doe,123
 
 ```
 
-We are using this feature to get lines starting with `Dr.` from the file and write them to another file. When the file changes, e.g. another record matching the dependency regex added to the `random_names_iq_scores.csv` file, it will also be added to `dr-iq-scores.csv` file.
-
-```console
-$ zsh -cl 'echo "Dr. Albert Einstein,144" >> random_names_iq_scores.csv'
-
-$ xvc pipeline run
-[DONE] dr-iq (echo "${XVC_ADDED_REGEX_ITEMS}" >> dr-iq-scores.csv )
-
-$ cat dr-iq-scores.csv
-Dr. Brian Shaffer,122
-Dr. Brittany Chang,82
-Dr. Mallory Payne MD,70
-Dr. Sherry Leonard,93
-Dr. Susan Swanson,81
-Dr. Albert Einstein,144
-
-```
-
-Now we want to add a another command that draws a fancy histogram from `dr-iq-scores.csv`. As this new step must wait `dr-iq-scores.csv` file to be ready, we'll define `dr-iq-scores.csv` as an _output_ of `dr-iq` step and set the file as a dependency to this new `visualize` step.
-
-```console
-$ xvc pipeline step output --step-name dr-iq --output-file dr-iq-scores.csv
-$ xvc pipeline step new --step-name visualize --command 'python3 visualize.py'
-$ xvc pipeline step dependency --step-name visualize --file dr-iq-scores.csv
-$ xvc pipeline run
-[ERROR] Step visualize finished UNSUCCESSFULLY with command python3 visualize.py
-
-```
-</details>
-
-
-<details>
-<summary> 🎋 <strong>Visualize a pipeline in Graphviz or Mermaid</strong></summary>
-
-You can get the pipeline in Graphviz DOT format to convert to an image.
-
-```console
-$ zsh -cl 'xvc pipeline dag --format graphviz | dot -opipeline.png'
-
-```
-
-You can also ask for a [mermaid.js]() diagram;
-
-
-```console
-xvc pipeline dag --format mermaid
-```
+Note that, `${XVC_ADDED_REGEX_ITEMS}` has only the added lines, not all of the
+lines the regex match. So, we can just work on the added elements, without
+rerunning the commands for all matching elements. 
 
 </details>
 
 <details>
-<summary> 🐾 <strong>Export a pipeline in YAML or JSON format</strong></summary>
-You can also export and import the pipeline to JSON to edit in your editor.
+  <summary> 🛃 
+      <strong>Export, edit and import a pipeline with YAML or JSON files</strong>
+    </summary>
 
-```console
+Unlike some other tools, Xvc doesn't require (or allow) to specify pipelines in
+YAML files. Nevertheless, you can [export][xvc-p-e] and [import][xvc-p-i] the pipeline to JSON or
+YAML to edit in your editor. You can fix typos in commands, remove steps
+completely, or duplicate the pipeline with a new name this way. 
+
+[xvc-p-e]:  https://docs.xvc.dev/ref/xvc-pipeline-export
+[xvc-p-i]:  https://docs.xvc.dev/ref/xvc-pipeline-import
+
+```bash
 $ xvc pipeline export --file my-pipeline.json
 
 $ cat my-pipeline.json
@@ -467,7 +538,7 @@ $ cat my-pipeline.json
               "Dr. Sherry Leonard,93",
               "Dr. Albert Einstein,144"
             ],
-            "path": "random_names_iq_scores.csv",
+            "path": "iq-scores.csv",
             "regex": "^Dr//..*",
             "xvc_metadata": {
               "file_type": "File",
@@ -511,14 +582,50 @@ $ cat my-pipeline.json
 }
 ```
 
-You can edit the file to change commands, add new dependencies, etc. and import it back to Xvc.
+After you edit the file with changes, you can import the file to check its
+consistency and update the pipeline definition. 
+
+```bash
+$ xvc pipeline import --file my-pipeline.json --overwrite
+```
+
 </details>
 
 <details>
-  <summary> 🛃 <strong>Import a pipeline from JSON or YAML files</strong></summary>
+  <summary> 🎋 
+      <strong>Visualize a pipeline in Graphviz or Mermaid</strong>
+  </summary>
 
-```console
-$ xvc pipeline import --file my-pipeline.json --overwrite
+You can get the pipeline in Graphviz DOT format to convert to an image.
+
+```bash
+$ zsh -cl 'xvc pipeline dag --format graphviz | dot -opipeline.png'
+
+```
+
+You can also ask for a [mermaid] diagram;
+
+
+```bash
+xvc pipeline dag --format mermaid
+flowchart TD
+    n0["preprocess"]
+    n1["data/*"] --> n0
+    n2["train"]
+    n0["preprocess"] --> n2
+
+```
+
+[mermaid]: https://mermaid.js.org
+
+You can embed this output in Markdown files, Github PRs or Jupyter notebooks.
+
+```mermaid
+flowchart TD
+    n0["preprocess"]
+    n1["data/*"] --> n0
+    n2["train"]
+    n0["preprocess"] --> n2
 ```
 
 </details>

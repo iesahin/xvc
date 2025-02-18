@@ -1,5 +1,4 @@
-
-### Step Dependencies
+### Step
 
 This command works only in Xvc repositories.
 
