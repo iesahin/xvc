@@ -6,27 +6,43 @@
 [![docs.rs](https://img.shields.io/docsrs/xvc)](https://docs.rs/xvc/)
 [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
 
-Manage your unstructured data next to code in Git repositories and run commands when they change. 
+Manage your data next to code in Git repositories and run commands when they change. 
 
 ## ⌛ Why Xvc?
 
-- You have image, audio, media, document or asset files to [track/version/backup][xvc-file-track] along with the code, but [don't want to copy][xvc-file-recheck] that huge data to all Git clones.
-- You want to [manage][xvc-file-list] unstructured data in multiple places with
-[multiple subsets][xvc-file-copy], some (e.g. data) being read-only and some
-(e.g. models, executables) change frequently. 
-- You want to [store][xvc-storage-new] this data in [local][xvc-storage-new-local], [SSH-accessible][xvc-storage-new-rsync], or [S3-compatible cloud storages][xvc-storage-new-s3] to share along the repository. 
-- You want to [specify commands][xvc-pipeline-step-new] that [run][xvc-pipeline-run] when only input data changes, define [pipelines][xvc-pipeline-new] with steps that run when only their [dependencies][xvc-pipeline-step-dependency] change.
-  - You want to define these dependencies with [files][xvc-pipeline-step-dependency-file], [globs][xvc-pipeline-step-dependency-glob] spanning multiple files, text file lines defined by [ranges][xvc-pipeline-step-dependency-line] or [regexes][xvc-pipeline-step-dependency-regex], [URLs][xvc-pipeline-step-dependency-url], [parameters][xvc-pipeline-step-dependency-params] in the YAML or JSON files, [SQLite queries][xvc-pipeline-step-dependency-sqlite]
-  or [any command][xvc-pipeline-step-dependency-generic] that produces output. 
+- You have image, audio, media, document or asset files to
+[track/version/backup][xvc-file-track] along with the code, but [don't want to
+copy][xvc-file-recheck] that huge data to all Git clones.
 
-### ✅ Common Tasks 
+- You want to [manage][xvc-file-list] files in multiple locations with
+[different subsets][xvc-file-copy], some (e.g. training data) being read-only
+and some (e.g. models, executables) change frequently, all versioned along with
+the code. 
+
+- You want to [store][xvc-s-n] this data in [local][xvc-s-n-local],
+[Rsync][xvc-s-n-rsync], or [S3-compatible cloud storages][xvc-s-n-s3] to share
+along the repository. 
+
+- You want to [specify commands][xvc-p-s-n] that [run][xvc-p-r] when
+only input data changes, define [pipelines][xvc-p-n] with steps that
+run when only their [dependencies][xvc-p-s-d] change.
+
+- You want to define these dependencies with
+[files][xvc-p-s-d-file],
+[globs][xvc-p-s-d-glob] spanning multiple files, text file
+lines defined by [ranges][xvc-p-s-d-line] or
+[regexes][xvc-p-s-d-line],
+[URLs][xvc-p-s-d-url],
+[parameters][xvc-p-s-d-params] in the YAML or JSON files,
+[SQLite queries][xvc-p-s-d-sqlite] or [any
+command][xvc-p-s-d-generic] that produces output. 
 
 <details>
   <summary> <strong> 🔽 Installation</strong></summary>
 
-You can get the binary files for Linux, macOS, and Windows from
-[releases](https://github.com/iesahin/xvc/releases/latest) page. Extract and
-copy the file to your `$PATH`.
+You can get the binary files for Linux, macOS, and Windows from [releases]
+page. Extract and copy the file to your `$PATH`.
+
 
 Alternatively, if you have Rust [installed], you can build xvc:
 
@@ -34,7 +50,6 @@ Alternatively, if you have Rust [installed], you can build xvc:
 $ cargo install xvc
 ```
 
-[installed]: https://www.rust-lang.org/tools/install
 
 If you want to use Xvc with Python console and Jupyter notebooks, you can also
 install it with `pip`:
@@ -46,7 +61,6 @@ $ pip install xvc
 Note that pip installation doesn't make `xvc` available as a shell command.
 Please see [xvc.py] for details.
 
-[xvc.py]: https://github.com/iesahin/xvc.py
 
 ### Completions
 
@@ -58,8 +72,6 @@ echo "source <(COMPLETE=bash xvc)" >> ~/.bashrc
 
 See [completions] section in the docs for others.
 
-[completions]: https://docs.xvc.dev/intro/completions
-
 </details>
 
 <details>
@@ -68,20 +80,19 @@ See [completions] section in the docs for others.
   </summary>
 
 ```bash
-$ git init # if you're not already in a Git repository
-Initialized empty Git repository in [CWD]/.git/
-
 $ xvc init
 ```
 
-This command initializes the `.xvc/` directory and adds a `.xvcignore` file for specifying paths you wish to hide from Xvc.
+[This command][xvc-init] initializes the `.xvc/` directory and adds a
+`.xvcignore` file for specifying paths you wish to hide from Xvc.
 
-  > 💡**Tip**:
+  > 💡
   > Git is **not required** to run Xvc. However running Xvc with Git is usually
   > a good idea. Xvc can stage/commit metadata files (under `.xvc/`) used to
   > track binary files and you can use branches for versioning as well. By
   > default, you won't have to deal with Git commands to commit these metadata
-  > files.
+  > files. Xvc can manage the files it updates and hides your binary files from
+  > Git by default. 
   > 
   > If you don't want to use Xvc with Git, use `--no-git` option when
   > initializing.
@@ -91,23 +102,23 @@ This command initializes the `.xvc/` directory and adds a `.xvcignore` file for 
 <details>
   <summary>
     👣
-    <strong>Add Files for Tracking</strong>
+    <strong>Track binary files</strong>
   </summary>
 
-Include your data files and directories for tracking:
+Add your data files and directories for tracking:
 
 ```shell
 $ xvc file track my-data/
 ```
 
-[This command](https://docs.xvc.dev/ref/xvc-file-track.html) calculates content
+[This command][xvc-file-track] calculates content
 hashes for data (using BLAKE-3, by default) and records them. Files are moved
 to content-addressed directories under `.xvc/b3`. Then they are copied to the
 workspace. 
 
   > 💡**Tip**:
   > You can specify different [recheck (checkout)
-  > methods](https://docs.xvc.dev/ref/xvc-file-recheck/) for files and
+  > methods][xvc-file-recheck] for files and
   > directories depending on your use case. Symlinks and hardlinks to the
   > files under Xvc cache don't consume additional space but they are readonly.
   > You can also use (copy-on-write) reflinks if your file system supports it
@@ -120,28 +131,32 @@ workspace.
     <strong>Checkout a subset of files as symlinks</strong>
 </summary>
 
-You can copy and recheck (checkout) subsets of files from Xvc cache as symlinks
-to create multiple _views_. This is useful when you need a read-only access
-that won't consume additional space.
+You can [copy][xvc-file-copy] and [recheck][xvc-file-recheck] (checkout)
+subsets of files from Xvc cache as symlinks to create multiple _views_. This is
+useful when you need a read-only access that won't consume additional space.
 
 ```bash
 $ xvc file copy my-data/ another-view-to-my-data/
 $ xvc file recheck another-view-to-my-data/ --as symlink
 ```
-  > 💡**Tip**:
+
+  > 💡
   > [`xvc file copy`][xvc-file-copy] and [`xvc file move`][xvc-file-move]
   > doesn't require file contents to be available. Xvc works only with their
   > metadata and you can organize files without their content copied to
   > workspace or cache. 
   
-  > 💡**Tip**:
-  > If you installed [completions] to your shell, Xvc completes file names even
-  > if they are not available in the workspace. 
+  > 💡 If you installed [completions] to your shell, Xvc completes file names
+  > even if they are not available in your local paths.
 
 </details>
 
+
+
 <details>
-<summary> 🌁 <strong>Send files to the cloud services</strong></summary>
+  <summary> 🌁 
+    <strong>Send files to the cloud services</strong>
+  </summary>
 
 Configure a cloud storage to share the files you track with Xvc.
 
@@ -161,27 +176,30 @@ You can also send a subset of the files.
 $ xvc file send 'my-data/training/*' --to my-storage
 ```
 
-Xvc [supports](https://docs.xvc.dev/ref/xvc-storage-new) [external directories](https://docs.xvc.dev/ref/xvc-storage-new-local), [Rsync](https://docs.xvc.dev/ref/xvc-storage-new-rsync), [AWS S3](https://docs.xvc.dev/ref/xvc-storage-new-s3), [Google Cloud Storage](https://docs.xvc.dev/ref/xvc-storage-new-gcs), [MinIO](https://docs.xvc.dev/ref/xvc-storage-new-minio), [Cloudflare R2](https://docs.xvc.dev/ref/xvc-storage-new-r2), [Wasabi](https://docs.xvc.dev/ref/xvc-storage-new-wasabi), [Digital Ocean Spaces](https://docs.xvc.dev/ref/xvc-storage-new-digital-ocean). Please [create an issue](https://github.com/iesahin/xvc/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen) if you want Xvc to support another cloud storage service.
+Xvc [supports][xvc-s-n] [external directories][xvc-s-n-local],
+[Rsync][xvc-s-n-rsync], [AWS S3][xvc-s-n-s3], [Google Cloud
+Storage][xvc-s-n-gcs], [MinIO][xvc-s-n-minio], [Cloudflare R2][xvc-s-n-r2],
+[Wasabi][xvc-s-n-wasabi], [Digital Ocean Spaces][xvc-s-n-do]. Please [create an
+issue]
+if you want Xvc to support another cloud storage service.
 
-> 💡**Tip**:
-> Xvc also supports any command to upload/download files. If your favorite
+> 💡 Xvc also supports any command to upload/download files. If your favorite
 > service is not listed or you want to use another tool (s5cmd, rclone, etc.),
-> you can specify a [generic](https://docs.xvc.dev/ref/xvc-storage-new-generic)
-> storage by supplying shell commands to upload and download. 
+> you can specify a [generic][xvc-s-n-generic] storage by supplying shell
+> commands to upload and download. 
 
 > 📌 **Important**:
 > Xvc never stores credentials to your connections and expects them to be
 > available in the environment. It _never_ makes network requests (for
-> tracking, statistics, etc.) without your knowledge. You can
-> [compile](https://docs.xvc.dev/intro/compile-without-default-features)
-> without cloud connection support in case you want to make sure that it
-> makes no connections to outside services.
+> tracking, statistics, etc.) without your knowledge. You can [compile] without
+> cloud connection support in case you want to make sure that it makes no
+> connections to outside services.
 
 </details>
 
 <details>
   <summary> 🪣 
-    <strong>Get Files from cloud services</strong>
+    <strong>Get files from cloud services</strong>
   </summary>
 
 When you (or someone else) want to access these files later, you can clone the
@@ -302,10 +320,6 @@ deleted or updated with [glob-items][xvc-p-s-d-glob-items].
   > glob dependencies that describe files in directory like `dir/*` when you
   > want to track all files in in. 
 
-[xvc-p-s-d-step]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step-dependency
-[xvc-p-s-d-file]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file-dependency
-[xvc-p-s-d-glob]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-dependency
-[xvc-p-s-d-glob-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-items-dependency
 
 - You can specify steps to depend only to a subset of lines in a file with
 [line ranges][xvc-p-s-d-line] or [regular expressions][xvc-p-s-d-regex]. You
@@ -313,28 +327,18 @@ can also get which lines are added, deleted or updated with more granular
 [line-items][xvc-p-s-d-line-items] or [regex-items][xvc-p-s-d-regex-items]
 dependencies. 
 
-[xvc-p-s-d-regex]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-dependency
-[xvc-p-s-d-regex-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-items-dependency
-[xvc-p-s-d-line]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-dependency
-[xvc-p-s-d-line-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-items-dependency
-
 - If you track (hyper)parameters for building/model training process in JSON or
 YAML files, you can specify steps to [depend on these parameters][xvc-p-s-d-params]. 
-
-[xvc-p-s-d-params]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#hyper-parameter-dependencies
 
 - If you want your steps to run when an HTTP(S) URL's content change, you can
 specify this with [URL dependencies][xvc-p-s-d-url]
 
-[xvc-p-s-d-url]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#url-dependencies
 
 - If you want your step to run when the output from an SQLite query change, you can specify it with [SQLite dependencies.][xvc-p-s-d-sqlite]
 
-[xvc-p-s-d-sqlite]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#sqlite-query-dependency
-
 - If none of the dependency types are fit for your needs, you can also specify a [command][xvc-p-s-d-generic] that will be run to check if a step is invalidated. 
 
-[xvc-p-s-d-generic]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic
+  </details>
 
 <details>
 <summary> 🖇️ <strong>Example to add a dependency when only certain lines in a file change</strong></summary>
@@ -444,8 +448,6 @@ YAML files. Nevertheless, you can [export][xvc-p-e] and [import][xvc-p-i] the pi
 YAML to edit in your editor. You can fix typos in commands, remove steps
 completely, or duplicate the pipeline with a new name this way. 
 
-[xvc-p-e]:  https://docs.xvc.dev/ref/xvc-pipeline-export
-[xvc-p-i]:  https://docs.xvc.dev/ref/xvc-pipeline-import
 
 ```bash
 $ xvc pipeline export --file my-pipeline.json
@@ -616,8 +618,6 @@ flowchart TD
 
 ```
 
-[mermaid]: https://mermaid.js.org
-
 You can embed this output in Markdown files, Github PRs or Jupyter notebooks.
 
 ```mermaid
@@ -630,92 +630,172 @@ flowchart TD
 
 </details>
 
-Please check [`docs.xvc.dev`](https://docs.xvc.dev) for documentation.
+Please check [`docs.xvc.dev`][docs] for documentation.
 
 ## 🤟 Big Thanks
 
-xvc stands on the following (giant) crates:
+xvc stands on the following crates:
 
-- [trycmd] is used to run all example commands in this file, [reference, and how-to documentation](https://docs.xvc.dev) at
-  every PR. It makes sure that the documentation is always up-to-date and shown commands work as described. We start
-  development by writing documentation and implementing them thanks to [trycmd].
+- Xvc has a deep CLI that has subcommands of subcommands (e.g. `xvc storage new
+s3`), and all these work with minimum bugs thanks to [clap]. With its dynamic
+completion support through [clap_complete], Xvc can complete almost anything in
+your shell. 
 
-- [serde] allows all data structures to be stored in text files. Special thanks from [`xvc-ecs`] for serializing components in an ECS with a single line of code.
+- [serde] allows all data structures to be stored in text files. Special thanks
+from [`xvc-ecs`] for serializing components in an ECS with a single line of
+code.
 
-- Xvc processes files in parallel with pipelines and parallel iterators thanks to [crossbeam] and [rayon].
+- Xvc processes files in parallel with pipelines and parallel iterators thanks
+to [crossbeam] and [rayon].
 
-- Thanks to [strum], Xvc uses enums extensively and converts almost everything to typed values from strings.
+- Thanks to [strum], Xvc uses enums extensively and converts almost everything
+to typed values from strings.
 
-- Xvc has a deep CLI that has subcommands of subcommands (e.g. `xvc storage new s3`), and all these work with minimum bugs thanks to [clap].
+- Xvc uses [rust-s3] to connect to S3 and compatible storage services. It
+employs excellent [tokio] for fast async Rust. These cloud storage features can
+be turned off thanks to Rust conditional compilation.
 
-- Xvc uses [rust-s3] to connect to S3 and compatible storage services. It employs excellent [tokio] for fast async Rust. These cloud storage features can be turned off thanks to Rust conditional compilation.
+- Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust
+[crypto] crate, Xvc couldn't detect file changes so fast.
 
-- Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust [crypto] crate, Xvc couldn't detect file changes so fast.
+- Xvc handles Git operations through calling the Git binary and (more and more)
+with [gix].
 
-- Many thanks to small and well built crates, [reflink], [relative-path], [path-absolutize], [glob] for file system and glob handling.
+- [trycmd] is used to run all example commands in this file, [reference, and
+how-to documentation][docs] at every PR. It makes sure that the documentation
+is always up-to-date and shown commands work as described. We start development
+by writing documentation and implementing them thanks to [trycmd].
 
-- Thanks to [sad_machine] for providing a State Machine implementation that I used in `xvc pipeline run`. A DAG composed of State Machines made running pipeline steps in parallel with a clean separation of process states.
+- Many thanks to small and well built crates, [reflink], [relative-path],
+[path-absolutize], [fast-glob] for file system and glob handling.
 
-- Thanks to [thiserror] and [anyhow] for making error handling a breeze. These two crates make me feel I'm doing something good for the humanity when handling errors.
+- Thanks to [sad_machine] for providing a State Machine implementation that I
+used in `xvc pipeline run`. A DAG composed of State Machines made running
+pipeline steps in parallel with a clean separation of process states.
+
+- Thanks to [thiserror] and [anyhow] for making error handling a breeze. These
+two crates make me feel I'm doing something good for the humanity when handling
+errors.
 
 - Xvc is split into many crates and owes this organization to [cargo workspaces].
 
-[crossbeam]: https://docs.rs/crossbeam/
-[cargo workspaces]: https://crates.io/crates/cargo-workspaces
-[rayon]: https://docs.rs/rayon/
-[strum]: https://docs.rs/strum/
-[clap]: https://docs.rs/clap/
-[serde]: https://serde.rs
+[Rust]: https://rust-lang.org
+[`xvc-ecs`]: https://docs.rs/xvc-ecs/
+[anyhow]: https://docs.rs/anyhow/
 [blake3]: https://docs.rs/blake3/
+[cargo workspaces]: https://crates.io/crates/cargo-workspaces
+[clap]: https://docs.rs/clap/
+[clap_complete]: https://docs.rs/clap_complete/
+[crossbeam]: https://docs.rs/crossbeam/
 [crypto]: https://docs.rs/rust-crypto/
+[fast-glob]: https://docs.rs/fast-glob/
+[gix]: https://docs.rs/gix/
+[path-absolutize]: https://docs.rs/path-absolutize/
+[rayon]: https://docs.rs/rayon/
 [reflink]: https://docs.rs/reflink/
 [relative-path]: https://docs.rs/relative-path/
-[path-absolutize]: https://docs.rs/path-absolutize/
-[glob]: https://docs.rs/glob/
-[wax]: https://docs.rs/wax/
-[trycmd]: https://docs.rs/trycmd/
-[sad_machine]: https://docs.rs/sad_machine/
-[thiserror]: https://docs.rs/thiserror/
-[anyhow]: https://docs.rs/anyhow/
 [rust-s3]: https://docs.rs/rust-s3/
-[`xvc-ecs`]: https://docs.rs/xvc-ecs/
+[sad_machine]: https://docs.rs/sad_machine/
+[serde]: https://serde.rs
+[strum]: https://docs.rs/strum/
+[thiserror]: https://docs.rs/thiserror/
 [tokio]: https://tokio.rs
-
-And, biggest thanks to Rust designers, developers and contributors. Although I can't see myself expert to appreciate it all, it's a fabulous language and environment to work with.
+[trycmd]: https://docs.rs/trycmd/
+And, biggest thanks to Rust designers, developers and contributors. It's a
+fabulous language and environment to work with.
 
 ## 🚁 Support
 
-- You can use [Discussions](https://github.com/iesahin/xvc/discussions) to ask questions. I'll answer as much as possible. Thank you.
-- I don't follow any other sites regularly. You can also reach me at [emre@xvc.dev](mailto:emre@xvc.dev)
+- If you found a bug, please [create an issue]. 
+
+- You can use [discussions] to ask questions. I'll answer as much as possible.
+Thank you.
+
+- I don't follow any other sites regularly. You can also reach me at
+[emre@xvc.dev](mailto:emre@xvc.dev)
 
 ## 👐 Contributing
 
-- Star this repo. I feel very happy for every star and send my best wishes to you. That's a certain win to spend your two seconds for me. Thanks.
-- Use xvc. Tell me how it works for you, read the [documentation](https://docs.xvc.dev), [report bugs](https://github.com/iesahin/xvc/issues), [discuss features](https://github.com/iesahin/xvc/discussions).
-- Please note that, I don't accept large code PRs. Please open an issue to discuss your idea and write/modify a
-  reference page before sending a PR. I'm happy to discuss and help you to implement your idea. Also, it may require a copyright transfer to me, as there may be cases which I provide the code in other licenses.
+- Star this repo. I feel very happy for every star and send my best wishes to
+you. That's a certain win to spend your two seconds for me. Thanks. 
+
+- Use xvc. Tell me how it works for you, read the [documentation][docs],
+[report bugs][create an issue], [discuss features][discussions].
+
+- Please note that I don't accept large code PRs. Please open an issue to
+discuss your idea and write/modify documentation before sending a PR. I'm
+happy to discuss and help you to implement your idea. 
 
 ## 📜 License
 
-Xvc is licensed under the [GNU GPL 3.0 License](https://github.com/iesahin/xvc/blob/main/LICENSE). If you want to use the code in your project with other licenses, please contact me.
+Xvc is licensed under the [GNU GPL 3.0
+License](https://github.com/iesahin/xvc/blob/main/LICENSE). 
+
+In the future, some crates can be licensed with other licenses for easier
+integration. If you want to use the some crates in your project with other
+licenses, please contact me from `emre@xvc.dev`
+
+Any contribution to Xvc is assumed to be aware that licenses can be changed.
 
 ## 🌦️ Future and Maintenance
 
-I'm using Xvc daily and I'm happy with it. Tracking all my files with Git via arbitrary servers and cloud providers is
-something I always need. I'm happy to improve and maintain it as long as I use it.
+I'm using Xvc daily for repositories up to 2TB and I'm happy with it. Tracking
+all my files with Git via arbitrary servers and cloud providers is something I
+always need. I'm happy to improve and maintain it as long as I use it.
 
-Given that I'm working on this for the last two years for pure technical bliss, you can expect me to work on it more.
+Given that I'm working on this for the last three years for pure technical bliss,
+you can expect me to work on it more.
 
 ## ⚠️ Disclaimer
 
-This software is fresh and ambitious. Although I use it and test it close to real-world conditions, it didn't go under
-the test of time. **Xvc can eat your files and spit them into the eternal void!** Please take backups.
+This software is fresh and ambitious. Although I use it and test it close to
+real-world conditions, it didn't go under the test of time. Please backup.
 
+[discussions]: https://github.com/iesahin/xvc/discussions
+[compile]: https://docs.xvc.dev/intro/compile-without-default-features
+[completions]: https://docs.xvc.dev/intro/completions
+[create an issue]: https://github.com/iesahin/xvc/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen
+[docs]: https://docs.xvc.dev
+[installed]: https://www.rust-lang.org/tools/install
+[mermaid]: https://mermaid.js.org
+[releases]: https://github.com/iesahin/xvc/releases/latest
 
-[xvc-file-track]: https://docs.xvc.dev/ref/xvc-file-track
-[xvc-file-list]: https://docs.xvc.dev/ref/xvc-file-list
-[xvc-file-recheck]: https://docs.xvc.dev/ref/xvc-file-recheck
-[xvc-file-send]: https://docs.xvc.dev/ref/xvc-file-send
 [xvc-file-bring]: https://docs.xvc.dev/ref/xvc-file-bring
 [xvc-file-copy]: https://docs.xvc.dev/ref/xvc-file-copy
+[xvc-file-list]: https://docs.xvc.dev/ref/xvc-file-list
 [xvc-file-move]: https://docs.xvc.dev/ref/xvc-file-move
+[xvc-file-recheck]: https://docs.xvc.dev/ref/xvc-file-recheck
+[xvc-file-send]: https://docs.xvc.dev/ref/xvc-file-send
+[xvc-file-track]: https://docs.xvc.dev/ref/xvc-file-track
+[xvc-init]: https://docs.xvc.dev/ref/xvc-init
+
+[xvc-p-e]:  https://docs.xvc.dev/ref/xvc-pipeline-export
+[xvc-p-i]:  https://docs.xvc.dev/ref/xvc-pipeline-import
+[xvc-p-n]: https://docs.xvc.dev/ref/xvc-pipeline-new
+[xvc-p-r]: https://docs.xvc.dev/ref/xvc-pipeline-run
+[xvc-p-s-d-file]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#file
+[xvc-p-s-d-generic]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#generic
+[xvc-p-s-d-glob-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob-items
+[xvc-p-s-d-glob]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#glob
+[xvc-p-s-d-line-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line-items
+[xvc-p-s-d-line]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#line
+[xvc-p-s-d-params]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#hyper-parameter
+[xvc-p-s-d-regex-items]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex-items
+[xvc-p-s-d-regex]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#regex
+[xvc-p-s-d-sqlite]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#sqlite-query-dependency
+[xvc-p-s-d-step]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#step
+[xvc-p-s-d-url]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency#url-dependencies
+[xvc-p-s-d]: https://docs.xvc.dev/ref/xvc-pipeline-step-dependency
+[xvc-p-s-n]: https://docs.xvc.dev/ref/xvc-pipeline-step-new
+
+[xvc-s-n-do]: https://docs.xvc.dev/ref/xvc-storage-new-digital-ocean
+[xvc-s-n-gcs]: https://docs.xvc.dev/ref/xvc-storage-new-gcs
+[xvc-s-n-generic]: https://docs.xvc.dev/ref/xvc-storage-new-generic
+[xvc-s-n-local]: https://docs.xvc.dev/ref/xvc-storage-new-local
+[xvc-s-n-minio]: https://docs.xvc.dev/ref/xvc-storage-new-minio
+[xvc-s-n-r2]: https://docs.xvc.dev/ref/xvc-storage-new-r2
+[xvc-s-n-rsync]: https://docs.xvc.dev/ref/xvc-storage-new-rsync
+[xvc-s-n-s3]: https://docs.xvc.dev/ref/xvc-storage-new-s3
+[xvc-s-n-wasabi]: https://docs.xvc.dev/ref/xvc-storage-new-wasabi 
+[xvc-s-n]: https://docs.xvc.dev/ref/xvc-storage-new 
+[xvc.py]: https://github.com/iesahin/xvc.py
