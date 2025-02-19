@@ -658,6 +658,9 @@ be turned off thanks to Rust conditional compilation.
 - Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust
 [crypto] crate, Xvc couldn't detect file changes so fast.
 
+- Xvc handles Git operations through calling the Git binary and (more and more)
+with [gix].
+
 - [trycmd] is used to run all example commands in this file, [reference, and
 how-to documentation][docs] at every PR. It makes sure that the documentation
 is always up-to-date and shown commands work as described. We start development
@@ -676,44 +679,28 @@ errors.
 
 - Xvc is split into many crates and owes this organization to [cargo workspaces].
 
-ls */Cargo.toml
-╭───┬────────────────────────┬──────┬─────────┬─────────────╮
-│ # │          name          │ type │  size   │  modified   │
-├───┼────────────────────────┼──────┼─────────┼─────────────┤
-│ 0 │ config/Cargo.toml      │ file │ 1.1 KiB │ 2 weeks ago │
-│ 1 │ core/Cargo.toml        │ file │ 2.2 KiB │ 2 weeks ago │
-│ 2 │ ecs/Cargo.toml         │ file │ 1.0 KiB │ 2 weeks ago │
-│ 3 │ file/Cargo.toml        │ file │ 2.6 KiB │ 2 weeks ago │
-│ 4 │ lib/Cargo.toml         │ file │ 3.4 KiB │ a week ago  │
-│ 5 │ logging/Cargo.toml     │ file │   738 B │ 2 weeks ago │
-│ 6 │ pipeline/Cargo.toml    │ file │ 2.5 KiB │ 2 weeks ago │
-│ 7 │ storage/Cargo.toml     │ file │ 2.8 KiB │ 2 weeks ago │
-│ 8 │ test_helper/Cargo.toml │ file │   806 B │ 2 weeks ago │
-│ 9 │ walker/Cargo.toml      │ file │ 1.1 KiB │ 2 weeks ago │
-╰───┴────────────────────────┴──────┴─────────┴─────────────╯
-
-[crossbeam]: https://docs.rs/crossbeam/
+[Rust]: https://rust-lang.org
+[`xvc-ecs`]: https://docs.rs/xvc-ecs/
+[anyhow]: https://docs.rs/anyhow/
+[blake3]: https://docs.rs/blake3/
 [cargo workspaces]: https://crates.io/crates/cargo-workspaces
-[rayon]: https://docs.rs/rayon/
-[strum]: https://docs.rs/strum/
 [clap]: https://docs.rs/clap/
 [clap_complete]: https://docs.rs/clap_complete/
-[serde]: https://serde.rs
-[blake3]: https://docs.rs/blake3/
+[crossbeam]: https://docs.rs/crossbeam/
 [crypto]: https://docs.rs/rust-crypto/
+[fast-glob]: https://docs.rs/fast-glob/
+[gix]: https://docs.rs/gix/
+[path-absolutize]: https://docs.rs/path-absolutize/
+[rayon]: https://docs.rs/rayon/
 [reflink]: https://docs.rs/reflink/
 [relative-path]: https://docs.rs/relative-path/
-[path-absolutize]: https://docs.rs/path-absolutize/
-[fast-glob]: https://docs.rs/fast-glob/
-[trycmd]: https://docs.rs/trycmd/
-[sad_machine]: https://docs.rs/sad_machine/
-[thiserror]: https://docs.rs/thiserror/
-[anyhow]: https://docs.rs/anyhow/
 [rust-s3]: https://docs.rs/rust-s3/
-[`xvc-ecs`]: https://docs.rs/xvc-ecs/
+[sad_machine]: https://docs.rs/sad_machine/
+[serde]: https://serde.rs
+[strum]: https://docs.rs/strum/
+[thiserror]: https://docs.rs/thiserror/
 [tokio]: https://tokio.rs
-[Rust]: https://rust-lang.org
-
+[trycmd]: https://docs.rs/trycmd/
 And, biggest thanks to Rust designers, developers and contributors. It's a
 fabulous language and environment to work with.
 
