@@ -37,8 +37,6 @@ lines defined by [ranges][xvc-p-s-d-line] or
 [SQLite queries][xvc-p-s-d-sqlite] or [any
 command][xvc-p-s-d-generic] that produces output. 
 
-### ✅ Common Tasks 
-
 <details>
   <summary> <strong> 🔽 Installation</strong></summary>
 
@@ -101,13 +99,13 @@ $ xvc init
 
 </details>
 
-<details open>
+<details>
   <summary>
     👣
-    <strong>Add Files for Tracking</strong>
+    <strong>Track binary files</strong>
   </summary>
 
-Include your data files and directories for tracking:
+Add your data files and directories for tracking:
 
 ```shell
 $ xvc file track my-data/
@@ -128,7 +126,7 @@ workspace.
 
 </details>
 
-<details open>
+<details>
 <summary>🫧 
     <strong>Checkout a subset of files as symlinks</strong>
 </summary>
@@ -201,7 +199,7 @@ if you want Xvc to support another cloud storage service.
 
 <details>
   <summary> 🪣 
-    <strong>Get Files from cloud services</strong>
+    <strong>Get files from cloud services</strong>
   </summary>
 
 When you (or someone else) want to access these files later, you can clone the
@@ -339,6 +337,8 @@ specify this with [URL dependencies][xvc-p-s-d-url]
 - If you want your step to run when the output from an SQLite query change, you can specify it with [SQLite dependencies.][xvc-p-s-d-sqlite]
 
 - If none of the dependency types are fit for your needs, you can also specify a [command][xvc-p-s-d-generic] that will be run to check if a step is invalidated. 
+
+  </details>
 
 <details>
 <summary> 🖇️ <strong>Example to add a dependency when only certain lines in a file change</strong></summary>
@@ -634,46 +634,77 @@ Please check [`docs.xvc.dev`][docs] for documentation.
 
 ## 🤟 Big Thanks
 
-xvc stands on the following (giant) crates:
+xvc stands on the following crates:
+
+- Xvc has a deep CLI that has subcommands of subcommands (e.g. `xvc storage new
+s3`), and all these work with minimum bugs thanks to [clap]. With its dynamic
+completion support through [clap_complete], Xvc can complete almost anything in
+your shell. 
+
+- [serde] allows all data structures to be stored in text files. Special thanks
+from [`xvc-ecs`] for serializing components in an ECS with a single line of
+code.
+
+- Xvc processes files in parallel with pipelines and parallel iterators thanks
+to [crossbeam] and [rayon].
+
+- Thanks to [strum], Xvc uses enums extensively and converts almost everything
+to typed values from strings.
+
+- Xvc uses [rust-s3] to connect to S3 and compatible storage services. It
+employs excellent [tokio] for fast async Rust. These cloud storage features can
+be turned off thanks to Rust conditional compilation.
+
+- Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust
+[crypto] crate, Xvc couldn't detect file changes so fast.
 
 - [trycmd] is used to run all example commands in this file, [reference, and
 how-to documentation][docs] at every PR. It makes sure that the documentation
 is always up-to-date and shown commands work as described. We start development
 by writing documentation and implementing them thanks to [trycmd].
 
-- [serde] allows all data structures to be stored in text files. Special thanks from [`xvc-ecs`] for serializing components in an ECS with a single line of code.
+- Many thanks to small and well built crates, [reflink], [relative-path],
+[path-absolutize], [fast-glob] for file system and glob handling.
 
-- Xvc processes files in parallel with pipelines and parallel iterators thanks to [crossbeam] and [rayon].
+- Thanks to [sad_machine] for providing a State Machine implementation that I
+used in `xvc pipeline run`. A DAG composed of State Machines made running
+pipeline steps in parallel with a clean separation of process states.
 
-- Thanks to [strum], Xvc uses enums extensively and converts almost everything to typed values from strings.
-
-- Xvc has a deep CLI that has subcommands of subcommands (e.g. `xvc storage new s3`), and all these work with minimum bugs thanks to [clap].
-
-- Xvc uses [rust-s3] to connect to S3 and compatible storage services. It employs excellent [tokio] for fast async Rust. These cloud storage features can be turned off thanks to Rust conditional compilation.
-
-- Without implementations of [BLAKE3], BLAKE2, SHA-2 and SHA-3 from Rust [crypto] crate, Xvc couldn't detect file changes so fast.
-
-- Many thanks to small and well built crates, [reflink], [relative-path], [path-absolutize], [glob] for file system and glob handling.
-
-- Thanks to [sad_machine] for providing a State Machine implementation that I used in `xvc pipeline run`. A DAG composed of State Machines made running pipeline steps in parallel with a clean separation of process states.
-
-- Thanks to [thiserror] and [anyhow] for making error handling a breeze. These two crates make me feel I'm doing something good for the humanity when handling errors.
+- Thanks to [thiserror] and [anyhow] for making error handling a breeze. These
+two crates make me feel I'm doing something good for the humanity when handling
+errors.
 
 - Xvc is split into many crates and owes this organization to [cargo workspaces].
+
+ls */Cargo.toml
+╭───┬────────────────────────┬──────┬─────────┬─────────────╮
+│ # │          name          │ type │  size   │  modified   │
+├───┼────────────────────────┼──────┼─────────┼─────────────┤
+│ 0 │ config/Cargo.toml      │ file │ 1.1 KiB │ 2 weeks ago │
+│ 1 │ core/Cargo.toml        │ file │ 2.2 KiB │ 2 weeks ago │
+│ 2 │ ecs/Cargo.toml         │ file │ 1.0 KiB │ 2 weeks ago │
+│ 3 │ file/Cargo.toml        │ file │ 2.6 KiB │ 2 weeks ago │
+│ 4 │ lib/Cargo.toml         │ file │ 3.4 KiB │ a week ago  │
+│ 5 │ logging/Cargo.toml     │ file │   738 B │ 2 weeks ago │
+│ 6 │ pipeline/Cargo.toml    │ file │ 2.5 KiB │ 2 weeks ago │
+│ 7 │ storage/Cargo.toml     │ file │ 2.8 KiB │ 2 weeks ago │
+│ 8 │ test_helper/Cargo.toml │ file │   806 B │ 2 weeks ago │
+│ 9 │ walker/Cargo.toml      │ file │ 1.1 KiB │ 2 weeks ago │
+╰───┴────────────────────────┴──────┴─────────┴─────────────╯
 
 [crossbeam]: https://docs.rs/crossbeam/
 [cargo workspaces]: https://crates.io/crates/cargo-workspaces
 [rayon]: https://docs.rs/rayon/
 [strum]: https://docs.rs/strum/
 [clap]: https://docs.rs/clap/
+[clap_complete]: https://docs.rs/clap_complete/
 [serde]: https://serde.rs
 [blake3]: https://docs.rs/blake3/
 [crypto]: https://docs.rs/rust-crypto/
 [reflink]: https://docs.rs/reflink/
 [relative-path]: https://docs.rs/relative-path/
 [path-absolutize]: https://docs.rs/path-absolutize/
-[glob]: https://docs.rs/glob/
-[wax]: https://docs.rs/wax/
+[fast-glob]: https://docs.rs/fast-glob/
 [trycmd]: https://docs.rs/trycmd/
 [sad_machine]: https://docs.rs/sad_machine/
 [thiserror]: https://docs.rs/thiserror/
@@ -681,49 +712,59 @@ by writing documentation and implementing them thanks to [trycmd].
 [rust-s3]: https://docs.rs/rust-s3/
 [`xvc-ecs`]: https://docs.rs/xvc-ecs/
 [tokio]: https://tokio.rs
+[Rust]: https://rust-lang.org
 
-And, biggest thanks to Rust designers, developers and contributors. Although I can't see myself expert to appreciate it all, it's a fabulous language and environment to work with.
+And, biggest thanks to Rust designers, developers and contributors. It's a
+fabulous language and environment to work with.
 
 ## 🚁 Support
 
+- If you found a bug, please [create an issue]. 
+
 - You can use [discussions] to ask questions. I'll answer as much as possible.
 Thank you.
+
 - I don't follow any other sites regularly. You can also reach me at
 [emre@xvc.dev](mailto:emre@xvc.dev)
-
-[discussions]: https://github.com/iesahin/xvc/discussions
 
 ## 👐 Contributing
 
 - Star this repo. I feel very happy for every star and send my best wishes to
-you. That's a certain win to spend your two seconds for me. Thanks
+you. That's a certain win to spend your two seconds for me. Thanks. 
 
 - Use xvc. Tell me how it works for you, read the [documentation][docs],
 [report bugs][create an issue], [discuss features][discussions].
 
-- Please note that, I don't accept large code PRs. Please open an issue to
-discuss your idea and write/modify a reference page before sending a PR. I'm
+- Please note that I don't accept large code PRs. Please open an issue to
+discuss your idea and write/modify documentation before sending a PR. I'm
 happy to discuss and help you to implement your idea. 
 
 ## 📜 License
 
 Xvc is licensed under the [GNU GPL 3.0
-License](https://github.com/iesahin/xvc/blob/main/LICENSE). If you want to use
-the code in your project with other licenses, please contact me from
-`emre@xvc.dev`
+License](https://github.com/iesahin/xvc/blob/main/LICENSE). 
+
+In the future, some crates can be licensed with other licenses for easier
+integration. If you want to use the some crates in your project with other
+licenses, please contact me from `emre@xvc.dev`
+
+Any contribution to Xvc is assumed to be aware that licenses can be changed.
 
 ## 🌦️ Future and Maintenance
 
-I'm using Xvc daily and I'm happy with it. Tracking all my files with Git via arbitrary servers and cloud providers is
-something I always need. I'm happy to improve and maintain it as long as I use it.
+I'm using Xvc daily for repositories up to 2TB and I'm happy with it. Tracking
+all my files with Git via arbitrary servers and cloud providers is something I
+always need. I'm happy to improve and maintain it as long as I use it.
 
-Given that I'm working on this for the last two years for pure technical bliss, you can expect me to work on it more.
+Given that I'm working on this for the last three years for pure technical bliss,
+you can expect me to work on it more.
 
 ## ⚠️ Disclaimer
 
-This software is fresh and ambitious. Although I use it and test it close to real-world conditions, it didn't go under
-the test of time. **Xvc can eat your files and spit them into the eternal void!** Please take backups.
+This software is fresh and ambitious. Although I use it and test it close to
+real-world conditions, it didn't go under the test of time. Please backup.
 
+[discussions]: https://github.com/iesahin/xvc/discussions
 [compile]: https://docs.xvc.dev/intro/compile-without-default-features
 [completions]: https://docs.xvc.dev/intro/completions
 [create an issue]: https://github.com/iesahin/xvc/issues?q=sort%3Aupdated-desc+is%3Aissue+is%3Aopen
