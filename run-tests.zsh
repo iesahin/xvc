@@ -4,5 +4,5 @@
 
 # XVC_TRYCMD_TESTS=storage,file,pipeline,core,start TRYCMD=overwrite cargo test --features test-ci -p xvc --test z_test_docs
 
-XVC_TRYCMD_TESTS=storage TRYCMD=overwrite rws cargo test --features test-ci -p xvc
+# XVC_TRYCMD_TESTS=storage TRYCMD=overwrite rws cargo test --features test-ci -p xvc
 
