@@ -5,7 +5,7 @@ use log::LevelFilter;
 
 use common::*;
 use subprocess::Exec;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
@@ -49,7 +49,7 @@ fn test_storage_new_rsync() -> Result<()> {
         "ssh {url} 'test -e {storage_dir_name} && rm -rf {storage_dir_name}'"
     ));
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "rsync",
@@ -71,7 +71,7 @@ fn test_storage_new_rsync() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
+    x(&["file", "track", the_file])?;
 
     let n_storage_files_before = jwalk::WalkDir::new(local_test_dir)
         .into_iter()
@@ -81,7 +81,7 @@ fn test_storage_new_rsync() -> Result<()> {
                 .unwrap_or_else(|_| false)
         })
         .count();
-    let push_result = x(&["file", "send", "--to", "rsync-storage", the_file])?;
+    x(&["file", "send", "--to", "rsync-storage", the_file])?;
 
     let file_list = sh(format!("ssh {url} 'ls -1R {storage_dir_name} | grep bin'"));
 
@@ -102,7 +102,7 @@ fn test_storage_new_rsync() -> Result<()> {
     let cache_dir = xvc_root.xvc_dir().join("b3");
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "rsync-storage"])?;
+    x(&["file", "bring", "--no-recheck", "--from", "rsync-storage"])?;
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -119,7 +119,7 @@ fn test_storage_new_rsync() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "rsync-storage"])?;
+    x(&["file", "bring", "--from", "rsync-storage"])?;
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()

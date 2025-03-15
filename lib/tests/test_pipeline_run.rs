@@ -7,8 +7,6 @@ use xvc_config::XvcVerbosity;
 
 use xvc::error::Result;
 
-use xvc::watch;
-
 #[test]
 fn test_pipeline_run() -> Result<()> {
     test_logging(log::LevelFilter::Warn);

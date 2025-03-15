@@ -141,7 +141,11 @@ where
     /// [crate::HStore]). This function adds events to `current` set, and these are serialized.
     /// See https://github.com/iesahin/xvc/issues/45
     pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
-        self.current.add(entity, value.clone());
+        self.current.push_event(Event::Add {
+            entity,
+            value: value.clone(),
+        });
+
         match self.entity_index.get_mut(&value) {
             Some(v) => {
                 v.push(entity);
@@ -170,7 +174,8 @@ where
     pub fn remove(&mut self, entity: XvcEntity) -> Option<T> {
         if let Some(value) = self.map.remove(&entity) {
             if let Some(vec_e) = self.entity_index.get_mut(&value) {
-                self.current.remove(entity);
+                // Add a remove event to the current event log
+                self.current.push_event(Event::Remove { entity });
                 vec_e.retain(|e| *e != entity);
                 return Some(value);
             }

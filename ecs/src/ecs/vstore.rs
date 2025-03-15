@@ -106,7 +106,10 @@ where
     /// Insert an entity to the store.
     /// It also inserts an event to the log.
     pub fn insert(&mut self, entity: XvcEntity, value: T) {
-        self.current.add(entity, value.clone());
+        self.current.push_event(Event::Add {
+            entity,
+            value: value.clone(),
+        });
         self.vec.push((entity, value))
     }
 
