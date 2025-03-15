@@ -92,6 +92,8 @@ futures = { version = "^0.3", optional = true }
 # On Linux we use "vendored" feature and on Windows we don't use that feature. 
 openssl = { version = "^0.10", optional = true }
 
+# For rclone support
+librclone = { version = "^0.9", optional = true }
 
 [features]
 default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean"]
@@ -103,7 +105,7 @@ wasabi = ["s3"]
 r2 = ["s3"]
 digital-ocean = ["s3"]
 bundled-openssl = ["openssl/vendored"]
-
+rclone = ["librclone"]
 
 [dev-dependencies]
 xvc-test-helper = { version = "0.6.16", path = "../test_helper/" }

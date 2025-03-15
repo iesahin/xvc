@@ -306,6 +306,24 @@ pub enum StorageNewSubCommand {
         #[arg(long, default_value = "")]
         storage_prefix: String,
     },
+
+    #[cfg(feature = "rclone")]
+    /// Add a new Rclone storage
+    ///
+    /// Uses the rclone configuration to connect to the storage
+    #[command()]
+    Rclone {
+        /// Name of the Xvc storage
+        #[arg(long = "name", short = 'n')]
+        name: String,
+        /// The name of the remote in rclone configuration
+        #[arg(long)]
+        remote_name: String,
+        /// The directory in the remote to store the files
+        /// If you want to use the root of this remote, use ""
+        #[arg(long)]
+        storage_prefix: String,
+    },
 }
 
 /// Specifies a storage by either a name or a GUID.
