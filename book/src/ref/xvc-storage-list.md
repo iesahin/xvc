@@ -39,9 +39,9 @@ You can list the storages and their GUIDs.
 
 ```console
 $ xvc storage list
-Local:   backup-1	675bc29a-24fc-40b1-af91-265f58c1b4fc	../backup-1
+Local:   backup-1	4975b3f7-429b-4281-9d29-0148ee4eeb56	../backup-1
 
-Local:   backup-2	305b79ef-78d1-44c3-97c4-4242c90cab15	../backup-2
+Local:   backup-2	ae6dc7ca-221c-40b2-8ebd-f8d04acabbad	../backup-2
 
 
 ```
