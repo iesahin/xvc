@@ -45,9 +45,9 @@ You can list the storages and their GUIDs.
 
 ```console
 $ xvc storage list
-Local:   backup-1	4975b3f7-429b-4281-9d29-0148ee4eeb56	../backup-1
+Local:   backup-1	631e1654-5c60-424b-b7ec-b75e4059fb2f	../backup-1
 
-Local:   backup-2	ae6dc7ca-221c-40b2-8ebd-f8d04acabbad	../backup-2
+Local:   backup-2	3eb92021-4767-4807-8e25-ed311e972c48	../backup-2
 
 
 ```
@@ -56,10 +56,10 @@ Now when we remove `backup-1` and get the list, only one of them is listed.
 
 ```console
 $ xvc storage remove --name backup-1
-Removed Storage Local:   backup-1	4975b3f7-429b-4281-9d29-0148ee4eeb56	../backup-1
+Removed Storage Local:   backup-1	631e1654-5c60-424b-b7ec-b75e4059fb2f	../backup-1
 
 $ xvc storage list
-Local:   backup-2	ae6dc7ca-221c-40b2-8ebd-f8d04acabbad	../backup-2
+Local:   backup-2	3eb92021-4767-4807-8e25-ed311e972c48	../backup-2
 
 
 ```
