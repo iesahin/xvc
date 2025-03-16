@@ -52,10 +52,6 @@ Without any options, it removes the file from Xvc tracking and the cache.
 ```console
 $ xvc file untrack data.txt
 [DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
-[DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
-[DELETE] [CWD]/.xvc/b3/c85/f3e
-[DELETE] [CWD]/.xvc/b3/c85
-[DELETE] [CWD]/.xvc/b3
 
 $ git status
 On branch [..]
@@ -73,10 +69,6 @@ lrwxr-xr-x [..] data.txt ⇒ [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b7230
 
 $ xvc file untrack data.txt
 [DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
-[DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
-[DELETE] [CWD]/.xvc/b3/c85/f3e
-[DELETE] [CWD]/.xvc/b3/c85
-[DELETE] [CWD]/.xvc/b3
 
 $ lsd -l
 .rw-rw-rw- [..] data.txt
@@ -98,14 +90,7 @@ $ xvc file untrack data.txt --restore-versions data-versions/
 [COPY] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt -> [CWD]/data-versions/data-b3-660-2cf-f6a4.txt
 [COPY] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt -> [CWD]/data-versions/data-b3-c85-f3e-8108.txt
 [DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
-[DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
-[DELETE] [CWD]/.xvc/b3/c85/f3e
-[DELETE] [CWD]/.xvc/b3/c85
 [DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt
-[DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-[DELETE] [CWD]/.xvc/b3/660/2cf
-[DELETE] [CWD]/.xvc/b3/660
-[DELETE] [CWD]/.xvc/b3
 
 $ lsd -l data-versions/
 .r--r--r-- [..] data-b3-660-2cf-f6a4.txt
@@ -136,9 +121,5 @@ $ tree .xvc/b3/
 
 $ xvc file untrack data2.txt
 [DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt
-[DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-[DELETE] [CWD]/.xvc/b3/660/2cf
-[DELETE] [CWD]/.xvc/b3/660
-[DELETE] [CWD]/.xvc/b3
 
 ```
