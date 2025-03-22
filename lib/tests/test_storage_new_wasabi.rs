@@ -5,7 +5,7 @@ use log::LevelFilter;
 
 use common::run_in_temp_xvc_dir;
 use subprocess::Exec;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
@@ -154,7 +154,7 @@ fn test_storage_new_wasabi() -> Result<()> {
         common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Warn)
     };
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "wasabi",
@@ -176,7 +176,7 @@ fn test_storage_new_wasabi() -> Result<()> {
 
     let the_file = "file-0000.bin";
 
-    let file_track_result = x(&["file", "track", the_file])?;
+    x(&["file", "track", the_file])?;
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
@@ -185,7 +185,7 @@ fn test_storage_new_wasabi() -> Result<()> {
         &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "wasabi-storage", the_file])?;
+    x(&["file", "send", "--to", "wasabi-storage", the_file])?;
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
@@ -207,7 +207,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     // remove all cache
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "wasabi-storage"])?;
+    x(&["file", "bring", "--no-recheck", "--from", "wasabi-storage"])?;
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -224,7 +224,7 @@ fn test_storage_new_wasabi() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "wasabi-storage"])?;
+    x(&["file", "bring", "--from", "wasabi-storage"])?;
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()

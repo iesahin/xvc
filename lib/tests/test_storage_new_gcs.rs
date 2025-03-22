@@ -183,7 +183,7 @@ fn test_storage_new_gcs() -> Result<()> {
         &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "gcs-storage", the_file])?;
+    x(&["file", "send", "--to", "gcs-storage", the_file])?;
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
@@ -205,7 +205,7 @@ fn test_storage_new_gcs() -> Result<()> {
     // remove all cache
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "gcs-storage"])?;
+    x(&["file", "bring", "--no-recheck", "--from", "gcs-storage"])?;
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()

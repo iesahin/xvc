@@ -62,7 +62,7 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
 }
 
 pub fn example_project_url() -> Result<String> {
-    Ok("http://e1.xvc.dev/example-xvc.tgz".to_string())
+    Ok("https://e1.xvc.dev/example-xvc.tgz".to_string())
 }
 
 pub fn example_project_template_path() -> Result<PathBuf> {

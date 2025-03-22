@@ -5,7 +5,7 @@ use std::{env, fs, path::PathBuf};
 use log::LevelFilter;
 
 use subprocess::Exec;
-use xvc::{error::Result, watch};
+use xvc::error::Result;
 use xvc_config::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
@@ -157,7 +157,7 @@ fn test_storage_new_r2() -> Result<()> {
         common::run_xvc(Some(xvc_root.as_path()), cmd, XvcVerbosity::Trace)
     };
 
-    let out = x(&[
+    x(&[
         "storage",
         "new",
         "r2",
@@ -188,7 +188,7 @@ fn test_storage_new_r2() -> Result<()> {
         &format!("| rg {storage_prefix} | rg 0.bin"),
     );
     let n_storage_files_before = file_list_before.lines().count();
-    let push_result = x(&["file", "send", "--to", "r2-storage", the_file])?;
+    x(&["file", "send", "--to", "r2-storage", the_file])?;
 
     let file_list_after = s3cmd(
         &format!("ls --recursive s3://{bucket_name}"),
@@ -210,7 +210,7 @@ fn test_storage_new_r2() -> Result<()> {
     // remove all cache
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
 
-    let fetch_result = x(&["file", "bring", "--no-recheck", "--from", "r2-storage"])?;
+    x(&["file", "bring", "--no-recheck", "--from", "r2-storage"])?;
 
     let n_local_files_after_fetch = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -227,7 +227,7 @@ fn test_storage_new_r2() -> Result<()> {
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
     fs::remove_file(the_file)?;
 
-    let pull_result = x(&["file", "bring", "--from", "r2-storage"])?;
+    x(&["file", "bring", "--from", "r2-storage"])?;
 
     let n_local_files_after_pull = jwalk::WalkDir::new(&cache_dir)
         .into_iter()
@@ -248,7 +248,7 @@ fn test_storage_new_r2() -> Result<()> {
     env::remove_var("R2_ACCESS_KEY_ID");
     env::remove_var("R2_SECRET_ACCESS_KEY");
 
-    let pull_result_2 = x(&["file", "bring", "--from", "r2-storage"])?;
+    x(&["file", "bring", "--from", "r2-storage"])?;
 
     clean_up(&xvc_root)
 }

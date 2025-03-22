@@ -16,7 +16,7 @@ use clap::{Parser, Subcommand};
 
 use clap_complete::ArgValueCompleter;
 use derive_more::Display;
-use storage::storage_identifier_completer;
+use storage::{get_storage_record, storage_identifier_completer};
 pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
@@ -506,11 +506,23 @@ fn cmd_storage_new(
 /// This doesn't remove the history associated with them.
 fn cmd_storage_remove(
     _input: std::io::StdinLock,
-    _output_snd: &XvcOutputSender,
-    _xvc_root: &XvcRoot,
-    _name: String,
+    output_snd: &XvcOutputSender,
+    xvc_root: &XvcRoot,
+    identifier: String,
 ) -> Result<()> {
-    todo!()
+    let identifier = StorageIdentifier::from_str(&identifier)?;
+    let storage = get_storage_record(output_snd, xvc_root, &identifier)?;
+    xvc_root.with_store_mut::<XvcStorage>(|store| {
+        let filtered = store.filter(|_xe, xs| xs.guid() == storage.guid());
+        if let Some((xe, xs)) = filtered.first() {
+            store.remove(*xe);
+            output!(output_snd, "Removed Storage {xs}");
+            Ok(())
+        } else {
+            Err(anyhow::anyhow!("Cannot find storage with identifier: {identifier}").into())
+        }
+    })?;
+    Ok(())
 }
 
 /// Lists all available storages.

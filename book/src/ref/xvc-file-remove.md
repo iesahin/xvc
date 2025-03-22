@@ -93,10 +93,6 @@ You can remove the file from the cache. The file is still tracked by Xvc and ava
 ```console
 $ xvc file remove --from-cache data.txt
 [DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
-[DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
-[DELETE] [CWD]/.xvc/b3/c85/f3e
-[DELETE] [CWD]/.xvc/b3/c85
-[DELETE] [CWD]/.xvc/b3
 
 $ ls
 data.txt
@@ -161,9 +157,6 @@ Total #: 1 Workspace Size:          19 Cached Size:          19
 
 $ xvc file remove --from-cache --only-version c85-f3e data.txt
 [DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496/0.txt
-[DELETE] [CWD]/.xvc/b3/c85/f3e/8108a0d53da6b4869e5532a3b72301ed58d5824ed1394d52dbcabe9496
-[DELETE] [CWD]/.xvc/b3/c85/f3e
-[DELETE] [CWD]/.xvc/b3/c85
 
 $ tree .xvc/b3/
 .xvc/b3/
@@ -208,18 +201,8 @@ $ tree .xvc/b3/
 
 $ xvc file remove --from-cache --all-versions data.txt
 [DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0/0.txt
-[DELETE] [CWD]/.xvc/b3/017/ad8/6d31011a7f6c8eabd808ba4f8cf3d3c0c65322ded3fffdfcb8d60279a0
-[DELETE] [CWD]/.xvc/b3/017/ad8
-[DELETE] [CWD]/.xvc/b3/017
 [DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367/0.txt
-[DELETE] [CWD]/.xvc/b3/660/2cf/f6a4cbc23a78205463b7086d1b0831d3d74c063122f20c1c2ea0c2d367
-[DELETE] [CWD]/.xvc/b3/660/2cf
-[DELETE] [CWD]/.xvc/b3/660
 [DELETE] [CWD]/.xvc/b3/fef/e16/d9668f4c96ee7e719517f056aa23653fe9aaeddc9bfe81324fff534152/0.txt
-[DELETE] [CWD]/.xvc/b3/fef/e16/d9668f4c96ee7e719517f056aa23653fe9aaeddc9bfe81324fff534152
-[DELETE] [CWD]/.xvc/b3/fef/e16
-[DELETE] [CWD]/.xvc/b3/fef
-[DELETE] [CWD]/.xvc/b3
 
 $ ls .xvc/
 config.local.toml

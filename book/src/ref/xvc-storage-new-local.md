@@ -75,18 +75,8 @@ You can remove the files you sent from your cache and workspace.
 ```console
 $ xvc file remove --from-cache dir-0001/
 [DELETE] [CWD]/.xvc/b3/3c6/70f/e91055c2be2e87890dba1e952d656d1e70dd196bf5530d379243c6e4aa/0.bin
-[DELETE] [CWD]/.xvc/b3/3c6/70f/e91055c2be2e87890dba1e952d656d1e70dd196bf5530d379243c6e4aa
-[DELETE] [CWD]/.xvc/b3/3c6/70f
-[DELETE] [CWD]/.xvc/b3/3c6
 [DELETE] [CWD]/.xvc/b3/7aa/354/0225bd33702c239454b63b31d1ea25721cbbfb491d6139d0b85b82d15d/0.bin
-[DELETE] [CWD]/.xvc/b3/7aa/354/0225bd33702c239454b63b31d1ea25721cbbfb491d6139d0b85b82d15d
-[DELETE] [CWD]/.xvc/b3/7aa/354
-[DELETE] [CWD]/.xvc/b3/7aa
 [DELETE] [CWD]/.xvc/b3/d7d/629/677c6d8df55ab3a1d694453c59f3ca0df494d3dc190aeef1e00abd96eb/0.bin
-[DELETE] [CWD]/.xvc/b3/d7d/629/677c6d8df55ab3a1d694453c59f3ca0df494d3dc190aeef1e00abd96eb
-[DELETE] [CWD]/.xvc/b3/d7d/629
-[DELETE] [CWD]/.xvc/b3/d7d
-[DELETE] [CWD]/.xvc/b3
 
 $ rm -rf dir-0001/
 ```

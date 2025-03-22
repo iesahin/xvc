@@ -142,17 +142,9 @@ where
         }
     }
 
-    /// Appends an [Event::Add] event to the log
-    pub fn add(&mut self, entity: XvcEntity, value: T) {
-        self.0.push(Event::Add { entity, value });
-    }
-
-    /// Appends an [Event::Remove] event to the log.
-    ///
-    /// Note that this doesn't remove anything from the log.
-    /// Stores that use event log are supposed to remove the element from their maps after this.
-    pub fn remove(&mut self, entity: XvcEntity) {
-        self.0.push(Event::Remove { entity });
+    /// Adds an [Event] to the log, either an [Event::Add] or an [Event::Remove].
+    pub fn push_event(&mut self, event: Event<T>) {
+        self.0.push(event)
     }
 }
 

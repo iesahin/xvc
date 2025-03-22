@@ -144,11 +144,6 @@ impl<T> HStore<T> {
         }
     }
 
-    /// Calls the inner map's insert
-    pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
-        self.map.insert(entity, value)
-    }
-
     /// Creates values from `func` and gets new entities from `gen` to create new records.
     pub fn from_func<F>(gen: &XvcEntityGenerator, func: F) -> Result<HStore<T>>
     where
@@ -165,6 +160,21 @@ impl<T> HStore<T> {
             hstore.map.insert(key, value);
         }
         Ok(hstore)
+    }
+
+    /// Return the number of elements in this HStore
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
+
+    /// Return true if there are no elements in this HStore
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+
+    /// Calls the inner map's insert
+    pub fn insert(&mut self, entity: XvcEntity, value: T) -> Option<T> {
+        self.map.insert(entity, value)
     }
 
     /// Returns a [HashSet] of values.

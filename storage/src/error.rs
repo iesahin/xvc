@@ -60,8 +60,11 @@ pub enum Error {
     #[error("No Guid found for Xvc Repository")]
     NoRepositoryGuidFound,
 
-    #[error("Cannot find remote with identifier: {identifier}")]
+    #[error("Cannot find storage with identifier: {identifier}")]
     CannotFindStorageWithIdentifier { identifier: StorageIdentifier },
+
+    #[error("Cannot remove storage with identifier: {identifier}")]
+    CannotRemoveStorageWithIdentifier { identifier: StorageIdentifier },
 
     #[error("Process Exec Error: {source}")]
     ProcessExecError {
