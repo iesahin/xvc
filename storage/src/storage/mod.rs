@@ -21,6 +21,9 @@ pub mod s3;
 #[cfg(feature = "wasabi")]
 pub mod wasabi;
 
+#[cfg(feature = "rclone")]
+pub mod rclone;
+
 use std::{env, ffi::OsStr, str::FromStr};
 
 pub use common_ops::XvcStorageOperations;
