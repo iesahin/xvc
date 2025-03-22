@@ -1,3 +1,5 @@
+use xvc_core::XvcRoot;
+
 pub fn cmd_new_rsync(
     output_snd: &XvcOutputSender,
     xvc_root: &XvcRoot,
