@@ -1,5 +1,10 @@
 # Xvc Changelog
 
+## v0.6.16 (2025-03-22)
+
+- PR: <https://github.com/iesahin/xvc/pull/270>
+- Added xvc storage remove command
+
 ## v0.6.15 (2025-02-01)
 
 - PR: <https://github.com/iesahin/xvc/pull/266>
