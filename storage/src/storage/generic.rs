@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, warn, XvcOutputSender};
+use xvc_logging::{error, info, warn, watch, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
@@ -304,7 +304,7 @@ impl XvcStorageOperations for XvcGenericStorage {
 
         address_map.insert(
             "{LOCAL_GUID_FILE_PATH}",
-            local_guid_path.clone().to_string_lossy().to_string(),
+            local_guid_path.to_string_lossy().to_string(),
         );
 
         let storage_guid_file_path = format!(
@@ -313,6 +313,8 @@ impl XvcStorageOperations for XvcGenericStorage {
         );
 
         address_map.insert("{STORAGE_GUID_FILE_PATH}", storage_guid_file_path);
+
+        address_map.insert("{XVC_GUID}", self.guid.to_string());
 
         let prepared_init_cmd = Self::replace_map_elements(&self.init_command, &address_map);
         let init_output = Exec::shell(prepared_init_cmd.clone())
@@ -341,7 +343,9 @@ impl XvcStorageOperations for XvcGenericStorage {
     fn list(&self, _output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.list_command, &address_map);
+        watch!(prepared_cmd);
         let cmd_output = Exec::shell(prepared_cmd).capture()?.stdout_str();
+        watch!(cmd_output);
         let xvc_guid = xvc_root.config().guid().unwrap();
         let re = Regex::new(&format!(
             "{xvc_guid}/{cp}/{d3}/{d3}/{d58}/0\\..*$",
@@ -377,6 +381,7 @@ impl XvcStorageOperations for XvcGenericStorage {
     ) -> Result<XvcStorageSendEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.upload_command, &address_map);
+        watch!(prepared_cmd);
         let storage_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
 
         Ok(XvcStorageSendEvent {
@@ -395,6 +400,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         let address_map = self.address_map();
         let temp_dir = XvcStorageTempDir::new()?;
         let prepared_cmd = Self::replace_map_elements(&self.download_command, &address_map);
+        watch!(prepared_cmd);
         let storage_paths =
             self.run_for_paths_in_temp_dir(output, xvc_root, &prepared_cmd, &temp_dir, paths);
 
@@ -415,6 +421,7 @@ impl XvcStorageOperations for XvcGenericStorage {
     ) -> Result<XvcStorageDeleteEvent> {
         let address_map = self.address_map();
         let prepared_cmd = Self::replace_map_elements(&self.delete_command, &address_map);
+        watch!(prepared_cmd);
         let storage_paths = self.run_for_paths(output, xvc_root, &prepared_cmd, paths);
 
         Ok(XvcStorageDeleteEvent {
