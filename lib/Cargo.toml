@@ -112,6 +112,7 @@ test-wasabi = ["wasabi"]
 test-digital-ocean = ["digital-ocean"]
 test-rsync = []
 test-generic-rsync = []
+test-generic-rclone = []
 test-ci = [
   "test-s3",
   "test-minio",
@@ -119,6 +120,7 @@ test-ci = [
   "test-digital-ocean",
   "test-rsync",
   "test-generic-rsync",
+  "test-generic-rclone",
 ]
 
 [dev-dependencies]
