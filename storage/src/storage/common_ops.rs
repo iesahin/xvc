@@ -73,6 +73,8 @@ impl XvcStorageOperations for XvcStorage {
             XvcStorage::Local(ref mut r) => r.init(output, xvc_root),
             XvcStorage::Generic(ref mut r) => r.init(output, xvc_root),
             XvcStorage::Rsync(ref mut r) => r.init(output, xvc_root),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "s3")]
             XvcStorage::S3(ref mut r) => r.init(output, xvc_root),
             #[cfg(feature = "minio")]
@@ -93,6 +95,8 @@ impl XvcStorageOperations for XvcStorage {
             XvcStorage::Local(lr) => lr.list(output, xvc_root),
             XvcStorage::Generic(gr) => gr.list(output, xvc_root),
             XvcStorage::Rsync(r) => r.list(output, xvc_root),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(r) => r.list(output, xvc_root),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.list(output, xvc_root),
             #[cfg(feature = "minio")]
@@ -119,6 +123,8 @@ impl XvcStorageOperations for XvcStorage {
             XvcStorage::Local(lr) => lr.send(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.send(output, xvc_root, paths, force),
             XvcStorage::Rsync(r) => r.send(output, xvc_root, paths, force),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(r) => r.send(output, xvc_root, paths, force),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.send(output, xvc_root, paths, force),
             #[cfg(feature = "minio")]
@@ -145,6 +151,8 @@ impl XvcStorageOperations for XvcStorage {
             XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
             XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
             XvcStorage::Rsync(r) => r.receive(output, xvc_root, paths, force),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(r) => r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.receive(output, xvc_root, paths, force),
             #[cfg(feature = "minio")]
@@ -170,6 +178,8 @@ impl XvcStorageOperations for XvcStorage {
             XvcStorage::Local(lr) => lr.delete(output, xvc_root, paths),
             XvcStorage::Generic(gr) => gr.delete(output, xvc_root, paths),
             XvcStorage::Rsync(r) => r.delete(output, xvc_root, paths),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(r) => r.delete(output, xvc_root, paths),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.delete(output, xvc_root, paths),
             #[cfg(feature = "minio")]
@@ -192,10 +202,16 @@ impl XvcStorageOperations for XvcStorage {
         path: &XvcCachePath,
         period: Duration,
     ) -> Result<XvcStorageExpiringShareEvent> {
+        // TODO: These should be dyn Storable
+
         match self {
             XvcStorage::Local(_) | XvcStorage::Generic(_) | XvcStorage::Rsync(_) => {
                 Err(Error::StorageDoesNotSupportSignedUrls)
             }
+
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(_) => Err(Error::StorageDoesNotSupportSignedUrls),
+
             #[cfg(feature = "s3")]
             XvcStorage::S3(r) => r.share(output, xvc_root, path, period),
             #[cfg(feature = "minio")]

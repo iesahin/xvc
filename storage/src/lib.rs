@@ -158,6 +158,31 @@ pub enum StorageNewSubCommand {
         storage_dir: String,
     },
 
+    #[cfg(feature = "rclone")]
+    /// Add a new rclone storage
+    ///
+    /// Uses the rclone configuration to connect to the storage. Configuration must be already done with the usual rclone commands.
+    #[command()]
+    Rclone {
+        /// Name of the storage
+        ///
+        /// This must be unique among all storages of the project
+        #[arg(long = "name", short = 'n')]
+        name: String,
+
+        /// The name of the remote in rclone configuration
+        ///
+        /// This is the "remote" part in "remote://dir/" URL.
+        #[arg(long)]
+        remote_name: String,
+
+        /// The directory in the remote to store the files.
+        ///
+        /// This is the "dir" part in "remote://dir/" URL.
+        #[arg(long, default_value = "")]
+        storage_prefix: String,
+    },
+
     #[cfg(feature = "s3")]
     /// Add a new S3 storage
     ///
@@ -306,24 +331,6 @@ pub enum StorageNewSubCommand {
         #[arg(long, default_value = "")]
         storage_prefix: String,
     },
-
-    #[cfg(feature = "rclone")]
-    /// Add a new Rclone storage
-    ///
-    /// Uses the rclone configuration to connect to the storage
-    #[command()]
-    Rclone {
-        /// Name of the Xvc storage
-        #[arg(long = "name", short = 'n')]
-        name: String,
-        /// The name of the remote in rclone configuration
-        #[arg(long)]
-        remote_name: String,
-        /// The directory in the remote to store the files
-        /// If you want to use the root of this remote, use ""
-        #[arg(long)]
-        storage_prefix: String,
-    },
 }
 
 /// Specifies a storage by either a name or a GUID.
@@ -417,6 +424,16 @@ fn cmd_storage_new(
             upload_command,
             delete_command,
         ),
+
+        #[cfg(feature = "rclone")]
+        StorageNewSubCommand::Rclone {
+            name,
+            remote_name,
+            storage_prefix,
+        } => {
+            storage::rclone::cmd_new_rclone(output_snd, xvc_root, name, remote_name, storage_prefix)
+        }
+
         #[cfg(feature = "s3")]
         StorageNewSubCommand::S3 {
             name,

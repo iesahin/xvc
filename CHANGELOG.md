@@ -1,5 +1,9 @@
 # Xvc Changelog
 
+## Unreleased
+
+- Added generic rclone storage tests
+
 ## v0.6.16 (2025-03-22)
 
 - PR: <https://github.com/iesahin/xvc/pull/270>

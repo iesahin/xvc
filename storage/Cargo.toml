@@ -89,14 +89,14 @@ tokio = { version = "^1.39", optional = true, features = ["rt-multi-thread"] }
 rust-s3 = { version = "^0.35", optional = true }
 futures = { version = "^0.3", optional = true }
 
-# On Linux we use "vendored" feature and on Windows we don't use that feature. 
+# On Linux we use "vendored" feature and on Windows we don't use that feature.
 openssl = { version = "^0.10", optional = true }
 
 # For rclone support
 librclone = { version = "^0.9", optional = true }
 
 [features]
-default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean"]
+default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean", "rclone"]
 async = ["rust-s3", "futures", "tokio"]
 s3 = ["async"]
 minio = ["s3"]
@@ -105,7 +105,11 @@ wasabi = ["s3"]
 r2 = ["s3"]
 digital-ocean = ["s3"]
 bundled-openssl = ["openssl/vendored"]
-rclone = ["librclone"]
+# rclone support
+# Uses rclone from the command line, without bundling librclone
+rclone = []
+# Uses librclone and bundles it. This doesn't compile on Windows as of now.
+bundled-rclone = ["rclone", "librclone"]
 
 [dev-dependencies]
 xvc-test-helper = { version = "0.6.16", path = "../test_helper/" }

@@ -54,6 +54,9 @@ use xvc_ecs::{persist, XvcStore};
 use self::generic::XvcGenericStorage;
 
 /// A storage that can be used to send and receive files with several different backends
+///
+/// TODO: Convert this to a supertrait of [XvcStorageOperations] and remove match statements
+/// Using dyn XvcStorageOperations is much cleaner
 #[derive(Clone, Debug, PartialOrd, Ord, PartialEq, Eq, Serialize, Deserialize)]
 pub enum XvcStorage {
     /// A local storage is a directory that is on the same machine as the repository.
@@ -63,6 +66,9 @@ pub enum XvcStorage {
     Generic(XvcGenericStorage),
     /// A rsync storage is a directory in an Rsync/SSH host
     Rsync(rsync::XvcRsyncStorage),
+    /// An Rclone storage is a directory in an Rclone remote
+    #[cfg(feature = "rclone")]
+    Rclone(rclone::XvcRcloneStorage),
     /// An S3 storage is a bucket in AWS S3
     #[cfg(feature = "s3")]
     S3(s3::XvcS3Storage),
@@ -91,6 +97,8 @@ impl XvcStorage {
             XvcStorage::Local(s) => s.name.clone(),
             XvcStorage::Generic(s) => s.name.clone(),
             XvcStorage::Rsync(s) => s.name.clone(),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(s) => s.name.clone(),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s) => s.name.clone(),
             #[cfg(feature = "minio")]
@@ -112,6 +120,8 @@ impl XvcStorage {
             XvcStorage::Local(s) => s.guid.to_string(),
             XvcStorage::Generic(s) => s.guid.to_string(),
             XvcStorage::Rsync(s) => s.guid.to_string(),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(s) => s.guid.to_string(),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s) => s.guid.to_string(),
             #[cfg(feature = "minio")]
@@ -158,6 +168,13 @@ impl std::fmt::Display for XvcStorage {
                     .map(|p| p.to_string())
                     .unwrap_or_else(|| "".to_string()),
                 r.storage_dir
+            ),
+
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(r) => write!(
+                f,
+                "Rclone:  {}\t{}\t{}:{}",
+                r.name, r.guid, r.remote, r.storage_prefix,
             ),
 
             #[cfg(feature = "s3")]
@@ -320,6 +337,9 @@ pub fn get_storage_record(
             XvcStorage::Local(r) => r.name == *n,
             XvcStorage::Generic(r) => r.name == *n,
             XvcStorage::Rsync(r) => r.name == *n,
+
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(r) => r.name == *n,
             #[cfg(feature = "s3")]
             XvcStorage::S3(r) => r.name == *n,
             #[cfg(feature = "minio")]
@@ -337,6 +357,8 @@ pub fn get_storage_record(
             XvcStorage::Local(lr) => lr.guid == (*id).into(),
             XvcStorage::Generic(gr) => gr.guid == (*id).into(),
             XvcStorage::Rsync(r) => r.guid == (*id).into(),
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(r) => r.guid == (*id).into(),
             #[cfg(feature = "s3")]
             XvcStorage::S3(s3r) => s3r.guid == (*id).into(),
             #[cfg(feature = "minio")]
