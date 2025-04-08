@@ -436,7 +436,6 @@ mod tests {
         match drive_list {
             Ok(cmd_output) => {
                 let stdout_str = cmd_output.stdout_str();
-                let stderr_str = cmd_output.stderr_str();
                 let lines = stdout_str.lines();
                 assert!(lines.count() > 1000);
             }
