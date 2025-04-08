@@ -93,11 +93,17 @@ pub fn rclone_cmd(
     let second_url = second_url.unwrap_or("");
     trace!(second_url);
 
-    let cmd = Exec::cmd(rclone_executable.as_path())
-        .arg(options)
-        .arg(command)
-        .arg(first_url)
-        .arg(second_url);
+    let mut cmd = Exec::cmd(rclone_executable.as_path());
+    if !options.is_empty() {
+        cmd = cmd.arg(options);
+    }
+    
+    cmd = cmd.arg(command).arg(first_url);
+
+    if !second_url.is_empty() {
+        cmd = cmd.arg(second_url);
+    }
+
 
     trace!(cmd);
 
