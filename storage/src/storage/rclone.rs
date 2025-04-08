@@ -79,6 +79,10 @@ fn rclone_executable() -> Result<AbsolutePath> {
     Ok(AbsolutePath::from(rclone_executable))
 }
 
+/// Run rclone with the given executable, options, command and urls.
+///
+/// Get `rclone_executable` from the [rclone_executable] function by supplying a command.
+/// Note that the second URL is optional for commands like `rclone ls myremote:dir/`
 pub fn rclone_cmd(
     rclone_executable: &AbsolutePath,
     options: &str,
@@ -276,7 +280,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
     ) -> Result<XvcStorageSendEvent> {
         // TODO: Parallelize this
 
-        let rclone_executable = Self::rclone_executable()?;
+        let rclone_executable = rclone_executable()?;
 
         let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
@@ -320,7 +324,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
         paths: &[XvcCachePath],
         _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let rsync_executable = Self::rclone_executable()?;
+        let rsync_executable = rclone_executable()?;
         let temp_dir = XvcStorageTempDir::new()?;
 
         let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
@@ -373,7 +377,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
         // "--delete",
         // "ssh {URL} 'rm {STORAGE_DIR}{RELATIVE_CACHE_PATH}'",
         //
-        let rclone_executable = Self::rclone_executable()?;
+        let rclone_executable = rclone_executable()?;
 
         let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
@@ -423,9 +427,6 @@ impl XvcStorageOperations for XvcRcloneStorage {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::XvcStorageOperations;
-    use xvc_core::XvcCachePath;
-    use xvc_ecs::R1NStore;
 
     #[test]
     fn test_rclone_drive_list() {
@@ -436,14 +437,12 @@ mod tests {
             Ok(cmd_output) => {
                 let stdout_str = cmd_output.stdout_str();
                 let stderr_str = cmd_output.stderr_str();
-                println!("stdout: {}", stdout_str);
-                println!("stderr: {}", stderr_str);
+                let lines = stdout_str.lines();
+                assert!(lines.count() > 1000);
             }
             Err(err) => {
                 println!("Error: {}", err);
             }
         }
-
-        assert!(false);
     }
 }
