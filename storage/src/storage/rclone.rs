@@ -159,10 +159,13 @@ impl XvcRcloneStorage {
         trace!(local_path.to_string());
         trace!(remote_url);
 
+        // With copyto we need to drop the filename in the remote path
+        // e.g. remote://dir/file.txt -> remote://dir/
+
         rclone_cmd(
             rclone_executable,
             "",
-            "copyto",
+            "copy",
             &local_path.to_string(),
             Some(remote_url),
         )
