@@ -31,41 +31,50 @@ fn sh(cmd: String) -> String {
 fn test_storage_new_rclone() -> Result<()> {
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
-    let remote_name = "xvc-generic-rclone-test";
-    let storage_dir_name = common::random_dir_name("xvc-storage", None);
-    let storage_dir = env::temp_dir().join(&storage_dir_name);
+
+    // We are going to test
+    // xvc storage new rclone --remote-name <remote_name> --name <storage_name> --storage-prefix <storage_prefix>
+    //
+    // The remote is an alias to a random local directory
+
+    // Prepare rclone remote
+    let local_dir_name = common::random_dir_name("xvc-storage", None);
+    let local_dir_path = env::temp_dir().join(&local_dir_name);
+    // Create storage directory
+    sh(format!("mkdir -p {}", local_dir_path.to_string_lossy()));
+
+    let rclone_remote_name = "xvc-rclone-test";
+    // Drop rclone remote if it exists
+    sh(format!("rclone config delete {}", rclone_remote_name));
+
+    // Create rclone remote
+    sh(format!(
+        "rclone config create {} alias remote={}",
+        rclone_remote_name,
+        local_dir_path.to_string_lossy()
+    ));
 
     let x = |cmd: &[&str]| -> Result<String> {
         common::run_xvc(Some(&xvc_root), cmd, XvcVerbosity::Trace)
     };
+
+    let storage_prefix = "xvc-rclone-storage";
+    let storage_name = "xvc-rclone-storage-name";
 
     x(&[
         "storage",
         "new",
         "rclone",
         "--name",
-        "rclone-storage",
+        storage_name,
         "--remote-name",
-        remote_name,
+        rclone_remote_name,
+        "--storage-prefix",
+        storage_prefix,
     ])?;
 
-    // Drop rclone remote if it exists
-    sh(format!("rclone config delete {}", remote_name));
-
-    // Create rclone remote
-    sh(format!(
-        "rclone config create {} alias remote={}",
-        remote_name,
-        storage_dir.to_string_lossy()
-    ));
-
-    // Create storage directory
-    sh(format!("mkdir -p {}", storage_dir.to_string_lossy()));
-
-    let storage_name = "generic-rclone-storage";
-
     let storage_list = sh(format!(
-        "rclone ls {remote_name}:{storage_dir_name}/{XVC_STORAGE_GUID_FILENAME}",
+        "rclone ls {rclone_remote_name}:{storage_prefix}/{XVC_STORAGE_GUID_FILENAME}",
     ));
 
     assert!(!storage_list.is_empty());
@@ -74,7 +83,7 @@ fn test_storage_new_rclone() -> Result<()> {
 
     x(&["file", "track", the_file])?;
 
-    let n_storage_files_before = jwalk::WalkDir::new(storage_dir)
+    let n_storage_files_before = jwalk::WalkDir::new(local_dir_path)
         .into_iter()
         .filter(|f| {
             f.as_ref()
@@ -87,7 +96,9 @@ fn test_storage_new_rclone() -> Result<()> {
 
     watch!(push_result);
 
-    let file_list = sh(format!("rclone ls {remote_name}: | grep bin"));
+    let file_list = sh(format!(
+        "rclone ls {rclone_remote_name}:{storage_prefix}/ | grep bin"
+    ));
 
     // The file should be in:
     // - storage_dir/REPO_ID/b3/ABCD...123/0.bin

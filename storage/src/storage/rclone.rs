@@ -97,15 +97,12 @@ pub fn rclone_cmd(
     if !options.is_empty() {
         cmd = cmd.arg(options);
     }
-    
+
     cmd = cmd.arg(command).arg(first_url);
 
     if !second_url.is_empty() {
         cmd = cmd.arg(second_url);
     }
-
-
-    trace!(cmd);
 
     let cmd_res = cmd.capture();
 

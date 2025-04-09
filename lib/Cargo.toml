@@ -122,6 +122,7 @@ test-ci = [
   "test-r2",
   "test-digital-ocean",
   "test-rsync",
+  "test-rclone",
   "test-generic-rsync",
   "test-generic-rclone",
 ]
