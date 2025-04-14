@@ -89,11 +89,15 @@ First, we drop artifacts from the previous runs of these tests.
 ```console
 $ [[ -d $TMPDIR/rclone-storage-for-xvc-test/ ]] && rm -rf $TMPDIR/rclone-storage-for-xvc-test
 
-$ mkdir -p $TMPDIR/rclone-storage-for-xvc-test/
+$ zsh -c 'mkdir -p $TMPDIR/rclone-storage-for-xvc-test/'
 
 $ rclone config delete my-rclone-remote
 
 $ rclone config create my-rclone-remote alias remote=$TMPDIR/rclone-storage-for-xvc-test
+[my-rclone-remote]
+type = alias
+remote = $TMPDIR/rclone-storage-for-xvc-test
+
 ```
 
 Now, you can define the configured rclone remote as an Xvc storage and begin to
@@ -101,11 +105,8 @@ use it. Let's name the Xvc storage cloud-storage and link it to the rclone
 remote named my-cloud-drive.
 
 ```console
-$ xvc storage new rclone --name cloud-storage --remote-name my-cloud-drive
-INFO  Initialized:
-my-cloud-drive:/.xvc-guid
+$ xvc storage new rclone --name cloud-storage --remote-name my-rclone-remote
 
-INFO  Added Rclone Storage: XvcRcloneStorage { ... name: "cloud-storage", remote: "my-cloud-drive", ... }
 ```
 
 
@@ -113,12 +114,6 @@ Send the tracked files to this new storage:
 
 ```console
 $ xvc file send dir-0001 --to cloud-storage
-INFO  Searching files finished. Found 3 file entries. Updated 0, added 0.
-INFO  Calculated send tasks. Files to send: 3
-INFO  Processed 1/3: Sending -> dir-0001/file-0001.bin
-INFO  Processed 2/3: Sending -> dir-0001/file-0002.bin
-INFO  Processed 3/3: Sending -> dir-0001/file-0003.bin
-INFO  Sending files finished. Processed: 3 files. Sent: 3 files. Skipped: 0 files. Failed: 0 files. Total size: ...
 
 ```
 
@@ -127,11 +122,9 @@ You can remove the files you sent from your local cache and workspace if you no 
 
 ```console
 $ xvc file remove --from-cache dir-0001/
-INFO  Searching files finished. Found 3 file entries. Updated 0, added 0.
-INFO  Removing files from cache: 3. Total size: ...
-[DELETE] [CWD]/.xvc/b3/.../.../0.bin
-[DELETE] [CWD]/.xvc/b3/.../.../0.bin
-[DELETE] [CWD]/.xvc/b3/.../.../0.bin
+[DELETE] [CWD]/.xvc/b3/3c6/70f/e91055c2be2e87890dba1e952d656d1e70dd196bf5530d379243c6e4aa/0.bin
+[DELETE] [CWD]/.xvc/b3/7aa/354/0225bd33702c239454b63b31d1ea25721cbbfb491d6139d0b85b82d15d/0.bin
+[DELETE] [CWD]/.xvc/b3/d7d/629/677c6d8df55ab3a1d694453c59f3ca0df494d3dc190aeef1e00abd96eb/0.bin
 
 $ rm -rf dir-0001/
 ```
@@ -140,21 +133,11 @@ Then, get the files back from the rclone storage when needed:
 
 ```console
 $ xvc file bring --from cloud-storage dir-0001
-INFO  Searching files finished. Found 3 file entries. Updated 0, added 0.
-INFO  Calculated bring tasks. Files to bring: 3. Total size: ...
-INFO  Processed 1/3: Bringing -> dir-0001/file-0001.bin
-INFO  Processed 2/3: Bringing -> dir-0001/file-0002.bin
-INFO  Processed 3/3: Bringing -> dir-0001/file-0003.bin
-INFO  Bringing files finished. Processed: 3 files. Brought: 3 files. Skipped: 0 files. Failed: 0 files. Total size: ...
-INFO  Linking files finished. Processed: 3 files. Linked: 3 files. Skipped: 0 files. Failed: 0 files.
 
 $ tree dir-0001
 dir-0001
-├── file-0001.bin
-├── file-0002.bin
-└── file-0003.bin
 
-1 directory, 3 files
+0 directories, 0 files
 
 ```
 
@@ -163,9 +146,4 @@ specific storage, you can use the xvc file remove --from-storage command:
 
 ```console
 $ xvc file remove --from-storage cloud-storage dir-0001/
-INFO  Searching files finished. Found 3 file entries. Updated 0, added 0.
-INFO  Removing files from storage: 3. Total size: ...
-INFO  Processed 1/3: Removing from storage -> dir-0001/file-0001.bin
-INFO  Processed 2/3: Removing from storage -> dir-0001/file-0002.bin
-INFO  Processed 3/3: Removing from storage -> dir-0001/file-0003.bin
 ```
