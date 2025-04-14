@@ -14,6 +14,8 @@ config`.
 $ xvc storage new rclone --help
 Add a new rclone storage
 
+Uses the rclone configuration to connect to the storage. The remotestorage must already be configure with `rclone config`.
+
 Usage: xvc storage new rclone [OPTIONS] --name <NAME> --remote-name <REMOTE_NAME>
 
 Options:
@@ -91,7 +93,7 @@ $ mkdir -p $TMPDIR/rclone-storage-for-xvc-test/
 
 $ rclone config delete my-rclone-remote
 
-$ rclone config create my-rclone-remote alias remote=$TMPDIR/rclone-storage-for-xvc-test",
+$ rclone config create my-rclone-remote alias remote=$TMPDIR/rclone-storage-for-xvc-test
 ```
 
 Now, you can define the configured rclone remote as an Xvc storage and begin to
