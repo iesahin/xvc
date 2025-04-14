@@ -132,6 +132,7 @@ fn test_storage_new_rclone() -> Result<()> {
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
     sh(format!("rm -rf {}", cache_dir.to_string_lossy()));
+    // Delete the file in the workspace as well
     fs::remove_file(the_file)?;
 
     x(&["file", "bring", "--from", storage_name])?;

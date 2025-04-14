@@ -161,6 +161,8 @@ impl XvcRcloneStorage {
 
         // With copyto we need to drop the filename in the remote path
         // e.g. remote://dir/file.txt -> remote://dir/
+        //
+        // This uses copy instead, to rename files
 
         rclone_cmd(
             rclone_executable,
@@ -182,7 +184,7 @@ impl XvcRcloneStorage {
         rclone_cmd(
             rclone_executable,
             "",
-            "copyto",
+            "copy",
             remote_url,
             Some(&local_path.to_string()),
         )
