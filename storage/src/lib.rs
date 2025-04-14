@@ -161,7 +161,8 @@ pub enum StorageNewSubCommand {
     #[cfg(feature = "rclone")]
     /// Add a new rclone storage
     ///
-    /// Uses the rclone configuration to connect to the storage. Configuration must be already done with the usual rclone commands.
+    /// Uses the rclone configuration to connect to the storage. The remotestorage must already be
+    /// configure with `rclone config`.
     #[command()]
     Rclone {
         /// Name of the storage

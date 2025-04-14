@@ -1,3 +1,9 @@
+//! Rclone storage implementation
+//!
+//! This module implements the XvcStorage trait for Rclone storage. It uses the rclone command line
+//! for the time being. In the future, it can use the rclone library or RPC interface.
+//!
+//! TODO: Use the rclone library or RPC interface instead of the command line.
 use std::env;
 use std::fs;
 
