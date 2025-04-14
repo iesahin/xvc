@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added rclone storage option
 - Added generic rclone storage tests
 
 ## v0.6.16 (2025-03-22)
