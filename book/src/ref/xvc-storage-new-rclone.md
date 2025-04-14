@@ -87,7 +87,7 @@ storage.
 First, we drop artifacts from the previous runs of these tests.
 
 ```console
-$ [[ -d $TMPDIR/rclone-storage-for-xvc-test/ ]] && rm -rf $TMPDIR/rclone-storage-for-xvc-test
+$ zsh -c '[[ -d $TMPDIR/rclone-storage-for-xvc-test/ ]] && rm -rf $TMPDIR/rclone-storage-for-xvc-test'
 
 $ zsh -c 'mkdir -p $TMPDIR/rclone-storage-for-xvc-test/'
 
@@ -146,4 +146,5 @@ specific storage, you can use the xvc file remove --from-storage command:
 
 ```console
 $ xvc file remove --from-storage cloud-storage dir-0001/
+
 ```
