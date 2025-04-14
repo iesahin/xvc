@@ -17,11 +17,26 @@ Add a new rclone storage
 Usage: xvc storage new rclone [OPTIONS] --name <NAME> --remote-name <REMOTE_NAME>
 
 Options:
-      --name <NAME>            Unique name for the storage
-      --remote-name <REMOTE_NAME>  Name of the pre-configured rclone remote (e.g., `my-gdrive`, `s3-bucket`)
+  -n, --name <NAME>
+          Name of the storage
+          
+          This must be unique among all storages of the project
+
+      --remote-name <REMOTE_NAME>
+          The name of the remote in rclone configuration
+          
+          This is the "remote" part in "remote://dir/" URL.
+
       --storage-prefix <STORAGE_PREFIX>
-                               Optional path/prefix within the rclone remote to store data under [default: ]
-  -h, --help                   Print help
+          The directory in the remote to store the files.
+          
+          This is the "dir" part in "remote://dir/" URL.
+          
+          [default: ]
+
+  -h, --help
+          Print help (see a summary with '-h')
+
 ```
 
 ## Examples
@@ -33,9 +48,10 @@ The command works only in Xvc repositories. Initialize one if needed:
 
 ```console
 $ git init
-Initialized empty Git repository in .../.git/
+Initialized empty Git repository in [CWD]/.git/
+
 $ xvc init
-INFO  Xvc project initialized in .../.xvc
+
 ```
 
 Create some sample data using the test helper:
@@ -49,18 +65,33 @@ dir-0001
 └── file-0003.bin
 
 1 directory, 3 files
+
 ```
 
 Xvc only sends and receives tracked files. Track the sample directory:
 
 ```console
 $ xvc file track dir-0001
-INFO  Searching files finished. Found 3 file entries. Updated 0, added 3.
-INFO  Hashing data finished. Processed 3 files. Added 3, updated 0. Total size ...
 
 $ xvc file track dir-0001
-INFO  Searching files finished. Found 3 file entries. Updated 0, added 3.
-INFO  Hashing data finished. Processed 3 files. Added 3, updated 0. Total size ...
+
+```
+
+For the purposes of these examples, we'll create an alias to a temporary
+directory for rclone remote storage. You must configure this with [rclone
+config](https://rclone.org/commands/rclone_config/) before setting up the
+storage.
+
+First, we drop artifacts from the previous runs of these tests.
+
+```console
+$ [[ -d $TMPDIR/rclone-storage-for-xvc-test/ ]] && rm -rf $TMPDIR/rclone-storage-for-xvc-test
+
+$ mkdir -p $TMPDIR/rclone-storage-for-xvc-test/
+
+$ rclone config delete my-rclone-remote
+
+$ rclone config create my-rclone-remote alias remote=$TMPDIR/rclone-storage-for-xvc-test",
 ```
 
 Now, you can define the configured rclone remote as an Xvc storage and begin to
