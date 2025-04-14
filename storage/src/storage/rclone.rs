@@ -400,7 +400,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
             let cmd_output = rclone_cmd(
                 &rclone_executable,
                 "",
-                "remove",
+                "delete",
                 &self.rclone_path_url(""),
                 None,
             );
