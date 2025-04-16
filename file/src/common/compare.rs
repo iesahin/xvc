@@ -136,7 +136,7 @@ pub fn diff_file_content_digest(
         let path_from_store = || -> Result<PathBuf> {
             let xvc_path = stored_xvc_path_store
                 .get(&xe)
-                .ok_or(EcsError::CannotFindEntityInStore { entity: xe })?;
+                .ok_or(XvcEcsError::CannotFindEntityInStore { entity: xe })?;
             let path = xvc_path.to_absolute_path(xvc_root).to_path_buf();
             Ok(path)
         };
@@ -574,11 +574,12 @@ pub fn diff_dir_content_digest(
                 })?;
         match xvc_content_diff {
             Diff::Identical | Diff::Skipped => {
-                let content = stored_xvc_content_store.get(xe).ok_or(
-                    xvc_ecs::error::Error::CannotFindKeyInStore {
-                        key: xe.to_string(),
-                    },
-                )?;
+                let content =
+                    stored_xvc_content_store
+                        .get(xe)
+                        .ok_or(XvcEcsError::CannotFindKeyInStore {
+                            key: xe.to_string(),
+                        })?;
                 content_digest_bytes.extend(content.digest().digest);
             }
             Diff::RecordMissing { actual } => {

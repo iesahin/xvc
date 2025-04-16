@@ -27,6 +27,8 @@ pub use pattern::Source;
 pub use walk_parallel::walk_parallel;
 pub use walk_serial::walk_serial;
 
+pub use walk_serial::path_metadata_map_from_file_targets;
+
 pub use abspath::AbsolutePath;
 pub use error::{Error, Result};
 

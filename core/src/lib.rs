@@ -36,23 +36,24 @@ pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
 pub use types::xvcroot::XvcRoot;
 
-pub use walker::AbsolutePath;
-pub use xvc_walker as walker;
-
 pub use error::Error;
 pub use error::Result;
-//
+
 // Reexported types
 pub use xvc_ecs::error::Error as XvcEcsError;
 pub use xvc_ecs::error::Result as XvcEcsResult;
-pub use xvc_ecs::{HStore, SharedHStore, SharedXStore, Storable, VStore, XvcEntity, XvcStore};
+pub use xvc_ecs::{
+    persist, Event, EventLog, HStore, SharedHStore, SharedXStore, Storable, VStore, XvcEntity,
+    XvcStore,
+};
 
 pub use xvc_logging::{debug, error, info, panic, uwo, uwr, warn, watch, XvcOutputSender};
-pub use xvc_walker::PathSync;
+
+pub use xvc_walker::{path_metadata_map_from_file_targets, AbsolutePath, Glob, PathSync};
 
 pub use xvc_config::error::Error as XvcConfigError;
 pub use xvc_config::error::Result as XvcConfigResult;
-pub use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
+pub use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
 pub use util::git;
 

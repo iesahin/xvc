@@ -19,21 +19,17 @@ use crossbeam_channel::{Receiver, Sender};
 use derive_more::{AsRef, Deref, Display, From, FromStr};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
+use xvc_core::path_metadata_map_from_file_targets;
+use xvc_core::EventLog;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff,
+    all_paths_and_metadata, apply_diff, conf, error, get_absolute_git_command,
+    get_git_tracked_files, info, persist,
+    types::xvcpath::XvcCachePath,
     util::{file::make_symlink, xvcignore::COMMON_IGNORE_PATTERNS},
-    ContentDigest, DiffStore, RecheckMethod, TextOrBinary, XvcFileType, XvcMetadata, XvcPath,
-    XvcPathMetadataMap, XvcRoot,
+    uwr, warn, AbsolutePath, ContentDigest, DiffStore, FromConfigKey, Glob, HStore, HashAlgorithm,
+    PathSync, RecheckMethod, Storable, TextOrBinary, XvcFileType, XvcMetadata, XvcOutputSender,
+    XvcPath, XvcPathMetadataMap, XvcRoot, XvcStore,
 };
-use xvc_core::{conf, types::xvcpath::XvcCachePath, FromConfigKey};
-use xvc_core::{get_absolute_git_command, get_git_tracked_files, HashAlgorithm};
-use xvc_ecs::ecs::event::EventLog;
-use xvc_logging::{error, info, uwr, warn, XvcOutputSender};
-
-use xvc_ecs::{persist, HStore, Storable, XvcStore};
-
-use xvc_walker::walk_serial::path_metadata_map_from_file_targets;
-use xvc_walker::{AbsolutePath, Glob, PathSync};
 
 use self::gitignore::IgnoreOp;
 
