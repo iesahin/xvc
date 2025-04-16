@@ -19,14 +19,13 @@ use crossbeam_channel::{Receiver, Sender};
 use derive_more::{AsRef, Deref, Display, From, FromStr};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
-use xvc_config::{conf, FromConfigKey};
-use xvc_core::types::xvcpath::XvcCachePath;
-use xvc_core::util::file::make_symlink;
-use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, ContentDigest, DiffStore, RecheckMethod, TextOrBinary,
-    XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, apply_diff,
+    util::{file::make_symlink, xvcignore::COMMON_IGNORE_PATTERNS},
+    ContentDigest, DiffStore, RecheckMethod, TextOrBinary, XvcFileType, XvcMetadata, XvcPath,
+    XvcPathMetadataMap, XvcRoot,
 };
+use xvc_core::{conf, types::xvcpath::XvcCachePath, FromConfigKey};
 use xvc_core::{get_absolute_git_command, get_git_tracked_files, HashAlgorithm};
 use xvc_ecs::ecs::event::EventLog;
 use xvc_logging::{error, info, uwr, warn, XvcOutputSender};

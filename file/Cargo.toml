@@ -21,11 +21,11 @@ test = true
 bench = true
 
 [dependencies]
-xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
-xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
+# xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
+# xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
+# xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
+# xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
 xvc-core = { version = "0.6.17-alpha.2", path = "../core" }
-xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
-xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
 xvc-storage = { version = "0.6.17-alpha.2", path = "../storage", default-features = false }
 
 
