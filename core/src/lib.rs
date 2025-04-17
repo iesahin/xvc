@@ -43,13 +43,15 @@ pub use error::Result;
 pub use xvc_ecs::error::Error as XvcEcsError;
 pub use xvc_ecs::error::Result as XvcEcsResult;
 pub use xvc_ecs::{
-    persist, Event, EventLog, HStore, SharedHStore, SharedXStore, Storable, VStore, XvcEntity,
-    XvcStore,
+    persist, Event, EventLog, HStore, R11Store, R1NStore, RMNStore, SharedHStore, SharedXStore,
+    Storable, VStore, XvcEntity, XvcStore,
 };
 
-pub use xvc_logging::{debug, error, info, panic, uwo, uwr, warn, watch, XvcOutputSender};
+pub use xvc_logging::{debug, error, info, output, panic, uwo, uwr, warn, watch, XvcOutputSender};
 
 pub use xvc_walker as walker;
+pub use xvc_walker::Error as XvcWalkerError;
+pub use xvc_walker::Result as XvcWalkerResult;
 
 pub use xvc_walker::{
     path_metadata_map_from_file_targets, AbsolutePath, Glob, IgnoreRules, MatchResult, PathSync,

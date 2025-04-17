@@ -1,5 +1,6 @@
 //! [Error] codes and messages for xvc-file crate
 use log::{debug, error, info, trace, warn};
+use xvc_core::{XvcConfigError, XvcEcsError, XvcWalkerError};
 
 use std::fmt::Debug;
 use std::io;
@@ -30,12 +31,12 @@ pub enum Error {
     #[error("Walker Error: {source}")]
     WalkerError {
         #[from]
-        source: xvc_walker::Error,
+        source: XvcWalkerError,
     },
     #[error("Ecs Error: {source}")]
     EcsError {
         #[from]
-        source: xvc_ecs::error::Error,
+        source: XvcEcsError,
     },
     #[error("Storage Error: {source}")]
     StorageError {
@@ -56,7 +57,7 @@ pub enum Error {
     #[error("Xvc Config Error: {source}")]
     XvcConfigError {
         #[from]
-        source: xvc_config::error::Error,
+        source: XvcConfigError,
     },
     #[error("I/O Error: {source}")]
     IoError {

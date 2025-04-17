@@ -14,9 +14,9 @@ use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
+use xvc_core::{debug, error, XvcOutputSender};
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, R11Store, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, XvcOutputSender};
+use xvc_core::{HStore, R11Store, XvcEntity, XvcStore};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]

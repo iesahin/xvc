@@ -19,7 +19,6 @@ use crossbeam_channel::{Receiver, Sender};
 use derive_more::{AsRef, Deref, Display, From, FromStr};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
-use xvc_core::path_metadata_map_from_file_targets;
 use xvc_core::EventLog;
 use xvc_core::{
     all_paths_and_metadata, apply_diff, conf, error, get_absolute_git_command,
@@ -30,6 +29,7 @@ use xvc_core::{
     PathSync, RecheckMethod, Storable, TextOrBinary, XvcFileType, XvcMetadata, XvcOutputSender,
     XvcPath, XvcPathMetadataMap, XvcRoot, XvcStore,
 };
+use xvc_core::{path_metadata_map_from_file_targets, XvcWalkerError};
 
 use self::gitignore::IgnoreOp;
 
@@ -576,13 +576,13 @@ pub fn cache_paths_for_xvc_paths(
         let cache_paths = path_digest_events
             .iter()
             .filter_map(|cd_event| match cd_event {
-                xvc_ecs::ecs::event::Event::Add { entity: _, value } => {
+                xvc_core::Event::Add { entity: _, value } => {
                     let xcp = uwr!(XvcCachePath::new(xp, value), output_snd
                  );
 
                     Some(xcp)
                 }
-                xvc_ecs::ecs::event::Event::Remove { entity } => {
+                xvc_core::Event::Remove { entity } => {
                     // We don't delete ContentDigests of available XvcPaths.
                     // This is an error.
                     error!(
@@ -631,7 +631,7 @@ pub fn move_to_cache(
                 fs::set_permissions(cache_dir, dir_perm)?;
 
                 fs::rename(path, cache_path)
-                    .map_err(|source| xvc_walker::Error::IoError { source })?;
+                    .map_err(|source| XvcWalkerError::IoError { source })?;
                 let mut file_perm = cache_path.metadata()?.permissions();
                 file_perm.set_readonly(true);
                 fs::set_permissions(cache_path, file_perm.clone())?;
