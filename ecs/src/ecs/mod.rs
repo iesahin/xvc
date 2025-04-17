@@ -26,8 +26,6 @@ use std::sync::Once;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use crate::Storable;
-
 use serde::{Deserialize, Serialize};
 
 use crate::error::{Error as XvcError, Result};

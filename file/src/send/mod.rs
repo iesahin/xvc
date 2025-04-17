@@ -12,8 +12,8 @@ use xvc_core::{
     util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
     XvcRoot,
 };
-use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{error, XvcOutputSender};
+use xvc_core::{HStore, XvcStore};
+use xvc_core::{error, XvcOutputSender};
 use xvc_storage::{
     storage::{get_storage_record, storage_identifier_completer},
     StorageIdentifier, XvcStorageOperations,

@@ -16,15 +16,15 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
+use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigResult};
 
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{
     apply_diff, ContentDigest, Diff, DiffStore, HashAlgorithm, RecheckMethod, XvcCachePath,
     XvcMetadata, XvcPath, XvcRoot,
 };
-use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, info, uwr, warn, XvcOutputSender};
+use xvc_core::{error, info, uwr, warn, XvcOutputSender};
+use xvc_core::{HStore, XvcEntity, XvcStore};
 
 /// Check out file from cache by a copy or link
 ///
@@ -61,7 +61,7 @@ pub struct RecheckCLI {
 }
 
 impl UpdateFromXvcConfig for RecheckCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
+    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
         let recheck_method = self
             .recheck_method
             .unwrap_or_else(|| RecheckMethod::from_conf(conf));

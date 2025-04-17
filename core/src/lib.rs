@@ -47,7 +47,10 @@ pub use xvc_ecs::{
     Storable, VStore, XvcEntity, XvcStore,
 };
 
-pub use xvc_logging::{debug, error, info, output, panic, uwo, uwr, warn, watch, XvcOutputSender};
+pub use xvc_logging::{
+    debug, error, info, output, panic, setup_logging, uwo, uwr, warn, watch, XvcOutputLine,
+    XvcOutputSender,
+};
 
 pub use xvc_walker as walker;
 pub use xvc_walker::Error as XvcWalkerError;
@@ -59,7 +62,9 @@ pub use xvc_walker::{
 
 pub use xvc_config::error::Error as XvcConfigError;
 pub use xvc_config::error::Result as XvcConfigResult;
-pub use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
+pub use xvc_config::{
+    conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigParams, XvcVerbosity,
+};
 
 pub use util::git;
 

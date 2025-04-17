@@ -8,8 +8,8 @@ use xvc_core::{
     util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
     XvcRoot,
 };
-use xvc_ecs::XvcStore;
-use xvc_logging::{uwo, watch, XvcOutputSender};
+use xvc_core::XvcStore;
+use xvc_core::{uwo, watch, XvcOutputSender};
 use xvc_storage::{
     storage::{get_storage_record, storage_identifier_completer},
     StorageIdentifier, XvcStorageOperations,

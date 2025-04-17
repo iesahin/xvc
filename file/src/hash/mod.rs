@@ -7,14 +7,15 @@ use clap::Parser;
 use crossbeam_channel::unbounded;
 use log::warn;
 use std::{env, path::PathBuf};
-use xvc_config::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigParams};
+use xvc_core::AbsolutePath;
 use xvc_core::ContentDigest;
+use xvc_core::XvcConfigResult;
+use xvc_core::{output, XvcOutputSender};
 use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
 };
-use xvc_logging::{output, XvcOutputSender};
-use xvc_walker::AbsolutePath;
+use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigParams};
 
 use crate::common::pipe_path_digest;
 
@@ -44,7 +45,7 @@ pub struct HashCLI {
 }
 
 impl UpdateFromXvcConfig for HashCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
+    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
         let algorithm = self
             .algorithm
             .unwrap_or_else(|| HashAlgorithm::from_conf(conf));

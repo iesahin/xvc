@@ -120,7 +120,7 @@ macro_rules! output {
     };
     ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
+            (&$channel).send(Some($crate::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
         }
     };
 }

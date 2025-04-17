@@ -19,13 +19,14 @@ use std::path::Path;
 use std::str::FromStr;
 use std::time::SystemTime;
 use strum_macros::{Display as EnumDisplay, EnumString, VariantNames};
-use xvc_config::{conf, FromConfigKey, UpdateFromXvcConfig};
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
+use xvc_core::{conf, FromConfigKey, UpdateFromXvcConfig};
+use xvc_core::{error, output, XvcOutputSender};
 use xvc_core::{
-    ContentDigest, HashAlgorithm, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot,
+    ContentDigest, HashAlgorithm, RecheckMethod, XvcConfigResult, XvcFileType, XvcMetadata,
+    XvcPath, XvcRoot,
 };
-use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{error, output, XvcOutputSender};
+use xvc_core::{HStore, XvcEntity, XvcStore};
 
 /// Format specifier for file list columns
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
@@ -582,10 +583,7 @@ pub struct ListCLI {
 }
 
 impl UpdateFromXvcConfig for ListCLI {
-    fn update_from_conf(
-        self,
-        conf: &xvc_config::XvcConfig,
-    ) -> xvc_config::error::Result<Box<Self>> {
+    fn update_from_conf(self, conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
         let no_summary = self.no_summary || conf.get_bool("file.list.no_summary")?.option;
         let show_dot_files =
             self.show_dot_files || conf.get_bool("file.list.show_dot_files")?.option;

@@ -12,14 +12,14 @@ use xvc_core::util::completer::strum_variants_completer;
 
 use std::collections::HashSet;
 
-use xvc_config::FromConfigKey;
-use xvc_config::{UpdateFromXvcConfig, XvcConfig};
 use xvc_core::util::git::build_gitignore;
+use xvc_core::{FromConfigKey, XvcConfigResult};
+use xvc_core::{UpdateFromXvcConfig, XvcConfig};
 
+use xvc_core::XvcOutputSender;
 use xvc_core::{
     ContentDigest, HashAlgorithm, TextOrBinary, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot,
 };
-use xvc_logging::XvcOutputSender;
 
 use crate::carry_in::carry_in;
 use crate::common::compare::{
@@ -34,7 +34,7 @@ use std::path::PathBuf;
 
 use xvc_core::RecheckMethod;
 use xvc_core::XvcPath;
-use xvc_ecs::{HStore, XvcEntity};
+use xvc_core::{HStore, XvcEntity};
 
 /// Add files for tracking with Xvc
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]
@@ -79,7 +79,7 @@ impl UpdateFromXvcConfig for TrackCLI {
     /// Updates `xvc file` configuration from the configuration files.
     /// Command line options take precedence over other sources.
     /// If options are not given, they are supplied from [XvcConfig]
-    fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
+    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
         let recheck_method = self
             .recheck_method
             .unwrap_or_else(|| RecheckMethod::from_conf(conf));
