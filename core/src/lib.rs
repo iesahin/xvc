@@ -49,7 +49,11 @@ pub use xvc_ecs::{
 
 pub use xvc_logging::{debug, error, info, panic, uwo, uwr, warn, watch, XvcOutputSender};
 
-pub use xvc_walker::{path_metadata_map_from_file_targets, AbsolutePath, Glob, PathSync};
+pub use xvc_walker as walker;
+
+pub use xvc_walker::{
+    path_metadata_map_from_file_targets, AbsolutePath, Glob, IgnoreRules, MatchResult, PathSync,
+};
 
 pub use xvc_config::error::Error as XvcConfigError;
 pub use xvc_config::error::Result as XvcConfigResult;

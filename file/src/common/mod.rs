@@ -303,7 +303,7 @@ pub fn targets_from_disk(
             xvc_root,
             // This should be ok as we checked empty condition on has_globs_or_dirs
             targets.clone().unwrap(),
-            &xvc_walker::WalkOptions::xvcignore(),
+            &xvc_core::walker::WalkOptions::xvcignore(),
         )?;
         let mut xpmm = HashMap::new();
 

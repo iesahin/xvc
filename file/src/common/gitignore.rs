@@ -10,9 +10,9 @@ use std::thread::JoinHandle;
 use xvc_core::util::git::build_gitignore;
 
 use crate::{Result, CHANNEL_CAPACITY};
+use xvc_core::{debug, error, info, uwr, XvcOutputSender};
+use xvc_core::{AbsolutePath, IgnoreRules, MatchResult};
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_logging::{debug, error, info, uwr, XvcOutputSender};
-use xvc_walker::{AbsolutePath, IgnoreRules, MatchResult};
 
 /// Used to signal ignored files and directories to the ignore handler
 pub enum IgnoreOperation {
