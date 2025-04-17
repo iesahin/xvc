@@ -50,7 +50,7 @@ crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
 ## Git Operations
-gix = "^0.69"
+gix = "^0.71"
 
 ## Utilities to complete commands
 clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
@@ -78,13 +78,13 @@ paste = "1.0"
 
 ## Misc
 regex = "^1.10"
-strum = "^0.26"
-strum_macros = "^0.26"
+strum = "^0.27"
+strum_macros = "^0.27"
 lazy_static = "^1.5"
 uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
-cached = "^0.54"
-derive_more = { version = "^1.0", features = ["full"] }
+cached = "^0.55"
+derive_more = { version = "^2.0", features = ["full"] }
 itertools = "^0.14"
 
 

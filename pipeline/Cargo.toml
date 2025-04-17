@@ -48,7 +48,7 @@ rmp-serde = "1.3.0"
 toml = "^0.8"
 
 ## Caching
-cached = "^0.54"
+cached = "^0.55"
 
 ## Parallelization
 rayon = "^1.10"
@@ -70,7 +70,7 @@ fern = { version = "^0.7", features = ["colored", "meta-logging-in-format"] }
 
 ## sqlite
 ## TODO: Add feature flags for sqlite when bundling needed
-rusqlite = "^0.32"
+rusqlite = "^0.34"
 fallible-iterator = "^0.3"
 
 ## Networking
@@ -80,7 +80,7 @@ reqwest = { version = "^0.12", features = ["blocking", "json", "gzip"] }
 comfy-table = "7.1.1"
 
 ## Graphs
-petgraph = "^0.7"
+petgraph = "^0.8"
 tabbycat = "0.1.3"
 
 ## Misc
@@ -89,15 +89,15 @@ subprocess = "^0.2"
 sad_machine = "^1.0"
 regex = "^1.10"
 chrono = "^0.4"
-strum = "^0.26"
-strum_macros = "^0.26"
+strum = "^0.27"
+strum_macros = "^0.27"
 lazy_static = "^1.5"
 uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
 itertools = "^0.14"
 # FIXME: Use features selectively
-derive_more = { version = "^1.0", features = ["full"] }
+derive_more = { version = "^2.0", features = ["full"] }
 
 [dev-dependencies]
 xvc-test-helper = { version = "0.6.17-alpha.2", path = "../test_helper/" }
