@@ -3,7 +3,7 @@ mod common;
 use common::*;
 use log::LevelFilter;
 use xvc::error::Result;
-use xvc_config::XvcVerbosity;
+use xvc_core::XvcVerbosity;
 
 #[test]
 fn test_pipeline_dag() -> Result<()> {

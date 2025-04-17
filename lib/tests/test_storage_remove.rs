@@ -3,7 +3,7 @@ mod common;
 use log::LevelFilter;
 
 use xvc::error::Result;
-use xvc_config::XvcVerbosity;
+use xvc_core::XvcVerbosity;
 
 #[test]
 fn test_storage_remove() -> Result<()> {

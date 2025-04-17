@@ -12,8 +12,8 @@ use xvc_core::{
     },
     XvcPath, XvcRoot,
 };
-use xvc_ecs::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
-use xvc_logging::{output, XvcOutputSender};
+use xvc_core::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
+use xvc_core::{output, XvcOutputSender};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},

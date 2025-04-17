@@ -3,7 +3,7 @@ use common::*;
 use std::path::PathBuf;
 
 use regex::Regex;
-use xvc_config::XvcVerbosity;
+use xvc_core::XvcVerbosity;
 
 use xvc::error::Result;
 use xvc_core::XvcRoot;

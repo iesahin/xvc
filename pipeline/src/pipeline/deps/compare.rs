@@ -8,7 +8,7 @@ use xvc_core::types::diff::Diffable;
 use xvc_core::XvcPathMetadataMap;
 
 use xvc_core::{Diff, HashAlgorithm, TextOrBinary, XvcPath, XvcRoot};
-use xvc_ecs::{HStore, Storable};
+use xvc_core::{HStore, Storable};
 
 use super::glob::GlobDep;
 use super::line_items::LineItemsDep;

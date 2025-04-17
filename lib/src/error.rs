@@ -47,18 +47,18 @@ pub enum Error {
     #[error("Ecs Error: {source}")]
     EcsError {
         #[from]
-        source: xvc_ecs::error::Error,
+        source: xvc_core::error::Error,
     },
     #[error("Walker Error: {source}")]
     WalkerError {
         #[from]
-        source: xvc_walker::error::Error,
+        source: xvc_core::error::Error,
     },
 
     #[error("Configuration Error: {source}")]
     ConfigError {
         #[from]
-        source: xvc_config::error::Error,
+        source: xvc_core::error::Error,
     },
 
     #[error("Storage Error: {source}")]

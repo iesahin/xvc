@@ -24,19 +24,19 @@ use xvc_core::types::xvcroot::find_root;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::util::completer::git_branch_completer;
 use xvc_core::util::completer::git_reference_completer;
-use xvc_logging::XvcOutputSender;
-use xvc_logging::{debug, error, uwr, XvcOutputLine};
+use xvc_core::XvcOutputSender;
+use xvc_core::{debug, error, uwr, XvcOutputLine};
 
-use xvc_config::{XvcConfigParams, XvcVerbosity};
+use xvc_core::{XvcConfigParams, XvcVerbosity};
 use xvc_core::check_ignore;
 pub use xvc_core::default_project_config;
 use xvc_core::root;
 use xvc_core::CHANNEL_BOUND;
 use xvc_file as file;
-use xvc_logging::setup_logging;
+use xvc_core::setup_logging;
 use xvc_pipeline as pipeline;
 use xvc_storage as storage;
-use xvc_walker::AbsolutePath;
+use xvc_core::AbsolutePath;
 
 use crate::cli;
 use crate::error::{Error, Result};

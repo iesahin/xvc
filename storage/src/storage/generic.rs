@@ -6,8 +6,8 @@ use relative_path::RelativePath;
 use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, warn, watch, XvcOutputSender};
+use xvc_core::R1NStore;
+use xvc_core::{error, info, warn, watch, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 

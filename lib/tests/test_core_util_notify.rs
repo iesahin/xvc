@@ -14,8 +14,8 @@ use xvc::error::Result;
 use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::XVCIGNORE_FILENAME;
 
-use xvc_walker::notify::{make_polling_watcher, PathEvent};
-use xvc_walker::{walk_serial, WalkOptions};
+use xvc_core::notify::{make_polling_watcher, PathEvent};
+use xvc_core::{walk_serial, WalkOptions};
 
 #[test]
 fn test_notify() -> Result<()> {

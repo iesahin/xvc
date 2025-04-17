@@ -22,9 +22,9 @@ use serde::{Deserialize, Serialize};
 use xvc_core::XvcPathMetadataProvider;
 
 use crate::error::{Error, Result};
-use xvc_config::XvcConfig;
+use xvc_core::XvcConfig;
 use xvc_core::{glob_includes, glob_paths, XvcPath, XvcPathMetadataMap, XvcRoot};
-use xvc_ecs::{persist, HStore, XvcStore};
+use xvc_core::{persist, HStore, XvcStore};
 
 pub use self::file::FileDep;
 pub use self::generic::GenericDep;

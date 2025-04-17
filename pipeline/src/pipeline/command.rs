@@ -12,7 +12,7 @@ use subprocess as sp;
 use xvc_file::CHANNEL_CAPACITY;
 
 use serde::{Deserialize, Serialize};
-use xvc_ecs::persist;
+use xvc_core::persist;
 
 use crate::XvcStep;
 

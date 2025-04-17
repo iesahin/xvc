@@ -26,7 +26,7 @@ pub enum Error {
     #[error("Xvc ECS Error: {source}")]
     EcsError {
         #[from]
-        source: xvc_ecs::error::Error,
+        source: xvc_core::error::Error,
     },
 
     #[error("Xvc Core Error: {source}")]
@@ -38,13 +38,13 @@ pub enum Error {
     #[error("Xvc Config Error: {source}")]
     ConfigError {
         #[from]
-        source: xvc_config::error::Error,
+        source: xvc_core::error::Error,
     },
 
     #[error("Walker Error: {source}")]
     WalkerError {
         #[from]
-        source: xvc_walker::error::Error,
+        source: xvc_core::error::Error,
     },
 
     #[error("Cannot infer format from file extension: {extension:?}")]

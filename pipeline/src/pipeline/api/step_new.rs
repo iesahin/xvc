@@ -1,6 +1,6 @@
 use crate::error::{Error, Result};
 use xvc_core::XvcRoot;
-use xvc_ecs::{R11Store, R1NStore, XvcStore};
+use xvc_core::{R11Store, R1NStore, XvcStore};
 
 use crate::{pipeline::XvcStepInvalidate, XvcPipeline, XvcStep, XvcStepCommand};
 

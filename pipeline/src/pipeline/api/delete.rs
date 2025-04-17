@@ -1,6 +1,6 @@
 use crate::error::{Error, Result};
 use clap::Parser;
-use xvc_config::FromConfigKey;
+use xvc_core::FromConfigKey;
 use xvc_core::XvcRoot;
 
 use crate::XvcPipeline;

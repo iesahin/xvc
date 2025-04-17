@@ -5,13 +5,13 @@ use std::{
 };
 
 use log::LevelFilter;
-use xvc_walker::*;
+use xvc_core::*;
 
 use test_case::test_case;
 
 use xvc::error::Result;
 use xvc_test_helper::*;
-use xvc_walker::AbsolutePath;
+use xvc_core::AbsolutePath;
 
 // TODO: Patterns shouldn't have / prefix, but an appropriate PathKind
 #[test_case(true => matches Ok(_); "this is to refresh the dir for each test run")]
@@ -50,7 +50,7 @@ fn new_dir_with_ignores(
 }
 
 fn create_patterns(root: &str, dir: Option<&str>, patterns: &str) -> Vec<Pattern> {
-    xvc_walker::content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
+    xvc_core::content_to_patterns(Path::new(root), dir.map(Path::new), patterns)
 }
 
 #[test_case("", "" => it contains "dir-0002/file-0001.bin" ; "t3733909666")]

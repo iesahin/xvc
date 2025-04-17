@@ -10,10 +10,10 @@ use s3::Region;
 use tokio::io::AsyncWriteExt;
 use xvc_core::XvcCachePath;
 use xvc_core::XvcRoot;
-use xvc_logging::error;
-use xvc_logging::info;
-use xvc_logging::output;
-use xvc_logging::XvcOutputSender;
+use xvc_core::error;
+use xvc_core::info;
+use xvc_core::output;
+use xvc_core::XvcOutputSender;
 
 use crate::Error;
 use crate::Result;

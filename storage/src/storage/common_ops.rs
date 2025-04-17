@@ -8,7 +8,7 @@ use crate::storage::{
     XvcStorageReceiveEvent, XvcStorageSendEvent,
 };
 
-use xvc_logging::XvcOutputSender;
+use xvc_core::XvcOutputSender;
 
 use crate::{Error, Result};
 

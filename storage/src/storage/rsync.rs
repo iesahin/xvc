@@ -5,9 +5,9 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, trace, uwr, warn, XvcOutputSender};
-use xvc_walker::AbsolutePath;
+use xvc_core::R1NStore;
+use xvc_core::{error, info, trace, uwr, warn, XvcOutputSender};
+use xvc_core::AbsolutePath;
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 

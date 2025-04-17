@@ -9,7 +9,7 @@ use anyhow::anyhow;
 use regex::Regex;
 
 use xvc::error::Result;
-use xvc_logging::{info, warn};
+use xvc_core::{info, warn};
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};

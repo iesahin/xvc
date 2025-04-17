@@ -1,6 +1,6 @@
 mod common;
 use common::*;
-use xvc_config::XvcVerbosity;
+use xvc_core::XvcVerbosity;
 
 use xvc::error::Result;
 

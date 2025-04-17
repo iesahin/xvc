@@ -2,7 +2,7 @@ use crate::error::Result;
 use log::info;
 use std::path::PathBuf;
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_ecs::R1NStore;
+use xvc_core::R1NStore;
 
 use crate::{XvcMetricsFormat, XvcOutput, XvcPipeline, XvcStep};
 

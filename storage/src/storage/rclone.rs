@@ -13,8 +13,8 @@ use subprocess::{CaptureData, Exec};
 use xvc_core::AbsolutePath;
 use xvc_core::XvcCachePath;
 use xvc_core::XvcRoot;
-use xvc_ecs::R1NStore;
-use xvc_logging::{error, info, trace, uwr, warn, XvcOutputSender};
+use xvc_core::R1NStore;
+use xvc_core::{error, info, trace, uwr, warn, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 

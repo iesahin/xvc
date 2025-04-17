@@ -39,8 +39,8 @@ pub use local::XvcLocalStorage;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_logging::{error, XvcOutputSender};
-use xvc_walker::AbsolutePath;
+use xvc_core::{error, XvcOutputSender};
+use xvc_core::AbsolutePath;
 
 use clap_complete::CompletionCandidate;
 
@@ -49,7 +49,7 @@ use crate::{Error, Result, StorageIdentifier};
 use relative_path::{RelativePath, RelativePathBuf};
 
 use xvc_core::{util::completer::load_store_for_completion, XvcCachePath, XvcRoot};
-use xvc_ecs::{persist, XvcStore};
+use xvc_core::{persist, XvcStore};
 
 use self::generic::XvcGenericStorage;
 

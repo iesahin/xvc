@@ -4,6 +4,8 @@
 
 - Added rclone storage option
 - Added generic rclone storage tests
+- Reexported xvc-logging, xvc-config, xvc-ecs functionality from xvc-core
+- Removed lower level crate dependencies from xvc-file, xvc-pipelines, xvc-storage crates
 
 ## v0.6.16 (2025-03-22)
 

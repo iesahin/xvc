@@ -21,10 +21,10 @@ pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
 
-use xvc_ecs::XvcStore;
+use xvc_core::XvcStore;
 
 use xvc_core::XvcRoot;
-use xvc_logging::{output, XvcOutputSender};
+use xvc_core::{output, XvcOutputSender};
 
 /// Storage (on the cloud) management commands
 #[derive(Debug, Parser, Clone)]

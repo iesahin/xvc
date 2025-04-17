@@ -4,8 +4,8 @@ use crate::error::Result;
 use clap::Parser;
 use xvc_core::error::Error as CoreError;
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_ecs::error::Error as EcsError;
-use xvc_ecs::R11Store;
+use xvc_core::error::Error as EcsError;
+use xvc_core::R11Store;
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
