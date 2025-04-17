@@ -19,11 +19,11 @@ default = []
 bundled-sqlite = ["rusqlite/bundled"]
 
 [dependencies]
-xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
+# xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
 xvc-core = { version = "0.6.17-alpha.2", path = "../core" }
-xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
-xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
-xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
+# xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
+# xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
+# xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
 xvc-file = { version = "0.6.17-alpha.2", path = "../file", default-features = false }
 
 ## Cli and config

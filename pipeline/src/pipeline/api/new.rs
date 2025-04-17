@@ -2,9 +2,9 @@ use std::path::PathBuf;
 
 use crate::error::Result;
 use clap::Parser;
-use xvc_core::{XvcPath, XvcRoot};
 use xvc_core::error::Error as EcsError;
 use xvc_core::R11Store;
+use xvc_core::{XvcEcsError, XvcPath, XvcRoot};
 
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
@@ -25,7 +25,7 @@ pub fn cmd_new(xvc_root: &XvcRoot, pipeline_name: &str, opts: NewCLI) -> Result<
         xvc_root.with_r11store_mut(|rs: &mut R11Store<XvcPipeline, XvcPipelineRunDir>| {
             let name = pipeline_name.to_string();
             if rs.left.iter().any(|(_, p)| p.name == name) {
-                Err(EcsError::KeyAlreadyFound {
+                Err(XvcEcsError::KeyAlreadyFound {
                     key: name,
                     store: "xvc-pipeline".into(),
                 }

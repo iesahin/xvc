@@ -32,9 +32,10 @@ use pipeline::util::pipeline_name_completer;
 use serde::{Deserialize, Serialize};
 use std::io::BufRead;
 use std::str::FromStr;
-use xvc_core::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
-use xvc_core::XvcStore;
+use xvc_core::XvcConfigResult;
 use xvc_core::XvcOutputSender;
+use xvc_core::XvcStore;
+use xvc_core::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;
@@ -109,7 +110,7 @@ pub enum PipelineSubCommand {
 }
 
 impl UpdateFromXvcConfig for PipelineCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> xvc_core::error::Result<Box<Self>> {
+    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
         let default_pipeline = XvcPipeline::from_conf(conf);
         let name = Some(self.pipeline_name.clone().unwrap_or(default_pipeline.name));
         Ok(Box::new(Self {

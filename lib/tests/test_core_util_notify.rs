@@ -14,7 +14,7 @@ use xvc::error::Result;
 use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
 use xvc_core::XVCIGNORE_FILENAME;
 
-use xvc_core::notify::{make_polling_watcher, PathEvent};
+use xvc_core::{make_polling_watcher, PathEvent};
 use xvc_core::{walk_serial, WalkOptions};
 
 #[test]

@@ -20,13 +20,13 @@ name = "xvc"
 path = "src/main.rs"
 
 [dependencies]
-xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
+# xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
 xvc-core = { version = "0.6.17-alpha.2", path = "../core" }
-xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
-xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
+# xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
+# xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
 xvc-file = { version = "0.6.17-alpha.2", path = "../file" }
 xvc-pipeline = { version = "0.6.17-alpha.2", path = "../pipeline" }
-xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
+# xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
 xvc-storage = { version = "0.6.17-alpha.2", path = "../storage", default-features = false }
 
 ## Cli and config

@@ -35,11 +35,12 @@ pub use error::{Error, Result};
 pub use ignore_rules::IgnoreRules;
 pub use ignore_rules::SharedIgnoreRules;
 
-pub use notify::make_watcher;
 pub use std::hash::Hash;
 pub use sync::{PathSync, PathSyncSingleton};
 use xvc_logging::warn;
 
+pub use notify::make_polling_watcher;
+pub use notify::make_watcher;
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
 

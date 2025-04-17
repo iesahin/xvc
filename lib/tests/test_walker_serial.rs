@@ -1,12 +1,10 @@
 use std::{fs, path::PathBuf};
 
-use xvc_core::*;
-
 use test_case::test_case;
 
 use xvc::error::Result;
+use xvc_core::{walk_serial, AbsolutePath, WalkOptions};
 use xvc_test_helper::*;
-use xvc_core::AbsolutePath;
 
 // TODO: Patterns shouldn't have / prefix, but an appropriate PathKind
 #[test_case(true => matches Ok(_); "this is to refresh the dir for each test run")]

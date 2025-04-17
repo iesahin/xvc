@@ -23,7 +23,7 @@ pub enum Error {
     #[error("Xvc ECS Error: {source}")]
     EcsError {
         #[from]
-        source: xvc_core::error::Error,
+        source: xvc_core::XvcEcsError,
     },
 
     #[error("Xvc Core Error: {source}")]
@@ -35,13 +35,13 @@ pub enum Error {
     #[error("Xvc Config Error: {source}")]
     ConfigError {
         #[from]
-        source: xvc_core::error::Error,
+        source: xvc_core::XvcConfigError,
     },
 
     #[error("Walker Error: {source}")]
     WalkerError {
         #[from]
-        source: xvc_core::error::Error,
+        source: xvc_core::XvcWalkerError,
     },
     #[error("I/O Error: {source}")]
     IoError {

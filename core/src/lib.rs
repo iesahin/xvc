@@ -48,7 +48,7 @@ pub use xvc_ecs::{
 };
 
 pub use xvc_logging::{
-    debug, error, info, output, panic, setup_logging, uwo, uwr, warn, watch, XvcOutputLine,
+    debug, error, info, output, panic, setup_logging, trace, uwo, uwr, warn, watch, XvcOutputLine,
     XvcOutputSender,
 };
 
@@ -57,13 +57,15 @@ pub use xvc_walker::Error as XvcWalkerError;
 pub use xvc_walker::Result as XvcWalkerResult;
 
 pub use xvc_walker::{
-    path_metadata_map_from_file_targets, AbsolutePath, Glob, IgnoreRules, MatchResult, PathSync,
+    content_to_patterns, make_polling_watcher, path_metadata_map_from_file_targets, walk_parallel,
+    walk_serial, AbsolutePath, Glob, IgnoreRules, MatchResult, PathEvent, PathSync, WalkOptions,
 };
 
 pub use xvc_config::error::Error as XvcConfigError;
 pub use xvc_config::error::Result as XvcConfigResult;
 pub use xvc_config::{
-    conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigParams, XvcVerbosity,
+    conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigOptionSource, XvcConfigParams,
+    XvcVerbosity,
 };
 
 pub use util::git;
