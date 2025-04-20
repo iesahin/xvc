@@ -29,4 +29,46 @@ Configuration values are cascaded and overridden according to precedence, with c
 
 
 
-### Basic Usage
+Here are examples showing how to use the xvc-config crate in various scenarios:
+
+### Creating Configuration Parameters
+
+```rust
+use std::path::PathBuf;
+use xvc_config::{XvcConfigParams, XvcConfig};
+use xvc_walker::AbsolutePath;
+
+// Create custom configuration parameters
+let params = XvcConfigParams {
+    // Set the current directory
+    current_dir: AbsolutePath::from(std::env::current_dir().unwrap()),
+    
+    // Set default configuration
+    default_configuration: r#"
+        [core]
+        guid = ""
+        verbosity = "info"
+        
+        [storage]
+        type = "local"
+        path = "./data"
+    "#.to_string(),
+    
+    // Include standard config locations
+    include_system_config: true,
+    include_user_config: true,
+    include_environment_config: true,
+    
+    // Specify custom paths
+    project_config_path: Some(PathBuf::from("./xvc.toml")),
+    local_config_path: Some(PathBuf::from("./xvc.local.toml")),
+    
+    // Override with command line options
+    command_line_config: Some(vec![
+        "core.verbosity=debug".to_string(),
+        "storage.path=./custom-data".to_string(),
+    ]),
+};
+
+// Create config from parameters
+let config = XvcConfig::new(params).expect("Failed to create config");
