@@ -24,7 +24,7 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 fn sh(cmd: String) -> String {
-    Exec::shell(cmd).capture().unwrap().stdout_str()
+    Exec::shell(cmd).capture().map_err(|e| format!("Failed to execute command: {}", e))?.stdout_str()
 }
 
 #[test]
