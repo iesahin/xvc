@@ -232,15 +232,11 @@ $ xvc pipeline step dependency --step-name deploy --file best-model.json
 You must also define the outputs these steps produce, so when the output is missing or dependency is newer than the output, the step will require to rerun.
 
 ```console
-$ xvc pipeline step output --step-name preprocess-train --glob data/pp-train/*
+$ xvc pipeline step output --step-name preprocess-train --output-file models/model.bin
 
-$ xvc pipeline step output --step-name preprocess-test --glob data/pp-test/*
+$ xvc pipeline step output --step-name test --output-metric metrics.json  --output-file best-model.json
 
-$ xvc pipeline step output --step-name train --output-file models/model.h5
-
-$ xvc pipeline step output --step-name test --output-metrics metrics.json  --output-file best-model.json
-
-$ xvc pipeline step output --step-name deploy --output-file /var/server/files/model.bin
+$ xvc pipeline step output --step-name deploy --output-file server/model.bin
 
 ```
 
