@@ -444,7 +444,7 @@ mod tests {
 
     #[test]
     fn test_rclone_drive_list() {
-        let rclone_exec = rclone_executable().unwrap();
+        let rclone_exec = rclone_executable().map_err(|e| format!("Failed to find rclone executable: {}", e))?;
         let drive_list = rclone_cmd(&rclone_exec, "", "ls", "drive://", None);
 
         match drive_list {
