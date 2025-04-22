@@ -11,9 +11,9 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::AbsolutePath;
+use xvc_core::R1NStore;
 use xvc_core::XvcCachePath;
 use xvc_core::XvcRoot;
-use xvc_core::R1NStore;
 use xvc_core::{error, info, trace, uwr, warn, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -444,7 +444,9 @@ mod tests {
 
     #[test]
     fn test_rclone_drive_list() {
-        let rclone_exec = rclone_executable().map_err(|e| format!("Failed to find rclone executable: {}", e))?;
+        let rclone_exec = rclone_executable()
+            .map_err(|e| format!("Failed to find rclone executable: {}", e))
+            .unwrap();
         let drive_list = rclone_cmd(&rclone_exec, "", "ls", "drive://", None);
 
         match drive_list {
