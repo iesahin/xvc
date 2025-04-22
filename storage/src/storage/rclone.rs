@@ -128,6 +128,7 @@ pub fn rclone_cmd(
 }
 
 impl XvcRcloneStorage {
+    /// Returns a generic rclone URL with remote, storage_prefix and path.
     fn rclone_path_url(&self, path: &str) -> String {
         let storage_dir = self
             .storage_prefix
@@ -142,6 +143,7 @@ impl XvcRcloneStorage {
         }
     }
 
+    /// Returns the rclone URL for the given cache path with the current repository
     fn rclone_cache_url(&self, xvc_guid: &str, path: &XvcCachePath) -> String {
         let storage_dir = self
             .storage_prefix
@@ -397,13 +399,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
             let remote_path = self.rclone_cache_url(xvc_guid.as_str(), cache_path);
-            let cmd_output = rclone_cmd(
-                &rclone_executable,
-                "",
-                "delete",
-                &self.rclone_path_url(""),
-                None,
-            );
+            let cmd_output = rclone_cmd(&rclone_executable, "", "delete", &remote_path, None);
 
             match cmd_output {
                 Ok(cmd_output) => {
