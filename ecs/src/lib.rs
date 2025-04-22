@@ -31,5 +31,8 @@ pub use ecs::xvcstore::XvcStore;
 pub use ecs::XvcEntity;
 pub use ecs::XvcEntityGenerator;
 
+pub use ecs::event::Event;
+pub use ecs::event::EventLog;
+
 pub use error::Error;
 pub use error::Result;

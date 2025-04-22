@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.6.16"
+version = "0.6.17"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -21,12 +21,12 @@ test = true
 bench = true
 
 [dependencies]
-xvc-logging = { version = "0.6.16", path = "../logging" }
-xvc-config = { version = "0.6.16", path = "../config" }
-xvc-core = { version = "0.6.16", path = "../core" }
-xvc-ecs = { version = "0.6.16", path = "../ecs" }
-xvc-walker = { version = "0.6.16", path = "../walker" }
-xvc-storage = { version = "0.6.16", path = "../storage", default-features = false }
+# xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
+# xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
+# xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
+# xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
+xvc-core = { version = "0.6.17", path = "../core" }
+xvc-storage = { version = "0.6.17", path = "../storage", default-features = false }
 
 
 ## Cli and config
@@ -81,15 +81,15 @@ humantime = "^2.1"
 subprocess = "^0.2"
 regex = "^1.10"
 chrono = "^0.4"
-strum = "^0.26"
-strum_macros = "^0.26"
+strum = "^0.27"
+strum_macros = "^0.27"
 lazy_static = "^1.5"
 uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
 itertools = "^0.14"
 # FIXME: These are mostly used in file/src/common/mod.rs and TextOrBinary wrapper. 
-derive_more = { version = "^1.0", features = [
+derive_more = { version = "^2.0", features = [
   "from",
   "display",
   "as_ref",
@@ -103,5 +103,5 @@ default = []
 reflink = ["dep:reflink"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.16", path = "../test_helper/" }
-shellfn = "^0.1"
+xvc-test-helper = { version = "0.6.17", path = "../test_helper/" }
+shellfn = "^0.2"

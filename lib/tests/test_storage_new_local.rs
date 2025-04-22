@@ -5,7 +5,7 @@ use log::LevelFilter;
 
 use common::*;
 use xvc::error::Result;
-use xvc_config::XvcVerbosity;
+use xvc_core::XvcVerbosity;
 use xvc_core::XvcRoot;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::generate_filled_file;

@@ -6,9 +6,9 @@ use std::path::Path;
 use log::LevelFilter;
 
 use xvc::error::Result;
-use xvc_config::XvcVerbosity;
+use xvc_core::XvcVerbosity;
 use xvc_test_helper::{create_directory_tree, test_logging};
-use xvc_walker::AbsolutePath;
+use xvc_core::AbsolutePath;
 
 // This builds a directory hierarchy to run the tests
 //

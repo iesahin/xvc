@@ -7,10 +7,10 @@ use std::path::PathBuf;
 use std::{env, path::Path};
 use subprocess::{CaptureData, Exec};
 use xvc::init::InitCLI;
-use xvc_config::XvcVerbosity;
+use xvc_core::XvcVerbosity;
 
 use xvc_core::XvcRoot;
-use xvc_logging::output;
+use xvc_core::output;
 
 use xvc::error::{Error, Result};
 

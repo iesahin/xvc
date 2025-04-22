@@ -255,7 +255,7 @@ pub fn most_recent_file(dir: &Path) -> Result<Option<PathBuf>> {
 /// `my-type-bstore.json` or `my-type-another-type-r11store.json`
 macro_rules! persist {
     ( $t:ty, $desc:literal ) => {
-        impl ::xvc_ecs::Storable for $t {
+        impl $crate::Storable for $t {
             fn type_description() -> String {
                 $desc.to_string()
             }

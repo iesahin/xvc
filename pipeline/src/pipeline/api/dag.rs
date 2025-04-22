@@ -5,9 +5,9 @@ use petgraph::graphmap::DiGraphMap;
 use tabbycat::attributes::{color, label, shape, Color, Shape};
 use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
 use xvc_core::util::completer::strum_variants_completer;
+use xvc_core::{info, output, XvcOutputSender};
+use xvc_core::{HStore, R1NStore, XvcEntity};
 use xvc_core::{XvcPath, XvcPathMetadataProvider, XvcRoot};
-use xvc_ecs::{HStore, R1NStore, XvcEntity};
-use xvc_logging::{info, output, XvcOutputSender};
 
 use std::collections::HashMap;
 use std::{fs::File, io::Write};

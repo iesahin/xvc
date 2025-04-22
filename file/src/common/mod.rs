@@ -19,22 +19,17 @@ use crossbeam_channel::{Receiver, Sender};
 use derive_more::{AsRef, Deref, Display, From, FromStr};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
-use xvc_config::{conf, FromConfigKey};
-use xvc_core::types::xvcpath::XvcCachePath;
-use xvc_core::util::file::make_symlink;
-use xvc_core::util::xvcignore::COMMON_IGNORE_PATTERNS;
+use xvc_core::EventLog;
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, ContentDigest, DiffStore, RecheckMethod, TextOrBinary,
-    XvcFileType, XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    all_paths_and_metadata, apply_diff, conf, error, get_absolute_git_command,
+    get_git_tracked_files, info, persist,
+    types::xvcpath::XvcCachePath,
+    util::{file::make_symlink, xvcignore::COMMON_IGNORE_PATTERNS},
+    uwr, warn, AbsolutePath, ContentDigest, DiffStore, FromConfigKey, Glob, HStore, HashAlgorithm,
+    PathSync, RecheckMethod, Storable, TextOrBinary, XvcFileType, XvcMetadata, XvcOutputSender,
+    XvcPath, XvcPathMetadataMap, XvcRoot, XvcStore,
 };
-use xvc_core::{get_absolute_git_command, get_git_tracked_files, HashAlgorithm};
-use xvc_ecs::ecs::event::EventLog;
-use xvc_logging::{error, info, uwr, warn, XvcOutputSender};
-
-use xvc_ecs::{persist, HStore, Storable, XvcStore};
-
-use xvc_walker::walk_serial::path_metadata_map_from_file_targets;
-use xvc_walker::{AbsolutePath, Glob, PathSync};
+use xvc_core::{path_metadata_map_from_file_targets, XvcWalkerError};
 
 use self::gitignore::IgnoreOp;
 
@@ -308,7 +303,7 @@ pub fn targets_from_disk(
             xvc_root,
             // This should be ok as we checked empty condition on has_globs_or_dirs
             targets.clone().unwrap(),
-            &xvc_walker::WalkOptions::xvcignore(),
+            &xvc_core::walker::WalkOptions::xvcignore(),
         )?;
         let mut xpmm = HashMap::new();
 
@@ -581,13 +576,13 @@ pub fn cache_paths_for_xvc_paths(
         let cache_paths = path_digest_events
             .iter()
             .filter_map(|cd_event| match cd_event {
-                xvc_ecs::ecs::event::Event::Add { entity: _, value } => {
+                xvc_core::Event::Add { entity: _, value } => {
                     let xcp = uwr!(XvcCachePath::new(xp, value), output_snd
                  );
 
                     Some(xcp)
                 }
-                xvc_ecs::ecs::event::Event::Remove { entity } => {
+                xvc_core::Event::Remove { entity } => {
                     // We don't delete ContentDigests of available XvcPaths.
                     // This is an error.
                     error!(
@@ -636,7 +631,7 @@ pub fn move_to_cache(
                 fs::set_permissions(cache_dir, dir_perm)?;
 
                 fs::rename(path, cache_path)
-                    .map_err(|source| xvc_walker::Error::IoError { source })?;
+                    .map_err(|source| XvcWalkerError::IoError { source })?;
                 let mut file_perm = cache_path.metadata()?.permissions();
                 file_perm.set_readonly(true);
                 fs::set_permissions(cache_path, file_perm.clone())?;

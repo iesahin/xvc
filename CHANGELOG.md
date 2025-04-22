@@ -1,5 +1,15 @@
 # Xvc Changelog
 
+## Unreleased
+
+## v0.6.17 (2025-04-22)
+
+- Added rclone storage option
+- Added generic rclone storage tests
+- Reexported xvc-logging, xvc-config, xvc-ecs functionality from xvc-core
+- Removed lower level crate dependencies from xvc-file, xvc-pipelines, xvc-storage crates
+- Added Readme files to config and ecs crates
+
 ## v0.6.16 (2025-03-22)
 
 - PR: <https://github.com/iesahin/xvc/pull/270>

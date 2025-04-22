@@ -10,7 +10,7 @@ use crate::Result;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{ContentDigest, Diff, HashAlgorithm, XvcDigest, XvcMetadata, XvcPath, XvcRoot};
 
-use xvc_ecs::persist;
+use xvc_core::persist;
 
 /// When a step depends to a regex search in a text file
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]

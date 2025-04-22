@@ -7,7 +7,7 @@ use xvc_core::{
     ContentDigest, Diff, HashAlgorithm, PathCollectionDigest, TextOrBinary, XvcDigest,
     XvcPathMetadataProvider, XvcRoot,
 };
-use xvc_ecs::persist;
+use xvc_core::persist;
 
 use crate::XvcDependency;
 

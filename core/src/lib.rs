@@ -36,11 +36,37 @@ pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
 pub use types::xvcroot::XvcRoot;
 
-pub use walker::AbsolutePath;
-pub use xvc_walker as walker;
-
 pub use error::Error;
 pub use error::Result;
+
+// Reexported types
+pub use xvc_ecs::error::Error as XvcEcsError;
+pub use xvc_ecs::error::Result as XvcEcsResult;
+pub use xvc_ecs::{
+    persist, Event, EventLog, HStore, R11Store, R1NStore, RMNStore, SharedHStore, SharedXStore,
+    Storable, VStore, XvcEntity, XvcStore,
+};
+
+pub use xvc_logging::{
+    debug, error, info, output, panic, setup_logging, trace, uwo, uwr, warn, watch, XvcOutputLine,
+    XvcOutputSender,
+};
+
+pub use xvc_walker as walker;
+pub use xvc_walker::Error as XvcWalkerError;
+pub use xvc_walker::Result as XvcWalkerResult;
+
+pub use xvc_walker::{
+    content_to_patterns, make_polling_watcher, path_metadata_map_from_file_targets, walk_parallel,
+    walk_serial, AbsolutePath, Glob, IgnoreRules, MatchResult, PathEvent, PathSync, WalkOptions,
+};
+
+pub use xvc_config::error::Error as XvcConfigError;
+pub use xvc_config::error::Result as XvcConfigResult;
+pub use xvc_config::{
+    conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigOptionSource, XvcConfigParams,
+    XvcVerbosity,
+};
 
 pub use util::git;
 

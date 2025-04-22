@@ -34,7 +34,7 @@ macro_rules! error {
     };
     ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Error(format!($fmt $(, $x)*)))).unwrap();
+            (&$channel).send(Some($crate::XvcOutputLine::Error(format!($fmt $(, $x)*)))).unwrap();
         }
     };
 }
@@ -49,7 +49,7 @@ macro_rules! info {
     };
     ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Info(format!($fmt $(,$x)*)))).unwrap();
+            (&$channel).send(Some($crate::XvcOutputLine::Info(format!($fmt $(,$x)*)))).unwrap();
         }
     };
 }
@@ -66,7 +66,7 @@ macro_rules! warn {
         {
             (&$channel).send(
                 Some(
-                    ::xvc_logging::XvcOutputLine::Warn(
+                    $crate::XvcOutputLine::Warn(
                         format!($fmt $(, $x)*)))).unwrap();
         }
     };
@@ -82,7 +82,7 @@ macro_rules! debug {
     };
     ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
         {
-                    (&$channel).send(Some(::xvc_logging::XvcOutputLine::Debug(format!($fmt $(, $x)*)))).unwrap();
+                    (&$channel).send(Some($crate::XvcOutputLine::Debug(format!($fmt $(, $x)*)))).unwrap();
         }
     };
 }
@@ -120,7 +120,7 @@ macro_rules! output {
     };
     ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
+            (&$channel).send(Some($crate::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
         }
     };
 }
@@ -136,7 +136,7 @@ macro_rules! panic {
     };
     ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
         {
-            (&$channel).send(Some(::xvc_logging::XvcOutputLine::Panic(format!("{} [{}::{}]",
+            (&$channel).send(Some($crate::XvcOutputLine::Panic(format!("{} [{}::{}]",
                                                                  format!($fmt $(, $x)*), file!(), line!())))).unwrap();
             ::std::panic!($fmt $(, $x)*);
         }
@@ -168,7 +168,7 @@ macro_rules! uwr {
             Ok(v) => v,
             Err(e) => {
                 (&$channel)
-                    .send(Some(::xvc_logging::XvcOutputLine::Panic(format!(
+                    .send(Some($crate::XvcOutputLine::Panic(format!(
                         "{:?}, [{}::{}]",
                         e,
                         file!(),
@@ -198,7 +198,7 @@ macro_rules! uwo {
                     line!()
                 );
                 (&$channel)
-                    .send(Some(::xvc_logging::XvcOutputLine::Panic(msg.clone())))
+                    .send(Some($crate::XvcOutputLine::Panic(msg.clone())))
                     .unwrap();
                 ::std::panic!("{}", msg);
             }

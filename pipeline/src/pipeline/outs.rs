@@ -5,7 +5,7 @@ use rayon::*;
 
 use strum_macros::Display;
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_ecs::persist;
+use xvc_core::persist;
 
 use crate::error::{Error, Result};
 

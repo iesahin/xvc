@@ -4,8 +4,8 @@ use std::env;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use xvc_ecs::R1NStore;
-use xvc_logging::{info, watch, XvcOutputSender};
+use xvc_core::R1NStore;
+use xvc_core::{info, watch, XvcOutputSender};
 
 use anyhow::anyhow;
 

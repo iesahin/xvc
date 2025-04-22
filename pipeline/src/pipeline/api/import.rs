@@ -4,7 +4,7 @@ use clap_complete::ArgValueCompleter;
 use log::warn;
 use std::{fs, io::BufRead, path::PathBuf};
 use xvc_core::{util::completer::strum_variants_completer, XvcRoot};
-use xvc_ecs::{R11Store, R1NStore};
+use xvc_core::{R11Store, R1NStore};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},

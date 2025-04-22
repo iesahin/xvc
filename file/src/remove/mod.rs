@@ -13,8 +13,8 @@ use itertools::Itertools;
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::util::completer::xvc_path_completer;
 use xvc_core::{XvcCachePath, XvcRoot};
-use xvc_ecs::XvcEntity;
-use xvc_logging::{output, uwr, warn, XvcOutputSender};
+use xvc_core::XvcEntity;
+use xvc_core::{output, uwr, warn, XvcOutputSender};
 use xvc_storage::storage::{get_storage_record, storage_identifier_completer};
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 

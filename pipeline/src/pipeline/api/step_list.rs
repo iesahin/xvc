@@ -3,8 +3,8 @@ use crate::{
 };
 use itertools::Itertools;
 use xvc_core::XvcRoot;
-use xvc_ecs::{HStore, R1NStore};
-use xvc_logging::{output, XvcOutputSender};
+use xvc_core::{HStore, R1NStore};
+use xvc_core::{output, XvcOutputSender};
 
 pub fn cmd_step_list(
     output_snd: &XvcOutputSender,

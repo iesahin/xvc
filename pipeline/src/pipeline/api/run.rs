@@ -2,7 +2,7 @@ use crate::error::Result;
 
 use clap::Parser;
 use xvc_core::XvcRoot;
-use xvc_logging::XvcOutputSender;
+use xvc_core::XvcOutputSender;
 
 use crate::pipeline::the_grand_pipeline_loop;
 

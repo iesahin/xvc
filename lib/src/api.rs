@@ -2,25 +2,22 @@
 
 pub use crate::error::{Error, Result};
 
-pub use xvc_config as config;
 pub use xvc_core as core;
-pub use xvc_ecs as ecs;
 pub use xvc_file as file;
-pub use xvc_logging as logging;
 pub use xvc_pipeline as pipeline;
 pub use xvc_storage as storage;
 
-pub use xvc_logging::debug;
-pub use xvc_logging::error;
-pub use xvc_logging::info;
-pub use xvc_logging::panic;
-pub use xvc_logging::trace;
-pub use xvc_logging::warn;
-pub use xvc_logging::watch;
+pub use xvc_core::debug;
+pub use xvc_core::error;
+pub use xvc_core::info;
+pub use xvc_core::panic;
+pub use xvc_core::trace;
+pub use xvc_core::warn;
+pub use xvc_core::watch;
 
-pub use xvc_config::XvcConfig;
-pub use xvc_config::XvcConfigOptionSource;
-pub use xvc_config::XvcConfigParams;
+pub use xvc_core::XvcConfig;
+pub use xvc_core::XvcConfigOptionSource;
+pub use xvc_core::XvcConfigParams;
 
 pub use xvc_core::AbsolutePath;
 

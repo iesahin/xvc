@@ -21,10 +21,10 @@ pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
 
-use xvc_ecs::XvcStore;
+use xvc_core::XvcStore;
 
 use xvc_core::XvcRoot;
-use xvc_logging::{output, XvcOutputSender};
+use xvc_core::{output, XvcOutputSender};
 
 /// Storage (on the cloud) management commands
 #[derive(Debug, Parser, Clone)]
@@ -156,6 +156,32 @@ pub enum StorageNewSubCommand {
         /// storage directory in the host to store the files.
         #[arg(long)]
         storage_dir: String,
+    },
+
+    #[cfg(feature = "rclone")]
+    /// Add a new rclone storage
+    ///
+    /// Uses the rclone configuration to connect to the storage. The remotestorage must already be
+    /// configure with `rclone config`.
+    #[command()]
+    Rclone {
+        /// Name of the storage
+        ///
+        /// This must be unique among all storages of the project
+        #[arg(long = "name", short = 'n')]
+        name: String,
+
+        /// The name of the remote in rclone configuration
+        ///
+        /// This is the "remote" part in "remote://dir/" URL.
+        #[arg(long)]
+        remote_name: String,
+
+        /// The directory in the remote to store the files.
+        ///
+        /// This is the "dir" part in "remote://dir/" URL.
+        #[arg(long, default_value = "")]
+        storage_prefix: String,
     },
 
     #[cfg(feature = "s3")]
@@ -399,6 +425,16 @@ fn cmd_storage_new(
             upload_command,
             delete_command,
         ),
+
+        #[cfg(feature = "rclone")]
+        StorageNewSubCommand::Rclone {
+            name,
+            remote_name,
+            storage_prefix,
+        } => {
+            storage::rclone::cmd_new_rclone(output_snd, xvc_root, name, remote_name, storage_prefix)
+        }
+
         #[cfg(feature = "s3")]
         StorageNewSubCommand::S3 {
             name,

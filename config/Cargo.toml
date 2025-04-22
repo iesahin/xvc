@@ -1,6 +1,6 @@
 [package]
 name = "xvc-config"
-version = "0.6.16"
+version = "0.6.17"
 edition = "2021"
 description = "Xvc configuration management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,8 +16,8 @@ name = "xvc_config"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.16", path = "../logging" }
-xvc-walker = { version = "0.6.16", path = "../walker" }
+xvc-logging = { version = "0.6.17", path = "../logging" }
+xvc-walker = { version = "0.6.17", path = "../walker" }
 
 
 ## Cli and config
@@ -43,6 +43,6 @@ fern = { version = "^0.7", features = ["colored"] }
 
 ## Misc
 regex = "^1.10"
-strum = "^0.26"
-strum_macros = "^0.26"
+strum = "^0.27"
+strum_macros = "^0.27"
 lazy_static = "^1.5"

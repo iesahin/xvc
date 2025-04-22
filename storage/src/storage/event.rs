@@ -1,6 +1,6 @@
 //! Storage events that we track when we created the storage, what we sent, received and deleted.
 use serde::{Deserialize, Serialize};
-use xvc_ecs::persist;
+use xvc_core::persist;
 
 use super::{XvcStorageGuid, XvcStoragePath};
 

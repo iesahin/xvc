@@ -8,7 +8,7 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use xvc_core::types::diff::Diffable;
 use xvc_core::{ContentDigest, Diff, HashAlgorithm, XvcDigest, XvcMetadata, XvcPath, XvcRoot};
-use xvc_ecs::persist;
+use xvc_core::persist;
 
 use crate::XvcDependency;
 

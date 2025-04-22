@@ -1,6 +1,7 @@
 //! Error and Result types for the pipelines crate
 use log::{debug, error, info, trace, warn};
 
+use rusqlite::Error as SqliteError;
 use std::ffi::OsString;
 use std::fmt::Debug;
 use std::io;
@@ -8,7 +9,6 @@ use std::num::TryFromIntError;
 use std::path::PathBuf;
 use std::sync::PoisonError;
 use thiserror::Error as ThisError;
-use rusqlite::Error as SqliteError;
 
 #[derive(ThisError, Debug)]
 /// Error messages for pipelines crate
@@ -26,7 +26,7 @@ pub enum Error {
     #[error("Xvc ECS Error: {source}")]
     EcsError {
         #[from]
-        source: xvc_ecs::error::Error,
+        source: xvc_core::XvcEcsError,
     },
 
     #[error("Xvc Core Error: {source}")]
@@ -38,13 +38,13 @@ pub enum Error {
     #[error("Xvc Config Error: {source}")]
     ConfigError {
         #[from]
-        source: xvc_config::error::Error,
+        source: xvc_core::XvcConfigError,
     },
 
     #[error("Walker Error: {source}")]
     WalkerError {
         #[from]
-        source: xvc_walker::error::Error,
+        source: xvc_core::XvcWalkerError,
     },
 
     #[error("Cannot infer format from file extension: {extension:?}")]
@@ -202,10 +202,9 @@ pub enum Error {
     #[error("Sqlite Error:")]
     SqliteError {
         #[from]
-        source: SqliteError 
+        source: SqliteError,
     },
 }
-
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error
 where
@@ -265,7 +264,6 @@ impl Error {
         panic!("{}", self);
     }
 }
-
 
 /// The result type for xvc pipeline crate
 pub type Result<T> = std::result::Result<T, Error>;

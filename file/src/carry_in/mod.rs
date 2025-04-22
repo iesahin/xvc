@@ -7,18 +7,17 @@
 use clap_complete::ArgValueCompleter;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_walker::PathSync;
+use xvc_core::PathSync;
 
 use std::collections::HashSet;
 use std::fs;
 
-use xvc_config::FromConfigKey;
-use xvc_config::{UpdateFromXvcConfig, XvcConfig};
+use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
 use xvc_core::XvcRoot;
+use xvc_core::{info, uwo, uwr, warn, watch, XvcOutputSender};
 use xvc_core::{ContentDigest, TextOrBinary};
 use xvc_core::{Diff, XvcCachePath};
-use xvc_logging::{info, uwo, uwr, warn, watch, XvcOutputSender};
 
 use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;
@@ -31,12 +30,7 @@ use crate::error::Result;
 
 use clap::Parser;
 
-use xvc_core::RecheckMethod;
-
-use xvc_core::XvcMetadata;
-use xvc_core::XvcPath;
-
-use xvc_ecs::{HStore, XvcStore};
+use xvc_core::{HStore, RecheckMethod, XvcMetadata, XvcPath, XvcStore};
 
 ///
 /// Carry in (commit) changed files/directories to the cache.
@@ -67,7 +61,7 @@ impl UpdateFromXvcConfig for CarryInCLI {
     /// Updates `xvc file` configuration from the configuration files.
     /// Command line options take precedence over other sources.
     /// If options are not given, they are supplied from [XvcConfig]
-    fn update_from_conf(self, conf: &XvcConfig) -> xvc_config::error::Result<Box<Self>> {
+    fn update_from_conf(self, conf: &XvcConfig) -> xvc_core::XvcConfigResult<Box<Self>> {
         let force = self.force || conf.get_bool("file.carry-in.force")?.option;
         let no_parallel = self.no_parallel || conf.get_bool("file.carry-in.no_parallel")?.option;
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(

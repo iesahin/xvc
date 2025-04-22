@@ -17,9 +17,9 @@ use crate::pipeline::step::StepSubCommand;
 use regex::Regex;
 use url::Url;
 use xvc_core::{XvcPath, XvcRoot};
-use xvc_ecs::{R1NStore, XvcEntity};
-use xvc_logging::{debug, XvcOutputSender};
-use xvc_walker::AbsolutePath;
+use xvc_core::{R1NStore, XvcEntity};
+use xvc_core::{debug, XvcOutputSender};
+use xvc_core::AbsolutePath;
 
 use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
 

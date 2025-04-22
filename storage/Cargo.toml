@@ -1,6 +1,6 @@
 [package]
 name = "xvc-storage"
-version = "0.6.16"
+version = "0.6.17"
 edition = "2021"
 description = "Xvc remote and local storage management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,11 +16,11 @@ name = "xvc_storage"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.16", path = "../logging" }
-xvc-config = { version = "0.6.16", path = "../config" }
-xvc-core = { version = "0.6.16", path = "../core" }
-xvc-ecs = { version = "0.6.16", path = "../ecs" }
-xvc-walker = { version = "0.6.16", path = "../walker" }
+xvc-logging = { version = "0.6.17", path = "../logging" }
+xvc-config = { version = "0.6.17", path = "../config" }
+xvc-core = { version = "0.6.17", path = "../core" }
+xvc-ecs = { version = "0.6.17", path = "../ecs" }
+xvc-walker = { version = "0.6.17", path = "../walker" }
 
 ## Cli and config
 clap = { version = "^4.5", features = ["derive"] }
@@ -71,15 +71,15 @@ paste = "1.0"
 humantime = "^2.1"
 subprocess = "^0.2"
 regex = "^1.10"
-strum = "^0.26"
-strum_macros = "^0.26"
+strum = "^0.27"
+strum_macros = "^0.27"
 lazy_static = "^1.5"
 uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
 itertools = "^0.14"
 # FIXME: Use features selectively
-derive_more = { version = "^1.0", features = ["full"] }
+derive_more = { version = "^2.0", features = ["full"] }
 tempfile = "^3.11"
 
 ## Networking & Async
@@ -89,12 +89,14 @@ tokio = { version = "^1.39", optional = true, features = ["rt-multi-thread"] }
 rust-s3 = { version = "^0.35", optional = true }
 futures = { version = "^0.3", optional = true }
 
-# On Linux we use "vendored" feature and on Windows we don't use that feature. 
+# On Linux we use "vendored" feature and on Windows we don't use that feature.
 openssl = { version = "^0.10", optional = true }
 
+# For rclone support
+librclone = { version = "^0.9", optional = true }
 
 [features]
-default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean"]
+default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean", "rclone"]
 async = ["rust-s3", "futures", "tokio"]
 s3 = ["async"]
 minio = ["s3"]
@@ -103,11 +105,15 @@ wasabi = ["s3"]
 r2 = ["s3"]
 digital-ocean = ["s3"]
 bundled-openssl = ["openssl/vendored"]
-
+# rclone support
+# Uses rclone from the command line, without bundling librclone
+rclone = []
+# Uses librclone and bundles it. This doesn't compile on Windows as of now.
+bundled-rclone = ["rclone", "librclone"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.16", path = "../test_helper/" }
-shellfn = "^0.1"
+xvc-test-helper = { version = "0.6.17", path = "../test_helper/" }
+shellfn = "^0.2"
 
 [package.metadata.cargo-udeps.ignore]
 normal = ["futures"]

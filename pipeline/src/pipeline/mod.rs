@@ -26,7 +26,7 @@ use crate::{XvcPipeline, XvcPipelineRunDir};
 
 use crossbeam_channel::{bounded, Receiver, Select, Sender};
 
-use xvc_logging::{debug, error, info, output, trace, uwr, warn, XvcOutputSender};
+use xvc_core::{debug, error, info, output, trace, uwr, warn, XvcOutputSender};
 
 use petgraph::algo::toposort;
 use petgraph::data::Build;
@@ -42,10 +42,10 @@ use std::sync::{Arc, RwLock};
 use std::thread::{self, sleep, ScopedJoinHandle};
 use std::time::Duration;
 use strum_macros::{Display, EnumString, VariantNames};
-use xvc_config::FromConfigKey;
+use xvc_core::FromConfigKey;
 use xvc_core::{update_with_actual, Diff, HashAlgorithm, XvcPath, XvcRoot};
 
-use xvc_ecs::{persist, HStore, R1NStore, XvcEntity, XvcStore};
+use xvc_core::{persist, HStore, R1NStore, XvcEntity, XvcStore};
 
 use sp::ExitStatus;
 use subprocess as sp;

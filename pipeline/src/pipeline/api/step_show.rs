@@ -1,6 +1,6 @@
 use crate::error::Error;
 use xvc_core::{util::serde::to_json, XvcRoot};
-use xvc_ecs::{R1NStore, XvcStore};
+use xvc_core::{R1NStore, XvcStore};
 
 use crate::{
     pipeline::XvcStepInvalidate, XvcDependency, XvcOutput, XvcPipeline, XvcStep, XvcStepCommand,

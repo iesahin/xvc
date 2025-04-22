@@ -17,14 +17,15 @@ use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot};
-use xvc_ecs::{HStore, XvcStore};
-use xvc_logging::{debug, error, uwr, warn, XvcOutputSender};
+use xvc_core::{debug, error, uwr, warn, XvcOutputSender};
+use xvc_core::{
+    ContentDigest, HStore, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot, XvcStore,
+};
 
+use xvc_core::PathSync;
 use xvc_storage::storage::storage_identifier_completer;
 use xvc_storage::XvcStorageEvent;
 use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
-use xvc_walker::PathSync;
 
 /// Bring (download, pull, fetch) files from storage.
 ///

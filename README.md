@@ -19,9 +19,10 @@ copy][xvc-file-recheck] that huge data to all Git clones.
 and some (e.g. models, executables) change frequently, all versioned along with
 the code. 
 
-- You want to [store][xvc-s-n] this data in [local][xvc-s-n-local],
-[Rsync][xvc-s-n-rsync], or [S3-compatible cloud storages][xvc-s-n-s3] to share
-along the repository. 
+- You want to [store][xvc-s-n] this data in [S3-compatible cloud
+storages][xvc-s-n-s3] or [local][xvc-s-n-local] directories, or your
+preconfigured [Rsync][xvc-s-n-rsync] and [Rclone][xvc-s-n-rclone] remotes to
+share with the repository. 
 
 - You want to [specify commands][xvc-p-s-n] that [run][xvc-p-r] when
 only input data changes, define [pipelines][xvc-p-n] with steps that
@@ -176,12 +177,12 @@ You can also send a subset of the files.
 $ xvc file send 'my-data/training/*' --to my-storage
 ```
 
-Xvc [supports][xvc-s-n] [external directories][xvc-s-n-local],
-[Rsync][xvc-s-n-rsync], [AWS S3][xvc-s-n-s3], [Google Cloud
-Storage][xvc-s-n-gcs], [MinIO][xvc-s-n-minio], [Cloudflare R2][xvc-s-n-r2],
-[Wasabi][xvc-s-n-wasabi], [Digital Ocean Spaces][xvc-s-n-do]. Please [create an
-issue]
-if you want Xvc to support another cloud storage service.
+Xvc [supports][xvc-s-n] [external directories][xvc-s-n-local], [rclone
+remotes][xvc-s-n-rclone], [Rsync][xvc-s-n-rsync], [AWS S3][xvc-s-n-s3], [Google
+Cloud Storage][xvc-s-n-gcs], [MinIO][xvc-s-n-minio], [Cloudflare
+R2][xvc-s-n-r2], [Wasabi][xvc-s-n-wasabi], [Digital Ocean Spaces][xvc-s-n-do].
+Please [create an issue] if you want Xvc to support another cloud storage
+service.
 
 > 💡 Xvc also supports any command to upload/download files. If your favorite
 > service is not listed or you want to use another tool (s5cmd, rclone, etc.),
@@ -795,6 +796,7 @@ real-world conditions, it didn't go under the test of time. Please backup.
 [xvc-s-n-minio]: https://docs.xvc.dev/ref/xvc-storage-new-minio
 [xvc-s-n-r2]: https://docs.xvc.dev/ref/xvc-storage-new-r2
 [xvc-s-n-rsync]: https://docs.xvc.dev/ref/xvc-storage-new-rsync
+[xvc-s-n-rclone]: https://docs.xvc.dev/ref/xvc-storage-new-rclone
 [xvc-s-n-s3]: https://docs.xvc.dev/ref/xvc-storage-new-s3
 [xvc-s-n-wasabi]: https://docs.xvc.dev/ref/xvc-storage-new-wasabi 
 [xvc-s-n]: https://docs.xvc.dev/ref/xvc-storage-new 

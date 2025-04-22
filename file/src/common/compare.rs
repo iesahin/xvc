@@ -11,17 +11,17 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 
-use xvc_config::FromConfigKey;
 use xvc_core::types::xvcdigest::{content_digest::ContentDigest, DIGEST_LENGTH};
-use xvc_ecs::{Error as EcsError, SharedXStore};
+use xvc_core::FromConfigKey;
+use xvc_core::{SharedXStore, XvcEcsError};
 
 use xvc_core::{
     diff_store, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod, XvcDigest, XvcFileType,
     XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
 };
 
-use xvc_ecs::{HStore, XvcEntity, XvcStore};
-use xvc_logging::{debug, error, panic, XvcOutputSender};
+use xvc_core::{debug, error, panic, XvcOutputSender};
+use xvc_core::{HStore, XvcEntity, XvcStore};
 
 use super::FileTextOrBinary;
 
@@ -136,7 +136,7 @@ pub fn diff_file_content_digest(
         let path_from_store = || -> Result<PathBuf> {
             let xvc_path = stored_xvc_path_store
                 .get(&xe)
-                .ok_or(EcsError::CannotFindEntityInStore { entity: xe })?;
+                .ok_or(XvcEcsError::CannotFindEntityInStore { entity: xe })?;
             let path = xvc_path.to_absolute_path(xvc_root).to_path_buf();
             Ok(path)
         };
@@ -566,18 +566,20 @@ pub fn diff_dir_content_digest(
     let mut content_digest_bytes = Vec::<u8>::with_capacity(sorted_entities.len() * DIGEST_LENGTH);
 
     for xe in sorted_entities {
-        let xvc_content_diff = xvc_content_diff
-            .get(xe)
-            .ok_or(EcsError::CannotFindKeyInStore {
-                key: xe.to_string(),
-            })?;
+        let xvc_content_diff =
+            xvc_content_diff
+                .get(xe)
+                .ok_or(XvcEcsError::CannotFindKeyInStore {
+                    key: xe.to_string(),
+                })?;
         match xvc_content_diff {
             Diff::Identical | Diff::Skipped => {
-                let content = stored_xvc_content_store.get(xe).ok_or(
-                    xvc_ecs::error::Error::CannotFindKeyInStore {
-                        key: xe.to_string(),
-                    },
-                )?;
+                let content =
+                    stored_xvc_content_store
+                        .get(xe)
+                        .ok_or(XvcEcsError::CannotFindKeyInStore {
+                            key: xe.to_string(),
+                        })?;
                 content_digest_bytes.extend(content.digest().digest);
             }
             Diff::RecordMissing { actual } => {

@@ -5,13 +5,13 @@ use log::{info, warn};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use xvc_config::XvcConfigParams;
+use xvc_core::XvcConfigParams;
 use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
 use xvc_core::XvcRoot;
 use xvc_pipeline;
-use xvc_walker::AbsolutePath;
+use xvc_core::AbsolutePath;
 
 /// Initialize an Xvc repository
 #[derive(Debug, Clone, Parser)]

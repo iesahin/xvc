@@ -8,7 +8,7 @@ use xvc_core::{
     glob_paths, ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcPathMetadataProvider,
     XvcRoot,
 };
-use xvc_ecs::persist;
+use xvc_core::persist;
 
 /// A path collection where each item is tracked separately.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]

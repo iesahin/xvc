@@ -27,17 +27,20 @@ pub use pattern::Source;
 pub use walk_parallel::walk_parallel;
 pub use walk_serial::walk_serial;
 
+pub use walk_serial::path_metadata_map_from_file_targets;
+
 pub use abspath::AbsolutePath;
 pub use error::{Error, Result};
 
 pub use ignore_rules::IgnoreRules;
 pub use ignore_rules::SharedIgnoreRules;
 
-pub use notify::make_watcher;
 pub use std::hash::Hash;
 pub use sync::{PathSync, PathSyncSingleton};
 use xvc_logging::warn;
 
+pub use notify::make_polling_watcher;
+pub use notify::make_watcher;
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
 
@@ -150,9 +153,7 @@ pub fn build_ignore_patterns(
     let ignore_fn = ignore_rules.ignore_filename.as_deref().unwrap();
 
     while let Some(dir) = dir_stack.pop() {
-        watch!(dir);
         let ignore_filename = dir.join(ignore_fn);
-        watch!(ignore_filename);
         if ignore_filename.is_file() {
             let ignore_content = fs::read_to_string(&ignore_filename)?;
             let new_patterns =
@@ -160,9 +161,7 @@ pub fn build_ignore_patterns(
             ignore_rules.add_patterns(new_patterns)?;
         }
         let mut new_dirs = dirs_under(&dir);
-        watch!(new_dirs);
         dir_stack.append(&mut new_dirs);
-        watch!(dir_stack);
     }
 
     Ok(ignore_rules)

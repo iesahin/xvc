@@ -9,7 +9,7 @@ use anyhow::anyhow;
 use regex::Regex;
 
 use xvc::error::Result;
-use xvc_logging::{info, warn};
+use xvc_core::{info, warn};
 use xvc_test_helper::{make_symlink, random_temp_dir, test_logging};
 
 use fs_extra::{self, dir::CopyOptions};
@@ -287,6 +287,7 @@ fn z_doc_tests() -> Result<()> {
         .register_bin("dvc", which::which("dvc"))
         .register_bin("hyperfine", which::which("hyperfine"))
         .register_bin("sqlite3", which::which("sqlite3"))
+        .register_bin("rclone", which::which("rclone"))
         .case("docs/*.md")
         .timeout(timeout)
         // We skip this for the time being.
