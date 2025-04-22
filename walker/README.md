@@ -16,8 +16,4 @@ A high-performance file system walker with `.gitignore`-like ignore rule handlin
 - **Parallel Processing**: Uses rayon for parallelized directory traversal
 - **Ignore Rules**: Supports `.gitignore`-style patterns to skip files and directories
 - **File System Events**: Integration with `notify` for watching file system changes
-- **Flexible Configuration**: Customizable walking behavior with options
-
-## Installation
-
-Add this to your `Cargo.toml`:
+- **Flexible Configuration**: Customizable walking behavior with option
