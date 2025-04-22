@@ -87,7 +87,7 @@ storage.
 First, we drop artifacts from the previous runs of these tests.
 
 ```console
-$ zsh -c '[[ -d $TMPDIR/rclone-storage-for-xvc-test/ ]] && rm -rf $TMPDIR/rclone-storage-for-xvc-test'
+$ zsh -c 'rm -rf $TMPDIR/rclone-storage-for-xvc-test > /dev/null &2>1'
 
 $ zsh -c 'mkdir -p $TMPDIR/rclone-storage-for-xvc-test/'
 
