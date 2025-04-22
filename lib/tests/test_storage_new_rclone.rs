@@ -6,8 +6,8 @@ use log::LevelFilter;
 use common::*;
 use subprocess::Exec;
 use xvc::{error::Result, watch};
-use xvc_core::XvcVerbosity;
 use xvc_core::XvcRoot;
+use xvc_core::XvcVerbosity;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::generate_filled_file;
 
@@ -24,7 +24,11 @@ fn create_directory_hierarchy() -> Result<XvcRoot> {
 }
 
 fn sh(cmd: String) -> String {
-    Exec::shell(cmd).capture().unwrap().stdout_str()
+    Exec::shell(cmd)
+        .capture()
+        .map_err(|e| format!("Failed to execute command: {}", e))
+        .unwrap()
+        .stdout_str()
 }
 
 #[test]

@@ -11,9 +11,9 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
 use xvc_core::AbsolutePath;
+use xvc_core::R1NStore;
 use xvc_core::XvcCachePath;
 use xvc_core::XvcRoot;
-use xvc_core::R1NStore;
 use xvc_core::{error, info, trace, uwr, warn, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
@@ -128,6 +128,7 @@ pub fn rclone_cmd(
 }
 
 impl XvcRcloneStorage {
+    /// Returns a generic rclone URL with remote, storage_prefix and path.
     fn rclone_path_url(&self, path: &str) -> String {
         let storage_dir = self
             .storage_prefix
@@ -142,6 +143,7 @@ impl XvcRcloneStorage {
         }
     }
 
+    /// Returns the rclone URL for the given cache path with the current repository
     fn rclone_cache_url(&self, xvc_guid: &str, path: &XvcCachePath) -> String {
         let storage_dir = self
             .storage_prefix
@@ -397,13 +399,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
             let remote_path = self.rclone_cache_url(xvc_guid.as_str(), cache_path);
-            let cmd_output = rclone_cmd(
-                &rclone_executable,
-                "",
-                "delete",
-                &self.rclone_path_url(""),
-                None,
-            );
+            let cmd_output = rclone_cmd(&rclone_executable, "", "delete", &remote_path, None);
 
             match cmd_output {
                 Ok(cmd_output) => {
@@ -444,7 +440,9 @@ mod tests {
 
     #[test]
     fn test_rclone_drive_list() {
-        let rclone_exec = rclone_executable().unwrap();
+        let rclone_exec = rclone_executable()
+            .map_err(|e| format!("Failed to find rclone executable: {}", e))
+            .unwrap();
         let drive_list = rclone_cmd(&rclone_exec, "", "ls", "drive://", None);
 
         match drive_list {

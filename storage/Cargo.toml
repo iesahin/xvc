@@ -1,6 +1,6 @@
 [package]
 name = "xvc-storage"
-version = "0.6.17-alpha.2"
+version = "0.6.17"
 edition = "2021"
 description = "Xvc remote and local storage management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,11 +16,11 @@ name = "xvc_storage"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
-xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
-xvc-core = { version = "0.6.17-alpha.2", path = "../core" }
-xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
-xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
+xvc-logging = { version = "0.6.17", path = "../logging" }
+xvc-config = { version = "0.6.17", path = "../config" }
+xvc-core = { version = "0.6.17", path = "../core" }
+xvc-ecs = { version = "0.6.17", path = "../ecs" }
+xvc-walker = { version = "0.6.17", path = "../walker" }
 
 ## Cli and config
 clap = { version = "^4.5", features = ["derive"] }
@@ -112,7 +112,7 @@ rclone = []
 bundled-rclone = ["rclone", "librclone"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.17-alpha.2", path = "../test_helper/" }
+xvc-test-helper = { version = "0.6.17", path = "../test_helper/" }
 shellfn = "^0.2"
 
 [package.metadata.cargo-udeps.ignore]
