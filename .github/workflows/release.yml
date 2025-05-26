@@ -17,27 +17,27 @@ jobs:
       matrix:
         platform:
           - os-name: FreeBSD-x86_64
-            runs-on: ubuntu-20.04
+            runs-on: ubuntu-latest
             target: x86_64-unknown-freebsd
             command: build
             args: "--release --features=bundled-openssl"
 
           - os-name: Linux-x86_64
-            runs-on: ubuntu-20.04
+            runs-on: ubuntu-latest
             target: x86_64-unknown-linux-musl
             command: build
             args: "--release --features=bundled-openssl"
 
             # FIXME: We need to install libsqlite in some of these targets but this is for later.
           - os-name: Linux-aarch64
-            runs-on: ubuntu-20.04
+            runs-on: ubuntu-latest
             target: aarch64-unknown-linux-musl
             command: build
             args: "--release --features=bundled-openssl,bundled-sqlite"
 
           # FIXME: OpenSSL Compilation Errors
           # - os-name: Linux-riscv64
-          #   runs-on: ubuntu-20.04
+          #   runs-on: ubuntu-latest
           #   target: riscv64gc-unknown-linux-gnu
           #   command: build
           #   args: "--release --features=bundled-openssl"
@@ -86,7 +86,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Build binary
-        uses: houseabsolute/actions-rust-cross@v0
+        uses: houseabsolute/actions-rust-cross@v1
         with:
           command: ${{ matrix.platform.command }}
           target: ${{ matrix.platform.target }}
