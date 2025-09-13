@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Refactored storage operations to use dynamic dispatch (`dyn XvcStorageOperations`), reducing boilerplate code.
+
 ## v0.6.17 (2025-04-22)
 
 - Added rclone storage option
