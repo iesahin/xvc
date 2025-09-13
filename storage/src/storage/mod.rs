@@ -136,6 +136,52 @@ impl XvcStorage {
             XvcStorage::DigitalOcean(s) => s.guid.to_string(),
         }
     }
+
+    /// Return a dynamic reference to the underlying storage
+    pub fn as_dyn(&self) -> &dyn XvcStorageOperations {
+        match self {
+            XvcStorage::Local(s) => s,
+            XvcStorage::Generic(s) => s,
+            XvcStorage::Rsync(s) => s,
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(s) => s,
+            #[cfg(feature = "s3")]
+            XvcStorage::S3(s) => s,
+            #[cfg(feature = "minio")]
+            XvcStorage::Minio(s) => s,
+            #[cfg(feature = "r2")]
+            XvcStorage::R2(s) => s,
+            #[cfg(feature = "gcs")]
+            XvcStorage::Gcs(s) => s,
+            #[cfg(feature = "wasabi")]
+            XvcStorage::Wasabi(s) => s,
+            #[cfg(feature = "digital-ocean")]
+            XvcStorage::DigitalOcean(s) => s,
+        }
+    }
+
+    /// Return a mutable dynamic reference to the underlying storage
+    pub fn as_dyn_mut(&mut self) -> &mut dyn XvcStorageOperations {
+        match self {
+            XvcStorage::Local(s) => s,
+            XvcStorage::Generic(s) => s,
+            XvcStorage::Rsync(s) => s,
+            #[cfg(feature = "rclone")]
+            XvcStorage::Rclone(s) => s,
+            #[cfg(feature = "s3")]
+            XvcStorage::S3(s) => s,
+            #[cfg(feature = "minio")]
+            XvcStorage::Minio(s) => s,
+            #[cfg(feature = "r2")]
+            XvcStorage::R2(s) => s,
+            #[cfg(feature = "gcs")]
+            XvcStorage::Gcs(s) => s,
+            #[cfg(feature = "wasabi")]
+            XvcStorage::Wasabi(s) => s,
+            #[cfg(feature = "digital-ocean")]
+            XvcStorage::DigitalOcean(s) => s,
+        }
+    }
 }
 
 impl std::fmt::Display for XvcStorage {
