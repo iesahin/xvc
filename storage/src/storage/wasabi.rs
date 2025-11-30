@@ -4,14 +4,12 @@ use std::env;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use xvc_core::XvcCachePath;
 use xvc_core::R1NStore;
+use xvc_core::XvcCachePath;
 use xvc_core::{watch, XvcOutputSender};
 
-use crate::{Result, XvcStorage, XvcStorageEvent};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
-
-use anyhow::anyhow;
 
 use super::async_common::XvcS3StorageOperations;
 use super::XvcStoragePath;
@@ -124,9 +122,10 @@ impl XvcS3StorageOperations for XvcWasabiStorage {
         let specific_access_key_var = format!("XVC_STORAGE_ACCESS_KEY_ID_{}", self.name);
         let specific_secret_key_var = format!("XVC_STORAGE_SECRET_ACCESS_KEY_{}", self.name);
 
-        if let (Ok(access_key), Ok(secret_key)) =
-            (env::var(&specific_access_key_var), env::var(&specific_secret_key_var))
-        {
+        if let (Ok(access_key), Ok(secret_key)) = (
+            env::var(&specific_access_key_var),
+            env::var(&specific_secret_key_var),
+        ) {
             return Credentials::new(Some(&access_key), Some(&secret_key), None, None, None)
                 .map_err(|e| e.into());
         }
