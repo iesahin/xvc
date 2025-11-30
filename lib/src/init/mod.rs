@@ -5,13 +5,14 @@ use log::{info, warn};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use xvc_core::XvcConfigParams;
 use xvc_core::default_project_config;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
+use xvc_core::watch;
+use xvc_core::AbsolutePath;
+use xvc_core::XvcConfigParams;
 use xvc_core::XvcRoot;
 use xvc_pipeline;
-use xvc_core::AbsolutePath;
 
 /// Initialize an Xvc repository
 #[derive(Debug, Clone, Parser)]
@@ -50,6 +51,8 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         .clone()
         .path
         .unwrap_or_else(|| env::current_dir().unwrap());
+
+    watch!(path);
     // Check whether we are inside a repository
     match xvc_root_opt {
         Some(xvc_root) => {
@@ -71,6 +74,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
     }
 
     let in_git = inside_git(&path);
+    watch!(in_git);
 
     match in_git {
         None => {
@@ -97,6 +101,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
     };
 
     let xvc_root = init_xvc_root(&path, config_opts)?;
+    watch!(xvc_root);
     xvc_pipeline::init(&xvc_root)?;
     xvc_file::init(&xvc_root)?;
     Ok(xvc_root)

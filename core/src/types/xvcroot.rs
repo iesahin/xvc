@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
+use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcConfigParams};
@@ -87,7 +88,9 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoo
         Err(e) => {
             if matches!(e, Error::CannotFindXvcRoot { .. }) {
                 let abs_path = AbsolutePath::from(path);
+                watch!(abs_path);
                 let xvc_dir = abs_path.join(XvcRootInner::XVC_DIR);
+                watch!(xvc_dir);
                 fs::create_dir(&xvc_dir)?;
                 let initial_config = config_opts.default_configuration.clone();
                 let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
@@ -266,8 +269,11 @@ pub fn find_root(path: &Path) -> Result<AbsolutePath> {
         .canonicalize()
         .expect("Cannot canonicalize the path. Possible symlink loop.");
 
+    watch!(abs_path);
+
     for parent in abs_path.ancestors() {
         if parent.join(XVC_DIR).is_dir() {
+            watch!(parent);
             return Ok(parent.into());
         }
     }

@@ -8,6 +8,7 @@ use std::path::PathBuf;
 use std::{env, path::Path};
 use subprocess::{CaptureData, Exec};
 use xvc::init::InitCLI;
+use xvc::watch;
 use xvc_core::XvcVerbosity;
 
 use xvc_core::output;
@@ -24,7 +25,8 @@ pub use xvc_test_helper::{
 const EXAMPLE_PROJECT_NAME: &str = "example-xvc";
 
 pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Result<String> {
-    let mut cmd = cargo_bin_cmd!();
+    let mut cmd = cargo_bin_cmd!("xvc");
+    watch!(cmd);
     let verbosity_opt = match verbosity {
         XvcVerbosity::Quiet => vec!["--quiet"],
         XvcVerbosity::Default => vec![],
