@@ -1,5 +1,4 @@
 //! Digital Ocean Spaces remote storage implementation.
-use anyhow::anyhow;
 use std::env;
 
 use s3::creds::Credentials;

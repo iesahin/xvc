@@ -12,7 +12,6 @@ use xvc_core::{error, info, XvcOutputSender};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
-use anyhow::anyhow;
 
 use super::async_common::XvcS3StorageOperations;
 use super::{XvcStorageListEvent, XvcStoragePath};

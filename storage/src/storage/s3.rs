@@ -1,14 +1,12 @@
 //! AWS S3 remote storage implementation
 use std::env;
 
-use anyhow::anyhow;
-
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_core::R1NStore;
 use xvc_core::{info, watch, XvcOutputSender};
+use xvc_core::{XvcCachePath, XvcRoot};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
@@ -110,9 +108,10 @@ impl XvcS3StorageOperations for XvcS3Storage {
         let specific_access_key_var = format!("XVC_STORAGE_ACCESS_KEY_ID_{}", self.name);
         let specific_secret_key_var = format!("XVC_STORAGE_SECRET_ACCESS_KEY_{}", self.name);
 
-        if let (Ok(access_key), Ok(secret_key)) =
-            (env::var(&specific_access_key_var), env::var(&specific_secret_key_var))
-        {
+        if let (Ok(access_key), Ok(secret_key)) = (
+            env::var(&specific_access_key_var),
+            env::var(&specific_secret_key_var),
+        ) {
             return Credentials::new(Some(&access_key), Some(&secret_key), None, None, None)
                 .map_err(|e| e.into());
         }
