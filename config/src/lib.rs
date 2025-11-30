@@ -40,7 +40,7 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
 };
-use xvc_logging::debug;
+use xvc_logging::{debug, watch};
 use xvc_walker::AbsolutePath;
 
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
@@ -192,10 +192,12 @@ impl XvcConfig {
     ///
     /// The configuration must be a valid TOML document.
     fn default_conf(p: &XvcConfigParams) -> Self {
-        let default_conf = p
-            .default_configuration
-            .parse::<TomlValue>()
-            .expect("Error in default configuration!");
+        watch!(p);
+        let default_conf_res = p.default_configuration.parse::<TomlValue>();
+        watch!(default_conf_res);
+        let default_conf = default_conf_res.expect("Error in default configuration!");
+
+        watch!(&default_conf);
         let hm = toml_value_to_hashmap("".into(), default_conf);
         let hm_for_list = hm.clone();
         let the_config: HashMap<String, XvcConfigValue> = hm
@@ -449,7 +451,9 @@ impl XvcConfig {
     /// Overrides all options with the given key=value style options in the
     /// command line
     pub fn new(p: XvcConfigParams) -> Result<XvcConfig> {
+        watch!(p);
         let mut config = XvcConfig::default_conf(&p);
+        watch!(config);
 
         config.current_dir = XvcConfigOption {
             option: p.current_dir,
@@ -511,6 +515,8 @@ impl XvcConfig {
                 }
             }
         }
+
+        watch!(&config);
 
         Ok(config)
     }
