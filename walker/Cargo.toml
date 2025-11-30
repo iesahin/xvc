@@ -26,7 +26,7 @@ crossbeam = "^0.8"
 rayon = "^1.11"
 
 ## File system
-notify = "7.0"
+notify = "8.2"
 jwalk = "^0.8"
 
 dashmap = "^6"
@@ -35,7 +35,7 @@ dashmap = "^6"
 thiserror = "^2.0"
 anyhow = "^1.0"
 log = "^0.4"
-peak_alloc = "^0.2"
+peak_alloc = "^0.3"
 
 ## Misc
 itertools = "^0.14"

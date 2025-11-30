@@ -36,7 +36,7 @@ thiserror = "^2.0"
 
 ## Misc
 lazy_static = "^1.5"
-rand = "^0.8"
+rand = "^0.9"
 
 
 [dev-dependencies]
