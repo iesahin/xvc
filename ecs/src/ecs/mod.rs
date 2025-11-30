@@ -100,11 +100,11 @@ static INIT: Once = Once::new();
 /// You cannot load a second instance of the entity generator, as it will defeat its thread-safe
 /// uniqueness purpose.
 pub fn load_generator(dir: &Path) -> Result<XvcEntityGenerator> {
-    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+    let mut generator: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
-    INIT.call_once(|| gen = XvcEntityGenerator::load(dir));
-    gen
+    INIT.call_once(|| generator = XvcEntityGenerator::load(dir));
+    generator
 }
 
 /// Inits a generator for the first time.
@@ -112,12 +112,12 @@ pub fn load_generator(dir: &Path) -> Result<XvcEntityGenerator> {
 /// Normally this only be used once an Xvc repository initializes.
 /// The starting value for entities is 1.
 pub fn init_generator() -> Result<XvcEntityGenerator> {
-    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+    let mut generator: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
 
-    INIT.call_once(|| gen = Ok(XvcEntityGenerator::new(1)));
-    gen
+    INIT.call_once(|| generator = Ok(XvcEntityGenerator::new(1)));
+    generator
 }
 
 impl Iterator for XvcEntityGenerator {
@@ -320,21 +320,21 @@ mod tests {
         let gen_dir = tempdir.path().join("entity-gen");
         fs::create_dir_all(&gen_dir)?;
         // We use new here to circumvent the singleton check.
-        let gen = XvcEntityGenerator::new(10);
-        gen.save(&gen_dir)?;
+        let generator = XvcEntityGenerator::new(10);
+        generator.save(&gen_dir)?;
         // It must save the counter at first
         assert!(sorted_files(&gen_dir)?.len() == 1);
         // It must not save the counter if it's not changed
-        gen.save(&gen_dir)?;
+        generator.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 1);
         // It must save the counter if it's changed
-        let _e = gen.next_element();
-        gen.save(&gen_dir)?;
+        let _e = generator.next_element();
+        generator.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 2);
 
         let gen2 = XvcEntityGenerator::load(&gen_dir)?;
         // Don't save if it's not changed after load
-        gen.save(&gen_dir)?;
+        generator.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 2);
         // Save if it's changed after load
         let _e = gen2.next_element();
