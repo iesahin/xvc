@@ -120,7 +120,7 @@ test-ci = [
   "test-s3",
   "test-minio",
   "test-r2",
-  "test-digital-ocean",
+  "test-wasabi",
   "test-rsync",
   "test-rclone",
   "test-generic-rsync",
