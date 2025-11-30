@@ -39,8 +39,8 @@ pub use local::XvcLocalStorage;
 use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
-use xvc_core::{error, XvcOutputSender};
 use xvc_core::AbsolutePath;
+use xvc_core::{error, XvcOutputSender};
 
 use clap_complete::CompletionCandidate;
 
@@ -48,8 +48,8 @@ use crate::{Error, Result, StorageIdentifier};
 
 use relative_path::{RelativePath, RelativePathBuf};
 
-use xvc_core::{util::completer::load_store_for_completion, XvcCachePath, XvcRoot};
 use xvc_core::{persist, XvcStore};
+use xvc_core::{util::completer::load_store_for_completion, XvcCachePath, XvcRoot};
 
 use self::generic::XvcGenericStorage;
 
@@ -270,7 +270,7 @@ pub struct XvcStorageTempDir(AbsolutePath);
 impl XvcStorageTempDir {
     /// Create a new temporary directory
     pub fn new() -> Result<Self> {
-        let temp_dir = AbsolutePath::from(TempDir::new()?.into_path());
+        let temp_dir = AbsolutePath::from(TempDir::new()?.keep());
         Ok(Self(temp_dir))
     }
 
