@@ -23,7 +23,7 @@ fast-glob = "^0.3"
 ## Parallelization
 crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
-rayon = "^1.10"
+rayon = "^1.11"
 
 ## File system
 notify = "7.0"
@@ -39,7 +39,7 @@ peak_alloc = "^0.2"
 
 ## Misc
 itertools = "^0.14"
-regex = "^1.10"
+regex = "^1.12"
 
 [dev-dependencies]
 xvc-test-helper = { path = "../test_helper/", version = "0.6.17" }

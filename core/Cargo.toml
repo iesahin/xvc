@@ -28,9 +28,9 @@ directories-next = "2.0"
 ## Hashing
 seahash = "^4.1"
 byteorder = "^1.5"
-blake3 = "^1.5"
+blake3 = "^1.8"
 blake2 = "0.10.6"
-sha2 = "0.10.8"
+sha2 = "0.10.9"
 sha3 = "0.10.8"
 
 ## Serialization
@@ -45,7 +45,7 @@ toml = "^0.8"
 reqwest = { version = "^0.12", features = ["blocking", "json", "gzip"] }
 
 ## Parallelization
-rayon = "^1.10"
+rayon = "^1.11"
 crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
@@ -77,11 +77,11 @@ fern = { version = "^0.7", features = ["colored"] }
 paste = "1.0"
 
 ## Misc
-regex = "^1.10"
+regex = "^1.12"
 strum = "^0.27"
 strum_macros = "^0.27"
 lazy_static = "^1.5"
-uuid = { version = "^1.10", features = ["serde", "v4", "fast-rng"] }
+uuid = { version = "^1.18", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 cached = "^0.55"
 derive_more = { version = "^2.0", features = ["full"] }
@@ -90,5 +90,5 @@ itertools = "^0.14"
 
 [dev-dependencies]
 xvc-test-helper = { version = "0.6.17", path = "../test_helper/" }
-proptest = "^1.5"
+proptest = "^1.9"
 test-case = "^3.3"
