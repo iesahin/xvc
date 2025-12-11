@@ -4,6 +4,14 @@
 
 - Refactored storage operations to use dynamic dispatch (`dyn XvcStorageOperations`), reducing boilerplate code.
 
+### TODO: Documentation Updates Needed
+
+- [ ] Document breaking change: Environment variable renamed from `XVC_STORAGE_SECRET_KEY_<storage_name>` to `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` for all S3-compatible storage backends (S3, Minio, R2, Wasabi, Digital Ocean, GCS). Users need to update their environment variable names. Add migration guide or backward compatibility note.
+- [ ] Document test configuration change: CI now tests Wasabi instead of Digital Ocean storage (lib/Cargo.toml test features updated).
+- [ ] Document `TempDir::keep()` behavior: Changed from `TempDir::new()?.into_path()` to `TempDir::new()?.keep()` in storage tests. This may affect temporary directory cleanup behavior in tests.
+- [ ] Update documentation for uncommented test line in `run-tests.zsh` - verify this is intentional for CI execution.
+- [ ] Verify and document updated dependencies including major version bumps (blake3, sha2, rayon, regex, uuid, cached, proptest, rand 0.9, etc.).
+
 ## v0.6.17 (2025-04-22)
 
 - Added rclone storage option
