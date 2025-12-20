@@ -5,7 +5,7 @@ use log::{info, warn};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use xvc_core::default_project_config;
+use xvc_core::initial_project_config;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
 use xvc_core::watch;
@@ -88,7 +88,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
             info!("Git repository found in: {:?}", git_root);
         }
     }
-    let default_configuration = default_project_config(!opts.no_git);
+    let default_configuration = initial_project_config(!opts.no_git);
     let config_opts = XvcConfigParams {
         default_configuration,
         current_dir: AbsolutePath::from(&path),

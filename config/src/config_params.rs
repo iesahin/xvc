@@ -1,92 +1,187 @@
-//! Specify configuration sources
-use xvc_walker::AbsolutePath;
+use serde::{Deserialize, Serialize};
 
-/// How should we initialize the configuration?
-///
-/// It's possible to ignore certain sources by supplying `None` to their values here.
-#[derive(Debug, Clone)]
-pub struct XvcConfigParams {
-    /// The default configuration for the project.
-    /// It should contain all default values as a TOML document.
-    /// Xvc produces this in [xvc_core::default_configuration].
-    pub default_configuration: String,
-    /// The directory where the application runs.
-    /// This can be set by various Options.
-    /// It affects how paths are handled in general.
-    pub current_dir: AbsolutePath,
-    /// Should we include system configuration?
-    /// If `true`, it's read from [SYSTEM_CONFIG_DIRS].
-    pub include_system_config: bool,
-    /// Should the user's (home) config be included.
-    /// If `true`, it's read from [USER_CONFIG_DIRS].
-    pub include_user_config: bool,
-    /// Where should we load the project's (public) configuration?
-    /// It's loaded in [XvcRootInner::new]
-    /// TODO: Add a option to ignore this
-    pub project_config_path: Option<AbsolutePath>,
-    /// Where should we load the project's (private) configuration?
-    /// It's loaded in [XvcRootInner::new]
-    /// TODO: Add a option to ignore this
-    pub local_config_path: Option<AbsolutePath>,
-    /// Should we include configuration from the environment.
-    /// If `true`, look for all variables in the form
-    ///
-    /// `XVC_group.key=value`
-    ///
-    /// from the environment and put them into the configuration.
-    pub include_environment_config: bool,
-    /// Command line configuration
-    pub command_line_config: Option<Vec<String>>,
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CoreConfig {
+    pub guid: String,
+    pub verbosity: String,
 }
 
-impl XvcConfigParams {
-    /// Create a new blank config params
-    pub fn new(default_configuration: String, current_dir: AbsolutePath) -> Self {
-        Self {
-            default_configuration,
-            current_dir,
-            include_system_config: true,
-            include_user_config: true,
-            project_config_path: None,
-            local_config_path: None,
-            include_environment_config: true,
-            command_line_config: None,
-        }
-    }
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct GitConfig {
+    pub use_git: bool,
+    pub command: String,
+    pub auto_commit: bool,
+    pub auto_stage: bool,
+}
 
-    /// Update include_system_config value
-    pub fn include_system_config(mut self, include_system_config: bool) -> Self {
-        self.include_system_config = include_system_config;
-        self
-    }
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CacheConfig {
+    pub algorithm: String,
+}
 
-    /// Update include_user_config value
-    pub fn include_user_config(mut self, include_user_config: bool) -> Self {
-        self.include_user_config = include_user_config;
-        self
-    }
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FileTrackConfig {
+    pub no_commit: bool,
+    pub force: bool,
+    pub text_or_binary: String,
+    pub no_parallel: bool,
+    pub include_git_files: bool,
+}
 
-    /// Update project config path
-    pub fn project_config_path(mut self, project_config_path: Option<AbsolutePath>) -> Self {
-        self.project_config_path = project_config_path;
-        self
-    }
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FileListConfig {
+    pub format: String,
+    pub sort: String,
+    pub show_dot_files: bool,
+    pub no_summary: bool,
+    pub recursive: bool,
+    pub include_git_files: bool,
+}
 
-    /// Update local config path
-    pub fn local_config_path(mut self, local_config_path: Option<AbsolutePath>) -> Self {
-        self.local_config_path = local_config_path;
-        self
-    }
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FileCarryInConfig {
+    pub force: bool,
+    pub no_parallel: bool,
+}
 
-    /// Whether to include enviroment variables in the configuration
-    pub fn include_environment_config(mut self, include_environment_config: bool) -> Self {
-        self.include_environment_config = include_environment_config;
-        self
-    }
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FileRecheckConfig {
+    pub method: String,
+}
 
-    /// Command line config from key=value definitions
-    pub fn command_line_config(mut self, command_line_config: Option<Vec<String>>) -> Self {
-        self.command_line_config = command_line_config;
-        self
-    }
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FileConfig {
+    pub track: FileTrackConfig,
+    pub list: FileListConfig,
+    #[serde(rename = "carry-in")]
+    pub carry_in: FileCarryInConfig,
+    pub recheck: FileRecheckConfig,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct PipelineConfig {
+    pub current_pipeline: String,
+    pub default: String,
+    pub default_params_file: String,
+    pub process_pool_size: u32,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CheckIgnoreConfig {
+    pub details: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct XvcConfig {
+    pub core: CoreConfig,
+    pub git: GitConfig,
+    pub cache: CacheConfig,
+    pub file: FileConfig,
+    pub pipeline: PipelineConfig,
+    #[serde(rename = "check-ignore")]
+    pub check_ignore: CheckIgnoreConfig,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalCoreConfig {
+    pub guid: Option<String>,
+    pub verbosity: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalGitConfig {
+    pub use_git: Option<bool>,
+    pub command: Option<String>,
+    pub auto_commit: Option<bool>,
+    pub auto_stage: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalCacheConfig {
+    pub algorithm: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalFileTrackConfig {
+    pub no_commit: Option<bool>,
+    pub force: Option<bool>,
+    pub text_or_binary: Option<String>,
+    pub no_parallel: Option<bool>,
+    pub include_git_files: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalFileListConfig {
+    pub format: Option<String>,
+    pub sort: Option<String>,
+    pub show_dot_files: Option<bool>,
+    pub no_summary: Option<bool>,
+    pub recursive: Option<bool>,
+    pub include_git_files: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalFileCarryInConfig {
+    pub force: Option<bool>,
+    pub no_parallel: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalFileRecheckConfig {
+    pub method: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalFileConfig {
+    pub track: Option<OptionalFileTrackConfig>,
+    pub list: Option<OptionalFileListConfig>,
+    #[serde(rename = "carry-in")]
+    pub carry_in: Option<OptionalFileCarryInConfig>,
+    pub recheck: Option<OptionalFileRecheckConfig>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalPipelineConfig {
+    pub current_pipeline: Option<String>,
+    pub default: Option<String>,
+    pub default_params_file: Option<String>,
+    pub process_pool_size: Option<u32>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct OptionalCheckIgnoreConfig {
+    pub details: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct XvcOptionalConfig {
+    pub core: Option<OptionalCoreConfig>,
+    pub git: Option<OptionalGitConfig>,
+    pub cache: Option<OptionalCacheConfig>,
+    pub file: Option<OptionalFileConfig>,
+    pub pipeline: Option<OptionalPipelineConfig>,
+    #[serde(rename = "check-ignore")]
+    pub check_ignore: Option<OptionalCheckIgnoreConfig>,
 }

@@ -46,7 +46,7 @@ use log::{debug, error, info, warn, LevelFilter};
 use std::io;
 use std::io::Write;
 use std::path::PathBuf;
-use xvc_core::default_project_config;
+use xvc_core::initial_project_config;
 use xvc_core::setup_logging;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::AbsolutePath;
@@ -292,7 +292,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,
         command_line_config: cli_opts.config.clone(),
-        default_configuration: default_project_config(true),
+        default_configuration: initial_project_config(true),
     };
 
     let xvc_root = match load_xvc_root(xvc_config_params) {

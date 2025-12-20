@@ -29,7 +29,7 @@ use xvc_core::{debug, error, uwr, XvcOutputLine};
 
 use xvc_core::{XvcConfigParams, XvcVerbosity};
 use xvc_core::check_ignore;
-pub use xvc_core::default_project_config;
+pub use xvc_core::initial_project_config;
 use xvc_core::root;
 use xvc_core::CHANNEL_BOUND;
 use xvc_file as file;
@@ -413,7 +413,7 @@ pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,
         command_line_config: Some(cli_opts.consolidate_config_options()),
-        default_configuration: default_project_config(true),
+        default_configuration: initial_project_config(true),
     }
 }
 

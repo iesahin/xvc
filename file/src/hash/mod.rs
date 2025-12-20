@@ -67,7 +67,7 @@ pub fn cmd_hash(
     let conf = match xvc_root {
         Some(xvc_root) => xvc_root.config().clone(),
         None => XvcConfig::new(XvcConfigParams {
-            default_configuration: xvc_core::default_project_config(false),
+            default_configuration: xvc_core::initial_project_config(false),
             current_dir: AbsolutePath::from(env::current_dir()?),
             include_system_config: true,
             include_user_config: false,

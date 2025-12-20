@@ -66,11 +66,11 @@ pub use xvc_config::error::Result as XvcConfigResult;
 pub use xvc_config::{
     conf,
     config_params::{
-        CacheConfig, CheckIgnoreConfig, CoreConfig, FileCarryInConfig, FileConfig,
-        FileListConfig, FileRecheckConfig, FileTrackConfig, GitConfig, PipelineConfig,
+        CacheConfig, CheckIgnoreConfig, CoreConfig, FileCarryInConfig, FileConfig, FileListConfig,
+        FileRecheckConfig, FileTrackConfig, GitConfig, PipelineConfig, XvcConfig,
     },
-    FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigOptionSource, XvcConfigParams,
-    XvcVerbosity,
+    FromConfigKey, UpdateFromXvcConfig, XvcConfig as XvcConfigLoader, XvcConfigOptionSource,
+    XvcConfigParams, XvcVerbosity,
 };
 
 pub use util::git;
@@ -137,54 +137,6 @@ pub const GITIGNORE_INITIAL_CONTENT: &str = "
 pub fn default_project_config(use_git: bool) -> String {
     let uuid = uuid::Uuid::new_v4();
     let guid = hex::encode(seahash::hash(uuid.as_bytes()).to_le_bytes());
-
-    let config = ProjectConfig {
-        core: CoreConfig {
-            guid,
-            verbosity: "error".to_string(),
-        },
-        git: GitConfig {
-            use_git,
-            command: "git".to_string(),
-            auto_commit: true,
-            auto_stage: false,
-        },
-        cache: CacheConfig {
-            algorithm: "blake3".to_string(),
-        },
-        file: FileConfig {
-            track: FileTrackConfig {
-                no_commit: false,
-                force: false,
-                text_or_binary: "auto".to_string(),
-                no_parallel: false,
-                include_git_files: !use_git,
-            },
-            list: FileListConfig {
-                format: "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}".to_string(),
-                sort: "name-desc".to_string(),
-                show_dot_files: false,
-                no_summary: false,
-                recursive: false,
-                include_git_files: !use_git,
-            },
-            carry_in: FileCarryInConfig {
-                force: false,
-                no_parallel: false,
-            },
-            recheck: FileRecheckConfig {
-                method: "copy".to_string(),
-            },
-        },
-        pipeline: PipelineConfig {
-            current_pipeline: "default".to_string(),
-            default: "default".to_string(),
-            default_params_file: "params.yaml".to_string(),
-            process_pool_size: 4,
-        },
-        check_ignore: CheckIgnoreConfig { details: false },
-    };
-
     format!(
         r##"
 [core]
@@ -194,7 +146,7 @@ pub fn default_project_config(use_git: bool) -> String {
 guid = "{guid}"
 # Default verbosity level.
 # One of "error", "warn", "info"
-verbosity = "{verbosity}"
+verbosity = "error"
 
 [git]
 # Automate git operations.
@@ -204,16 +156,16 @@ use_git = {use_git}
 # Command to run Git process.
 # You can set this to an absolute path to specify an executable
 # If set to a non-absolute path, the executable will be searched in $PATH.
-command = "{git_command}"
+command = "git"
 
 # Commit changes in .xvc/ directory after commands.
 # You can set this to false if you want to commit manually.
-auto_commit = {auto_commit}
+auto_commit = true
 
 # Stage changes in .xvc/ directory without committing.
 # auto_commit implies auto_stage.
 # If you want to commit manually but don't want to stage after individual Xvc commands, you can set this to true.
-auto_stage = {auto_stage}
+auto_stage = false
 
 [cache]
 # The hash algorithm used for the cache.
@@ -221,29 +173,29 @@ auto_stage = {auto_stage}
 # All algorithms are selected to produce 256-bit hashes, so sha2 means SHA2-256, blake2 means BLAKE2s, etc.
 # The cache path is produced by prepending algorithm name to the cache.
 # Blake3 files are in .xvc/b3/, while sha2 files are in .xvc/s2/ etc.
-algorithm = "{cache_algorithm}"
+algorithm = "blake3"
 
 [file]
 
 [file.track]
 
 # Don't move file content to cache after xvc file track
-no_commit = {file_track_no_commit}
+no_commit = false
 # Force to track files even if they are already tracked.
-force = {file_track_force}
+force = false
 
 # Xvc calculates file content digest differently for text and binary files.
 # This option controls whether to treat files as text or binary.
 # It may take auto, text or binary as values.
 # Auto check each file individually and treat it as text if it's text.
-text_or_binary = "{file_track_text_or_binary}"
+text_or_binary = "auto"
 
 # Don't use parallelism in track operations.
 # Note that some of the operations are implemented in parallel by default, and this option affects some heavier operations.
-no_parallel = {file_track_no_parallel}
+no_parallel = false
 
 # Track files that are tracked by Git. 
-include_git_files = {file_track_include_git_files}
+include_git_files = {include_git_files}
 
 [file.list]
 
@@ -271,80 +223,69 @@ include_git_files = {file_track_include_git_files}
 # There are no escape sequences in the format string.
 # If you want to add a tab, type it to the string.
 # If you want to add a literal double curly brace, open an issue.
-format = "{file_list_format}"
+format = "{{{{aft}}}}{{{{rrm}}}} {{{{asz}}}} {{{{ats}}}} {{{{rcd8}}}} {{{{acd8}}}} {{{{name}}}}"
 
 # Default sort order for `xvc file list`.
 # Valid values are
 # none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-sort = "{file_list_sort}"
+sort = "name-desc"
 
 # Show dot files like .gitignore
-show_dot_files = {file_list_show_dot_files}
+show_dot_files = false
 
 # Do not show a summary for as the final row for `xvc file list`.
-no_summary = {file_list_no_summary}
+no_summary = false
 
 # List files recursively always.
-recursive = {file_list_recursive}
+recursive = false
 
 # List files tracked by Git. 
-include_git_files = {file_list_include_git_files}
+include_git_files = {include_git_files}
 
 [file.carry-in]
 # Carry-in the files to cache always, even if they are already present.
-force = {file_carry_in_force}
+force = false
 
 # Don't use parallel move/copy in carry-in
-no_parallel = {file_carry_in_no_parallel}
+no_parallel = false
 
 [file.recheck]
 # The recheck method for Xvc. It may take copy, hardlink, symlink, reflink as values.
 # The default is copy to make sure the options is portable.
 # Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file.
 # Note that hardlink and symlink are read-only as they link the files in cache.
-method = "{file_recheck_method}"
+method = "copy"
 
 [pipeline]
 # Name of the current pipeline to run
-current_pipeline = "{pipeline_current_pipeline}"
+current_pipeline = "default"
 # Name of the default pipeline
-default = "{pipeline_default}"
+default = "default"
 # Name of the default params file name
-default_params_file = "{pipeline_default_params_file}"
+default_params_file = "params.yaml"
 # Number of command processes to run concurrently
-process_pool_size = {pipeline_process_pool_size}
+process_pool_size = 4
  
 [check-ignore]
 # Show details by default
-details = {check_ignore_details}
+details = false
 
 "##,
-        guid = config.core.guid,
-        verbosity = config.core.verbosity,
-        use_git = config.git.use_git,
-        git_command = config.git.command,
-        auto_commit = config.git.auto_commit,
-        auto_stage = config.git.auto_stage,
-        cache_algorithm = config.cache.algorithm,
-        file_track_no_commit = config.file.track.no_commit,
-        file_track_force = config.file.track.force,
-        file_track_text_or_binary = config.file.track.text_or_binary,
-        file_track_no_parallel = config.file.track.no_parallel,
-        file_track_include_git_files = config.file.track.include_git_files,
-        file_list_format = config.file.list.format,
-        file_list_sort = config.file.list.sort,
-        file_list_show_dot_files = config.file.list.show_dot_files,
-        file_list_no_summary = config.file.list.no_summary,
-        file_list_recursive = config.file.list.recursive,
-        file_list_include_git_files = config.file.list.include_git_files,
-        file_carry_in_force = config.file.carry_in.force,
-        file_carry_in_no_parallel = config.file.carry_in.no_parallel,
-        file_recheck_method = config.file.recheck.method,
-        pipeline_current_pipeline = config.pipeline.current_pipeline,
-        pipeline_default = config.pipeline.default,
-        pipeline_default_params_file = config.pipeline.default_params_file,
-        pipeline_process_pool_size = config.pipeline.process_pool_size,
-        check_ignore_details = config.check_ignore.details,
+        guid = guid,
+        use_git = use_git,
+        include_git_files = !use_git
     )
 }
 
+
+/// Deserializes the default project configuration string into a [ProjectConfig] struct.
+///
+/// # Arguments
+///
+/// - `use_git`: sets `core.use_git` option.
+pub fn get_default_project_config_struct(use_git: bool) -> Result<XvcConfig> {
+    let config_str = default_project_config(use_git);
+    let config: XvcConfig =
+        toml::from_str(&config_str).map_err(|e| Error::TomlDeserializationError { source: e })?;
+    Ok(config)
+}
