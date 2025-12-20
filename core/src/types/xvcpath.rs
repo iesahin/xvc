@@ -12,13 +12,12 @@ use derive_more::Display as DeriveDisplay;
 use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display, EnumString, VariantNames};
 use xvc_logging::{info, output, uwr, XvcOutputSender};
 use xvc_walker::AbsolutePath;
 
 use std::ops::Deref;
 
-use crate::{ContentDigest, HashAlgorithm};
+use crate::{ContentDigest, HashAlgorithm, TextOrBinary};
 use xvc_ecs::persist;
 
 use super::diff::Diffable;
@@ -192,40 +191,6 @@ impl XvcPath {
         self.0.file_name()
     }
 }
-
-/// Represents whether a file is a text file or not
-#[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Serialize,
-    Deserialize,
-    EnumString,
-    Hash,
-    Display,
-    Copy,
-    VariantNames,
-)]
-#[strum(serialize_all = "lowercase")]
-pub enum TextOrBinary {
-    /// Detect whether the file is text or binary with [is_text_file] function
-    Auto,
-    /// Remove all line endings before calculating the digest
-    Text,
-    /// Do not remove line endings before calculating the digest
-    Binary,
-}
-
-impl Default for TextOrBinary {
-    fn default() -> Self {
-        Self::Auto
-    }
-}
-
-persist!(TextOrBinary, "text-or-binary");
 
 /// Cache paths are relative to `.xvc/`
 #[derive(

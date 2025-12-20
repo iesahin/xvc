@@ -4,7 +4,7 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 use log::LevelFilter;
-use rand::distributions::Alphanumeric;
+use rand::distr::Alphanumeric;
 use rand::rngs::StdRng;
 use rand::Rng;
 use rand::RngCore;
@@ -52,7 +52,7 @@ pub fn random_dir_name(prefix: &str, seed: Option<u64>) -> String {
     let mut rng = if let Some(seed) = seed {
         rand::rngs::StdRng::seed_from_u64(seed)
     } else {
-        rand::rngs::StdRng::from_entropy()
+        rand::rngs::StdRng::from_os_rng()
     };
 
     let rand: u32 = rng.next_u32();
@@ -137,7 +137,7 @@ pub fn generate_random_file(filename: &Path, size: usize, seed: Option<u64>) {
 
     let mut rng: StdRng = seed
         .map(StdRng::seed_from_u64)
-        .unwrap_or_else(StdRng::from_entropy);
+        .unwrap_or_else(StdRng::from_os_rng);
     let mut buffer = [0u8; 1024];
     let mut remaining_size = size;
 
@@ -168,7 +168,7 @@ pub fn generate_filled_file(filename: &Path, size: usize, byte: u8) {
 /// Generate a random text file composed of alphanumerics
 pub fn generate_random_text_file(filename: &Path, num_lines: usize) {
     let mut f = File::create(filename).unwrap();
-    let rng = rand::thread_rng();
+    let rng = rand::rng();
     let line_length = 100;
     for _ in 0..num_lines {
         let line: String = rng

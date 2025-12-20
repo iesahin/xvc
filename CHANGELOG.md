@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Refactored storage operations to use dynamic dispatch (`dyn XvcStorageOperations`), reducing boilerplate code.
+- Fixed `MINIO_ACCESS_KEY_ID` environment variable for MinIO storage credentials. 
+
+
 ## v0.6.17 (2025-04-22)
 
 - Added rclone storage option

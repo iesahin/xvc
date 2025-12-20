@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
+use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcConfigParams};
@@ -87,16 +88,20 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoo
         Err(e) => {
             if matches!(e, Error::CannotFindXvcRoot { .. }) {
                 let abs_path = AbsolutePath::from(path);
+                watch!(abs_path);
                 let xvc_dir = abs_path.join(XvcRootInner::XVC_DIR);
+                watch!(xvc_dir);
                 fs::create_dir(&xvc_dir)?;
                 let initial_config = config_opts.default_configuration.clone();
                 let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
                 fs::write(&project_config_path, initial_config)?;
+                watch!(&project_config_path);
                 let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
                 fs::write(
                     &local_config_path,
                     "# Please add your local config here. This file is .gitignored",
                 )?;
+                watch!(&local_config_path);
 
                 let project_config_opts = XvcConfigParams {
                     default_configuration: config_opts.default_configuration,
@@ -110,14 +115,19 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoo
                 };
 
                 let config = XvcConfig::new(project_config_opts.clone())?;
+                watch!(&config);
                 // We write the initial entity value directly, without init_entity_generator,
                 // because we can't initialize the generator more than once, and we'll read
                 // from this value below
                 let entity_generator_dir = &xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH);
+                watch!(entity_generator_dir);
                 fs::create_dir_all(entity_generator_dir)?;
                 let entity_generator_path = entity_generator_dir.join(timestamp());
+                watch!(entity_generator_path);
                 fs::write(entity_generator_path, "1")?;
                 let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
+
+                watch!(&store_dir);
                 fs::create_dir(store_dir)?;
                 // TODO: Add crate specific initializations
 
@@ -266,8 +276,11 @@ pub fn find_root(path: &Path) -> Result<AbsolutePath> {
         .canonicalize()
         .expect("Cannot canonicalize the path. Possible symlink loop.");
 
+    watch!(abs_path);
+
     for parent in abs_path.ancestors() {
         if parent.join(XVC_DIR).is_dir() {
+            watch!(parent);
             return Ok(parent.into());
         }
     }

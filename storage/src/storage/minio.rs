@@ -1,16 +1,14 @@
 //! Minio remote storage implementation.
 use std::env;
 
-use anyhow::anyhow;
-
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_core::R1NStore;
 use xvc_core::XvcOutputSender;
+use xvc_core::{XvcCachePath, XvcRoot};
 
-use crate::{Result, XvcStorage, XvcStorageEvent};
+use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
 use super::async_common::XvcS3StorageOperations;
@@ -79,33 +77,6 @@ pub struct XvcMinioStorage {
     pub endpoint: String,
 }
 
-impl XvcMinioStorage {
-    fn storage_specific_credentials(&self) -> Result<Credentials> {
-        Credentials::new(
-            Some(&env::var(format!(
-                "XVC_STORAGE_ACCESS_KEY_ID_{}",
-                self.name
-            ))?),
-            Some(&env::var(format!("XVC_STORAGE_SECRET_KEY_{}", self.name))?),
-            None,
-            None,
-            None,
-        )
-        .map_err(|e| e.into())
-    }
-
-    fn storage_type_credentials(&self) -> Result<Credentials> {
-        Credentials::new(
-            Some(&env::var("MINIO_ACCESS_KEY_ID").unwrap()),
-            Some(&env::var("MINIO_SECRET_ACCESS_KEY").unwrap()),
-            None,
-            None,
-            None,
-        )
-        .map_err(|e| e.into())
-    }
-}
-
 impl XvcS3StorageOperations for XvcMinioStorage {
     fn storage_prefix(&self) -> String {
         self.storage_prefix.clone()
@@ -127,18 +98,39 @@ impl XvcS3StorageOperations for XvcMinioStorage {
     }
 
     fn credentials(&self) -> Result<Credentials> {
-        match self.storage_specific_credentials() {
-            Ok(c) => Ok(c),
-            Err(e1) => match self.storage_type_credentials() {
-                Ok(c) => Ok(c),
-                Err(e2) => Err(anyhow!(
-                    "None of the required environment variables found for credentials: {}\n{}\n",
-                    e1,
-                    e2
-                )),
-            },
+        // Try storage-specific credentials
+        let specific_access_key_var = format!("XVC_STORAGE_ACCESS_KEY_ID_{}", self.name);
+        let specific_secret_key_var = format!("XVC_STORAGE_SECRET_ACCESS_KEY_{}", self.name);
+
+        if let (Ok(access_key), Ok(secret_key)) = (
+            env::var(&specific_access_key_var),
+            env::var(&specific_secret_key_var),
+        ) {
+            return Credentials::new(Some(&access_key), Some(&secret_key), None, None, None)
+                .map_err(|e| e.into());
         }
-        .map_err(|e| e.into())
+
+        // Try storage-type credentials
+        let type_access_key_var = "MINIO_ACCESS_KEY_ID";
+        let type_secret_key_var = "MINIO_SECRET_ACCESS_KEY";
+        if let (Ok(access_key), Ok(secret_key)) =
+            (env::var(type_access_key_var), env::var(type_secret_key_var))
+        {
+            return Credentials::new(Some(&access_key), Some(&secret_key), None, None, None)
+                .map_err(|e| e.into());
+        }
+
+        // If both fail, return an error
+        Err(Error::CloudCredentialsNotFound {
+            storage_name: self.name.clone(),
+            var_pairs: vec![
+                (specific_access_key_var, specific_secret_key_var),
+                (
+                    type_access_key_var.to_string(),
+                    type_secret_key_var.to_string(),
+                ),
+            ],
+        })
     }
 
     fn bucket_name(&self) -> String {

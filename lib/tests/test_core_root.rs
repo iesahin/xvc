@@ -1,17 +1,20 @@
 mod common;
 use common::*;
+use xvc_core::AbsolutePath;
 use xvc_core::XvcVerbosity;
 use xvc_test_helper::test_logging;
-use xvc_core::AbsolutePath;
 
-use xvc::error::Result;
+use xvc::{error::Result, watch};
 
 #[test]
 fn test_root() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let xvc_root = run_in_temp_xvc_dir()?;
 
+    watch!(xvc_root);
+
     let rel = run_xvc(Some(&xvc_root), &["root"], XvcVerbosity::Default)?;
+
     assert!(rel.trim() == ".", "Relative: {}", rel);
     let abs = run_xvc(
         Some(&xvc_root),

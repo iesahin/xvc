@@ -96,7 +96,11 @@ where
 
     /// This is used to create a store from actual values where the entity may
     /// or may not already be in the store.
-    pub fn from_storable<I>(values: I, store: &XvcStore<T>, gen: &XvcEntityGenerator) -> HStore<T>
+    pub fn from_storable<I>(
+        values: I,
+        store: &XvcStore<T>,
+        generator: &XvcEntityGenerator,
+    ) -> HStore<T>
     where
         I: IntoIterator<Item = T>,
     {
@@ -104,7 +108,7 @@ where
         for value in values {
             let key = match store.entity_by_value(&value) {
                 Some(e) => e,
-                None => gen.next_element(),
+                None => generator.next_element(),
             };
             hstore.map.insert(key, value.clone());
         }
@@ -144,8 +148,8 @@ impl<T> HStore<T> {
         }
     }
 
-    /// Creates values from `func` and gets new entities from `gen` to create new records.
-    pub fn from_func<F>(gen: &XvcEntityGenerator, func: F) -> Result<HStore<T>>
+    /// Creates values from `func` and gets new entities from `generator` to create new records.
+    pub fn from_func<F>(generator: &XvcEntityGenerator, func: F) -> Result<HStore<T>>
     where
         F: Fn() -> Result<Option<T>>,
     {
@@ -156,7 +160,7 @@ impl<T> HStore<T> {
                 Ok(None) => break,
                 Err(err) => return Err(err),
             };
-            let key = gen.next_element();
+            let key = generator.next_element();
             hstore.map.insert(key, value);
         }
         Ok(hstore)

@@ -10,7 +10,7 @@ use crate::storage::{
 
 use xvc_core::XvcOutputSender;
 
-use crate::{Error, Result};
+use crate::Result;
 
 use xvc_core::{XvcCachePath, XvcRoot};
 
@@ -23,9 +23,7 @@ use super::XvcStorageTempDir;
 pub trait XvcStorageOperations {
     /// The init operation is creates a directory with the "short guid" of the Xvc repository and
     /// adds a .xvc-guid file with the guid of the storage.
-    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
-    where
-        Self: Sized;
+    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>;
 
     /// Used by xvc file list command to list the contents of a directory in the storage.
     fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent>;
@@ -69,47 +67,11 @@ impl XvcStorageOperations for XvcStorage {
         output: &XvcOutputSender,
         xvc_root: &XvcRoot,
     ) -> Result<XvcStorageInitEvent> {
-        match self {
-            XvcStorage::Local(ref mut r) => r.init(output, xvc_root),
-            XvcStorage::Generic(ref mut r) => r.init(output, xvc_root),
-            XvcStorage::Rsync(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "rclone")]
-            XvcStorage::Rclone(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(ref mut r) => r.init(output, xvc_root),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(ref mut r) => r.init(output, xvc_root),
-        }
+        self.as_dyn_mut().init(output, xvc_root)
     }
 
     fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
-        match self {
-            XvcStorage::Local(lr) => lr.list(output, xvc_root),
-            XvcStorage::Generic(gr) => gr.list(output, xvc_root),
-            XvcStorage::Rsync(r) => r.list(output, xvc_root),
-            #[cfg(feature = "rclone")]
-            XvcStorage::Rclone(r) => r.list(output, xvc_root),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.list(output, xvc_root),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.list(output, xvc_root),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.list(output, xvc_root),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.list(output, xvc_root),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.list(output, xvc_root),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.list(output, xvc_root),
-        }
+        self.as_dyn().list(output, xvc_root)
     }
 
     fn send(
@@ -119,25 +81,7 @@ impl XvcStorageOperations for XvcStorage {
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<XvcStorageSendEvent> {
-        match self {
-            XvcStorage::Local(lr) => lr.send(output, xvc_root, paths, force),
-            XvcStorage::Generic(gr) => gr.send(output, xvc_root, paths, force),
-            XvcStorage::Rsync(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "rclone")]
-            XvcStorage::Rclone(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.send(output, xvc_root, paths, force),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.send(output, xvc_root, paths, force),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.send(output, xvc_root, paths, force),
-        }
+        self.as_dyn().send(output, xvc_root, paths, force)
     }
 
     fn receive(
@@ -147,25 +91,7 @@ impl XvcStorageOperations for XvcStorage {
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        match self {
-            XvcStorage::Local(lr) => lr.receive(output, xvc_root, paths, force),
-            XvcStorage::Generic(gr) => gr.receive(output, xvc_root, paths, force),
-            XvcStorage::Rsync(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "rclone")]
-            XvcStorage::Rclone(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.receive(output, xvc_root, paths, force),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.receive(output, xvc_root, paths, force),
-        }
+        self.as_dyn().receive(output, xvc_root, paths, force)
     }
 
     fn delete(
@@ -174,25 +100,7 @@ impl XvcStorageOperations for XvcStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
-        match self {
-            XvcStorage::Local(lr) => lr.delete(output, xvc_root, paths),
-            XvcStorage::Generic(gr) => gr.delete(output, xvc_root, paths),
-            XvcStorage::Rsync(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "rclone")]
-            XvcStorage::Rclone(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(s3r) => s3r.delete(output, xvc_root, paths),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(mr) => mr.delete(output, xvc_root, paths),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.delete(output, xvc_root, paths),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.delete(output, xvc_root, paths),
-        }
+        self.as_dyn().delete(output, xvc_root, paths)
     }
 
     fn share(
@@ -202,28 +110,6 @@ impl XvcStorageOperations for XvcStorage {
         path: &XvcCachePath,
         period: Duration,
     ) -> Result<XvcStorageExpiringShareEvent> {
-        // TODO: These should be dyn Storable
-
-        match self {
-            XvcStorage::Local(_) | XvcStorage::Generic(_) | XvcStorage::Rsync(_) => {
-                Err(Error::StorageDoesNotSupportSignedUrls)
-            }
-
-            #[cfg(feature = "rclone")]
-            XvcStorage::Rclone(_) => Err(Error::StorageDoesNotSupportSignedUrls),
-
-            #[cfg(feature = "s3")]
-            XvcStorage::S3(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "minio")]
-            XvcStorage::Minio(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "r2")]
-            XvcStorage::R2(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "gcs")]
-            XvcStorage::Gcs(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "wasabi")]
-            XvcStorage::Wasabi(r) => r.share(output, xvc_root, path, period),
-            #[cfg(feature = "digital-ocean")]
-            XvcStorage::DigitalOcean(r) => r.share(output, xvc_root, path, period),
-        }
+        self.as_dyn().share(output, xvc_root, path, period)
     }
 }

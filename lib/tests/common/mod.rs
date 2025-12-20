@@ -1,16 +1,18 @@
 #![allow(dead_code)]
 
 use anyhow::anyhow;
+use assert_cmd::cargo::cargo_bin_cmd;
 use assert_cmd::Command;
 
 use std::path::PathBuf;
 use std::{env, path::Path};
 use subprocess::{CaptureData, Exec};
 use xvc::init::InitCLI;
+use xvc::watch;
 use xvc_core::XvcVerbosity;
 
-use xvc_core::XvcRoot;
 use xvc_core::output;
+use xvc_core::XvcRoot;
 
 use xvc::error::{Error, Result};
 
@@ -23,42 +25,36 @@ pub use xvc_test_helper::{
 const EXAMPLE_PROJECT_NAME: &str = "example-xvc";
 
 pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Result<String> {
-    match Command::cargo_bin("xvc") {
-        Ok(mut cmd) => {
-            let verbosity_opt = match verbosity {
-                XvcVerbosity::Quiet => vec!["--quiet"],
-                XvcVerbosity::Default => vec![],
-                XvcVerbosity::Warn => vec!["-v"],
-                XvcVerbosity::Info => vec!["-vv"],
-                XvcVerbosity::Debug => vec!["-vvv"],
-                XvcVerbosity::Trace => vec!["--debug", "-vvvvv"],
-            };
+    let mut cmd = cargo_bin_cmd!("xvc");
+    watch!(cmd);
+    let verbosity_opt = match verbosity {
+        XvcVerbosity::Quiet => vec!["--quiet"],
+        XvcVerbosity::Default => vec![],
+        XvcVerbosity::Warn => vec!["-v"],
+        XvcVerbosity::Info => vec!["-vv"],
+        XvcVerbosity::Debug => vec!["-vvv"],
+        XvcVerbosity::Trace => vec!["--debug", "-vvvvv"],
+    };
 
-            let prepared = match cwd {
-                Some(cwd) => cmd.args(verbosity_opt).args(args).current_dir(cwd),
-                None => cmd.args(verbosity_opt).args(args),
-            };
+    let prepared = match cwd {
+        Some(cwd) => cmd.args(verbosity_opt).args(args).current_dir(cwd),
+        None => cmd.args(verbosity_opt).args(args),
+    };
 
-            let output = prepared.output()?;
+    let output = prepared.output()?;
 
-            output!("{:?}", &output);
-            output!("{:?}", &output.status);
-            assert!(output.status.success(), "Command failed: {:?}", prepared);
+    output!("{:?}", &output);
+    output!("{:?}", &output.status);
+    assert!(output.status.success(), "Command failed: {:?}", prepared);
 
-            let output_str = String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n");
-            let debug_output_str = format!(
-                "Command: {prepared:#?}\nStdout: {}\nStderr: {}",
-                output_str,
-                String::from_utf8_lossy(&output.stderr).replace("\\\n", "\n"),
-            );
-            println!("{}", debug_output_str);
-            Ok(output_str)
-        }
-        Err(e) => {
-            println!("{}", e);
-            Err(e.into())
-        }
-    }
+    let output_str = String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n");
+    let debug_output_str = format!(
+        "Command: {prepared:#?}\nStdout: {}\nStderr: {}",
+        output_str,
+        String::from_utf8_lossy(&output.stderr).replace("\\\n", "\n"),
+    );
+    println!("{}", debug_output_str);
+    Ok(output_str)
 }
 
 pub fn example_project_url() -> Result<String> {

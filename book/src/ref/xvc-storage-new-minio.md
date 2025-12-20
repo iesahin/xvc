@@ -11,7 +11,7 @@ It allows to store tracked file contents in a Minio server.
 $ xvc storage new minio --help
 Add a new Minio storage
 
-Reads credentials from `MINIO_ACCESS_KEY` and `MINIO_SECRET_ACCESS_KEY` environment variables. Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
+Reads credentials from `MINIO_ACCESS_KEY_ID` and `MINIO_SECRET_ACCESS_KEY` environment variables. Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
 
 Usage: xvc storage new minio [OPTIONS] --name <NAME> --endpoint <ENDPOINT> --bucket-name <BUCKET_NAME> --region <REGION>
 

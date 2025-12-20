@@ -1,6 +1,6 @@
 //! Decide whether a digest is calculated as text or binary file.
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumString;
+use strum_macros::{Display, EnumString, VariantNames};
 
 use xvc_ecs::persist;
 
@@ -10,10 +10,22 @@ use xvc_ecs::persist;
 ///
 /// Configuration for each file is saved in `text-or-binary` BStore.
 #[derive(
-    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, EnumString, Hash,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Serialize,
+    Deserialize,
+    EnumString,
+    Hash,
+    Display,
+    Copy,
+    VariantNames,
 )]
 #[strum(serialize_all = "lowercase")]
-enum TextOrBinary {
+pub enum TextOrBinary {
     /// Check whether first 8000 bytes contains 0s in a file.
     /// If found, it's considered binary.
     /// Otherwise it's text.

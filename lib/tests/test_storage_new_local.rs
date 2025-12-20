@@ -5,8 +5,8 @@ use log::LevelFilter;
 
 use common::*;
 use xvc::error::Result;
-use xvc_core::XvcVerbosity;
 use xvc_core::XvcRoot;
+use xvc_core::XvcVerbosity;
 use xvc_storage::storage::XVC_STORAGE_GUID_FILENAME;
 use xvc_test_helper::generate_filled_file;
 
@@ -126,7 +126,7 @@ fn test_storage_new_local() -> Result<()> {
     // We'll use a separate process to run the following tests.
     // Entity counter cannot be loaded to the same process twice.
     let another_xvc_root = assert_fs::TempDir::new()?;
-    let mut xvc = assert_cmd::cmd::Command::cargo_bin("xvc")?;
+    let mut xvc = assert_cmd::cargo::cargo_bin_cmd!();
     xvc.current_dir(&another_xvc_root);
     xvc.arg("init").assert();
     xvc.args([

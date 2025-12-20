@@ -100,11 +100,11 @@ static INIT: Once = Once::new();
 /// You cannot load a second instance of the entity generator, as it will defeat its thread-safe
 /// uniqueness purpose.
 pub fn load_generator(dir: &Path) -> Result<XvcEntityGenerator> {
-    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+    let mut generator: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
-    INIT.call_once(|| gen = XvcEntityGenerator::load(dir));
-    gen
+    INIT.call_once(|| generator = XvcEntityGenerator::load(dir));
+    generator
 }
 
 /// Inits a generator for the first time.
@@ -112,12 +112,12 @@ pub fn load_generator(dir: &Path) -> Result<XvcEntityGenerator> {
 /// Normally this only be used once an Xvc repository initializes.
 /// The starting value for entities is 1.
 pub fn init_generator() -> Result<XvcEntityGenerator> {
-    let mut gen: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
+    let mut generator: Result<XvcEntityGenerator> = Err(XvcError::CanInitializeOnlyOnce {
         object: "XvcEntityGenerator".to_string(),
     });
 
-    INIT.call_once(|| gen = Ok(XvcEntityGenerator::new(1)));
-    gen
+    INIT.call_once(|| generator = Ok(XvcEntityGenerator::new(1)));
+    generator
 }
 
 impl Iterator for XvcEntityGenerator {
@@ -131,7 +131,7 @@ impl Iterator for XvcEntityGenerator {
 impl XvcEntityGenerator {
     fn new(start: u64) -> XvcEntityGenerator {
         let counter = AtomicU64::new(start);
-        let mut rng = rngs::StdRng::from_entropy();
+        let mut rng = rngs::StdRng::from_os_rng();
         let init_random = rng.next_u64();
         // When we create a new generator from scratch, we need to save it.
         // In the load function, we set this to false, as we don't want to save duplicate values.
@@ -156,7 +156,7 @@ impl XvcEntityGenerator {
                 let current_val = fs::read_to_string(path)?.parse::<u64>()?;
                 // We don't use new here to set the dirty flag to false.
                 let counter = AtomicU64::new(current_val);
-                let mut rng = rngs::StdRng::from_entropy();
+                let mut rng = rngs::StdRng::from_os_rng();
                 let init_random = rng.next_u64();
                 // When we load a new generator from file, we don't need to save it.
                 // In the new function, we set this to true, as we need to save the first value.
@@ -276,10 +276,10 @@ mod tests {
 
     #[test]
     fn test_init() -> Result<()> {
-        let gen = init_generator()?;
-        assert_eq!(gen.counter.load(Ordering::SeqCst), 1);
-        assert_eq!(gen.next_element().0, 1);
-        assert_eq!(gen.next_element().0, 2);
+        let g = init_generator()?;
+        assert_eq!(g.counter.load(Ordering::SeqCst), 1);
+        assert_eq!(g.next_element().0, 1);
+        assert_eq!(g.next_element().0, 2);
         let gen2 = init_generator();
         assert!(matches!(gen2, Err(XvcError::CanInitializeOnlyOnce { .. })));
         Ok(())
@@ -300,12 +300,12 @@ mod tests {
         sleep(Duration::from_millis(1));
         let gen_file_3 = gen_dir.join(timestamp());
         fs::write(gen_file_3, format!("{}", r + 2000))?;
-        let gen = XvcEntityGenerator::load(&gen_dir)?;
-        assert_eq!(gen.counter.load(Ordering::SeqCst), r + 2000);
-        assert_eq!(gen.next_element().0, (r + 2000));
-        assert_eq!(gen.next_element().0, (r + 2001));
-        assert_eq!(gen.next_element().0, (r + 2002));
-        gen.save(&gen_dir)?;
+        let g = XvcEntityGenerator::load(&gen_dir)?;
+        assert_eq!(g.counter.load(Ordering::SeqCst), r + 2000);
+        assert_eq!(g.next_element().0, (r + 2000));
+        assert_eq!(g.next_element().0, (r + 2001));
+        assert_eq!(g.next_element().0, (r + 2002));
+        g.save(&gen_dir)?;
         let new_val = fs::read_to_string(most_recent_file(&gen_dir)?.unwrap())?.parse::<u64>()?;
         assert_eq!(new_val, r + 2003);
         Ok(())
@@ -320,21 +320,21 @@ mod tests {
         let gen_dir = tempdir.path().join("entity-gen");
         fs::create_dir_all(&gen_dir)?;
         // We use new here to circumvent the singleton check.
-        let gen = XvcEntityGenerator::new(10);
-        gen.save(&gen_dir)?;
+        let generator = XvcEntityGenerator::new(10);
+        generator.save(&gen_dir)?;
         // It must save the counter at first
         assert!(sorted_files(&gen_dir)?.len() == 1);
         // It must not save the counter if it's not changed
-        gen.save(&gen_dir)?;
+        generator.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 1);
         // It must save the counter if it's changed
-        let _e = gen.next_element();
-        gen.save(&gen_dir)?;
+        let _e = generator.next_element();
+        generator.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 2);
 
         let gen2 = XvcEntityGenerator::load(&gen_dir)?;
         // Don't save if it's not changed after load
-        gen.save(&gen_dir)?;
+        generator.save(&gen_dir)?;
         assert!(sorted_files(&gen_dir)?.len() == 2);
         // Save if it's changed after load
         let _e = gen2.next_element();

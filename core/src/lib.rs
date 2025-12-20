@@ -29,9 +29,9 @@ pub use types::diff::apply_diff;
 pub use types::diff::diff_store;
 pub use types::diff::update_with_actual;
 
+pub use types::textorbinary::TextOrBinary;
 pub use types::xvcfiletype::XvcFileType;
 pub use types::xvcmetadata::XvcMetadata;
-pub use types::xvcpath::TextOrBinary;
 pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
 pub use types::xvcroot::XvcRoot;
