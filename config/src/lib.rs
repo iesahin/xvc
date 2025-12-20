@@ -26,6 +26,7 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 pub mod config_params;
+pub mod configuration;
 pub mod error;
 
 pub use config_params::XvcConfigParams;
@@ -45,7 +46,10 @@ use xvc_walker::AbsolutePath;
 
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
 
-use crate::error::{Error, Result};
+use crate::{
+    configuration::{XvcConfiguration, XvcOptionalConfiguration},
+    error::{Error, Result},
+};
 use toml::Value as TomlValue;
 
 lazy_static! {
@@ -164,8 +168,23 @@ pub struct XvcConfigMap {
 pub struct XvcConfig {
     /// Current directory. It can be set with xvc -C option
     pub current_dir: XvcConfigOption<AbsolutePath>,
-    /// Configuration values for each level
-    pub config_maps: Vec<XvcConfigMap>,
+
+    /// Default configuration we set in the executable
+    default_config: XvcConfiguration,
+    /// System configuration from the system directories
+    system_config: XvcOptionalConfiguration,
+    /// User's configuration value from [USER_CONFIG_DIRS]
+    global_config: XvcOptionalConfiguration,
+    /// Project specific configuration that can be shared
+    project_config: XvcOptionalConfiguration,
+    /// Project specific configuration that's not meant to be shared (personal/local)
+    local_config: XvcOptionalConfiguration,
+    /// Options obtained from the command line
+    command_line_config: XvcOptionalConfiguration,
+    /// Options from environment variables
+    environment_config: XvcOptionalConfiguration,
+    /// Options set while running the software, automatically.
+    runtime_config: XvcOptionalConfiguration,
     /// The current configuration map, updated cascadingly
     pub the_config: HashMap<String, XvcConfigValue>,
     /// The init params used to create this config

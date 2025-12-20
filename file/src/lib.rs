@@ -46,7 +46,6 @@ use log::{debug, error, info, warn, LevelFilter};
 use std::io;
 use std::io::Write;
 use std::path::PathBuf;
-use xvc_core::initial_project_config;
 use xvc_core::setup_logging;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::AbsolutePath;
