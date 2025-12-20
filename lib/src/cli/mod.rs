@@ -27,7 +27,7 @@ use xvc_core::util::completer::git_reference_completer;
 use xvc_core::XvcOutputSender;
 use xvc_core::{debug, error, uwr, XvcOutputLine};
 
-use xvc_core::{XvcConfigParams, XvcVerbosity};
+use xvc_core::{XvcLoadParams, XvcVerbosity};
 use xvc_core::check_ignore;
 pub use xvc_core::initial_project_config;
 use xvc_core::root;
@@ -404,8 +404,8 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
 }
 
 /// Decide configuration sources  from CLI options
-pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
-    XvcConfigParams {
+pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcLoadParams {
+    XvcLoadParams {
         current_dir: AbsolutePath::from(&cli_opts.workdir),
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,

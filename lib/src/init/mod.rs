@@ -10,7 +10,7 @@ use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
 use xvc_core::watch;
 use xvc_core::AbsolutePath;
-use xvc_core::XvcConfigParams;
+use xvc_core::XvcLoadParams;
 use xvc_core::XvcRoot;
 use xvc_pipeline;
 
@@ -89,7 +89,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         }
     }
     let default_configuration = initial_project_config(!opts.no_git);
-    let config_opts = XvcConfigParams {
+    let config_opts = XvcLoadParams {
         default_configuration,
         current_dir: AbsolutePath::from(&path),
         include_system_config: true,

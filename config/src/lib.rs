@@ -29,7 +29,7 @@ pub mod config_params;
 pub mod configuration;
 pub mod error;
 
-pub use config_params::XvcConfigParams;
+pub use config_params::XvcLoadParams;
 
 use directories_next::{BaseDirs, ProjectDirs, UserDirs};
 use lazy_static::lazy_static;
@@ -47,7 +47,7 @@ use xvc_walker::AbsolutePath;
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
 
 use crate::{
-    configuration::{XvcConfiguration, XvcOptionalConfiguration},
+    configuration::{default_config, XvcConfiguration, XvcOptionalConfiguration},
     error::{Error, Result},
 };
 use toml::Value as TomlValue;
@@ -168,13 +168,12 @@ pub struct XvcConfigMap {
 pub struct XvcConfig {
     /// Current directory. It can be set with xvc -C option
     pub current_dir: XvcConfigOption<AbsolutePath>,
-
     /// Default configuration we set in the executable
     default_config: XvcConfiguration,
     /// System configuration from the system directories
     system_config: XvcOptionalConfiguration,
     /// User's configuration value from [USER_CONFIG_DIRS]
-    global_config: XvcOptionalConfiguration,
+    user_config: XvcOptionalConfiguration,
     /// Project specific configuration that can be shared
     project_config: XvcOptionalConfiguration,
     /// Project specific configuration that's not meant to be shared (personal/local)
@@ -186,9 +185,9 @@ pub struct XvcConfig {
     /// Options set while running the software, automatically.
     runtime_config: XvcOptionalConfiguration,
     /// The current configuration map, updated cascadingly
-    pub the_config: HashMap<String, XvcConfigValue>,
+    pub the_config: XvcConfiguration,
     /// The init params used to create this config
-    pub init_params: XvcConfigParams,
+    pub init_params: XvcLoadParams,
 }
 
 impl fmt::Display for XvcConfig {
@@ -199,9 +198,7 @@ impl fmt::Display for XvcConfig {
             "current_dir: {:?} ({:?})",
             self.current_dir.option, self.current_dir.source
         )?;
-        for (k, v) in &self.the_config {
-            writeln!(f, "{}: {} ({})", k, v.value, v.source)?;
-        }
+        writeln!(&self.the_config);
         writeln!(f)
     }
 }
@@ -210,27 +207,44 @@ impl XvcConfig {
     /// Loads the default configuration from `p`.
     ///
     /// The configuration must be a valid TOML document.
-    fn default_conf(p: &XvcConfigParams) -> Self {
-        watch!(p);
-        let default_conf_res = p.default_configuration.parse::<TomlValue>();
-        watch!(default_conf_res);
-        let default_conf = default_conf_res.expect("Error in default configuration!");
+    fn new(config_init_params: &XvcLoadParams) -> Self {
+        let default_conf = default_config();
 
-        watch!(&default_conf);
-        let hm = toml_value_to_hashmap("".into(), default_conf);
-        let hm_for_list = hm.clone();
-        let the_config: HashMap<String, XvcConfigValue> = hm
-            .into_iter()
-            .map(|(k, v)| {
-                (
-                    k,
-                    XvcConfigValue {
-                        source: XvcConfigOptionSource::Default,
-                        value: v,
-                    },
-                )
-            })
-            .collect();
+        let system_config = if config_init_params.include_system_config {
+            load_system_config()
+        } else {
+            blank_optional_config()
+        };
+
+        let user_config = if config_init_params.include_user_config {
+            load_user_config()
+        } else {
+            blank_optional_config()
+        };
+
+        let project_config = if config_init_params.include_project_config {
+            load_project_config()
+        } else {
+            blank_optional_config()
+        };
+
+        let local_config = if config_init_params.include_local_config {
+            load_project_local_config()
+        } else {
+            blank_optional_config()
+        };
+
+        let environment_config = if config_init_params.include_environment_config {
+            load_environment_config()
+        } else {
+            blank_optional_config()
+        };
+
+        let command_line_config = load_command_line_config(&config_init_params.command_line_config);
+
+        let runtime_config = blank_optional_config();
+
+        let the_config = merge_configuration(default_conf, system_config)
 
         XvcConfig {
             current_dir: XvcConfigOption {
@@ -244,7 +258,7 @@ impl XvcConfig {
                 map: hm_for_list,
                 source: XvcConfigOptionSource::Default,
             }],
-            init_params: p.clone(),
+            init_params: config_init_params.clone(),
         }
     }
 
@@ -469,9 +483,9 @@ impl XvcConfig {
     /// Loads all config files
     /// Overrides all options with the given key=value style options in the
     /// command line
-    pub fn new(p: XvcConfigParams) -> Result<XvcConfig> {
+    pub fn new(p: XvcLoadParams) -> Result<XvcConfig> {
         watch!(p);
-        let mut config = XvcConfig::default_conf(&p);
+        let mut config = XvcConfig::new(&p);
         watch!(config);
 
         config.current_dir = XvcConfigOption {

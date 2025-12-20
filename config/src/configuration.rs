@@ -1,4 +1,3 @@
-
 use crate::Result;
 use serde::{Deserialize, Serialize};
 use xvc_walker::AbsolutePath;
@@ -6,7 +5,7 @@ use xvc_walker::AbsolutePath;
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct CoreConfig {
-    pub guid: String,
+    pub xvc_repo_version: u8,
     pub verbosity: String,
 }
 
@@ -99,7 +98,7 @@ pub struct XvcConfiguration {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCoreConfig {
-    pub guid: Option<String>,
+    pub xvc_repo_version: Option<u8>,
     pub verbosity: Option<String>,
 }
 
@@ -280,13 +279,64 @@ impl XvcConfigParams {
 
 /// Returns the default configuration that can be modified with system, user,
 /// repository configurations
-pub fn default_config() -> XvcConfig {
-    let uuid = uuid::Uuid::new_v4();
-    let guid = hex::encode(seahash::hash(uuid.as_bytes()).to_le_bytes());
-
-    XvcConfig {
+pub fn default_config() -> XvcConfiguration {
+    XvcConfiguration {
         core: CoreConfig {
-            guid,
+            xvc_repo_version: 2,
+            verbosity: "error".to_string(),
+        },
+        git: GitConfig {
+            use_git: true,
+            command: "git".to_string(),
+            auto_commit: true,
+            auto_stage: false,
+        },
+        cache: CacheConfig {
+            algorithm: "blake3".to_string(),
+        },
+        file: FileConfig {
+            track: FileTrackConfig {
+                no_commit: false,
+                force: false,
+                text_or_binary: "auto".to_string(),
+                no_parallel: false,
+                include_git_files: false,
+            },
+            list: FileListConfig {
+                format: "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}".to_string(),
+                sort: "name-desc".to_string(),
+                show_dot_files: false,
+                no_summary: false,
+                recursive: false,
+                include_git_files: false,
+            },
+            carry_in: FileCarryInConfig {
+                force: false,
+                no_parallel: false,
+            },
+            recheck: FileRecheckConfig {
+                method: "copy".to_string(),
+            },
+        },
+        pipeline: PipelineConfig {
+            current_pipeline: "default".to_string(),
+            default: "default".to_string(),
+            default_params_file: "params.yaml".to_string(),
+            process_pool_size: 4,
+        },
+        check_ignore: CheckIgnoreConfig { details: false },
+    }
+}
+
+/// Returns the default configuration that can be modified with system, user,
+/// repository configurations
+pub fn merge_configs(
+    config: &XvcConfiguration,
+    optional_config: &XvcOptionalConfiguration,
+) -> XvcConfiguration {
+    XvcConfiguration {
+        core: CoreConfig {
+            xvc_repo_version: 2,
             verbosity: "error".to_string(),
         },
         git: GitConfig {
@@ -338,9 +388,6 @@ pub fn initial_xvc_config(
 ) -> Result<String> {
     let mut config = default_config;
     if let Some(user_core) = user_options.core {
-        if let Some(guid) = user_core.guid {
-            config.core.guid = guid;
-        }
         if let Some(verbosity) = user_core.verbosity {
             config.core.verbosity = verbosity;
         }

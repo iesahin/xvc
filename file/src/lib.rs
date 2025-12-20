@@ -49,7 +49,7 @@ use std::path::PathBuf;
 use xvc_core::setup_logging;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::AbsolutePath;
-use xvc_core::XvcConfigParams;
+use xvc_core::XvcLoadParams;
 use xvc_core::XvcRoot;
 use xvc_core::XvcVerbosity;
 use xvc_core::CHANNEL_BOUND;
@@ -283,7 +283,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
         AbsolutePath::from(std::env::current_dir()?.join(dir).canonicalize()?)
     };
     // try to create root
-    let xvc_config_params = XvcConfigParams {
+    let xvc_config_params = XvcLoadParams {
         current_dir,
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,

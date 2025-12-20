@@ -70,7 +70,7 @@ pub use xvc_config::{
         FileRecheckConfig, FileTrackConfig, GitConfig, PipelineConfig, XvcConfig,
     },
     FromConfigKey, UpdateFromXvcConfig, XvcConfig as XvcConfigLoader, XvcConfigOptionSource,
-    XvcConfigParams, XvcVerbosity,
+    XvcLoadParams, XvcVerbosity,
 };
 
 pub use util::git;
@@ -122,9 +122,11 @@ pub const GIT_DIR: &str = ".git";
 pub const GITIGNORE_INITIAL_CONTENT: &str = "
 ## Following are required for Xvc to function correctly.
 .xvc/*
+!.xvc/guid
 !.xvc/store/
 !.xvc/ec/
 !.xvc/config.toml
+!.xvc/pipelines/
 ";
 
 /// Deserializes the default project configuration string into a [ProjectConfig] struct.

@@ -15,7 +15,7 @@ use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
 };
-use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigParams};
+use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcLoadParams};
 
 use crate::common::pipe_path_digest;
 
@@ -66,7 +66,7 @@ pub fn cmd_hash(
 ) -> Result<()> {
     let conf = match xvc_root {
         Some(xvc_root) => xvc_root.config().clone(),
-        None => XvcConfig::new(XvcConfigParams {
+        None => XvcConfig::new(XvcLoadParams {
             default_configuration: xvc_core::initial_project_config(false),
             current_dir: AbsolutePath::from(env::current_dir()?),
             include_system_config: true,
