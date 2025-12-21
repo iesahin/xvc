@@ -47,7 +47,9 @@ use xvc_walker::AbsolutePath;
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
 
 use crate::{
-    configuration::{XvcConfiguration, XvcOptionalConfiguration, blank_optional_config, default_config},
+    configuration::{
+        blank_optional_config, default_config, XvcConfiguration, XvcOptionalConfiguration,
+    },
     error::{Error, Result},
 };
 use toml::Value as TomlValue;
@@ -167,7 +169,7 @@ pub struct XvcConfigMap {
 #[derive(Debug, Clone)]
 pub struct XvcConfig {
     /// Current directory. It can be set with xvc -C option
-    pub current_dir: XvcConfigOption<AbsolutePath>,
+    pub current_dir: AbsolutePath,
     /// Default configuration we set in the executable
     default_config: XvcConfiguration,
     /// System configuration from the system directories
@@ -187,7 +189,7 @@ pub struct XvcConfig {
     /// The current configuration map, updated cascadingly
     pub the_config: XvcConfiguration,
     /// The init params used to create this config
-    pub init_params: XvcLoadParams,
+    pub load_params: XvcLoadParams,
 }
 
 impl fmt::Display for XvcConfig {
@@ -211,35 +213,37 @@ impl XvcConfig {
         let default_conf = default_config();
 
         let system_config = if config_init_params.include_system_config {
-            Self::system_config_file().and_then(|path|
-                Self::load_optional_config_from_file(&path)).unwrap_or(blank_optional_config())
+            Self::system_config_file()
+                .and_then(|path| Self::load_optional_config_from_file(&path))
+                .unwrap_or(blank_optional_config())
         } else {
             blank_optional_config()
         };
 
         let user_config = if config_init_params.include_user_config {
-            Self::user_config_file().and_then(|path|
-                Self::load_optional_config_from_file(&path)).unwrap_or(blank_optional_config())
+            Self::user_config_file()
+                .and_then(|path| Self::load_optional_config_from_file(&path))
+                .unwrap_or(blank_optional_config())
         } else {
             blank_optional_config()
         };
 
         let project_config = if config_init_params.include_project_config {
-            if let Some(config_path) = config_init_params.project_config_path  {
+            if let Some(config_path) = config_init_params.project_config_path {
                 Self::load_optional_config_from_file(&config_path)?
             } else {
-                            blank_optional_config()
-            }          
+                blank_optional_config()
+            }
         } else {
             blank_optional_config()
         };
 
         let local_config = if config_init_params.include_local_config {
-            if let Some(config_path) = config_init_params.local_config_path  {
+            if let Some(config_path) = config_init_params.local_config_path {
                 Self::load_optional_config_from_file(&config_path)?
             } else {
-                            blank_optional_config()
-            }          
+                blank_optional_config()
+            }
         } else {
             blank_optional_config()
         };
@@ -254,22 +258,28 @@ impl XvcConfig {
 
         let runtime_config = blank_optional_config();
 
-        let the_config = merge_configuration(default_conf, system_config)
+        let the_config = default_conf
+            .merge_with_optional(system_config)
+            .merge_with_optional(user_config)
+            .merge_with_optional(project_config)
+            .merge_with_optional(local_config)
+            .merge_with_optional(environment_config)
+            .merge_with_optional(command_line_config)
+            .merge_with_optional(runtime_config);
 
-        XvcConfig {
-            current_dir: XvcConfigOption {
-                option: std::env::current_dir()
-                    .expect("Cannot determine current directory")
-                    .into(),
-                source: XvcConfigOptionSource::Default,
-            },
+        Ok(XvcConfig {
+            current_dir: config_init_params.current_dir,
+            default_config: default_conf,
+            system_config,
+            user_config,
+            project_config,
+            local_config,
+            command_line_config,
+            environment_config,
+            runtime_config,
             the_config,
-            config_maps: vec![XvcConfigMap {
-                map: hm_for_list,
-                source: XvcConfigOptionSource::Default,
-            }],
-            init_params: config_init_params.clone(),
-        }
+            load_params: config_init_params.clone(),
+        })
     }
 
     /// Returns string value for `key`.
@@ -375,7 +385,7 @@ impl XvcConfig {
 
         Ok(Self {
             current_dir: self.current_dir.clone(),
-            init_params: self.init_params.clone(),
+            load_params: self.load_params.clone(),
             the_config: current_map,
             config_maps: new_config_maps,
         })
@@ -414,7 +424,6 @@ impl XvcConfig {
         }
     }
 
-
     /// Return the system configuration file path for Xvc
     /// FIXME: Return Absolute Path
     pub fn system_config_file() -> Result<PathBuf> {
@@ -425,7 +434,7 @@ impl XvcConfig {
             .to_path_buf())
     }
 
-        /// Return the user configuration file path for Xvc
+    /// Return the user configuration file path for Xvc
     pub fn user_config_file() -> Result<PathBuf> {
         Ok(USER_CONFIG_DIRS
             .to_owned()
@@ -443,7 +452,6 @@ impl XvcConfig {
             Ok(blank_optional_config())
         }
     }
-
 
     /// Load all keys from the environment that starts with `XVC_` and build a hash map with them.
     ///

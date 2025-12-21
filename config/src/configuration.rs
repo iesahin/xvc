@@ -786,4 +786,8 @@ impl XvcConfiguration {
             toml::from_str(&s).map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
         Ok(c)
     }
+
+    pub fn merge_with_optional(&self, opt_config: XvcOptionalConfiguration) -> Self {
+        merge_configs(&self, &opt_config)
+    }
 }
