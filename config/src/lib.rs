@@ -211,7 +211,8 @@ impl XvcConfig {
         let default_conf = default_config();
 
         let system_config = if config_init_params.include_system_config {
-            load_system_config()
+            Self::system_config_file().and_then(|path| Self::load_optional_config_from_file(&path)
+            )
         } else {
             blank_optional_config()
         };
@@ -406,6 +407,7 @@ impl XvcConfig {
 
 
     /// Return the system configuration file path for Xvc
+    /// FIXME: Return Absolute Path
     pub fn system_config_file() -> Result<PathBuf> {
         Ok(SYSTEM_CONFIG_DIRS
             .to_owned()
@@ -414,13 +416,7 @@ impl XvcConfig {
             .to_path_buf())
     }
 
-    pub fn load_system_config() -> Result<XvcOptionalConfiguration> {
-        if Ok(config_file) = system_config_file() {
-            
-        }
-    }
-
-    /// Return the user configuration file path for Xvc
+        /// Return the user configuration file path for Xvc
     pub fn user_config_file() -> Result<PathBuf> {
         Ok(USER_CONFIG_DIRS
             .to_owned()
@@ -428,6 +424,17 @@ impl XvcConfig {
             .config_dir()
             .join("xvc"))
     }
+
+    /// Load an [XvcOptionalConfiguration] from a file or returns a blank config if the file is not found
+    pub fn load_optional_config_from_file(path: &Path) -> Result<XvcOptionalConfiguration> {
+        if path.exists() {
+            let opt_config = XvcOptionalConfiguration::from_file(path)?;
+            Ok(opt_config)
+        } else {
+            Ok(blank_optional_config())
+        }
+    }
+
 
     /// Load all keys from the environment that starts with `XVC_` and build a hash map with them.
     ///
@@ -490,7 +497,7 @@ impl XvcConfig {
     /// Loads all config files
     /// Overrides all options with the given key=value style options in the
     /// command line
-    pub fn new(p: XvcLoadParams) -> Result<XvcConfig> {
+    pub fn previous_new(p: XvcLoadParams) -> Result<XvcConfig> {
         watch!(p);
         let mut config = XvcConfig::new(&p);
         watch!(config);

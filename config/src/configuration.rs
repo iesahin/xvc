@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use crate::Result;
 use serde::{Deserialize, Serialize};
 use xvc_walker::AbsolutePath;
@@ -184,15 +186,15 @@ pub struct XvcOptionalConfiguration {
     pub cache: Option<OptionalCacheConfig>,
     pub file: Option<OptionalFileConfig>,
     pub pipeline: Option<OptionalPipelineConfig>,
-
+    pub check_ignore: Option<OptionalCheckIgnoreConfig>,
 }
 
 impl XvcOptionalConfiguration {
-    pub fn from_file(file_path: AbsolutePath) -> Result<Self> {
-        let s = std::fs::read_to_string(&file_path)
-            .map_err(|e| crate::Error::IoError { source: e })?;
-        let c: XvcOptionalConfiguration = toml::from_str(&s)
-            .map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
+    pub fn from_file(file_path: &Path) -> Result<Self> {
+        let s =
+            std::fs::read_to_string(&file_path).map_err(|e| crate::Error::IoError { source: e })?;
+        let c: XvcOptionalConfiguration =
+            toml::from_str(&s).map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
         Ok(c)
     }
 }
@@ -607,10 +609,7 @@ pub fn initial_xvc_config(
     Ok(format!(
         r##"
 [core]
-# The repository id. Please do not delete or change it.
-# This is used to identify the repository and generate paths in storages.
-# In the future it may be used to in other ways.
-guid = "{guid}"
+xvc_repo_version = "{xvc_repo_version}"
 # Default verbosity level.
 # One of "error", "warn", "info"
 verbosity = "{verbosity}"
@@ -738,7 +737,7 @@ process_pool_size = {pipeline_process_pool_size}
 details = {check_ignore_details}
 
 "##,
-        guid = config.core.guid,
+        xvc_repo_version = config.core.xvc_repo_version,
         verbosity = config.core.verbosity,
         use_git = config.git.use_git,
         git_command = config.git.command,
@@ -780,12 +779,11 @@ pub fn blank_optional_config() -> XvcOptionalConfiguration {
 }
 
 impl XvcConfiguration {
-    pub fn from_file(file_path: AbsolutePath) -> Result<Self> {
-        let s = std::fs::read_to_string(&file_path)
-            .map_err(|e| crate::Error::IoError { source: e })?;
-        let c: XvcConfiguration = toml::from_str(&s)
-            .map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
+    pub fn from_file(file_path: &Path) -> Result<Self> {
+        let s =
+            std::fs::read_to_string(&file_path).map_err(|e| crate::Error::IoError { source: e })?;
+        let c: XvcConfiguration =
+            toml::from_str(&s).map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
         Ok(c)
     }
 }
-
