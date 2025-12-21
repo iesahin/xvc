@@ -207,30 +207,39 @@ impl XvcConfig {
     /// Loads the default configuration from `p`.
     ///
     /// The configuration must be a valid TOML document.
-    fn new(config_init_params: &XvcLoadParams) -> Self {
+    fn new(config_init_params: &XvcLoadParams) -> Result<Self> {
         let default_conf = default_config();
 
         let system_config = if config_init_params.include_system_config {
-            Self::system_config_file().and_then(|path| Self::load_optional_config_from_file(&path)
-            )
+            Self::system_config_file().and_then(|path|
+                Self::load_optional_config_from_file(&path)).unwrap_or(blank_optional_config())
         } else {
             blank_optional_config()
         };
 
         let user_config = if config_init_params.include_user_config {
-            load_user_config()
+            Self::user_config_file().and_then(|path|
+                Self::load_optional_config_from_file(&path)).unwrap_or(blank_optional_config())
         } else {
             blank_optional_config()
         };
 
         let project_config = if config_init_params.include_project_config {
-            load_project_config()
+            if let Some(config_path) = config_init_params.project_config_path  {
+                Self::load_optional_config_from_file(&config_path)?
+            } else {
+                            blank_optional_config()
+            }          
         } else {
             blank_optional_config()
         };
 
         let local_config = if config_init_params.include_local_config {
-            load_project_local_config()
+            if let Some(config_path) = config_init_params.local_config_path  {
+                Self::load_optional_config_from_file(&config_path)?
+            } else {
+                            blank_optional_config()
+            }          
         } else {
             blank_optional_config()
         };

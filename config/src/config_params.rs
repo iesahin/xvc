@@ -22,6 +22,10 @@ pub struct XvcLoadParams {
     pub include_user_config: bool,
     /// Should we include the project config at .xvc/config.toml?
     pub include_project_config: bool,
+
+    /// Should we include the local config at .xvc/config-local.toml
+    pub include_local_config: bool,
+
     /// Where should we load the project's (public) configuration?
     /// It's loaded in [XvcRootInner::new]
     pub project_config_path: Option<AbsolutePath>,
