@@ -184,9 +184,19 @@ pub struct XvcOptionalConfiguration {
     pub cache: Option<OptionalCacheConfig>,
     pub file: Option<OptionalFileConfig>,
     pub pipeline: Option<OptionalPipelineConfig>,
-    #[serde(rename = "check-ignore")]
-    pub check_ignore: Option<OptionalCheckIgnoreConfig>,
+
 }
+
+impl XvcOptionalConfiguration {
+    pub fn from_file(file_path: AbsolutePath) -> Result<Self> {
+        let s = std::fs::read_to_string(&file_path)
+            .map_err(|e| crate::Error::IoError { source: e })?;
+        let c: XvcOptionalConfiguration = toml::from_str(&s)
+            .map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
+        Ok(c)
+    }
+}
+
 /// How should we initialize the configuration?
 ///
 /// It's possible to ignore certain sources by supplying `None` to their values here.
@@ -756,3 +766,26 @@ details = {check_ignore_details}
         check_ignore_details = config.check_ignore.details,
     ))
 }
+
+/// Returns a blank optional configuration with all fields set to None.
+pub fn blank_optional_config() -> XvcOptionalConfiguration {
+    XvcOptionalConfiguration {
+        core: None,
+        git: None,
+        cache: None,
+        file: None,
+        pipeline: None,
+        check_ignore: None,
+    }
+}
+
+impl XvcConfiguration {
+    pub fn from_file(file_path: AbsolutePath) -> Result<Self> {
+        let s = std::fs::read_to_string(&file_path)
+            .map_err(|e| crate::Error::IoError { source: e })?;
+        let c: XvcConfiguration = toml::from_str(&s)
+            .map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
+        Ok(c)
+    }
+}
+

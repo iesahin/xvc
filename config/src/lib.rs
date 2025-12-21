@@ -47,7 +47,7 @@ use xvc_walker::AbsolutePath;
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
 
 use crate::{
-    configuration::{default_config, XvcConfiguration, XvcOptionalConfiguration},
+    configuration::{XvcConfiguration, XvcOptionalConfiguration, blank_optional_config, default_config},
     error::{Error, Result},
 };
 use toml::Value as TomlValue;
@@ -404,6 +404,7 @@ impl XvcConfig {
         }
     }
 
+
     /// Return the system configuration file path for Xvc
     pub fn system_config_file() -> Result<PathBuf> {
         Ok(SYSTEM_CONFIG_DIRS
@@ -411,6 +412,12 @@ impl XvcConfig {
             .ok_or(Error::CannotDetermineSystemConfigurationPath)?
             .config_dir()
             .to_path_buf())
+    }
+
+    pub fn load_system_config() -> Result<XvcOptionalConfiguration> {
+        if Ok(config_file) = system_config_file() {
+            
+        }
     }
 
     /// Return the user configuration file path for Xvc
