@@ -54,6 +54,9 @@ use crate::{
 };
 use toml::Value as TomlValue;
 
+fn load_environment_config() -> XvcOptionalConfiguration {
+    XvcOptionalConfiguration::from_env()
+}
 lazy_static! {
     /// System specific configuration directory.
     /// see [directories_next::ProjectDirs].

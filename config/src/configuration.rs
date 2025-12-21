@@ -97,14 +97,14 @@ pub struct XvcConfiguration {
     pub check_ignore: CheckIgnoreConfig,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCoreConfig {
     pub xvc_repo_version: Option<u8>,
     pub verbosity: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalGitConfig {
     pub use_git: Option<bool>,
@@ -113,13 +113,13 @@ pub struct OptionalGitConfig {
     pub auto_stage: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCacheConfig {
     pub algorithm: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileTrackConfig {
     pub no_commit: Option<bool>,
@@ -129,7 +129,7 @@ pub struct OptionalFileTrackConfig {
     pub include_git_files: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileListConfig {
     pub format: Option<String>,
@@ -140,20 +140,20 @@ pub struct OptionalFileListConfig {
     pub include_git_files: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileCarryInConfig {
     pub force: Option<bool>,
     pub no_parallel: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileRecheckConfig {
     pub method: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileConfig {
     pub track: Option<OptionalFileTrackConfig>,
@@ -163,7 +163,7 @@ pub struct OptionalFileConfig {
     pub recheck: Option<OptionalFileRecheckConfig>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalPipelineConfig {
     pub current_pipeline: Option<String>,
@@ -172,13 +172,13 @@ pub struct OptionalPipelineConfig {
     pub process_pool_size: Option<u32>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCheckIgnoreConfig {
     pub details: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct XvcOptionalConfiguration {
     pub core: Option<OptionalCoreConfig>,
@@ -196,6 +196,248 @@ impl XvcOptionalConfiguration {
         let c: XvcOptionalConfiguration =
             toml::from_str(&s).map_err(|e| crate::Error::TomlDeserializationError { source: e })?;
         Ok(c)
+    }
+
+    fn parse_bool(s: &str) -> Option<bool> {
+        match s {
+            "1" | "TRUE" | "True" | "true" => Some(true),
+            "0" | "FALSE" | "False" | "false" => Some(false),
+            _ => None,
+        }
+    }
+
+    pub fn from_env() -> Self {
+        let mut config = Self {
+            core: None,
+            git: None,
+            cache: None,
+            file: None,
+            pipeline: None,
+            check_ignore: None,
+        };
+
+        let prefix = "XVC_";
+        for (key, value) in std::env::vars() {
+            if !key.starts_with(prefix) {
+                continue;
+            }
+
+            let key_upper = key[prefix.len()..].to_string();
+            match key_upper.as_str() {
+                // core
+                "CORE_XVC_REPO_VERSION" => {
+                    if let Ok(val) = value.parse::<u8>() {
+                        config
+                            .core
+                            .get_or_insert_with(Default::default)
+                            .xvc_repo_version = Some(val);
+                    }
+                }
+                "CORE_VERBOSITY" => {
+                    config.core.get_or_insert_with(Default::default).verbosity = Some(value);
+                }
+                // git
+                "GIT_USE_GIT" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config.git.get_or_insert_with(Default::default).use_git = Some(val);
+                    }
+                }
+                "GIT_COMMAND" => {
+                    config.git.get_or_insert_with(Default::default).command = Some(value);
+                }
+                "GIT_AUTO_COMMIT" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .git
+                            .get_or_insert_with(Default::default)
+                            .auto_commit = Some(val);
+                    }
+                }
+                "GIT_AUTO_STAGE" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config.git.get_or_insert_with(Default::default).auto_stage = Some(val);
+                    }
+                }
+                // cache
+                "CACHE_ALGORITHM" => {
+                    config.cache.get_or_insert_with(Default::default).algorithm = Some(value);
+                }
+                // file.track
+                "FILE_TRACK_NO_COMMIT" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .track
+                            .get_or_insert_with(Default::default)
+                            .no_commit = Some(val);
+                    }
+                }
+                "FILE_TRACK_FORCE" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .track
+                            .get_or_insert_with(Default::default)
+                            .force = Some(val);
+                    }
+                }
+                "FILE_TRACK_TEXT_OR_BINARY" => {
+                    config
+                        .file
+                        .get_or_insert_with(Default::default)
+                        .track
+                        .get_or_insert_with(Default::default)
+                        .text_or_binary = Some(value);
+                }
+                "FILE_TRACK_NO_PARALLEL" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .track
+                            .get_or_insert_with(Default::default)
+                            .no_parallel = Some(val);
+                    }
+                }
+                "FILE_TRACK_INCLUDE_GIT_FILES" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .track
+                            .get_or_insert_with(Default::default)
+                            .include_git_files = Some(val);
+                    }
+                }
+                // file.list
+                "FILE_LIST_FORMAT" => {
+                    config
+                        .file
+                        .get_or_insert_with(Default::default)
+                        .list
+                        .get_or_insert_with(Default::default)
+                        .format = Some(value);
+                }
+                "FILE_LIST_SORT" => {
+                    config
+                        .file
+                        .get_or_insert_with(Default::default)
+                        .list
+                        .get_or_insert_with(Default::default)
+                        .sort = Some(value);
+                }
+                "FILE_LIST_SHOW_DOT_FILES" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .list
+                            .get_or_insert_with(Default::default)
+                            .show_dot_files = Some(val);
+                    }
+                }
+                "FILE_LIST_NO_SUMMARY" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .list
+                            .get_or_insert_with(Default::default)
+                            .no_summary = Some(val);
+                    }
+                }
+                "FILE_LIST_RECURSIVE" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .list
+                            .get_or_insert_with(Default::default)
+                            .recursive = Some(val);
+                    }
+                }
+                "FILE_LIST_INCLUDE_GIT_FILES" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .list
+                            .get_or_insert_with(Default::default)
+                            .include_git_files = Some(val);
+                    }
+                }
+                // file.carry_in
+                "FILE_CARRY_IN_FORCE" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .carry_in
+                            .get_or_insert_with(Default::default)
+                            .force = Some(val);
+                    }
+                }
+                "FILE_CARRY_IN_NO_PARALLEL" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .file
+                            .get_or_insert_with(Default::default)
+                            .carry_in
+                            .get_or_insert_with(Default::default)
+                            .no_parallel = Some(val);
+                    }
+                }
+                // file.recheck
+                "FILE_RECHECK_METHOD" => {
+                    config
+                        .file
+                        .get_or_insert_with(Default::default)
+                        .recheck
+                        .get_or_insert_with(Default::default)
+                        .method = Some(value);
+                }
+                // pipeline
+                "PIPELINE_CURRENT_PIPELINE" => {
+                    config
+                        .pipeline
+                        .get_or_insert_with(Default::default)
+                        .current_pipeline = Some(value);
+                }
+                "PIPELINE_DEFAULT" => {
+                    config
+                        .pipeline
+                        .get_or_insert_with(Default::default)
+                        .default = Some(value);
+                }
+                "PIPELINE_DEFAULT_PARAMS_FILE" => {
+                    config
+                        .pipeline
+                        .get_or_insert_with(Default::default)
+                        .default_params_file = Some(value);
+                }
+                "PIPELINE_PROCESS_POOL_SIZE" => {
+                    if let Ok(val) = value.parse::<u32>() {
+                        config
+                            .pipeline
+                            .get_or_insert_with(Default::default)
+                            .process_pool_size = Some(val);
+                    }
+                }
+                // check_ignore
+                "CHECK_IGNORE_DETAILS" => {
+                    if let Some(val) = Self::parse_bool(&value) {
+                        config
+                            .check_ignore
+                            .get_or_insert_with(Default::default)
+                            .details = Some(val);
+                    }
+                }
+                _ => {} // Ignore unknown keys
+            }
+        }
+        config
     }
 }
 
