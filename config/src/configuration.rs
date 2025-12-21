@@ -332,53 +332,165 @@ pub fn default_config() -> XvcConfiguration {
 /// repository configurations
 pub fn merge_configs(
     config: &XvcConfiguration,
-    optional_config: &XvcOptionalConfiguration,
+    opt_config: &XvcOptionalConfiguration,
 ) -> XvcConfiguration {
+    let core = CoreConfig {
+        xvc_repo_version: opt_config
+            .core
+            .clone()
+            .and_then(|c| c.xvc_repo_version)
+            .unwrap_or(config.core.xvc_repo_version),
+        verbosity: opt_config
+            .core
+            .clone()
+            .and_then(|c| c.verbosity)
+            .unwrap_or(config.core.verbosity.clone()),
+    };
+
+    let git = GitConfig {
+        use_git: opt_config
+            .git
+            .clone()
+            .and_then(|g| g.use_git)
+            .unwrap_or(config.git.use_git),
+        command: opt_config
+            .git
+            .clone()
+            .and_then(|g| g.command)
+            .unwrap_or(config.git.command.clone()),
+        auto_commit: opt_config
+            .git
+            .clone()
+            .and_then(|g| g.auto_commit)
+            .unwrap_or(config.git.auto_commit),
+        auto_stage: opt_config
+            .git
+            .clone()
+            .and_then(|g| g.auto_stage)
+            .unwrap_or(config.git.auto_stage),
+    };
+
+    let cache = CacheConfig {
+        algorithm: opt_config
+            .cache
+            .clone()
+            .and_then(|g| g.algorithm)
+            .unwrap_or(config.cache.algorithm.clone()),
+    };
+
+    let opt_track = opt_config.file.clone().and_then(|f| f.track);
+    let track = FileTrackConfig {
+        no_commit: opt_track
+            .clone()
+            .and_then(|t| t.no_commit)
+            .unwrap_or(config.file.track.no_commit),
+        force: opt_track
+            .clone()
+            .and_then(|t| t.force)
+            .unwrap_or(config.file.track.force),
+        text_or_binary: opt_track
+            .clone()
+            .and_then(|t| t.text_or_binary)
+            .unwrap_or(config.file.track.text_or_binary.clone()),
+        no_parallel: opt_track
+            .clone()
+            .and_then(|t| t.no_parallel)
+            .unwrap_or(config.file.track.no_parallel),
+        include_git_files: opt_track
+            .and_then(|t| t.include_git_files)
+            .unwrap_or(config.file.track.include_git_files),
+    };
+
+    let opt_list = opt_config.file.clone().and_then(|f| f.list);
+    let list = FileListConfig {
+        format: opt_list
+            .clone()
+            .and_then(|l| l.format)
+            .unwrap_or(config.file.list.format.clone()),
+        sort: opt_list
+            .clone()
+            .and_then(|l| l.sort)
+            .unwrap_or(config.file.list.sort.clone()),
+        show_dot_files: opt_list
+            .clone()
+            .and_then(|l| l.show_dot_files)
+            .unwrap_or(config.file.list.show_dot_files),
+        no_summary: opt_list
+            .clone()
+            .and_then(|l| l.no_summary)
+            .unwrap_or(config.file.list.no_summary),
+        recursive: opt_list
+            .clone()
+            .and_then(|l| l.recursive)
+            .unwrap_or(config.file.list.recursive),
+        include_git_files: opt_list
+            .and_then(|l| l.include_git_files)
+            .unwrap_or(config.file.list.include_git_files),
+    };
+
+    let opt_carry_in = opt_config.file.clone().and_then(|f| f.carry_in);
+    let carry_in = FileCarryInConfig {
+        force: opt_carry_in
+            .clone()
+            .and_then(|c| c.force)
+            .unwrap_or(config.file.carry_in.force),
+        no_parallel: opt_carry_in
+            .and_then(|c| c.no_parallel)
+            .unwrap_or(config.file.carry_in.no_parallel),
+    };
+
+    let opt_recheck = opt_config.file.clone().and_then(|f| f.recheck);
+    let recheck = FileRecheckConfig {
+        method: opt_recheck
+            .and_then(|r| r.method)
+            .unwrap_or(config.file.recheck.method.clone()),
+    };
+
+    let file = FileConfig {
+        track,
+        list,
+        carry_in,
+        recheck,
+    };
+
+    let pipeline = PipelineConfig {
+        current_pipeline: opt_config
+            .pipeline
+            .clone()
+            .and_then(|p| p.current_pipeline)
+            .unwrap_or(config.pipeline.current_pipeline.clone()),
+        default: opt_config
+            .pipeline
+            .clone()
+            .and_then(|p| p.default)
+            .unwrap_or(config.pipeline.default.clone()),
+        default_params_file: opt_config
+            .pipeline
+            .clone()
+            .and_then(|p| p.default_params_file)
+            .unwrap_or(config.pipeline.default_params_file.clone()),
+        process_pool_size: opt_config
+            .pipeline
+            .clone()
+            .and_then(|p| p.process_pool_size)
+            .unwrap_or(config.pipeline.process_pool_size),
+    };
+
+    let check_ignore = CheckIgnoreConfig {
+        details: opt_config
+            .check_ignore
+            .clone()
+            .and_then(|c| c.details)
+            .unwrap_or(config.check_ignore.details),
+    };
+
     XvcConfiguration {
-        core: CoreConfig {
-            xvc_repo_version: 2,
-            verbosity: "error".to_string(),
-        },
-        git: GitConfig {
-            use_git: true,
-            command: "git".to_string(),
-            auto_commit: true,
-            auto_stage: false,
-        },
-        cache: CacheConfig {
-            algorithm: "blake3".to_string(),
-        },
-        file: FileConfig {
-            track: FileTrackConfig {
-                no_commit: false,
-                force: false,
-                text_or_binary: "auto".to_string(),
-                no_parallel: false,
-                include_git_files: false,
-            },
-            list: FileListConfig {
-                format: "{{aft}}{{rrm}} {{asz}} {{ats}} {{rcd8}} {{acd8}} {{name}}".to_string(),
-                sort: "name-desc".to_string(),
-                show_dot_files: false,
-                no_summary: false,
-                recursive: false,
-                include_git_files: false,
-            },
-            carry_in: FileCarryInConfig {
-                force: false,
-                no_parallel: false,
-            },
-            recheck: FileRecheckConfig {
-                method: "copy".to_string(),
-            },
-        },
-        pipeline: PipelineConfig {
-            current_pipeline: "default".to_string(),
-            default: "default".to_string(),
-            default_params_file: "params.yaml".to_string(),
-            process_pool_size: 4,
-        },
-        check_ignore: CheckIgnoreConfig { details: false },
+        core,
+        git,
+        cache,
+        file,
+        pipeline,
+        check_ignore,
     }
 }
 
