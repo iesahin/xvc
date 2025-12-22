@@ -1,17 +1,20 @@
 use std::path::Path;
 
 use crate::Result;
+use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use xvc_walker::AbsolutePath;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("CoreConfig(xvc_repo_version: {xvc_repo_version}, verbosity: {verbosity})")]
 #[serde(deny_unknown_fields)]
 pub struct CoreConfig {
     pub xvc_repo_version: u8,
     pub verbosity: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("GitConfig(use_git: {use_git}, command: {command}, auto_commit: {auto_commit}, auto_stage: {auto_stage})")]
 #[serde(deny_unknown_fields)]
 pub struct GitConfig {
     pub use_git: bool,
@@ -20,13 +23,15 @@ pub struct GitConfig {
     pub auto_stage: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("CacheConfig(algorithm: {algorithm})")]
 #[serde(deny_unknown_fields)]
 pub struct CacheConfig {
     pub algorithm: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("FileTrackConfig(no_commit: {no_commit}, force: {force}, text_or_binary: {text_or_binary}, no_parallel: {no_parallel}, include_git_files: {include_git_files})")]
 #[serde(deny_unknown_fields)]
 pub struct FileTrackConfig {
     pub no_commit: bool,
@@ -36,7 +41,8 @@ pub struct FileTrackConfig {
     pub include_git_files: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("FileListConfig(format: {format}, sort: {sort}, show_dot_files: {show_dot_files}, no_summary: {no_summary}, recursive: {recursive}, include_git_files: {include_git_files})")]
 #[serde(deny_unknown_fields)]
 pub struct FileListConfig {
     pub format: String,
@@ -47,20 +53,23 @@ pub struct FileListConfig {
     pub include_git_files: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("FileCarryInConfig(force: {force}, no_parallel: {no_parallel})")]
 #[serde(deny_unknown_fields)]
 pub struct FileCarryInConfig {
     pub force: bool,
     pub no_parallel: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("FileRecheckConfig(method: {method})")]
 #[serde(deny_unknown_fields)]
 pub struct FileRecheckConfig {
     pub method: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("FileConfig(track: {track}, list: {list}, carry_in: {carry_in}, recheck: {recheck})")]
 #[serde(deny_unknown_fields)]
 pub struct FileConfig {
     pub track: FileTrackConfig,
@@ -70,7 +79,8 @@ pub struct FileConfig {
     pub recheck: FileRecheckConfig,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("PipelineConfig(current_pipeline: {current_pipeline}, default: {default}, default_params_file: {default_params_file}, process_pool_size: {process_pool_size})")]
 #[serde(deny_unknown_fields)]
 pub struct PipelineConfig {
     pub current_pipeline: String,
@@ -79,13 +89,15 @@ pub struct PipelineConfig {
     pub process_pool_size: u32,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("CheckIgnoreConfig(details: {details})")]
 #[serde(deny_unknown_fields)]
 pub struct CheckIgnoreConfig {
     pub details: bool,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[display("XvcConfiguration(core: {core}, git: {git}, cache: {cache}, file: {file}, pipeline: {pipeline}, check_ignore: {check_ignore})")]
 #[serde(deny_unknown_fields)]
 pub struct XvcConfiguration {
     pub core: CoreConfig,
@@ -97,14 +109,16 @@ pub struct XvcConfiguration {
     pub check_ignore: CheckIgnoreConfig,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalCoreConfig(xvc_repo_version: {xvc_repo_version:?}, verbosity: {verbosity:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCoreConfig {
     pub xvc_repo_version: Option<u8>,
     pub verbosity: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalGitConfig(use_git: {use_git:?}, command: {command:?}, auto_commit: {auto_commit:?}, auto_stage: {auto_stage:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalGitConfig {
     pub use_git: Option<bool>,
@@ -113,13 +127,15 @@ pub struct OptionalGitConfig {
     pub auto_stage: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalCacheConfig(algorithm: {algorithm:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCacheConfig {
     pub algorithm: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalFileTrackConfig(no_commit: {no_commit:?}, force: {force:?}, text_or_binary: {text_or_binary:?}, no_parallel: {no_parallel:?}, include_git_files: {include_git_files:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileTrackConfig {
     pub no_commit: Option<bool>,
@@ -129,7 +145,8 @@ pub struct OptionalFileTrackConfig {
     pub include_git_files: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalFileListConfig(format: {format:?}, sort: {sort:?}, show_dot_files: {show_dot_files:?}, no_summary: {no_summary:?}, recursive: {recursive:?}, include_git_files: {include_git_files:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileListConfig {
     pub format: Option<String>,
@@ -140,20 +157,23 @@ pub struct OptionalFileListConfig {
     pub include_git_files: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalFileCarryInConfig(force: {force:?}, no_parallel: {no_parallel:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileCarryInConfig {
     pub force: Option<bool>,
     pub no_parallel: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalFileRecheckConfig(method: {method:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileRecheckConfig {
     pub method: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalFileConfig(track: {track:?}, list: {list:?}, carry_in: {carry_in:?}, recheck: {recheck:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileConfig {
     pub track: Option<OptionalFileTrackConfig>,
@@ -163,7 +183,8 @@ pub struct OptionalFileConfig {
     pub recheck: Option<OptionalFileRecheckConfig>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalPipelineConfig(current_pipeline: {current_pipeline:?}, default: {default:?}, default_params_file: {default_params_file:?}, process_pool_size: {process_pool_size:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalPipelineConfig {
     pub current_pipeline: Option<String>,
@@ -172,13 +193,15 @@ pub struct OptionalPipelineConfig {
     pub process_pool_size: Option<u32>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("OptionalCheckIgnoreConfig(details: {details:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCheckIgnoreConfig {
     pub details: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
+#[display("XvcOptionalConfiguration(core: {core:?}, git: {git:?}, cache: {cache:?}, file: {file:?}, pipeline: {pipeline:?}, check_ignore: {check_ignore:?})")]
 #[serde(deny_unknown_fields)]
 pub struct XvcOptionalConfiguration {
     pub core: Option<OptionalCoreConfig>,
