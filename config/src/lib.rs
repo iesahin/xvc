@@ -544,3 +544,14 @@ impl XvcConfig {
         )
     }
 }
+
+/// Trait to update CLI options with defaults from configuration.
+///
+/// When a CLI struct like [xvc_pipeline::PipelineCLI] implements this trait, it reads the configuration and updates values not set in the command line accordingly.
+pub trait FromConfig {
+    /// Update the implementing struct from the configuration.
+    /// Reading the relevant keys and values of the config is in implementor's responsibility.
+    ///
+    /// This is used to abstract away CLI structs and crate options.
+    fn from_config(conf: &XvcConfig) -> Result<Box<Self>>;
+}

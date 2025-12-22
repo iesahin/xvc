@@ -1,7 +1,6 @@
 //! Available hash algorithms in Xvc
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display as EnumDisplay, EnumString, VariantNames};
-use xvc_config::{conf, FromConfigKey};
 
 /// The available content hash algorithms to get content addresses.
 /// Note that, the selection is based on the digest size being 32 bytes.
@@ -51,4 +50,6 @@ pub enum HashAlgorithm {
     SHA3_256,
 }
 
-conf!(HashAlgorithm, "cache.algorithm");
+impl FromConfig for HashAlgoritm {
+    
+}
