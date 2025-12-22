@@ -185,7 +185,7 @@ pub struct XvcConfig {
     /// Options set while running the software, automatically.
     runtime_config: XvcOptionalConfiguration,
     /// The current configuration map, updated cascadingly
-    pub the_config: XvcConfiguration,
+    the_config: XvcConfiguration,
 }
 
 impl fmt::Display for XvcConfig {
@@ -271,6 +271,11 @@ impl XvcConfig {
             runtime_config,
             the_config,
         })
+    }
+
+    /// Return the current configuration
+    pub fn config(&self) -> &XvcConfiguration {
+        &self.the_config
     }
 
     /// Return the system configuration file path for Xvc
@@ -537,111 +542,5 @@ impl XvcConfig {
             // check-ignore
             ["check-ignore", "details"]
         )
-    }
-}
-
-/// Trait to update CLI options with defaults from configuration.
-///
-/// When a CLI struct like [xvc_pipeline::PipelineCLI] implements this trait, it reads the configuration and updates values not set in the command line accordingly.
-pub trait UpdateFromXvcConfig {
-    /// Update the implementing struct from the configuration.
-    /// Reading the relevant keys and values of the config is in implementor's responsibility.
-    ///
-    /// This is used to abstract away CLI structs and crate options.
-    fn update_from_conf(self, conf: &XvcConfig) -> Result<Box<Self>>;
-}
-
-/// A struct implementing this trait can instantiate itself from XvcConfig.
-///
-/// When an option should be parsed and converted to a struct, it implements this trait.
-/// The functions are basically identical, and uses [XvcConfig::get_val] to instantiate.
-/// It's used to bind a configuration key (str) "group.key" with a struct.
-///
-/// See [conf] macro below for a shortcut.
-pub trait FromConfigKey<T: FromStr> {
-    /// Create a value of type `T` from configuration.
-    /// Supposed to panic! if there is no key, or the value cannot be parsed.
-    fn from_conf(conf: &XvcConfig) -> T;
-
-    /// Try to create a type `T` from the configuration.
-    /// Returns error if there is no key, or the value cannot be parsed.
-    fn try_from_conf(conf: &XvcConfig) -> Result<T>;
-}
-
-/// Binds a type with a configuration key.
-///
-/// When you declare `conf!("group.subgroup.key", MyType)`, this macro writes the code necessary to create `MyType` from the configuration.
-#[macro_export]
-macro_rules! conf {
-    ($type: ty, $key: literal) => {
-        impl FromConfigKey<$type> for $type {
-            fn from_conf(conf: &$crate::XvcConfig) -> $type {
-                conf.get_val::<$type>($key).unwrap()
-            }
-
-            fn try_from_conf(conf: &$crate::XvcConfig) -> $crate::error::Result<$type> {
-                conf.get_val::<$type>($key)
-            }
-        }
-    };
-}
-
-/// Convert a TomlValue which can be a [TomlValue::Table] or any other simple type to a hash map with keys in the hierarchical form.
-///
-/// A `key` in TOML table `[group]` will have `group.key` in the returned hash map.
-/// The groups can be arbitrarily deep.
-pub fn toml_value_to_hashmap(key: String, value: TomlValue) -> HashMap<String, TomlValue> {
-    let mut key_value_stack = Vec::<(String, TomlValue)>::new();
-    let mut key_value_map = HashMap::<String, TomlValue>::new();
-    key_value_stack.push((key, value));
-    while let Some((key, value)) = key_value_stack.pop() {
-        match value {
-            TomlValue::Table(t) => {
-                for (subkey, subvalue) in t {
-                    if key.is_empty() {
-                        key_value_stack.push((subkey, subvalue));
-                    } else {
-                        key_value_stack.push((format!("{}.{}", key, subkey), subvalue));
-                    }
-                }
-            }
-            _ => {
-                key_value_map.insert(key, value);
-            }
-        }
-    }
-    key_value_map
-}
-
-#[cfg(test)]
-mod tests {
-
-    use super::*;
-    use crate::error::Result;
-    use log::LevelFilter;
-    use toml::Value as TomlValue;
-    use xvc_logging::setup_logging;
-
-    pub fn test_logging(level: LevelFilter) {
-        setup_logging(Some(level), Some(LevelFilter::Trace));
-    }
-
-    #[test]
-    fn test_toml_value_to_hashmap() -> Result<()> {
-        test_logging(LevelFilter::Trace);
-        let str_value = "foo = 'bar'".parse::<TomlValue>()?;
-        let str_hm = toml_value_to_hashmap("".to_owned(), str_value);
-
-        assert!(str_hm["foo"] == TomlValue::String("bar".to_string()));
-
-        let table_value = r#"[core]
-        foo = "bar"
-        val = 100
-        "#
-        .parse::<TomlValue>()?;
-
-        let table_hm = toml_value_to_hashmap("".to_owned(), table_value);
-        assert!(table_hm.get("core.foo") == Some(&TomlValue::String("bar".to_string())));
-        Ok(())
     }
 }
