@@ -228,8 +228,8 @@ impl XvcConfig {
         };
 
         let project_config = if config_init_params.include_project_config {
-            if let Some(config_path) = config_init_params.project_config_path {
-                Self::load_optional_config_from_file(&config_path)?
+            if let Some(ref config_path) = config_init_params.project_config_path {
+                Self::load_optional_config_from_file(config_path)?
             } else {
                 blank_optional_config()
             }
@@ -238,8 +238,8 @@ impl XvcConfig {
         };
 
         let local_config = if config_init_params.include_local_config {
-            if let Some(config_path) = config_init_params.local_config_path {
-                Self::load_optional_config_from_file(&config_path)?
+            if let Some(ref config_path) = config_init_params.local_config_path {
+                Self::load_optional_config_from_file(config_path)?
             } else {
                 blank_optional_config()
             }
@@ -253,21 +253,22 @@ impl XvcConfig {
             blank_optional_config()
         };
 
-        let command_line_config = load_command_line_config(&config_init_params.command_line_config);
+        let command_line_config =
+            Self::load_command_line_config(&config_init_params.command_line_config)?;
 
         let runtime_config = blank_optional_config();
 
         let the_config = default_conf
-            .merge_with_optional(system_config)
-            .merge_with_optional(user_config)
-            .merge_with_optional(project_config)
-            .merge_with_optional(local_config)
-            .merge_with_optional(environment_config)
-            .merge_with_optional(command_line_config)
-            .merge_with_optional(runtime_config);
+            .merge_with_optional(&system_config)
+            .merge_with_optional(&user_config)
+            .merge_with_optional(&project_config)
+            .merge_with_optional(&local_config)
+            .merge_with_optional(&environment_config)
+            .merge_with_optional(&command_line_config)
+            .merge_with_optional(&runtime_config);
 
         Ok(XvcConfig {
-            current_dir: config_init_params.current_dir,
+            current_dir: config_init_params.current_dir.clone(),
             default_config: default_conf,
             system_config,
             user_config,
@@ -310,198 +311,49 @@ impl XvcConfig {
         }
     }
 
-    /// Load all keys from the environment that starts with `XVC_` and build a hash map with them.
-    ///
-    /// The resulting hash map has `key: value` elements for environment variables in the form `XVC_key=value`.
-    fn env_map() -> Result<HashMap<String, TomlValue>> {
-        let mut hm = HashMap::<String, String>::new();
-        let env_key_re = Regex::new(r"^XVC_?(.+)")?;
-        for (k, v) in std::env::vars() {
-            if let Some(cap) = env_key_re.captures(&k) {
-                hm.insert(cap[1].to_owned(), v);
-            }
-        }
-
-        // Try to parse the values:
-        // bool -> i64 -> f64 -> String
-
-        let hm_val = hm
-            .into_iter()
-            .map(|(k, v)| (k, Self::parse_to_value(v)))
-            .collect();
-
-        Ok(hm_val)
-    }
-
-    /// Parses a string to most specific type that can represent it.
-    ///
-    /// The parsing order is
-    ///
-    /// bool -> int -> float -> string.
-    ///
-    /// If it's not parsed as bool, int is tried, then float.
-    /// If none of these work, return it as String.
-    /// This is used in [self.env_map] to get TOML values from environment variables.
-    /// Other documents in TOML form are using native TOML parsing.
-    fn parse_to_value(v: String) -> TomlValue {
-        if let Ok(b) = v.parse::<bool>() {
-            TomlValue::Boolean(b)
-        } else if let Ok(i) = v.parse::<i64>() {
-            TomlValue::Integer(i)
-        } else if let Ok(f) = v.parse::<f64>() {
-            TomlValue::Float(f)
+    pub fn load_command_line_config(
+        cli_opt_vector: &Option<Vec<String>>,
+    ) -> Result<XvcOptionalConfiguration> {
+        if let Some(cli_opts) = cli_opt_vector {
+            let cli_opts_hm = Self::parse_key_value_vector(cli_opts);
+            Ok(XvcOptionalConfiguration::from_hash_map("", &cli_opts_hm))
         } else {
-            TomlValue::String(v)
+            Ok(XvcOptionalConfiguration::default())
         }
     }
 
-    /// Parses a vector of strings, and returns a `Vec<(key, value)>`.
-    fn parse_key_value_vector(vector: Vec<String>) -> Vec<(String, TomlValue)> {
-        vector
+    /// Parses a vector of strings, and returns a `HashMap<String, String>`.
+    fn parse_key_value_vector(cli_opts: &Vec<String>) -> HashMap<String, String> {
+        cli_opts
             .into_iter()
             .map(|str| {
                 let elements: Vec<&str> = str.split('=').collect();
                 let key = elements[0].trim().to_owned();
-                let value = Self::parse_to_value(elements[1].trim().to_owned());
+                let value = elements[1].trim().to_owned();
                 (key, value)
             })
             .collect()
-    }
-
-    /// Loads all config files
-    /// Overrides all options with the given key=value style options in the
-    /// command line
-    pub fn previous_new(p: XvcLoadParams) -> Result<XvcConfig> {
-        watch!(p);
-        let mut config = XvcConfig::new(&p);
-        watch!(config);
-
-        config.current_dir = XvcConfigOption {
-            option: p.current_dir,
-            source: XvcConfigOptionSource::Runtime,
-        };
-
-        let mut update = |source, file: std::result::Result<&Path, &Error>| match file {
-            Ok(config_file) => match config.update_from_file(config_file, source) {
-                Ok(new_config) => config = new_config,
-                Err(err) => {
-                    err.debug();
-                }
-            },
-            Err(err) => {
-                debug!("{}", err);
-            }
-        };
-
-        if p.include_system_config {
-            let f = Self::system_config_file();
-            update(XvcConfigOptionSource::System, f.as_deref());
-        }
-
-        if p.include_user_config {
-            update(
-                XvcConfigOptionSource::Global,
-                Self::user_config_file().as_deref(),
-            );
-        }
-
-        if let Some(project_config_path) = p.project_config_path {
-            update(XvcConfigOptionSource::Project, Ok(&project_config_path));
-        }
-
-        if let Some(local_config_path) = p.local_config_path {
-            update(XvcConfigOptionSource::Local, Ok(&local_config_path));
-        }
-
-        if p.include_environment_config {
-            let env_config = Self::env_map().unwrap();
-            match config.update_from_hash_map(env_config, XvcConfigOptionSource::Environment) {
-                Ok(conf) => config = conf,
-                Err(err) => {
-                    err.debug();
-                }
-            }
-        }
-
-        if let Some(cli_config) = p.command_line_config {
-            let map: HashMap<String, TomlValue> = Self::parse_key_value_vector(cli_config)
-                .into_iter()
-                .collect();
-            match config.update_from_hash_map(map, XvcConfigOptionSource::CommandLine) {
-                Ok(conf) => {
-                    config = conf;
-                }
-                Err(err) => {
-                    err.debug();
-                }
-            }
-        }
-
-        watch!(&config);
-
-        Ok(config)
-    }
-
-    pub fn load_command_line_config(cli_config: Option<Vec<String>>) {
-
-        
     }
 
     /// Where do we run the command?
     ///
     /// This can be modified by options in the command line, so it's not always equal to [std::env::current_dir()]
     pub fn current_dir(&self) -> Result<&AbsolutePath> {
-        let pb = &self.current_dir.option;
+        let pb = &self.current_dir;
         Ok(pb)
-    }
-
-    /// Globally Unique Identified for the Xvc Repository / Project
-    ///
-    /// It's stored in `core.guid` option.
-    /// It's created in [`XvcRoot::init`] and shouldn't be tampered with.
-    /// Storage commands use this to create different paths for different Xvc projects.
-    pub fn guid(&self) -> Option<String> {
-        match self.get_str("core.guid") {
-            Ok(opt) => Some(opt.option),
-            Err(err) => {
-                err.warn();
-                None
-            }
-        }
     }
 
     /// The current verbosity level.
     /// Set with `core.verbosity` option.
     pub fn verbosity(&self) -> XvcVerbosity {
-        let verbosity_str = self.get_str("core.verbosity");
-        let verbosity_str = match verbosity_str {
-            Ok(opt) => opt.option,
-            Err(err) => {
-                err.warn();
-                "1".to_owned()
-            }
-        };
-
-        match XvcVerbosity::from_str(&verbosity_str) {
+        let verbosity_str = &self.the_config.core.verbosity;
+        match XvcVerbosity::from_str(verbosity_str) {
             Ok(v) => v,
             Err(source) => {
                 Error::StrumError { source }.warn();
                 XvcVerbosity::Default
             }
         }
-    }
-
-    /// Returns a struct (`T`) value by using its `FromStr` implementation.
-    /// It parses the string to get the value.
-    pub fn get_val<T>(&self, key: &str) -> Result<T>
-    where
-        T: FromStr,
-    {
-        let str_val = self.get_str(key)?;
-        let val: T = T::from_str(&str_val.option).map_err(|_| Error::EnumTypeConversionError {
-            cause_key: key.to_owned(),
-        })?;
-        Ok(val)
     }
 }
 

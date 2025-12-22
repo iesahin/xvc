@@ -116,6 +116,13 @@ pub const XVCIGNORE_INITIAL_CONTENT: &str = "
 /// This is not expected to change for some time.
 pub const GIT_DIR: &str = ".git";
 
+/// Globally Unique Identified for the Xvc Repository / Project
+///
+/// It's stored in `.xvc/guid` file.
+/// Storage commands use this to create different paths for different Xvc projects.
+
+pub const GUID_FILENAME: &str = "guid"
+
 /// The initial content for `.xvc/.gitignore` to hide files in .xvc/
 ///
 /// We ignore all, and just track the store, entity counter and the configuration

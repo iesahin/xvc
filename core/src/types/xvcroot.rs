@@ -17,6 +17,7 @@ use xvc_config::{XvcConfig, XvcLoadParams};
 
 use crate::error::{Error, Result};
 use crate::GITIGNORE_INITIAL_CONTENT;
+use crate::GUID_FILENAME;
 use crate::XVCIGNORE_FILENAME;
 use crate::XVCIGNORE_INITIAL_CONTENT;
 use crate::XVC_DIR;
@@ -38,6 +39,8 @@ use crate::XVC_DIR;
 /// Almost all operations receive a reference to this structure.
 #[derive(Debug)]
 pub struct XvcRootInner {
+    // Moved here from config in repository version 2
+    guid: String,
     absolute_path: AbsolutePath,
     xvc_dir: AbsolutePath,
     store_dir: AbsolutePath,
@@ -92,6 +95,7 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcLoadParams) -> Result<XvcRoot>
                 let xvc_dir = abs_path.join(XvcRootInner::XVC_DIR);
                 watch!(xvc_dir);
                 fs::create_dir(&xvc_dir)?;
+                // TODO: Generate guid here and write to a file
                 let initial_config = config_opts.default_configuration.clone();
                 let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
                 fs::write(&project_config_path, initial_config)?;

@@ -1055,7 +1055,7 @@ impl XvcConfiguration {
         Ok(c)
     }
 
-    pub fn merge_with_optional(&self, opt_config: XvcOptionalConfiguration) -> Self {
-        merge_configs(&self, &opt_config)
+    pub fn merge_with_optional(&self, opt_config: &XvcOptionalConfiguration) -> Self {
+        merge_configs(self, opt_config)
     }
 }
