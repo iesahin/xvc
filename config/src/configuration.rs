@@ -247,10 +247,7 @@ impl XvcOptionalConfiguration {
                 }
                 "GIT_AUTO_COMMIT" => {
                     if let Some(val) = Self::parse_bool(&value) {
-                        config
-                            .git
-                            .get_or_insert_with(Default::default)
-                            .auto_commit = Some(val);
+                        config.git.get_or_insert_with(Default::default).auto_commit = Some(val);
                     }
                 }
                 "GIT_AUTO_STAGE" => {
@@ -406,10 +403,7 @@ impl XvcOptionalConfiguration {
                         .current_pipeline = Some(value);
                 }
                 "PIPELINE_DEFAULT" => {
-                    config
-                        .pipeline
-                        .get_or_insert_with(Default::default)
-                        .default = Some(value);
+                    config.pipeline.get_or_insert_with(Default::default).default = Some(value);
                 }
                 "PIPELINE_DEFAULT_PARAMS_FILE" => {
                     config

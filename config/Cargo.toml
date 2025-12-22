@@ -27,7 +27,9 @@ directories-next = "2.0"
 serde = { version = "^1.0", features = ["derive"] }
 serde_yaml = "^0.9"
 toml = { version = "^0.9", features = ["serde", "display", "parse"] }
-
+derive_more = { version = "^2.1", features = [
+  "display",
+] }
 ## Parallelization
 crossbeam-channel = "^0.5"
 crossbeam = "^0.8"

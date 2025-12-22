@@ -198,12 +198,8 @@ pub struct XvcConfig {
 impl fmt::Display for XvcConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "\nCurrent Configuration")?;
-        writeln!(
-            f,
-            "current_dir: {:?} ({:?})",
-            self.current_dir.option, self.current_dir.source
-        )?;
-        writeln!(&self.the_config);
+        writeln!(f, "current_dir: {}", self.current_dir)?;
+        writeln!(f, "{}", &self.the_config);
         writeln!(f)
     }
 }
