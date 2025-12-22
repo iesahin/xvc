@@ -8,6 +8,8 @@ use std::io::Write;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use xvc_config::configuration::XvcConfiguration;
+use xvc_config::configuration::XvcOptionalConfiguration;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
 use xvc_logging::watch;
@@ -95,11 +97,21 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcLoadParams) -> Result<XvcRoot>
                 let xvc_dir = abs_path.join(XvcRootInner::XVC_DIR);
                 watch!(xvc_dir);
                 fs::create_dir(&xvc_dir)?;
-                // TODO: Generate guid here and write to a file
-                let initial_config = config_opts.default_configuration.clone();
+                // Create GUID
+                let uuid = uuid::Uuid::new_v4();
+                let guid = hex::encode(seahash::hash(uuid.as_bytes()).to_le_bytes());
+                let guid_path = xvc_dir.join(GUID_FILENAME);
+                fs::write(&guid_path, guid);
+
                 let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
+                // TODO: We can allow some options to be set initially here
+                let initial_config = xvc_config::initial_xvc_config(
+                    xvc_config::default_config(),
+                    XvcOptionalConfiguration::default(),
+                );
                 fs::write(&project_config_path, initial_config)?;
                 watch!(&project_config_path);
+
                 let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
                 fs::write(
                     &local_config_path,
@@ -108,17 +120,13 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcLoadParams) -> Result<XvcRoot>
                 watch!(&local_config_path);
 
                 let project_config_opts = XvcLoadParams {
-                    default_configuration: config_opts.default_configuration,
-                    current_dir: config_opts.current_dir,
-                    include_system_config: config_opts.include_system_config,
-                    include_user_config: config_opts.include_user_config,
+                    xvc_root_dir: xvc_dir,
                     project_config_path: Some(project_config_path),
                     local_config_path: Some(local_config_path),
-                    include_environment_config: config_opts.include_environment_config,
-                    command_line_config: config_opts.command_line_config,
+                    ..config_opts
                 };
 
-                let config = XvcConfig::new(project_config_opts.clone())?;
+                let config = XvcConfig::new_v2(project_config_opts.clone())?;
                 watch!(&config);
                 // We write the initial entity value directly, without init_entity_generator,
                 // because we can't initialize the generator more than once, and we'll read
@@ -163,22 +171,21 @@ impl XvcRootInner {
         let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
         let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
         let config_opts = XvcLoadParams {
+            xvc_root_dir: Some(absolute_path),
             project_config_path: Some(project_config_path.clone()),
             local_config_path: Some(local_config_path.clone()),
-            default_configuration: config_opts.default_configuration,
-            current_dir: config_opts.current_dir,
-            include_system_config: config_opts.include_system_config,
-            include_user_config: config_opts.include_user_config,
-            include_environment_config: config_opts.include_environment_config,
-            command_line_config: config_opts.command_line_config,
+            ..config_opts
         };
-        let config = XvcConfig::new(config_opts)?;
+        let config = XvcConfig::new_v2(config_opts)?;
+        // TODO: Update to new configurations from earliers here
+        let guid = fs::read_to_string(&xvc_dir.join(GUID_FILENAME))?;
         let entity_generator =
             xvc_ecs::load_generator(&xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH))?;
 
         let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
         Ok(Self {
             xvc_dir,
+            guid,
             store_dir,
             local_config_path,
             project_config_path,

@@ -30,6 +30,10 @@ pub mod configuration;
 pub mod error;
 
 pub use config_params::XvcLoadParams;
+pub use configuration::default_config;
+pub use configuration::initial_xvc_config;
+pub use configuration::XvcConfiguration;
+pub use configuration::XvcOptionalConfiguration;
 
 use directories_next::{BaseDirs, ProjectDirs, UserDirs};
 use lazy_static::lazy_static;
@@ -201,7 +205,7 @@ impl XvcConfig {
     /// Loads the default configuration from `p`.
     ///
     /// The configuration must be a valid TOML document.
-    pub fn new(config_init_params: &XvcLoadParams) -> Result<Self> {
+    pub fn new_v2(config_init_params: &XvcLoadParams) -> Result<Self> {
         let default_conf = default_config();
 
         let system_config = if config_init_params.include_system_config {
