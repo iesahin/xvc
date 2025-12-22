@@ -63,15 +63,6 @@ pub use xvc_walker::{
 
 pub use xvc_config::error::Error as XvcConfigError;
 pub use xvc_config::error::Result as XvcConfigResult;
-pub use xvc_config::{
-    conf,
-    config_params::{
-        CacheConfig, CheckIgnoreConfig, CoreConfig, FileCarryInConfig, FileConfig, FileListConfig,
-        FileRecheckConfig, FileTrackConfig, GitConfig, PipelineConfig, XvcConfig,
-    },
-    FromConfigKey, UpdateFromXvcConfig, XvcConfig as XvcConfigLoader, XvcConfigOptionSource,
-    XvcLoadParams, XvcVerbosity,
-};
 
 pub use util::git;
 
@@ -121,7 +112,7 @@ pub const GIT_DIR: &str = ".git";
 /// It's stored in `.xvc/guid` file.
 /// Storage commands use this to create different paths for different Xvc projects.
 
-pub const GUID_FILENAME: &str = "guid"
+pub const GUID_FILENAME: &str = "guid";
 
 /// The initial content for `.xvc/.gitignore` to hide files in .xvc/
 ///
@@ -135,15 +126,3 @@ pub const GITIGNORE_INITIAL_CONTENT: &str = "
 !.xvc/config.toml
 !.xvc/pipelines/
 ";
-
-/// Deserializes the default project configuration string into a [ProjectConfig] struct.
-///
-/// # Arguments
-///
-/// - `use_git`: sets `core.use_git` option.
-pub fn get_default_project_config_struct(use_git: bool) -> Result<XvcConfig> {
-    let config_str = default_project_config(use_git);
-    let config: XvcConfig =
-        toml::from_str(&config_str).map_err(|e| Error::TomlDeserializationError { source: e })?;
-    Ok(config)
-}
