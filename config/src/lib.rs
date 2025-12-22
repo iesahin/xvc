@@ -54,9 +54,6 @@ use crate::{
 };
 use toml::Value as TomlValue;
 
-fn load_environment_config() -> XvcOptionalConfiguration {
-    XvcOptionalConfiguration::from_env()
-}
 lazy_static! {
     /// System specific configuration directory.
     /// see [directories_next::ProjectDirs].
@@ -199,7 +196,7 @@ impl fmt::Display for XvcConfig {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "\nCurrent Configuration")?;
         writeln!(f, "current_dir: {}", self.current_dir)?;
-        writeln!(f, "{}", &self.the_config);
+        writeln!(f, "{}", &self.the_config)?;
         writeln!(f)
     }
 }
@@ -208,7 +205,7 @@ impl XvcConfig {
     /// Loads the default configuration from `p`.
     ///
     /// The configuration must be a valid TOML document.
-    fn new(config_init_params: &XvcLoadParams) -> Result<Self> {
+    pub fn new(config_init_params: &XvcLoadParams) -> Result<Self> {
         let default_conf = default_config();
 
         let system_config = if config_init_params.include_system_config {
@@ -248,7 +245,7 @@ impl XvcConfig {
         };
 
         let environment_config = if config_init_params.include_environment_config {
-            load_environment_config()
+            XvcOptionalConfiguration::from_env()
         } else {
             blank_optional_config()
         };
@@ -354,6 +351,193 @@ impl XvcConfig {
                 XvcVerbosity::Default
             }
         }
+    }
+
+    /// Find where a configuration value is defined, by checking configuration layers from highest priority to lowest.
+    pub fn find_value_source(&self, key: &str) -> Option<XvcConfigOptionSource> {
+        let layers = [
+            (XvcConfigOptionSource::Runtime, &self.runtime_config),
+            (
+                XvcConfigOptionSource::CommandLine,
+                &self.command_line_config,
+            ),
+            (XvcConfigOptionSource::Environment, &self.environment_config),
+            (XvcConfigOptionSource::Local, &self.local_config),
+            (XvcConfigOptionSource::Project, &self.project_config),
+            (XvcConfigOptionSource::Global, &self.user_config), // enum variant is Global
+            (XvcConfigOptionSource::System, &self.system_config),
+        ];
+
+        for (source, config) in &layers {
+            if self.key_exists_in_optional_config(config, key) {
+                return Some(*source);
+            }
+        }
+
+        if self.is_valid_key(key) {
+            Some(XvcConfigOptionSource::Default)
+        } else {
+            None
+        }
+    }
+
+    /// This is a helper function to check if a key is defined in an optional configuration.
+    fn key_exists_in_optional_config(&self, config: &XvcOptionalConfiguration, key: &str) -> bool {
+        let parts: Vec<&str> = key.split('.').collect();
+        match parts.as_slice() {
+            // core
+            ["core", "xvc_repo_version"] => config
+                .core
+                .as_ref()
+                .is_some_and(|c| c.xvc_repo_version.is_some()),
+            ["core", "verbosity"] => config.core.as_ref().is_some_and(|c| c.verbosity.is_some()),
+            // git
+            ["git", "use_git"] => config.git.as_ref().is_some_and(|c| c.use_git.is_some()),
+            ["git", "command"] => config.git.as_ref().is_some_and(|c| c.command.is_some()),
+            ["git", "auto_commit"] => config.git.as_ref().is_some_and(|c| c.auto_commit.is_some()),
+            ["git", "auto_stage"] => config.git.as_ref().is_some_and(|c| c.auto_stage.is_some()),
+            // cache
+            ["cache", "algorithm"] => config.cache.as_ref().is_some_and(|c| c.algorithm.is_some()),
+            // file.track
+            ["file", "track", "no_commit"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.track.as_ref())
+                .is_some_and(|t| t.no_commit.is_some()),
+            ["file", "track", "force"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.track.as_ref())
+                .is_some_and(|t| t.force.is_some()),
+            ["file", "track", "text_or_binary"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.track.as_ref())
+                .is_some_and(|t| t.text_or_binary.is_some()),
+            ["file", "track", "no_parallel"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.track.as_ref())
+                .is_some_and(|t| t.no_parallel.is_some()),
+            ["file", "track", "include_git_files"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.track.as_ref())
+                .is_some_and(|t| t.include_git_files.is_some()),
+            // file.list
+            ["file", "list", "format"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.list.as_ref())
+                .is_some_and(|l| l.format.is_some()),
+            ["file", "list", "sort"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.list.as_ref())
+                .is_some_and(|l| l.sort.is_some()),
+            ["file", "list", "show_dot_files"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.list.as_ref())
+                .is_some_and(|l| l.show_dot_files.is_some()),
+            ["file", "list", "no_summary"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.list.as_ref())
+                .is_some_and(|l| l.no_summary.is_some()),
+            ["file", "list", "recursive"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.list.as_ref())
+                .is_some_and(|l| l.recursive.is_some()),
+            ["file", "list", "include_git_files"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.list.as_ref())
+                .is_some_and(|l| l.include_git_files.is_some()),
+            // file.carry-in
+            ["file", "carry-in", "force"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.carry_in.as_ref())
+                .is_some_and(|c| c.force.is_some()),
+            ["file", "carry-in", "no_parallel"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.carry_in.as_ref())
+                .is_some_and(|c| c.no_parallel.is_some()),
+            // file.recheck
+            ["file", "recheck", "method"] => config
+                .file
+                .as_ref()
+                .and_then(|f| f.recheck.as_ref())
+                .is_some_and(|r| r.method.is_some()),
+            // pipeline
+            ["pipeline", "current_pipeline"] => config
+                .pipeline
+                .as_ref()
+                .is_some_and(|p| p.current_pipeline.is_some()),
+            ["pipeline", "default"] => config
+                .pipeline
+                .as_ref()
+                .is_some_and(|p| p.default.is_some()),
+            ["pipeline", "default_params_file"] => config
+                .pipeline
+                .as_ref()
+                .is_some_and(|p| p.default_params_file.is_some()),
+            ["pipeline", "process_pool_size"] => config
+                .pipeline
+                .as_ref()
+                .is_some_and(|p| p.process_pool_size.is_some()),
+            // check-ignore
+            ["check-ignore", "details"] => config
+                .check_ignore
+                .as_ref()
+                .is_some_and(|c| c.details.is_some()),
+            _ => false,
+        }
+    }
+
+    fn is_valid_key(&self, key: &str) -> bool {
+        let parts: Vec<&str> = key.split('.').collect();
+        matches!(
+            parts.as_slice(),
+            // core
+            ["core", "xvc_repo_version"] |
+            ["core", "verbosity"] |
+            // git
+            ["git", "use_git"] |
+            ["git", "command"] |
+            ["git", "auto_commit"] |
+            ["git", "auto_stage"] |
+            // cache
+            ["cache", "algorithm"] |
+            // file.track
+            ["file", "track", "no_commit"] |
+            ["file", "track", "force"] |
+            ["file", "track", "text_or_binary"] |
+            ["file", "track", "no_parallel"] |
+            ["file", "track", "include_git_files"] |
+            // file.list
+            ["file", "list", "format"] |
+            ["file", "list", "sort"] |
+            ["file", "list", "show_dot_files"] |
+            ["file", "list", "no_summary"] |
+            ["file", "list", "recursive"] |
+            ["file", "list", "include_git_files"] |
+            // file.carry-in
+            ["file", "carry-in", "force"] |
+            ["file", "carry-in", "no_parallel"] |
+            // file.recheck
+            ["file", "recheck", "method"] |
+            // pipeline
+            ["pipeline", "current_pipeline"] |
+            ["pipeline", "default"] |
+            ["pipeline", "default_params_file"] |
+            ["pipeline", "process_pool_size"] |
+            // check-ignore
+            ["check-ignore", "details"]
+        )
     }
 }
 
