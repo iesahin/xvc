@@ -170,8 +170,6 @@ pub struct XvcConfigMap {
 pub struct XvcConfig {
     /// Current directory. It can be set with xvc -C option
     pub current_dir: AbsolutePath,
-    /// Default configuration we set in the executable
-    default_config: XvcConfiguration,
     /// System configuration from the system directories
     system_config: XvcOptionalConfiguration,
     /// User's configuration value from [USER_CONFIG_DIRS]
@@ -188,8 +186,6 @@ pub struct XvcConfig {
     runtime_config: XvcOptionalConfiguration,
     /// The current configuration map, updated cascadingly
     pub the_config: XvcConfiguration,
-    /// The init params used to create this config
-    pub load_params: XvcLoadParams,
 }
 
 impl fmt::Display for XvcConfig {
@@ -266,7 +262,6 @@ impl XvcConfig {
 
         Ok(XvcConfig {
             current_dir: config_init_params.current_dir.clone(),
-            default_config: default_conf,
             system_config,
             user_config,
             project_config,
@@ -275,7 +270,6 @@ impl XvcConfig {
             environment_config,
             runtime_config,
             the_config,
-            load_params: config_init_params.clone(),
         })
     }
 
@@ -308,6 +302,8 @@ impl XvcConfig {
         }
     }
 
+    /// Loads configuration from command line arguments.
+    /// Parses a vector of key-value strings into an [XvcOptionalConfiguration].
     pub fn load_command_line_config(
         cli_opt_vector: &Option<Vec<String>>,
     ) -> Result<XvcOptionalConfiguration> {
@@ -381,7 +377,8 @@ impl XvcConfig {
         }
     }
 
-    /// This is a helper function to check if a key is defined in an optional configuration.
+    /// Helper function to check if a specific key exists and has a `Some` value within an [XvcOptionalConfiguration] instance.
+    /// It traverses the optional configuration structure based on the `key`'s dot-separated parts.
     fn key_exists_in_optional_config(&self, config: &XvcOptionalConfiguration, key: &str) -> bool {
         let parts: Vec<&str> = key.split('.').collect();
         match parts.as_slice() {
@@ -498,6 +495,8 @@ impl XvcConfig {
         }
     }
 
+    /// Checks if a given key string (e.g., "core.verbosity") corresponds to a valid, known configuration path.
+    /// This ensures that only recognized keys are processed or reported as having a default source.
     fn is_valid_key(&self, key: &str) -> bool {
         let parts: Vec<&str> = key.split('.').collect();
         matches!(
