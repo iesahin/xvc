@@ -53,6 +53,7 @@ impl XvcLoadParams {
             include_system_config: true,
             include_user_config: true,
             include_project_config: true,
+            include_local_config: true,
             project_config_path: None,
             local_config_path: None,
             include_environment_config: true,
