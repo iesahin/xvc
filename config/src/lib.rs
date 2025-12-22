@@ -281,148 +281,6 @@ impl XvcConfig {
         })
     }
 
-    /// Returns string value for `key`.
-    ///
-    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
-    pub fn get_str(&self, key: &str) -> Result<XvcConfigOption<String>> {
-        let opt = self.get_toml_value(key)?;
-        if let TomlValue::String(val) = opt.option {
-            Ok(XvcConfigOption::<String> {
-                option: val,
-                source: opt.source,
-            })
-        } else {
-            Err(Error::MismatchedValueType { key: key.into() })
-        }
-    }
-
-    /// Returns bool value for `key`.
-    ///
-    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
-    pub fn get_bool(&self, key: &str) -> Result<XvcConfigOption<bool>> {
-        let opt = self.get_toml_value(key)?;
-        if let TomlValue::Boolean(val) = opt.option {
-            Ok(XvcConfigOption::<bool> {
-                option: val,
-                source: opt.source,
-            })
-        } else {
-            Err(Error::MismatchedValueType { key: key.into() })
-        }
-    }
-
-    /// Returns int value for `key`.
-    ///
-    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
-    pub fn get_int(&self, key: &str) -> Result<XvcConfigOption<i64>> {
-        let opt = self.get_toml_value(key)?;
-        if let TomlValue::Integer(val) = opt.option {
-            Ok(XvcConfigOption::<i64> {
-                option: val,
-                source: opt.source,
-            })
-        } else {
-            Err(Error::MismatchedValueType { key: key.into() })
-        }
-    }
-
-    /// Returns float value for `key`.
-    ///
-    /// The value is parsed from the corresponding TomlValue stored in [`self.the_config`].
-    pub fn get_float(&self, key: &str) -> Result<XvcConfigOption<f64>> {
-        let opt = self.get_toml_value(key)?;
-        if let TomlValue::Float(val) = opt.option {
-            Ok(XvcConfigOption::<f64> {
-                option: val,
-                source: opt.source,
-            })
-        } else {
-            Err(Error::MismatchedValueType { key: key.into() })
-        }
-    }
-
-    /// Returns [TOML value][TomlValue] corresponding to key.
-    ///
-    /// It's returned _without parsing_ from [`self.the_config`]
-    pub fn get_toml_value(&self, key: &str) -> Result<XvcConfigOption<TomlValue>> {
-        let value = self
-            .the_config
-            .get(key)
-            .ok_or(Error::ConfigKeyNotFound { key: key.into() })?
-            .to_owned();
-
-        Ok(XvcConfigOption::<TomlValue> {
-            option: value.value,
-            source: value.source,
-        })
-    }
-
-    /// Updates [`self.the_config`]  with the values found in `new_map`.
-    ///
-    /// The configuration source for all values in `new_map` is set to be `new_source`.
-    fn update_from_hash_map(
-        &self,
-        new_map: HashMap<String, TomlValue>,
-        new_source: XvcConfigOptionSource,
-    ) -> Result<Self> {
-        let mut current_map = self.the_config.clone();
-        new_map.iter().for_each(|(k, v)| {
-            current_map.insert(
-                k.clone(),
-                XvcConfigValue {
-                    source: new_source,
-                    value: v.clone(),
-                },
-            );
-        });
-
-        let mut new_config_maps = self.config_maps.clone();
-        new_config_maps.push(XvcConfigMap {
-            source: new_source,
-            map: new_map,
-        });
-
-        Ok(Self {
-            current_dir: self.current_dir.clone(),
-            load_params: self.load_params.clone(),
-            the_config: current_map,
-            config_maps: new_config_maps,
-        })
-    }
-
-    /// Updates [`self.the_config`] after parsing `configuration`.
-    ///
-    /// `configuration` must be a valid TOML document.
-    /// [Source][XvcConfigOptionSource] of all read values are set to `new_source`.
-    fn update_from_toml(
-        &self,
-        configuration: String,
-        new_source: XvcConfigOptionSource,
-    ) -> Result<Self> {
-        let new_val = configuration.parse::<TomlValue>()?;
-        let key = "".to_string();
-        let new_map = toml_value_to_hashmap(key, new_val);
-        self.update_from_hash_map(new_map, new_source)
-    }
-
-    /// Reads `file_name` and calls `self.update_from_toml` with the contents.
-    fn update_from_file(
-        &self,
-        file_name: &Path,
-        source: XvcConfigOptionSource,
-    ) -> Result<XvcConfig> {
-        if file_name.is_file() {
-            let config_string =
-                fs::read_to_string(file_name).map_err(|source| Error::IoError { source })?;
-            self.update_from_toml(config_string, source)
-        } else {
-            Err(Error::ConfigurationForSourceNotFound {
-                config_source: source.to_string(),
-                path: file_name.as_os_str().into(),
-            })
-        }
-    }
-
     /// Return the system configuration file path for Xvc
     /// FIXME: Return Absolute Path
     pub fn system_config_file() -> Result<PathBuf> {
@@ -582,6 +440,11 @@ impl XvcConfig {
         watch!(&config);
 
         Ok(config)
+    }
+
+    pub fn load_command_line_config(cli_config: Option<Vec<String>>) {
+
+        
     }
 
     /// Where do we run the command?

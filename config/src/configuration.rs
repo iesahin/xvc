@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::path::Path;
 
 use crate::Result;
@@ -229,7 +230,7 @@ impl XvcOptionalConfiguration {
         }
     }
 
-    pub fn from_env() -> Self {
+    pub fn from_hash_map(prefix: &str, values: &HashMap<String, String>) -> Self {
         let mut config = Self {
             core: None,
             git: None,
@@ -239,8 +240,7 @@ impl XvcOptionalConfiguration {
             check_ignore: None,
         };
 
-        let prefix = "XVC_";
-        for (key, value) in std::env::vars() {
+        for (key, value) in values.iter() {
             if !key.starts_with(prefix) {
                 continue;
             }
@@ -257,34 +257,37 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "CORE_VERBOSITY" => {
-                    config.core.get_or_insert_with(Default::default).verbosity = Some(value);
+                    config.core.get_or_insert_with(Default::default).verbosity =
+                        Some(value.to_string());
                 }
                 // git
                 "GIT_USE_GIT" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config.git.get_or_insert_with(Default::default).use_git = Some(val);
                     }
                 }
                 "GIT_COMMAND" => {
-                    config.git.get_or_insert_with(Default::default).command = Some(value);
+                    config.git.get_or_insert_with(Default::default).command =
+                        Some(value.to_string());
                 }
                 "GIT_AUTO_COMMIT" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config.git.get_or_insert_with(Default::default).auto_commit = Some(val);
                     }
                 }
                 "GIT_AUTO_STAGE" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config.git.get_or_insert_with(Default::default).auto_stage = Some(val);
                     }
                 }
                 // cache
                 "CACHE_ALGORITHM" => {
-                    config.cache.get_or_insert_with(Default::default).algorithm = Some(value);
+                    config.cache.get_or_insert_with(Default::default).algorithm =
+                        Some(value.to_string());
                 }
                 // file.track
                 "FILE_TRACK_NO_COMMIT" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -294,7 +297,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "FILE_TRACK_FORCE" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -309,10 +312,10 @@ impl XvcOptionalConfiguration {
                         .get_or_insert_with(Default::default)
                         .track
                         .get_or_insert_with(Default::default)
-                        .text_or_binary = Some(value);
+                        .text_or_binary = Some(value.to_string());
                 }
                 "FILE_TRACK_NO_PARALLEL" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -322,7 +325,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "FILE_TRACK_INCLUDE_GIT_FILES" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -338,7 +341,7 @@ impl XvcOptionalConfiguration {
                         .get_or_insert_with(Default::default)
                         .list
                         .get_or_insert_with(Default::default)
-                        .format = Some(value);
+                        .format = Some(value.to_string());
                 }
                 "FILE_LIST_SORT" => {
                     config
@@ -346,10 +349,10 @@ impl XvcOptionalConfiguration {
                         .get_or_insert_with(Default::default)
                         .list
                         .get_or_insert_with(Default::default)
-                        .sort = Some(value);
+                        .sort = Some(value.to_string());
                 }
                 "FILE_LIST_SHOW_DOT_FILES" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -359,7 +362,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "FILE_LIST_NO_SUMMARY" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -369,7 +372,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "FILE_LIST_RECURSIVE" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -379,7 +382,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "FILE_LIST_INCLUDE_GIT_FILES" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -390,7 +393,7 @@ impl XvcOptionalConfiguration {
                 }
                 // file.carry_in
                 "FILE_CARRY_IN_FORCE" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -400,7 +403,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "FILE_CARRY_IN_NO_PARALLEL" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .file
                             .get_or_insert_with(Default::default)
@@ -416,23 +419,24 @@ impl XvcOptionalConfiguration {
                         .get_or_insert_with(Default::default)
                         .recheck
                         .get_or_insert_with(Default::default)
-                        .method = Some(value);
+                        .method = Some(value.to_string());
                 }
                 // pipeline
                 "PIPELINE_CURRENT_PIPELINE" => {
                     config
                         .pipeline
                         .get_or_insert_with(Default::default)
-                        .current_pipeline = Some(value);
+                        .current_pipeline = Some(value.to_string());
                 }
                 "PIPELINE_DEFAULT" => {
-                    config.pipeline.get_or_insert_with(Default::default).default = Some(value);
+                    config.pipeline.get_or_insert_with(Default::default).default =
+                        Some(value.to_string());
                 }
                 "PIPELINE_DEFAULT_PARAMS_FILE" => {
                     config
                         .pipeline
                         .get_or_insert_with(Default::default)
-                        .default_params_file = Some(value);
+                        .default_params_file = Some(value.to_string());
                 }
                 "PIPELINE_PROCESS_POOL_SIZE" => {
                     if let Ok(val) = value.parse::<u32>() {
@@ -444,7 +448,7 @@ impl XvcOptionalConfiguration {
                 }
                 // check_ignore
                 "CHECK_IGNORE_DETAILS" => {
-                    if let Some(val) = Self::parse_bool(&value) {
+                    if let Some(val) = Self::parse_bool(value) {
                         config
                             .check_ignore
                             .get_or_insert_with(Default::default)
@@ -455,6 +459,11 @@ impl XvcOptionalConfiguration {
             }
         }
         config
+    }
+
+    pub fn from_env() -> Self {
+        let env_vars: HashMap<String, String> = std::env::vars().collect();
+        Self::from_hash_map("XVC_", &env_vars)
     }
 }
 
