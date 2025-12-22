@@ -1,9 +1,10 @@
 //! Recheck methods denote how a cached file put into the working directory.
 //! See [CacheType] for different types
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr, VariantNames};
-use xvc_config::{conf, FromConfigKey};
-
+use xvc_config::FromConfig;
 use xvc_ecs::persist;
 
 /// Denotes how a cache file is linked to the workspace.
@@ -82,4 +83,11 @@ impl Default for RecheckMethod {
     }
 }
 persist!(RecheckMethod, "recheck-method");
-conf!(RecheckMethod, "file.recheck.method");
+
+impl FromConfig for RecheckMethod {
+    fn from_config(conf: &xvc_config::XvcConfig) -> xvc_config::error::Result<Box<Self>> {
+        Ok(Box::new(RecheckMethod::from_str(
+            &conf.config().file.recheck.method,
+        )?))
+    }
+}
