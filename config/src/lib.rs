@@ -553,3 +553,7 @@ pub trait FromConfig {
     /// This is used to abstract away CLI structs and crate options.
     fn from_config(conf: &XvcConfig) -> Result<Box<Self>>;
 }
+
+pub trait UpdateFromConfig {
+    fn update_from_config(self, conf: &XvcConfig) -> Result<Box<Self>>;
+}

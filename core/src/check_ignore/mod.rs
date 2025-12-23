@@ -49,9 +49,7 @@ pub fn cmd_check_ignore<R: BufRead>(
     xvc_root: &XvcRoot,
     opts: CheckIgnoreCLI,
 ) -> Result<()> {
-    let conf = xvc_root.config();
-
-    let current_dir = conf.current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let walk_options = WalkOptions {
         ignore_filename: Some(opts.ignore_filename.clone()),
         include_dirs: true,
@@ -81,8 +79,7 @@ fn check_ignore_stdin<R: BufRead>(
     xvc_root: &XvcRoot,
     ignore_rules: &IgnoreRules,
 ) -> Result<()> {
-    let conf = xvc_root.config();
-    let current_dir = conf.current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let mut buffer = String::new();
     let lines_iter = input.lines();
     lines_iter

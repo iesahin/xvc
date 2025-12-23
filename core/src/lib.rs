@@ -63,6 +63,11 @@ pub use xvc_walker::{
 
 pub use xvc_config::error::Error as XvcConfigError;
 pub use xvc_config::error::Result as XvcConfigResult;
+pub use xvc_config::FromConfig;
+pub use xvc_config::UpdateFromConfig;
+pub use xvc_config::XvcConfig;
+pub use xvc_config::XvcConfiguration;
+pub use xvc_config::XvcOptionalConfiguration;
 
 pub use util::git;
 

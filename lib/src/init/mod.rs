@@ -94,13 +94,20 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         current_dir: AbsolutePath::from(&path),
         include_system_config: true,
         include_user_config: true,
+        include_project_config: true,
         project_config_path: None,
         local_config_path: None,
         include_environment_config: true,
         command_line_config: None,
     };
 
-    let xvc_root = init_xvc_root(&path, config_opts)?;
+    let mut initial_user_config = blank_optional_config();
+
+    if opts.no_git {
+        initial_user_config.git = GitConfig { use_git: false }
+    }
+
+    let xvc_root = init_xvc_root(&path, config_opts, initial_user_config)?;
     watch!(xvc_root);
     xvc_pipeline::init(&xvc_root)?;
     xvc_file::init(&xvc_root)?;

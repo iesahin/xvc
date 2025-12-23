@@ -6,9 +6,9 @@ use regex::Regex;
 use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
-use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_core::R1NStore;
 use xvc_core::{error, info, XvcOutputSender};
+use xvc_core::{XvcCachePath, XvcRoot};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
@@ -105,9 +105,10 @@ impl XvcS3StorageOperations for XvcR2Storage {
         let specific_access_key_var = format!("XVC_STORAGE_ACCESS_KEY_ID_{}", self.name);
         let specific_secret_key_var = format!("XVC_STORAGE_SECRET_ACCESS_KEY_{}", self.name);
 
-        if let (Ok(access_key), Ok(secret_key)) =
-            (env::var(&specific_access_key_var), env::var(&specific_secret_key_var))
-        {
+        if let (Ok(access_key), Ok(secret_key)) = (
+            env::var(&specific_access_key_var),
+            env::var(&specific_secret_key_var),
+        ) {
             return Credentials::new(Some(&access_key), Some(&secret_key), None, None, None)
                 .map_err(|e| e.into());
         }
@@ -151,7 +152,7 @@ impl XvcS3StorageOperations for XvcR2Storage {
         xvc_root: &xvc_core::XvcRoot,
     ) -> Result<XvcStorageListEvent> {
         let bucket = self.get_bucket()?;
-        let xvc_guid = xvc_root.config().guid().unwrap();
+        let xvc_guid = xvc_root.guid();
         let prefix = self.storage_prefix.clone();
 
         let res_list = bucket

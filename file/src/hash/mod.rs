@@ -71,6 +71,7 @@ pub fn cmd_hash(
             current_dir: AbsolutePath::from(env::current_dir()?),
             include_system_config: true,
             include_user_config: false,
+            include_project_config: false,
             project_config_path: None,
             local_config_path: None,
             include_environment_config: true,

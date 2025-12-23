@@ -7,12 +7,10 @@
 use clap_complete::ArgValueCompleter;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_core::PathSync;
+use xvc_core::{FromConfig, PathSync, UpdateFromConfig, XvcConfig, XvcConfigResult};
 
 use std::collections::HashSet;
 use std::fs;
-
-use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
 use xvc_core::XvcRoot;
 use xvc_core::{info, uwo, uwr, warn, watch, XvcOutputSender};
@@ -57,13 +55,14 @@ pub struct CarryInCLI {
     targets: Option<Vec<String>>,
 }
 
-impl UpdateFromXvcConfig for CarryInCLI {
+impl UpdateFromConfig for CarryInCLI {
     /// Updates `xvc file` configuration from the configuration files.
     /// Command line options take precedence over other sources.
     /// If options are not given, they are supplied from [XvcConfig]
-    fn update_from_conf(self, conf: &XvcConfig) -> xvc_core::XvcConfigResult<Box<Self>> {
-        let force = self.force || conf.get_bool("file.carry-in.force")?.option;
-        let no_parallel = self.no_parallel || conf.get_bool("file.carry-in.no_parallel")?.option;
+    fn update_from_config(self, conf: &XvcConfig) -> xvc_core::XvcConfigResult<Box<Self>> {
+        let carry_in_opts = conf.config().file.carry_in;
+        let force = carry_in_opts.force;
+        let no_parallel = ;
         let text_or_binary = self.text_or_binary.as_ref().map_or_else(
             || Some(FileTextOrBinary::from_conf(conf)),
             |v| Some(v.to_owned()),

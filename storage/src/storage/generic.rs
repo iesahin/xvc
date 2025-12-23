@@ -5,9 +5,9 @@ use regex::Regex;
 use relative_path::RelativePath;
 use serde::{Deserialize, Serialize};
 use subprocess::Exec;
-use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_core::R1NStore;
 use xvc_core::{error, info, warn, watch, XvcOutputSender};
+use xvc_core::{XvcCachePath, XvcRoot};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
@@ -127,7 +127,7 @@ impl XvcGenericStorage {
     /// - `{FULL_STORAGE_PATH}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_PATH}`
     /// - `{FULL_STORAGE_DIR}`: Concatenation of `{URL}{STORAGE_DIR}{XVC_GUID}/{RELATIVE_CACHE_DIR}`
     fn path_map(&self, xvc_root: &XvcRoot, cache_path: &XvcCachePath) -> HashMap<&str, String> {
-        let xvc_guid = xvc_root.config().guid().unwrap();
+        let xvc_guid = xvc_root.guid().to_owned();
         let relative_cache_path = cache_path.to_string();
         let relative_cache_dir = cache_path
             .as_ref()
@@ -179,7 +179,7 @@ impl XvcGenericStorage {
         temp_dir: &XvcStorageTempDir,
         cache_path: &XvcCachePath,
     ) -> HashMap<&str, String> {
-        let xvc_guid = xvc_root.config().guid().unwrap();
+        let xvc_guid = xvc_root.guid().to_owned();
         let relative_cache_path = cache_path.to_string();
         let relative_cache_dir = cache_path
             .as_ref()
@@ -346,7 +346,7 @@ impl XvcStorageOperations for XvcGenericStorage {
         watch!(prepared_cmd);
         let cmd_output = Exec::shell(prepared_cmd).capture()?.stdout_str();
         watch!(cmd_output);
-        let xvc_guid = xvc_root.config().guid().unwrap();
+        let xvc_guid = xvc_root.guid().to_owned();
         let re = Regex::new(&format!(
             "{xvc_guid}/{cp}/{d3}/{d3}/{d58}/0\\..*$",
             cp = r#"[a-zA-Z][0-9]"#,

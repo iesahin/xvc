@@ -260,7 +260,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
         let storage_url = self.rclone_path_url(storage_dir);
 
         let cmd_output = rclone_cmd(&rclone_executable, "", "ls", &storage_url, None)?.stdout_str();
-        let xvc_guid = xvc_root.config().guid().unwrap();
+        let xvc_guid = xvc_root.guid();
         // TODO: Move this regex to a central place
         let re = Regex::new(&format!(
             "{xvc_guid}/{cp}/{d3}/{d3}/{d58}/0\\..*$",
@@ -298,7 +298,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
 
         let rclone_executable = rclone_executable()?;
 
-        let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
+        let xvc_guid = xvc_root.guid();
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
             let local_path = cache_path.to_absolute_path(xvc_root);
@@ -343,7 +343,7 @@ impl XvcStorageOperations for XvcRcloneStorage {
         let rsync_executable = rclone_executable()?;
         let temp_dir = XvcStorageTempDir::new()?;
 
-        let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
+        let xvc_guid = xvc_root.guid();
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
             let local_path = temp_dir.temp_cache_path(cache_path).unwrap();
@@ -395,10 +395,10 @@ impl XvcStorageOperations for XvcRcloneStorage {
         //
         let rclone_executable = rclone_executable()?;
 
-        let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
+        let xvc_guid = xvc_root.guid();
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
-            let remote_path = self.rclone_cache_url(xvc_guid.as_str(), cache_path);
+            let remote_path = self.rclone_cache_url(xvc_guid, cache_path);
             let cmd_output = rclone_cmd(&rclone_executable, "", "delete", &remote_path, None);
 
             match cmd_output {

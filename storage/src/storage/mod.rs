@@ -321,7 +321,7 @@ impl XvcStoragePath {
     /// The storage path of a cache path is like {guid}/{cache-path}
     /// ⚠️  The separator between {guid} and {cache-path} is always /
     pub fn new(xvc_root: &XvcRoot, local: &XvcCachePath) -> Self {
-        let guid = xvc_root.config().guid().unwrap();
+        let guid = xvc_root.guid();
         let guid_path = RelativePathBuf::from(guid);
         let rel_path = guid_path.join(local);
         Self(rel_path)

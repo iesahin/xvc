@@ -4,10 +4,10 @@ use std::{env, fs};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use subprocess::{CaptureData, Exec};
-use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_core::AbsolutePath;
 use xvc_core::R1NStore;
 use xvc_core::{error, info, trace, uwr, warn, XvcOutputSender};
-use xvc_core::AbsolutePath;
+use xvc_core::{XvcCachePath, XvcRoot};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
@@ -288,7 +288,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let ssh_executable = Self::ssh_executable()?;
 
         let cmd_output = self.ssh_cmd(&ssh_executable, &format!("ls -1R {}", self.storage_dir))?;
-        let xvc_guid = xvc_root.config().guid().unwrap();
+        let xvc_guid = xvc_root.guid();
         let re = Regex::new(&format!(
             "{xvc_guid}/{cp}/{d3}/{d3}/{d58}/0\\..*$",
             cp = r#"[a-zA-Z][0-9]"#,
@@ -330,7 +330,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let rsync_executable = Self::rsync_executable()?;
         let ssh_executable = Self::ssh_executable()?;
 
-        let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
+        let xvc_guid = xvc_root.guid();
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
             let local_path = cache_path.to_absolute_path(xvc_root);
@@ -378,7 +378,7 @@ impl XvcStorageOperations for XvcRsyncStorage {
         let rsync_executable = Self::rsync_executable()?;
         let temp_dir = XvcStorageTempDir::new()?;
 
-        let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
+        let xvc_guid = xvc_root.guid();
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
             let local_path = temp_dir.temp_cache_path(cache_path).unwrap();
@@ -430,10 +430,10 @@ impl XvcStorageOperations for XvcRsyncStorage {
         //
         let ssh_executable = Self::ssh_executable()?;
 
-        let xvc_guid = xvc_root.config().guid().expect("Repo GUID");
+        let xvc_guid = xvc_root.guid();
         let mut storage_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
         paths.iter().for_each(|cache_path| {
-            let remote_path = self.ssh_cache_path(xvc_guid.as_str(), cache_path);
+            let remote_path = self.ssh_cache_path(xvc_guid, cache_path);
             let delete_cmd = format!("rm -f '{}'", remote_path);
             let cmd_output = self.ssh_cmd(&ssh_executable, &delete_cmd);
 

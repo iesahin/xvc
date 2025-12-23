@@ -287,6 +287,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
         current_dir,
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,
+        include_project_config: !cli_opts.no_project_config,
         project_config_path: None,
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,

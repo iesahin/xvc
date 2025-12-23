@@ -224,6 +224,11 @@ impl XvcRootInner {
         &self.absolute_path
     }
 
+    /// Guid for this repository
+    pub fn guid(&self) -> &str {
+        &self.guid
+    }
+
     /// Get the absolute path to the .xvc directory.
     pub fn xvc_dir(&self) -> &AbsolutePath {
         &self.xvc_dir
@@ -232,6 +237,11 @@ impl XvcRootInner {
     /// Get the configuration for this repository.
     pub fn config(&self) -> &XvcConfiguration {
         &self.config.config()
+    }
+
+    /// The current directory we run the commands
+    pub fn current_dir(&self) -> &AbsolutePath {
+        &self.config.current_dir
     }
 
     /// Get the absolute path to the local config file.

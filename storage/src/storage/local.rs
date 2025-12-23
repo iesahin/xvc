@@ -7,8 +7,8 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use xvc_core::XvcRoot;
 use xvc_core::R1NStore;
+use xvc_core::XvcRoot;
 use xvc_core::{info, XvcOutputSender};
 
 use super::{
@@ -119,10 +119,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         paths: &[XvcCachePath],
         force: bool,
     ) -> Result<XvcStorageSendEvent> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
+        let repo_guid = xvc_root.guid();
         let mut copied_paths = Vec::<XvcStoragePath>::new();
 
         for cache_path in paths {
@@ -159,10 +156,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         paths: &[XvcCachePath],
         _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
+        let repo_guid = xvc_root.guid();
         let mut copied_paths = Vec::<XvcStoragePath>::new();
         let temp_dir = XvcStorageTempDir::new()?;
 
@@ -197,10 +191,7 @@ impl XvcStorageOperations for XvcLocalStorage {
         xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
-        let repo_guid = xvc_root
-            .config()
-            .guid()
-            .ok_or_else(|| crate::Error::NoRepositoryGuidFound)?;
+        let repo_guid = xvc_root.guid();
         let mut deleted_paths = Vec::<XvcStoragePath>::new();
 
         for cache_path in paths {
