@@ -283,7 +283,7 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
         AbsolutePath::from(std::env::current_dir()?.join(dir).canonicalize()?)
     };
 
-    let xvc_root_dir = find_root(&current_dir)?;
+    let xvc_root_dir = find_root(&current_dir).ok();
 
     // try to create root
     let xvc_config_params = XvcLoadParams {

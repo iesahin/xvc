@@ -71,15 +71,16 @@ impl Deref for XvcRootInner {
 
 /// Create a new XvcRoot object from the `path`.
 /// Configuration is loaded according to [`config_opts`][XvcConfigInitParams].
-/// The path is not required to be the root of the repository.
-/// This function searches for the root of the repository using
-/// [XvcRoot::find_root] and uses it as the root.
 pub fn load_xvc_root(config_opts: XvcLoadParams) -> Result<XvcRoot> {
-    let path = config_opts.current_dir.as_ref();
+    match &config_opts.xvc_root_dir {
+        Some(absolute_path) => Ok(Arc::new(XvcRootInner::new(
+            absolute_path.clone(),
+            config_opts,
+        )?)),
 
-    match find_root(path) {
-        Ok(absolute_path) => Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?)),
-        Err(e) => Err(e),
+        None => Err(Error::CannotFindXvcRoot {
+            path: config_opts.current_dir.to_path_buf(),
+        }),
     }
 }
 

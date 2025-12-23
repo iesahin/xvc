@@ -70,6 +70,7 @@ pub use xvc_config::XvcConfig;
 pub use xvc_config::XvcConfiguration;
 pub use xvc_config::XvcLoadParams;
 pub use xvc_config::XvcOptionalConfiguration;
+pub use xvc_config::XvcVerbosity;
 
 pub use util::git;
 

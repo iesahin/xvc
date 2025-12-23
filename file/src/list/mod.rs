@@ -20,12 +20,12 @@ use std::str::FromStr;
 use std::time::SystemTime;
 use strum_macros::{Display as EnumDisplay, EnumString, VariantNames};
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
-use xvc_core::{conf, FromConfigKey, UpdateFromXvcConfig};
 use xvc_core::{error, output, XvcOutputSender};
 use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcConfigResult, XvcFileType, XvcMetadata,
     XvcPath, XvcRoot,
 };
+use xvc_core::{FromConfig, UpdateFromConfig};
 use xvc_core::{HStore, XvcEntity, XvcStore};
 
 /// Format specifier for file list columns
@@ -110,8 +110,14 @@ impl FromStr for ListFormat {
     }
 }
 
-conf!(ListFormat, "file.list.format");
-
+impl FromConfig for ListFormat {
+    fn from_config(conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
+        Ok(Box::new(ListFormat::from_str(
+            &conf.config().file.list.format,
+        )))
+    }
+}
+/// 
 /// Specify how to sort file list
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq, VariantNames)]
 pub enum ListSortCriteria {
