@@ -30,6 +30,7 @@ pub mod configuration;
 pub mod error;
 
 pub use config_params::XvcLoadParams;
+pub use configuration::blank_optional_config;
 pub use configuration::default_config;
 pub use configuration::initial_xvc_config;
 pub use configuration::XvcConfiguration;
@@ -37,25 +38,18 @@ pub use configuration::XvcOptionalConfiguration;
 
 use directories_next::{BaseDirs, ProjectDirs, UserDirs};
 use lazy_static::lazy_static;
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
-    fmt, fs,
+    fmt,
     path::{Path, PathBuf},
     str::FromStr,
 };
-use xvc_logging::{debug, watch};
 use xvc_walker::AbsolutePath;
 
 use strum_macros::{Display as EnumDisplay, EnumString, IntoStaticStr};
 
-use crate::{
-    configuration::{
-        blank_optional_config, default_config, XvcConfiguration, XvcOptionalConfiguration,
-    },
-    error::{Error, Result},
-};
+use crate::error::{Error, Result};
 use toml::Value as TomlValue;
 
 lazy_static! {

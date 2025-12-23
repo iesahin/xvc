@@ -148,7 +148,7 @@ pub fn git_checkout_ref(
     from_ref: &str,
 ) -> Result<()> {
     let xvc_directory = xvc_root.as_path().to_str().unwrap();
-    let git_command_option = xvc_root.config().get_str("git.command")?.option;
+    let git_command_option = xvc_root.config().git.command.clone();
     let git_command = get_absolute_git_command(&git_command_option)?;
 
     let git_diff_staged_out = stash_user_staged_files(output_snd, &git_command, xvc_directory)?;
