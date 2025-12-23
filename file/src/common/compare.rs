@@ -12,7 +12,6 @@ use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 
 use xvc_core::types::xvcdigest::{content_digest::ContentDigest, DIGEST_LENGTH};
-use xvc_core::FromConfigKey;
 use xvc_core::{SharedXStore, XvcEcsError};
 
 use xvc_core::{

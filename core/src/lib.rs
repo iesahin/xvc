@@ -34,6 +34,7 @@ pub use types::xvcfiletype::XvcFileType;
 pub use types::xvcmetadata::XvcMetadata;
 pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
+pub use types::xvcroot::find_root;
 pub use types::xvcroot::XvcRoot;
 
 pub use error::Error;
@@ -67,6 +68,7 @@ pub use xvc_config::FromConfig;
 pub use xvc_config::UpdateFromConfig;
 pub use xvc_config::XvcConfig;
 pub use xvc_config::XvcConfiguration;
+pub use xvc_config::XvcLoadParams;
 pub use xvc_config::XvcOptionalConfiguration;
 
 pub use util::git;

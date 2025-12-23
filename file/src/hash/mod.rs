@@ -9,13 +9,15 @@ use log::warn;
 use std::{env, path::PathBuf};
 use xvc_core::AbsolutePath;
 use xvc_core::ContentDigest;
+use xvc_core::UpdateFromConfig;
+use xvc_core::XvcConfig;
 use xvc_core::XvcConfigResult;
+use xvc_core::XvcLoadParams;
 use xvc_core::{output, XvcOutputSender};
 use xvc_core::{
     util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
 };
-use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcLoadParams};
 
 use crate::common::pipe_path_digest;
 
@@ -44,8 +46,8 @@ pub struct HashCLI {
     targets: Vec<PathBuf>,
 }
 
-impl UpdateFromXvcConfig for HashCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
+impl UpdateFromConfig for HashCLI {
+    fn update_from_config(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
         let algorithm = self
             .algorithm
             .unwrap_or_else(|| HashAlgorithm::from_conf(conf));
@@ -67,11 +69,12 @@ pub fn cmd_hash(
     let conf = match xvc_root {
         Some(xvc_root) => xvc_root.config().clone(),
         None => XvcConfig::new(XvcLoadParams {
-            default_configuration: xvc_core::initial_project_config(false),
             current_dir: AbsolutePath::from(env::current_dir()?),
+            xvc_root_dir: None,
             include_system_config: true,
-            include_user_config: false,
+            include_user_config: true,
             include_project_config: false,
+            include_local_config: false,
             project_config_path: None,
             local_config_path: None,
             include_environment_config: true,
