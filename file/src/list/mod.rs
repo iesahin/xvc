@@ -117,7 +117,7 @@ impl FromConfig for ListFormat {
         )))
     }
 }
-/// 
+///
 /// Specify how to sort file list
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq, VariantNames)]
 pub enum ListSortCriteria {
@@ -147,7 +147,13 @@ pub enum ListSortCriteria {
     /// Sort by timestamp in descending order
     TimestampDesc,
 }
-conf!(ListSortCriteria, "file.list.sort");
+
+impl FromConfig for ListSortCriteria {
+    fn from_config(conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
+        let opt = conf.config().file.list.sort;
+        Ok(Box::new(Self::from_str(opt)))
+    }
+}
 
 /// A single item in the list output
 #[derive(Debug, Clone, PartialEq)]
