@@ -9,9 +9,11 @@ use log::warn;
 use std::{env, path::PathBuf};
 use xvc_core::AbsolutePath;
 use xvc_core::ContentDigest;
+use xvc_core::FromConfig;
 use xvc_core::UpdateFromConfig;
 use xvc_core::XvcConfig;
 use xvc_core::XvcConfigResult;
+use xvc_core::XvcConfiguration;
 use xvc_core::XvcLoadParams;
 use xvc_core::{output, XvcOutputSender};
 use xvc_core::{
@@ -47,10 +49,11 @@ pub struct HashCLI {
 }
 
 impl UpdateFromConfig for HashCLI {
-    fn update_from_config(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let algorithm = self
-            .algorithm
-            .unwrap_or_else(|| HashAlgorithm::from_conf(conf));
+    fn update_from_config(self, conf: &XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let algorithm = self.algorithm.unwrap_or_else(|| {
+            *HashAlgorithm::from_config(conf).expect("HashAlgorithm must be configured")
+        });
+
         Ok(Box::new(Self {
             algorithm: Some(algorithm),
             text_or_binary: self.text_or_binary,
@@ -68,7 +71,7 @@ pub fn cmd_hash(
 ) -> Result<()> {
     let conf = match xvc_root {
         Some(xvc_root) => xvc_root.config().clone(),
-        None => XvcConfig::new(XvcLoadParams {
+        None => XvcConfig::new_v2(&XvcLoadParams {
             current_dir: AbsolutePath::from(env::current_dir()?),
             xvc_root_dir: None,
             include_system_config: true,
@@ -79,10 +82,12 @@ pub fn cmd_hash(
             local_config_path: None,
             include_environment_config: true,
             command_line_config: None,
-        })?,
+        })?
+        .config()
+        .clone(),
     };
 
-    let opts = opts.update_from_conf(&conf)?;
+    let opts = opts.update_from_config(&conf)?;
     let algorithm = opts.algorithm.unwrap_or(HashAlgorithm::Blake3);
 
     let text_or_binary = opts.text_or_binary;

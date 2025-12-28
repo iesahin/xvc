@@ -551,9 +551,9 @@ pub trait FromConfig {
     /// Reading the relevant keys and values of the config is in implementor's responsibility.
     ///
     /// This is used to abstract away CLI structs and crate options.
-    fn from_config(conf: &XvcConfig) -> Result<Box<Self>>;
+    fn from_config(conf: &XvcConfiguration) -> Result<Box<Self>>;
 }
 
 pub trait UpdateFromConfig {
-    fn update_from_config(self, conf: &XvcConfig) -> Result<Box<Self>>;
+    fn update_from_config(self, conf: &XvcConfiguration) -> Result<Box<Self>>;
 }

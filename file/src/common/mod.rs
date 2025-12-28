@@ -5,6 +5,7 @@ pub mod gitignore;
 use std::collections::{HashMap, HashSet};
 use std::fs::{self};
 
+use std::str::FromStr;
 use std::{
     fs::Metadata,
     path::{Path, PathBuf},
@@ -28,7 +29,9 @@ use xvc_core::{
     RecheckMethod, Storable, TextOrBinary, XvcFileType, XvcMetadata, XvcOutputSender, XvcPath,
     XvcPathMetadataMap, XvcRoot, XvcStore,
 };
-use xvc_core::{path_metadata_map_from_file_targets, XvcConfigResult, XvcWalkerError};
+use xvc_core::{
+    path_metadata_map_from_file_targets, XvcConfigResult, XvcConfiguration, XvcWalkerError,
+};
 use xvc_core::{EventLog, FromConfig, XvcConfig};
 
 use self::gitignore::IgnoreOp;
@@ -55,10 +58,10 @@ use self::gitignore::IgnoreOp;
 pub struct FileTextOrBinary(TextOrBinary);
 
 impl FromConfig for FileTextOrBinary {
-    fn from_config(conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
+    fn from_config(conf: &XvcConfiguration) -> XvcConfigResult<Box<Self>> {
         Ok(Box::new(FileTextOrBinary(TextOrBinary::from_str(
-            conf.config().file.track.text_or_binary,
-        ))))
+            &conf.file.track.text_or_binary,
+        )?)))
     }
 }
 persist!(FileTextOrBinary, "file-text-or-binary");
@@ -332,7 +335,7 @@ pub fn targets_from_disk(
     // Return false when the path is a git path
 
     let git_files: HashSet<String> = if filter_git_paths {
-        let git_command_str = xvc_root.config().get_str("git.command")?.option;
+        let git_command_str = xvc_root.config().git.command.clone();
         let git_command = get_absolute_git_command(&git_command_str)?;
         get_git_tracked_files(
             &git_command,

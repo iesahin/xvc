@@ -85,9 +85,9 @@ impl Default for RecheckMethod {
 persist!(RecheckMethod, "recheck-method");
 
 impl FromConfig for RecheckMethod {
-    fn from_config(conf: &xvc_config::XvcConfig) -> xvc_config::error::Result<Box<Self>> {
+    fn from_config(conf: &xvc_config::XvcConfiguration) -> xvc_config::error::Result<Box<Self>> {
         Ok(Box::new(RecheckMethod::from_str(
-            &conf.config().file.recheck.method,
+            &conf.file.recheck.method,
         )?))
     }
 }

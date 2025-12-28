@@ -54,9 +54,7 @@ pub enum HashAlgorithm {
 }
 
 impl FromConfig for HashAlgorithm {
-    fn from_config(conf: &xvc_config::XvcConfig) -> xvc_config::error::Result<Box<Self>> {
-        Ok(Box::new(HashAlgorithm::from_str(
-            &conf.config().cache.algorithm,
-        )?))
+    fn from_config(conf: &xvc_config::XvcConfiguration) -> xvc_config::error::Result<Box<Self>> {
+        Ok(Box::new(HashAlgorithm::from_str(&conf.cache.algorithm)?))
     }
 }
