@@ -16,7 +16,7 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigResult};
+use xvc_core::{UpdateFromConfig, XvcConfig, XvcConfigResult};
 
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{
@@ -31,6 +31,7 @@ use xvc_core::{HStore, XvcEntity, XvcStore};
 /// There are three conditions to recheck a file:
 ///
 /// - If the workspace copy is missing.
+///
 /// - If the workspace copy is not changed but the user wants to change recheck method. (e.g. from copy
 ///   to symlink.)
 /// - If the `--force` is set.
@@ -60,13 +61,14 @@ pub struct RecheckCLI {
     pub targets: Option<Vec<String>>,
 }
 
-impl UpdateFromXvcConfig for RecheckCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
+impl UpdateFromConfig for RecheckCLI {
+    fn update_from_config(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
         let recheck_method = self
             .recheck_method
             .unwrap_or_else(|| RecheckMethod::from_conf(conf));
-        let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
 
+        let config = conf.config();
+        let no_parallel = self.no_parallel || config.file.track.no_parallel;
         let force = self.force;
 
         Ok(Box::new(Self {

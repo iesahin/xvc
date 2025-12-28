@@ -13,8 +13,8 @@ use xvc_core::util::completer::strum_variants_completer;
 use std::collections::HashSet;
 
 use xvc_core::util::git::build_gitignore;
-use xvc_core::{FromConfigKey, XvcConfigResult};
-use xvc_core::{UpdateFromXvcConfig, XvcConfig};
+use xvc_core::{FromConfig, XvcConfigResult};
+use xvc_core::{UpdateFromConfig, XvcConfig};
 
 use xvc_core::XvcOutputSender;
 use xvc_core::{
@@ -75,23 +75,26 @@ pub struct TrackCLI {
     targets: Option<Vec<String>>,
 }
 
-impl UpdateFromXvcConfig for TrackCLI {
+impl UpdateFromConfig for TrackCLI {
     /// Updates `xvc file` configuration from the configuration files.
     /// Command line options take precedence over other sources.
     /// If options are not given, they are supplied from [XvcConfig]
-    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let recheck_method = self
-            .recheck_method
-            .unwrap_or_else(|| RecheckMethod::from_conf(conf));
-        let no_commit = self.no_commit || conf.get_bool("file.track.no_commit")?.option;
-        let force = self.force || conf.get_bool("file.track.force")?.option;
-        let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
-        let text_or_binary = self.text_or_binary.as_ref().map_or_else(
-            || Some(FileTextOrBinary::from_conf(conf)),
-            |v| Some(v.to_owned()),
+    fn update_from_config(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
+        let recheck_method = self.recheck_method.unwrap_or_else(|| {
+            *RecheckMethod::from_config(conf).expect("Configuration has a recheck method")
+        });
+
+        let config = conf.config();
+
+        let no_commit = self.no_commit || config.file.track.no_commit;
+        let force = self.force || config.file.track.force;
+        let no_parallel = self.no_parallel || config.file.track.no_parallel;
+        let include_git_files = self.include_git_files || config.file.track.include_git_files;
+
+        let text_or_binary = Some(
+            self.text_or_binary
+                .unwrap_or_else(|| *FileTextOrBinary::from_config(conf).unwrap()),
         );
-        let include_git_files =
-            self.include_git_files || conf.get_bool("file.track.include_git_files")?.option;
 
         Ok(Box::new(Self {
             targets: self.targets.clone(),

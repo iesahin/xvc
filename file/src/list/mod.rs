@@ -594,18 +594,17 @@ pub struct ListCLI {
     pub targets: Option<Vec<String>>,
 }
 
-impl UpdateFromXvcConfig for ListCLI {
-    fn update_from_conf(self, conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let no_summary = self.no_summary || conf.get_bool("file.list.no_summary")?.option;
-        let show_dot_files =
-            self.show_dot_files || conf.get_bool("file.list.show_dot_files")?.option;
+impl UpdateFromConfig for ListCLI {
+    fn update_from_config(self, conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
+        let config = conf.config();
+        let no_summary = self.no_summary || config.file.list.no_summary;
+        let show_dot_files = self.show_dot_files || config.file.list.show_dot_files;
+        let include_git_files = self.include_git_files || config.file.list.include_git_files;
 
         let format = self.format.unwrap_or_else(|| ListFormat::from_conf(conf));
         let sort_criteria = self
             .sort
             .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
-        let include_git_files =
-            self.include_git_files || conf.get_bool("file.list.include_git_files")?.option;
 
         Ok(Box::new(Self {
             no_summary,
