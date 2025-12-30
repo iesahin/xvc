@@ -38,11 +38,6 @@ pub use self::sqlite_query::SqliteQueryDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
 
-/// Return default name for the params file from the config
-pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
-    Ok(conf.get_str("pipeline.default_params_file")?.option)
-}
-
 /// Represents variety of dependencies Xvc supports.
 /// This is to unify all dependencies without dynamic dispatch and having
 /// compile time errors when we miss something about dependencies.

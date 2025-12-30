@@ -12,9 +12,9 @@ use itertools::Itertools;
 
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::util::completer::xvc_path_completer;
-use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_core::XvcEntity;
 use xvc_core::{output, uwr, warn, XvcOutputSender};
+use xvc_core::{XvcCachePath, XvcRoot};
 use xvc_storage::storage::{get_storage_record, storage_identifier_completer};
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 
@@ -66,7 +66,7 @@ pub fn cmd_remove(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: Remove
         );
     }
 
-    let current_dir = xvc_root.config().current_dir()?;
+    let current_dir = xvc_root.current_dir();
 
     let all_paths = xvc_root.load_store()?;
     let all_content_digests = xvc_root.load_store()?;

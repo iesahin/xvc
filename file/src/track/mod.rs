@@ -13,8 +13,8 @@ use xvc_core::util::completer::strum_variants_completer;
 use std::collections::HashSet;
 
 use xvc_core::util::git::build_gitignore;
-use xvc_core::{FromConfig, XvcConfigResult};
-use xvc_core::{UpdateFromConfig, XvcConfig};
+use xvc_core::UpdateFromConfig;
+use xvc_core::{FromConfig, XvcConfigResult, XvcConfiguration};
 
 use xvc_core::XvcOutputSender;
 use xvc_core::{
@@ -79,12 +79,10 @@ impl UpdateFromConfig for TrackCLI {
     /// Updates `xvc file` configuration from the configuration files.
     /// Command line options take precedence over other sources.
     /// If options are not given, they are supplied from [XvcConfig]
-    fn update_from_config(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
+    fn update_from_config(self, config: &XvcConfiguration) -> XvcConfigResult<Box<Self>> {
         let recheck_method = self.recheck_method.unwrap_or_else(|| {
-            *RecheckMethod::from_config(conf).expect("Configuration has a recheck method")
+            *RecheckMethod::from_config(config).expect("Configuration has a recheck method")
         });
-
-        let config = conf.config();
 
         let no_commit = self.no_commit || config.file.track.no_commit;
         let force = self.force || config.file.track.force;
@@ -93,7 +91,7 @@ impl UpdateFromConfig for TrackCLI {
 
         let text_or_binary = Some(
             self.text_or_binary
-                .unwrap_or_else(|| *FileTextOrBinary::from_config(conf).unwrap()),
+                .unwrap_or_else(|| *FileTextOrBinary::from_config(config).unwrap()),
         );
 
         Ok(Box::new(Self {
@@ -136,8 +134,8 @@ pub fn cmd_track(
     cli_opts: TrackCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
-    let opts = cli_opts.update_from_conf(conf)?;
-    let current_dir = conf.current_dir()?;
+    let opts = cli_opts.update_from_config(conf)?;
+    let current_dir = xvc_root.current_dir();
     let filter_git_files = !opts.include_git_files;
     let targets = targets_from_disk(
         output_snd,
@@ -177,7 +175,7 @@ pub fn cmd_track(
             .collect();
 
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
-    let default_recheck_method = RecheckMethod::from_conf(conf);
+    let default_recheck_method = *RecheckMethod::from_config(conf)?;
     let recheck_method_diff = diff_recheck_method(
         default_recheck_method,
         &stored_recheck_method_store,
@@ -192,7 +190,7 @@ pub fn cmd_track(
         &changed_entities,
     );
 
-    let hash_algorithm = HashAlgorithm::from_conf(conf);
+    let hash_algorithm = *HashAlgorithm::from_config(conf)?;
 
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
 

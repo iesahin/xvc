@@ -111,10 +111,10 @@ impl FromStr for ListFormat {
 }
 
 impl FromConfig for ListFormat {
-    fn from_config(conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
-        Ok(Box::new(ListFormat::from_str(
-            &conf.config().file.list.format,
-        )))
+    fn from_config(conf: &xvc_core::XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let configured = ListFormat::from_str(&conf.file.list.format)
+            .expect("ListFormat must be recognized in configuration");
+        Ok(Box::new(configured))
     }
 }
 ///
@@ -149,9 +149,10 @@ pub enum ListSortCriteria {
 }
 
 impl FromConfig for ListSortCriteria {
-    fn from_config(conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let opt = conf.config().file.list.sort;
-        Ok(Box::new(Self::from_str(opt)))
+    fn from_config(conf: &xvc_core::XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let opt =
+            Self::from_str(&conf.file.list.sort).expect("ListSortCriteria must be recognized");
+        Ok(Box::new(opt))
     }
 }
 
@@ -595,16 +596,17 @@ pub struct ListCLI {
 }
 
 impl UpdateFromConfig for ListCLI {
-    fn update_from_config(self, conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let config = conf.config();
+    fn update_from_config(self, config: &xvc_core::XvcConfiguration) -> XvcConfigResult<Box<Self>> {
         let no_summary = self.no_summary || config.file.list.no_summary;
         let show_dot_files = self.show_dot_files || config.file.list.show_dot_files;
         let include_git_files = self.include_git_files || config.file.list.include_git_files;
 
-        let format = self.format.unwrap_or_else(|| ListFormat::from_conf(conf));
-        let sort_criteria = self
-            .sort
-            .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
+        let format = self.format.unwrap_or_else(|| {
+            *ListFormat::from_config(config).expect("ListFormat must be configured")
+        });
+        let sort_criteria = self.sort.unwrap_or_else(|| {
+            *ListSortCriteria::from_config(config).expect("ListSortCriteria must be configured")
+        });
 
         Ok(Box::new(Self {
             no_summary,
@@ -641,7 +643,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
     // FIXME: `opts` shouldn't be sent to the inner function, but we cannot make sure that it's
     // updated from the config files in callers. A refactoring is good here.
     let conf = xvc_root.config();
-    let opts = cli_opts.update_from_conf(conf)?;
+    let opts = cli_opts.update_from_config(conf)?;
     let no_summary = opts.no_summary;
     let list_rows = cmd_list_inner(output_snd, xvc_root, &opts)?;
 
@@ -668,7 +670,7 @@ pub fn cmd_list_inner(
 ) -> Result<ListRows> {
     let conf = xvc_root.config();
 
-    let current_dir = conf.current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let filter_git_paths = !opts.include_git_files;
 
     let all_from_disk = targets_from_disk(
@@ -712,7 +714,8 @@ pub fn cmd_list_inner(
         if opts.format.as_ref().unwrap().columns.iter().any(|c| {
             *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
         }) {
-            let algorithm = HashAlgorithm::from_conf(conf);
+            let algorithm =
+                *HashAlgorithm::from_config(conf).expect("HashAlgorithm must be configured");
             fill_actual_content_digests(output_snd, xvc_root, algorithm, matches)?
         } else {
             matches

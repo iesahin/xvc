@@ -15,7 +15,7 @@ use self::step::XvcStep;
 use anyhow::anyhow;
 
 use itertools::Itertools;
-use xvc_core::XvcPathMetadataProvider;
+use xvc_core::{FromConfig, XvcPathMetadataProvider};
 use xvc_file::CHANNEL_CAPACITY;
 
 use crate::deps::compare::thorough_compare_dependency;
@@ -42,7 +42,6 @@ use std::sync::{Arc, RwLock};
 use std::thread::{self, sleep, ScopedJoinHandle};
 use std::time::Duration;
 use strum_macros::{Display, EnumString, VariantNames};
-use xvc_core::FromConfigKey;
 use xvc_core::{update_with_actual, Diff, HashAlgorithm, XvcPath, XvcRoot};
 
 use xvc_core::{persist, HStore, R1NStore, XvcEntity, XvcStore};
@@ -399,17 +398,13 @@ pub fn the_grand_pipeline_loop(
             .collect(),
     ));
 
-    let process_pool_size: usize = xvc_root
-        .config()
-        .get_int("pipeline.process_pool_size")?
-        .option
-        .try_into()?;
+    let process_pool_size: usize = xvc_root.config().pipeline.process_pool_size as usize;
     let default_step_timeout: u64 = 10000;
     let terminate_on_timeout = true;
 
     let step_commands = xvc_root.load_store::<XvcStepCommand>()?;
 
-    let algorithm = HashAlgorithm::from_conf(config);
+    let algorithm = *HashAlgorithm::from_config(config)?;
 
     let state_channels: HStore<(Sender<_>, Receiver<_>)> = sorted_steps
         .iter()

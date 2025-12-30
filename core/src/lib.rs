@@ -72,6 +72,9 @@ pub use xvc_config::XvcLoadParams;
 pub use xvc_config::XvcOptionalConfiguration;
 pub use xvc_config::XvcVerbosity;
 
+pub use xvc_config::blank_optional_config;
+pub use xvc_config::configuration;
+
 pub use util::git;
 
 pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_paths};

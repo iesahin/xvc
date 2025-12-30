@@ -16,7 +16,7 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_core::{info, uwr, XvcOutputSender};
+use xvc_core::{info, uwr, FromConfig, XvcOutputSender};
 use xvc_core::{HStore, XvcEntity, XvcStore};
 use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 
@@ -139,7 +139,7 @@ pub fn get_move_source_dest_store(
             source_xvc_metadata,
         )?;
 
-        let current_dir = xvc_root.config().current_dir()?;
+        let current_dir = xvc_root.current_dir();
         let source_xe = source_xvc_paths.keys().next().unwrap();
 
         let mut source_dest_store = HStore::<XvcPath>::with_capacity(1);
@@ -215,7 +215,10 @@ pub fn cmd_move(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: MoveCLI)
             let source_recheck_method = recheck_method_store
                 .get(source_xe)
                 .copied()
-                .unwrap_or_else(|| RecheckMethod::from_conf(xvc_root.config()));
+                .unwrap_or_else(|| {
+                    *RecheckMethod::from_config(xvc_root.config())
+                        .expect("RecheckMethod must be configured")
+                });
 
             let dest_recheck_method = if let Some(given_recheck_method) = opts.recheck_method {
                 given_recheck_method

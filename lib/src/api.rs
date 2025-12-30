@@ -16,7 +16,6 @@ pub use xvc_core::warn;
 pub use xvc_core::watch;
 
 pub use xvc_core::XvcConfig;
-pub use xvc_core::XvcConfigOptionSource;
 pub use xvc_core::XvcLoadParams;
 
 pub use xvc_core::AbsolutePath;

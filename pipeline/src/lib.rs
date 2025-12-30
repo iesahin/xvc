@@ -32,10 +32,12 @@ use pipeline::util::pipeline_name_completer;
 use serde::{Deserialize, Serialize};
 use std::io::BufRead;
 use std::str::FromStr;
+use xvc_core::FromConfig;
+use xvc_core::UpdateFromConfig;
 use xvc_core::XvcConfigResult;
+use xvc_core::XvcConfiguration;
 use xvc_core::XvcOutputSender;
 use xvc_core::XvcStore;
-use xvc_core::{conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig};
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;
@@ -109,9 +111,9 @@ pub enum PipelineSubCommand {
     Step(StepCLI),
 }
 
-impl UpdateFromXvcConfig for PipelineCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let default_pipeline = XvcPipeline::from_conf(conf);
+impl UpdateFromConfig for PipelineCLI {
+    fn update_from_config(self, conf: &XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let default_pipeline = *XvcPipeline::from_config(conf)?;
         let name = Some(self.pipeline_name.clone().unwrap_or(default_pipeline.name));
         Ok(Box::new(Self {
             pipeline_name: name,
@@ -138,7 +140,13 @@ impl FromStr for XvcPipeline {
 }
 
 persist!(XvcPipeline, "xvc-pipeline");
-conf!(XvcPipeline, "pipeline.default");
+impl FromConfig for XvcPipeline {
+    fn from_config(conf: &XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        Ok(Box::new(Self {
+            name: conf.pipeline.default.clone(),
+        }))
+    }
+}
 
 /// A pipeline run directory where the pipeline is run.
 /// It should be within the workspace to be portable across systems.
@@ -172,11 +180,7 @@ pub fn init(xvc_root: &XvcRoot) -> Result<()> {
     let conf = xvc_root.config();
     let mut pipeline_store = XvcStore::<XvcPipeline>::new();
     // If there is a system config for default pipeline name, adhere to it
-    let initial_name = if let Ok(config_opt) = conf.get_str("pipeline.default") {
-        config_opt.option
-    } else {
-        "default".to_string()
-    };
+    let initial_name = conf.pipeline.default.clone();
 
     pipeline_store.insert(xvc_root.new_entity(), XvcPipeline { name: initial_name });
 
@@ -202,7 +206,7 @@ pub fn cmd_pipeline<R: BufRead>(
     command: PipelineCLI,
 ) -> Result<()> {
     let conf = xvc_root.config();
-    let command = command.update_from_conf(conf)?;
+    let command = *command.update_from_config(conf)?;
     // This should already be filled from the conf if not given
     let pipeline_name = command.pipeline_name.unwrap();
     match command.subcommand {

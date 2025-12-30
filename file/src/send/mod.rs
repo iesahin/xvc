@@ -8,12 +8,12 @@ use crate::Result;
 use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
+use xvc_core::{error, XvcOutputSender};
 use xvc_core::{
     util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
     XvcRoot,
 };
 use xvc_core::{HStore, XvcStore};
-use xvc_core::{error, XvcOutputSender};
 use xvc_storage::{
     storage::{get_storage_record, storage_identifier_completer},
     StorageIdentifier, XvcStorageOperations,
@@ -44,7 +44,7 @@ pub struct SendCLI {
 /// Send a targets in `opts.targets` in `xvc_root`  to `opt.remote`
 pub fn cmd_send(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: SendCLI) -> Result<()> {
     let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
-    let current_dir = xvc_root.config().current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
 
     let target_file_xvc_metadata = xvc_root
