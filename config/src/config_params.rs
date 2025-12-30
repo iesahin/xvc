@@ -1,3 +1,6 @@
+//! This module defines `XvcLoadParams`, a builder-style struct used to specify how Xvc should load its configuration.
+//! It allows for granular control over which configuration sources (system, user, project, environment variables, command-line) should be included.
+
 use xvc_walker::AbsolutePath;
 
 /// How should we initialize the configuration?
