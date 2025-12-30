@@ -2,8 +2,11 @@
 
 ## Unreleased
 
+
 - Refactored storage operations to use dynamic dispatch (`dyn XvcStorageOperations`), reducing boilerplate code.
-- Fixed `MINIO_ACCESS_KEY_ID` environment variable for MinIO storage credentials. 
+- Fixed `MINIO_ACCESS_KEY_ID` environment variable for MinIO storage credentials.
+- Refactored XvcConfig for a simpler structure using structs for all configuration
+- Added documentation for configuration structs and their fields in `config/src/configuration.rs`.
 
 
 ## v0.6.17 (2025-04-22)

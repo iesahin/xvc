@@ -6,214 +6,317 @@ use derive_more::Display;
 use serde::{Deserialize, Serialize};
 use xvc_walker::AbsolutePath;
 
+/// Core configuration for Xvc.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("CoreConfig(xvc_repo_version: {xvc_repo_version}, verbosity: {verbosity})")]
 #[serde(deny_unknown_fields)]
 pub struct CoreConfig {
+    /// The Xvc repository version.
     pub xvc_repo_version: u8,
+    /// The verbosity level for logging.
     pub verbosity: String,
 }
 
+/// Git integration configuration for Xvc.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("GitConfig(use_git: {use_git}, command: {command}, auto_commit: {auto_commit}, auto_stage: {auto_stage})")]
 #[serde(deny_unknown_fields)]
 pub struct GitConfig {
+    /// Whether to use Git for version control.
     pub use_git: bool,
+    /// The command to execute Git.
     pub command: String,
+    /// Whether to automatically commit changes in the .xvc directory.
     pub auto_commit: bool,
+    /// Whether to automatically stage changes in the .xvc directory.
     pub auto_stage: bool,
 }
 
+/// Cache configuration for Xvc.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("CacheConfig(algorithm: {algorithm})")]
 #[serde(deny_unknown_fields)]
 pub struct CacheConfig {
+    /// The hashing algorithm used for caching.
     pub algorithm: String,
 }
 
+/// Configuration for file tracking operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("FileTrackConfig(no_commit: {no_commit}, force: {force}, text_or_binary: {text_or_binary}, no_parallel: {no_parallel}, include_git_files: {include_git_files})")]
 #[serde(deny_unknown_fields)]
 pub struct FileTrackConfig {
+    /// Whether to skip committing changes after tracking.
     pub no_commit: bool,
+    /// Whether to force tracking even if files are already tracked.
     pub force: bool,
+    /// How to treat files: "auto", "text", or "binary".
     pub text_or_binary: String,
+    /// Whether to disable parallel operations during tracking.
     pub no_parallel: bool,
+    /// Whether to include Git-tracked files in Xvc tracking operations.
     pub include_git_files: bool,
 }
 
+/// Configuration for file listing operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("FileListConfig(format: {format}, sort: {sort}, show_dot_files: {show_dot_files}, no_summary: {no_summary}, recursive: {recursive}, include_git_files: {include_git_files})")]
 #[serde(deny_unknown_fields)]
 pub struct FileListConfig {
+    /// The format string for displaying file list entries.
     pub format: String,
+    /// The sorting order for the file list.
     pub sort: String,
+    /// Whether to show dot files (e.g., .gitignore).
     pub show_dot_files: bool,
+    /// Whether to suppress the summary row in the file list.
     pub no_summary: bool,
+    /// Whether to list files recursively by default.
     pub recursive: bool,
+    /// Whether to include Git-tracked files in Xvc listing operations.
     pub include_git_files: bool,
 }
 
+/// Configuration for file carry-in operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("FileCarryInConfig(force: {force}, no_parallel: {no_parallel})")]
 #[serde(deny_unknown_fields)]
 pub struct FileCarryInConfig {
+    /// Whether to force carry-in even if files are already present in cache.
     pub force: bool,
+    /// Whether to disable parallel operations during carry-in.
     pub no_parallel: bool,
 }
 
+/// Configuration for file recheck operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("FileRecheckConfig(method: {method})")]
 #[serde(deny_unknown_fields)]
 pub struct FileRecheckConfig {
+    /// The method used for rechecking files (e.g., "copy", "hardlink", "symlink", "reflink").
     pub method: String,
 }
 
+/// Comprehensive file-related configuration for Xvc.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("FileConfig(track: {track}, list: {list}, carry_in: {carry_in}, recheck: {recheck})")]
 #[serde(deny_unknown_fields)]
 pub struct FileConfig {
+    /// Configuration for `xvc file track`.
     pub track: FileTrackConfig,
+    /// Configuration for `xvc file list`.
     pub list: FileListConfig,
+    /// Configuration for `xvc file carry-in`.
     #[serde(rename = "carry-in")]
     pub carry_in: FileCarryInConfig,
+    /// Configuration for `xvc file recheck`.
     pub recheck: FileRecheckConfig,
 }
 
+/// Configuration for pipeline operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("PipelineConfig(current_pipeline: {current_pipeline}, default: {default}, default_params_file: {default_params_file}, process_pool_size: {process_pool_size})")]
 #[serde(deny_unknown_fields)]
 pub struct PipelineConfig {
+    /// The name of the currently active pipeline.
     pub current_pipeline: String,
+    /// The name of the default pipeline.
     pub default: String,
+    /// The default parameters file name for pipelines.
     pub default_params_file: String,
+    /// The number of command processes to run concurrently in a pipeline.
     pub process_pool_size: u32,
 }
 
+/// Configuration for checking ignored files.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("CheckIgnoreConfig(details: {details})")]
 #[serde(deny_unknown_fields)]
 pub struct CheckIgnoreConfig {
+    /// Whether to show detailed information when checking ignored files.
     pub details: bool,
 }
 
+/// The top-level Xvc configuration structure.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display("XvcConfiguration(core: {core}, git: {git}, cache: {cache}, file: {file}, pipeline: {pipeline}, check_ignore: {check_ignore})")]
 #[serde(deny_unknown_fields)]
 pub struct XvcConfiguration {
+    /// Core Xvc settings.
     pub core: CoreConfig,
+    /// Git integration settings.
     pub git: GitConfig,
+    /// Cache settings.
     pub cache: CacheConfig,
+    /// File-related operation settings.
     pub file: FileConfig,
+    /// Pipeline execution settings.
     pub pipeline: PipelineConfig,
+    /// Check ignore settings.
     #[serde(rename = "check-ignore")]
     pub check_ignore: CheckIgnoreConfig,
 }
 
+/// Optional core configuration for Xvc, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalCoreConfig(xvc_repo_version: {xvc_repo_version:?}, verbosity: {verbosity:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCoreConfig {
+    /// Optional Xvc repository version.
     pub xvc_repo_version: Option<u8>,
+    /// Optional verbosity level for logging.
     pub verbosity: Option<String>,
 }
 
+/// Optional Git integration configuration for Xvc, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalGitConfig(use_git: {use_git:?}, command: {command:?}, auto_commit: {auto_commit:?}, auto_stage: {auto_stage:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalGitConfig {
+    /// Optional setting for whether to use Git for version control.
     pub use_git: Option<bool>,
+    /// Optional Git command to execute.
     pub command: Option<String>,
+    /// Optional setting for whether to automatically commit changes.
     pub auto_commit: Option<bool>,
+    /// Optional setting for whether to automatically stage changes.
     pub auto_stage: Option<bool>,
 }
 
+/// Optional cache configuration for Xvc, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalCacheConfig(algorithm: {algorithm:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCacheConfig {
+    /// Optional hashing algorithm used for caching.
     pub algorithm: Option<String>,
 }
 
+/// Optional configuration for file tracking operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalFileTrackConfig(no_commit: {no_commit:?}, force: {force:?}, text_or_binary: {text_or_binary:?}, no_parallel: {no_parallel:?}, include_git_files: {include_git_files:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileTrackConfig {
+    /// Optional setting for whether to skip committing changes after tracking.
     pub no_commit: Option<bool>,
+    /// Optional setting for whether to force tracking.
     pub force: Option<bool>,
+    /// Optional setting for how to treat files: "auto", "text", or "binary".
     pub text_or_binary: Option<String>,
+    /// Optional setting for whether to disable parallel operations during tracking.
     pub no_parallel: Option<bool>,
+    /// Optional setting for whether to include Git-tracked files.
     pub include_git_files: Option<bool>,
 }
 
+/// Optional configuration for file listing operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalFileListConfig(format: {format:?}, sort: {sort:?}, show_dot_files: {show_dot_files:?}, no_summary: {no_summary:?}, recursive: {recursive:?}, include_git_files: {include_git_files:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileListConfig {
+    /// Optional format string for displaying file list entries.
     pub format: Option<String>,
+    /// Optional sorting order for the file list.
     pub sort: Option<String>,
+    /// Optional setting for whether to show dot files.
     pub show_dot_files: Option<bool>,
+    /// Optional setting for whether to suppress the summary row.
     pub no_summary: Option<bool>,
+    /// Optional setting for whether to list files recursively.
     pub recursive: Option<bool>,
+    /// Optional setting for whether to include Git-tracked files in Xvc listing operations.
     pub include_git_files: Option<bool>,
 }
 
+/// Optional configuration for file carry-in operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalFileCarryInConfig(force: {force:?}, no_parallel: {no_parallel:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileCarryInConfig {
+    /// Optional setting for whether to force carry-in.
     pub force: Option<bool>,
+    /// Optional setting for whether to disable parallel operations during carry-in.
     pub no_parallel: Option<bool>,
 }
 
+/// Optional configuration for file recheck operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalFileRecheckConfig(method: {method:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileRecheckConfig {
+    /// Optional recheck method for Xvc.
     pub method: Option<String>,
 }
 
+/// Optional comprehensive file-related configuration for Xvc, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalFileConfig(track: {track:?}, list: {list:?}, carry_in: {carry_in:?}, recheck: {recheck:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileConfig {
+    /// Optional configuration for `xvc file track`.
     pub track: Option<OptionalFileTrackConfig>,
+    /// Optional configuration for `xvc file list`.
     pub list: Option<OptionalFileListConfig>,
+    /// Optional configuration for `xvc file carry-in`.
     #[serde(rename = "carry-in")]
     pub carry_in: Option<OptionalFileCarryInConfig>,
+    /// Optional configuration for `xvc file recheck`.
     pub recheck: Option<OptionalFileRecheckConfig>,
 }
 
+/// Optional configuration for pipeline operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalPipelineConfig(current_pipeline: {current_pipeline:?}, default: {default:?}, default_params_file: {default_params_file:?}, process_pool_size: {process_pool_size:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalPipelineConfig {
+    /// Optional name of the currently active pipeline.
     pub current_pipeline: Option<String>,
+    /// Optional name of the default pipeline.
     pub default: Option<String>,
+    /// Optional default parameters file name for pipelines.
     pub default_params_file: Option<String>,
+    /// Optional number of command processes to run concurrently.
     pub process_pool_size: Option<u32>,
 }
 
+/// Optional configuration for checking ignored files, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("OptionalCheckIgnoreConfig(details: {details:?})")]
 #[serde(deny_unknown_fields)]
 pub struct OptionalCheckIgnoreConfig {
+    /// Optional setting for whether to show detailed information when checking ignored files.
     pub details: Option<bool>,
 }
 
+/// The top-level optional Xvc configuration structure, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display("XvcOptionalConfiguration(core: {core:?}, git: {git:?}, cache: {cache:?}, file: {file:?}, pipeline: {pipeline:?}, check_ignore: {check_ignore:?})")]
 #[serde(deny_unknown_fields)]
 pub struct XvcOptionalConfiguration {
+    /// Optional core Xvc settings.
     pub core: Option<OptionalCoreConfig>,
+    /// Optional Git integration settings.
     pub git: Option<OptionalGitConfig>,
+    /// Optional cache settings.
     pub cache: Option<OptionalCacheConfig>,
+    /// Optional file-related operation settings.
     pub file: Option<OptionalFileConfig>,
+    /// Optional pipeline execution settings.
     pub pipeline: Option<OptionalPipelineConfig>,
+    /// Optional check ignore settings.
     pub check_ignore: Option<OptionalCheckIgnoreConfig>,
 }
 
 impl XvcOptionalConfiguration {
+    /// Creates an `XvcOptionalConfiguration` by reading and parsing a TOML file.
+    ///
+    /// # Arguments
+    ///
+    /// * `file_path` - The path to the TOML configuration file.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the `XvcOptionalConfiguration` if successful, or an error.
     pub fn from_file(file_path: &Path) -> Result<Self> {
         let s =
             std::fs::read_to_string(&file_path).map_err(|e| crate::Error::IoError { source: e })?;
@@ -230,6 +333,17 @@ impl XvcOptionalConfiguration {
         }
     }
 
+    /// Creates an `XvcOptionalConfiguration` from a HashMap of string key-value pairs.
+    /// This is typically used to parse environment variables or command-line arguments.
+    ///
+    /// # Arguments
+    ///
+    /// * `prefix` - The prefix to filter keys from the HashMap (e.g., "XVC_").
+    /// * `values` - A reference to the HashMap containing configuration values.
+    ///
+    /// # Returns
+    ///
+    /// A new `XvcOptionalConfiguration` instance.
     pub fn from_hash_map(prefix: &str, values: &HashMap<String, String>) -> Self {
         let mut config = Self {
             core: None,
@@ -461,6 +575,12 @@ impl XvcOptionalConfiguration {
         config
     }
 
+    /// Creates an `XvcOptionalConfiguration` by reading environment variables
+    /// prefixed with "XVC_".
+    ///
+    /// # Returns
+    ///
+    /// A new `XvcOptionalConfiguration` instance populated from environment variables.
     pub fn from_env() -> Self {
         let env_vars: HashMap<String, String> = std::env::vars().collect();
         Self::from_hash_map("XVC_", &env_vars)
@@ -506,7 +626,16 @@ pub struct XvcConfigParams {
 }
 
 impl XvcConfigParams {
-    /// Create a new blank config params
+    /// Creates a new `XvcConfigParams` instance with default settings.
+    ///
+    /// # Arguments
+    ///
+    /// * `default_configuration` - The default configuration as a TOML string.
+    /// * `current_dir` - The absolute path of the current working directory.
+    ///
+    /// # Returns
+    ///
+    /// A new `XvcConfigParams` instance with default settings.
     pub fn new(default_configuration: String, current_dir: AbsolutePath) -> Self {
         Self {
             default_configuration,
@@ -520,45 +649,99 @@ impl XvcConfigParams {
         }
     }
 
-    /// Update include_system_config value
+    /// Updates the `include_system_config` value.
+    ///
+    /// # Arguments
+    ///
+    /// * `include_system_config` - Whether to include system configuration.
+    ///
+    /// # Returns
+    ///
+    /// The modified `XvcConfigParams` instance.
     pub fn include_system_config(mut self, include_system_config: bool) -> Self {
         self.include_system_config = include_system_config;
         self
     }
 
-    /// Update include_user_config value
+    /// Updates the `include_user_config` value.
+    ///
+    /// # Arguments
+    ///
+    /// * `include_user_config` - Whether to include user configuration.
+    ///
+    /// # Returns
+    ///
+    /// The modified `XvcConfigParams` instance.
     pub fn include_user_config(mut self, include_user_config: bool) -> Self {
         self.include_user_config = include_user_config;
         self
     }
 
-    /// Update project config path
+    /// Updates the `project_config_path` value.
+    ///
+    /// # Arguments
+    ///
+    /// * `project_config_path` - The optional absolute path to the project's public configuration.
+    ///
+    /// # Returns
+    ///
+    /// The modified `XvcConfigParams` instance.
     pub fn project_config_path(mut self, project_config_path: Option<AbsolutePath>) -> Self {
         self.project_config_path = project_config_path;
         self
     }
 
-    /// Update local config path
+    /// Updates the `local_config_path` value.
+    ///
+    /// # Arguments
+    ///
+    /// * `local_config_path` - The optional absolute path to the project's private configuration.
+    ///
+    /// # Returns
+    ///
+    /// The modified `XvcConfigParams` instance.
     pub fn local_config_path(mut self, local_config_path: Option<AbsolutePath>) -> Self {
         self.local_config_path = local_config_path;
         self
     }
 
-    /// Whether to include enviroment variables in the configuration
+    /// Whether to include environment variables in the configuration.
+    ///
+    /// # Arguments
+    ///
+    /// * `include_environment_config` - Whether to include environment variables.
+    ///
+    /// # Returns
+    ///
+    /// The modified `XvcConfigParams` instance.
     pub fn include_environment_config(mut self, include_environment_config: bool) -> Self {
         self.include_environment_config = include_environment_config;
         self
     }
 
-    /// Command line config from key=value definitions
+    /// Sets the command line configuration from key=value definitions.
+    ///
+    /// # Arguments
+    ///
+    /// * `command_line_config` - An optional vector of strings representing command-line configurations.
+    ///
+    /// # Returns
+    ///
+    /// The modified `XvcConfigParams` instance.
     pub fn command_line_config(mut self, command_line_config: Option<Vec<String>>) -> Self {
         self.command_line_config = command_line_config;
         self
     }
 }
 
-/// Returns the default configuration that can be modified with system, user,
-/// repository configurations
+/// Returns the default Xvc configuration.
+///
+/// This configuration serves as the base, which can then be overridden
+/// by system, user, and repository-specific configurations.
+///
+/// # Returns
+///
+/// A `XvcConfiguration` struct populated with default values.
 pub fn default_config() -> XvcConfiguration {
     XvcConfiguration {
         core: CoreConfig {
@@ -608,8 +791,19 @@ pub fn default_config() -> XvcConfiguration {
     }
 }
 
-/// Returns the default configuration that can be modified with system, user,
-/// repository configurations
+/// Merges an optional configuration into a base Xvc configuration.
+///
+/// This function applies values from `opt_config` to `config`, overwriting
+/// any existing values in `config` if they are present in `opt_config`.
+///
+/// # Arguments
+///
+/// * `config` - A reference to the base `XvcConfiguration`.
+/// * `opt_config` - A reference to the optional `XvcOptionalConfiguration` to merge.
+///
+/// # Returns
+///
+/// A new `XvcConfiguration` with merged values.
 pub fn merge_configs(
     config: &XvcConfiguration,
     opt_config: &XvcOptionalConfiguration,
@@ -774,6 +968,19 @@ pub fn merge_configs(
     }
 }
 
+/// Initializes the Xvc configuration by merging a default configuration with user-provided options.
+///
+/// This function takes a base `default_config` and applies `user_options` to it,
+/// generating a TOML-formatted string representing the final configuration.
+///
+/// # Arguments
+///
+/// * `default_config` - The base `XvcConfiguration` to start with.
+/// * `user_options` - An `XvcOptionalConfiguration` containing user-specific overrides.
+///
+/// # Returns
+///
+/// A `Result` containing a TOML-formatted string of the merged configuration if successful, or an error.
 pub fn initial_xvc_config(
     default_config: XvcConfiguration,
     user_options: XvcOptionalConfiguration,
@@ -1034,7 +1241,13 @@ details = {check_ignore_details}
     ))
 }
 
-/// Returns a blank optional configuration with all fields set to None.
+/// Returns a blank `XvcOptionalConfiguration` with all fields set to `None`.
+///
+/// This is useful as a starting point when no optional configuration overrides are provided.
+///
+/// # Returns
+///
+/// A new `XvcOptionalConfiguration` instance with no values set.
 pub fn blank_optional_config() -> XvcOptionalConfiguration {
     XvcOptionalConfiguration {
         core: None,
@@ -1047,6 +1260,15 @@ pub fn blank_optional_config() -> XvcOptionalConfiguration {
 }
 
 impl XvcConfiguration {
+    /// Creates an `XvcConfiguration` by reading and parsing a TOML file.
+    ///
+    /// # Arguments
+    ///
+    /// * `file_path` - The path to the TOML configuration file.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing the `XvcConfiguration` if successful, or an error.
     pub fn from_file(file_path: &Path) -> Result<Self> {
         let s =
             std::fs::read_to_string(&file_path).map_err(|e| crate::Error::IoError { source: e })?;
@@ -1055,6 +1277,15 @@ impl XvcConfiguration {
         Ok(c)
     }
 
+    /// Merges an optional configuration into the current configuration.
+    ///
+    /// # Arguments
+    ///
+    /// * `opt_config` - A reference to the `XvcOptionalConfiguration` to merge.
+    ///
+    /// # Returns
+    ///
+    /// A new `XvcConfiguration` with the merged values.
     pub fn merge_with_optional(&self, opt_config: &XvcOptionalConfiguration) -> Self {
         merge_configs(self, opt_config)
     }
