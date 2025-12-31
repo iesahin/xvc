@@ -8,8 +8,11 @@ use std::io::Write;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use xvc_config::configuration::merge_configs;
 use xvc_config::configuration::XvcConfiguration;
 use xvc_config::configuration::XvcOptionalConfiguration;
+use xvc_config::default_config;
+use xvc_config::initial_xvc_configuration_file;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
 use xvc_logging::watch;
@@ -89,8 +92,11 @@ pub fn load_xvc_root(config_opts: XvcLoadParams) -> Result<XvcRoot> {
 pub fn init_xvc_root(
     path: &Path,
     config_opts: XvcLoadParams,
-    initial_user_config: XvcOptionalConfiguration,
+    initial_user_config: &XvcOptionalConfiguration,
 ) -> Result<XvcRoot> {
+    let default_config = default_config();
+    let initial_config = merge_configs(&default_config, initial_user_config);
+
     match find_root(path) {
         Ok(abs_path) => Err(Error::CannotNestXvcRepositories {
             path: abs_path.to_path_buf(),
@@ -109,12 +115,9 @@ pub fn init_xvc_root(
                 fs::write(&guid_path, guid)?;
 
                 let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
-                // TODO: We can allow some options to be set initially here
-                let initial_config = xvc_config::initial_xvc_config(
-                    xvc_config::default_config(),
-                    XvcOptionalConfiguration::default(),
-                )?;
-                fs::write(&project_config_path, &initial_config)?;
+                let initial_configuration_file_content =
+                    initial_xvc_configuration_file(&initial_config)?;
+                fs::write(&project_config_path, &initial_configuration_file_content)?;
                 watch!(&project_config_path);
 
                 let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
@@ -151,7 +154,9 @@ pub fn init_xvc_root(
                 let xvcignore_path = abs_path.join(XVCIGNORE_FILENAME);
                 fs::write(xvcignore_path, XVCIGNORE_INITIAL_CONTENT)?;
 
-                let use_git = initial_user_config.git.and_then(|git| git.use_git) == Some(true);
+                let use_git = initial_config.git.use_git;
+                dbg!(use_git);
+
                 if use_git {
                     let gitignore_path = abs_path.join(PathBuf::from(".gitignore"));
                     let mut out = OpenOptions::new()

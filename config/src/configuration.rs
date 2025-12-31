@@ -972,119 +972,19 @@ pub fn merge_configs(
     }
 }
 
-/// Initializes the Xvc configuration by merging a default configuration with user-provided options.
+/// Initializes the Xvc configuration file from the given [XvcConfiguration]
 ///
-/// This function takes a base `default_config` and applies `user_options` to it,
-/// generating a TOML-formatted string representing the final configuration.
+/// Please use [merge_configs] before this to get [config] from possibly
+/// user supplied [XvcOptionalConfiguration]. See [init_xvc_root] function for a use of this.
 ///
 /// # Arguments
 ///
-/// * `default_config` - The base `XvcConfiguration` to start with.
-/// * `user_options` - An `XvcOptionalConfiguration` containing user-specific overrides.
+/// * `config` - The `XvcConfiguration` to convert to a TOML file.
 ///
 /// # Returns
 ///
 /// A `Result` containing a TOML-formatted string of the merged configuration if successful, or an error.
-pub fn initial_xvc_config(
-    default_config: XvcConfiguration,
-    user_options: XvcOptionalConfiguration,
-) -> Result<String> {
-    let mut config = default_config;
-    if let Some(user_core) = user_options.core {
-        if let Some(verbosity) = user_core.verbosity {
-            config.core.verbosity = verbosity;
-        }
-    }
-    if let Some(user_git) = user_options.git {
-        if let Some(use_git) = user_git.use_git {
-            config.git.use_git = use_git;
-        }
-        if let Some(command) = user_git.command {
-            config.git.command = command;
-        }
-        if let Some(auto_commit) = user_git.auto_commit {
-            config.git.auto_commit = auto_commit;
-        }
-        if let Some(auto_stage) = user_git.auto_stage {
-            config.git.auto_stage = auto_stage;
-        }
-    }
-    if let Some(user_cache) = user_options.cache {
-        if let Some(algorithm) = user_cache.algorithm {
-            config.cache.algorithm = algorithm;
-        }
-    }
-    if let Some(user_file) = user_options.file {
-        if let Some(user_track) = user_file.track {
-            if let Some(no_commit) = user_track.no_commit {
-                config.file.track.no_commit = no_commit;
-            }
-            if let Some(force) = user_track.force {
-                config.file.track.force = force;
-            }
-            if let Some(text_or_binary) = user_track.text_or_binary {
-                config.file.track.text_or_binary = text_or_binary;
-            }
-            if let Some(no_parallel) = user_track.no_parallel {
-                config.file.track.no_parallel = no_parallel;
-            }
-            if let Some(include_git_files) = user_track.include_git_files {
-                config.file.track.include_git_files = include_git_files;
-            }
-        }
-        if let Some(user_list) = user_file.list {
-            if let Some(format) = user_list.format {
-                config.file.list.format = format;
-            }
-            if let Some(sort) = user_list.sort {
-                config.file.list.sort = sort;
-            }
-            if let Some(show_dot_files) = user_list.show_dot_files {
-                config.file.list.show_dot_files = show_dot_files;
-            }
-            if let Some(no_summary) = user_list.no_summary {
-                config.file.list.no_summary = no_summary;
-            }
-            if let Some(recursive) = user_list.recursive {
-                config.file.list.recursive = recursive;
-            }
-            if let Some(include_git_files) = user_list.include_git_files {
-                config.file.list.include_git_files = include_git_files;
-            }
-        }
-        if let Some(user_carry_in) = user_file.carry_in {
-            if let Some(force) = user_carry_in.force {
-                config.file.carry_in.force = force;
-            }
-            if let Some(no_parallel) = user_carry_in.no_parallel {
-                config.file.carry_in.no_parallel = no_parallel;
-            }
-        }
-        if let Some(user_recheck) = user_file.recheck {
-            if let Some(method) = user_recheck.method {
-                config.file.recheck.method = method;
-            }
-        }
-    }
-    if let Some(user_pipeline) = user_options.pipeline {
-        if let Some(current_pipeline) = user_pipeline.current_pipeline {
-            config.pipeline.current_pipeline = current_pipeline;
-        }
-        if let Some(default) = user_pipeline.default {
-            config.pipeline.default = default;
-        }
-        if let Some(default_params_file) = user_pipeline.default_params_file {
-            config.pipeline.default_params_file = default_params_file;
-        }
-        if let Some(process_pool_size) = user_pipeline.process_pool_size {
-            config.pipeline.process_pool_size = process_pool_size;
-        }
-    }
-    if let Some(user_check_ignore) = user_options.check_ignore {
-        if let Some(details) = user_check_ignore.details {
-            config.check_ignore.details = details;
-        }
-    }
+pub fn initial_xvc_configuration_file(config: &XvcConfiguration) -> Result<String> {
     Ok(format!(
         r##"
 [core]

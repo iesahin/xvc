@@ -32,7 +32,7 @@ pub mod error;
 pub use config_params::XvcLoadParams;
 pub use configuration::blank_optional_config;
 pub use configuration::default_config;
-pub use configuration::initial_xvc_config;
+pub use configuration::initial_xvc_configuration_file;
 pub use configuration::XvcConfiguration;
 pub use configuration::XvcOptionalConfiguration;
 

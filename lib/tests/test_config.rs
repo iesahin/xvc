@@ -4,8 +4,8 @@ use crate::common::{run_in_temp_dir, test_logging};
 use std::collections::HashMap;
 use std::fs;
 use xvc_core::configuration::{
-    blank_optional_config, default_config, initial_xvc_config, merge_configs, OptionalCoreConfig,
-    OptionalGitConfig, XvcConfiguration, XvcOptionalConfiguration,
+    blank_optional_config, default_config, initial_xvc_configuration_file, merge_configs,
+    OptionalCoreConfig, OptionalGitConfig, XvcConfiguration, XvcOptionalConfiguration,
 };
 
 use xvc_core::XvcConfigResult as Result;
@@ -127,7 +127,9 @@ fn test_initial_xvc_config() -> Result<()> {
         ..Default::default()
     });
 
-    let config_str = initial_xvc_config(base_config, user_options)?;
+    let config = merge_configs(&base_config, &user_options);
+
+    let config_str = initial_xvc_configuration_file(&config)?;
 
     assert!(config_str.contains("verbosity = \"info\""));
     assert!(config_str.contains("use_git = true")); // from default

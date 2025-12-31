@@ -13,6 +13,7 @@ use xvc_core::util::git::inside_git;
 use xvc_core::watch;
 use xvc_core::AbsolutePath;
 use xvc_core::XvcLoadParams;
+use xvc_core::XvcOptionalConfiguration;
 use xvc_core::XvcRoot;
 use xvc_pipeline;
 
@@ -104,18 +105,25 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         command_line_config: None,
     };
 
-    let mut initial_user_config = blank_optional_config();
+    let initial_user_config = blank_optional_config();
 
-    if opts.no_git {
-        initial_user_config.git = Some(OptionalGitConfig {
+    let git = if opts.no_git {
+        Some(OptionalGitConfig {
             use_git: Some(false),
             command: None,
             auto_commit: Some(false),
             auto_stage: Some(false),
         })
-    }
+    } else {
+        None
+    };
 
-    let xvc_root = init_xvc_root(&path, config_opts, initial_user_config)?;
+    let initial_user_config = XvcOptionalConfiguration {
+        git,
+        ..initial_user_config
+    };
+
+    let xvc_root = init_xvc_root(&path, config_opts, &initial_user_config)?;
     watch!(xvc_root);
     xvc_pipeline::init(&xvc_root)?;
     xvc_file::init(&xvc_root)?;
