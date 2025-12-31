@@ -67,6 +67,7 @@ pub use xvc_config::error::Result as XvcConfigResult;
 pub use xvc_config::FromConfig;
 pub use xvc_config::UpdateFromConfig;
 pub use xvc_config::XvcConfig;
+pub use xvc_config::XvcConfigOptionSource;
 pub use xvc_config::XvcConfiguration;
 pub use xvc_config::XvcLoadParams;
 pub use xvc_config::XvcOptionalConfiguration;

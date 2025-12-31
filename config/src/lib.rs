@@ -68,7 +68,9 @@ lazy_static! {
 }
 
 /// Define the source where an option is obtained
-#[derive(Debug, Copy, Clone, EnumString, EnumDisplay, IntoStaticStr, Serialize, Deserialize)]
+#[derive(
+    Debug, Copy, Clone, EnumString, EnumDisplay, IntoStaticStr, Serialize, Deserialize, PartialEq,
+)]
 #[strum(serialize_all = "lowercase")]
 pub enum XvcConfigOptionSource {
     /// Default value defined in source code

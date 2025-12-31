@@ -3,20 +3,14 @@ mod common;
 use crate::common::{run_in_temp_dir, test_logging};
 use std::collections::HashMap;
 use std::fs;
-use xvc_config::configuration::{
-    blank_optional_config,
-    default_config,
-    initial_xvc_config,
-    merge_configs,
-    OptionalCoreConfig,
-    OptionalGitConfig,
-    XvcConfiguration,
-    XvcOptionalConfiguration,
+use xvc_core::configuration::{
+    blank_optional_config, default_config, initial_xvc_config, merge_configs, OptionalCoreConfig,
+    OptionalGitConfig, XvcConfiguration, XvcOptionalConfiguration,
 };
 
-use xvc_config::error::Result;
-use xvc_config::{XvcConfig, XvcConfigOptionSource, XvcLoadParams};
-use xvc_walker::AbsolutePath;
+use xvc_core::AbsolutePath;
+use xvc_core::XvcConfigResult as Result;
+use xvc_core::{XvcConfig, XvcConfigOptionSource, XvcLoadParams};
 
 #[test]
 fn test_default_config() -> Result<()> {
@@ -241,18 +235,22 @@ fn test_find_value_source() -> Result<()> {
         config_loader.find_value_source("core.verbosity"),
         Some(XvcConfigOptionSource::CommandLine)
     );
+
     assert_eq!(
         config_loader.find_value_source("cache.algorithm"),
         Some(XvcConfigOptionSource::Environment)
     );
+
     assert_eq!(
         config_loader.find_value_source("git.use_git"),
         Some(XvcConfigOptionSource::Project)
     );
+
     assert_eq!(
         config_loader.find_value_source("file.track.force"),
         Some(XvcConfigOptionSource::Default)
     );
+
     assert_eq!(config_loader.find_value_source("invalid.key"), None);
 
     std::env::remove_var("XVC_CACHE_ALGORITHM");
