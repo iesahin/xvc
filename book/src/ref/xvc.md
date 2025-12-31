@@ -23,7 +23,7 @@ Options:
       --quiet                  Suppress all output
       --debug                  Turn on all logging to $TMPDIR/xvc.log
   -C <WORKDIR>                 Set working directory for the command. It doesn't create a new shell, or change the directory [default: .]
-  -c, --config <CONFIG>        Configuration options set from the command line in the form section.key=value You can use multiple times
+  -c, --config <CONFIG>        Configuration options set from the command line in the form SECTION_KEY=value (e.g. `CORE_VERBOSITY=debug`). You can use multiple times
       --no-system-config       Ignore system configuration file
       --no-user-config         Ignore user configuration file
       --no-project-config      Ignore project configuration file (.xvc/config)
