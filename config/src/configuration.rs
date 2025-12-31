@@ -113,7 +113,7 @@ pub struct FileConfig {
     /// Configuration for `xvc file carry-in`.
     #[serde(rename = "carry-in")]
     pub carry_in: FileCarryInConfig,
-    /// Configuration for `xvc file recheck`.n
+    /// Configuration for `xvc file recheck`.
     pub recheck: FileRecheckConfig,
 }
 
@@ -264,7 +264,7 @@ pub struct OptionalFileConfig {
     /// Optional configuration for `xvc file carry-in`.
     #[serde(rename = "carry-in")]
     pub carry_in: Option<OptionalFileCarryInConfig>,
-    /// Optional configuration for `xvc file recheck`.n
+    /// Optional configuration for `xvc file recheck`.
     pub recheck: Option<OptionalFileRecheckConfig>,
 }
 
@@ -375,7 +375,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "CORE_VERBOSITY" => {
-                    config.core.get_or_insert_with(Default::default).verbosity = 
+                    config.core.get_or_insert_with(Default::default).verbosity =
                         Some(value.to_string());
                 }
                 // git
@@ -385,7 +385,7 @@ impl XvcOptionalConfiguration {
                     }
                 }
                 "GIT_COMMAND" => {
-                    config.git.get_or_insert_with(Default::default).command = 
+                    config.git.get_or_insert_with(Default::default).command =
                         Some(value.to_string());
                 }
                 "GIT_AUTO_COMMIT" => {
@@ -400,7 +400,7 @@ impl XvcOptionalConfiguration {
                 }
                 // cache
                 "CACHE_ALGORITHM" => {
-                    config.cache.get_or_insert_with(Default::default).algorithm = 
+                    config.cache.get_or_insert_with(Default::default).algorithm =
                         Some(value.to_string());
                 }
                 // file.track
@@ -547,7 +547,7 @@ impl XvcOptionalConfiguration {
                         .current_pipeline = Some(value.to_string());
                 }
                 "PIPELINE_DEFAULT" => {
-                    config.pipeline.get_or_insert_with(Default::default).default = 
+                    config.pipeline.get_or_insert_with(Default::default).default =
                         Some(value.to_string());
                 }
                 "PIPELINE_DEFAULT_PARAMS_FILE" => {
@@ -834,7 +834,7 @@ pub fn merge_configs(
         command: opt_config
             .git
             .clone()
-            .and_then(|g| g.command) +
+            .and_then(|g| g.command)
             .unwrap_or(config.git.command.clone()),
         auto_commit: opt_config
             .git
@@ -1088,7 +1088,7 @@ pub fn initial_xvc_config(
     Ok(format!(
         r##"
 [core]
-xvc_repo_version = "{xvc_repo_version}"
+xvc_repo_version = {xvc_repo_version}
 # Default verbosity level.
 # One of "error", "warn", "info"
 verbosity = "{verbosity}"
