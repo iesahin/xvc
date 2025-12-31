@@ -106,7 +106,7 @@ pub fn init_xvc_root(
                 let uuid = uuid::Uuid::new_v4();
                 let guid = hex::encode(seahash::hash(uuid.as_bytes()).to_le_bytes());
                 let guid_path = xvc_dir.join(GUID_FILENAME);
-                fs::write(&guid_path, guid);
+                fs::write(&guid_path, guid)?;
 
                 let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
                 // TODO: We can allow some options to be set initially here

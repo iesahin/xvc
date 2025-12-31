@@ -6,7 +6,6 @@ use std::env;
 use std::fs;
 use std::path::PathBuf;
 use xvc_core::blank_optional_config;
-use xvc_core::configuration::GitConfig;
 use xvc_core::configuration::OptionalGitConfig;
 use xvc_core::find_root;
 use xvc_core::types::xvcroot::init_xvc_root;

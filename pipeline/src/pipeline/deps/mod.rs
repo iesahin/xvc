@@ -21,8 +21,7 @@ pub use param::*;
 use serde::{Deserialize, Serialize};
 use xvc_core::XvcPathMetadataProvider;
 
-use crate::error::{Error, Result};
-use xvc_core::XvcConfig;
+use crate::error::Error;
 use xvc_core::{glob_includes, glob_paths, XvcPath, XvcPathMetadataMap, XvcRoot};
 use xvc_core::{persist, HStore, XvcStore};
 

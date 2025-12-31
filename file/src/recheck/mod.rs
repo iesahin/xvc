@@ -16,7 +16,7 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use xvc_core::{FromConfig, UpdateFromConfig, XvcConfig, XvcConfigResult, XvcConfiguration};
+use xvc_core::{FromConfig, UpdateFromConfig, XvcConfigResult, XvcConfiguration};
 
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{

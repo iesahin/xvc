@@ -1,7 +1,7 @@
 //!  Share files from S3 compatible storages for a limited time
 
 use crate::{common::load_targets_from_store, error, Result};
-use clap::{command, Parser};
+use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use humantime;
 use xvc_core::XvcStore;

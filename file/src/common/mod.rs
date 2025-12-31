@@ -32,7 +32,7 @@ use xvc_core::{
 use xvc_core::{
     path_metadata_map_from_file_targets, XvcConfigResult, XvcConfiguration, XvcWalkerError,
 };
-use xvc_core::{EventLog, FromConfig, XvcConfig};
+use xvc_core::{EventLog, FromConfig};
 
 use self::gitignore::IgnoreOp;
 

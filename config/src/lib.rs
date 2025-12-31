@@ -556,6 +556,23 @@ pub trait FromConfig {
     fn from_config(conf: &XvcConfiguration) -> Result<Box<Self>>;
 }
 
+/// A trait for updating an existing configuration struct with values from a complete `XvcConfiguration`.
+///
+/// This allows for merging configuration values into an already instantiated struct,
+/// often used for CLI options where some fields might already be set by the user.
 pub trait UpdateFromConfig {
+    /// Updates the implementing struct with values from the provided `XvcConfiguration`.
+    ///
+    /// The implementation is responsible for reading the relevant keys and values
+    /// from `conf` and applying them to `self`.
+    ///
+    /// # Arguments
+    ///
+    /// * `self` - The instance of the struct to be updated.
+    /// * `conf` - A reference to the `XvcConfiguration` containing the values to apply.
+    ///
+    /// # Returns
+    ///
+    /// A `Result` containing a `Box`ed instance of the updated struct if successful, or an error.
     fn update_from_config(self, conf: &XvcConfiguration) -> Result<Box<Self>>;
 }

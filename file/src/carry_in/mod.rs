@@ -7,9 +7,7 @@
 use clap_complete::ArgValueCompleter;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_core::{
-    FromConfig, PathSync, UpdateFromConfig, XvcConfig, XvcConfigResult, XvcConfiguration,
-};
+use xvc_core::{FromConfig, PathSync, UpdateFromConfig, XvcConfiguration};
 
 use std::collections::HashSet;
 use std::fs;

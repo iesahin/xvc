@@ -21,7 +21,7 @@ use xvc_core::{debug, XvcOutputSender};
 use xvc_core::{R1NStore, XvcEntity};
 use xvc_core::{XvcPath, XvcRoot};
 
-use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
+use crate::{XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
 
 /// Entry point for `xvc pipeline step dependency` command.
 /// Add a set of new dependencies to the given step in the pipeline.
