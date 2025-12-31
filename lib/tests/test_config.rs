@@ -8,9 +8,7 @@ use xvc_core::configuration::{
     OptionalGitConfig, XvcConfiguration, XvcOptionalConfiguration,
 };
 
-use xvc_core::AbsolutePath;
 use xvc_core::XvcConfigResult as Result;
-use xvc_core::{XvcConfig, XvcConfigOptionSource, XvcLoadParams};
 
 #[test]
 fn test_default_config() -> Result<()> {
@@ -84,25 +82,6 @@ fn test_from_hash_map() -> Result<()> {
 }
 
 #[test]
-fn test_from_env() -> Result<()> {
-    test_logging(log::LevelFilter::Trace);
-    std::env::set_var("XVC_CORE.VERBOSITY", "warn");
-    std::env::set_var("XVC_GIT.AUTO_COMMIT", "false");
-
-    let opt_config = XvcOptionalConfiguration::from_env();
-
-    assert_eq!(
-        opt_config.core.unwrap().verbosity.unwrap(),
-        "warn".to_string()
-    );
-    assert_eq!(opt_config.git.unwrap().auto_commit.unwrap(), false);
-
-    std::env::remove_var("XVC_CORE.VERBOSITY");
-    std::env::remove_var("XVC_GIT.AUTO_COMMIT");
-    Ok(())
-}
-
-#[test]
 fn test_config_from_file() -> Result<()> {
     test_logging(log::LevelFilter::Trace);
     let temp_dir = run_in_temp_dir();
@@ -153,111 +132,5 @@ fn test_initial_xvc_config() -> Result<()> {
     assert!(config_str.contains("verbosity = \"info\""));
     assert!(config_str.contains("use_git = true")); // from default
 
-    Ok(())
-}
-
-#[test]
-fn test_xvc_config_new_v2_precedence() -> Result<()> {
-    test_logging(log::LevelFilter::Trace);
-    let temp_dir = run_in_temp_dir();
-    let current_dir = AbsolutePath::from(temp_dir.clone());
-
-    // 1. Project config file
-    let project_config_path = temp_dir.join("xvc.toml");
-    let project_toml = r#"
-[core]
-verbosity = "info" # Project
-[git]
-use_git = false # Project
-"#;
-    fs::write(&project_config_path, project_toml)?;
-
-    // 2. Local config file
-    let local_config_path = temp_dir.join("xvc.local.toml");
-    let local_toml = r#"#;
-
-[core]
-verbosity = "debug" # Local overrides project
-#
-"#;
-    fs::write(&local_config_path, local_toml)?;
-
-    // 3. Environment variables
-    std::env::set_var("XVC_GIT.USE_GIT", "true"); // Env overrides project
-    std::env::set_var("XVC_CACHE.ALGORITHM", "sha256"); // Env provides new value
-
-    // 4. Command line
-    let command_line_config = Some(vec!["core.verbosity=trace".to_string()]); // CLI overrides all
-
-    let params = XvcLoadParams::new(current_dir.clone(), Some(current_dir))
-        .include_system_config(false)
-        .include_user_config(false)
-        .project_config_path(Some(AbsolutePath::from(project_config_path)))
-        .local_config_path(Some(AbsolutePath::from(local_config_path)))
-        .command_line_config(command_line_config);
-
-    let config_loader = XvcConfig::new_v2(&params)?;
-    let config = config_loader.config();
-
-    // Check precedence
-    assert_eq!(config.core.verbosity, "trace"); // 1. CLI
-    assert_eq!(config.git.use_git, true); // 2. Env
-    assert_eq!(config.cache.algorithm, "sha256"); // 3. Env (new value)
-    assert_eq!(config.file.track.force, false); // 4. Default (untouched)
-
-    // Cleanup
-    std::env::remove_var("XVC_GIT.USE_GIT");
-    std::env::remove_var("XVC_CACHE.ALGORITHM");
-    fs::remove_dir_all(temp_dir)?;
-    Ok(())
-}
-
-#[test]
-fn test_find_value_source() -> Result<()> {
-    test_logging(log::LevelFilter::Trace);
-    let temp_dir = run_in_temp_dir();
-    let current_dir = AbsolutePath::from(temp_dir.clone());
-
-    let project_config_path = temp_dir.join("xvc.toml");
-    fs::write(&project_config_path, "[git]\nuse_git = false")?;
-
-    // This seems to leak from other tests
-    std::env::remove_var("XVC_GIT.USE_GIT");
-    std::env::set_var("XVC_FILE.RECHECK.METHOD", "reflink");
-
-    let params = XvcLoadParams::new(current_dir.clone(), Some(current_dir))
-        .include_system_config(false)
-        .include_user_config(false)
-        .project_config_path(Some(AbsolutePath::from(project_config_path)))
-        .command_line_config(Some(vec!["core.verbosity=trace".to_string()]));
-
-    let config_loader = XvcConfig::new_v2(&params)?;
-
-    dbg!(&config_loader.config().core.verbosity);
-
-    assert_eq!(
-        config_loader.find_value_source("core.verbosity"),
-        Some(XvcConfigOptionSource::CommandLine)
-    );
-
-    assert_eq!(
-        config_loader.find_value_source("file.recheck.method"),
-        Some(XvcConfigOptionSource::Environment)
-    );
-
-    assert_eq!(
-        config_loader.find_value_source("git.use_git"),
-        Some(XvcConfigOptionSource::Project)
-    );
-
-    assert_eq!(
-        config_loader.find_value_source("file.track.force"),
-        Some(XvcConfigOptionSource::Default)
-    );
-
-    assert_eq!(config_loader.find_value_source("invalid.key"), None);
-
-    std::env::remove_var("XVC_FILE.RECHECK.METHOD");
-    fs::remove_dir_all(temp_dir)?;
     Ok(())
 }

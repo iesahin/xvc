@@ -1211,7 +1211,7 @@ default_params_file = "{pipeline_default_params_file}"
 # Number of command processes to run concurrently
 process_pool_size = {pipeline_process_pool_size}
  
-[check-ignore]
+[check_ignore]
 # Show details by default
 details = {check_ignore_details}
 
