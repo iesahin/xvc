@@ -350,7 +350,6 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
             Ok(xvc_root_opt)
         });
 
-        dbg!(&xvc_root_opt_res);
         let xvc_root_opt = xvc_root_opt_res.join().unwrap();
         match &xvc_root_opt {
             Ok(_) => debug!(output_snd_clone, "Command completed successfully."),

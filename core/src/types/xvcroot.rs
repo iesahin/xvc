@@ -155,7 +155,6 @@ pub fn init_xvc_root(
                 fs::write(xvcignore_path, XVCIGNORE_INITIAL_CONTENT)?;
 
                 let use_git = initial_config.git.use_git;
-                dbg!(use_git);
 
                 if use_git {
                     let gitignore_path = abs_path.join(PathBuf::from(".gitignore"));

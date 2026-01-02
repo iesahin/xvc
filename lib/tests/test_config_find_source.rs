@@ -27,8 +27,6 @@ fn test_find_value_source() -> Result<()> {
 
     let config_loader = XvcConfig::new_v2(&params)?;
 
-    dbg!(&config_loader.config().core.verbosity);
-
     assert_eq!(
         config_loader.find_value_source("core.verbosity"),
         Some(XvcConfigOptionSource::CommandLine)

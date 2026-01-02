@@ -246,14 +246,8 @@ impl XvcConfig {
             blank_optional_config()
         };
 
-        dbg!(&config_init_params.command_line_config);
         let command_line_config =
             Self::load_command_line_config(&config_init_params.command_line_config)?;
-
-        dbg!(command_line_config
-            .core
-            .as_ref()
-            .and_then(|f| Some(&f.verbosity)));
 
         let runtime_config = blank_optional_config();
 
@@ -320,7 +314,6 @@ impl XvcConfig {
     ) -> Result<XvcOptionalConfiguration> {
         if let Some(cli_opts) = cli_opt_vector {
             let cli_opts_hm = Self::parse_key_value_vector(cli_opts);
-            dbg!("cli_opts_hm {}", &cli_opts_hm);
             Ok(XvcOptionalConfiguration::from_hash_map("", &cli_opts_hm))
         } else {
             Ok(XvcOptionalConfiguration::default())
@@ -377,7 +370,6 @@ impl XvcConfig {
         ];
 
         for (source, config) in &layers {
-            dbg!(&source, &key);
             if self.key_exists_in_optional_config(config, key) {
                 return Some(*source);
             }
@@ -394,7 +386,6 @@ impl XvcConfig {
     /// It traverses the optional configuration structure based on the `key`'s dot-separated parts.
     fn key_exists_in_optional_config(&self, config: &XvcOptionalConfiguration, key: &str) -> bool {
         let parts: Vec<&str> = key.split('.').collect();
-        dbg!(&parts);
         match parts.as_slice() {
             // core
             ["core", "xvc_repo_version"] => config
