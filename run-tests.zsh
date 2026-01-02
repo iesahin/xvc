@@ -2,9 +2,11 @@
 # rws is for local dev, run-with-secrets script
 # XVC_TRYCMD_TESTS=storage,file,pipeline,core,start TRYCMD=overwrite rws cargo test --features test-ci -p xvc --test test_core_root
 
-# XVC_TRYCMD_TESTS=storage,file,pipeline,core,start TRYCMD=overwrite cargo test --features test-ci -p xvc # --test test_storage_new_rclone
+# XVC_TRYCMD_TESTS=storage,file,pipeline,core,start TRYCMD=overwrite rws cargo test --features test-ci -p xvc --test test_storage_new_minio
 
 # XVC_TRYCMD_TESTS=storage TRYCMD=overwrite rws cargo test --features test-ci -p xvc
 #
 # run unit tests in storage/src/storage/rclone.rs
+#
+
 

@@ -6,8 +6,8 @@ use log::LevelFilter;
 
 use subprocess::Exec;
 use xvc::error::Result;
-use xvc_core::XvcVerbosity;
 use xvc_core::XvcRoot;
+use xvc_core::XvcVerbosity;
 use xvc_test_helper::{create_directory_tree, generate_filled_file};
 
 fn create_directory_hierarchy() -> Result<XvcRoot> {
@@ -176,7 +176,7 @@ fn test_storage_new_minio() -> Result<()> {
 
     // Set remote specific passwords and remove general ones
     env::set_var("XVC_STORAGE_ACCESS_KEY_ID_minio-storage", access_key);
-    env::set_var("XVC_STORAGE_SECRET_KEY_minio-storage", secret_key);
+    env::set_var("XVC_STORAGE_SECRET_ACCESS_KEY_minio-storage", secret_key);
 
     env::remove_var("MINIO_ACCESS_KEY_ID");
     env::remove_var("MINIO_SECRET_ACCESS_KEY");
