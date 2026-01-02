@@ -36,7 +36,7 @@ Options:
           - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
             as a copy (C), symlink (S), hardlink (H) or reflink (R).
           - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
-            MB, GB and TB to represent sizes larged than 1MB.
+            MB, GB and TB to represent sizes larger than 1MB.
           - {{rts}}:  recorded timestamp. The timestamp of the cached content.
           
           The default format can be set with file.list.format in the config file.
