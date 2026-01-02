@@ -24,11 +24,11 @@ use_git = false # Project
 
     // 2. Local config file
     let local_config_path = temp_dir.join("xvc.local.toml");
-    let local_toml = r#"#;
+    let local_toml = r#"
 
 [core]
 verbosity = "debug" # Local overrides project
-#
+
 "#;
     fs::write(&local_config_path, local_toml)?;
 

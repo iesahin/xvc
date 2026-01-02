@@ -87,14 +87,14 @@ fn test_config_from_file() -> Result<()> {
     let temp_dir = run_in_temp_dir();
     let config_path = temp_dir.join("test.toml");
 
-    let toml_content = r#"#
+    let toml_content = r#"
 
 [core]
 verbosity = "debug"
 
 [git]
 use_git = false
-#"#;
+"#;
 
     fs::write(&config_path, toml_content)?;
 
