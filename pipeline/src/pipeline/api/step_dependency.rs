@@ -16,12 +16,12 @@ use crate::pipeline::step::StepSubCommand;
 
 use regex::Regex;
 use url::Url;
-use xvc_core::{XvcPath, XvcRoot};
-use xvc_core::{R1NStore, XvcEntity};
-use xvc_core::{debug, XvcOutputSender};
 use xvc_core::AbsolutePath;
+use xvc_core::{debug, XvcOutputSender};
+use xvc_core::{R1NStore, XvcEntity};
+use xvc_core::{XvcPath, XvcRoot};
 
-use crate::{pipeline::deps, XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
+use crate::{XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};
 
 /// Entry point for `xvc pipeline step dependency` command.
 /// Add a set of new dependencies to the given step in the pipeline.
@@ -89,7 +89,7 @@ impl<'a> XvcDependencyList<'a> {
         pipeline_name: &'a str,
         step_name: &'a str,
     ) -> Result<Self> {
-        let current_dir = xvc_root.config().current_dir()?;
+        let current_dir = xvc_root.current_dir();
         let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, pipeline_name)?;
         let (step_e, step) = XvcStep::from_name(xvc_root, &pipeline_e, step_name)?;
         Ok(Self {
@@ -151,7 +151,8 @@ impl<'a> XvcDependencyList<'a> {
         let current_dir = self.current_dir;
         if let Some(params) = params {
             let param_splitter = Regex::new(r"((?P<param_file>.*)::)?(?P<param_name>.*)").unwrap();
-            let default_param_file_name = deps::conf_params_file(self.xvc_root.config())?;
+            let default_param_file_name =
+                self.xvc_root.config().pipeline.default_params_file.clone();
             let mut deps = self.deps.borrow_mut();
             for param in params {
                 let captures = match param_splitter.captures(&param) {
@@ -212,7 +213,7 @@ impl<'a> XvcDependencyList<'a> {
         regexes: Option<Vec<String>>,
     ) -> Result<Vec<(XvcPath, String)>> {
         let mut vec = Vec::new();
-        let current_dir = self.xvc_root.config().current_dir()?;
+        let current_dir = self.xvc_root.current_dir();
         if let Some(regexes) = regexes {
             let regex_splitter = Regex::new(r"(?P<regex_file>[^:/]+):/(?P<regex>.+)").unwrap();
             for regex in regexes {

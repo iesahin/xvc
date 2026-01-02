@@ -104,18 +104,9 @@ $ git commit -m "Began to track dir-0001/file-0002.bin with Xvc"
 ```
 
 If you never want Xvc to handle commits, you can set `git.use_git` option in
-`.xvc/config` file to false or set `XVC_git.use_git=false` in the environment. 
+`.xvc/config.toml` file to false or set `XVC_git.use_git=false` in the environment.
 
 ```console
 $ XVC_git.use_git=false xvc file track dir-0001/file-0003.bin
-
-$ git status -s
- M dir-0001/.gitignore
-?? .xvc/ec/[..]
-?? .xvc/store/[..]
-?? .xvc/store/[..]
-?? .xvc/store/[..]
-?? .xvc/store/[..]
-?? .xvc/store/[..]
-
+# Or XVC_GIT.USE_GIT=false
 ```

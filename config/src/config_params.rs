@@ -1,28 +1,36 @@
-//! Specify configuration sources
+//! This module defines `XvcLoadParams`, a builder-style struct used to specify how Xvc should load its configuration.
+//! It allows for granular control over which configuration sources (system, user, project, environment variables, command-line) should be included.
+
 use xvc_walker::AbsolutePath;
 
 /// How should we initialize the configuration?
 ///
 /// It's possible to ignore certain sources by supplying `None` to their values here.
 #[derive(Debug, Clone)]
-pub struct XvcConfigParams {
-    /// The default configuration for the project.
-    /// It should contain all default values as a TOML document.
-    /// Xvc produces this in [xvc_core::default_configuration].
-    pub default_configuration: String,
+pub struct XvcLoadParams {
     /// The directory where the application runs.
     /// This can be set by various Options.
     /// It affects how paths are handled in general.
     pub current_dir: AbsolutePath,
+
+    /// This is Some(dir) if we run in an Xvc directory
+    /// Guid will be read from here in version 2 onwards
+    pub xvc_root_dir: Option<AbsolutePath>,
+
     /// Should we include system configuration?
     /// If `true`, it's read from [SYSTEM_CONFIG_DIRS].
     pub include_system_config: bool,
     /// Should the user's (home) config be included.
     /// If `true`, it's read from [USER_CONFIG_DIRS].
     pub include_user_config: bool,
+    /// Should we include the project config at .xvc/config.toml?
+    pub include_project_config: bool,
+
+    /// Should we include the local config at .xvc/config-local.toml
+    pub include_local_config: bool,
+
     /// Where should we load the project's (public) configuration?
     /// It's loaded in [XvcRootInner::new]
-    /// TODO: Add a option to ignore this
     pub project_config_path: Option<AbsolutePath>,
     /// Where should we load the project's (private) configuration?
     /// It's loaded in [XvcRootInner::new]
@@ -39,14 +47,16 @@ pub struct XvcConfigParams {
     pub command_line_config: Option<Vec<String>>,
 }
 
-impl XvcConfigParams {
+impl XvcLoadParams {
     /// Create a new blank config params
-    pub fn new(default_configuration: String, current_dir: AbsolutePath) -> Self {
+    pub fn new(current_dir: AbsolutePath, xvc_root_dir: Option<AbsolutePath>) -> Self {
         Self {
-            default_configuration,
             current_dir,
+            xvc_root_dir,
             include_system_config: true,
             include_user_config: true,
+            include_project_config: true,
+            include_local_config: true,
             project_config_path: None,
             local_config_path: None,
             include_environment_config: true,

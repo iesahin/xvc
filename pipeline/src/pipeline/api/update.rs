@@ -48,7 +48,7 @@ pub fn cmd_update(xvc_root: &XvcRoot, pipeline_name: &str, opts: UpdateCLI) -> R
                         return Err(CoreError::Todo("Setting default pipeline").error());
                     }
                     if let Some(wd) = &workdir {
-                        let current_dir = xvc_root.config().current_dir()?;
+                        let current_dir = xvc_root.current_dir();
                         rs.right.insert(
                             *pipeline_e,
                             XvcPipelineRunDir {

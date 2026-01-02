@@ -1,14 +1,14 @@
 //!  Share files from S3 compatible storages for a limited time
 
 use crate::{common::load_targets_from_store, error, Result};
-use clap::{command, Parser};
+use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use humantime;
+use xvc_core::XvcStore;
 use xvc_core::{
     util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
     XvcRoot,
 };
-use xvc_core::XvcStore;
 use xvc_core::{uwo, watch, XvcOutputSender};
 use xvc_storage::{
     storage::{get_storage_record, storage_identifier_completer},
@@ -39,7 +39,7 @@ pub struct ShareCLI {
 pub fn cmd_share(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, opts: ShareCLI) -> Result<()> {
     // TODO: TIDY UP these implementation to reuse code in other places
     let storage = get_storage_record(output_snd, xvc_root, &opts.storage)?;
-    let current_dir = xvc_root.config().current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let targets =
         load_targets_from_store(output_snd, xvc_root, current_dir, &Some(vec![opts.target]))?;
 

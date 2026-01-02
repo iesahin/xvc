@@ -1,8 +1,8 @@
 use crate::error::Result;
 use log::info;
 use std::path::PathBuf;
-use xvc_core::{XvcPath, XvcRoot};
 use xvc_core::R1NStore;
+use xvc_core::{XvcPath, XvcRoot};
 
 use crate::{XvcMetricsFormat, XvcOutput, XvcPipeline, XvcStep};
 
@@ -22,7 +22,7 @@ pub fn cmd_step_output(
 ) -> Result<()> {
     let (pipeline_e, _) = XvcPipeline::from_name(xvc_root, pipeline_name)?;
     let (step_e, step) = XvcStep::from_name(xvc_root, &pipeline_e, &step_name)?;
-    let current_dir = xvc_root.config().current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let mut outputs: Vec<XvcOutput> = Vec::new();
 
     if let Some(output_files) = files {

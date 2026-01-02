@@ -5420,6 +5420,7 @@ version = "0.6.17"
 dependencies = [
  "crossbeam",
  "crossbeam-channel",
+ "derive_more",
  "directories-next",
  "fern",
  "lazy_static",

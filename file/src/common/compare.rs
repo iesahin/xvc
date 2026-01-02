@@ -12,8 +12,7 @@ use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 
 use xvc_core::types::xvcdigest::{content_digest::ContentDigest, DIGEST_LENGTH};
-use xvc_core::FromConfigKey;
-use xvc_core::{SharedXStore, XvcEcsError};
+use xvc_core::{FromConfig, SharedXStore, XvcEcsError};
 
 use xvc_core::{
     diff_store, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod, XvcDigest, XvcFileType,
@@ -254,8 +253,9 @@ pub fn make_file_content_digest_diff_handler(
     requested_text_or_binary: Option<FileTextOrBinary>,
     requested_hash_algorithm: Option<HashAlgorithm>,
 ) -> Result<FileContentDigestDiffHandlers> {
-    let algorithm: HashAlgorithm =
-        requested_hash_algorithm.unwrap_or_else(|| HashAlgorithm::from_conf(xvc_root.config()));
+    let algorithm: HashAlgorithm = requested_hash_algorithm.unwrap_or_else(|| {
+        *HashAlgorithm::from_config(xvc_root.config()).expect("hash algorithm must be configured")
+    });
 
     let (diff_request_snd, diff_request_rcv) =
         crossbeam_channel::bounded::<Option<DiffRequest>>(crate::CHANNEL_CAPACITY);
@@ -354,8 +354,9 @@ pub fn diff_content_digest(
     parallel: bool,
 ) -> DiffStore<ContentDigest> {
     let entities: HashSet<XvcEntity> = xvc_path_diff_store.keys().copied().collect();
-    let algorithm: HashAlgorithm =
-        requested_hash_algorithm.unwrap_or_else(|| HashAlgorithm::from_conf(xvc_root.config()));
+    let algorithm: HashAlgorithm = requested_hash_algorithm.unwrap_or_else(|| {
+        *HashAlgorithm::from_config(xvc_root.config()).expect("HashAlgorithm must be configured")
+    });
 
     let diff_file = |xe| -> Result<(XvcEntity, Diff<ContentDigest>)> {
         let xvc_path_diff = xvc_path_diff_store
@@ -369,7 +370,10 @@ pub fn diff_content_digest(
             stored_text_or_binary_store
                 .get(&xe)
                 .copied()
-                .unwrap_or_else(|| FileTextOrBinary::from_conf(xvc_root.config()))
+                .unwrap_or_else(|| {
+                    *FileTextOrBinary::from_config(xvc_root.config())
+                        .expect("TextOrBinary must be configured")
+                })
         });
 
         diff_file_content_digest(

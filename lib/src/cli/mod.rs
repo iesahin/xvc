@@ -27,16 +27,15 @@ use xvc_core::util::completer::git_reference_completer;
 use xvc_core::XvcOutputSender;
 use xvc_core::{debug, error, uwr, XvcOutputLine};
 
-use xvc_core::{XvcConfigParams, XvcVerbosity};
 use xvc_core::check_ignore;
-pub use xvc_core::default_project_config;
 use xvc_core::root;
-use xvc_core::CHANNEL_BOUND;
-use xvc_file as file;
 use xvc_core::setup_logging;
+use xvc_core::AbsolutePath;
+use xvc_core::CHANNEL_BOUND;
+use xvc_core::{XvcLoadParams, XvcVerbosity};
+use xvc_file as file;
 use xvc_pipeline as pipeline;
 use xvc_storage as storage;
-use xvc_core::AbsolutePath;
 
 use crate::cli;
 use crate::error::{Error, Result};
@@ -404,16 +403,19 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
 }
 
 /// Decide configuration sources  from CLI options
-pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcConfigParams {
-    XvcConfigParams {
+pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcLoadParams {
+    let xvc_root_dir = find_root(&cli_opts.workdir).ok();
+    XvcLoadParams {
+        xvc_root_dir,
         current_dir: AbsolutePath::from(&cli_opts.workdir),
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,
+        include_project_config: !cli_opts.no_project_config,
+        include_local_config: !cli_opts.no_local_config,
         project_config_path: None,
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,
         command_line_config: Some(cli_opts.consolidate_config_options()),
-        default_configuration: default_project_config(true),
     }
 }
 

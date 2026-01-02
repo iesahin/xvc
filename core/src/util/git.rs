@@ -148,7 +148,7 @@ pub fn git_checkout_ref(
     from_ref: &str,
 ) -> Result<()> {
     let xvc_directory = xvc_root.as_path().to_str().unwrap();
-    let git_command_option = xvc_root.config().get_str("git.command")?.option;
+    let git_command_option = xvc_root.config().git.command.clone();
     let git_command = get_absolute_git_command(&git_command_option)?;
 
     let git_diff_staged_out = stash_user_staged_files(output_snd, &git_command, xvc_directory)?;
@@ -171,10 +171,11 @@ pub fn handle_git_automation(
 ) -> Result<()> {
     let xvc_root_dir = xvc_root.as_path().to_path_buf();
     let xvc_root_str = xvc_root_dir.to_str().unwrap();
-    let use_git = xvc_root.config().get_bool("git.use_git")?.option;
-    let auto_commit = xvc_root.config().get_bool("git.auto_commit")?.option;
-    let auto_stage = xvc_root.config().get_bool("git.auto_stage")?.option;
-    let git_command_str = xvc_root.config().get_str("git.command")?.option;
+    let git_config = xvc_root.config().git.clone();
+    let use_git = git_config.use_git;
+    let auto_commit = git_config.auto_commit;
+    let auto_stage = git_config.auto_stage;
+    let git_command_str = git_config.command.clone();
     let git_command = get_absolute_git_command(&git_command_str)?;
     let xvc_dir = xvc_root.xvc_dir().clone();
     let xvc_dir_str = xvc_dir.to_str().unwrap();

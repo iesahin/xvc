@@ -21,8 +21,7 @@ pub use param::*;
 use serde::{Deserialize, Serialize};
 use xvc_core::XvcPathMetadataProvider;
 
-use crate::error::{Error, Result};
-use xvc_core::XvcConfig;
+use crate::error::Error;
 use xvc_core::{glob_includes, glob_paths, XvcPath, XvcPathMetadataMap, XvcRoot};
 use xvc_core::{persist, HStore, XvcStore};
 
@@ -37,11 +36,6 @@ pub use self::regex_items::RegexItemsDep;
 pub use self::sqlite_query::SqliteQueryDep;
 pub use self::step::StepDep;
 pub use self::url::UrlDigestDep;
-
-/// Return default name for the params file from the config
-pub fn conf_params_file(conf: &XvcConfig) -> Result<String> {
-    Ok(conf.get_str("pipeline.default_params_file")?.option)
-}
 
 /// Represents variety of dependencies Xvc supports.
 /// This is to unify all dependencies without dynamic dispatch and having

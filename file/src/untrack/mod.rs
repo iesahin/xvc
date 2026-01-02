@@ -41,7 +41,7 @@ pub fn cmd_untrack(
     opts: UntrackCLI,
 ) -> Result<()> {
     // Load targets from store
-    let current_dir = xvc_root.config().current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let all_paths = xvc_root.load_store()?;
     let all_content_digests = xvc_root.load_store()?;
 

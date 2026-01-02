@@ -46,14 +46,13 @@ use log::{debug, error, info, warn, LevelFilter};
 use std::io;
 use std::io::Write;
 use std::path::PathBuf;
-use xvc_core::default_project_config;
-use xvc_core::setup_logging;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::AbsolutePath;
-use xvc_core::XvcConfigParams;
+use xvc_core::XvcLoadParams;
 use xvc_core::XvcRoot;
 use xvc_core::XvcVerbosity;
 use xvc_core::CHANNEL_BOUND;
+use xvc_core::{find_root, setup_logging};
 use xvc_core::{XvcOutputLine, XvcOutputSender};
 
 pub use bring::BringCLI;
@@ -283,16 +282,21 @@ pub fn dispatch(cli_opts: XvcFileCLI) -> Result<()> {
     } else {
         AbsolutePath::from(std::env::current_dir()?.join(dir).canonicalize()?)
     };
+
+    let xvc_root_dir = find_root(&current_dir).ok();
+
     // try to create root
-    let xvc_config_params = XvcConfigParams {
+    let xvc_config_params = XvcLoadParams {
         current_dir,
+        xvc_root_dir,
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,
+        include_project_config: !cli_opts.no_project_config,
+        include_local_config: !cli_opts.no_local_config,
         project_config_path: None,
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,
         command_line_config: cli_opts.config.clone(),
-        default_configuration: default_project_config(true),
     };
 
     let xvc_root = match load_xvc_root(xvc_config_params) {

@@ -5,12 +5,15 @@ use log::{info, warn};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
-use xvc_core::default_project_config;
+use xvc_core::blank_optional_config;
+use xvc_core::configuration::OptionalGitConfig;
+use xvc_core::find_root;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
 use xvc_core::watch;
 use xvc_core::AbsolutePath;
-use xvc_core::XvcConfigParams;
+use xvc_core::XvcLoadParams;
+use xvc_core::XvcOptionalConfiguration;
 use xvc_core::XvcRoot;
 use xvc_pipeline;
 
@@ -88,19 +91,39 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
             info!("Git repository found in: {:?}", git_root);
         }
     }
-    let default_configuration = default_project_config(!opts.no_git);
-    let config_opts = XvcConfigParams {
-        default_configuration,
+    let xvc_root_dir = find_root(&path).ok();
+    let config_opts = XvcLoadParams {
+        xvc_root_dir,
         current_dir: AbsolutePath::from(&path),
         include_system_config: true,
         include_user_config: true,
+        include_project_config: true,
+        include_local_config: true,
         project_config_path: None,
         local_config_path: None,
         include_environment_config: true,
         command_line_config: None,
     };
 
-    let xvc_root = init_xvc_root(&path, config_opts)?;
+    let initial_user_config = blank_optional_config();
+
+    let git = if opts.no_git {
+        Some(OptionalGitConfig {
+            use_git: Some(false),
+            command: None,
+            auto_commit: Some(false),
+            auto_stage: Some(false),
+        })
+    } else {
+        None
+    };
+
+    let initial_user_config = XvcOptionalConfiguration {
+        git,
+        ..initial_user_config
+    };
+
+    let xvc_root = init_xvc_root(&path, config_opts, &initial_user_config)?;
     watch!(xvc_root);
     xvc_pipeline::init(&xvc_root)?;
     xvc_file::init(&xvc_root)?;

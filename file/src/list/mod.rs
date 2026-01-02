@@ -20,12 +20,12 @@ use std::str::FromStr;
 use std::time::SystemTime;
 use strum_macros::{Display as EnumDisplay, EnumString, VariantNames};
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
-use xvc_core::{conf, FromConfigKey, UpdateFromXvcConfig};
 use xvc_core::{error, output, XvcOutputSender};
 use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcConfigResult, XvcFileType, XvcMetadata,
     XvcPath, XvcRoot,
 };
+use xvc_core::{FromConfig, UpdateFromConfig};
 use xvc_core::{HStore, XvcEntity, XvcStore};
 
 /// Format specifier for file list columns
@@ -110,8 +110,14 @@ impl FromStr for ListFormat {
     }
 }
 
-conf!(ListFormat, "file.list.format");
-
+impl FromConfig for ListFormat {
+    fn from_config(conf: &xvc_core::XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let configured = ListFormat::from_str(&conf.file.list.format)
+            .expect("ListFormat must be recognized in configuration");
+        Ok(Box::new(configured))
+    }
+}
+///
 /// Specify how to sort file list
 #[derive(Debug, Copy, Clone, EnumString, EnumDisplay, PartialEq, Eq, VariantNames)]
 pub enum ListSortCriteria {
@@ -141,7 +147,14 @@ pub enum ListSortCriteria {
     /// Sort by timestamp in descending order
     TimestampDesc,
 }
-conf!(ListSortCriteria, "file.list.sort");
+
+impl FromConfig for ListSortCriteria {
+    fn from_config(conf: &xvc_core::XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let opt =
+            Self::from_str(&conf.file.list.sort).expect("ListSortCriteria must be recognized");
+        Ok(Box::new(opt))
+    }
+}
 
 /// A single item in the list output
 #[derive(Debug, Clone, PartialEq)]
@@ -535,7 +548,7 @@ pub struct ListCLI {
     /// - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
     ///   as a copy (C), symlink (S), hardlink (H) or reflink (R).
     /// - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
-    ///   MB, GB and TB to represent sizes larged than 1MB.
+    ///   MB, GB and TB to represent sizes larger than 1MB.
     /// - {{rts}}:  recorded timestamp. The timestamp of the cached content.
     ///
     /// The default format can be set with file.list.format in the config file.
@@ -582,18 +595,18 @@ pub struct ListCLI {
     pub targets: Option<Vec<String>>,
 }
 
-impl UpdateFromXvcConfig for ListCLI {
-    fn update_from_conf(self, conf: &xvc_core::XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let no_summary = self.no_summary || conf.get_bool("file.list.no_summary")?.option;
-        let show_dot_files =
-            self.show_dot_files || conf.get_bool("file.list.show_dot_files")?.option;
+impl UpdateFromConfig for ListCLI {
+    fn update_from_config(self, config: &xvc_core::XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let no_summary = self.no_summary || config.file.list.no_summary;
+        let show_dot_files = self.show_dot_files || config.file.list.show_dot_files;
+        let include_git_files = self.include_git_files || config.file.list.include_git_files;
 
-        let format = self.format.unwrap_or_else(|| ListFormat::from_conf(conf));
-        let sort_criteria = self
-            .sort
-            .unwrap_or_else(|| ListSortCriteria::from_conf(conf));
-        let include_git_files =
-            self.include_git_files || conf.get_bool("file.list.include_git_files")?.option;
+        let format = self.format.unwrap_or_else(|| {
+            *ListFormat::from_config(config).expect("ListFormat must be configured")
+        });
+        let sort_criteria = self.sort.unwrap_or_else(|| {
+            *ListSortCriteria::from_config(config).expect("ListSortCriteria must be configured")
+        });
 
         Ok(Box::new(Self {
             no_summary,
@@ -630,7 +643,7 @@ pub fn cmd_list(output_snd: &XvcOutputSender, xvc_root: &XvcRoot, cli_opts: List
     // FIXME: `opts` shouldn't be sent to the inner function, but we cannot make sure that it's
     // updated from the config files in callers. A refactoring is good here.
     let conf = xvc_root.config();
-    let opts = cli_opts.update_from_conf(conf)?;
+    let opts = cli_opts.update_from_config(conf)?;
     let no_summary = opts.no_summary;
     let list_rows = cmd_list_inner(output_snd, xvc_root, &opts)?;
 
@@ -657,7 +670,7 @@ pub fn cmd_list_inner(
 ) -> Result<ListRows> {
     let conf = xvc_root.config();
 
-    let current_dir = conf.current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let filter_git_paths = !opts.include_git_files;
 
     let all_from_disk = targets_from_disk(
@@ -701,7 +714,8 @@ pub fn cmd_list_inner(
         if opts.format.as_ref().unwrap().columns.iter().any(|c| {
             *c == ListColumn::ActualContentDigest64 || *c == ListColumn::ActualContentDigest8
         }) {
-            let algorithm = HashAlgorithm::from_conf(conf);
+            let algorithm =
+                *HashAlgorithm::from_config(conf).expect("HashAlgorithm must be configured");
             fill_actual_content_digests(output_snd, xvc_root, algorithm, matches)?
         } else {
             matches

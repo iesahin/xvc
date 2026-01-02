@@ -34,6 +34,7 @@ pub use types::xvcfiletype::XvcFileType;
 pub use types::xvcmetadata::XvcMetadata;
 pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
+pub use types::xvcroot::find_root;
 pub use types::xvcroot::XvcRoot;
 
 pub use error::Error;
@@ -63,10 +64,17 @@ pub use xvc_walker::{
 
 pub use xvc_config::error::Error as XvcConfigError;
 pub use xvc_config::error::Result as XvcConfigResult;
-pub use xvc_config::{
-    conf, FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigOptionSource, XvcConfigParams,
-    XvcVerbosity,
-};
+pub use xvc_config::FromConfig;
+pub use xvc_config::UpdateFromConfig;
+pub use xvc_config::XvcConfig;
+pub use xvc_config::XvcConfigOptionSource;
+pub use xvc_config::XvcConfiguration;
+pub use xvc_config::XvcLoadParams;
+pub use xvc_config::XvcOptionalConfiguration;
+pub use xvc_config::XvcVerbosity;
+
+pub use xvc_config::blank_optional_config;
+pub use xvc_config::configuration;
 
 pub use util::git;
 
@@ -111,163 +119,22 @@ pub const XVCIGNORE_INITIAL_CONTENT: &str = "
 /// This is not expected to change for some time.
 pub const GIT_DIR: &str = ".git";
 
+/// Globally Unique Identified for the Xvc Repository / Project
+///
+/// It's stored in `.xvc/guid` file.
+/// Storage commands use this to create different paths for different Xvc projects.
+
+pub const GUID_FILENAME: &str = "guid";
+
 /// The initial content for `.xvc/.gitignore` to hide files in .xvc/
 ///
 /// We ignore all, and just track the store, entity counter and the configuration
 pub const GITIGNORE_INITIAL_CONTENT: &str = "
 ## Following are required for Xvc to function correctly.
 .xvc/*
+!.xvc/guid
 !.xvc/store/
 !.xvc/ec/
 !.xvc/config.toml
+!.xvc/pipelines/
 ";
-
-/// Creates a new project configuration by writing all default values.
-/// This is used when initializing a new project.
-/// The repository GUID is created here.
-///
-/// # Arguments
-///
-/// - `use_git`: sets `core.use_git` option.
-pub fn default_project_config(use_git: bool) -> String {
-    let uuid = uuid::Uuid::new_v4();
-    let guid = hex::encode(seahash::hash(uuid.as_bytes()).to_le_bytes());
-    format!(
-        r##"
-[core]
-# The repository id. Please do not delete or change it.
-# This is used to identify the repository and generate paths in storages.
-# In the future it may be used to in other ways.
-guid = "{guid}"
-# Default verbosity level.
-# One of "error", "warn", "info"
-verbosity = "error"
-
-[git]
-# Automate git operations.
-# Turning this off leads Xvc to behave as if it's not in a Git repository.
-# Not recommended unless you're really not using Git
-use_git = {use_git}
-# Command to run Git process.
-# You can set this to an absolute path to specify an executable
-# If set to a non-absolute path, the executable will be searched in $PATH.
-command = "git"
-
-# Commit changes in .xvc/ directory after commands.
-# You can set this to false if you want to commit manually.
-auto_commit = true
-
-# Stage changes in .xvc/ directory without committing.
-# auto_commit implies auto_stage.
-# If you want to commit manually but don't want to stage after individual Xvc commands, you can set this to true.
-auto_stage = false
-
-[cache]
-# The hash algorithm used for the cache.
-# It may take blake3, blake2, sha2 or sha3 as values.
-# All algorithms are selected to produce 256-bit hashes, so sha2 means SHA2-256, blake2 means BLAKE2s, etc.
-# The cache path is produced by prepending algorithm name to the cache.
-# Blake3 files are in .xvc/b3/, while sha2 files are in .xvc/s2/ etc.
-algorithm = "blake3"
-
-[file]
-
-[file.track]
-
-# Don't move file content to cache after xvc file track
-no_commit = false
-# Force to track files even if they are already tracked.
-force = false
-
-# Xvc calculates file content digest differently for text and binary files.
-# This option controls whether to treat files as text or binary.
-# It may take auto, text or binary as values.
-# Auto check each file individually and treat it as text if it's text.
-text_or_binary = "auto"
-
-# Don't use parallelism in track operations.
-# Note that some of the operations are implemented in parallel by default, and this option affects some heavier operations.
-no_parallel = false
-
-# Track files that are tracked by Git. 
-include_git_files = {include_git_files}
-
-[file.list]
-
-# Format for `xvc file list` rows. You can reorder or remove columns.
-# The following are the keys for each row:
-# - {{acd64}}:  actual content digest. All 64 digits from the workspace file's content.
-# - {{acd8}}:  actual content digest. First 8 digits the file content digest.
-# - {{aft}}:  actual file type. Whether the entry is a file (F), directory (D),
-#   symlink (S), hardlink (H) or reflink (R).
-# - {{asz}}:  actual size. The size of the workspace file in bytes. It uses MB,
-#   GB and TB to represent sizes larger than 1MB.
-# - {{ats}}:  actual timestamp. The timestamp of the workspace file.
-# - {{cst}}:  cache status. One of "=", ">", "<", "X", or "?" to show
-#   whether the file timestamp is the same as the cached timestamp, newer,
-#   older, not cached or not tracked.
-# - {{name}}: The name of the file or directory.
-# - {{rcd64}}:  recorded content digest. All 64 digits.
-# - {{rcd8}}:  recorded content digest. First 8 digits.
-# - {{rrm}}:  recorded recheck method. Whether the entry is linked to the workspace
-#   as a copy (C), symlink (S), hardlink (H) or reflink (R).
-# - {{rsz}}:  recorded size. The size of the cached content in bytes. It uses
-#   MB, GB and TB to represent sizes larged than 1MB.
-# - {{rts}}:  recorded timestamp. The timestamp of the cached content.
-#
-# There are no escape sequences in the format string.
-# If you want to add a tab, type it to the string.
-# If you want to add a literal double curly brace, open an issue.
-format = "{{{{aft}}}}{{{{rrm}}}} {{{{asz}}}} {{{{ats}}}} {{{{rcd8}}}} {{{{acd8}}}} {{{{name}}}}"
-
-# Default sort order for `xvc file list`.
-# Valid values are
-# none, name-asc, name-desc, size-asc, size-desc, ts-asc, ts-desc.
-sort = "name-desc"
-
-# Show dot files like .gitignore
-show_dot_files = false
-
-# Do not show a summary for as the final row for `xvc file list`.
-no_summary = false
-
-# List files recursively always.
-recursive = false
-
-# List files tracked by Git. 
-include_git_files = {include_git_files}
-
-[file.carry-in]
-# Carry-in the files to cache always, even if they are already present.
-force = false
-
-# Don't use parallel move/copy in carry-in
-no_parallel = false
-
-[file.recheck]
-# The recheck method for Xvc. It may take copy, hardlink, symlink, reflink as values.
-# The default is copy to make sure the options is portable.
-# Copy duplicates the file content, while hardlink, symlink and reflink only create a new path to the file.
-# Note that hardlink and symlink are read-only as they link the files in cache.
-method = "copy"
-
-[pipeline]
-# Name of the current pipeline to run
-current_pipeline = "default"
-# Name of the default pipeline
-default = "default"
-# Name of the default params file name
-default_params_file = "params.yaml"
-# Number of command processes to run concurrently
-process_pool_size = 4
- 
-[check-ignore]
-# Show details by default
-details = false
-
-"##,
-        guid = guid,
-        use_git = use_git,
-        include_git_files = !use_git
-    )
-}

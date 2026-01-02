@@ -31,7 +31,7 @@ Options:
       --include-git-files
           Include git tracked files as well. (Default: false)
           
-          Xvc doesn't track files that are already tracked by git by default. You can set files.track.include-git to true in the configuration file to change this behavior.
+          Xvc doesn't track files that are already tracked by git by default. You can set `file.track.include_git_files = true` in the configuration file to change this behavior.
 
       --force
           Add targets even if they are already tracked

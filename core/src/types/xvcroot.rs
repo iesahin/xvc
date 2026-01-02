@@ -8,15 +8,21 @@ use std::io::Write;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
+use xvc_config::configuration::merge_configs;
+use xvc_config::configuration::XvcConfiguration;
+use xvc_config::configuration::XvcOptionalConfiguration;
+use xvc_config::default_config;
+use xvc_config::initial_xvc_configuration_file;
 use xvc_ecs::ecs::timestamp;
 use xvc_ecs::{XvcEntity, XvcEntityGenerator};
 use xvc_logging::watch;
 use xvc_walker::AbsolutePath;
 
-use xvc_config::{XvcConfig, XvcConfigParams};
+use xvc_config::{XvcConfig, XvcLoadParams};
 
 use crate::error::{Error, Result};
 use crate::GITIGNORE_INITIAL_CONTENT;
+use crate::GUID_FILENAME;
 use crate::XVCIGNORE_FILENAME;
 use crate::XVCIGNORE_INITIAL_CONTENT;
 use crate::XVC_DIR;
@@ -38,6 +44,8 @@ use crate::XVC_DIR;
 /// Almost all operations receive a reference to this structure.
 #[derive(Debug)]
 pub struct XvcRootInner {
+    // Moved here from config in repository version 2
+    guid: String,
     absolute_path: AbsolutePath,
     xvc_dir: AbsolutePath,
     store_dir: AbsolutePath,
@@ -66,21 +74,29 @@ impl Deref for XvcRootInner {
 
 /// Create a new XvcRoot object from the `path`.
 /// Configuration is loaded according to [`config_opts`][XvcConfigInitParams].
-/// The path is not required to be the root of the repository.
-/// This function searches for the root of the repository using
-/// [XvcRoot::find_root] and uses it as the root.
-pub fn load_xvc_root(config_opts: XvcConfigParams) -> Result<XvcRoot> {
-    let path = config_opts.current_dir.as_ref();
+pub fn load_xvc_root(config_opts: XvcLoadParams) -> Result<XvcRoot> {
+    match &config_opts.xvc_root_dir {
+        Some(absolute_path) => Ok(Arc::new(XvcRootInner::new(
+            absolute_path.clone(),
+            config_opts,
+        )?)),
 
-    match find_root(path) {
-        Ok(absolute_path) => Ok(Arc::new(XvcRootInner::new(absolute_path, config_opts)?)),
-        Err(e) => Err(e),
+        None => Err(Error::CannotFindXvcRoot {
+            path: config_opts.current_dir.to_path_buf(),
+        }),
     }
 }
 
 /// Creates a new .xvc dir in `path` and initializes a directory.
 /// *Warning:* This should only be used in `xvc init`, not in other commands.
-pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoot> {
+pub fn init_xvc_root(
+    path: &Path,
+    config_opts: XvcLoadParams,
+    initial_user_config: &XvcOptionalConfiguration,
+) -> Result<XvcRoot> {
+    let default_config = default_config();
+    let initial_config = merge_configs(&default_config, initial_user_config);
+
     match find_root(path) {
         Ok(abs_path) => Err(Error::CannotNestXvcRepositories {
             path: abs_path.to_path_buf(),
@@ -92,10 +108,18 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoo
                 let xvc_dir = abs_path.join(XvcRootInner::XVC_DIR);
                 watch!(xvc_dir);
                 fs::create_dir(&xvc_dir)?;
-                let initial_config = config_opts.default_configuration.clone();
+                // Create GUID
+                let uuid = uuid::Uuid::new_v4();
+                let guid = hex::encode(seahash::hash(uuid.as_bytes()).to_le_bytes());
+                let guid_path = xvc_dir.join(GUID_FILENAME);
+                fs::write(&guid_path, guid)?;
+
                 let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
-                fs::write(&project_config_path, initial_config)?;
+                let initial_configuration_file_content =
+                    initial_xvc_configuration_file(&initial_config)?;
+                fs::write(&project_config_path, &initial_configuration_file_content)?;
                 watch!(&project_config_path);
+
                 let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
                 fs::write(
                     &local_config_path,
@@ -103,18 +127,14 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoo
                 )?;
                 watch!(&local_config_path);
 
-                let project_config_opts = XvcConfigParams {
-                    default_configuration: config_opts.default_configuration,
-                    current_dir: config_opts.current_dir,
-                    include_system_config: config_opts.include_system_config,
-                    include_user_config: config_opts.include_user_config,
+                let project_config_opts = XvcLoadParams {
+                    xvc_root_dir: Some(abs_path.clone()),
                     project_config_path: Some(project_config_path),
                     local_config_path: Some(local_config_path),
-                    include_environment_config: config_opts.include_environment_config,
-                    command_line_config: config_opts.command_line_config,
+                    ..config_opts
                 };
 
-                let config = XvcConfig::new(project_config_opts.clone())?;
+                let config = XvcConfig::new_v2(&project_config_opts)?;
                 watch!(&config);
                 // We write the initial entity value directly, without init_entity_generator,
                 // because we can't initialize the generator more than once, and we'll read
@@ -134,7 +154,8 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoo
                 let xvcignore_path = abs_path.join(XVCIGNORE_FILENAME);
                 fs::write(xvcignore_path, XVCIGNORE_INITIAL_CONTENT)?;
 
-                let use_git = config.get_bool("git.use_git")?.option;
+                let use_git = initial_config.git.use_git;
+
                 if use_git {
                     let gitignore_path = abs_path.join(PathBuf::from(".gitignore"));
                     let mut out = OpenOptions::new()
@@ -154,27 +175,26 @@ pub fn init_xvc_root(path: &Path, config_opts: XvcConfigParams) -> Result<XvcRoo
 impl XvcRootInner {
     /// Create a new XvcRootInner object by reading the configuration from `absolute_path/.xvc/` or
     /// other locations. `config_opts` can determine which configuration files to read
-    pub fn new(absolute_path: AbsolutePath, config_opts: XvcConfigParams) -> Result<Self> {
+    pub fn new(absolute_path: AbsolutePath, config_opts: XvcLoadParams) -> Result<Self> {
         let xvc_dir = absolute_path.join(XvcRootInner::XVC_DIR);
         let local_config_path = xvc_dir.join(XvcRootInner::LOCAL_CONFIG_PATH);
         let project_config_path = xvc_dir.join(XvcRootInner::PROJECT_CONFIG_PATH);
-        let config_opts = XvcConfigParams {
+        let config_opts = XvcLoadParams {
+            xvc_root_dir: Some(absolute_path.clone()),
             project_config_path: Some(project_config_path.clone()),
             local_config_path: Some(local_config_path.clone()),
-            default_configuration: config_opts.default_configuration,
-            current_dir: config_opts.current_dir,
-            include_system_config: config_opts.include_system_config,
-            include_user_config: config_opts.include_user_config,
-            include_environment_config: config_opts.include_environment_config,
-            command_line_config: config_opts.command_line_config,
+            ..config_opts
         };
-        let config = XvcConfig::new(config_opts)?;
+        let config = XvcConfig::new_v2(&config_opts)?;
+        // TODO: Update to new configurations from earliers here
+        let guid = fs::read_to_string(&xvc_dir.join(GUID_FILENAME))?;
         let entity_generator =
             xvc_ecs::load_generator(&xvc_dir.join(XvcRootInner::ENTITY_GENERATOR_PATH))?;
 
         let store_dir = xvc_dir.join(XvcRootInner::STORE_DIR);
         Ok(Self {
             xvc_dir,
+            guid,
             store_dir,
             local_config_path,
             project_config_path,
@@ -209,15 +229,24 @@ impl XvcRootInner {
         &self.absolute_path
     }
 
+    /// Guid for this repository
+    pub fn guid(&self) -> &str {
+        &self.guid
+    }
+
     /// Get the absolute path to the .xvc directory.
     pub fn xvc_dir(&self) -> &AbsolutePath {
         &self.xvc_dir
     }
 
     /// Get the configuration for this repository.
-    /// The configuration is initialized using [XvcConfigInitParams] in [Self::new].
-    pub fn config(&self) -> &XvcConfig {
-        &self.config
+    pub fn config(&self) -> &XvcConfiguration {
+        &self.config.config()
+    }
+
+    /// The current directory we run the commands
+    pub fn current_dir(&self) -> &AbsolutePath {
+        &self.config.current_dir
     }
 
     /// Get the absolute path to the local config file.

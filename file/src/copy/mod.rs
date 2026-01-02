@@ -82,7 +82,7 @@ pub(crate) fn get_source_path_metadata(
         vec![source.to_string()]
     };
 
-    let current_dir = xvc_root.config().current_dir()?;
+    let current_dir = xvc_root.current_dir();
     let all_sources = filter_targets_from_store(
         output_snd,
         xvc_root,
@@ -264,7 +264,7 @@ pub fn get_copy_source_dest_store(
             source_xvc_metadata,
         )?;
 
-        let current_dir = xvc_root.config().current_dir()?;
+        let current_dir = xvc_root.current_dir();
         let source_xe = source_xvc_paths.keys().next().unwrap();
 
         let mut source_dest_store = HStore::<(XvcEntity, XvcPath)>::with_capacity(1);

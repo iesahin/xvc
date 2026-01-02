@@ -16,7 +16,7 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use crossbeam_channel::Sender;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-use xvc_core::{FromConfigKey, UpdateFromXvcConfig, XvcConfig, XvcConfigResult};
+use xvc_core::{FromConfig, UpdateFromConfig, XvcConfigResult, XvcConfiguration};
 
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{
@@ -31,6 +31,7 @@ use xvc_core::{HStore, XvcEntity, XvcStore};
 /// There are three conditions to recheck a file:
 ///
 /// - If the workspace copy is missing.
+///
 /// - If the workspace copy is not changed but the user wants to change recheck method. (e.g. from copy
 ///   to symlink.)
 /// - If the `--force` is set.
@@ -60,13 +61,13 @@ pub struct RecheckCLI {
     pub targets: Option<Vec<String>>,
 }
 
-impl UpdateFromXvcConfig for RecheckCLI {
-    fn update_from_conf(self, conf: &XvcConfig) -> XvcConfigResult<Box<Self>> {
-        let recheck_method = self
-            .recheck_method
-            .unwrap_or_else(|| RecheckMethod::from_conf(conf));
-        let no_parallel = self.no_parallel || conf.get_bool("file.track.no_parallel")?.option;
+impl UpdateFromConfig for RecheckCLI {
+    fn update_from_config(self, config: &XvcConfiguration) -> XvcConfigResult<Box<Self>> {
+        let recheck_method = self.recheck_method.unwrap_or_else(|| {
+            *RecheckMethod::from_config(config).expect("RecheckMethod must be configured")
+        });
 
+        let no_parallel = self.no_parallel || config.file.track.no_parallel;
         let force = self.force;
 
         Ok(Box::new(Self {
@@ -93,8 +94,8 @@ pub fn cmd_recheck(
     // We copy this before
     let requested_recheck_method = cli_opts.recheck_method;
 
-    let opts = cli_opts.update_from_conf(conf)?;
-    let current_dir = conf.current_dir()?;
+    let opts = cli_opts.update_from_config(conf)?;
+    let current_dir = xvc_root.current_dir();
     let targets = load_targets_from_store(output_snd, xvc_root, current_dir, &opts.targets)?;
 
     let stored_xvc_path_store = xvc_root.load_store::<XvcPath>()?;
@@ -105,7 +106,7 @@ pub fn cmd_recheck(
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
     let stored_content_digest_store = xvc_root.load_store::<ContentDigest>()?;
     let entities: HashSet<XvcEntity> = target_files.keys().copied().collect();
-    let default_recheck_method = RecheckMethod::from_conf(xvc_root.config());
+    let default_recheck_method = *RecheckMethod::from_config(xvc_root.config())?;
     let recheck_method_diff = diff_recheck_method(
         default_recheck_method,
         &stored_recheck_method_store,
@@ -123,7 +124,7 @@ pub fn cmd_recheck(
     let xvc_path_diff: DiffStore<XvcPath> = xvc_path_metadata_diff.0;
     let xvc_metadata_diff: DiffStore<XvcMetadata> = xvc_path_metadata_diff.1;
 
-    let algorithm = HashAlgorithm::from_conf(conf);
+    let algorithm = *HashAlgorithm::from_config(conf)?;
     let stored_text_or_binary_store = xvc_root.load_store::<FileTextOrBinary>()?;
 
     let content_digest_diff = diff_content_digest(

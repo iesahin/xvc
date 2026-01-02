@@ -8,12 +8,12 @@ use s3::creds::Credentials;
 use s3::Bucket;
 use s3::Region;
 use tokio::io::AsyncWriteExt;
-use xvc_core::XvcCachePath;
-use xvc_core::XvcRoot;
 use xvc_core::error;
 use xvc_core::info;
 use xvc_core::output;
+use xvc_core::XvcCachePath;
 use xvc_core::XvcOutputSender;
+use xvc_core::XvcRoot;
 
 use crate::Error;
 use crate::Result;
@@ -99,7 +99,7 @@ pub(crate) trait XvcS3StorageOperations {
         let credentials = self.credentials()?;
         let region = Region::from_str(&self.region()).unwrap_or("us-east-1".parse().unwrap());
         let bucket = Bucket::new(&self.bucket_name(), region, credentials)?;
-        let xvc_guid = xvc_root.config().guid().unwrap();
+        let xvc_guid = xvc_root.guid();
         let prefix = self.storage_prefix().clone();
 
         let res_list = bucket

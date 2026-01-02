@@ -34,8 +34,7 @@ pub fn cmd_new(xvc_root: &XvcRoot, pipeline_name: &str, opts: NewCLI) -> Result<
                 let p_e = xvc_root.new_entity();
                 rs.left.insert(p_e, pipeline);
                 if let Some(wd) = &opts.workdir {
-                    let conf = xvc_root.config();
-                    let current_dir = conf.current_dir()?;
+                    let current_dir = xvc_root.current_dir();
                     let run_dir = XvcPipelineRunDir {
                         run_dir: XvcPath::new(xvc_root, current_dir, wd)?,
                     };
