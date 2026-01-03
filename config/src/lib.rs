@@ -220,7 +220,7 @@ impl XvcConfig {
             blank_optional_config()
         };
 
-        let project_config = if config_init_params.include_project_config {
+        let mut project_config = if config_init_params.include_project_config {
             if let Some(ref config_path) = config_init_params.project_config_path {
                 Self::load_optional_config_from_file(config_path)?
             } else {
@@ -229,6 +229,14 @@ impl XvcConfig {
         } else {
             blank_optional_config()
         };
+
+        if let Some(ref config_path) = config_init_params.project_config_path {
+            if let Some(ref mut core) = project_config.core {
+                if let Some(guid) = core.guid.take() {
+                    Self::migrate_config_to_07(config_path, guid)?;
+                }
+            }
+        }
 
         let local_config = if config_init_params.include_local_config {
             if let Some(ref config_path) = config_init_params.local_config_path {
@@ -305,6 +313,57 @@ impl XvcConfig {
         } else {
             Ok(blank_optional_config())
         }
+    }
+
+    fn migrate_config_to_07(config_path: &Path, guid: String) -> Result<()> {
+        if let Some(xvc_dir) = config_path.parent() {
+            let guid_path = xvc_dir.join("guid");
+            if !guid_path.exists() {
+                std::fs::write(&guid_path, &guid).map_err(|e| Error::IoError { source: e })?;
+            }
+
+            if let Some(project_root) = xvc_dir.parent() {
+                let gitignore_path = project_root.join(".gitignore");
+                if gitignore_path.exists() {
+                    let content = std::fs::read_to_string(&gitignore_path)
+                        .map_err(|e| Error::IoError { source: e })?;
+                    let mut new_content = content.clone();
+                    let mut changed = false;
+
+                    if !content.contains("!.xvc/guid") {
+                        new_content.push_str("\n!.xvc/guid");
+                        changed = true;
+                    }
+
+                    if !content.contains("!.xvc/pipelines/") {
+                        new_content.push_str("\n!.xvc/pipelines/");
+                        changed = true;
+                    }
+
+                    if changed {
+                        std::fs::write(&gitignore_path, new_content)
+                            .map_err(|e| Error::IoError { source: e })?;
+                    }
+                }
+            }
+        }
+
+        let content =
+            std::fs::read_to_string(config_path).map_err(|e| Error::IoError { source: e })?;
+        let mut new_lines = Vec::new();
+        for line in content.lines() {
+            let trimmed = line.trim();
+            if !trimmed.starts_with("guid =") && !trimmed.starts_with("guid=") {
+                new_lines.push(line);
+            }
+        }
+        let mut new_content = new_lines.join("\n");
+        if content.ends_with('\n') {
+            new_content.push('\n');
+        }
+        std::fs::write(config_path, new_content).map_err(|e| Error::IoError { source: e })?;
+
+        Ok(())
     }
 
     /// Loads configuration from command line arguments.

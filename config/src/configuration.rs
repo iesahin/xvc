@@ -170,6 +170,9 @@ pub struct OptionalCoreConfig {
     pub xvc_repo_version: Option<u8>,
     /// Optional verbosity level for logging.
     pub verbosity: Option<String>,
+    /// Optional GUID for the repository.
+    /// This is a legacy field and should be migrated to .xvc/guid file.
+    pub guid: Option<String>,
 }
 
 /// Optional Git integration configuration for Xvc, used for partial updates.
