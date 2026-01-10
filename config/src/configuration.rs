@@ -311,6 +311,7 @@ pub struct XvcOptionalConfiguration {
     /// Optional pipeline execution settings.
     pub pipeline: Option<OptionalPipelineConfig>,
     /// Optional check ignore settings.
+    #[serde(rename = "check-ignore")]
     pub check_ignore: Option<OptionalCheckIgnoreConfig>,
 }
 
