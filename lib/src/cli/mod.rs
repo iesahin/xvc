@@ -69,8 +69,8 @@ pub struct XvcCLI {
 
     /// Set working directory for the command.
     /// It doesn't create a new shell, or change the directory.
-    #[arg(short = 'C', default_value = ".")]
-    pub workdir: PathBuf,
+    #[arg(short = 'C')]
+    pub workdir: Option<PathBuf>,
 
     /// Configuration options set from the command line in the form section.key=value
     /// You can use multiple times.
@@ -237,12 +237,18 @@ pub fn run(args: &[&str]) -> Result<XvcRootOpt> {
 /// Run the supplied command within the optional [XvcRoot]. If xvc_root is None, it will be tried
 /// to be loaded from `cli_opts.workdir`.
 pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Result<XvcRootOpt> {
+    let workdir = if let Some(wd) = &cli_opts.workdir {
+        std::fs::canonicalize(wd)?
+    } else {
+        std::env::current_dir()?
+    };
+
     // XvcRoot should be kept per repository and shouldn't change directory across runs
     assert!(
         xvc_root_opt.as_ref().is_none()
             || xvc_root_opt
                 .as_ref()
-                .map(|xvc_root| find_root(&cli_opts.workdir).unwrap() == *xvc_root.absolute_path())
+                .map(|xvc_root| find_root(&workdir).unwrap() == *xvc_root.absolute_path())
                 .unwrap()
     );
 
@@ -389,7 +395,7 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
         },
     );
 
-    let xvc_config_params = get_xvc_config_params(&cli_opts);
+    let xvc_config_params = get_xvc_config_params(&cli_opts)?;
 
     let xvc_root_opt = match load_xvc_root(xvc_config_params) {
         Ok(r) => Some(r),
@@ -403,11 +409,16 @@ pub fn dispatch(cli_opts: cli::XvcCLI) -> Result<XvcRootOpt> {
 }
 
 /// Decide configuration sources  from CLI options
-pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcLoadParams {
-    let xvc_root_dir = find_root(&cli_opts.workdir).ok();
-    XvcLoadParams {
+pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> Result<XvcLoadParams> {
+    let workdir = if let Some(wd) = &cli_opts.workdir {
+        std::fs::canonicalize(wd)?
+    } else {
+        std::env::current_dir()?
+    };
+    let xvc_root_dir = find_root(&workdir).ok();
+    Ok(XvcLoadParams {
         xvc_root_dir,
-        current_dir: AbsolutePath::from(&cli_opts.workdir),
+        current_dir: AbsolutePath::from(workdir),
         include_system_config: !cli_opts.no_system_config,
         include_user_config: !cli_opts.no_user_config,
         include_project_config: !cli_opts.no_project_config,
@@ -416,7 +427,7 @@ pub fn get_xvc_config_params(cli_opts: &XvcCLI) -> XvcLoadParams {
         local_config_path: None,
         include_environment_config: !cli_opts.no_env_config,
         command_line_config: Some(cli_opts.consolidate_config_options()),
-    }
+    })
 }
 
 /// Convert verbosity to log level

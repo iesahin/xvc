@@ -1,6 +1,6 @@
 [package]
 name = "xvc-file"
-version = "0.7.0"
+version = "0.7.1-alpha.0"
 edition = "2021"
 description = "File tracking, versioning, upload and download functions for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -25,8 +25,8 @@ bench = true
 # xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
 # xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
 # xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
-xvc-core = { version = "0.7.0", path = "../core" }
-xvc-storage = { version = "0.7.0", path = "../storage", default-features = false }
+xvc-core = { version = "0.7.1-alpha.0", path = "../core" }
+xvc-storage = { version = "0.7.1-alpha.0", path = "../storage", default-features = false }
 
 
 ## Cli and config
@@ -103,5 +103,5 @@ default = []
 reflink = ["dep:reflink"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.7.0", path = "../test_helper/" }
+xvc-test-helper = { version = "0.7.1-alpha.0", path = "../test_helper/" }
 shellfn = "^0.2"
