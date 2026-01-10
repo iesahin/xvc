@@ -1,8 +1,8 @@
 # Xvc Changelog
 
-## Unreleased
+## v0.7.0 (2026-01-10)
 
-
+- Added automatic configuration migration for legacy `core.guid` to `.xvc/guid` file.
 - Refactored storage operations to use dynamic dispatch (`dyn XvcStorageOperations`), reducing boilerplate code.
 - Fixed `MINIO_ACCESS_KEY_ID` environment variable for MinIO storage credentials.
 - Refactored XvcConfig for a simpler structure using structs for all configuration
