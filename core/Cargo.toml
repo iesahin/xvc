@@ -42,7 +42,7 @@ rmp-serde = "1.3.0"
 toml = { version = "^0.9",  features = ["serde", "parse", "display"]}
 
 ## Network
-reqwest = { version = "^0.12", features = ["blocking", "json", "gzip"] }
+reqwest = { version = "^0.13", features = ["blocking", "json", "gzip"] }
 
 ## Parallelization
 rayon = "^1.11"
@@ -50,7 +50,7 @@ crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
 ## Git Operations
-gix = "^0.75"
+gix = "^0.77"
 
 ## Utilities to complete commands
 clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
