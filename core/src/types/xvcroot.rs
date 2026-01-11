@@ -313,6 +313,7 @@ pub fn find_root(path: &Path) -> Result<AbsolutePath> {
             return Ok(parent.into());
         }
     }
+    watch!(path);
     Err(Error::CannotFindXvcRoot { path: path.into() })
 }
 

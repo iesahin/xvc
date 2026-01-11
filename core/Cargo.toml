@@ -1,6 +1,6 @@
 [package]
 name = "xvc-core"
-version = "0.6.17"
+version = "0.7.1-alpha.2"
 edition = "2021"
 description = "Xvc core for common elements for all commands"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,10 +16,10 @@ name = "xvc_core"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-config = { version = "0.6.17", path = "../config" }
-xvc-logging = { version = "0.6.17", path = "../logging" }
-xvc-ecs = { version = "0.6.17", path = "../ecs" }
-xvc-walker = { version = "0.6.17", path = "../walker" }
+xvc-config = { version = "0.7.1-alpha.2", path = "../config" }
+xvc-logging = { version = "0.7.1-alpha.2", path = "../logging" }
+xvc-ecs = { version = "0.7.1-alpha.2", path = "../ecs" }
+xvc-walker = { version = "0.7.1-alpha.2", path = "../walker" }
 
 ## Cli and config
 clap = { version = "^4.5", features = ["derive"] }
@@ -43,6 +43,10 @@ toml = { version = "^0.9",  features = ["serde", "parse", "display"]}
 
 ## Network
 reqwest = { version = "^0.12", features = ["blocking", "json", "gzip"] }
+# reqwest 0.13 has an issue similar to
+# https://github.com/aws/aws-lc-rs/issues/537#issuecomment-2674726389
+# and following line may be required to fix, but for now, I'll go with 0.12
+# rustls = { version = "0.23", default-features = false, features = ["ring"] }
 
 ## Parallelization
 rayon = "^1.11"
@@ -50,7 +54,7 @@ crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
 ## Git Operations
-gix = "^0.75"
+gix = "^0.77"
 
 ## Utilities to complete commands
 clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
@@ -89,6 +93,6 @@ itertools = "^0.14"
 
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.6.17", path = "../test_helper/" }
+xvc-test-helper = { version = "0.7.1-alpha.2", path = "../test_helper/" }
 proptest = "^1.9"
 test-case = "^3.3"
