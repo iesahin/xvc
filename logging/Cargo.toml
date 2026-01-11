@@ -1,6 +1,6 @@
 [package]
 name = "xvc-logging"
-version = "0.7.1-alpha.0"
+version = "0.7.1-alpha.1"
 edition = "2021"
 description = "Logging crate for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
