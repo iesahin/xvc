@@ -18,3 +18,12 @@ lib/docs
 # Ignore all profiling files
 *.profraw
 lcov.info
+
+## Following are required for Xvc to function correctly.
+.xvc/*
+!.xvc/guid
+!.xvc/store/
+!.xvc/ec/
+!.xvc/config.toml
+!.xvc/pipelines/
+
