@@ -27,3 +27,5 @@ lcov.info
 !.xvc/config.toml
 !.xvc/pipelines/
 
+### Following 1 lines are added by xvc on Sun, 11 Jan 2026 23:39:48 +0000
+/dist/
