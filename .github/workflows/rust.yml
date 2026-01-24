@@ -122,3 +122,80 @@ jobs:
       - name: Test all benches
         if: matrix.benches
         run: cargo test --benches ${{ matrix.features }}
+
+  test-linux:
+    name: Test on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    if: github.actor == 'iesahin'
+
+    strategy:
+      matrix:
+        build: [stable]
+        include:
+          - build: stable
+            rust: stable
+            test-args: --features test-ci
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      DIGITAL_OCEAN_ACCESS_KEY_ID: ${{ secrets.DIGITAL_OCEAN_ACCESS_KEY_ID }}
+      DIGITAL_OCEAN_SECRET_ACCESS_KEY: ${{ secrets.DIGITAL_OCEAN_SECRET_ACCESS_KEY }}
+      GCS_ACCESS_KEY_ID: ${{ secrets.GCS_ACCESS_KEY_ID }}
+      GCS_SECRET_ACCESS_KEY: ${{ secrets.GCS_SECRET_ACCESS_KEY }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+      MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+      XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
+      XVC_TRYCMD_TESTS: core,file,pipeline,intro,start,storage
+      XVC_TRYCMD_STORAGE_TESTS: minio,generic,local,
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y s3cmd ripgrep tree python3 rclone
+          # Install lsd
+          wget https://github.com/Peltoche/lsd/releases/download/0.23.1/lsd_0.23.1_amd64.deb
+          sudo dpkg -i lsd_0.23.1_amd64.deb
+          # Install minio client
+          wget https://dl.min.io/client/mc/release/linux-amd64/mc
+          chmod +x mc
+          sudo mv mc /usr/local/bin/
+
+      - name: Git config for automated Git tests
+        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
+
+      - name: Write the private key file for e1.xvc.dev connection
+        run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
+
+      - name: Write an ssh config to allow connection without noise
+        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; echo '    LogLevel ERROR' >> $HOME/.ssh/config ;  chmod 400 $HOME/.ssh/config
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust || 'stable' }}
+
+      - name: Build debug
+        run: cargo build ${{ matrix.build-args }}
+        env:
+          RUSTFLAGS: "-A dead_code"
+
+      - name: Add xvc to PATH
+        run: echo "${GITHUB_WORKSPACE}/target/debug" >> $GITHUB_PATH
+
+      - name: Check if xvc is in PATH
+        run: xvc --version
+
+      - name: Test
+        run: cargo test ${{ matrix.test-args }} --workspace
+        env:
+          TRYCMD: "dump"
+          XVC_TRYCMD_TESTS: "storage,file,pipeline,core,start"

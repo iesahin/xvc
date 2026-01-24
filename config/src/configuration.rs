@@ -311,6 +311,7 @@ pub struct XvcOptionalConfiguration {
     /// Optional pipeline execution settings.
     pub pipeline: Option<OptionalPipelineConfig>,
     /// Optional check ignore settings.
+    #[serde(rename = "check-ignore")]
     pub check_ignore: Option<OptionalCheckIgnoreConfig>,
 }
 
@@ -1114,7 +1115,7 @@ default_params_file = "{pipeline_default_params_file}"
 # Number of command processes to run concurrently
 process_pool_size = {pipeline_process_pool_size}
  
-[check_ignore]
+[check-ignore]
 # Show details by default
 details = {check_ignore_details}
 
