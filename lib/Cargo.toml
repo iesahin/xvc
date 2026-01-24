@@ -20,13 +20,9 @@ name = "xvc"
 path = "src/main.rs"
 
 [dependencies]
-# xvc-config = { version = "0.6.17-alpha.2", path = "../config" }
 xvc-core = { version = "0.7.1-alpha.3", path = "../core" }
-# xvc-logging = { version = "0.6.17-alpha.2", path = "../logging" }
-# xvc-ecs = { version = "0.6.17-alpha.2", path = "../ecs" }
 xvc-file = { version = "0.7.1-alpha.3", path = "../file" }
 xvc-pipeline = { version = "0.7.1-alpha.3", path = "../pipeline" }
-# xvc-walker = { version = "0.6.17-alpha.2", path = "../walker" }
 xvc-storage = { version = "0.7.1-alpha.3", path = "../storage", default-features = false }
 
 ## Cli and config
@@ -118,7 +114,6 @@ test-rsync = []
 test-generic-rsync = []
 test-generic-rclone = []
 test-ci = [
-  "test-s3",
   "test-minio",
   "test-r2",
   "test-wasabi",
