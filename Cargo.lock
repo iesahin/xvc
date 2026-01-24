@@ -5372,7 +5372,7 @@ checksum = "9edde0db4769d2dc68579893f2306b26c6ecfbe0ef499b013d731b7b9247e0b9"
 
 [[package]]
 name = "xvc"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -5433,7 +5433,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-config"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "crossbeam",
  "crossbeam-channel",
@@ -5456,7 +5456,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-core"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5511,7 +5511,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-ecs"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "crossbeam-channel",
  "fern",
@@ -5531,7 +5531,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-file"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5585,7 +5585,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-logging"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "crossbeam-channel",
  "fern",
@@ -5595,7 +5595,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-pipeline"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5649,7 +5649,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-storage"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5708,7 +5708,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-test-helper"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "anyhow",
  "clap",
@@ -5720,7 +5720,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-walker"
-version = "0.7.1-alpha.2"
+version = "0.7.1-alpha.3"
 dependencies = [
  "anyhow",
  "crossbeam",
