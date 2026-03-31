@@ -1,5 +1,11 @@
 # Xvc Changelog
 
+## v0.7.1-alpha.3 (2026-03-31)
+
+- Bump all package versions to `0.7.1-alpha.3`.
+- Update internal dependencies to match the new version.
+- Skip `test_storage_new_wasabi` when environment variables are not set.
+
 ## v0.7.0 (2026-01-10)
 
 - Added automatic configuration migration for legacy `core.guid` to `.xvc/guid` file.

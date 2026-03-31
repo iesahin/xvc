@@ -139,8 +139,20 @@ fn test_storage_new_wasabi() -> Result<()> {
     let bucket_name = "xvc-test";
     let storage_prefix = common::random_dir_name("xvc-storage", None);
 
-    let access_key = env::var("WASABI_ACCESS_KEY_ID")?;
-    let secret_key = env::var("WASABI_SECRET_ACCESS_KEY")?;
+    let access_key = match env::var("WASABI_ACCESS_KEY_ID") {
+        Ok(v) => v,
+        Err(_) => {
+            eprintln!("WASABI_ACCESS_KEY_ID not set, skipping test");
+            return Ok(());
+        }
+    };
+    let secret_key = match env::var("WASABI_SECRET_ACCESS_KEY") {
+        Ok(v) => v,
+        Err(_) => {
+            eprintln!("WASABI_SECRET_ACCESS_KEY not set, skipping test");
+            return Ok(());
+        }
+    };
     let endpoint = "s3.wasabisys.com";
 
     let config_file_name = write_s3cmd_config(&access_key, &secret_key)?;
