@@ -332,6 +332,23 @@ pub enum StorageNewSubCommand {
         #[arg(long, default_value = "")]
         storage_prefix: String,
     },
+
+    #[cfg(feature = "dropbox")]
+    /// Add a new Dropbox storage
+    ///
+    /// Reads credentials from `DROPBOX_ACCESS_TOKEN` environment variable.
+    /// Alternatively you can use `XVC_STORAGE_DROPBOX_TOKEN_<storage_name>` environment variable if you have multiple storages of this type.
+    #[command()]
+    Dropbox {
+        /// Name of the storage
+        ///
+        /// This must be unique among all storages of the project
+        #[arg(long = "name", short = 'n')]
+        name: String,
+        /// You can set a directory in Dropbox with this prefix
+        #[arg(long, default_value = "")]
+        storage_prefix: String,
+    },
 }
 
 /// Specifies a storage by either a name or a GUID.
@@ -525,6 +542,11 @@ fn cmd_storage_new(
             endpoint,
             storage_prefix,
         ),
+        #[cfg(feature = "dropbox")]
+        StorageNewSubCommand::Dropbox {
+            name,
+            storage_prefix,
+        } => storage::dropbox::cmd_new_dropbox(output_snd, xvc_root, name, storage_prefix),
         StorageNewSubCommand::Rsync {
             name,
             host,

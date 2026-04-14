@@ -94,10 +94,11 @@ predicates = "^3.1"
 
 
 [features]
-default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean", "rclone"]
+default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean", "rclone", "dropbox"]
 # Dropped reflink from default features in 0.6.13
 reflink = ["xvc-file/reflink"]
 rclone = ["xvc-storage/rclone"]
+dropbox = ["xvc-storage/dropbox"]
 s3 = ["xvc-storage/s3"]
 minio = ["xvc-storage/minio"]
 r2 = ["xvc-storage/r2"]
@@ -114,6 +115,7 @@ test-gcs = ["gcs"]
 test-wasabi = ["wasabi"]
 test-digital-ocean = ["digital-ocean"]
 test-rclone = ["rclone"]
+test-dropbox = ["dropbox"]
 test-rsync = []
 test-generic-rsync = []
 test-generic-rclone = []
@@ -124,6 +126,7 @@ test-ci = [
   "test-wasabi",
   "test-rsync",
   "test-rclone",
+  "test-dropbox",
   "test-generic-rsync",
   "test-generic-rclone",
 ]

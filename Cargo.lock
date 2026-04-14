@@ -5660,6 +5660,7 @@ dependencies = [
  "rayon",
  "regex",
  "relative-path",
+ "reqwest",
  "rmp",
  "rmp-serde",
  "rust-s3",

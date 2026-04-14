@@ -95,8 +95,11 @@ openssl = { version = "^0.10", optional = true }
 # For rclone support
 librclone = { version = "^0.9", optional = true }
 
+# For Dropbox support
+reqwest = { version = "^0.12", optional = true, features = ["json", "stream"] }
+
 [features]
-default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean", "rclone"]
+default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean", "rclone", "dropbox"]
 async = ["rust-s3", "futures", "tokio"]
 s3 = ["async"]
 minio = ["s3"]
@@ -104,6 +107,7 @@ gcs = ["s3"]
 wasabi = ["s3"]
 r2 = ["s3"]
 digital-ocean = ["s3"]
+dropbox = ["async", "reqwest"]
 bundled-openssl = ["openssl/vendored"]
 # rclone support
 # Uses rclone from the command line, without bundling librclone
