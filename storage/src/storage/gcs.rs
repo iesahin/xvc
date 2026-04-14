@@ -11,7 +11,7 @@ use gcloud_storage::http::objects::list::ListObjectsRequest;
 use gcloud_storage::http::objects::upload::{Media, UploadObjectRequest, UploadType};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use tokio::io::AsyncWriteExt;
+
 use xvc_core::R1NStore;
 use xvc_core::{error, info, watch, XvcCachePath, XvcOutputSender, XvcRoot};
 
