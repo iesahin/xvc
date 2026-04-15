@@ -1,5 +1,12 @@
 # Xvc Changelog
 
+## v0.7.1-alpha.4 (2026-04-14)
+
+- Add native Google Cloud Storage (GCS) support using `gcloud-storage` crate.
+- Support `gcloud auth application-default login` for GCS authentication.
+- Update tests to use `gcloud storage` commands for verification.
+- Bump all package versions to `0.7.1-alpha.4`.
+
 ## v0.7.1-alpha.3 (2026-03-31)
 
 - Bump all package versions to `0.7.1-alpha.3`.
