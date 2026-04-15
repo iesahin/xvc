@@ -37,8 +37,8 @@ fn test_storage_new_gcs() -> Result<()> {
 
     let region = "europe-west3";
 
-    let gsutil = |cmd: &str, append: &str| -> String {
-        let sh_cmd = format!("gsutil {cmd} {append}");
+    let gcloud_storage = |cmd: &str, append: &str| -> String {
+        let sh_cmd = format!("gcloud storage {cmd} {append}");
         sh(sh_cmd)
     };
 
@@ -60,7 +60,7 @@ fn test_storage_new_gcs() -> Result<()> {
         region,
     ])?;
 
-    let s3_bucket_list = gsutil(
+    let s3_bucket_list = gcloud_storage(
         &format!("ls gs://{bucket_name}/{storage_prefix}/**"),
         &format!("| rg {XVC_STORAGE_GUID_FILENAME}"),
     );
@@ -72,14 +72,14 @@ fn test_storage_new_gcs() -> Result<()> {
 
     let cache_dir = xvc_root.xvc_dir().join("b3");
 
-    let file_list_before = gsutil(
+    let file_list_before = gcloud_storage(
         &format!("ls gs://{bucket_name}/{storage_prefix}/**"),
         &format!("| rg 0.bin || true"),
     );
     let n_storage_files_before = if file_list_before.trim().is_empty() { 0 } else { file_list_before.lines().count() };
     x(&["file", "send", "--to", "gcs-storage", the_file])?;
 
-    let file_list_after = gsutil(
+    let file_list_after = gcloud_storage(
         &format!("ls gs://{bucket_name}/{storage_prefix}/**"),
         &format!("| rg 0.bin"),
     );
