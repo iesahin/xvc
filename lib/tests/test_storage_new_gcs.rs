@@ -30,6 +30,11 @@ fn sh(cmd: String) -> String {
 #[test]
 #[cfg_attr(not(feature = "test-gcs"), ignore)]
 fn test_storage_new_gcs() -> Result<()> {
+    if env::var("GOOGLE_APPLICATION_CREDENTIALS").is_err() {
+        println!("Skipping GCS test since GOOGLE_APPLICATION_CREDENTIALS is not set");
+        return Ok(());
+    }
+
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";
