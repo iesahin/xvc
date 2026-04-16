@@ -1,6 +1,6 @@
 [package]
 name = "xvc-storage"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 edition = "2021"
 description = "Xvc remote and local storage management"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -16,11 +16,11 @@ name = "xvc_storage"
 crate-type = ["rlib"]
 
 [dependencies]
-xvc-logging = { version = "0.7.1-alpha.3", path = "../logging" }
-xvc-config = { version = "0.7.1-alpha.3", path = "../config" }
-xvc-core = { version = "0.7.1-alpha.3", path = "../core" }
-xvc-ecs = { version = "0.7.1-alpha.3", path = "../ecs" }
-xvc-walker = { version = "0.7.1-alpha.3", path = "../walker" }
+xvc-logging = { version = "0.7.1-alpha.4", path = "../logging" }
+xvc-config = { version = "0.7.1-alpha.4", path = "../config" }
+xvc-core = { version = "0.7.1-alpha.4", path = "../core" }
+xvc-ecs = { version = "0.7.1-alpha.4", path = "../ecs" }
+xvc-walker = { version = "0.7.1-alpha.4", path = "../walker" }
 
 ## Cli and config
 clap = { version = "^4.5", features = ["derive"] }
@@ -94,6 +94,7 @@ openssl = { version = "^0.10", optional = true }
 
 # For rclone support
 librclone = { version = "^0.9", optional = true }
+gcloud-storage = "1.3.0"
 
 [features]
 default = ["s3", "minio", "gcs", "wasabi", "r2", "digital-ocean", "rclone"]
@@ -112,7 +113,7 @@ rclone = []
 bundled-rclone = ["rclone", "librclone"]
 
 [dev-dependencies]
-xvc-test-helper = { version = "0.7.1-alpha.3", path = "../test_helper/" }
+xvc-test-helper = { version = "0.7.1-alpha.4", path = "../test_helper/" }
 shellfn = "^0.2"
 
 [package.metadata.cargo-udeps.ignore]

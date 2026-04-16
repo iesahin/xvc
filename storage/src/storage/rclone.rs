@@ -440,6 +440,11 @@ mod tests {
 
     #[test]
     fn test_rclone_drive_list() {
+        if which::which("rclone").is_err() {
+            println!("Skipping rclone test because rclone is not installed");
+            return;
+        }
+
         let rclone_exec = rclone_executable()
             .map_err(|e| format!("Failed to find rclone executable: {}", e))
             .unwrap();

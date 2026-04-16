@@ -286,9 +286,8 @@ pub enum StorageNewSubCommand {
     #[cfg(feature = "gcs")]
     /// Add a new Google Cloud Storage storage
     ///
-    /// Reads credentials from `GCS_ACCESS_KEY_ID` and `GCS_SECRET_ACCESS_KEY` environment variables.
-    /// Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and
-    /// `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
+    /// Uses Google Application Default Credentials (ADC).
+    /// You can authenticate by running `gcloud auth application-default login` or by setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of a service account JSON key file.
     #[command()]
     Gcs {
         /// Name of the storage

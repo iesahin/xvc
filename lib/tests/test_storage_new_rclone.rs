@@ -33,6 +33,11 @@ fn sh(cmd: String) -> String {
 
 #[test]
 fn test_storage_new_rclone() -> Result<()> {
+    if which::which("rclone").is_err() {
+        println!("Skipping rclone test because rclone is not installed");
+        return Ok(());
+    }
+
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
 

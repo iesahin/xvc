@@ -10,7 +10,7 @@ Configure an [Google Cloud Storage](https://cloud.google.com/storage) service as
 $ xvc storage new gcs --help
 Add a new Google Cloud Storage storage
 
-Reads credentials from `GCS_ACCESS_KEY_ID` and `GCS_SECRET_ACCESS_KEY` environment variables. Alternatively you can use `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>` and `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>` environment variables if you have multiple storages of this type.
+Uses Google Application Default Credentials (ADC). You can authenticate by running `gcloud auth application-default login` or by setting the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of a service account JSON key file.
 
 Usage: xvc storage new gcs [OPTIONS] --name <NAME> --bucket-name <BUCKET_NAME> --region <REGION>
 
@@ -38,13 +38,9 @@ Options:
 
 ## Examples
 
-Please [configure S3 compatible interface to your Google Cloud Storage account](https://bitmovin.com/docs/encoding/faqs/how-can-i-create-access-secret-keys-for-google-cloud-storage) before using this command.
+You can configure this using Google Cloud Storage SDK and Application Default Credentials natively.
 
-Before calling any commands that use this storage, you must set the following environment variables.
-
-- `GCS_ACCESS_KEY_ID` or `XVC_STORAGE_ACCESS_KEY_ID_<storage_name>`: The access key of the Google Cloud Storage
-  account. The second form is used when you have multiple storages with different access keys.
-- `GCS_SECRET_ACCESS_KEY` or `XVC_STORAGE_SECRET_ACCESS_KEY_<storage_name>`: The secret key of the Google Cloud Storage account. The second form is used when you have multiple storages with different access keys.
+Before calling any commands that use this storage, make sure you have either run `gcloud auth application-default login` or set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to a valid service account JSON key.
 
 The command works only in Xvc repositories.
 
