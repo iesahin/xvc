@@ -105,12 +105,12 @@ impl XvcDropboxStorage {
     }
 
     fn build_storage_path(&self, xvc_root: &XvcRoot, cache_path: &XvcCachePath) -> XvcStoragePath {
-        XvcStoragePath::from(format!(
-            "{}/{}/{}",
-            self.storage_prefix.trim_start_matches('/').trim_end_matches('/'),
-            xvc_root.guid(),
-            cache_path
-        ))
+        let prefix = self.storage_prefix.trim_start_matches('/').trim_end_matches('/');
+        if prefix.is_empty() {
+            XvcStoragePath::from(format!("{}/{}", xvc_root.guid(), cache_path))
+        } else {
+            XvcStoragePath::from(format!("{}/{}/{}", prefix, xvc_root.guid(), cache_path))
+        }
     }
 }
 
@@ -197,7 +197,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
         let response = client
             .post("https://content.dropboxapi.com/2/files/upload")
             .header("Authorization", format!("Bearer {}", token))
-            .header("Dropbox-API-Arg", serde_json::to_string(&commit_info).unwrap())
+            .header("Dropbox-API-Arg", serde_json::to_string(&commit_info).map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Failed to serialize Dropbox argument: {}", e) })?)
             .header("Content-Type", "application/octet-stream")
             .body(guid_str)
             .send()
@@ -256,6 +256,11 @@ impl XvcStorageOperations for XvcDropboxStorage {
                 .send()
                 .map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Dropbox list continue error: {}", e) })?;
             
+            if !response.status().is_success() {
+                let err_text = response.text().unwrap_or_else(|_| "Unknown error".to_string());
+                return Err(Error::AnyhowError { source: anyhow::anyhow!("Dropbox list continue failed: {}", err_text) });
+            }
+
             result = response.json().map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Dropbox json error: {}", e) })?;
             entries.extend(result.entries);
         }
@@ -304,7 +309,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
                 client
                     .post("https://content.dropboxapi.com/2/files/upload")
                     .header("Authorization", format!("Bearer {}", token))
-                    .header("Dropbox-API-Arg", serde_json::to_string(&commit_info).unwrap())
+                    .header("Dropbox-API-Arg", serde_json::to_string(&commit_info).map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Failed to serialize Dropbox argument: {}", e) })?)
                     .header("Content-Type", "application/octet-stream")
                     .body(file)
                     .send()
@@ -318,7 +323,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
                 let response = client
                     .post("https://content.dropboxapi.com/2/files/upload_session/start")
                     .header("Authorization", format!("Bearer {}", token))
-                    .header("Dropbox-API-Arg", serde_json::to_string(&arg).unwrap())
+                    .header("Dropbox-API-Arg", serde_json::to_string(&arg).map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Failed to serialize Dropbox argument: {}", e) })?)
                     .header("Content-Type", "application/octet-stream")
                     .send()
                     .map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Dropbox session start error: {}", e) })?;
@@ -355,7 +360,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
                         let response = client
                             .post("https://content.dropboxapi.com/2/files/upload_session/append_v2")
                             .header("Authorization", format!("Bearer {}", token))
-                            .header("Dropbox-API-Arg", serde_json::to_string(&arg).unwrap())
+                            .header("Dropbox-API-Arg", serde_json::to_string(&arg).map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Failed to serialize Dropbox argument: {}", e) })?)
                             .header("Content-Type", "application/octet-stream")
                             .body(buffer[..bytes_read].to_vec())
                             .send()
@@ -386,7 +391,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
                         let response = client
                             .post("https://content.dropboxapi.com/2/files/upload_session/finish")
                             .header("Authorization", format!("Bearer {}", token))
-                            .header("Dropbox-API-Arg", serde_json::to_string(&arg).unwrap())
+                            .header("Dropbox-API-Arg", serde_json::to_string(&arg).map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Failed to serialize Dropbox argument: {}", e) })?)
                             .header("Content-Type", "application/octet-stream")
                             .body(buffer[..bytes_read].to_vec())
                             .send()
@@ -439,7 +444,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
             let mut response = client
                 .post("https://content.dropboxapi.com/2/files/download")
                 .header("Authorization", format!("Bearer {}", token))
-                .header("Dropbox-API-Arg", serde_json::to_string(&serde_json::json!({ "path": dropbox_path })).unwrap())
+                .header("Dropbox-API-Arg", serde_json::to_string(&serde_json::json!({ "path": dropbox_path })).map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Failed to serialize Dropbox argument: {}", e) })?)
                 .send()
                 .map_err(|e| Error::AnyhowError { source: anyhow::anyhow!("Dropbox download error: {}", e) })?;
 
