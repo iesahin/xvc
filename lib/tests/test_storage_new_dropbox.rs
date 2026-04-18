@@ -3,6 +3,7 @@ use common::*;
 use xvc_core::XvcVerbosity;
 
 #[test]
+#[cfg_attr(not(feature = "test-dropbox"), ignore)]
 fn test_storage_new_dropbox() {
     let xvc_root = run_in_temp_git_dir();
     std::env::set_current_dir(&xvc_root).unwrap();
