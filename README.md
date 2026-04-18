@@ -180,7 +180,8 @@ $ xvc file send 'my-data/training/*' --to my-storage
 Xvc [supports][xvc-s-n] [external directories][xvc-s-n-local], [rclone
 remotes][xvc-s-n-rclone], [Rsync][xvc-s-n-rsync], [AWS S3][xvc-s-n-s3], [Google
 Cloud Storage][xvc-s-n-gcs], [MinIO][xvc-s-n-minio], [Cloudflare
-R2][xvc-s-n-r2], [Wasabi][xvc-s-n-wasabi], [Digital Ocean Spaces][xvc-s-n-do].
+R2][xvc-s-n-r2], [Wasabi][xvc-s-n-wasabi], [Digital Ocean Spaces][xvc-s-n-do],
+[Dropbox][xvc-s-n-dropbox].
 Please [create an issue] if you want Xvc to support another cloud storage
 service.
 
@@ -790,6 +791,7 @@ real-world conditions, it didn't go under the test of time. Please backup.
 [xvc-p-s-n]: https://docs.xvc.dev/ref/xvc-pipeline-step-new
 
 [xvc-s-n-do]: https://docs.xvc.dev/ref/xvc-storage-new-digital-ocean
+[xvc-s-n-dropbox]: https://docs.xvc.dev/ref/xvc-storage-new-dropbox
 [xvc-s-n-gcs]: https://docs.xvc.dev/ref/xvc-storage-new-gcs
 [xvc-s-n-generic]: https://docs.xvc.dev/ref/xvc-storage-new-generic
 [xvc-s-n-local]: https://docs.xvc.dev/ref/xvc-storage-new-local

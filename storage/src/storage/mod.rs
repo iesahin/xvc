@@ -6,6 +6,8 @@ pub mod async_common;
 
 #[cfg(feature = "digital-ocean")]
 pub mod digital_ocean;
+#[cfg(feature = "dropbox")]
+pub mod dropbox;
 pub mod event;
 #[cfg(feature = "gcs")]
 pub mod gcs;
@@ -87,6 +89,9 @@ pub enum XvcStorage {
     /// A DigitalOcean storage is a bucket in DigitalOcean
     #[cfg(feature = "digital-ocean")]
     DigitalOcean(digital_ocean::XvcDigitalOceanStorage),
+    /// A Dropbox storage is a folder in Dropbox
+    #[cfg(feature = "dropbox")]
+    Dropbox(dropbox::XvcDropboxStorage),
 }
 persist!(XvcStorage, "storage");
 
@@ -111,6 +116,8 @@ impl XvcStorage {
             XvcStorage::Wasabi(s) => s.name.clone(),
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(s) => s.name.clone(),
+            #[cfg(feature = "dropbox")]
+            XvcStorage::Dropbox(s) => s.name.clone(),
         }
     }
 
@@ -134,6 +141,8 @@ impl XvcStorage {
             XvcStorage::Wasabi(s) => s.guid.to_string(),
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(s) => s.guid.to_string(),
+            #[cfg(feature = "dropbox")]
+            XvcStorage::Dropbox(s) => s.guid.to_string(),
         }
     }
 
@@ -157,6 +166,8 @@ impl XvcStorage {
             XvcStorage::Wasabi(s) => s,
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(s) => s,
+            #[cfg(feature = "dropbox")]
+            XvcStorage::Dropbox(s) => s,
         }
     }
 
@@ -180,6 +191,8 @@ impl XvcStorage {
             XvcStorage::Wasabi(s) => s,
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(s) => s,
+            #[cfg(feature = "dropbox")]
+            XvcStorage::Dropbox(s) => s,
         }
     }
 }
@@ -258,6 +271,12 @@ impl std::fmt::Display for XvcStorage {
                 f,
                 "DO:      {}\t{}\t{}.{}/{}",
                 dor.name, dor.guid, dor.region, dor.bucket_name, dor.storage_prefix
+            ),
+            #[cfg(feature = "dropbox")]
+            XvcStorage::Dropbox(dr) => write!(
+                f,
+                "Dropbox: {}\t{}\t{}",
+                dr.name, dr.guid, dr.storage_prefix
             ),
         }
     }
@@ -398,6 +417,8 @@ pub fn get_storage_record(
             XvcStorage::Wasabi(r) => r.name == *n,
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(r) => r.name == *n,
+            #[cfg(feature = "dropbox")]
+            XvcStorage::Dropbox(r) => r.name == *n,
         },
         StorageIdentifier::Uuid(ref id) => match r {
             XvcStorage::Local(lr) => lr.guid == (*id).into(),
@@ -417,6 +438,8 @@ pub fn get_storage_record(
             XvcStorage::Wasabi(r) => r.guid == (*id).into(),
             #[cfg(feature = "digital-ocean")]
             XvcStorage::DigitalOcean(r) => r.guid == (*id).into(),
+            #[cfg(feature = "dropbox")]
+            XvcStorage::Dropbox(r) => r.guid == (*id).into(),
         },
     });
 

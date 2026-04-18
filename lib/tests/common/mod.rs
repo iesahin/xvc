@@ -57,6 +57,29 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     Ok(output_str)
 }
 
+pub fn run_xvc_catch(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Result<(String, String)> {
+    let mut cmd = cargo_bin_cmd!("xvc");
+    let verbosity_opt = match verbosity {
+        XvcVerbosity::Quiet => vec!["--quiet"],
+        XvcVerbosity::Default => vec![],
+        XvcVerbosity::Warn => vec!["-v"],
+        XvcVerbosity::Info => vec!["-vv"],
+        XvcVerbosity::Debug => vec!["-vvv"],
+        XvcVerbosity::Trace => vec!["--debug", "-vvvvv"],
+    };
+
+    let prepared = match cwd {
+        Some(cwd) => cmd.args(verbosity_opt).args(args).current_dir(cwd),
+        None => cmd.args(verbosity_opt).args(args),
+    };
+
+    let output = prepared.output()?;
+
+    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+    Ok((stdout, stderr))
+}
+
 pub fn example_project_url() -> Result<String> {
     Ok("https://e1.xvc.dev/example-xvc.tgz".to_string())
 }
