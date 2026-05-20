@@ -135,6 +135,10 @@ fn sh(cmd: String) -> String {
 #[test]
 #[cfg_attr(not(feature = "test-digital-ocean"), ignore)]
 fn test_storage_new_digital_ocean() -> Result<()> {
+    if env::var("DIGITAL_OCEAN_ACCESS_KEY_ID").is_err() || env::var("DIGITAL_OCEAN_SECRET_ACCESS_KEY").is_err() {
+        println!("Skipping test_storage_new_digital_ocean because DIGITAL_OCEAN_ACCESS_KEY_ID or DIGITAL_OCEAN_SECRET_ACCESS_KEY is not set.");
+        return Ok(());
+    }
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc";

@@ -132,6 +132,10 @@ fn sh(cmd: String) -> String {
 #[test]
 #[cfg_attr(not(feature = "test-s3"), ignore)]
 fn test_storage_new_s3() -> Result<()> {
+    if env::var("AWS_ACCESS_KEY_ID").is_err() || env::var("AWS_SECRET_ACCESS_KEY").is_err() {
+        println!("Skipping test_storage_new_s3 because AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is not set.");
+        return Ok(());
+    }
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";

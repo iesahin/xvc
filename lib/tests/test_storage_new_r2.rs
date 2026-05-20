@@ -134,6 +134,10 @@ fn sh(cmd: String) -> String {
 // Ignore this test for now
 #[ignore]
 fn test_storage_new_r2() -> Result<()> {
+    if env::var("R2_ACCESS_KEY_ID").is_err() || env::var("R2_SECRET_ACCESS_KEY").is_err() || env::var("R2_ACCOUNT_ID").is_err() {
+        println!("Skipping test_storage_new_r2 because R2_ACCESS_KEY_ID or R2_SECRET_ACCESS_KEY or R2_ACCOUNT_ID is not set.");
+        return Ok(());
+    }
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let bucket_name = "xvc-test";

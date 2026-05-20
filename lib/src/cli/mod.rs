@@ -335,7 +335,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
             match xvc_root_opt {
                 Some(ref xvc_root) => {
                     xvc_root.record();
-                    if cli_opts.skip_git {
+                    if cli_opts.skip_git || matches!(cli_opts.command, XvcSubCommand::_Comp(_)) {
                         debug!(output_snd, "Skipping Git operations");
                     } else {
                         handle_git_automation(
@@ -621,20 +621,6 @@ pub fn command_matcher(
                 None
             }
         };
-
-        if let Some(ref xvc_root) = xvc_root_opt {
-            if !cli_opts.skip_git {
-                xvc_root.record();
-                handle_git_automation(
-                    output_snd,
-                    xvc_root,
-                    cli_opts.to_branch.as_deref(),
-                    &cli_opts.command_string,
-                    // FIXME: Handle this error more gracefully
-                )
-                .unwrap();
-            }
-        }
 
         Ok(xvc_root_opt)
     }

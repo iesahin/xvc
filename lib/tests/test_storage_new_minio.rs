@@ -48,6 +48,11 @@ fn sh(cmd: String) -> String {
 #[test]
 #[cfg_attr(not(feature = "test-minio"), ignore)]
 fn test_storage_new_minio() -> Result<()> {
+    if env::var("MINIO_ACCESS_KEY_ID").is_err() || env::var("MINIO_SECRET_ACCESS_KEY").is_err() {
+        println!("Skipping test_storage_new_minio because MINIO_ACCESS_KEY_ID or MINIO_SECRET_ACCESS_KEY is not set.");
+        return Ok(());
+    }
+
     common::test_logging(LevelFilter::Trace);
     let xvc_root = create_directory_hierarchy()?;
     let endpoint = "http://e1.xvc.dev:9000";
