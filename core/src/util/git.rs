@@ -181,6 +181,33 @@ pub fn handle_git_automation(
     let xvc_dir_str = xvc_dir.to_str().unwrap();
 
     if use_git {
+        // Check if there are any changes in the relevant paths before proceeding
+        match exec_git(
+            &git_command,
+            xvc_root_str,
+            &[
+                "status",
+                "--porcelain",
+                xvc_dir_str,
+                "*.gitignore",
+                "*.xvcignore",
+            ],
+        ) {
+            Ok(git_status_out) => {
+                if git_status_out.trim().is_empty() {
+                    debug!(
+                        output_snd,
+                        "No changes detected in Xvc files, skipping Git operations."
+                    );
+                    return Ok(());
+                }
+            }
+            Err(e) => {
+                debug!(output_snd, "Error checking git status: {e}");
+                // Continue and let git_auto_commit/git_auto_stage handle/report the error
+            }
+        }
+
         if auto_commit {
             git_auto_commit(
                 output_snd,
@@ -217,6 +244,7 @@ pub fn git_auto_commit(
     }
 
     // Add and commit `.xvc`
+    let mut commit_error = None;
     match exec_git(
         git_command,
         xvc_root_str,
@@ -233,7 +261,6 @@ pub fn git_auto_commit(
         Ok(git_add_output) => {
             if git_add_output.trim().is_empty() {
                 debug!(output_snd, "No files to commit");
-                return Ok(());
             } else {
                 match exec_git(
                     git_command,
@@ -249,14 +276,14 @@ pub fn git_auto_commit(
                     }
                     Err(e) => {
                         debug!(output_snd, "Error committing .xvc/ to git: {e}");
-                        return Err(e);
+                        commit_error = Some(e);
                     }
                 }
             }
         }
         Err(e) => {
             debug!(output_snd, "Error adding .xvc/ to git: {e}");
-            return Err(e);
+            commit_error = Some(e);
         }
     }
 
@@ -269,6 +296,11 @@ pub fn git_auto_commit(
         );
         unstash_user_staged_files(output_snd, git_command, xvc_root_str)?;
     }
+    
+    if let Some(e) = commit_error {
+        return Err(e);
+    }
+    
     Ok(())
 }
 
