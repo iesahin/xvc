@@ -1,0 +1,189 @@
+name: Nightly Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    name: Prepare Tag
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.calc.outputs.tag_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Calculate Tag
+        id: calc
+        run: |
+          VERSION=$(grep '^version =' lib/Cargo.toml | head -n1 | cut -d '"' -f 2)
+          DATE=$(date +'%Y%m%d')
+          HASH=$(git rev-parse --short HEAD)
+          TAG="v${VERSION}.${DATE}.${HASH}-nightly"
+          echo "Calculated tag: $TAG"
+          echo "tag_name=${TAG}" >> $GITHUB_OUTPUT
+
+  build:
+    name: Build - ${{ matrix.platform.os-name }}
+    needs: prepare
+    runs-on: ${{ matrix.platform.runs-on }}
+    strategy:
+      fail-fast: true
+      matrix:
+        platform:
+          - os-name: Linux-x86_64
+            runs-on: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            command: build
+            args: "--release --features=bundled-openssl"
+
+          - os-name: Linux-aarch64
+            runs-on: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+            command: build
+            args: "--release --features=bundled-openssl,bundled-sqlite"
+
+          - os-name: Windows-x86_64
+            runs-on: windows-latest
+            target: x86_64-pc-windows-msvc
+            command: build
+            args: "--release --features=bundled-sqlite"
+
+          - os-name: Windows-aarch64
+            runs-on: windows-latest
+            target: aarch64-pc-windows-msvc
+            command: build
+            args: "--release --features=bundled-sqlite"
+
+          - os-name: macOS-x86_64
+            runs-on: macOS-latest
+            target: x86_64-apple-darwin
+            command: build
+            args: "--release"
+
+          - os-name: macOS-aarch64
+            runs-on: macOS-latest
+            target: aarch64-apple-darwin
+            command: build
+            args: "--release"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build binary
+        uses: houseabsolute/actions-rust-cross@v1
+        with:
+          command: ${{ matrix.platform.command }}
+          target: ${{ matrix.platform.target }}
+          args: ${{ matrix.platform.args }}
+          strip: true
+
+      - name: Package artifacts (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          cd target/${{ matrix.platform.target }}/release
+          tar -czf xvc-${{ matrix.platform.target }}.tar.gz xvc
+        shell: bash
+
+      - name: Package artifacts (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd target/${{ matrix.platform.target }}/release
+          Compress-Archive -Path xvc.exe -DestinationPath xvc-${{ matrix.platform.target }}.zip
+        shell: pwsh
+
+      - name: Upload artifact (Unix)
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xvc-${{ matrix.platform.target }}
+          path: target/${{ matrix.platform.target }}/release/xvc-${{ matrix.platform.target }}.tar.gz
+          retention-days: 1
+
+      - name: Upload artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: xvc-${{ matrix.platform.target }}
+          path: target/${{ matrix.platform.target }}/release/xvc-${{ matrix.platform.target }}.zip
+          retention-days: 1
+
+  test:
+    name: Test
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y s3cmd ripgrep tree python3 rclone
+          wget https://github.com/Peltoche/lsd/releases/download/0.23.1/lsd_0.23.1_amd64.deb
+          sudo dpkg -i lsd_0.23.1_amd64.deb
+          wget https://dl.min.io/client/mc/release/linux-amd64/mc
+          chmod +x mc
+          sudo mv mc /usr/local/bin/
+
+      - name: Git config for automated Git tests
+        run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
+
+      - name: Write the private key file for e1.xvc.dev connection
+        run: mkdir -p $HOME/.ssh/ && echo "${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
+
+      - name: Write an ssh config to allow connection without noise
+        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; echo '    LogLevel ERROR' >> $HOME/.ssh/config ;  chmod 400 $HOME/.ssh/config
+
+      - name: Install rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Test
+        run: cargo test --features test-ci --workspace
+        env:
+          TRYCMD: "dump"
+          XVC_TRYCMD_TESTS: "storage,file,pipeline,core,start"
+          # Included some core env vars as in rust.yml (excluding AWS/GCS for brevity unless needed by tests locally)
+          # Note: If tests strictly require secrets, we might need to map them here as well.
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DIGITAL_OCEAN_ACCESS_KEY_ID: ${{ secrets.DIGITAL_OCEAN_ACCESS_KEY_ID }}
+          DIGITAL_OCEAN_SECRET_ACCESS_KEY: ${{ secrets.DIGITAL_OCEAN_SECRET_ACCESS_KEY }}
+          GCS_ACCESS_KEY_ID: ${{ secrets.GCS_ACCESS_KEY_ID }}
+          GCS_SECRET_ACCESS_KEY: ${{ secrets.GCS_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
+          MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
+
+  release:
+    name: Create Release
+    needs: [prepare, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display downloaded artifacts
+        run: ls -R artifacts/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag_name }}
+          prerelease: true
+          make_latest: false
+          files: artifacts/**/*
