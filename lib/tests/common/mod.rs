@@ -57,6 +57,42 @@ pub fn run_xvc(cwd: Option<&Path>, args: &[&str], verbosity: XvcVerbosity) -> Re
     Ok(output_str)
 }
 
+/// Run xvc without asserting success. Returns (success, stdout, stderr).
+pub fn run_xvc_unchecked(cwd: Option<&Path>, args: &[&str]) -> Result<(bool, String, String)> {
+    let mut cmd = cargo_bin_cmd!("xvc");
+    let prepared = match cwd {
+        Some(cwd) => cmd.args(args).current_dir(cwd),
+        None => cmd.args(args),
+    };
+    let output = prepared.output()?;
+    Ok((
+        output.status.success(),
+        String::from_utf8_lossy(&output.stdout).replace("\\\n", "\n"),
+        String::from_utf8_lossy(&output.stderr).replace("\\\n", "\n"),
+    ))
+}
+
+/// All regular files under the `.xvc/b3` content-addressed cache
+pub fn cache_paths(xvc_root: &XvcRoot) -> Vec<PathBuf> {
+    let cache_dir = xvc_root.absolute_path().join(".xvc/b3");
+    if !cache_dir.exists() {
+        return Vec::new();
+    }
+    let mut paths: Vec<PathBuf> = jwalk::WalkDir::new(&cache_dir)
+        .into_iter()
+        .filter_map(|e| {
+            let e = e.ok()?;
+            if e.file_type().is_file() {
+                Some(e.path())
+            } else {
+                None
+            }
+        })
+        .collect();
+    paths.sort();
+    paths
+}
+
 pub fn example_project_url() -> Result<String> {
     Ok("https://e1.xvc.dev/example-xvc.tgz".to_string())
 }
