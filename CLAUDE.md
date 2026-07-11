@@ -18,9 +18,6 @@ cargo test --workspace               # all unit + integration tests
 cargo test -p xvc --test test_file_track_serial   # single integration test file
 cargo test -p xvc-core               # single crate
 
-# Doc tests (macOS only, trycmd-based, reads from book/src/)
-XVC_TRYCMD_TESTS=file cargo test -p xvc --test z_test_docs
-
 # Cloud storage integration tests (require secrets)
 cargo test --features test-ci -p xvc --test test_storage_new_minio
 
@@ -92,9 +89,9 @@ persist!(MyType, "my-type");  // generates Storable impl; "my-type" becomes the 
 
 `RecheckMethod` controls how files are placed in the workspace from cache: `Copy`, `Symlink`, `Hardlink`, or `Reflink` (feature-gated). Default is `Copy`.
 
-### Documentation tests
+### Documentation
 
-`lib/tests/z_test_docs.rs` uses `trycmd` to run all shell commands embedded in the `book/src/` Markdown files. It symlinks docs into `lib/docs/` and template dirs from `lib/templates/`. These tests are macOS-only (`#[cfg(target_os = "macos")]`). Each doc page can have a `.in/` directory (input files) and `.out/` directory (expected outputs).
+The mdBook documentation (previously `book/` here) now lives in `iesahin/xvc-mono`'s `book/` directory. The `docs.xvc.dev` site is published from there.
 
 ### Features
 
