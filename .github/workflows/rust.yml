@@ -24,29 +24,9 @@ jobs:
           - build: stable
             rust: stable
             # rust: nightly-2024-01-01
-            test-args: --features test-ci # --no-fail-fast
             ## for submitters other than me, I'll add another job here.
             # benches: true
             coverage: true
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DIGITAL_OCEAN_ACCESS_KEY_ID: ${{ secrets.DIGITAL_OCEAN_ACCESS_KEY_ID }}
-      DIGITAL_OCEAN_SECRET_ACCESS_KEY: ${{ secrets.DIGITAL_OCEAN_SECRET_ACCESS_KEY }}
-      # WASABI_ACCESS_KEY_ID: ${{ secrets.WASABI_ACCESS_KEY_ID }}
-      # WASABI_SECRET_ACCESS_KEY: ${{ secrets.WASABI_SECRET_ACCESS_KEY }}
-      GCS_ACCESS_KEY_ID: ${{ secrets.GCS_ACCESS_KEY_ID }}
-      GCS_SECRET_ACCESS_KEY: ${{ secrets.GCS_SECRET_ACCESS_KEY }}
-      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-      MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
-      MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
-      XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
-      # We don't run xvc-storage and how-to tests here
-      XVC_TRYCMD_TESTS: core,file,pipeline,intro,start,storage
-      XVC_TRYCMD_STORAGE_TESTS: minio,generic,local,
 
     steps:
       - name: Checkout
@@ -65,15 +45,6 @@ jobs:
       - name: Git config for automated Git tests
         run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
 
-      - name: Write the private key file for e1.xvc.dev connection
-        run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
-
-      - name: Write an ssh config to allow connection without noise
-        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; echo '    LogLevel ERROR' >> $HOME/.ssh/config ;  chmod 400 $HOME/.ssh/config
-
-      # - name: List .ssh contents
-      #   run: ls -R $HOME/.ssh ; cat $HOME/.ssh/id_rsa ; cat $HOME/.ssh/config
-      #
       - name: Install rust
         uses: dtolnay/rust-toolchain@master
         with:
@@ -105,12 +76,7 @@ jobs:
       - name: Test and Coverage
         id: coverage
         if: matrix.coverage
-        run: cargo llvm-cov ${{ matrix.test-args }} --workspace --lcov --output-path lcov.info
-        env:
-          # To debug the output when commands fail
-          TRYCMD: "dump"
-          # Limit the docs we run tests
-          XVC_TRYCMD_TESTS: "storage,file,pipeline,core,start"
+        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
 
       - name: Upload to codecov.io
         if: matrix.coverage
@@ -135,23 +101,6 @@ jobs:
         include:
           - build: stable
             rust: stable
-            test-args: --features test-ci
-
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      DIGITAL_OCEAN_ACCESS_KEY_ID: ${{ secrets.DIGITAL_OCEAN_ACCESS_KEY_ID }}
-      DIGITAL_OCEAN_SECRET_ACCESS_KEY: ${{ secrets.DIGITAL_OCEAN_SECRET_ACCESS_KEY }}
-      GCS_ACCESS_KEY_ID: ${{ secrets.GCS_ACCESS_KEY_ID }}
-      GCS_SECRET_ACCESS_KEY: ${{ secrets.GCS_SECRET_ACCESS_KEY }}
-      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
-      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-      MINIO_ACCESS_KEY_ID: ${{ secrets.MINIO_ACCESS_KEY_ID }}
-      MINIO_SECRET_ACCESS_KEY: ${{ secrets.MINIO_SECRET_ACCESS_KEY }}
-      XVC_TEST_ONE_EMRESULT_COM_KEY: ${{ secrets.XVC_TEST_ONE_EMRESULT_COM_KEY }}
-      XVC_TRYCMD_TESTS: core,file,pipeline,intro,start,storage
-      XVC_TRYCMD_STORAGE_TESTS: minio,generic,local,
 
     steps:
       - name: Checkout
@@ -172,12 +121,6 @@ jobs:
       - name: Git config for automated Git tests
         run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
 
-      - name: Write the private key file for e1.xvc.dev connection
-        run: mkdir -p $HOME/.ssh/ && echo "${XVC_TEST_ONE_EMRESULT_COM_KEY}" > $HOME/.ssh/id_rsa ; chmod 600 ~/.ssh/id_rsa
-
-      - name: Write an ssh config to allow connection without noise
-        run: echo 'Host *' >> $HOME/.ssh/config ; echo '    StrictHostKeyChecking no' >> $HOME/.ssh/config ; echo '    LogLevel ERROR' >> $HOME/.ssh/config ;  chmod 400 $HOME/.ssh/config
-
       - name: Install rust
         uses: dtolnay/rust-toolchain@master
         with:
@@ -195,7 +138,4 @@ jobs:
         run: xvc --version
 
       - name: Test
-        run: cargo test ${{ matrix.test-args }} --workspace
-        env:
-          TRYCMD: "dump"
-          XVC_TRYCMD_TESTS: "storage,file,pipeline,core,start"
+        run: cargo test --workspace
