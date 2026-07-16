@@ -4,12 +4,12 @@ use std::ffi::OsString;
 use crate::error::Error;
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
+use xvc_core::persist;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
     ContentDigest, Diff, HashAlgorithm, TextOrBinary, XvcMetadata, XvcPath,
     XvcPathMetadataProvider, XvcRoot,
 };
-use xvc_core::persist;
 
 /// A file dependency for a pipeline step.
 /// It keeps track of path, metadata and the digest of the file.

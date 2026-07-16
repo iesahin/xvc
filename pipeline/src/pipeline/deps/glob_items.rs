@@ -3,12 +3,12 @@ use std::collections::BTreeMap;
 
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
+use xvc_core::persist;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
     glob_paths, ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcPathMetadataProvider,
     XvcRoot,
 };
-use xvc_core::persist;
 
 /// A path collection where each item is tracked separately.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]

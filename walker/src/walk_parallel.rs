@@ -1,16 +1,13 @@
 //! Parallel walk implementation
-use std::{
-    path::Path,
-    sync::Arc,
-};
+use std::{path::Path, sync::Arc};
 
 use crossbeam::queue::SegQueue;
 use crossbeam_channel::Sender;
 use xvc_logging::watch;
 
 use crate::{
-    directory_list, update_ignore_rules, MatchResult, PathMetadata, Result,
-    SharedIgnoreRules, WalkOptions, MAX_THREADS_PARALLEL_WALK,
+    directory_list, update_ignore_rules, MatchResult, PathMetadata, Result, SharedIgnoreRules,
+    WalkOptions, MAX_THREADS_PARALLEL_WALK,
 };
 
 fn walk_parallel_inner(

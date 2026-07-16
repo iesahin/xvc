@@ -23,7 +23,8 @@ use super::XvcStorageTempDir;
 pub trait XvcStorageOperations {
     /// The init operation is creates a directory with the "short guid" of the Xvc repository and
     /// adds a .xvc-guid file with the guid of the storage.
-    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>;
+    fn init(&mut self, output: &XvcOutputSender, xvc_root: &XvcRoot)
+        -> Result<XvcStorageInitEvent>;
 
     /// Used by xvc file list command to list the contents of a directory in the storage.
     fn list(&self, output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent>;

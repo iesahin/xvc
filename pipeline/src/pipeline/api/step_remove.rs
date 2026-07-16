@@ -1,6 +1,6 @@
 use xvc_core::XvcRoot;
-use xvc_core::{R1NStore, XvcStore};
 use xvc_core::{info, XvcOutputSender};
+use xvc_core::{R1NStore, XvcStore};
 
 use crate::{
     pipeline::XvcStepInvalidate, Result, XvcDependency, XvcOutput, XvcPipeline, XvcStep,
