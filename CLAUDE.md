@@ -13,13 +13,9 @@ Xvc is a Git-based MLOps/data versioning CLI tool. It tracks large binary files 
 cargo build                          # debug build
 cargo build --release                # release build
 
-# Run tests (all workspace crates)
-cargo test --workspace               # all unit + integration tests
-cargo test -p xvc --test test_file_track_serial   # single integration test file
+# Run tests (all workspace crates, unit tests only)
+cargo test --workspace               # unit tests embedded in each crate's src/
 cargo test -p xvc-core               # single crate
-
-# Cloud storage integration tests (require secrets)
-cargo test --features test-ci -p xvc --test test_storage_new_minio
 
 # Lint
 cargo clippy --workspace
@@ -28,14 +24,10 @@ cargo fmt --all
 # Coverage (requires cargo-llvm-cov)
 LLVM_PROFILE_FILE="${TMPDIR}/xvc-%p-%m.profraw" CARGO_INCREMENTAL=0 \
   RUSTFLAGS="-Cinstrument-coverage" \
-  cargo llvm-cov --features test-ci --lcov --output-path lcov.info -p xvc
+  cargo llvm-cov --lcov --output-path lcov.info -p xvc
 ```
 
-### Test environment variables
-
-- `XVC_TRYCMD_TESTS` — comma-separated list of doc sections to run: `core`, `file`, `pipeline`, `storage`, `intro`, `start`, `how-to`
-- `TRYCMD=overwrite` — regenerate expected outputs in doc tests
-- `TRYCMD=dump` — dump actual outputs without failing
+Integration tests (CLI-level, cloud storage backends, etc.) live in `iesahin/xvc-mono`'s `xvc-test` crate, which path-depends on this repo's crates via the `xvc` submodule. Run them from there: `cargo test --manifest-path xvc-test/Cargo.toml --features test-ci`.
 
 ## Architecture
 
@@ -57,8 +49,8 @@ xvc-logging → xvc-ecs → xvc-walker → xvc-config → xvc-core
 - **`file`** — `track`, `recheck`, `carry-in`, `copy`, `move`, `list`, `hash`, `bring`, `send`, `share`, `untrack` subcommands.
 - **`pipeline`** — Pipeline steps, dependency types (file, glob, glob-items, lines, line-items, regex, regex-items, url, param, sqlite, generic, step), DAG execution via `petgraph`. Steps run in parallel when not interdependent.
 - **`storage`** — Storage backends: local, S3/MinIO/R2/GCS/Wasabi/DigitalOcean (via `rust-s3`), rsync, rclone, generic (shell commands). Cloud features are Cargo feature-gated.
-- **`test_helper`** — `create_directory_tree`, `generate_random_file`, `run_in_temp_dir`, `run_in_temp_git_dir`, `random_temp_dir`. Used from all integration tests.
-- **`lib`** — The `xvc` crate: binary entrypoint (`main.rs`), CLI dispatch (`cli/mod.rs`), public API re-exports (`api.rs`), and all integration tests under `tests/`.
+- **`test_helper`** — `create_directory_tree`, `generate_random_file`, `run_in_temp_dir`, `run_in_temp_git_dir`, `random_temp_dir`. Used from `xvc-mono`'s `xvc-test` integration tests.
+- **`lib`** — The `xvc` crate: binary entrypoint (`main.rs`), CLI dispatch (`cli/mod.rs`), public API re-exports (`api.rs`).
 
 ### CLI dispatch flow
 
@@ -98,4 +90,5 @@ The mdBook documentation (previously `book/` here) now lives in `iesahin/xvc-mon
 Default features enable all cloud backends. Key feature flags:
 - `reflink` — enables reflink support via `xvc-file/reflink`
 - `bundled-sqlite` — bundles SQLite for pipeline sqlite-query dependencies
-- `test-ci` — enables all storage integration tests that require credentials
+
+(The `test-*`/`test-ci` feature flags that used to gate storage integration tests moved with those tests to `xvc-mono`'s `xvc-test` crate.)
