@@ -11,9 +11,9 @@ use crate::{
 use clap::Parser;
 use sad_machine::state_machine;
 use serde::{Deserialize, Serialize};
+use xvc_core::XvcOutputSender;
 use xvc_core::XvcRoot;
 use xvc_core::{persist, XvcEntity};
-use xvc_core::XvcOutputSender;
 
 use super::api::step_list::cmd_step_list;
 use super::api::step_remove::cmd_step_remove;

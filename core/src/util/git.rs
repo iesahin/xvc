@@ -296,11 +296,11 @@ pub fn git_auto_commit(
         );
         unstash_user_staged_files(output_snd, git_command, xvc_root_str)?;
     }
-    
+
     if let Some(e) = commit_error {
         return Err(e);
     }
-    
+
     Ok(())
 }
 

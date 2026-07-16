@@ -7,9 +7,9 @@ use serde_yaml::Value as YamlValue;
 use std::ffi::OsString;
 use std::{ffi::OsStr, fmt::Display, fs, path::Path};
 use toml::Value as TomlValue;
+use xvc_core::persist;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{Diff, XvcMetadata, XvcPath, XvcPathMetadataProvider, XvcRoot};
-use xvc_core::persist;
 
 use log::{error, warn};
 use serde::{Deserialize, Serialize};

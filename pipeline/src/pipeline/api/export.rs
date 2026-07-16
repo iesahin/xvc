@@ -5,6 +5,7 @@ use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use std::{fs, path::PathBuf};
 
+use xvc_core::{output, XvcOutputSender};
 use xvc_core::{
     util::{
         completer::strum_variants_completer,
@@ -13,7 +14,6 @@ use xvc_core::{
     XvcPath, XvcRoot,
 };
 use xvc_core::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
-use xvc_core::{output, XvcOutputSender};
 
 use crate::{
     pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},

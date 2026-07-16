@@ -2,9 +2,9 @@
 use std::io::{self, BufRead};
 
 use serde::{Deserialize, Serialize};
+use xvc_core::persist;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{Diff, XvcMetadata, XvcPath, XvcRoot};
-use xvc_core::persist;
 
 use crate::XvcDependency;
 

@@ -4,8 +4,8 @@ use std::{ffi::OsStr, path::Path};
 use rayon::*;
 
 use strum_macros::Display;
-use xvc_core::{XvcPath, XvcRoot};
 use xvc_core::persist;
+use xvc_core::{XvcPath, XvcRoot};
 
 use crate::error::{Error, Result};
 

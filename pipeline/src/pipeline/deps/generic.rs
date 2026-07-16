@@ -3,9 +3,9 @@ use crate::error::Error;
 use crate::{Result, XvcDependency};
 use serde::{Deserialize, Serialize};
 use subprocess::Exec;
+use xvc_core::persist;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{Diff, HashAlgorithm, StdoutDigest};
-use xvc_core::persist;
 
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]
 /// A generic dependency that's invalidated when the given command's output has changed.

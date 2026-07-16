@@ -4,9 +4,9 @@ use crate::{Result, XvcDependency};
 use reqwest::blocking::Client as HttpClient;
 use serde::{Deserialize, Serialize};
 use url::Url;
+use xvc_core::persist;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{Diff, HashAlgorithm, UrlContentDigest};
-use xvc_core::persist;
 ///
 /// Invalidates when header of the URL get request changes.
 #[derive(Debug, PartialOrd, Ord, Clone, Eq, PartialEq, Serialize, Deserialize)]

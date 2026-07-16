@@ -1,8 +1,8 @@
 use crate::error::Result;
 
 use clap::Parser;
-use xvc_core::XvcRoot;
 use xvc_core::XvcOutputSender;
+use xvc_core::XvcRoot;
 
 use crate::pipeline::the_grand_pipeline_loop;
 
