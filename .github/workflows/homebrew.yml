@@ -15,7 +15,7 @@ jobs:
     name: Bump Homebrew formula
     runs-on: ubuntu-latest
     steps:
-      - uses: dawidd6/action-homebrew-bump-formula@v4
+      - uses: dawidd6/action-homebrew-bump-formula@v8
         with:
           # Required, custom GitHub access token with the 'public_repo' and 'workflow' scopes
           token: ${{secrets.HOMEBREW_XVC_REPOSITORY_TOKEN}}

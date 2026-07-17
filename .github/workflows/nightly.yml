@@ -15,7 +15,7 @@ jobs:
     outputs:
       tag_name: ${{ steps.calc.outputs.tag_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Calculate Tag
         id: calc
         run: |
@@ -72,7 +72,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v1
@@ -98,7 +98,7 @@ jobs:
 
       - name: Upload artifact (Unix)
         if: runner.os != 'Windows'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xvc-${{ matrix.platform.target }}
           path: target/${{ matrix.platform.target }}/release/xvc-${{ matrix.platform.target }}.tar.gz
@@ -106,7 +106,7 @@ jobs:
 
       - name: Upload artifact (Windows)
         if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xvc-${{ matrix.platform.target }}
           path: target/${{ matrix.platform.target }}/release/xvc-${{ matrix.platform.target }}.zip
@@ -119,7 +119,7 @@ jobs:
     timeout-minutes: 50
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install required packages
         run: |
@@ -148,10 +148,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts
 
@@ -159,7 +159,7 @@ jobs:
         run: ls -R artifacts/
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.prepare.outputs.tag_name }}
           prerelease: true
