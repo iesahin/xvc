@@ -36,8 +36,8 @@ seahash = "^4.1"
 byteorder = "^1.5"
 blake3 = "^1.8"
 blake2 = "^0.10"
-sha2 = "^0.10"
-sha3 = "^0.10"
+sha2 = "^0.11"
+sha3 = "^0.12"
 
 ## Serialization
 serde = { version = "^1.0", features = ["derive"] }
@@ -45,10 +45,10 @@ serde_yaml = "^0.9"
 serde_json = "^1.0"
 rmp = "^0.8"
 rmp-serde = "1.3.0"
-toml = { version = "^0.9",  features = ["serde", "parse", "display"]}
+toml = { version = "^1.1",  features = ["serde", "parse", "display"]}
 
 ## Caching
-cached = "^0.56"
+cached = "^2.0"
 
 ## Parallelization
 rayon = "^1.11"
@@ -57,7 +57,7 @@ crossbeam = "^0.8"
 
 ## File system
 relative-path = { version = "^2.0", features = ["serde"] }
-path-absolutize = "^3.1"
+path-absolutize = "^4.0"
 glob = "^0.3"
 
 ## Logging and errors
@@ -70,11 +70,11 @@ fern = { version = "^0.7", features = ["colored", "meta-logging-in-format"] }
 
 ## sqlite
 ## TODO: Add feature flags for sqlite when bundling needed
-rusqlite = "^0.38"
+rusqlite = "^0.40"
 fallible-iterator = "^0.3"
 
 ## Networking
-reqwest = { version = "^0.12", features = ["blocking", "json", "gzip"] }
+reqwest = { version = "^0.13", features = ["blocking", "json", "gzip"] }
 
 ## UI
 comfy-table = "7.2.1"
@@ -84,18 +84,18 @@ petgraph = "^0.8"
 tabbycat = "0.1.3"
 
 ## Misc
-subprocess = "^0.2"
+subprocess = "^1.2"
 
 sad_machine = "^1.0"
 regex = "^1.12"
 chrono = "^0.4"
-strum = "^0.27"
-strum_macros = "^0.27"
+strum = "^0.28"
+strum_macros = "^0.28"
 lazy_static = "^1.5"
 uuid = { version = "^1.19", features = ["serde", "v4", "fast-rng"] }
 hex = { version = "^0.4", features = ["serde"] }
 url = { version = "^2.5", features = ["serde"] }
-itertools = "^0.14"
+itertools = "^0.15"
 # FIXME: Use features selectively
 derive_more = { version = "^2.1", features = ["full"] }
 
