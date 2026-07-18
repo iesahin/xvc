@@ -1,8 +1,8 @@
 use std::{ffi::OsStr, path::Path};
 
 use crate::error::{Error, Result};
-use crate::pipeline::deps::XvcDependency;
 use crate::pipeline::XvcOutput;
+use crate::pipeline::deps::XvcDependency;
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString, IntoStaticStr, VariantNames};
 use xvc_core::XvcPath;

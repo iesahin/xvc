@@ -5,10 +5,10 @@ use std::collections::{HashMap, HashSet};
 use std::fs::{self};
 use std::path::PathBuf;
 
-use crate::common::gitignore::make_ignore_handler;
-use crate::common::{cache_paths_for_xvc_paths, filter_targets_from_store, FileTextOrBinary};
-use crate::recheck::{make_recheck_handler, RecheckOperation};
 use crate::Result;
+use crate::common::gitignore::make_ignore_handler;
+use crate::common::{FileTextOrBinary, cache_paths_for_xvc_paths, filter_targets_from_store};
+use crate::recheck::{RecheckOperation, make_recheck_handler};
 use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
@@ -17,9 +17,9 @@ use itertools::Itertools;
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use xvc_core::util::completer::xvc_path_completer;
-use xvc_core::{debug, output, panic, uwr, XvcOutputSender};
 use xvc_core::{ContentDigest, RecheckMethod, XvcCachePath, XvcMetadata, XvcPath, XvcRoot};
 use xvc_core::{HStore, XvcEntity, XvcStore};
+use xvc_core::{XvcOutputSender, debug, output, panic, uwr};
 
 /// Remove files from tracking and possibly delete them
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, From, Parser)]

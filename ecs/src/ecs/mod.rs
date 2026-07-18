@@ -16,13 +16,13 @@ pub mod storable;
 pub mod vstore;
 pub mod xvcstore;
 
-use rand::{rngs, RngCore, SeedableRng};
+use rand::{RngCore, SeedableRng, rngs};
 use std::fmt;
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::Once;
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 

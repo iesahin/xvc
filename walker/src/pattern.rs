@@ -6,7 +6,7 @@ pub use ignore_rules::IgnoreRules;
 pub use std::hash::Hash;
 pub use sync::{PathSync, PathSyncSingleton};
 
-pub use crate::notify::{make_watcher, PathEvent, RecommendedWatcher};
+pub use crate::notify::{PathEvent, RecommendedWatcher, make_watcher};
 
 use std::{fmt::Debug, path::PathBuf};
 

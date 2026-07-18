@@ -1,7 +1,7 @@
 //! A parameter dependency is a key-value pair that is extracted from a parameter in YAML,
 //! TOML or JSON file.
-use crate::error::{Error, Result};
 use crate::XvcDependency;
+use crate::error::{Error, Result};
 use serde_json::value::Value as JsonValue;
 use serde_yaml::Value as YamlValue;
 use std::ffi::OsString;

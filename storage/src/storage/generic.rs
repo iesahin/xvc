@@ -6,14 +6,14 @@ use relative_path::RelativePath;
 use serde::{Deserialize, Serialize};
 use subprocess::Exec;
 use xvc_core::R1NStore;
-use xvc_core::{error, info, warn, watch, XvcOutputSender};
 use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_core::{XvcOutputSender, error, info, warn, watch};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
-    XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
+    XVC_STORAGE_GUID_FILENAME, XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
 };
 
 /// Entry point for `xvc storage new generic` command. Receives all parameters from the command

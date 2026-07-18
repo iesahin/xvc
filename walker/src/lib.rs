@@ -39,10 +39,10 @@ pub use std::hash::Hash;
 pub use sync::{PathSync, PathSyncSingleton};
 use xvc_logging::warn;
 
-pub use notify::make_polling_watcher;
-pub use notify::make_watcher;
 pub use notify::PathEvent;
 pub use notify::RecommendedWatcher;
+pub use notify::make_polling_watcher;
+pub use notify::make_watcher;
 
 pub use fast_glob::Glob;
 
@@ -270,8 +270,8 @@ mod tests {
     use log::LevelFilter;
     use test_case::test_case;
 
-    use crate::error::Result;
     use crate::AbsolutePath;
+    use crate::error::Result;
     use xvc_test_helper::*;
 
     #[test_case("!mydir/*/file" => matches PatternEffect::Whitelist ; "t1159938339")]

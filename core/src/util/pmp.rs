@@ -5,17 +5,17 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, RwLock};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
-use xvc_logging::{error, uwr, XvcOutputSender};
-use xvc_walker::{build_ignore_patterns, make_watcher, IgnoreRules, MatchResult, PathEvent};
+use xvc_logging::{XvcOutputSender, error, uwr};
+use xvc_walker::{IgnoreRules, MatchResult, PathEvent, build_ignore_patterns, make_watcher};
 
 use crate::error::Error;
 use crate::error::Result;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
-use crate::{XvcFileType, XVCIGNORE_FILENAME};
-use crossbeam_channel::{bounded, RecvError, Select, Sender};
+use crate::{XVCIGNORE_FILENAME, XvcFileType};
+use crossbeam_channel::{RecvError, Select, Sender, bounded};
 
-use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 use crate::XvcMetadata;
+use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 
 use super::XvcPathMetadataMap;
 

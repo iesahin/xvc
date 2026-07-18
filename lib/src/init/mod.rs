@@ -5,16 +5,16 @@ use log::{info, warn};
 use std::env;
 use std::fs;
 use std::path::PathBuf;
+use xvc_core::AbsolutePath;
+use xvc_core::XvcLoadParams;
+use xvc_core::XvcOptionalConfiguration;
+use xvc_core::XvcRoot;
 use xvc_core::blank_optional_config;
 use xvc_core::configuration::OptionalGitConfig;
 use xvc_core::find_root;
 use xvc_core::types::xvcroot::init_xvc_root;
 use xvc_core::util::git::inside_git;
 use xvc_core::watch;
-use xvc_core::AbsolutePath;
-use xvc_core::XvcLoadParams;
-use xvc_core::XvcOptionalConfiguration;
-use xvc_core::XvcRoot;
 use xvc_pipeline;
 
 /// Initialize an Xvc repository

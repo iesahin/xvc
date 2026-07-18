@@ -5,8 +5,8 @@
 //! It defines [PathEvent] as a simple version of [notify::EventKind].
 //! It defines [PathEventHandler] that handles events from [notify::EventHandler].
 use crate::{
-    error::{Error, Result},
     IgnoreRules, MatchResult,
+    error::{Error, Result},
 };
 pub use notify::{
     Config, Event, EventHandler, PollWatcher, RecommendedWatcher, RecursiveMode, Watcher,
@@ -16,7 +16,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 use xvc_logging::watch;
 
-use crossbeam_channel::{bounded, Receiver, Sender};
+use crossbeam_channel::{Receiver, Sender, bounded};
 use log::{debug, warn};
 
 /// An walker-relevant event for changes in a directory.

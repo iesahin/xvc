@@ -22,8 +22,8 @@ use serde::{Deserialize, Serialize};
 use xvc_core::XvcPathMetadataProvider;
 
 use crate::error::Error;
-use xvc_core::{glob_includes, glob_paths, XvcPath, XvcPathMetadataMap, XvcRoot};
-use xvc_core::{persist, HStore, XvcStore};
+use xvc_core::{HStore, XvcStore, persist};
+use xvc_core::{XvcPath, XvcPathMetadataMap, XvcRoot, glob_includes, glob_paths};
 
 pub use self::file::FileDep;
 pub use self::generic::GenericDep;

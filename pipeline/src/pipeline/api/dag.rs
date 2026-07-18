@@ -2,11 +2,11 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use petgraph::graphmap::DiGraphMap;
-use tabbycat::attributes::{color, label, shape, Color, Shape};
+use tabbycat::attributes::{Color, Shape, color, label, shape};
 use tabbycat::{AttrList, Edge, GraphBuilder, Identity, StmtList};
 use xvc_core::util::completer::strum_variants_completer;
-use xvc_core::{info, output, XvcOutputSender};
 use xvc_core::{HStore, R1NStore, XvcEntity};
+use xvc_core::{XvcOutputSender, info, output};
 use xvc_core::{XvcPath, XvcPathMetadataProvider, XvcRoot};
 
 use std::collections::HashMap;
@@ -19,8 +19,8 @@ use std::path::PathBuf;
 use strum_macros::{Display, EnumString, IntoStaticStr, VariantNames};
 
 use crate::{
-    pipeline::{add_explicit_dependencies, add_implicit_dependencies},
     XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcStep,
+    pipeline::{add_explicit_dependencies, add_implicit_dependencies},
 };
 
 #[derive(Debug, Clone, Parser)]

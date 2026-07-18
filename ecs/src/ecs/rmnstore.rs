@@ -11,8 +11,8 @@
 use std::fmt::Debug;
 use std::path::Path;
 
-use crate::error::Result;
 use crate::ChildEntity;
+use crate::error::Result;
 use crate::{Storable, XvcStore};
 
 /// RMNStore is M-N RelationStore, where we store arbitrary relationships between two entities. It

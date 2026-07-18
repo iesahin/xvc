@@ -3,18 +3,18 @@
 //! [`RemoveCLI`] defines the options of the command, and [`cmd_remove`] is the entry point.
 use std::collections::{HashMap, HashSet};
 
-use crate::common::{cache_paths_for_xvc_paths, filter_targets_from_store};
 use crate::Result;
+use crate::common::{cache_paths_for_xvc_paths, filter_targets_from_store};
 
 use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 
+use xvc_core::XvcEntity;
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
 use xvc_core::util::completer::xvc_path_completer;
-use xvc_core::XvcEntity;
-use xvc_core::{output, uwr, warn, XvcOutputSender};
 use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_core::{XvcOutputSender, output, uwr, warn};
 use xvc_storage::storage::{get_storage_record, storage_identifier_completer};
 use xvc_storage::{StorageIdentifier, XvcStorageOperations};
 

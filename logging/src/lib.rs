@@ -14,7 +14,7 @@ use std::sync::Once;
 /// Debugging macro to print the given expression and its value, with the module, function and line number
 #[macro_export]
 macro_rules! watch {
-    ( $( $x:expr ),* ) => {
+    ( $( $x:expr_2021 ),* ) => {
         // TODO: Use stdout for this and convert all tracing macros to trace!
         {
             $(
@@ -27,12 +27,12 @@ macro_rules! watch {
 /// Either send a [XvcOutputLine::Error] value to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! error {
-    ($fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr_2021 )* ) => {
         {
             ::log::error!($fmt $(,$x)*);
         }
     };
-    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+    ( $channel:expr_2021, $fmt:literal $(, $x:expr_2021 )* ) => {
         {
             (&$channel).send(Some($crate::XvcOutputLine::Error(format!($fmt $(, $x)*)))).unwrap();
         }
@@ -42,12 +42,12 @@ macro_rules! error {
 /// Either send [XvcOutputLine::Info] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! info {
-    ($fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr_2021 )* ) => {
         {
             ::log::info!($fmt $(, $x)*);
         }
     };
-    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+    ( $channel:expr_2021, $fmt:literal $(, $x:expr_2021 )* ) => {
         {
             (&$channel).send(Some($crate::XvcOutputLine::Info(format!($fmt $(,$x)*)))).unwrap();
         }
@@ -57,12 +57,12 @@ macro_rules! info {
 /// Either send [XvcOutputLine::Warn] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! warn {
-    ($fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr_2021 )* ) => {
         {
             ::log::warn!($fmt $(, $x)*);
         }
     };
-    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+    ( $channel:expr_2021, $fmt:literal $(, $x:expr_2021 )* ) => {
         {
             (&$channel).send(
                 Some(
@@ -75,12 +75,12 @@ macro_rules! warn {
 /// Either send [XvcOutputLine::Debug] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! debug {
-    ($fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr_2021 )* ) => {
         {
             ::log::debug!($fmt $(, $x)*);
         }
     };
-    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+    ( $channel:expr_2021, $fmt:literal $(, $x:expr_2021 )* ) => {
         {
                     (&$channel).send(Some($crate::XvcOutputLine::Debug(format!($fmt $(, $x)*)))).unwrap();
         }
@@ -90,18 +90,18 @@ macro_rules! debug {
 /// Either send [XvcOutputLine::Trace] to the given channel, or log via `log` crate
 #[macro_export]
 macro_rules! trace {
-    ($fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr_2021 )* ) => {
         {
             ::log::trace!($fmt $(, $x)*);
         }
     };
-    ( $channel:expr, $fmt:literal $(, $x:expr ),* ) => {
+    ( $channel:expr_2021, $fmt:literal $(, $x:expr_2021 ),* ) => {
         {
             (&$channel).send(Some(::xvc_logging::XvcOutputLine::Trace(format!("{} [{}::{}]", format!($fmt $(, $x)*), file!(), line!())))).unwrap();
         }
     };
 
-    ( $( $x:expr ),* ) => {
+    ( $( $x:expr_2021 ),* ) => {
         {
             $(
                ::log::trace!("{}: {}", stringify!($x), format!("{:#?}", $x).replace("\\n", "\n"));
@@ -113,12 +113,12 @@ macro_rules! trace {
 /// Either send [XvcOutputLine::Output] to the given channel, or print to stdout
 #[macro_export]
 macro_rules! output {
-    ($fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr_2021 )* ) => {
         {
             ::std::println!($fmt $(, $x)*);
         }
     };
-    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+    ( $channel:expr_2021, $fmt:literal $(, $x:expr_2021 )* ) => {
         {
             (&$channel).send(Some($crate::XvcOutputLine::Output(format!($fmt $(, $x)*)))).unwrap();
         }
@@ -128,13 +128,13 @@ macro_rules! output {
 /// Either send [XvcOutputLine::Panic] to the given channel, or print to stdout
 #[macro_export]
 macro_rules! panic {
-    ($fmt:literal $(, $x:expr )* ) => {
+    ($fmt:literal $(, $x:expr_2021 )* ) => {
         {
             watch!($fmt $(, $x)*);
             ::std::panic!($fmt $(, $x)*);
         }
     };
-    ( $channel:expr, $fmt:literal $(, $x:expr )* ) => {
+    ( $channel:expr_2021, $fmt:literal $(, $x:expr_2021 )* ) => {
         {
             (&$channel).send(Some($crate::XvcOutputLine::Panic(format!("{} [{}::{}]",
                                                                  format!($fmt $(, $x)*), file!(), line!())))).unwrap();
@@ -163,7 +163,7 @@ macro_rules! tick {
 /// This is mostly to be used in `for_each` blocks, where the error is not propagated.
 #[macro_export]
 macro_rules! uwr {
-    ( $e:expr, $channel:expr ) => {{
+    ( $e:expr_2021, $channel:expr_2021 ) => {{
         match $e {
             Ok(v) => v,
             Err(e) => {
@@ -186,7 +186,7 @@ macro_rules! uwr {
 /// This is mostly to be used in `for_each` blocks, where the error is not propagated.
 #[macro_export]
 macro_rules! uwo {
-    ( $e:expr, $channel:expr ) => {{
+    ( $e:expr_2021, $channel:expr_2021 ) => {{
         match $e {
             Some(v) => v,
             None => {

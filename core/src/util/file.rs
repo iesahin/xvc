@@ -1,6 +1,6 @@
 //! Core file operationscorefil
-use cached::proc_macro::cached;
 use cached::UnboundCache;
+use cached::proc_macro::cached;
 use glob::Pattern as GlobPattern;
 
 use std::fs::{self, Metadata};
@@ -14,17 +14,17 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use xvc_walker::{IgnoreRules, PathMetadata, SharedIgnoreRules, WalkOptions};
 
+use crate::CHANNEL_BOUND;
 use crate::error::Error;
 use crate::error::Result;
-use crate::CHANNEL_BOUND;
 
-use crossbeam_channel::{bounded, Receiver, Sender};
+use crossbeam_channel::{Receiver, Sender, bounded};
 
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 
-use super::pmp::XvcPathMetadataProvider;
-use super::xvcignore::{walk_parallel, COMMON_IGNORE_PATTERNS};
 use super::XvcPathMetadataMap;
+use super::pmp::XvcPathMetadataProvider;
+use super::xvcignore::{COMMON_IGNORE_PATTERNS, walk_parallel};
 
 ///w
 ///

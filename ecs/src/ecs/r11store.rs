@@ -3,8 +3,8 @@
 //! It doesn't have any semantics except binding two components with a single entity.
 use std::path::Path;
 
-use crate::{error::Result, XvcStore};
 use crate::{Storable, XvcEntity};
+use crate::{XvcStore, error::Result};
 use std::fmt::Debug;
 
 /// Associates two [XvcStore]s with two different type of components with a single [XvcEntity].

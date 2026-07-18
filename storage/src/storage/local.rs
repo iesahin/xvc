@@ -9,12 +9,12 @@ use serde::{Deserialize, Serialize};
 
 use xvc_core::R1NStore;
 use xvc_core::XvcRoot;
-use xvc_core::{info, XvcOutputSender};
+use xvc_core::{XvcOutputSender, info};
 
 use super::{
-    XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid, XvcStorageInitEvent, XvcStorageListEvent,
-    XvcStorageOperations, XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent,
-    XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
+    XVC_STORAGE_GUID_FILENAME, XvcCachePath, XvcStorageDeleteEvent, XvcStorageGuid,
+    XvcStorageInitEvent, XvcStorageListEvent, XvcStorageOperations, XvcStoragePath,
+    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
 };
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 

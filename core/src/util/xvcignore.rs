@@ -1,14 +1,14 @@
 //! Walkers with Xvc-specific ignore rules
 use crate::types::{xvcpath::XvcPath, xvcroot::XvcRoot};
 
-use crate::{XvcMetadata, XvcPathMetadataMap, CHANNEL_BOUND, XVCIGNORE_FILENAME};
+use crate::{CHANNEL_BOUND, XVCIGNORE_FILENAME, XvcMetadata, XvcPathMetadataMap};
 
 use crate::error::{Error, Result};
-use crossbeam_channel::{bounded, Sender};
+use crossbeam_channel::{Sender, bounded};
 
 use std::sync::{Arc, RwLock};
 use std::thread;
-use xvc_logging::{warn, XvcOutputSender};
+use xvc_logging::{XvcOutputSender, warn};
 use xvc_walker::{self, IgnoreRules, PathMetadata, WalkOptions};
 use xvc_walker::{Result as XvcWalkerResult, SharedIgnoreRules};
 

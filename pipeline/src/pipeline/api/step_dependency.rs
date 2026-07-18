@@ -1,8 +1,9 @@
 use std::cell::RefCell;
 use std::path::PathBuf;
 
-use crate::deps::{sqlite_query, LinesDep, RegexDep};
+use crate::deps::{LinesDep, RegexDep, sqlite_query};
 use crate::error::{Error, Result};
+use crate::pipeline::deps::ParamDep;
 use crate::pipeline::deps::file::FileDep;
 use crate::pipeline::deps::generic::GenericDep;
 use crate::pipeline::deps::glob::GlobDep;
@@ -11,14 +12,13 @@ use crate::pipeline::deps::line_items::LineItemsDep;
 use crate::pipeline::deps::regex_items::RegexItemsDep;
 use crate::pipeline::deps::step::StepDep;
 use crate::pipeline::deps::url::UrlDigestDep;
-use crate::pipeline::deps::ParamDep;
 use crate::pipeline::step::StepSubCommand;
 
 use regex::Regex;
 use url::Url;
 use xvc_core::AbsolutePath;
-use xvc_core::{debug, XvcOutputSender};
 use xvc_core::{R1NStore, XvcEntity};
+use xvc_core::{XvcOutputSender, debug};
 use xvc_core::{XvcPath, XvcRoot};
 
 use crate::{XvcDependency, XvcParamFormat, XvcPipeline, XvcStep};

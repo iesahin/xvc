@@ -1,10 +1,10 @@
 use crate::error::Error;
-use xvc_core::{util::serde::to_json, XvcRoot};
 use xvc_core::{R1NStore, XvcStore};
+use xvc_core::{XvcRoot, util::serde::to_json};
 
 use crate::{
-    pipeline::XvcStepInvalidate, XvcDependency, XvcOutput, XvcPipeline, XvcStep, XvcStepCommand,
-    XvcStepSchema,
+    XvcDependency, XvcOutput, XvcPipeline, XvcStep, XvcStepCommand, XvcStepSchema,
+    pipeline::XvcStepInvalidate,
 };
 
 /// Entry point for `xvc pipeline step show` command.

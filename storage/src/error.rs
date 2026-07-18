@@ -81,7 +81,9 @@ pub enum Error {
         source: which::Error,
     },
 
-    #[error("Cloud credentials for storage '{storage_name}' not found. Please set ONE of the following pairs of environment variables: {var_pairs:?}")]
+    #[error(
+        "Cloud credentials for storage '{storage_name}' not found. Please set ONE of the following pairs of environment variables: {var_pairs:?}"
+    )]
     CloudCredentialsNotFound {
         storage_name: String,
         var_pairs: Vec<(String, String)>,

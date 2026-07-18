@@ -4,22 +4,23 @@ use std::str::FromStr;
 
 use futures::StreamExt;
 use regex::Regex;
-use s3::creds::Credentials;
 use s3::Bucket;
 use s3::Region;
+use s3::creds::Credentials;
 use tokio::io::AsyncWriteExt;
-use xvc_core::error;
-use xvc_core::info;
-use xvc_core::output;
 use xvc_core::XvcCachePath;
 use xvc_core::XvcOutputSender;
 use xvc_core::XvcRoot;
+use xvc_core::error;
+use xvc_core::info;
+use xvc_core::output;
 
 use crate::Error;
 use crate::Result;
 use crate::XvcStorageGuid;
 use crate::XvcStorageOperations;
 
+use super::XVC_STORAGE_GUID_FILENAME;
 use super::XvcStorageDeleteEvent;
 use super::XvcStorageExpiringShareEvent;
 use super::XvcStorageInitEvent;
@@ -28,7 +29,6 @@ use super::XvcStoragePath;
 use super::XvcStorageReceiveEvent;
 use super::XvcStorageSendEvent;
 use super::XvcStorageTempDir;
-use super::XVC_STORAGE_GUID_FILENAME;
 
 /// Operations for S3 compatible storage services. Each service implements functions in this trait
 /// for xvc file send and xvc file bring commands to work with the common functions.

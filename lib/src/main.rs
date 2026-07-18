@@ -4,7 +4,7 @@ use std::env;
 
 use clap::CommandFactory;
 
-use xvc::{cli::XvcCLI, error::Result, Error};
+use xvc::{Error, cli::XvcCLI, error::Result};
 
 /// The entry point of the `xvc` cli.
 ///
@@ -22,7 +22,9 @@ fn main() -> Result<()> {
         if ran_completion {
             return Ok(());
         } else {
-            eprintln!("Something is broken with completions. Please undefine COMPLETE environment variable (if there is one) and report this.");
+            eprintln!(
+                "Something is broken with completions. Please undefine COMPLETE environment variable (if there is one) and report this."
+            );
             return Err(Error::CompletionError);
         }
     }

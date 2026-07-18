@@ -3,9 +3,9 @@
 //! - [ListCLI] defines the command line options
 //! - [cmd_list]  is the entry point to run the command
 
-use crate::common::{load_targets_from_store, targets_from_disk, FileTextOrBinary};
-use crate::error::Error;
 use crate::Result;
+use crate::common::{FileTextOrBinary, load_targets_from_store, targets_from_disk};
+use crate::error::Error;
 use anyhow::anyhow;
 use chrono;
 use clap::Parser;
@@ -20,13 +20,13 @@ use std::str::FromStr;
 use std::time::SystemTime;
 use strum_macros::{Display as EnumDisplay, EnumString, VariantNames};
 use xvc_core::types::xvcdigest::DIGEST_LENGTH;
-use xvc_core::{error, output, XvcOutputSender};
 use xvc_core::{
     ContentDigest, HashAlgorithm, RecheckMethod, XvcConfigResult, XvcFileType, XvcMetadata,
     XvcPath, XvcRoot,
 };
 use xvc_core::{FromConfig, UpdateFromConfig};
 use xvc_core::{HStore, XvcEntity, XvcStore};
+use xvc_core::{XvcOutputSender, error, output};
 
 /// Format specifier for file list columns
 #[derive(Debug, Clone, EnumString, EnumDisplay, PartialEq, Eq)]
@@ -482,7 +482,9 @@ fn add_summary_line(list_rows: &ListRows) -> String {
     let total_cached_size = format_size(Some(list_rows.total_cached_size()));
 
     // TODO: Add a format string to this output similar to files
-    format!("Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n")
+    format!(
+        "Total #: {total_lines} Workspace Size: {total_actual_size} Cached Size: {total_cached_size}\n"
+    )
 }
 
 fn sort_list_rows(list_rows: &mut ListRows) {

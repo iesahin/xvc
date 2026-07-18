@@ -5,20 +5,20 @@ use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use std::{fs, path::PathBuf};
 
-use xvc_core::{output, XvcOutputSender};
+use xvc_core::{HStore, R1NStore, R11Store, XvcEntity, XvcStore};
+use xvc_core::{XvcOutputSender, output};
 use xvc_core::{
+    XvcPath, XvcRoot,
     util::{
         completer::strum_variants_completer,
         serde::{to_json, to_yaml},
     },
-    XvcPath, XvcRoot,
 };
-use xvc_core::{HStore, R11Store, R1NStore, XvcEntity, XvcStore};
 
 use crate::{
-    pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},
     XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcPipelineSchema, XvcStep,
     XvcStepCommand, XvcStepSchema,
+    pipeline::{XvcStepInvalidate, schema::XvcSchemaSerializationFormat},
 };
 
 #[derive(Debug, Clone, Parser)]

@@ -6,19 +6,19 @@ use xvc_core::util::completer::strum_variants_completer;
 
 use crate::error::{Error, Result};
 use crate::{
-    cmd_step_dependency, cmd_step_new, cmd_step_output, cmd_step_show, cmd_step_update, XvcPipeline,
+    XvcPipeline, cmd_step_dependency, cmd_step_new, cmd_step_output, cmd_step_show, cmd_step_update,
 };
 use clap::Parser;
 use sad_machine::state_machine;
 use serde::{Deserialize, Serialize};
 use xvc_core::XvcOutputSender;
 use xvc_core::XvcRoot;
-use xvc_core::{persist, XvcEntity};
+use xvc_core::{XvcEntity, persist};
 
+use super::XvcStepInvalidate;
 use super::api::step_list::cmd_step_list;
 use super::api::step_remove::cmd_step_remove;
 use super::util::step_name_completer;
-use super::XvcStepInvalidate;
 
 /// Step creation, dependency, output commands
 #[derive(Debug, Clone, Parser)]
