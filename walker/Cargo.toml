@@ -44,7 +44,6 @@ regex = "^1.12"
 [dev-dependencies]
 xvc-test-helper = { path = "../test_helper/", version = "0.7.1-alpha.3" }
 test-case = "^3.3"
-proptest = "^1.8"
 
 [package.metadata.cargo-udeps.ignore]
 normal = ["xvc-logging", "test-case"]

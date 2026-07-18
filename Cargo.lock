@@ -6032,7 +6032,6 @@ dependencies = [
  "log",
  "notify",
  "peak_alloc",
- "proptest",
  "rayon",
  "regex",
  "test-case",
