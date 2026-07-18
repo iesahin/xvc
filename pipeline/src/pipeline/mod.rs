@@ -46,8 +46,6 @@ use xvc_core::{Diff, HashAlgorithm, XvcPath, XvcRoot, update_with_actual};
 
 use xvc_core::{HStore, R1NStore, XvcEntity, XvcStore, persist};
 
-use subprocess as sp;
-
 /// The option whether to consider a step changed
 #[derive(
     Debug,

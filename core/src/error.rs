@@ -140,7 +140,6 @@ pub enum Error {
         source: which::Error,
     },
 
-
     #[error("Cannot find parent path")]
     CannotFindParentPath { path: PathBuf },
 

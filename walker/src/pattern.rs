@@ -140,10 +140,13 @@ impl Pattern {
         }
 
         let begin_slash = line.starts_with('/');
-        let non_final_slash = if !line.is_empty() {
-            line[..line.len() - 1].chars().any(|c| c == '/')
-        } else {
-            false
+        // A slash in any position except the final one makes the pattern relative to
+        // the current directory. Drop the final *character* (which may be multi-byte)
+        // before searching.
+        let non_final_slash = {
+            let mut chars = line.chars();
+            chars.next_back();
+            chars.as_str().contains('/')
         };
 
         if begin_slash {

@@ -66,7 +66,6 @@ pub enum Error {
     #[error("Cannot remove storage with identifier: {identifier}")]
     CannotRemoveStorageWithIdentifier { identifier: StorageIdentifier },
 
-
     #[error("Process Error.\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}")]
     ProcessError { stdout: String, stderr: String },
 
