@@ -908,21 +908,23 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
     // Check if the step dependencies have run
     {
         // Check if there are any step dependencies that we depend and done by running
-        changed = params.step_dependencies.iter().any(|xe| {
-            if let Ok(hstore) = params.current_states.read() {
-                if let Some(s) = hstore.get(xe) {
-                    if matches!(s, XvcStepState::DoneByRunning(_)) {
-                        true
+        changed = params
+            .step_dependencies
+            .iter()
+            .any(|xe| match params.current_states.read() {
+                Ok(hstore) => {
+                    if let Some(s) = hstore.get(xe) {
+                        if matches!(s, XvcStepState::DoneByRunning(_)) {
+                            true
+                        } else {
+                            changed
+                        }
                     } else {
                         changed
                     }
-                } else {
-                    changed
                 }
-            } else {
-                changed
-            }
-        });
+                _ => changed,
+            });
     }
 
     {
