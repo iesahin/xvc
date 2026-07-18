@@ -1,6 +1,6 @@
 //! Digest from contents of a GET request to a URL.
 use crate::types::hashalgorithm::HashAlgorithm;
-use crate::{attribute_digest, XvcDigest};
+use crate::{XvcDigest, attribute_digest};
 use reqwest::Url;
 
 use crate::error::Result;

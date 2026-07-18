@@ -6,8 +6,8 @@ use crossbeam_channel::Sender;
 use xvc_logging::watch;
 
 use crate::{
-    directory_list, update_ignore_rules, MatchResult, PathMetadata, Result, SharedIgnoreRules,
-    WalkOptions, MAX_THREADS_PARALLEL_WALK,
+    MAX_THREADS_PARALLEL_WALK, MatchResult, PathMetadata, Result, SharedIgnoreRules, WalkOptions,
+    directory_list, update_ignore_rules,
 };
 
 fn walk_parallel_inner(

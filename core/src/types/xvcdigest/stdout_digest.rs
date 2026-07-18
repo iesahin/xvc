@@ -1,6 +1,6 @@
 //! Digest of a command output.
 use crate::types::hashalgorithm::HashAlgorithm;
-use crate::{attribute_digest, XvcDigest};
+use crate::{XvcDigest, attribute_digest};
 
 use serde::{Deserialize, Serialize};
 

@@ -3,7 +3,7 @@ use std::{env, ffi::OsStr};
 use clap_complete::CompletionCandidate;
 use xvc_core::util::completer::load_store_for_completion;
 
-use crate::{error::Error, XvcPipeline, XvcStep};
+use crate::{XvcPipeline, XvcStep, error::Error};
 
 /// Return all pipeline names starting with `prefix`
 pub fn pipeline_name_completer(prefix: &OsStr) -> Vec<CompletionCandidate> {

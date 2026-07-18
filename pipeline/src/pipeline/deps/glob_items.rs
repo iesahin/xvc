@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize};
 use xvc_core::persist;
 use xvc_core::types::diff::Diffable;
 use xvc_core::{
-    glob_paths, ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcPathMetadataProvider,
-    XvcRoot,
+    ContentDigest, Diff, HashAlgorithm, XvcMetadata, XvcPath, XvcPathMetadataProvider, XvcRoot,
+    glob_paths,
 };
 
 /// A path collection where each item is tracked separately.

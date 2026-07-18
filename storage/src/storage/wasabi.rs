@@ -6,13 +6,13 @@ use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::R1NStore;
 use xvc_core::XvcCachePath;
-use xvc_core::{watch, XvcOutputSender};
+use xvc_core::{XvcOutputSender, watch};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
-use super::async_common::XvcS3StorageOperations;
 use super::XvcStoragePath;
+use super::async_common::XvcS3StorageOperations;
 
 /// Configure a new Wasabi remote storage.
 ///

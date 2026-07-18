@@ -21,18 +21,18 @@ use derive_more::{AsRef, Deref, Display, From, FromStr};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use xvc_core::{
-    all_paths_and_metadata, apply_diff, error, get_absolute_git_command, get_git_tracked_files,
-    info, persist,
+    AbsolutePath, ContentDigest, DiffStore, Glob, HStore, HashAlgorithm, PathSync, RecheckMethod,
+    Storable, TextOrBinary, XvcFileType, XvcMetadata, XvcOutputSender, XvcPath, XvcPathMetadataMap,
+    XvcRoot, XvcStore, all_paths_and_metadata, apply_diff, error, get_absolute_git_command,
+    get_git_tracked_files, info, persist,
     types::xvcpath::XvcCachePath,
     util::{file::make_symlink, xvcignore::COMMON_IGNORE_PATTERNS},
-    uwr, warn, AbsolutePath, ContentDigest, DiffStore, Glob, HStore, HashAlgorithm, PathSync,
-    RecheckMethod, Storable, TextOrBinary, XvcFileType, XvcMetadata, XvcOutputSender, XvcPath,
-    XvcPathMetadataMap, XvcRoot, XvcStore,
-};
-use xvc_core::{
-    path_metadata_map_from_file_targets, XvcConfigResult, XvcConfiguration, XvcWalkerError,
+    uwr, warn,
 };
 use xvc_core::{EventLog, FromConfig};
+use xvc_core::{
+    XvcConfigResult, XvcConfiguration, XvcWalkerError, path_metadata_map_from_file_targets,
+};
 
 use self::gitignore::IgnoreOp;
 

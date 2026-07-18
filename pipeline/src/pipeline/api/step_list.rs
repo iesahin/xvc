@@ -1,10 +1,10 @@
 use crate::{
-    error::Result, pipeline::XvcStepInvalidate, Error, XvcPipeline, XvcStep, XvcStepCommand,
+    Error, XvcPipeline, XvcStep, XvcStepCommand, error::Result, pipeline::XvcStepInvalidate,
 };
 use itertools::Itertools;
 use xvc_core::XvcRoot;
-use xvc_core::{output, XvcOutputSender};
 use xvc_core::{HStore, R1NStore};
+use xvc_core::{XvcOutputSender, output};
 
 pub fn cmd_step_list(
     output_snd: &XvcOutputSender,

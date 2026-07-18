@@ -2,7 +2,7 @@
 
 use std::io;
 
-use crate::{cli::XvcCLI, Result};
+use crate::{Result, cli::XvcCLI};
 use clap::{CommandFactory, Parser};
 use clap_complete::generate;
 use clap_complete_nushell::Nushell;

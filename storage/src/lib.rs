@@ -16,15 +16,15 @@ use clap::{Parser, Subcommand};
 
 use clap_complete::ArgValueCompleter;
 use derive_more::Display;
-use storage::{get_storage_record, storage_identifier_completer};
 pub use storage::{
     XvcLocalStorage, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations,
 };
+use storage::{get_storage_record, storage_identifier_completer};
 
 use xvc_core::XvcStore;
 
 use xvc_core::XvcRoot;
-use xvc_core::{output, XvcOutputSender};
+use xvc_core::{XvcOutputSender, output};
 
 /// Storage (on the cloud) management commands
 #[derive(Debug, Parser, Clone)]

@@ -11,8 +11,8 @@ use xvc_core::{XvcCachePath, XvcRoot};
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
-use super::async_common::XvcS3StorageOperations;
 use super::XvcStoragePath;
+use super::async_common::XvcS3StorageOperations;
 
 /// Configure a new Minio remote storage.
 ///

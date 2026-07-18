@@ -3,9 +3,9 @@ use std::time::SystemTime;
 
 use serde::{Deserialize, Serialize};
 
-use crate::types::diff::Diffable;
 use crate::Result;
-use crate::{attribute_digest, HashAlgorithm, XvcDigest, XvcMetadata};
+use crate::types::diff::Diffable;
+use crate::{HashAlgorithm, XvcDigest, XvcMetadata, attribute_digest};
 
 /// A short representation of the file metadata that fits into 32 bytes.
 /// This is used to quickly compare metadata of files without individual fields.

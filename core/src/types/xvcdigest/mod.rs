@@ -10,7 +10,7 @@ use crate::types::hashalgorithm::HashAlgorithm;
 use std::collections::BTreeMap;
 
 use std::{fmt::Display, fs, path::Path};
-use xvc_ecs::{persist, Storable};
+use xvc_ecs::{Storable, persist};
 
 use crate::error::Result;
 use blake2::{Blake2s, Digest};

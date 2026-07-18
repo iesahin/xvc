@@ -1,6 +1,6 @@
 //! File comparison utilities.
-use crate::error::Error;
 use crate::Result;
+use crate::error::Error;
 use anyhow::anyhow;
 use crossbeam_channel::{Receiver, Sender};
 
@@ -11,16 +11,16 @@ use std::collections::HashSet;
 use std::path::PathBuf;
 use std::thread::{self, JoinHandle};
 
-use xvc_core::types::xvcdigest::{content_digest::ContentDigest, DIGEST_LENGTH};
+use xvc_core::types::xvcdigest::{DIGEST_LENGTH, content_digest::ContentDigest};
 use xvc_core::{FromConfig, SharedXStore, XvcEcsError};
 
 use xvc_core::{
-    diff_store, Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod, XvcDigest, XvcFileType,
-    XvcMetadata, XvcPath, XvcPathMetadataMap, XvcRoot,
+    Diff, DiffStore, DiffStore2, HashAlgorithm, RecheckMethod, XvcDigest, XvcFileType, XvcMetadata,
+    XvcPath, XvcPathMetadataMap, XvcRoot, diff_store,
 };
 
-use xvc_core::{debug, error, panic, XvcOutputSender};
 use xvc_core::{HStore, XvcEntity, XvcStore};
+use xvc_core::{XvcOutputSender, debug, error, panic};
 
 use super::FileTextOrBinary;
 

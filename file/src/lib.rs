@@ -42,18 +42,18 @@ use clap::Subcommand;
 use crossbeam::thread;
 use crossbeam_channel::bounded;
 
-use log::{debug, error, info, warn, LevelFilter};
+use log::{LevelFilter, debug, error, info, warn};
 use std::io;
 use std::io::Write;
 use std::path::PathBuf;
-use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::AbsolutePath;
+use xvc_core::CHANNEL_BOUND;
 use xvc_core::XvcLoadParams;
 use xvc_core::XvcRoot;
 use xvc_core::XvcVerbosity;
-use xvc_core::CHANNEL_BOUND;
-use xvc_core::{find_root, setup_logging};
+use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::{XvcOutputLine, XvcOutputSender};
+use xvc_core::{find_root, setup_logging};
 
 pub use bring::BringCLI;
 pub use carry_in::CarryInCLI;

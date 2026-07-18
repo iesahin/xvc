@@ -30,11 +30,11 @@ pub mod configuration;
 pub mod error;
 
 pub use config_params::XvcLoadParams;
+pub use configuration::XvcConfiguration;
+pub use configuration::XvcOptionalConfiguration;
 pub use configuration::blank_optional_config;
 pub use configuration::default_config;
 pub use configuration::initial_xvc_configuration_file;
-pub use configuration::XvcConfiguration;
-pub use configuration::XvcOptionalConfiguration;
 
 use directories_next::{BaseDirs, ProjectDirs, UserDirs};
 use lazy_static::lazy_static;

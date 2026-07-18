@@ -4,11 +4,11 @@
 #![warn(missing_docs)]
 #![forbid(unsafe_code)]
 use log::LevelFilter;
-use rand::distr::Alphanumeric;
-use rand::rngs::StdRng;
 use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
+use rand::distr::Alphanumeric;
+use rand::rngs::StdRng;
 use std::cmp;
 use std::env;
 use std::fs::OpenOptions;

@@ -12,10 +12,10 @@ use std::io::{self, Read};
 use std::thread::sleep;
 use std::time::Duration;
 
-use crossbeam_channel::{bounded, Receiver};
+use crossbeam_channel::{Receiver, bounded};
 
 use crate::error::Result;
-use crate::{XvcMetadata, XvcPath, CHANNEL_BOUND};
+use crate::{CHANNEL_BOUND, XvcMetadata, XvcPath};
 
 /// A hashmap to store [XvcMetadata] for [XvcPath]
 pub type XvcPathMetadataMap = HashMap<XvcPath, XvcMetadata>;

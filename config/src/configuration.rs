@@ -23,7 +23,9 @@ pub struct CoreConfig {
 
 /// Git integration configuration for Xvc.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[display("GitConfig(use_git: {use_git}, command: {command}, auto_commit: {auto_commit}, auto_stage: {auto_stage})")]
+#[display(
+    "GitConfig(use_git: {use_git}, command: {command}, auto_commit: {auto_commit}, auto_stage: {auto_stage})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct GitConfig {
     /// Whether to use Git for version control.
@@ -47,7 +49,9 @@ pub struct CacheConfig {
 
 /// Configuration for file tracking operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[display("FileTrackConfig(no_commit: {no_commit}, force: {force}, text_or_binary: {text_or_binary}, no_parallel: {no_parallel}, include_git_files: {include_git_files})")]
+#[display(
+    "FileTrackConfig(no_commit: {no_commit}, force: {force}, text_or_binary: {text_or_binary}, no_parallel: {no_parallel}, include_git_files: {include_git_files})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct FileTrackConfig {
     /// Whether to skip committing changes after tracking.
@@ -64,7 +68,9 @@ pub struct FileTrackConfig {
 
 /// Configuration for file listing operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[display("FileListConfig(format: {format}, sort: {sort}, show_dot_files: {show_dot_files}, no_summary: {no_summary}, recursive: {recursive}, include_git_files: {include_git_files})")]
+#[display(
+    "FileListConfig(format: {format}, sort: {sort}, show_dot_files: {show_dot_files}, no_summary: {no_summary}, recursive: {recursive}, include_git_files: {include_git_files})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct FileListConfig {
     /// The format string for displaying file list entries.
@@ -119,7 +125,9 @@ pub struct FileConfig {
 
 /// Configuration for pipeline operations.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[display("PipelineConfig(current_pipeline: {current_pipeline}, default: {default}, default_params_file: {default_params_file}, process_pool_size: {process_pool_size})")]
+#[display(
+    "PipelineConfig(current_pipeline: {current_pipeline}, default: {default}, default_params_file: {default_params_file}, process_pool_size: {process_pool_size})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct PipelineConfig {
     /// The name of the currently active pipeline.
@@ -143,7 +151,9 @@ pub struct CheckIgnoreConfig {
 
 /// The top-level Xvc configuration structure.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[display("XvcConfiguration(core: {core}, git: {git}, cache: {cache}, file: {file}, pipeline: {pipeline}, check_ignore: {check_ignore})")]
+#[display(
+    "XvcConfiguration(core: {core}, git: {git}, cache: {cache}, file: {file}, pipeline: {pipeline}, check_ignore: {check_ignore})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct XvcConfiguration {
     /// Core Xvc settings.
@@ -177,7 +187,9 @@ pub struct OptionalCoreConfig {
 
 /// Optional Git integration configuration for Xvc, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
-#[display("OptionalGitConfig(use_git: {use_git:?}, command: {command:?}, auto_commit: {auto_commit:?}, auto_stage: {auto_stage:?})")]
+#[display(
+    "OptionalGitConfig(use_git: {use_git:?}, command: {command:?}, auto_commit: {auto_commit:?}, auto_stage: {auto_stage:?})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalGitConfig {
     /// Optional setting for whether to use Git for version control.
@@ -201,7 +213,9 @@ pub struct OptionalCacheConfig {
 
 /// Optional configuration for file tracking operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
-#[display("OptionalFileTrackConfig(no_commit: {no_commit:?}, force: {force:?}, text_or_binary: {text_or_binary:?}, no_parallel: {no_parallel:?}, include_git_files: {include_git_files:?})")]
+#[display(
+    "OptionalFileTrackConfig(no_commit: {no_commit:?}, force: {force:?}, text_or_binary: {text_or_binary:?}, no_parallel: {no_parallel:?}, include_git_files: {include_git_files:?})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileTrackConfig {
     /// Optional setting for whether to skip committing changes after tracking.
@@ -218,7 +232,9 @@ pub struct OptionalFileTrackConfig {
 
 /// Optional configuration for file listing operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
-#[display("OptionalFileListConfig(format: {format:?}, sort: {sort:?}, show_dot_files: {show_dot_files:?}, no_summary: {no_summary:?}, recursive: {recursive:?}, include_git_files: {include_git_files:?})")]
+#[display(
+    "OptionalFileListConfig(format: {format:?}, sort: {sort:?}, show_dot_files: {show_dot_files:?}, no_summary: {no_summary:?}, recursive: {recursive:?}, include_git_files: {include_git_files:?})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileListConfig {
     /// Optional format string for displaying file list entries.
@@ -257,7 +273,9 @@ pub struct OptionalFileRecheckConfig {
 
 /// Optional comprehensive file-related configuration for Xvc, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
-#[display("OptionalFileConfig(track: {track:?}, list: {list:?}, carry_in: {carry_in:?}, recheck: {recheck:?})")]
+#[display(
+    "OptionalFileConfig(track: {track:?}, list: {list:?}, carry_in: {carry_in:?}, recheck: {recheck:?})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalFileConfig {
     /// Optional configuration for `xvc file track`.
@@ -273,7 +291,9 @@ pub struct OptionalFileConfig {
 
 /// Optional configuration for pipeline operations, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
-#[display("OptionalPipelineConfig(current_pipeline: {current_pipeline:?}, default: {default:?}, default_params_file: {default_params_file:?}, process_pool_size: {process_pool_size:?})")]
+#[display(
+    "OptionalPipelineConfig(current_pipeline: {current_pipeline:?}, default: {default:?}, default_params_file: {default_params_file:?}, process_pool_size: {process_pool_size:?})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct OptionalPipelineConfig {
     /// Optional name of the currently active pipeline.
@@ -297,7 +317,9 @@ pub struct OptionalCheckIgnoreConfig {
 
 /// The top-level optional Xvc configuration structure, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
-#[display("XvcOptionalConfiguration(core: {core:?}, git: {git:?}, cache: {cache:?}, file: {file:?}, pipeline: {pipeline:?}, check_ignore: {check_ignore:?})")]
+#[display(
+    "XvcOptionalConfiguration(core: {core:?}, git: {git:?}, cache: {cache:?}, file: {file:?}, pipeline: {pipeline:?}, check_ignore: {check_ignore:?})"
+)]
 #[serde(deny_unknown_fields)]
 pub struct XvcOptionalConfiguration {
     /// Optional core Xvc settings.

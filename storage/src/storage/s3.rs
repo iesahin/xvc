@@ -5,15 +5,15 @@ use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::R1NStore;
-use xvc_core::{info, watch, XvcOutputSender};
 use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_core::{XvcOutputSender, info, watch};
 
 use crate::storage::XVC_STORAGE_GUID_FILENAME;
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};
 
-use super::async_common::XvcS3StorageOperations;
 use super::XvcStoragePath;
+use super::async_common::XvcS3StorageOperations;
 
 /// Configure a new Amazon Web Services S3 remote storage.
 ///

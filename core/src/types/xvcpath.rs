@@ -12,7 +12,7 @@ use derive_more::Display as DeriveDisplay;
 use path_absolutize::*;
 use relative_path::{RelativePath, RelativePathBuf};
 use serde::{Deserialize, Serialize};
-use xvc_logging::{info, output, uwr, XvcOutputSender};
+use xvc_logging::{XvcOutputSender, info, output, uwr};
 use xvc_walker::AbsolutePath;
 
 use std::ops::Deref;

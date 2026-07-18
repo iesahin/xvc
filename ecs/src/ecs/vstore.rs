@@ -2,8 +2,8 @@
 //! It's better suited when duplicate elements with the same `XvcEntity` may occur.
 use super::event::{Event, EventLog};
 use super::hstore::HStore;
-use crate::error::{Error, Result};
 use crate::XvcEntity;
+use crate::error::{Error, Result};
 use crate::{Storable, XvcStore};
 use serde::{Deserialize, Serialize};
 

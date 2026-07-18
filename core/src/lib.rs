@@ -10,14 +10,14 @@ pub mod util;
 pub use types::hashalgorithm::HashAlgorithm;
 pub use types::recheckmethod::RecheckMethod;
 
+pub use types::xvcdigest::AttributeDigest;
+pub use types::xvcdigest::XvcDigest;
+pub use types::xvcdigest::XvcDigests;
 pub use types::xvcdigest::content_digest::ContentDigest;
 pub use types::xvcdigest::path_collection_digest::PathCollectionDigest;
 pub use types::xvcdigest::stdout_digest::StdoutDigest;
 pub use types::xvcdigest::url_get_digest::UrlContentDigest;
 pub use types::xvcdigest::xvc_metadata_digest::XvcMetadataDigest;
-pub use types::xvcdigest::AttributeDigest;
-pub use types::xvcdigest::XvcDigest;
-pub use types::xvcdigest::XvcDigests;
 
 pub use types::diff::Diff;
 pub use types::diff::DiffStore;
@@ -34,8 +34,8 @@ pub use types::xvcfiletype::XvcFileType;
 pub use types::xvcmetadata::XvcMetadata;
 pub use types::xvcpath::XvcCachePath;
 pub use types::xvcpath::XvcPath;
-pub use types::xvcroot::find_root;
 pub use types::xvcroot::XvcRoot;
+pub use types::xvcroot::find_root;
 
 pub use error::Error;
 pub use error::Result;
@@ -44,13 +44,13 @@ pub use error::Result;
 pub use xvc_ecs::error::Error as XvcEcsError;
 pub use xvc_ecs::error::Result as XvcEcsResult;
 pub use xvc_ecs::{
-    persist, Event, EventLog, HStore, R11Store, R1NStore, RMNStore, SharedHStore, SharedXStore,
-    Storable, VStore, XvcEntity, XvcStore,
+    Event, EventLog, HStore, R1NStore, R11Store, RMNStore, SharedHStore, SharedXStore, Storable,
+    VStore, XvcEntity, XvcStore, persist,
 };
 
 pub use xvc_logging::{
-    debug, error, info, output, panic, setup_logging, trace, uwo, uwr, warn, watch, XvcOutputLine,
-    XvcOutputSender,
+    XvcOutputLine, XvcOutputSender, debug, error, info, output, panic, setup_logging, trace, uwo,
+    uwr, warn, watch,
 };
 
 pub use xvc_walker as walker;
@@ -58,12 +58,11 @@ pub use xvc_walker::Error as XvcWalkerError;
 pub use xvc_walker::Result as XvcWalkerResult;
 
 pub use xvc_walker::{
+    AbsolutePath, Glob, IgnoreRules, MatchResult, PathEvent, PathSync, WalkOptions,
     content_to_patterns, make_polling_watcher, path_metadata_map_from_file_targets, walk_parallel,
-    walk_serial, AbsolutePath, Glob, IgnoreRules, MatchResult, PathEvent, PathSync, WalkOptions,
+    walk_serial,
 };
 
-pub use xvc_config::error::Error as XvcConfigError;
-pub use xvc_config::error::Result as XvcConfigResult;
 pub use xvc_config::FromConfig;
 pub use xvc_config::UpdateFromConfig;
 pub use xvc_config::XvcConfig;
@@ -72,6 +71,8 @@ pub use xvc_config::XvcConfiguration;
 pub use xvc_config::XvcLoadParams;
 pub use xvc_config::XvcOptionalConfiguration;
 pub use xvc_config::XvcVerbosity;
+pub use xvc_config::error::Error as XvcConfigError;
+pub use xvc_config::error::Result as XvcConfigResult;
 
 pub use xvc_config::blank_optional_config;
 pub use xvc_config::configuration;
@@ -85,8 +86,8 @@ pub use util::git::{
     stash_user_staged_files, unstash_user_staged_files,
 };
 
-pub use util::pmp::XvcPathMetadataProvider;
 pub use util::XvcPathMetadataMap;
+pub use util::pmp::XvcPathMetadataProvider;
 
 /// Channel size for [crossbeam_channel::bounded] used across the library.
 /// TODO: This can be configurable for smaller/larger RAM sizes.

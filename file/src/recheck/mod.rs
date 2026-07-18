@@ -7,11 +7,11 @@ use std::thread::JoinHandle;
 use std::{fs, thread};
 
 use crate::common::compare::{diff_content_digest, diff_recheck_method, diff_xvc_path_metadata};
-use crate::common::gitignore::{make_ignore_handler, IgnoreOp};
+use crate::common::gitignore::{IgnoreOp, make_ignore_handler};
 use crate::common::{
-    load_targets_from_store, only_file_targets, xvc_path_metadata_map_from_disk, FileTextOrBinary,
+    FileTextOrBinary, load_targets_from_store, only_file_targets, xvc_path_metadata_map_from_disk,
 };
-use crate::{common::recheck_from_cache, Result};
+use crate::{Result, common::recheck_from_cache};
 use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use crossbeam_channel::Sender;
@@ -20,11 +20,11 @@ use xvc_core::{FromConfig, UpdateFromConfig, XvcConfigResult, XvcConfiguration};
 
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
 use xvc_core::{
-    apply_diff, ContentDigest, Diff, DiffStore, HashAlgorithm, RecheckMethod, XvcCachePath,
-    XvcMetadata, XvcPath, XvcRoot,
+    ContentDigest, Diff, DiffStore, HashAlgorithm, RecheckMethod, XvcCachePath, XvcMetadata,
+    XvcPath, XvcRoot, apply_diff,
 };
-use xvc_core::{error, info, uwr, warn, XvcOutputSender};
 use xvc_core::{HStore, XvcEntity, XvcStore};
+use xvc_core::{XvcOutputSender, error, info, uwr, warn};
 
 /// Check out file from cache by a copy or link
 ///

@@ -9,23 +9,23 @@
 use crate::common::{load_targets_from_store, move_to_cache};
 
 use crate::{
-    recheck::{cmd_recheck, RecheckCLI},
     Result,
+    recheck::{RecheckCLI, cmd_recheck},
 };
 
 use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_core::{debug, error, uwr, warn, XvcOutputSender};
 use xvc_core::{
     ContentDigest, HStore, RecheckMethod, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot, XvcStore,
 };
+use xvc_core::{XvcOutputSender, debug, error, uwr, warn};
 
 use xvc_core::PathSync;
-use xvc_storage::storage::storage_identifier_completer;
 use xvc_storage::XvcStorageEvent;
-use xvc_storage::{storage::get_storage_record, StorageIdentifier, XvcStorageOperations};
+use xvc_storage::storage::storage_identifier_completer;
+use xvc_storage::{StorageIdentifier, XvcStorageOperations, storage::get_storage_record};
 
 /// Bring (download, pull, fetch) files from storage.
 ///

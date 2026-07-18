@@ -2,7 +2,7 @@ use crate::error::Result;
 use xvc_core::XvcRoot;
 use xvc_core::{R11Store, XvcStore};
 
-use crate::{pipeline::XvcStepInvalidate, XvcPipeline, XvcStep, XvcStepCommand};
+use crate::{XvcPipeline, XvcStep, XvcStepCommand, pipeline::XvcStepInvalidate};
 
 /// Entry point for `xvc pipeline step update` command.
 /// Updates the command and invalidation strategy (`when` to run) of the

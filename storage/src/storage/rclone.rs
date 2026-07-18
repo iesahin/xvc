@@ -14,13 +14,13 @@ use xvc_core::AbsolutePath;
 use xvc_core::R1NStore;
 use xvc_core::XvcCachePath;
 use xvc_core::XvcRoot;
-use xvc_core::{error, info, trace, uwr, warn, XvcOutputSender};
+use xvc_core::{XvcOutputSender, error, info, trace, uwr, warn};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent, XvcStorageGuid, XvcStorageOperations};
 
 use super::{
-    XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent, XvcStoragePath,
-    XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir, XVC_STORAGE_GUID_FILENAME,
+    XVC_STORAGE_GUID_FILENAME, XvcStorageDeleteEvent, XvcStorageInitEvent, XvcStorageListEvent,
+    XvcStoragePath, XvcStorageReceiveEvent, XvcStorageSendEvent, XvcStorageTempDir,
 };
 
 /// Add a new Rclone storage to the repository

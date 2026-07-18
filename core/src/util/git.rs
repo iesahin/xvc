@@ -3,12 +3,12 @@ use std::{ffi::OsString, path::PathBuf, str::FromStr};
 
 use crate::XvcRoot;
 use subprocess::Exec;
-use xvc_logging::{debug, XvcOutputSender};
+use xvc_logging::{XvcOutputSender, debug};
 
 use crate::{Error, Result};
 use std::path::Path;
 
-use xvc_walker::{build_ignore_patterns, AbsolutePath, IgnoreRules};
+use xvc_walker::{AbsolutePath, IgnoreRules, build_ignore_patterns};
 
 use crate::GIT_DIR;
 

@@ -7,8 +7,8 @@ use s3::creds::Credentials;
 use s3::{Bucket, Region};
 use serde::{Deserialize, Serialize};
 use xvc_core::R1NStore;
-use xvc_core::{error, info, XvcOutputSender};
 use xvc_core::{XvcCachePath, XvcRoot};
+use xvc_core::{XvcOutputSender, error, info};
 
 use crate::{Error, Result, XvcStorage, XvcStorageEvent};
 use crate::{XvcStorageGuid, XvcStorageOperations};

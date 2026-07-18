@@ -1,18 +1,18 @@
 //!  Share files from S3 compatible storages for a limited time
 
-use crate::{common::load_targets_from_store, error, Result};
+use crate::{Result, common::load_targets_from_store, error};
 use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use humantime;
 use xvc_core::XvcStore;
 use xvc_core::{
-    util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
-    XvcRoot,
+    ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot,
+    util::completer::xvc_path_completer,
 };
-use xvc_core::{uwo, watch, XvcOutputSender};
+use xvc_core::{XvcOutputSender, uwo, watch};
 use xvc_storage::{
-    storage::{get_storage_record, storage_identifier_completer},
     StorageIdentifier, XvcStorageOperations,
+    storage::{get_storage_record, storage_identifier_completer},
 };
 
 /// Share (uploaded and tracked) files from an S3 compatible storage

@@ -1,14 +1,14 @@
 //! xvc check ignore CLI handling module
 use crate::error::Result;
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
-use crate::{XvcPath, XvcRoot, XVCIGNORE_FILENAME};
+use crate::{XVCIGNORE_FILENAME, XvcPath, XvcRoot};
 use clap::Parser;
 
 use log::trace;
 use std::io::BufRead;
 use std::path::{Path, PathBuf};
-use xvc_logging::{output, XvcOutputSender};
-use xvc_walker::{build_ignore_patterns, IgnoreRules, MatchResult, WalkOptions};
+use xvc_logging::{XvcOutputSender, output};
+use xvc_walker::{IgnoreRules, MatchResult, WalkOptions, build_ignore_patterns};
 
 // DIFFERENCES from DVC
 // merged --all and --details, they are the same now

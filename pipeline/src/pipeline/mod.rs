@@ -8,8 +8,8 @@ pub mod step;
 pub mod util;
 
 use self::command::XvcStepCommand;
-use self::deps::compare::superficial_compare_dependency;
 use self::deps::XvcDependency;
+use self::deps::compare::superficial_compare_dependency;
 use self::outs::XvcOutput;
 use self::step::XvcStep;
 use anyhow::anyhow;
@@ -24,9 +24,9 @@ use crate::error::{Error, Result};
 use crate::pipeline::command::CommandProcess;
 use crate::{XvcPipeline, XvcPipelineRunDir};
 
-use crossbeam_channel::{bounded, Receiver, Select, Sender};
+use crossbeam_channel::{Receiver, Select, Sender, bounded};
 
-use xvc_core::{debug, error, info, output, trace, uwr, warn, XvcOutputSender};
+use xvc_core::{XvcOutputSender, debug, error, info, output, trace, uwr, warn};
 
 use petgraph::algo::toposort;
 use petgraph::data::Build;
@@ -39,12 +39,12 @@ use std::collections::HashSet;
 use std::fmt::Debug;
 
 use std::sync::{Arc, RwLock};
-use std::thread::{self, sleep, ScopedJoinHandle};
+use std::thread::{self, ScopedJoinHandle, sleep};
 use std::time::Duration;
 use strum_macros::{Display, EnumString, VariantNames};
-use xvc_core::{update_with_actual, Diff, HashAlgorithm, XvcPath, XvcRoot};
+use xvc_core::{Diff, HashAlgorithm, XvcPath, XvcRoot, update_with_actual};
 
-use xvc_core::{persist, HStore, R1NStore, XvcEntity, XvcStore};
+use xvc_core::{HStore, R1NStore, XvcEntity, XvcStore, persist};
 
 use sp::ExitStatus;
 use subprocess as sp;

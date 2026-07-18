@@ -8,9 +8,9 @@ use std::io::Write;
 use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use xvc_config::configuration::merge_configs;
 use xvc_config::configuration::XvcConfiguration;
 use xvc_config::configuration::XvcOptionalConfiguration;
+use xvc_config::configuration::merge_configs;
 use xvc_config::default_config;
 use xvc_config::initial_xvc_configuration_file;
 use xvc_ecs::ecs::timestamp;
@@ -20,12 +20,12 @@ use xvc_walker::AbsolutePath;
 
 use xvc_config::{XvcConfig, XvcLoadParams};
 
-use crate::error::{Error, Result};
 use crate::GITIGNORE_INITIAL_CONTENT;
 use crate::GUID_FILENAME;
+use crate::XVC_DIR;
 use crate::XVCIGNORE_FILENAME;
 use crate::XVCIGNORE_INITIAL_CONTENT;
-use crate::XVC_DIR;
+use crate::error::{Error, Result};
 
 /// The primary data structure for Xvc repository.
 ///

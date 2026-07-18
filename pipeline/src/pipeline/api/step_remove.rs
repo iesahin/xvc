@@ -1,10 +1,10 @@
 use xvc_core::XvcRoot;
-use xvc_core::{info, XvcOutputSender};
 use xvc_core::{R1NStore, XvcStore};
+use xvc_core::{XvcOutputSender, info};
 
 use crate::{
-    pipeline::XvcStepInvalidate, Result, XvcDependency, XvcOutput, XvcPipeline, XvcStep,
-    XvcStepCommand,
+    Result, XvcDependency, XvcOutput, XvcPipeline, XvcStep, XvcStepCommand,
+    pipeline::XvcStepInvalidate,
 };
 
 /// Remove a step from a pipeline

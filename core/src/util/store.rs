@@ -1,8 +1,8 @@
 //! ECS utilities for easy load and save in a repository.
 use crate::error::Result;
 use crate::types::xvcroot::XvcRootInner;
-use xvc_ecs::R11Store;
 use xvc_ecs::R1NStore;
+use xvc_ecs::R11Store;
 use xvc_ecs::RMNStore;
 use xvc_ecs::Storable;
 use xvc_ecs::XvcStore;

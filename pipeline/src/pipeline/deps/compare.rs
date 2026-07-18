@@ -1,11 +1,11 @@
 //! Compare all different types of dependencies
+use crate::XvcEntity;
 use crate::error::Result;
 use crate::pipeline::StepStateParams;
-use crate::XvcEntity;
 use anyhow::anyhow;
 
-use xvc_core::types::diff::Diffable;
 use xvc_core::XvcPathMetadataMap;
+use xvc_core::types::diff::Diffable;
 
 use xvc_core::{Diff, HashAlgorithm, TextOrBinary, XvcPath, XvcRoot};
 use xvc_core::{HStore, Storable};

@@ -1,8 +1,8 @@
 use crate::error::{Error, Result};
 use xvc_core::XvcRoot;
-use xvc_core::{R11Store, R1NStore, XvcStore};
+use xvc_core::{R1NStore, R11Store, XvcStore};
 
-use crate::{pipeline::XvcStepInvalidate, XvcPipeline, XvcStep, XvcStepCommand};
+use crate::{XvcPipeline, XvcStep, XvcStepCommand, pipeline::XvcStepInvalidate};
 
 /// Creates a new step
 pub fn cmd_step_new(

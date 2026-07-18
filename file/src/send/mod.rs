@@ -2,21 +2,21 @@
 //!
 //! - [`cmd_send`] implements the command
 //! - [`SendCLI`] is the command line interface
-use crate::common::load_targets_from_store;
 use crate::Result;
+use crate::common::load_targets_from_store;
 
 use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
-use xvc_core::{error, XvcOutputSender};
 use xvc_core::{
-    util::completer::xvc_path_completer, ContentDigest, XvcCachePath, XvcFileType, XvcMetadata,
-    XvcRoot,
+    ContentDigest, XvcCachePath, XvcFileType, XvcMetadata, XvcRoot,
+    util::completer::xvc_path_completer,
 };
 use xvc_core::{HStore, XvcStore};
+use xvc_core::{XvcOutputSender, error};
 use xvc_storage::{
-    storage::{get_storage_record, storage_identifier_completer},
     StorageIdentifier, XvcStorageOperations,
+    storage::{get_storage_record, storage_identifier_completer},
 };
 
 /// Send (upload) tracked files to storage

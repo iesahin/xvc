@@ -26,8 +26,8 @@ use pipeline::api::new::NewCLI;
 use pipeline::api::update::UpdateCLI;
 pub use pipeline::deps;
 
-use pipeline::step::handle_step_cli;
 use pipeline::step::StepCLI;
+use pipeline::step::handle_step_cli;
 use pipeline::util::pipeline_name_completer;
 use serde::{Deserialize, Serialize};
 use std::io::BufRead;
@@ -41,18 +41,18 @@ use xvc_core::XvcStore;
 
 use xvc_core::XvcPath;
 use xvc_core::XvcRoot;
-use xvc_core::{self, persist, XvcEntity};
+use xvc_core::{self, XvcEntity, persist};
 
 use crate::error::{Error, Result};
+use crate::pipeline::XvcStepInvalidate;
 pub use crate::pipeline::command::CommandProcess;
 pub use crate::pipeline::command::XvcStepCommand;
-pub use crate::pipeline::deps::{param::XvcParamFormat, XvcDependency};
+pub use crate::pipeline::deps::{XvcDependency, param::XvcParamFormat};
 pub use crate::pipeline::outs::XvcMetricsFormat;
 pub use crate::pipeline::outs::XvcOutput;
 pub use crate::pipeline::schema::XvcPipelineSchema;
 pub use crate::pipeline::schema::XvcStepSchema;
 pub use crate::pipeline::step::XvcStep;
-use crate::pipeline::XvcStepInvalidate;
 
 pub use crate::pipeline::api::run::RunCLI;
 

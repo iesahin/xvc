@@ -3,20 +3,20 @@
 //! It contains [`CopyCLI`] to handle command line options and [`cmd_copy`] to execute the command.
 use std::path::Path;
 
+use crate::Result;
 use crate::common::compare::{diff_content_digest, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;
-use crate::common::{filter_targets_from_store, xvc_path_metadata_map_from_disk, FileTextOrBinary};
+use crate::common::{FileTextOrBinary, filter_targets_from_store, xvc_path_metadata_map_from_disk};
 use crate::error::Error;
-use crate::recheck::{make_recheck_handler, RecheckOperation};
-use crate::Result;
+use crate::recheck::{RecheckOperation, make_recheck_handler};
 use anyhow::anyhow;
 use clap::Parser;
 
 use clap_complete::ArgValueCompleter;
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_core::{debug, error, XvcOutputSender};
 use xvc_core::{ContentDigest, Diff, RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 use xvc_core::{HStore, R11Store, XvcEntity, XvcStore};
+use xvc_core::{XvcOutputSender, debug, error};
 
 /// CLI for `xvc file copy`.
 #[derive(Debug, Clone, PartialEq, Eq, Parser)]

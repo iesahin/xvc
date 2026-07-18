@@ -2,7 +2,7 @@
 use crate::types::diff::Diffable;
 use crate::types::hashalgorithm::HashAlgorithm;
 use crate::util::file::is_text_file;
-use crate::{attribute_digest, TextOrBinary, XvcDigest};
+use crate::{TextOrBinary, XvcDigest, attribute_digest};
 
 use std::{fmt::Display, path::Path};
 

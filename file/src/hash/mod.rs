@@ -15,11 +15,11 @@ use xvc_core::XvcConfig;
 use xvc_core::XvcConfigResult;
 use xvc_core::XvcConfiguration;
 use xvc_core::XvcLoadParams;
-use xvc_core::{output, XvcOutputSender};
 use xvc_core::{
-    util::file::{path_metadata_channel, pipe_filter_path_errors},
     HashAlgorithm, TextOrBinary, XvcRoot,
+    util::file::{path_metadata_channel, pipe_filter_path_errors},
 };
+use xvc_core::{XvcOutputSender, output};
 
 use crate::common::pipe_path_digest;
 

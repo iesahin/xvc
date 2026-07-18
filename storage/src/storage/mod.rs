@@ -40,7 +40,7 @@ use serde::{Deserialize, Serialize};
 use tempfile::TempDir;
 use uuid::Uuid;
 use xvc_core::AbsolutePath;
-use xvc_core::{error, XvcOutputSender};
+use xvc_core::{XvcOutputSender, error};
 
 use clap_complete::CompletionCandidate;
 
@@ -48,8 +48,8 @@ use crate::{Error, Result, StorageIdentifier};
 
 use relative_path::{RelativePath, RelativePathBuf};
 
-use xvc_core::{persist, XvcStore};
-use xvc_core::{util::completer::load_store_for_completion, XvcCachePath, XvcRoot};
+use xvc_core::{XvcCachePath, XvcRoot, util::completer::load_store_for_completion};
+use xvc_core::{XvcStore, persist};
 
 use self::generic::XvcGenericStorage;
 

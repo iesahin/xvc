@@ -5,9 +5,9 @@ use std::ffi::OsString;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use crate::XvcRootOpt;
 use crate::comp;
 use crate::init;
-use crate::XvcRootOpt;
 
 use xvc_core::git_checkout_ref;
 use xvc_core::handle_git_automation;
@@ -20,18 +20,18 @@ use crossbeam::thread;
 use crossbeam_channel::bounded;
 use log::LevelFilter;
 use std::io;
+use xvc_core::XvcOutputSender;
 use xvc_core::types::xvcroot::find_root;
 use xvc_core::types::xvcroot::load_xvc_root;
 use xvc_core::util::completer::git_branch_completer;
 use xvc_core::util::completer::git_reference_completer;
-use xvc_core::XvcOutputSender;
-use xvc_core::{debug, error, uwr, XvcOutputLine};
+use xvc_core::{XvcOutputLine, debug, error, uwr};
 
+use xvc_core::AbsolutePath;
+use xvc_core::CHANNEL_BOUND;
 use xvc_core::check_ignore;
 use xvc_core::root;
 use xvc_core::setup_logging;
-use xvc_core::AbsolutePath;
-use xvc_core::CHANNEL_BOUND;
 use xvc_core::{XvcLoadParams, XvcVerbosity};
 use xvc_file as file;
 use xvc_pipeline as pipeline;

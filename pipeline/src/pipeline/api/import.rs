@@ -3,13 +3,13 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use log::warn;
 use std::{fs, io::BufRead, path::PathBuf};
-use xvc_core::{util::completer::strum_variants_completer, XvcRoot};
-use xvc_core::{R11Store, R1NStore};
+use xvc_core::{R1NStore, R11Store};
+use xvc_core::{XvcRoot, util::completer::strum_variants_completer};
 
 use crate::{
-    pipeline::{schema::XvcSchemaSerializationFormat, XvcStepInvalidate},
     XvcDependency, XvcOutput, XvcPipeline, XvcPipelineRunDir, XvcPipelineSchema, XvcStep,
     XvcStepCommand,
+    pipeline::{XvcStepInvalidate, schema::XvcSchemaSerializationFormat},
 };
 
 #[derive(Debug, Clone, Parser)]

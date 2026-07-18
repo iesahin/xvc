@@ -13,17 +13,17 @@ use std::collections::HashSet;
 use std::fs;
 
 use xvc_core::XvcRoot;
-use xvc_core::{info, uwo, uwr, warn, watch, XvcOutputSender};
 use xvc_core::{ContentDigest, TextOrBinary};
 use xvc_core::{Diff, XvcCachePath};
+use xvc_core::{XvcOutputSender, info, uwo, uwr, warn, watch};
 
 use crate::common::compare::{diff_content_digest, diff_text_or_binary, diff_xvc_path_metadata};
 use crate::common::gitignore::make_ignore_handler;
+use crate::common::{FileTextOrBinary, update_store_records};
 use crate::common::{
     load_targets_from_store, move_xvc_path_to_cache, only_file_targets, recheck_from_cache,
     set_writable, xvc_path_metadata_map_from_disk,
 };
-use crate::common::{update_store_records, FileTextOrBinary};
 use crate::error::Result;
 
 use clap::Parser;

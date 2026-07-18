@@ -12,8 +12,8 @@ use xvc_core::util::completer::strum_variants_completer;
 
 use std::collections::HashSet;
 
-use xvc_core::util::git::build_gitignore;
 use xvc_core::UpdateFromConfig;
+use xvc_core::util::git::build_gitignore;
 use xvc_core::{FromConfig, XvcConfigResult, XvcConfiguration};
 
 use xvc_core::XvcOutputSender;
@@ -26,7 +26,7 @@ use crate::common::compare::{
     diff_content_digest, diff_recheck_method, diff_text_or_binary, diff_xvc_path_metadata,
 };
 use crate::common::gitignore::{update_dir_gitignores, update_file_gitignores};
-use crate::common::{targets_from_disk, update_store_records, FileTextOrBinary};
+use crate::common::{FileTextOrBinary, targets_from_disk, update_store_records};
 use crate::error::Result;
 
 use clap::Parser;
@@ -161,18 +161,15 @@ pub fn cmd_track(
     let xvc_path_diff = xvc_path_metadata_diff.0;
     let xvc_metadata_diff = xvc_path_metadata_diff.1;
 
-    let changed_entities: HashSet<XvcEntity> =
-        xvc_path_diff
-            .iter()
-            .filter_map(|(xe, xpd)| if xpd.changed() { Some(*xe) } else { None })
-            .chain(xvc_metadata_diff.iter().filter_map(|(xe, xpd)| {
-                if xpd.changed() {
-                    Some(*xe)
-                } else {
-                    None
-                }
-            }))
-            .collect();
+    let changed_entities: HashSet<XvcEntity> = xvc_path_diff
+        .iter()
+        .filter_map(|(xe, xpd)| if xpd.changed() { Some(*xe) } else { None })
+        .chain(xvc_metadata_diff.iter().filter_map(
+            |(xe, xpd)| {
+                if xpd.changed() { Some(*xe) } else { None }
+            },
+        ))
+        .collect();
 
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
     let default_recheck_method = *RecheckMethod::from_config(conf)?;

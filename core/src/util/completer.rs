@@ -1,7 +1,7 @@
 //! Completion helpers for commands and options
 use crate::{
-    types::xvcroot::{find_root, XvcRootInner},
     Result, XvcPath,
+    types::xvcroot::{XvcRootInner, find_root},
 };
 use std::{env, ffi::OsStr, path::Path};
 

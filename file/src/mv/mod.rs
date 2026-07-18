@@ -16,7 +16,7 @@ use clap::Parser;
 use clap_complete::ArgValueCompleter;
 use itertools::Itertools;
 use xvc_core::util::completer::{strum_variants_completer, xvc_path_completer};
-use xvc_core::{info, uwr, FromConfig, XvcOutputSender};
+use xvc_core::{FromConfig, XvcOutputSender, info, uwr};
 use xvc_core::{HStore, XvcEntity, XvcStore};
 use xvc_core::{RecheckMethod, XvcFileType, XvcMetadata, XvcPath, XvcRoot};
 

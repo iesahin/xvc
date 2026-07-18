@@ -2,11 +2,11 @@
 //! See [`walk_parallel`] for parallel version.
 use std::path::{Path, PathBuf};
 
-use xvc_logging::{debug, error, warn, XvcOutputSender};
+use xvc_logging::{XvcOutputSender, debug, error, warn};
 
 use crate::{
-    build_ignore_patterns, directory_list, pattern::MatchResult, update_ignore_rules, IgnoreRules,
-    PathMetadata, Result, WalkOptions,
+    IgnoreRules, PathMetadata, Result, WalkOptions, build_ignore_patterns, directory_list,
+    pattern::MatchResult, update_ignore_rules,
 };
 
 /// Walk `dir` with `walk_options`, with the given _initial_ `ignore_rules`.
