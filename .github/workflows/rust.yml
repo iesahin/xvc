@@ -11,8 +11,8 @@ on:
       - "v*.*.*"
 
 jobs:
-  coverage:
-    name: Test and Coverage
+  test-macos:
+    name: Test on macOS
     if: github.actor == 'iesahin'
     runs-on: macos-latest
     timeout-minutes: 50
@@ -26,7 +26,6 @@ jobs:
             # rust: nightly-2024-01-01
             ## for submitters other than me, I'll add another job here.
             # benches: true
-            coverage: true
 
     steps:
       - name: Checkout
@@ -49,7 +48,6 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust || 'stable' }}
-          components: llvm-tools-preview
 
       - name: Build debug
         run: cargo build ${{ matrix.build-args }}
@@ -66,24 +64,8 @@ jobs:
         # run: tree $GITHUB_WORKSPACE && xvc --version
         run: xvc --version
 
-      - name: Install cargo-llvm-cov
-        if: matrix.coverage
-        uses: taiki-e/install-action@cargo-llvm-cov
-
       - name: Run Current Dev Tests
         run: $GITHUB_WORKSPACE/run-tests.zsh
-
-      - name: Test and Coverage
-        id: coverage
-        if: matrix.coverage
-        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
-
-      - name: Upload to codecov.io
-        if: matrix.coverage
-        uses: codecov/codecov-action@v7
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ${{ steps.coverage.outputs.report }}
 
       - name: Test all benches
         if: matrix.benches

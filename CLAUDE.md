@@ -29,6 +29,8 @@ LLVM_PROFILE_FILE="${TMPDIR}/xvc-%p-%m.profraw" CARGO_INCREMENTAL=0 \
 
 Integration tests (CLI-level, cloud storage backends, etc.) live in `iesahin/xvc-mono`'s `xvc-test` crate, which path-depends on this repo's crates via the `xvc` submodule. Run them from there: `cargo test --manifest-path xvc-test/Cargo.toml --features test-ci`.
 
+CI coverage (codecov) is generated in `iesahin/xvc-mono`, not here: its `test.yml` workflow runs `cargo llvm-cov --manifest-path xvc-test/Cargo.toml --features test-ci --lcov --output-path lcov.info` so coverage reflects the integration suite exercising this repo's crates, then uploads the result via `codecov/codecov-action`.
+
 ## Architecture
 
 ### Workspace crates (dependency order)
