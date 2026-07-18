@@ -80,6 +80,9 @@ pub fn cmd_import<R: BufRead>(
     let schema: XvcPipelineSchema = match format {
         XvcSchemaSerializationFormat::Json => serde_json::from_str(&content)?,
         XvcSchemaSerializationFormat::Yaml => serde_yaml::from_str(&content)?,
+        XvcSchemaSerializationFormat::Kdl => {
+            crate::pipeline::kdl::pipeline_schema_from_kdl(&content)?
+        }
     };
 
     assert!(schema.version == 1);
