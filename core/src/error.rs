@@ -140,11 +140,6 @@ pub enum Error {
         source: which::Error,
     },
 
-    #[error("Process Exec Error: {source}")]
-    ProcessExecError {
-        #[from]
-        source: subprocess::PopenError,
-    },
 
     #[error("Cannot find parent path")]
     CannotFindParentPath { path: PathBuf },

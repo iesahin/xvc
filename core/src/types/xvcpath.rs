@@ -87,7 +87,7 @@ impl XvcPath {
             panic!("Path shouldn't be empty");
         }
 
-        let abs_path = path.absolutize_from(current_dir)?;
+        let abs_path = path.absolutize_from(current_dir);
         let rel_path = abs_path.strip_prefix(xvc_root.absolute_path())?;
         Ok(XvcPath(RelativePathBuf::from_path(rel_path)?))
     }

@@ -3,7 +3,7 @@ use std::{env, fs};
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use subprocess::{CaptureData, Exec};
+use subprocess::{Capture, Exec};
 use xvc_core::AbsolutePath;
 use xvc_core::R1NStore;
 use xvc_core::{XvcCachePath, XvcRoot};
@@ -87,7 +87,7 @@ impl XvcRsyncStorage {
         }
     }
 
-    fn ssh_cmd(&self, ssh_executable: &AbsolutePath, cmd: &str) -> Result<CaptureData> {
+    fn ssh_cmd(&self, ssh_executable: &AbsolutePath, cmd: &str) -> Result<Capture> {
         let ssh_url = self.ssh_url();
         trace!(ssh_url);
         let cmd_res = Exec::cmd(ssh_executable.as_path())
@@ -96,16 +96,16 @@ impl XvcRsyncStorage {
             .capture();
 
         match cmd_res {
-            Ok(res) => match res.exit_status {
-                subprocess::ExitStatus::Exited(0) => Ok(res),
-                subprocess::ExitStatus::Exited(_)
-                | subprocess::ExitStatus::Signaled(_)
-                | subprocess::ExitStatus::Other(_)
-                | subprocess::ExitStatus::Undetermined => Err(Error::ProcessError {
-                    stdout: res.stdout_str(),
-                    stderr: res.stderr_str(),
-                }),
-            },
+            Ok(res) => {
+                if res.exit_status.success() {
+                    Ok(res)
+                } else {
+                    Err(Error::ProcessError {
+                        stdout: res.stdout_str(),
+                        stderr: res.stderr_str(),
+                    })
+                }
+            }
             Err(e) => Err(e.into()),
         }
     }
@@ -151,7 +151,7 @@ impl XvcRsyncStorage {
         rsync_executable: &AbsolutePath,
         local_path: &AbsolutePath,
         remote_url: &str,
-    ) -> Result<CaptureData> {
+    ) -> Result<Capture> {
         let rsync_opts = "-av";
 
         let cmd_res = Exec::cmd(rsync_executable.as_path())
@@ -161,16 +161,16 @@ impl XvcRsyncStorage {
             .capture();
 
         match cmd_res {
-            Ok(res) => match res.exit_status {
-                subprocess::ExitStatus::Exited(0) => Ok(res),
-                subprocess::ExitStatus::Exited(_)
-                | subprocess::ExitStatus::Signaled(_)
-                | subprocess::ExitStatus::Other(_)
-                | subprocess::ExitStatus::Undetermined => Err(Error::ProcessError {
-                    stdout: res.stdout_str(),
-                    stderr: res.stderr_str(),
-                }),
-            },
+            Ok(res) => {
+                if res.exit_status.success() {
+                    Ok(res)
+                } else {
+                    Err(Error::ProcessError {
+                        stdout: res.stdout_str(),
+                        stderr: res.stderr_str(),
+                    })
+                }
+            }
             Err(e) => Err(e.into()),
         }
     }
@@ -180,7 +180,7 @@ impl XvcRsyncStorage {
         rsync_executable: &AbsolutePath,
         remote_url: &str,
         local_path: &AbsolutePath,
-    ) -> Result<CaptureData> {
+    ) -> Result<Capture> {
         trace!(remote_url);
 
         let rsync_opts = "-av";
@@ -192,16 +192,16 @@ impl XvcRsyncStorage {
             .capture();
 
         match cmd_res {
-            Ok(res) => match res.exit_status {
-                subprocess::ExitStatus::Exited(0) => Ok(res),
-                subprocess::ExitStatus::Exited(_)
-                | subprocess::ExitStatus::Signaled(_)
-                | subprocess::ExitStatus::Other(_)
-                | subprocess::ExitStatus::Undetermined => Err(Error::ProcessError {
-                    stdout: res.stdout_str(),
-                    stderr: res.stderr_str(),
-                }),
-            },
+            Ok(res) => {
+                if res.exit_status.success() {
+                    Ok(res)
+                } else {
+                    Err(Error::ProcessError {
+                        stdout: res.stdout_str(),
+                        stderr: res.stderr_str(),
+                    })
+                }
+            }
             Err(e) => Err(e.into()),
         }
     }
@@ -231,7 +231,7 @@ impl XvcRsyncStorage {
         ssh_executable: &AbsolutePath,
         xvc_guid: &str,
         cache_path: &XvcCachePath,
-    ) -> Result<CaptureData> {
+    ) -> Result<Capture> {
         let storage_dir = self.ssh_cache_dir(xvc_guid, cache_path);
         self.ssh_cmd(ssh_executable, &format!("mkdir -p '{}'", storage_dir))
     }

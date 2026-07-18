@@ -46,7 +46,6 @@ use xvc_core::{Diff, HashAlgorithm, XvcPath, XvcRoot, update_with_actual};
 
 use xvc_core::{HStore, R1NStore, XvcEntity, XvcStore, persist};
 
-use sp::ExitStatus;
 use subprocess as sp;
 
 /// The option whether to consider a step changed
@@ -1425,21 +1424,28 @@ fn s_running_f_wait_process<'a>(
                     }
                 }
 
-                Some(exit_code) => match exit_code {
-            ExitStatus::Exited(0) => {
-                output!(params.output_snd, "[DONE] [{}] ({})\n", step.name, step_command);
-                return_state = Some(s.process_completed_successfully());
-            }
-            ,
-            // we don't handle other variants in the state machine. Either it exited
-            // successfully or died for some reason.
-            //
-            _ => {
-    // We get the remaining output at the end;
-                error!(params.output_snd, "Step {} finished UNSUCCESSFULLY with command {}", step.name, step_command);
-                return_state = Some(s.process_returned_non_zero());
-            },
-        },
+                Some(exit_code) => {
+                    if exit_code.success() {
+                        output!(
+                            params.output_snd,
+                            "[DONE] [{}] ({})\n",
+                            step.name,
+                            step_command
+                        );
+                        return_state = Some(s.process_completed_successfully());
+                    } else {
+                        // We don't distinguish between non-zero exits, signals, and other
+                        // failures in the state machine. Either it exited successfully or
+                        // died for some reason. We get the remaining output at the end.
+                        error!(
+                            params.output_snd,
+                            "Step {} finished UNSUCCESSFULLY with command {}",
+                            step.name,
+                            step_command
+                        );
+                        return_state = Some(s.process_returned_non_zero());
+                    }
+                }
             }
         }
 

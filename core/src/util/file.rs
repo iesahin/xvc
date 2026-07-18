@@ -1,6 +1,6 @@
 //! Core file operationscorefil
 use cached::UnboundCache;
-use cached::proc_macro::cached;
+use cached::cached;
 use glob::Pattern as GlobPattern;
 
 use std::fs::{self, Metadata};
@@ -77,9 +77,8 @@ pub fn all_paths_and_metadata(xvc_root: &XvcRoot) -> (XvcPathMetadataMap, Shared
 /// Returns a compiled [glob::Pattern] by prepending it with `pipeline_rundir`.
 #[cached(
     ty = "UnboundCache<String, glob::Pattern>",
-    create = "{ UnboundCache::new() }",
-    convert = r#"{ format!("{:?}{}", pipeline_rundir, glob) }"#,
-    result = true
+    create = "{ UnboundCache::builder().build().unwrap() }",
+    convert = r#"{ format!("{:?}{}", pipeline_rundir, glob) }"#
 )]
 pub fn compiled_glob(pipeline_rundir: &Path, glob: &str) -> Result<glob::Pattern> {
     GlobPattern::new(&pipeline_rundir.join(glob).to_string_lossy())

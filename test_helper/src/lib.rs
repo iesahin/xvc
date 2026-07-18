@@ -5,7 +5,7 @@
 #![forbid(unsafe_code)]
 use log::LevelFilter;
 use rand::Rng;
-use rand::RngCore;
+use rand::RngExt;
 use rand::SeedableRng;
 use rand::distr::Alphanumeric;
 use rand::rngs::StdRng;
@@ -52,7 +52,7 @@ pub fn random_dir_name(prefix: &str, seed: Option<u64>) -> String {
     let mut rng = if let Some(seed) = seed {
         rand::rngs::StdRng::seed_from_u64(seed)
     } else {
-        rand::rngs::StdRng::from_os_rng()
+        rand::rngs::StdRng::from_rng(&mut rand::rng())
     };
 
     let rand: u32 = rng.next_u32();
@@ -137,7 +137,7 @@ pub fn generate_random_file(filename: &Path, size: usize, seed: Option<u64>) {
 
     let mut rng: StdRng = seed
         .map(StdRng::seed_from_u64)
-        .unwrap_or_else(StdRng::from_os_rng);
+        .unwrap_or_else(|| StdRng::from_rng(&mut rand::rng()));
     let mut buffer = [0u8; 1024];
     let mut remaining_size = size;
 

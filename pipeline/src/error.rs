@@ -53,11 +53,6 @@ pub enum Error {
     FormatSpecificationRequired,
     #[error("Process Error - stdout: {stdout}\nstderr: {stderr}")]
     ProcessError { stdout: String, stderr: String },
-    #[error("Process Exec Error: {source}")]
-    ProcessExecError {
-        #[from]
-        source: subprocess::PopenError,
-    },
     #[error("Invalid regular expression: {regex}")]
     InvalidRegexFormat { regex: String },
     //

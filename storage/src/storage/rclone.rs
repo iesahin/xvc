@@ -9,7 +9,7 @@ use std::fs;
 
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use subprocess::{CaptureData, Exec};
+use subprocess::{Capture, Exec};
 use xvc_core::AbsolutePath;
 use xvc_core::R1NStore;
 use xvc_core::XvcCachePath;
@@ -95,7 +95,7 @@ pub fn rclone_cmd(
     command: &str,
     first_url: &str,
     second_url: Option<&str>,
-) -> Result<CaptureData> {
+) -> Result<Capture> {
     let second_url = second_url.unwrap_or("");
     trace!(second_url);
 
@@ -113,16 +113,16 @@ pub fn rclone_cmd(
     let cmd_res = cmd.capture();
 
     match cmd_res {
-        Ok(res) => match res.exit_status {
-            subprocess::ExitStatus::Exited(0) => Ok(res),
-            subprocess::ExitStatus::Exited(_)
-            | subprocess::ExitStatus::Signaled(_)
-            | subprocess::ExitStatus::Other(_)
-            | subprocess::ExitStatus::Undetermined => Err(Error::ProcessError {
-                stdout: res.stdout_str(),
-                stderr: res.stderr_str(),
-            }),
-        },
+        Ok(res) => {
+            if res.exit_status.success() {
+                Ok(res)
+            } else {
+                Err(Error::ProcessError {
+                    stdout: res.stdout_str(),
+                    stderr: res.stderr_str(),
+                })
+            }
+        }
         Err(e) => Err(e.into()),
     }
 }
@@ -162,7 +162,7 @@ impl XvcRcloneStorage {
         rclone_executable: &AbsolutePath,
         local_path: &AbsolutePath,
         remote_url: &str,
-    ) -> Result<CaptureData> {
+    ) -> Result<Capture> {
         trace!(remote_url);
         trace!(local_path.to_string());
         trace!(remote_url);
@@ -186,7 +186,7 @@ impl XvcRcloneStorage {
         rclone_executable: &AbsolutePath,
         remote_url: &str,
         local_path: &AbsolutePath,
-    ) -> Result<CaptureData> {
+    ) -> Result<Capture> {
         trace!(remote_url);
 
         rclone_cmd(
@@ -203,7 +203,7 @@ impl XvcRcloneStorage {
         rclone_executable: &AbsolutePath,
         xvc_guid: &str,
         cache_path: &XvcCachePath,
-    ) -> Result<CaptureData> {
+    ) -> Result<Capture> {
         let storage_dir = self.rclone_cache_url(xvc_guid, cache_path);
         rclone_cmd(rclone_executable, "", "mkdir", &storage_dir, None)
     }
@@ -440,9 +440,10 @@ mod tests {
 
     #[test]
     fn test_rclone_drive_list() {
-        let rclone_exec = rclone_executable()
-            .map_err(|e| format!("Failed to find rclone executable: {}", e))
-            .unwrap();
+        let Ok(rclone_exec) = rclone_executable() else {
+            eprintln!("rclone executable not found, skipping test");
+            return;
+        };
         let drive_list = rclone_cmd(&rclone_exec, "", "ls", "drive://", None);
 
         match drive_list {

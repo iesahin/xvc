@@ -10,6 +10,7 @@
 #![forbid(unsafe_code)]
 pub mod abspath;
 pub mod error;
+pub mod glob;
 pub mod ignore_rules;
 pub mod notify;
 pub mod pattern;
@@ -44,7 +45,8 @@ pub use notify::RecommendedWatcher;
 pub use notify::make_polling_watcher;
 pub use notify::make_watcher;
 
-pub use fast_glob::Glob;
+pub use fast_glob::glob_match;
+pub use glob::Glob;
 
 use xvc_logging::watch;
 

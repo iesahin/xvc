@@ -17,7 +17,7 @@ use blake2::{Blake2s, Digest};
 use relative_path::RelativePathBuf;
 
 use serde::{Deserialize, Serialize};
-use sha2::Sha256;
+use sha2::{Digest as _, Sha256};
 use sha3::Sha3_256;
 
 /// The digest length in bytes that is supposed to stay constant for a long time
