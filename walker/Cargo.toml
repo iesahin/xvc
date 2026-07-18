@@ -18,7 +18,7 @@ crate-type = ["rlib"]
 [dependencies]
 xvc-logging = { version = "0.7.1-alpha.3", path = "../logging" }
 # NOTE: 0.4 removes Glob struct and this should be handled with care
-fast-glob = "^0.3"
+fast-glob = "^1.0"
 
 ## Parallelization
 crossbeam-channel = "^0.5"
@@ -38,7 +38,7 @@ log = "^0.4"
 peak_alloc = "^0.3"
 
 ## Misc
-itertools = "^0.14"
+itertools = "^0.15"
 regex = "^1.12"
 
 [dev-dependencies]
