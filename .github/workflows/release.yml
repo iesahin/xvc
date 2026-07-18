@@ -85,7 +85,7 @@ jobs:
     runs-on: ${{ matrix.platform.runs-on }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v1
         with:
@@ -94,7 +94,7 @@ jobs:
           args: ${{ matrix.platform.args }}
           strip: true
       - name: Publish artifacts and release
-        uses: houseabsolute/actions-rust-release@v0
+        uses: houseabsolute/actions-rust-release@v1
         with:
           executable-name: xvc
           changes-file: "CHANGELOG.md"

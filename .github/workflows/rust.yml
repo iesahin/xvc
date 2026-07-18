@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v7
 
       - name: Install required packages
         run: |
@@ -80,7 +80,7 @@ jobs:
 
       - name: Upload to codecov.io
         if: matrix.coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ${{ steps.coverage.outputs.report }}
@@ -104,7 +104,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v7
 
       - name: Install required packages
         run: |
