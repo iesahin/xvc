@@ -16,7 +16,7 @@ pub mod storable;
 pub mod vstore;
 pub mod xvcstore;
 
-use rand::{RngCore, SeedableRng, rngs};
+use rand::Rng as _;
 use std::fmt;
 use std::fs;
 use std::path::Path;
@@ -131,8 +131,7 @@ impl Iterator for XvcEntityGenerator {
 impl XvcEntityGenerator {
     fn new(start: u64) -> XvcEntityGenerator {
         let counter = AtomicU64::new(start);
-        let mut rng = rngs::StdRng::from_os_rng();
-        let init_random = rng.next_u64();
+        let init_random = rand::rng().next_u64();
         // When we create a new generator from scratch, we need to save it.
         // In the load function, we set this to false, as we don't want to save duplicate values.
         let dirty = AtomicBool::new(true);
@@ -156,8 +155,7 @@ impl XvcEntityGenerator {
                 let current_val = fs::read_to_string(path)?.parse::<u64>()?;
                 // We don't use new here to set the dirty flag to false.
                 let counter = AtomicU64::new(current_val);
-                let mut rng = rngs::StdRng::from_os_rng();
-                let init_random = rng.next_u64();
+                let init_random = rand::rng().next_u64();
                 // When we load a new generator from file, we don't need to save it.
                 // In the new function, we set this to true, as we need to save the first value.
                 let dirty = AtomicBool::new(false);

@@ -51,7 +51,7 @@ pub struct CommandProcess {
     /// When we started running the command
     pub birth: Option<Instant>,
     /// The process that runs the command
-    pub process: Option<sp::Popen>,
+    pub process: Option<sp::Job>,
     /// Channel to send stdout to
     pub stdout_sender: Sender<String>,
     /// Channel to send stderr to
@@ -94,14 +94,9 @@ impl CommandProcess {
             .stdout(sp::Redirection::Pipe)
             .stderr(sp::Redirection::Pipe)
             .stdin(sp::Redirection::None)
-            .env_extend(
-                self.environment
-                    .iter()
-                    .collect::<Vec<(&String, &String)>>()
-                    .as_slice(),
-            )
+            .env_extend(self.environment.iter())
             .detached()
-            .popen()?;
+            .start()?;
         self.process = Some(process);
         self.birth = Some(Instant::now());
         Ok(())

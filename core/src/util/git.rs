@@ -66,18 +66,13 @@ pub fn exec_git(git_command: &str, xvc_directory: &str, args_str_vec: &[&str]) -
         .collect();
     let proc_res = Exec::cmd(git_command).args(&args).capture()?;
 
-    match proc_res.exit_status {
-        subprocess::ExitStatus::Exited(0) => Ok(proc_res.stdout_str()),
-        subprocess::ExitStatus::Exited(_) => Err(Error::GitProcessError {
+    if proc_res.exit_status.success() {
+        Ok(proc_res.stdout_str())
+    } else {
+        Err(Error::GitProcessError {
             stdout: proc_res.stdout_str(),
             stderr: proc_res.stderr_str(),
-        }),
-        subprocess::ExitStatus::Signaled(_)
-        | subprocess::ExitStatus::Other(_)
-        | subprocess::ExitStatus::Undetermined => Err(Error::GitProcessError {
-            stdout: proc_res.stdout_str(),
-            stderr: proc_res.stderr_str(),
-        }),
+        })
     }
 }
 

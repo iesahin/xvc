@@ -10,6 +10,7 @@
 #![forbid(unsafe_code)]
 pub mod abspath;
 pub mod error;
+pub mod glob;
 pub mod ignore_rules;
 pub mod notify;
 pub mod pattern;
@@ -44,7 +45,8 @@ pub use notify::RecommendedWatcher;
 pub use notify::make_polling_watcher;
 pub use notify::make_watcher;
 
-pub use fast_glob::Glob;
+pub use fast_glob::glob_match;
+pub use glob::Glob;
 
 use xvc_logging::watch;
 
@@ -513,7 +515,7 @@ mod tests {
     fn test_match_result(dir: &str, contents: &str, path: &str) -> MatchResult {
         test_logging(LevelFilter::Trace);
 
-        let root = create_directory_hierarchy(false).unwrap();
+        let root = create_directory_hierarchy();
         let source_file = format!("{root}/{dir}/.gitignore");
         let path = root.as_ref().join(path).to_owned();
         let dwi =
@@ -523,27 +525,30 @@ mod tests {
     }
 
     // TODO: Patterns shouldn't have / prefix, but an appropriate PathKind
-    #[test_case(true => matches Ok(_); "this is to refresh the dir for each test run")]
-    // This builds a directory hierarchy to run the tests
-    fn create_directory_hierarchy(force: bool) -> Result<AbsolutePath> {
-        let temp_dir: PathBuf = seeded_temp_dir("xvc-walker", Some(20220615));
+    // This builds a directory hierarchy to run the tests. It's built once per process:
+    // building (or refreshing) it from concurrently running tests corrupts the tree for
+    // the tests already using it.
+    fn create_directory_hierarchy() -> AbsolutePath {
+        static ROOT: std::sync::OnceLock<AbsolutePath> = std::sync::OnceLock::new();
+        ROOT.get_or_init(|| {
+            let temp_dir: PathBuf = seeded_temp_dir("xvc-walker", Some(20220615));
 
-        if force && temp_dir.exists() {
-            fs::remove_dir_all(&temp_dir)?;
-        }
+            // Refresh the tree from scratch for each test run.
+            if temp_dir.exists() {
+                fs::remove_dir_all(&temp_dir).unwrap();
+            }
 
-        if !temp_dir.exists() {
-            // in parallel tests, sometimes this fail
-            fs::create_dir(&temp_dir)?;
-            create_directory_tree(&temp_dir, 10, 10, 1000, None)?;
+            fs::create_dir(&temp_dir).unwrap();
+            create_directory_tree(&temp_dir, 10, 10, 1000, None).unwrap();
             // root/dir1 may have another tree
             let level_1 = &temp_dir.join("dir-0001");
-            create_directory_tree(level_1, 10, 10, 1000, None)?;
+            create_directory_tree(level_1, 10, 10, 1000, None).unwrap();
             // and another level
             let level_2 = &level_1.join("dir-0001");
-            create_directory_tree(level_2, 10, 10, 1000, None)?;
-        }
+            create_directory_tree(level_2, 10, 10, 1000, None).unwrap();
 
-        Ok(AbsolutePath::from(temp_dir))
+            AbsolutePath::from(temp_dir)
+        })
+        .clone()
     }
 }

@@ -17,7 +17,7 @@ crate-type = ["rlib"]
 
 [dependencies]
 xvc-logging = { version = "0.7.1-alpha.3", path = "../logging" }
-# NOTE: 0.4 removes Glob struct and this should be handled with care
+# NOTE: 1.0 removed the multi-pattern Glob struct; it's reimplemented in src/glob.rs
 fast-glob = "^1.0"
 
 ## Parallelization
