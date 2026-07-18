@@ -1,7 +1,7 @@
 [package]
 name = "xvc-core"
 version = "0.7.1-alpha.3"
-edition = "2021"
+edition = "2024"
 description = "Xvc core for common elements for all commands"
 authors = ["Emre Şahin <contact@emresahin.net>"]
 license = "GPL-3.0"

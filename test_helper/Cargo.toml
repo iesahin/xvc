@@ -1,7 +1,7 @@
 [package]
 name = "xvc-test-helper"
 version = "0.7.1-alpha.3"
-edition = "2021"
+edition = "2024"
 description = "Test helper command for Xvc"
 authors = ["Emre Şahin <contact@emresahin.net>"]
 license = "GPL-3.0"
