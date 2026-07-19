@@ -77,6 +77,16 @@ persist!(MyType, "my-type");  // generates Storable impl; "my-type" becomes the 
 3. Implement `compare_dependency` in `deps/compare.rs`.
 4. Add CLI parsing in `pipeline/src/pipeline/api/` and wire into `cmd_step_dependency`.
 
+### KDL pipeline definitions
+
+`pipeline/src/pipeline/kdl/` converts between KDL documents and `XvcPipelineSchema`, the same schema `pipeline export`/`import` use for JSON and YAML (see `iesahin/xvc-mono`'s `book/src/arch/kdl-pipeline-definition.md` for the language design):
+
+- `kdl/mod.rs` — public interface: `pipeline_schema_from_kdl` / `pipeline_schema_to_kdl`.
+- `kdl/parse.rs` — KDL document -> `XvcPipelineSchema`, building dependencies through the existing constructors (`FileDep::new`, `ParamDep::new`, ...).
+- `kdl/generate.rs` — `XvcPipelineSchema` -> KDL document (the canonical graph form: shared dependencies become shared `node`s).
+
+Tests live in `iesahin/xvc-mono`'s `xvc-test` crate (`test_pipeline_kdl_schema.rs` for parsing/generation, `test_pipeline_kdl.rs` for CLI-level behavior), not in this repo.
+
 ### Recheck methods
 
 `RecheckMethod` controls how files are placed in the workspace from cache: `Copy`, `Symlink`, `Hardlink`, or `Reflink` (feature-gated). Default is `Copy`.

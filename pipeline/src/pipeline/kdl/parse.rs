@@ -329,7 +329,9 @@ fn parse_step(step: &KdlNode, nodes: &BTreeMap<String, XvcDependency>) -> Result
                         match nodes.get(&id) {
                             Some(dep) => dependencies.push(dep.clone()),
                             None => {
-                                return err(format!("step '{name}' references unknown node '{id}'"));
+                                return err(format!(
+                                    "step '{name}' references unknown node '{id}'"
+                                ));
                             }
                         }
                     }

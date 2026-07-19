@@ -129,7 +129,13 @@ pub fn pipeline_schema_to_kdl(schema: &XvcPipelineSchema) -> Result<String> {
         children.nodes_mut().push(step_node(step, step_dep_ids));
     }
 
+    let mut version = KdlNode::new("version");
+    version
+        .entries_mut()
+        .push(KdlEntry::new(schema.version as i128));
+
     let mut doc = KdlDocument::new();
+    doc.nodes_mut().push(version);
     doc.nodes_mut().push(pipeline);
     doc.autoformat();
     Ok(doc.to_string())
