@@ -599,7 +599,7 @@ checksum = "958c5d6ecf1f214b4c2bbbbf6ab9523a864bd136dcf71a7e8904799acfe1ad47"
 dependencies = [
  "crossterm",
  "unicode-segmentation",
- "unicode-width",
+ "unicode-width 0.2.2",
 ]
 
 [[package]]
@@ -2952,6 +2952,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "kdl"
+version = "6.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "082ddf81b2acd76fe04412655d17befedfff1837db772f8e74c38050d25ed670"
+dependencies = [
+ "miette",
+ "num-traits",
+ "serde",
+ "winnow 0.7.14",
+]
+
+[[package]]
 name = "keccak"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3121,6 +3133,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "744133e4a0e0a658e1374cf3bf8e415c4052a15a111acd372764c55b4177d490"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "miette"
+version = "7.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f98efec8807c63c752b5bd61f862c165c115b0a35685bdcfd9238c7aeb592b7"
+dependencies = [
+ "cfg-if",
+ "unicode-width 0.1.14",
 ]
 
 [[package]]
@@ -4701,7 +4723,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.3",
+ "getrandom 0.3.4",
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",
@@ -5070,6 +5092,12 @@ name = "unicode-segmentation"
 version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f6ccf251212114b54433ec949fd6a7841275f9ada20dddd2f29e9ceea4501493"
+
+[[package]]
+name = "unicode-width"
+version = "0.1.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7dd6e30e90baa6f72411720665d41d89b9a3d039dc45b8faea1ddd07f617f6af"
 
 [[package]]
 name = "unicode-width"
@@ -5681,7 +5709,7 @@ checksum = "9edde0db4769d2dc68579893f2306b26c6ecfbe0ef499b013d731b7b9247e0b9"
 
 [[package]]
 name = "xvc"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -5733,7 +5761,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-config"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "crossbeam",
  "crossbeam-channel",
@@ -5756,7 +5784,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-core"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5811,7 +5839,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-ecs"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "crossbeam-channel",
  "fern",
@@ -5831,7 +5859,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-file"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5885,7 +5913,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-logging"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "crossbeam-channel",
  "fern",
@@ -5895,7 +5923,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-pipeline"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5915,6 +5943,7 @@ dependencies = [
  "glob",
  "hex",
  "itertools 0.15.0",
+ "kdl",
  "lazy_static",
  "log",
  "path-absolutize",
@@ -5949,7 +5978,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-storage"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "anyhow",
  "blake2",
@@ -6008,7 +6037,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-test-helper"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "anyhow",
  "clap",
@@ -6020,7 +6049,7 @@ dependencies = [
 
 [[package]]
 name = "xvc-walker"
-version = "0.7.1-alpha.3"
+version = "0.7.1-alpha.4"
 dependencies = [
  "anyhow",
  "crossbeam",

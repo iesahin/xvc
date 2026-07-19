@@ -25,6 +25,7 @@ use pipeline::api::import::ImportCLI;
 use pipeline::api::new::NewCLI;
 use pipeline::api::update::UpdateCLI;
 pub use pipeline::deps;
+pub use pipeline::kdl;
 
 use pipeline::step::StepCLI;
 use pipeline::step::handle_step_cli;

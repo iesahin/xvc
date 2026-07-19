@@ -56,6 +56,9 @@ pub enum Error {
     #[error("Invalid regular expression: {regex}")]
     InvalidRegexFormat { regex: String },
     //
+    #[error("KDL pipeline definition error: {message}")]
+    InvalidKdlPipeline { message: String },
+    //
     #[error("Invalid lines definition: {line}")]
     InvalidLinesFormat { line: String },
     //

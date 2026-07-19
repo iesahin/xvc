@@ -148,6 +148,9 @@ pub fn cmd_export(
             serde_json::to_string_pretty(&value)?
         }
         XvcSchemaSerializationFormat::Yaml => to_yaml(&pipeline_schema)?,
+        XvcSchemaSerializationFormat::Kdl => {
+            crate::pipeline::kdl::pipeline_schema_to_kdl(&pipeline_schema)?
+        }
     };
     match file {
         Some(path) => fs::write(path, export_output).map_err(|e| e.into()),

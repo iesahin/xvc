@@ -2,6 +2,7 @@
 pub mod api;
 pub mod command;
 pub mod deps;
+pub mod kdl;
 pub mod outs;
 pub mod schema;
 pub mod step;

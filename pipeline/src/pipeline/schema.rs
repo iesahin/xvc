@@ -14,6 +14,7 @@ use super::XvcStepInvalidate;
 pub enum XvcSchemaSerializationFormat {
     Json,
     Yaml,
+    Kdl,
     // Turned off because of UnsupportedType error
     // TOML,
 }
@@ -23,6 +24,7 @@ impl XvcSchemaSerializationFormat {
         match ext.to_str().unwrap_or("") {
             "json" | "JSON" => Ok(Self::Json),
             "yaml" | "yml" => Ok(Self::Yaml),
+            "kdl" | "KDL" => Ok(Self::Kdl),
             // "toml" | "tom" | "tml" => Ok(Self::TOML),
             _ => Err(Error::CannotInferFormatFromExtension {
                 extension: ext.into(),
