@@ -100,15 +100,17 @@ impl XvcDropboxStorage {
         self.storage_prefix.trim_matches('/').to_string()
     }
 
-    /// The relative storage path (no leading slash) of a cache path in the storage.
-    /// This is used to build [XvcStoragePath] values recorded in storage events.
-    fn build_storage_path(&self, cache_path: &XvcCachePath) -> XvcStoragePath {
+    /// The relative storage path (no leading slash) of a cache path in the storage:
+    /// `{storage_prefix}/{repo_guid}/{cache_path}`. This is used both as the actual Dropbox
+    /// object key and as the [XvcStoragePath] value recorded in storage events, so it must use
+    /// the same repository GUID that [XvcDropboxStorage::list] filters on.
+    fn build_storage_path(&self, xvc_root: &XvcRoot, cache_path: &XvcCachePath) -> XvcStoragePath {
         let prefix = self.storage_prefix_trimmed();
-        let guid = self.guid.to_string();
+        let xvc_guid = xvc_root.guid();
         let relative = if prefix.is_empty() {
-            format!("{guid}/{cache_path}")
+            format!("{xvc_guid}/{cache_path}")
         } else {
-            format!("{prefix}/{guid}/{cache_path}")
+            format!("{prefix}/{xvc_guid}/{cache_path}")
         };
         XvcStoragePath::from(relative)
     }
@@ -332,7 +334,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
         let mut sent_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
 
         for cache_path in paths {
-            let storage_path = self.build_storage_path(cache_path);
+            let storage_path = self.build_storage_path(xvc_root, cache_path);
             let dropbox_path = Self::to_dropbox_path(storage_path.as_str());
             let abs_cache_path = cache_path.to_absolute_path(xvc_root);
 
@@ -357,7 +359,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
     fn receive(
         &self,
         output: &XvcOutputSender,
-        _xvc_root: &XvcRoot,
+        xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
         _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
@@ -365,7 +367,7 @@ impl XvcStorageOperations for XvcDropboxStorage {
         let mut received_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
 
         for cache_path in paths {
-            let storage_path = self.build_storage_path(cache_path);
+            let storage_path = self.build_storage_path(xvc_root, cache_path);
             let dropbox_path = Self::to_dropbox_path(storage_path.as_str());
 
             match self.download(&dropbox_path) {
@@ -393,13 +395,13 @@ impl XvcStorageOperations for XvcDropboxStorage {
     fn delete(
         &self,
         output: &XvcOutputSender,
-        _xvc_root: &XvcRoot,
+        xvc_root: &XvcRoot,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
         let mut deleted_paths = Vec::<XvcStoragePath>::with_capacity(paths.len());
 
         for cache_path in paths {
-            let storage_path = self.build_storage_path(cache_path);
+            let storage_path = self.build_storage_path(xvc_root, cache_path);
             let dropbox_path = Self::to_dropbox_path(storage_path.as_str());
 
             match self.delete_path(&dropbox_path) {
@@ -424,11 +426,11 @@ impl XvcStorageOperations for XvcDropboxStorage {
     fn share(
         &self,
         output: &XvcOutputSender,
-        _xvc_root: &XvcRoot,
+        xvc_root: &XvcRoot,
         path: &XvcCachePath,
         _period: std::time::Duration,
     ) -> Result<XvcStorageExpiringShareEvent> {
-        let storage_path = self.build_storage_path(path);
+        let storage_path = self.build_storage_path(xvc_root, path);
         let dropbox_path = Self::to_dropbox_path(storage_path.as_str());
 
         let result: DbxTemporaryLinkResult = serde_json::from_value(
