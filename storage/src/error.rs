@@ -104,6 +104,31 @@ pub enum Error {
 
     #[error("This storage type does not support file sharing with signed URLs")]
     StorageDoesNotSupportSignedUrls,
+
+    #[error(
+        "Access token for storage '{storage_name}' not found. Please set one of the following environment variables: {vars:?}"
+    )]
+    CloudTokenNotFound {
+        storage_name: String,
+        vars: Vec<String>,
+    },
+
+    #[cfg(feature = "dropbox")]
+    #[error("Dropbox HTTP Error: {source}")]
+    ReqwestError {
+        #[from]
+        source: reqwest::Error,
+    },
+
+    #[cfg(feature = "dropbox")]
+    #[error("Dropbox API Error: {0}")]
+    DropboxApiError(String),
+
+    #[error("JSON Error: {source}")]
+    SerdeJsonError {
+        #[from]
+        source: serde_json::Error,
+    },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

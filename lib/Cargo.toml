@@ -1,6 +1,6 @@
 [package]
 name = "xvc"
-version = "0.7.1-alpha.4"
+version = "0.7.1-alpha.5"
 edition = "2024"
 description = "An MLOps tool to manage data files and pipelines on top of Git"
 authors = ["Emre Şahin <contact@emresahin.net>"]
@@ -20,10 +20,10 @@ name = "xvc"
 path = "src/main.rs"
 
 [dependencies]
-xvc-core = { version = "0.7.1-alpha.4", path = "../core" }
-xvc-file = { version = "0.7.1-alpha.4", path = "../file" }
-xvc-pipeline = { version = "0.7.1-alpha.4", path = "../pipeline" }
-xvc-storage = { version = "0.7.1-alpha.4", path = "../storage", default-features = false }
+xvc-core = { version = "0.7.1-alpha.5", path = "../core" }
+xvc-file = { version = "0.7.1-alpha.5", path = "../file" }
+xvc-pipeline = { version = "0.7.1-alpha.5", path = "../pipeline" }
+xvc-storage = { version = "0.7.1-alpha.5", path = "../storage", default-features = false }
 
 ## Cli and config
 clap = { version = "^4.5", features = ["derive", "cargo", "unstable-ext"] }
@@ -90,7 +90,7 @@ predicates = "^3.1"
 
 
 [features]
-default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean", "rclone"]
+default = ["s3", "minio", "r2", "gcs", "wasabi", "digital-ocean", "rclone", "dropbox"]
 # Dropped reflink from default features in 0.6.13
 reflink = ["xvc-file/reflink"]
 rclone = ["xvc-storage/rclone"]
@@ -100,6 +100,7 @@ r2 = ["xvc-storage/r2"]
 gcs = ["xvc-storage/gcs"]
 wasabi = ["xvc-storage/wasabi"]
 digital-ocean = ["xvc-storage/digital-ocean"]
+dropbox = ["xvc-storage/dropbox"]
 bundled-sqlite = ["xvc-pipeline/bundled-sqlite"]
 bundled-openssl = ["xvc-storage/bundled-openssl"]
 bundled-rclone = ["xvc-storage/bundled-rclone"]

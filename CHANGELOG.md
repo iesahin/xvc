@@ -1,5 +1,11 @@
 # Xvc Changelog
 
+## v0.7.1-alpha.5 (2026-07-21)
+
+- Added Dropbox storage support (`xvc storage new dropbox`). Credentials are read from `DROPBOX_ACCESS_TOKEN` or `XVC_STORAGE_ACCESS_TOKEN_<storage_name>`. Closes #290.
+- Bump all package versions to `0.7.1-alpha.5`.
+- Update internal dependencies to match the new version.
+
 ## v0.7.1-alpha.4 (2026-07-19)
 
 - Added a KDL-based pipeline definition language (`pipeline export`/`import --format kdl`): pipelines defined as graphs, with `node` children for dependencies and `step` children for the commands that connect them.
