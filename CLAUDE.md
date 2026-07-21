@@ -48,7 +48,7 @@ xvc-logging → xvc-ecs → xvc-walker → xvc-config → xvc-core
 - **`core`** — `XvcRoot` (an `Arc<XvcRootInner>`) is the single repository handle passed everywhere. Re-exports all common types from the crates above. Contains hash algorithms (BLAKE3 default), `XvcPath`, `RecheckMethod`, `Diff`/`DiffStore`, and Git integration utilities.
 - **`file`** — `track`, `recheck`, `carry-in`, `copy`, `move`, `list`, `hash`, `bring`, `send`, `share`, `untrack` subcommands.
 - **`pipeline`** — Pipeline steps, dependency types (file, glob, glob-items, lines, line-items, regex, regex-items, url, param, sqlite, generic, step), DAG execution via `petgraph`. Steps run in parallel when not interdependent.
-- **`storage`** — Storage backends: local, S3/MinIO/R2/GCS/Wasabi/DigitalOcean (via `rust-s3`), rsync, rclone, generic (shell commands). Cloud features are Cargo feature-gated.
+- **`storage`** — Storage backends: local, S3/MinIO/R2/GCS/Wasabi/DigitalOcean (via `rust-s3`), Dropbox (via `reqwest`, using the Dropbox HTTP API directly), rsync, rclone, generic (shell commands). Cloud features are Cargo feature-gated.
 - **`test_helper`** — `create_directory_tree`, `generate_random_file`, `run_in_temp_dir`, `run_in_temp_git_dir`, `random_temp_dir`. Used from `xvc-mono`'s `xvc-test` integration tests.
 - **`lib`** — The `xvc` crate: binary entrypoint (`main.rs`), CLI dispatch (`cli/mod.rs`), public API re-exports (`api.rs`).
 
