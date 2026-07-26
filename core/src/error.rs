@@ -160,6 +160,17 @@ pub enum Error {
         #[from]
         source: gix::reference::iter::init::Error,
     },
+
+    #[error("Gix Commit Error: {cause}")]
+    GixCommitError { cause: String },
+
+    #[error("Gix Index Error: {cause}")]
+    GixIndexError { cause: String },
+
+    /// The in-process Git backend cannot perform an operation for this repository, so the caller
+    /// should fall back to running the `git` binary. Carries the reason so it can be logged.
+    #[error("Git operation {operation} is unsupported in process: {reason}")]
+    GitBackendUnsupported { operation: String, reason: String },
 }
 
 impl<T> From<crossbeam_channel::SendError<T>> for Error

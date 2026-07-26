@@ -1,50 +1,29 @@
-//! Git operations for Xvc repositories
+//! Git operations that run the `git` binary.
+//!
+//! Every `git` process Xvc spawns goes through [exec_git]. The binary to run comes from the
+//! `git.command` configuration option, resolved to an absolute path by
+//! [get_absolute_git_command].
+
 use std::{ffi::OsString, path::PathBuf, str::FromStr};
 
-use crate::XvcRoot;
+use cached::UnboundCache;
+use cached::cached;
 use subprocess::Exec;
 use xvc_logging::{XvcOutputSender, debug};
 
+use super::paths::XvcGitPaths;
+use crate::XvcRoot;
 use crate::{Error, Result};
-use std::path::Path;
-
-use xvc_walker::{AbsolutePath, IgnoreRules, build_ignore_patterns};
-
-use crate::GIT_DIR;
-
-use super::xvcignore::COMMON_IGNORE_PATTERNS;
-/// Check whether a path is inside a Git repository.
-/// It returns `None` if not, otherwise returns the closest directory with `.git`.
-/// It works by checking `.git` directories in parents, until no more parent left.
-pub fn inside_git(path: &Path) -> Option<PathBuf> {
-    let mut pb = PathBuf::from(path)
-        .canonicalize()
-        .expect("Cannot canonicalize the path. Possible symlink loop.");
-    loop {
-        if pb.join(GIT_DIR).is_dir() {
-            return Some(pb);
-        } else if pb.parent().is_none() {
-            return None;
-        } else {
-            pb.pop();
-        }
-    }
-}
-
-/// Returns [xvc_walker::IgnoreRules] for `.gitignore`
-/// It's used to check whether a path is already ignored by Git.
-pub fn build_gitignore(git_root: &AbsolutePath) -> Result<IgnoreRules> {
-    let rules = build_ignore_patterns(
-        COMMON_IGNORE_PATTERNS,
-        git_root,
-        ".gitignore".to_owned().as_ref(),
-    )?;
-
-    Ok(rules)
-}
 
 /// Find the absolute path to the git executable to run
-/// TODO: This must be cached. It makes a which request every time a command runs
+///
+/// The result is cached per `git_command`, so a `which` lookup happens once per process rather
+/// than once per Git operation.
+#[cached(
+    ty = "UnboundCache<String, String>",
+    create = "{ UnboundCache::builder().build().unwrap() }",
+    convert = r#"{ git_command.to_string() }"#
+)]
 pub fn get_absolute_git_command(git_command: &str) -> Result<String> {
     let git_cmd_path = PathBuf::from(git_command);
     let git_cmd = if git_cmd_path.is_absolute() {
@@ -177,17 +156,9 @@ pub fn handle_git_automation(
 
     if use_git {
         // Check if there are any changes in the relevant paths before proceeding
-        match exec_git(
-            &git_command,
-            xvc_root_str,
-            &[
-                "status",
-                "--porcelain",
-                xvc_dir_str,
-                "*.gitignore",
-                "*.xvcignore",
-            ],
-        ) {
+        let mut status_args = vec!["status", "--porcelain"];
+        status_args.extend(XvcGitPaths::subprocess_pathspecs(xvc_dir_str));
+        match exec_git(&git_command, xvc_root_str, &status_args) {
             Ok(git_status_out) => {
                 if git_status_out.trim().is_empty() {
                     debug!(
@@ -240,19 +211,11 @@ pub fn git_auto_commit(
 
     // Add and commit `.xvc`
     let mut commit_error = None;
-    match exec_git(
-        git_command,
-        xvc_root_str,
-        // We check the output of the git add command to see if there were any files added.
-        // "--verbose" is required to get the output we need.
-        &[
-            "add",
-            "--verbose",
-            xvc_dir_str,
-            "*.gitignore",
-            "*.xvcignore",
-        ],
-    ) {
+    // We check the output of the git add command to see if there were any files added.
+    // "--verbose" is required to get the output we need.
+    let mut add_args = vec!["add", "--verbose"];
+    add_args.extend(XvcGitPaths::subprocess_pathspecs(xvc_dir_str));
+    match exec_git(git_command, xvc_root_str, &add_args) {
         Ok(git_add_output) => {
             if git_add_output.trim().is_empty() {
                 debug!(output_snd, "No files to commit");
@@ -306,99 +269,9 @@ pub fn git_auto_stage(
     xvc_root_str: &str,
     xvc_dir_str: &str,
 ) -> Result<()> {
-    let res_git_add = exec_git(
-        git_command,
-        xvc_root_str,
-        &["add", xvc_dir_str, "*.gitignore", "*.xvcignore"],
-    )?;
+    let mut add_args = vec!["add"];
+    add_args.extend(XvcGitPaths::subprocess_pathspecs(xvc_dir_str));
+    let res_git_add = exec_git(git_command, xvc_root_str, &add_args)?;
     debug!(output_snd, "Staging .xvc/ to git: {res_git_add}");
     Ok(())
-}
-
-/// Run `git check-ignore` to check if a path is ignored by Git
-pub fn git_ignored(git_command: &str, xvc_root_str: &str, path: &str) -> Result<bool> {
-    let command_res = exec_git(git_command, xvc_root_str, &["check-ignore", path])?;
-
-    if command_res.trim().is_empty() {
-        Ok(false)
-    } else {
-        Ok(true)
-    }
-}
-
-/// Return all tags and branches from a repository using Gix
-///
-/// TODO: We can add prefix listing if there is a performance issue for large repos here
-pub fn gix_list_references(repo_path: &Path) -> Result<Vec<String>> {
-    // We use map error because gix::discover::Error is a large struct
-    let repo = gix::discover(repo_path).map_err(|e| Error::GixError {
-        cause: e.to_string(),
-    })?;
-    let mut refs = Vec::new();
-
-    let ref_platform = repo.references()?;
-    ref_platform.all().map(|all| {
-        all.for_each(|reference| {
-            if let Ok(reference) = reference {
-                if let Some((_, name)) = reference.name().category_and_short_name() {
-                    refs.push(name.to_string());
-                }
-            }
-        });
-        Ok(refs)
-    })?
-}
-
-/// List local branches in a Git repository
-pub fn gix_list_branches(repo_path: &Path) -> Result<Vec<String>> {
-    // We use map error because gix::discover::Error is a large struct
-    let repo = gix::discover(repo_path).map_err(|e| Error::GixError {
-        cause: e.to_string(),
-    })?;
-    let mut refs = Vec::new();
-
-    let ref_platform = repo.references()?;
-    ref_platform.local_branches().map(|all| {
-        all.for_each(|reference| {
-            if let Ok(reference) = reference {
-                if let Some((_, name)) = reference.name().category_and_short_name() {
-                    refs.push(name.to_string());
-                }
-            }
-        });
-        Ok(refs)
-    })?
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    use std::fs;
-    use test_case::test_case;
-    use xvc_test_helper::*;
-    use xvc_walker::MatchResult as M;
-
-    #[test_case("myfile.txt" , ".gitignore", "/myfile.txt" => matches M::Ignore ; "myfile.txt")]
-    #[test_case("mydir/myfile.txt" , "mydir/.gitignore", "myfile.txt" => matches M::Ignore ; "mydir/myfile.txt")]
-    #[test_case("mydir/myfile.txt" , ".gitignore", "/mydir/myfile.txt" => matches M::Ignore ; "from root dir")]
-    #[test_case("mydir/myfile.txt" , ".gitignore", ""  => matches M::NoMatch ; "non ignore")]
-    #[test_case("mydir/myfile.txt" , ".gitignore", "mydir/**" => matches M::Ignore ; "ignore dir star 2")]
-    #[test_case("mydir/myfile.txt" , ".gitignore", "mydir/*" => matches M::Ignore ; "ignore dir star")]
-    #[test_case("mydir/yourdir/myfile.txt" , "mydir/.gitignore", "yourdir/*" => matches M::Ignore ; "ignore deep dir star")]
-    #[test_case("mydir/yourdir/myfile.txt" , "mydir/.gitignore", "yourdir/**" => matches M::Ignore ; "ignore deep dir star 2")]
-    #[test_case("mydir/myfile.txt" , "another-dir/.gitignore", "another-dir/myfile.txt" => matches M::NoMatch ; "non ignore from dir")]
-    fn test_gitignore(path: &str, gitignore_path: &str, ignore_line: &str) -> M {
-        test_logging(log::LevelFilter::Trace);
-        let git_root = temp_git_dir();
-        let path = git_root.join(PathBuf::from(path));
-        let gitignore_path = git_root.join(PathBuf::from(gitignore_path));
-        if let Some(ignore_dir) = gitignore_path.parent() {
-            fs::create_dir_all(ignore_dir).unwrap();
-        }
-        fs::write(&gitignore_path, format!("{}\n", ignore_line)).unwrap();
-
-        let gitignore = build_ignore_patterns("", &git_root, ".gitignore").unwrap();
-
-        gitignore.check(&path)
-    }
 }
