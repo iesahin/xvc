@@ -11,18 +11,32 @@ use xvc_walker::{AbsolutePath, IgnoreRules, build_ignore_patterns};
 
 use crate::util::xvcignore::COMMON_IGNORE_PATTERNS;
 
+/// Where the Git repository containing a path is, if there is one.
+///
+/// Returned by [inside_git].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum GitRoot {
+    /// A `.git` directory was found. Holds the directory that contains it, i.e. the repository
+    /// root.
+    Found(PathBuf),
+    /// Neither the path nor any of its ancestors contains a `.git` directory.
+    NotFound,
+}
+
 /// Check whether a path is inside a Git repository.
-/// It returns `None` if not, otherwise returns the closest directory with `.git`.
-/// It works by checking `.git` directories in parents, until no more parent left.
-pub fn inside_git(path: &Path) -> Option<PathBuf> {
+///
+/// Returns [GitRoot::Found] with the closest ancestor directory containing `.git`, or
+/// [GitRoot::NotFound]. It works by checking `.git` directories in parents, until no more parent
+/// left.
+pub fn inside_git(path: &Path) -> GitRoot {
     let mut pb = PathBuf::from(path)
         .canonicalize()
         .expect("Cannot canonicalize the path. Possible symlink loop.");
     loop {
         if pb.join(GIT_DIR).is_dir() {
-            return Some(pb);
+            return GitRoot::Found(pb);
         } else if pb.parent().is_none() {
-            return None;
+            return GitRoot::NotFound;
         } else {
             pb.pop();
         }

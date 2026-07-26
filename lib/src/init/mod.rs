@@ -13,7 +13,7 @@ use xvc_core::blank_optional_config;
 use xvc_core::configuration::OptionalGitConfig;
 use xvc_core::find_root;
 use xvc_core::types::xvcroot::init_xvc_root;
-use xvc_core::util::git::inside_git;
+use xvc_core::util::git::{GitRoot, inside_git};
 use xvc_core::watch;
 use xvc_pipeline;
 
@@ -80,14 +80,14 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
     watch!(in_git);
 
     match in_git {
-        None => {
+        GitRoot::NotFound => {
             if !opts.no_git {
                 return Err(Error::PathNotInGitRepository {
                     path: path.into_os_string(),
                 });
             }
         }
-        Some(git_root) => {
+        GitRoot::Found(git_root) => {
             info!("Git repository found in: {:?}", git_root);
         }
     }
