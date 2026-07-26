@@ -20,6 +20,7 @@ pub mod paths;
 pub mod refs;
 pub mod subprocess;
 
+pub use gix_backend::tracked_files;
 pub use ignore::{GitRoot, build_gitignore, inside_git};
 pub use paths::{GITIGNORE_PATHSPEC, XVCIGNORE_PATHSPEC, XvcGitPaths};
 pub use refs::{gix_list_branches, gix_list_references};

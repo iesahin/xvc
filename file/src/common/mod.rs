@@ -23,8 +23,7 @@ use serde::{Deserialize, Serialize};
 use xvc_core::{
     AbsolutePath, ContentDigest, DiffStore, Glob, HStore, HashAlgorithm, PathSync, RecheckMethod,
     Storable, TextOrBinary, XvcFileType, XvcMetadata, XvcOutputSender, XvcPath, XvcPathMetadataMap,
-    XvcRoot, XvcStore, all_paths_and_metadata, apply_diff, error, get_absolute_git_command,
-    get_git_tracked_files, info, persist,
+    XvcRoot, XvcStore, all_paths_and_metadata, apply_diff, error, info, persist, tracked_files,
     types::xvcpath::XvcCachePath,
     util::{file::make_symlink, xvcignore::COMMON_IGNORE_PATTERNS},
     uwr, warn,
@@ -335,17 +334,9 @@ pub fn targets_from_disk(
     // Return false when the path is a git path
 
     let git_files: HashSet<String> = if filter_git_paths {
-        let git_command_str = xvc_root.config().git.command.clone();
-        let git_command = get_absolute_git_command(&git_command_str)?;
-        get_git_tracked_files(
-            &git_command,
-            xvc_root
-                .absolute_path()
-                .to_str()
-                .expect("xvc_root must have a path"),
-        )?
-        .into_iter()
-        .collect()
+        tracked_files(xvc_root.absolute_path())?
+            .into_iter()
+            .collect()
     } else {
         HashSet::new()
     };
