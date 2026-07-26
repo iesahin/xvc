@@ -54,7 +54,10 @@ crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
 ## Git Operations
-gix = "^0.85"
+# "tree-editor" is not a default feature, and Repository::edit_tree is gated behind it. It's what
+# lets us build a commit tree from HEAD^{tree} instead of from the index, so committing `.xvc/`
+# never touches the user's staging area.
+gix = { version = "^0.85", features = ["tree-editor"] }
 
 ## Utilities to complete commands
 clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }

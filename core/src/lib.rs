@@ -82,8 +82,8 @@ pub use util::git;
 pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_paths};
 pub use util::git::{
     build_gitignore, exec_git, get_absolute_git_command, get_git_tracked_files, git_auto_commit,
-    git_auto_stage, git_checkout_ref, git_ignored, handle_git_automation, inside_git,
-    stash_user_staged_files, unstash_user_staged_files,
+    git_auto_stage, git_checkout_ref, handle_git_automation, inside_git, stash_user_staged_files,
+    unstash_user_staged_files,
 };
 
 pub use util::XvcPathMetadataMap;
