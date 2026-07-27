@@ -135,62 +135,6 @@ pub fn git_checkout_ref(
     Ok(())
 }
 
-/// This receives `xvc_root` ownership because as a final operation, it must drop the root to
-/// record the last entity counter before commit.
-pub fn handle_git_automation(
-    output_snd: &XvcOutputSender,
-    xvc_root: &XvcRoot,
-    to_branch: Option<&str>,
-    xvc_cmd: &str,
-) -> Result<()> {
-    let xvc_root_dir = xvc_root.as_path().to_path_buf();
-    let xvc_root_str = xvc_root_dir.to_str().unwrap();
-    let git_config = xvc_root.config().git.clone();
-    let use_git = git_config.use_git;
-    let auto_commit = git_config.auto_commit;
-    let auto_stage = git_config.auto_stage;
-    let git_command_str = git_config.command.clone();
-    let git_command = get_absolute_git_command(&git_command_str)?;
-    let xvc_dir = xvc_root.xvc_dir().clone();
-    let xvc_dir_str = xvc_dir.to_str().unwrap();
-
-    if use_git {
-        // Check if there are any changes in the relevant paths before proceeding
-        let mut status_args = vec!["status", "--porcelain"];
-        status_args.extend(XvcGitPaths::subprocess_pathspecs(xvc_dir_str));
-        match exec_git(&git_command, xvc_root_str, &status_args) {
-            Ok(git_status_out) => {
-                if git_status_out.trim().is_empty() {
-                    debug!(
-                        output_snd,
-                        "No changes detected in Xvc files, skipping Git operations."
-                    );
-                    return Ok(());
-                }
-            }
-            Err(e) => {
-                debug!(output_snd, "Error checking git status: {e}");
-                // Continue and let git_auto_commit/git_auto_stage handle/report the error
-            }
-        }
-
-        if auto_commit {
-            git_auto_commit(
-                output_snd,
-                &git_command,
-                xvc_root_str,
-                xvc_dir_str,
-                xvc_cmd,
-                to_branch,
-            )?;
-        } else if auto_stage {
-            git_auto_stage(output_snd, &git_command, xvc_root_str, xvc_dir_str)?;
-        }
-    }
-
-    Ok(())
-}
-
 /// Commit `.xvc` directory after Xvc operations
 pub fn git_auto_commit(
     output_snd: &XvcOutputSender,

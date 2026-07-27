@@ -4,7 +4,7 @@
 //! risk first:
 //!
 //! 1. [tracked_files] — iterate the index instead of parsing `git ls-files --full-name`. **Done.**
-//! 2. `xvc_paths_dirty` — [`gix::Repository::status`] instead of `git status --porcelain`.
+//! 2. [xvc_paths_dirty] — [`gix::Repository::status`] instead of `git status --porcelain`. **Done.**
 //! 3. `stage_xvc_paths` — write blobs through the filter pipeline and patch the index.
 //! 4. `commit_xvc_paths` — build the tree from `HEAD^{tree}` with [`gix::Repository::edit_tree`]
 //!    and commit it, so the user's staging area is never touched and no stash is needed.
@@ -17,6 +17,7 @@
 
 use std::path::Path;
 
+use super::paths::XvcGitPaths;
 use crate::{Error, Result};
 
 /// List the files Git tracks under `xvc_directory`, as paths relative to `xvc_directory`.
@@ -43,20 +44,7 @@ use crate::{Error, Result};
 /// [`crate::XvcPath`]s, which are relative to the Xvc root, so entries outside `xvc_directory`
 /// are dropped and the rest are re-based onto it.
 pub fn tracked_files(xvc_directory: &Path) -> Result<Vec<String>> {
-    let repo = gix::discover(xvc_directory).map_err(|e| Error::GixError {
-        cause: e.to_string(),
-    })?;
-
-    let workdir = repo.workdir().ok_or_else(|| Error::GixError {
-        cause: format!(
-            "{} is inside a bare Git repository, which tracks no worktree files",
-            xvc_directory.display()
-        ),
-    })?;
-
-    // Both sides are canonicalized before comparison: `gix` reports the worktree as configured,
-    // which may traverse symlinks differently than the path Xvc was given.
-    let prefix = subdirectory_prefix(&workdir.canonicalize()?, &xvc_directory.canonicalize()?)?;
+    let (repo, prefix) = repo_and_prefix(xvc_directory)?;
 
     let index = repo.index_or_empty().map_err(|e| Error::GixIndexError {
         cause: e.to_string(),
@@ -78,6 +66,70 @@ pub fn tracked_files(xvc_directory: &Path) -> Result<Vec<String>> {
         .collect();
 
     Ok(files)
+}
+
+/// Whether anything under the Xvc-owned path set differs from `HEAD` — staged, unstaged or
+/// untracked.
+///
+/// This replaces the `git status --porcelain <xvc paths>` pre-check that decides whether
+/// [`super::handle_git_automation`] has any reason to commit or stage.
+///
+/// The pathspecs are narrower than the ones the subprocess pre-check used; see
+/// [`XvcGitPaths::pathspecs`] for what changed and why.
+pub fn xvc_paths_dirty(xvc_directory: &Path) -> Result<bool> {
+    let (repo, prefix) = repo_and_prefix(xvc_directory)?;
+
+    let mut changes = repo
+        .status(gix::progress::Discard)
+        .map_err(|e| Error::GixError {
+            cause: e.to_string(),
+        })?
+        // `Collapsed`, the default, would be cheaper — it reports a wholly new `.xvc/store/` as a
+        // single directory, which is enough for a boolean. `Files` is used anyway so that this
+        // check and the commit that follows it walk the tree the same way and cannot disagree
+        // about whether there is anything to do.
+        .untracked_files(gix::status::UntrackedFiles::Files)
+        .index_worktree_submodules(None)
+        .into_iter(XvcGitPaths::pathspecs(
+            prefix.as_deref().unwrap_or_default(),
+        ))
+        .map_err(|e| Error::GixError {
+            cause: e.to_string(),
+        })?;
+
+    // Only the first item matters. Dropping the iterator early interrupts and joins the producer
+    // threads, so there is no need to drain it.
+    match changes.next() {
+        None => Ok(false),
+        Some(Ok(_)) => Ok(true),
+        Some(Err(e)) => Err(Error::GixError {
+            cause: e.to_string(),
+        }),
+    }
+}
+
+/// Open the repository containing `xvc_directory`, and work out where that directory sits inside
+/// it.
+///
+/// Both paths are canonicalized before comparison: `gix` reports the worktree as configured, which
+/// may traverse symlinks differently than the path Xvc was given.
+fn repo_and_prefix(xvc_directory: &Path) -> Result<(gix::Repository, Option<String>)> {
+    let repo = gix::discover(xvc_directory).map_err(|e| Error::GixError {
+        cause: e.to_string(),
+    })?;
+
+    let workdir = repo
+        .workdir()
+        .ok_or_else(|| Error::GixError {
+            cause: format!(
+                "{} is inside a bare Git repository, which has no worktree",
+                xvc_directory.display()
+            ),
+        })?
+        .canonicalize()?;
+
+    let prefix = subdirectory_prefix(&workdir, &xvc_directory.canonicalize()?)?;
+    Ok((repo, prefix))
 }
 
 /// The slash-separated path from `root` down to `dir`, with a trailing slash, or `None` when they

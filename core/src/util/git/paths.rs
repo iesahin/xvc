@@ -5,6 +5,10 @@
 //! pre-check and the `git add` that follows it agree by construction, rather than by three
 //! copies of the same literals staying in sync by hand.
 
+use gix::bstr::BString;
+
+use crate::{XVC_DIR, XVCIGNORE_FILENAME};
+
 /// Pathspec matching the `.gitignore` files Xvc writes to.
 ///
 /// NOTE: This is a bare Git pathspec, so `*` matches `/` too (`fnmatch` without `FNM_PATHNAME`).
@@ -27,6 +31,28 @@ impl XvcGitPaths {
     pub fn subprocess_pathspecs(xvc_dir: &str) -> [&str; 3] {
         [xvc_dir, GITIGNORE_PATHSPEC, XVCIGNORE_PATHSPEC]
     }
+
+    /// The same set as Git pathspecs, for the in-process backend.
+    ///
+    /// `prefix` is where the Xvc root sits inside the repository, slash-terminated — empty when
+    /// the two are the same directory, `"sub/"` when `xvc init` ran in `sub`. Unlike the
+    /// subprocess form, these are always relative to the repository root, because
+    /// [`gix::Repository::status`] has no working directory to be relative to. The `(top)` magic
+    /// says so explicitly.
+    ///
+    /// # Narrower than [subprocess_pathspecs][Self::subprocess_pathspecs]
+    ///
+    /// `*.gitignore` is a bare pathspec, where `*` matches `/` as well, so it also selects
+    /// `sub/x.gitignore` — a file Git attaches no meaning to and Xvc never writes. The `(glob)`
+    /// magic stops `*` from crossing directory separators, and `**/` matches any number of
+    /// leading directories, so `**/.gitignore` selects exactly the ignore files themselves.
+    pub fn pathspecs(prefix: &str) -> Vec<BString> {
+        vec![
+            format!(":(top){prefix}{XVC_DIR}").into(),
+            format!(":(top,glob){prefix}**/.gitignore").into(),
+            format!(":(top,glob){prefix}**/{XVCIGNORE_FILENAME}").into(),
+        ]
+    }
 }
 
 #[cfg(test)]
@@ -40,6 +66,33 @@ mod test {
         assert_eq!(
             XvcGitPaths::subprocess_pathspecs("/repo/.xvc"),
             ["/repo/.xvc", "*.gitignore", "*.xvcignore"]
+        );
+    }
+
+    #[test]
+    fn pathspecs_at_the_repository_root() {
+        assert_eq!(
+            XvcGitPaths::pathspecs(""),
+            vec![
+                BString::from(":(top).xvc"),
+                BString::from(":(top,glob)**/.gitignore"),
+                BString::from(":(top,glob)**/.xvcignore"),
+            ]
+        );
+    }
+
+    /// When `xvc init` ran in a subdirectory, the pathspecs stay anchored to the repository root
+    /// but are scoped to that subdirectory — matching what `git -C <xvc root>` did by having the
+    /// working directory scope them.
+    #[test]
+    fn pathspecs_under_a_subdirectory_xvc_root() {
+        assert_eq!(
+            XvcGitPaths::pathspecs("sub/"),
+            vec![
+                BString::from(":(top)sub/.xvc"),
+                BString::from(":(top,glob)sub/**/.gitignore"),
+                BString::from(":(top,glob)sub/**/.xvcignore"),
+            ]
         );
     }
 }
