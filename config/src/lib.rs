@@ -470,6 +470,7 @@ impl XvcConfig {
             // git
             ["git", "use_git"] => config.git.as_ref().is_some_and(|c| c.use_git.is_some()),
             ["git", "command"] => config.git.as_ref().is_some_and(|c| c.command.is_some()),
+            ["git", "backend"] => config.git.as_ref().is_some_and(|c| c.backend.is_some()),
             ["git", "auto_commit"] => config.git.as_ref().is_some_and(|c| c.auto_commit.is_some()),
             ["git", "auto_stage"] => config.git.as_ref().is_some_and(|c| c.auto_stage.is_some()),
             // cache
@@ -586,6 +587,7 @@ impl XvcConfig {
             // git
             ["git", "use_git"] |
             ["git", "command"] |
+            ["git", "backend"] |
             ["git", "auto_commit"] |
             ["git", "auto_stage"] |
             // cache

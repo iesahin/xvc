@@ -5,8 +5,10 @@
 //!
 //! The work is split by *how* it reaches Git:
 //!
+//! - [backend] chooses between the two implementations below and defines the seam between them.
 //! - [subprocess] runs the `git` binary.
-//! - [gix_backend] does the same work in process with [gix]. Operations move there one at a time.
+//! - [gix_backend] does the same work in process with [gix].
+//! - [capabilities] decides when a repository needs the `git` binary regardless.
 //! - [paths] holds the path set Xvc owns, shared by both so they cannot drift apart.
 //! - [ignore] locates the repository and reads `.gitignore` rules — no Git needed either way.
 //! - [refs] lists references and branches for the shell completers, already using [gix].
@@ -15,13 +17,17 @@
 //! rather than in either backend. Callers should use the re-exports below rather than reaching
 //! into the submodules, so that moving an operation between backends stays invisible to them.
 
+pub mod backend;
+pub mod capabilities;
 pub mod gix_backend;
 pub mod ignore;
 pub mod paths;
 pub mod refs;
 pub mod subprocess;
 
-pub use gix_backend::{stage_xvc_paths, tracked_files, xvc_paths_dirty};
+pub use backend::{GitBackend, GitBackendKind, GixBackend, SubprocessBackend, select_backend};
+pub use capabilities::gix_unsupported;
+pub use gix_backend::{commit_xvc_paths, stage_xvc_paths, tracked_files, xvc_paths_dirty};
 pub use ignore::{GitRoot, build_gitignore, inside_git};
 pub use paths::{GITIGNORE_PATHSPEC, XVCIGNORE_PATHSPEC, XvcGitPaths};
 pub use refs::{gix_list_branches, gix_list_references};
@@ -44,54 +50,46 @@ pub fn handle_git_automation(
     to_branch: Option<&str>,
     xvc_cmd: &str,
 ) -> Result<()> {
-    let xvc_root_dir = xvc_root.as_path().to_path_buf();
-    let xvc_root_str = xvc_root_dir.to_str().unwrap();
     let git_config = xvc_root.config().git.clone();
-    let use_git = git_config.use_git;
-    let auto_commit = git_config.auto_commit;
-    let auto_stage = git_config.auto_stage;
-    let git_command_str = git_config.command.clone();
-    let git_command = get_absolute_git_command(&git_command_str)?;
-    let xvc_dir = xvc_root.xvc_dir().clone();
-    let xvc_dir_str = xvc_dir.to_str().unwrap();
 
-    if use_git {
-        // Check if there are any changes in the relevant paths before proceeding.
-        //
-        // This fails open: if the status check itself errors, carry on and let the commit or stage
-        // below report the problem. The commit path re-checks anyway, so the cost of a false
-        // positive here is one wasted `git add`, whereas a false negative would silently drop a
-        // commit Xvc owed.
-        match xvc_paths_dirty(&xvc_root_dir) {
-            Ok(false) => {
-                debug!(
-                    output_snd,
-                    "No changes detected in Xvc files, skipping Git operations."
-                );
-                return Ok(());
-            }
-            Ok(true) => {}
-            Err(e) => {
-                debug!(output_snd, "Error checking git status: {e}");
-            }
-        }
+    if !git_config.use_git {
+        return Ok(());
+    }
 
-        if auto_commit {
-            git_auto_commit(
+    let backend = select_backend(output_snd, xvc_root)?;
+
+    // Check if there are any changes in the relevant paths before proceeding.
+    //
+    // This fails open: if the status check itself errors, carry on and let the commit or stage
+    // below report the problem. The commit path re-checks anyway, so the cost of a false
+    // positive here is one wasted `git add`, whereas a false negative would silently drop a
+    // commit Xvc owed.
+    match backend.xvc_paths_dirty() {
+        Ok(false) => {
+            debug!(
                 output_snd,
-                &git_command,
-                xvc_root_str,
-                xvc_dir_str,
-                xvc_cmd,
-                to_branch,
-            )?;
-        } else if auto_stage {
-            let staged = stage_xvc_paths(&xvc_root_dir)?;
-            if staged.is_empty() {
-                debug!(output_snd, "No files to stage");
-            } else {
-                debug!(output_snd, "Staged {} paths to git", staged.len());
-            }
+                "No changes detected in Xvc files, skipping Git operations."
+            );
+            return Ok(());
+        }
+        Ok(true) => {}
+        Err(e) => {
+            debug!(output_snd, "Error checking git status: {e}");
+        }
+    }
+
+    if git_config.auto_commit {
+        // Before the commit, so that the commit lands on the new branch. At this point the
+        // worktree and index still hold what the command produced, and creating a branch does not
+        // disturb either.
+        if let Some(branch) = to_branch {
+            backend.create_and_switch_branch(output_snd, branch)?;
+        }
+        backend.commit_xvc_paths(output_snd, &format!("Xvc auto-commit after '{xvc_cmd}'"))?;
+    } else if git_config.auto_stage {
+        let staged = backend.stage_xvc_paths(output_snd)?;
+        if staged.is_empty() {
+            debug!(output_snd, "No files to stage");
         }
     }
 
