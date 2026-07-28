@@ -21,7 +21,7 @@ pub mod paths;
 pub mod refs;
 pub mod subprocess;
 
-pub use gix_backend::{tracked_files, xvc_paths_dirty};
+pub use gix_backend::{stage_xvc_paths, tracked_files, xvc_paths_dirty};
 pub use ignore::{GitRoot, build_gitignore, inside_git};
 pub use paths::{GITIGNORE_PATHSPEC, XVCIGNORE_PATHSPEC, XvcGitPaths};
 pub use refs::{gix_list_branches, gix_list_references};
@@ -86,7 +86,12 @@ pub fn handle_git_automation(
                 to_branch,
             )?;
         } else if auto_stage {
-            git_auto_stage(output_snd, &git_command, xvc_root_str, xvc_dir_str)?;
+            let staged = stage_xvc_paths(&xvc_root_dir)?;
+            if staged.is_empty() {
+                debug!(output_snd, "No files to stage");
+            } else {
+                debug!(output_snd, "Staged {} paths to git", staged.len());
+            }
         }
     }
 
