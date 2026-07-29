@@ -111,6 +111,7 @@ pub fn run(xvc_root_opt: Option<&XvcRoot>, opts: InitCLI) -> Result<XvcRoot> {
         Some(OptionalGitConfig {
             use_git: Some(false),
             command: None,
+            backend: None,
             auto_commit: Some(false),
             auto_stage: Some(false),
         })

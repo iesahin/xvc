@@ -81,10 +81,11 @@ pub use util::git;
 
 pub use util::file::{all_paths_and_metadata, dir_includes, glob_includes, glob_paths};
 pub use util::git::{
-    GitRoot, build_gitignore, exec_git, get_absolute_git_command, get_git_tracked_files,
-    git_auto_commit, git_auto_stage, git_checkout_ref, handle_git_automation, inside_git,
-    stage_xvc_paths, stash_user_staged_files, tracked_files, unstash_user_staged_files,
-    xvc_paths_dirty,
+    GitBackend, GitBackendKind, GitRoot, GixBackend, SubprocessBackend, build_gitignore,
+    commit_xvc_paths, exec_git, get_absolute_git_command, get_git_tracked_files, git_auto_commit,
+    git_auto_stage, git_checkout_ref, gix_unsupported, handle_git_automation, inside_git,
+    select_backend, stage_xvc_paths, stash_user_staged_files, tracked_files,
+    unstash_user_staged_files, xvc_paths_dirty,
 };
 
 pub use util::XvcPathMetadataMap;

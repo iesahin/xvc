@@ -24,7 +24,7 @@ pub struct CoreConfig {
 /// Git integration configuration for Xvc.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[display(
-    "GitConfig(use_git: {use_git}, command: {command}, auto_commit: {auto_commit}, auto_stage: {auto_stage})"
+    "GitConfig(use_git: {use_git}, command: {command}, backend: {backend}, auto_commit: {auto_commit}, auto_stage: {auto_stage})"
 )]
 #[serde(deny_unknown_fields)]
 pub struct GitConfig {
@@ -32,6 +32,8 @@ pub struct GitConfig {
     pub use_git: bool,
     /// The command to execute Git.
     pub command: String,
+    /// How to perform Git operations: "auto", "gix", or "subprocess".
+    pub backend: String,
     /// Whether to automatically commit changes in the .xvc directory.
     pub auto_commit: bool,
     /// Whether to automatically stage changes in the .xvc directory.
@@ -188,7 +190,7 @@ pub struct OptionalCoreConfig {
 /// Optional Git integration configuration for Xvc, used for partial updates.
 #[derive(Display, Clone, Debug, Deserialize, PartialEq, Serialize, Default)]
 #[display(
-    "OptionalGitConfig(use_git: {use_git:?}, command: {command:?}, auto_commit: {auto_commit:?}, auto_stage: {auto_stage:?})"
+    "OptionalGitConfig(use_git: {use_git:?}, command: {command:?}, backend: {backend:?}, auto_commit: {auto_commit:?}, auto_stage: {auto_stage:?})"
 )]
 #[serde(deny_unknown_fields)]
 pub struct OptionalGitConfig {
@@ -196,6 +198,8 @@ pub struct OptionalGitConfig {
     pub use_git: Option<bool>,
     /// Optional Git command to execute.
     pub command: Option<String>,
+    /// Optional setting for how to perform Git operations.
+    pub backend: Option<String>,
     /// Optional setting for whether to automatically commit changes.
     pub auto_commit: Option<bool>,
     /// Optional setting for whether to automatically stage changes.
@@ -412,6 +416,10 @@ impl XvcOptionalConfiguration {
                 }
                 "git.command" => {
                     config.git.get_or_insert_with(Default::default).command =
+                        Some(value.to_string());
+                }
+                "git.backend" => {
+                    config.git.get_or_insert_with(Default::default).backend =
                         Some(value.to_string());
                 }
                 "git.auto_commit" => {
@@ -781,6 +789,7 @@ pub fn default_config() -> XvcConfiguration {
         git: GitConfig {
             use_git: true,
             command: "git".to_string(),
+            backend: "auto".to_string(),
             auto_commit: true,
             auto_stage: false,
         },
@@ -862,6 +871,11 @@ pub fn merge_configs(
             .clone()
             .and_then(|g| g.command)
             .unwrap_or(config.git.command.clone()),
+        backend: opt_config
+            .git
+            .clone()
+            .and_then(|g| g.backend)
+            .unwrap_or(config.git.backend.clone()),
         auto_commit: opt_config
             .git
             .clone()
@@ -1029,6 +1043,16 @@ use_git = {use_git}
 # If set to a non-absolute path, the executable will be searched in $PATH.
 command = "{git_command}"
 
+# How to perform Git operations.
+# "auto" runs them in process with gitoxide, falling back to the Git command
+# when the repository needs something gitoxide cannot do — commit hooks,
+# signed commits (commit.gpgsign), or a split index.
+# "gix" always runs in process and fails rather than falling back.
+# "subprocess" always runs the Git command above.
+# Checking out a ref (`--from-ref`) always runs the Git command, whatever this
+# is set to, so an absent Git binary disables that flag alone.
+backend = "{git_backend}"
+
 # Commit changes in .xvc/ directory after commands.
 # You can set this to false if you want to commit manually.
 auto_commit = {auto_commit}
@@ -1146,6 +1170,7 @@ details = {check_ignore_details}
         verbosity = config.core.verbosity,
         use_git = config.git.use_git,
         git_command = config.git.command,
+        git_backend = config.git.backend,
         auto_commit = config.git.auto_commit,
         auto_stage = config.git.auto_stage,
         cache_algorithm = config.cache.algorithm,

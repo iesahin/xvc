@@ -136,25 +136,32 @@ pub fn git_checkout_ref(
 }
 
 /// Commit `.xvc` directory after Xvc operations
+///
+/// Returns the new commit's id, or `None` when there was nothing to commit.
+///
+/// # The stash
+///
+/// `git commit` commits the whole index; there is no way to ask it for a subset. So anything the
+/// user has staged has to be moved out of the way first and put back afterwards, which is what
+/// [stash_user_staged_files] and [unstash_user_staged_files] are for.
+///
+/// This is the riskiest thing Xvc does, and it runs on every command: a crash between the push and
+/// the pop leaves the user's staged work in a stash they never created. The in-process backend
+/// does not need it — see [`super::gix_backend::commit_xvc_paths`] — so this path exists for the
+/// repositories that cannot use it.
 pub fn git_auto_commit(
     output_snd: &XvcOutputSender,
     git_command: &str,
     xvc_root_str: &str,
     xvc_dir_str: &str,
-    xvc_cmd: &str,
-    to_branch: Option<&str>,
-) -> Result<()> {
+    message: &str,
+) -> Result<Option<String>> {
     debug!(output_snd, "Using Git: {git_command}");
 
     let git_diff_staged_out = stash_user_staged_files(output_snd, git_command, xvc_root_str)?;
 
-    if let Some(branch) = to_branch {
-        debug!(output_snd, "Checking out branch {branch}");
-        exec_git(git_command, xvc_root_str, &["checkout", "-b", branch])?;
-    }
-
     // Add and commit `.xvc`
-    let mut commit_error = None;
+    let mut commit_result = Ok(None);
     // We check the output of the git add command to see if there were any files added.
     // "--verbose" is required to get the output we need.
     let mut add_args = vec!["add", "--verbose"];
@@ -164,28 +171,22 @@ pub fn git_auto_commit(
             if git_add_output.trim().is_empty() {
                 debug!(output_snd, "No files to commit");
             } else {
-                match exec_git(
-                    git_command,
-                    xvc_root_str,
-                    &[
-                        "commit",
-                        "-m",
-                        &format!("Xvc auto-commit after '{xvc_cmd}'"),
-                    ],
-                ) {
+                match exec_git(git_command, xvc_root_str, &["commit", "-m", message]) {
                     Ok(res_git_commit) => {
                         debug!(output_snd, "Committing .xvc/ to git: {res_git_commit}");
+                        commit_result = exec_git(git_command, xvc_root_str, &["rev-parse", "HEAD"])
+                            .map(|id| Some(id.trim().to_string()));
                     }
                     Err(e) => {
                         debug!(output_snd, "Error committing .xvc/ to git: {e}");
-                        commit_error = Some(e);
+                        commit_result = Err(e);
                     }
                 }
             }
         }
         Err(e) => {
             debug!(output_snd, "Error adding .xvc/ to git: {e}");
-            commit_error = Some(e);
+            commit_result = Err(e);
         }
     }
 
@@ -199,23 +200,34 @@ pub fn git_auto_commit(
         unstash_user_staged_files(output_snd, git_command, xvc_root_str)?;
     }
 
-    if let Some(e) = commit_error {
-        return Err(e);
-    }
-
-    Ok(())
+    commit_result
 }
 
 /// runs `git add .xvc *.gitignore *.xvcignore` to stage the files after Xvc operations
+///
+/// Returns the paths staged, read back from `git add --verbose`. Git prints one `add '<path>'` line
+/// per file, and quotes the path the same way `ls-files` does — so a path with a control character
+/// in it comes back C-quoted. The in-process backend reads the paths from the index instead and has
+/// no such problem; here the list is only ever logged, so the difference does not propagate.
 pub fn git_auto_stage(
     output_snd: &XvcOutputSender,
     git_command: &str,
     xvc_root_str: &str,
     xvc_dir_str: &str,
-) -> Result<()> {
-    let mut add_args = vec!["add"];
+) -> Result<Vec<String>> {
+    let mut add_args = vec!["add", "--verbose"];
     add_args.extend(XvcGitPaths::subprocess_pathspecs(xvc_dir_str));
     let res_git_add = exec_git(git_command, xvc_root_str, &add_args)?;
     debug!(output_snd, "Staging .xvc/ to git: {res_git_add}");
-    Ok(())
+
+    let mut staged: Vec<String> = res_git_add
+        .lines()
+        .filter_map(|line| {
+            line.strip_prefix("add '")
+                .and_then(|rest| rest.strip_suffix('\''))
+                .map(ToString::to_string)
+        })
+        .collect();
+    staged.sort();
+    Ok(staged)
 }
