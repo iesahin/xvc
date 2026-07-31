@@ -313,6 +313,25 @@ pub fn commit_xvc_paths(xvc_directory: &Path, message: &str) -> Result<Option<St
 /// is `None`, and [`commit_xvc_paths`]'s own `deref: true` write to `"HEAD"` creates
 /// `refs/heads/<branch>` when it next runs — exactly as it already does for a first commit on
 /// whatever branch `HEAD` already named.
+///
+/// # `PreviousValue::MustNotExist` is not what its name suggests
+///
+/// The obvious way to refuse an existing branch is `expected: PreviousValue::MustNotExist` on the
+/// branch-creation edit. It does not refuse an existing branch — `gix_ref`'s own transaction code
+/// only rejects it when the existing ref's value *differs* from the one being written, and silently
+/// treats a matching value as success. A branch created at the same commit `HEAD` is already on —
+/// unremarkable, since `git branch <name>` with no start point does exactly that — would pass
+/// straight through and switch onto it. So existence is checked explicitly, before either edit is
+/// built, independent of what the branch would have pointed at.
+///
+/// # `HEAD`'s reflog does not gain an entry here
+///
+/// `gix_ref` does not write a reflog entry for a symbolic-target change at all: its own comment
+/// calls this "a special hack", since a reflog line needs an old and a new object id and a symbolic
+/// target has neither. Only the branch's own reflog entry (`branch: Created from HEAD`, an
+/// object-target change) is written by this function. Real `git checkout -b` does log the switch on
+/// `HEAD`; in Xvc's flow the difference is short-lived, since [`commit_xvc_paths`] runs immediately
+/// after and adds its own `HEAD` reflog entry for the commit that lands on the new branch.
 pub fn create_and_switch_branch(xvc_directory: &Path, branch: &str) -> Result<()> {
     let repo = gix::discover(xvc_directory).map_err(|e| Error::GixError {
         cause: e.to_string(),
@@ -323,6 +342,18 @@ pub fn create_and_switch_branch(xvc_directory: &Path, branch: &str) -> Result<()
             cause: e.to_string(),
         },
     )?;
+
+    if repo
+        .try_find_reference(&branch_ref)
+        .map_err(|e| Error::GixReferenceEditError {
+            cause: e.to_string(),
+        })?
+        .is_some()
+    {
+        return Err(Error::GixReferenceEditError {
+            cause: format!("a branch named '{branch}' already exists"),
+        });
+    }
 
     let head = repo.head().map_err(|e| Error::GixReferenceEditError {
         cause: e.to_string(),
@@ -339,7 +370,8 @@ pub fn create_and_switch_branch(xvc_directory: &Path, branch: &str) -> Result<()
                     force_create_reflog: false,
                     message: "branch: Created from HEAD".into(),
                 },
-                // Mirrors `git checkout -b`'s refusal when the branch already exists.
+                // The existence check above is what actually refuses an existing branch; see the
+                // doc comment. This still guards the narrow race between that check and this write.
                 expected: gix::refs::transaction::PreviousValue::MustNotExist,
                 new: gix::refs::Target::Object(head_id.detach()),
             },
@@ -348,18 +380,10 @@ pub fn create_and_switch_branch(xvc_directory: &Path, branch: &str) -> Result<()
         });
     }
 
-    let previous = head
-        .referent_name()
-        .map(ToString::to_string)
-        .unwrap_or_else(|| "detached HEAD".to_string());
-
     edits.push(gix::refs::transaction::RefEdit {
         change: gix::refs::transaction::Change::Update {
-            log: gix::refs::transaction::LogChange {
-                mode: gix::refs::transaction::RefLog::AndReference,
-                force_create_reflog: false,
-                message: format!("checkout: moving from {previous} to {branch}").into(),
-            },
+            // No reflog entry results from this; see the doc comment.
+            log: gix::refs::transaction::LogChange::default(),
             // Not `MustExist`: on an unborn HEAD the ref exists but names a branch with no commit
             // yet, which is a legitimate starting point, not a condition to refuse.
             expected: gix::refs::transaction::PreviousValue::Any,
