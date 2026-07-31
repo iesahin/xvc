@@ -535,17 +535,14 @@ pub fn command_matcher(
     {
         let res_xvc_root_opt: Result<XvcRootOpt> = match cli_opts.command {
             XvcSubCommand::Init(opts) => {
-                let use_git = !opts.no_git;
+                // Not calling `handle_git_automation` here: the generic dispatch that invokes
+                // `command_matcher` already calls it once for every command's `xvc_root`,
+                // `Init` included, with the same `to_branch` and `command_string`. A second
+                // call here used to run alongside it — harmless when `create_and_switch_branch`
+                // tolerated writing a branch that already existed at the same commit, but a
+                // real "branch already exists" failure once it correctly does not, since the
+                // first call already created and switched to it.
                 let xvc_root = init::run(xvc_root_opt.as_ref(), opts)?;
-
-                if use_git {
-                    handle_git_automation(
-                        output_snd,
-                        &xvc_root,
-                        cli_opts.to_branch.as_deref(),
-                        &cli_opts.command_string,
-                    )?;
-                }
                 Ok(Some(xvc_root))
             }
 
