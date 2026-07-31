@@ -146,20 +146,16 @@ impl GitBackend for SubprocessBackend {
     }
 }
 
-/// Runs Git operations in process with [`gix`], delegating the ones it cannot do.
+/// Runs Git operations in process with [`gix`].
 pub struct GixBackend {
     xvc_root_dir: PathBuf,
-    /// Not every operation has an in-process implementation. Branch creation moves here next;
-    /// until then it is delegated, so callers never learn which backend answered.
-    subprocess: SubprocessBackend,
 }
 
 impl GixBackend {
-    /// Bind the in-process backend to an Xvc root, keeping a subprocess backend for delegation.
+    /// Bind the in-process backend to an Xvc root.
     pub fn new(xvc_root: &XvcRoot) -> Result<Self> {
         Ok(Self {
             xvc_root_dir: xvc_root.as_path().to_path_buf(),
-            subprocess: SubprocessBackend::new(xvc_root)?,
         })
     }
 }
@@ -193,9 +189,9 @@ impl GitBackend for GixBackend {
     }
 
     fn create_and_switch_branch(&self, output_snd: &XvcOutputSender, branch: &str) -> Result<()> {
-        // Delegated for now. `git checkout -b` is a reference edit and nothing more at this point
-        // in the flow, since the commit that precedes it leaves the index and worktree clean.
-        self.subprocess.create_and_switch_branch(output_snd, branch)
+        gix_backend::create_and_switch_branch(&self.xvc_root_dir, branch)?;
+        debug!(output_snd, "Created and switched to branch {branch}");
+        Ok(())
     }
 }
 
