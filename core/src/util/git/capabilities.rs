@@ -92,9 +92,9 @@ fn is_executable_hook(path: &Path) -> bool {
 fn hooks_dir(repo: &gix::Repository) -> PathBuf {
     repo.config_snapshot()
         .trusted_path("core.hooksPath")
-        .transpose()
+        // `trusted_path` returns `Ok(None)` for "not set" and `Err(_)` for "set but could not be
+        // interpolated" (e.g. an unresolvable `~`); both fall back the same way as "not set".
         .ok()
         .flatten()
-        .map(|path| path.into_owned())
         .unwrap_or_else(|| repo.common_dir().join("hooks"))
 }
