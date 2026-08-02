@@ -27,7 +27,9 @@ pub mod subprocess;
 
 pub use backend::{GitBackend, GitBackendKind, GixBackend, SubprocessBackend, select_backend};
 pub use capabilities::gix_unsupported;
-pub use gix_backend::{commit_xvc_paths, stage_xvc_paths, tracked_files, xvc_paths_dirty};
+pub use gix_backend::{
+    commit_xvc_paths, create_and_switch_branch, stage_xvc_paths, tracked_files, xvc_paths_dirty,
+};
 pub use ignore::{GitRoot, build_gitignore, inside_git};
 pub use paths::{GITIGNORE_PATHSPEC, XVCIGNORE_PATHSPEC, XvcGitPaths};
 pub use refs::{gix_list_branches, gix_list_references};

@@ -8,12 +8,13 @@
 //! 3. [stage_xvc_paths] — write blobs through the filter pipeline and patch the index. **Done.**
 //! 4. [commit_xvc_paths] — build the tree from `HEAD^{tree}` with [`gix::Repository::edit_tree`]
 //!    and commit it, so the user's staging area is never touched and no stash is needed. **Done.**
-//! 5. `create_and_switch_branch` — `edit_references` instead of `git checkout -b`.
+//! 5. [create_and_switch_branch] — `edit_references` instead of `git checkout -b`. **Done.**
 //!
-//! `git checkout <ref>` (the `--from-ref` flag) is deliberately **not** on that list. It is a
-//! full `unpack_trees` two-way merge against the live index and worktree, and gitoxide has no
-//! checkout orchestration; reimplementing it risks silently destroying uncommitted user work.
-//! It stays on [`super::subprocess::git_checkout_ref`], and so does the stash it needs.
+//! That covers every Git operation Xvc performs on its own behalf. `git checkout <ref>` (the
+//! `--from-ref` flag) is deliberately **not** on the list: it is a full `unpack_trees` two-way
+//! merge against the live index and worktree, and gitoxide has no checkout orchestration;
+//! reimplementing it risks silently destroying uncommitted user work. It stays on
+//! [`super::subprocess::git_checkout_ref`], and so does the stash it needs.
 
 use std::path::Path;
 
@@ -286,6 +287,122 @@ pub fn commit_xvc_paths(xvc_directory: &Path, message: &str) -> Result<Option<St
     write_index(&repo, &mut index)?;
 
     Ok(Some(commit_id.detach().to_string()))
+}
+
+/// Create `branch` and switch to it, as `git checkout -b <branch>` does.
+///
+/// This replaces `git checkout -b`. Called just before [`commit_xvc_paths`], at a point where the
+/// worktree and index hold exactly what the command produced — creating a branch touches neither.
+/// It is two reference writes and nothing else.
+///
+/// # `deref: false` is load-bearing
+///
+/// `HEAD` is itself a symbolic reference, ordinarily pointing at `refs/heads/<current branch>`.
+/// [`gix::Repository::commit`] writes to `"HEAD"` with `deref: true`, deliberately, so a commit
+/// lands on the current branch rather than detaching `HEAD`. Doing the same here would be wrong in
+/// the opposite direction: it would resolve *through* `HEAD` and update whatever branch it
+/// currently points at — silently repointing the user's actual branch to look like the new one,
+/// instead of moving `HEAD` itself. `deref: false` applies the edit to `HEAD` literally.
+///
+/// # Unborn `HEAD`
+///
+/// On a fresh `git init`, `HEAD` exists but the branch it names does not — there is no commit yet
+/// to create it at. Real `git checkout -b` in that state does not create the branch ref either; it
+/// only repoints `HEAD`'s symbolic target, and the branch ref comes into existence on the first
+/// commit. This does the same: the branch-creation edit is skipped when [`Head::id`](gix::Head::id)
+/// is `None`, and [`commit_xvc_paths`]'s own `deref: true` write to `"HEAD"` creates
+/// `refs/heads/<branch>` when it next runs — exactly as it already does for a first commit on
+/// whatever branch `HEAD` already named.
+///
+/// # `PreviousValue::MustNotExist` is not what its name suggests
+///
+/// The obvious way to refuse an existing branch is `expected: PreviousValue::MustNotExist` on the
+/// branch-creation edit. It does not refuse an existing branch — `gix_ref`'s own transaction code
+/// only rejects it when the existing ref's value *differs* from the one being written, and silently
+/// treats a matching value as success. A branch created at the same commit `HEAD` is already on —
+/// unremarkable, since `git branch <name>` with no start point does exactly that — would pass
+/// straight through and switch onto it. So existence is checked explicitly, before either edit is
+/// built, independent of what the branch would have pointed at.
+///
+/// # `HEAD`'s reflog does not gain an entry here
+///
+/// `gix_ref` does not write a reflog entry for a symbolic-target change at all: its own comment
+/// calls this "a special hack", since a reflog line needs an old and a new object id and a symbolic
+/// target has neither. Only the branch's own reflog entry (`branch: Created from HEAD`, an
+/// object-target change) is written by this function. Real `git checkout -b` does log the switch on
+/// `HEAD`; in Xvc's flow the difference is short-lived, since [`commit_xvc_paths`] runs immediately
+/// after and adds its own `HEAD` reflog entry for the commit that lands on the new branch.
+pub fn create_and_switch_branch(xvc_directory: &Path, branch: &str) -> Result<()> {
+    let repo = gix::discover(xvc_directory).map_err(|e| Error::GixError {
+        cause: e.to_string(),
+    })?;
+
+    let branch_ref: gix::refs::FullName = format!("refs/heads/{branch}").try_into().map_err(
+        |e: gix::validate::reference::name::Error| Error::GixReferenceEditError {
+            cause: e.to_string(),
+        },
+    )?;
+
+    if repo
+        .try_find_reference(&branch_ref)
+        .map_err(|e| Error::GixReferenceEditError {
+            cause: e.to_string(),
+        })?
+        .is_some()
+    {
+        return Err(Error::GixReferenceEditError {
+            cause: format!("a branch named '{branch}' already exists"),
+        });
+    }
+
+    let head = repo.head().map_err(|e| Error::GixReferenceEditError {
+        cause: e.to_string(),
+    })?;
+
+    let mut edits = Vec::with_capacity(2);
+
+    // Skipped on an unborn HEAD: there is no commit yet for the branch to point at.
+    if let Some(head_id) = head.id() {
+        edits.push(gix::refs::transaction::RefEdit {
+            change: gix::refs::transaction::Change::Update {
+                log: gix::refs::transaction::LogChange {
+                    mode: gix::refs::transaction::RefLog::AndReference,
+                    force_create_reflog: false,
+                    message: "branch: Created from HEAD".into(),
+                },
+                // The existence check above is what actually refuses an existing branch; see the
+                // doc comment. This still guards the narrow race between that check and this write.
+                expected: gix::refs::transaction::PreviousValue::MustNotExist,
+                new: gix::refs::Target::Object(head_id.detach()),
+            },
+            name: branch_ref.clone(),
+            deref: false,
+        });
+    }
+
+    edits.push(gix::refs::transaction::RefEdit {
+        change: gix::refs::transaction::Change::Update {
+            // No reflog entry results from this; see the doc comment.
+            log: gix::refs::transaction::LogChange::default(),
+            // Not `MustExist`: on an unborn HEAD the ref exists but names a branch with no commit
+            // yet, which is a legitimate starting point, not a condition to refuse.
+            expected: gix::refs::transaction::PreviousValue::Any,
+            new: gix::refs::Target::Symbolic(branch_ref),
+        },
+        name: "HEAD"
+            .try_into()
+            .expect("\"HEAD\" is a valid reference name"),
+        deref: false,
+    });
+
+    // Both writes in one transaction, so a crash between them cannot leave the branch created but
+    // HEAD still pointing at the old one — the transaction fully applies or fully does not.
+    repo.edit_references(edits)
+        .map_err(|e| Error::GixReferenceEditError {
+            cause: e.to_string(),
+        })?;
+
+    Ok(())
 }
 
 /// What a set of changed paths implies for the index and for the tree being built.

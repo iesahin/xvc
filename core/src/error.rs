@@ -167,6 +167,9 @@ pub enum Error {
     #[error("Gix Index Error: {cause}")]
     GixIndexError { cause: String },
 
+    #[error("Gix Reference Edit Error: {cause}")]
+    GixReferenceEditError { cause: String },
+
     /// The in-process Git backend cannot perform an operation for this repository, so the caller
     /// should fall back to running the `git` binary. Carries the reason so it can be logged.
     #[error("Git operation {operation} is unsupported in process: {reason}")]
