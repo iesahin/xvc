@@ -64,7 +64,7 @@ clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
 
 ## File system
 subprocess = "^1.2"
-jwalk = "^0.8"
+jwalk = "^0.9"
 walkdir = "^2.5"
 relative-path = { version = "^2.0", features = ["serde"] }
 path-absolutize = "^4.0"

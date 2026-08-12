@@ -57,7 +57,7 @@ crossbeam = "^0.8"
 dashmap = { version = "^6.1", features = ["serde", "rayon"] }
 
 ## File system
-jwalk = "^0.8"
+jwalk = "^0.9"
 walkdir = "^2.5"
 reflink = { version = "^0.1", optional = true }
 relative-path = { version = "^2.0", features = ["serde"] }

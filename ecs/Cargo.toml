@@ -41,7 +41,7 @@ rand = "^0.10"
 
 [dev-dependencies]
 tempdir = "^0.3"
-jwalk = "^0.8"
+jwalk = "^0.9"
 
 [package.metadata.cargo-udeps.ignore]
 normal = ["xvc-logging", "test-case", "tempdir"]
