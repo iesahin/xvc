@@ -957,3 +957,66 @@ fn filter_xvc_path_xvc_metadata_stores(
         })
         .collect()
 }
+
+#[cfg(test)]
+mod test {
+    use super::ListSortCriteria;
+    use clap_complete::CompletionCandidate;
+    use std::ffi::OsStr;
+    use std::str::FromStr;
+    use xvc_core::util::completer::strum_variants_completer;
+
+    fn values(candidates: Vec<CompletionCandidate>) -> Vec<String> {
+        let mut values: Vec<String> = candidates
+            .iter()
+            .map(|c| c.get_value().to_string_lossy().to_string())
+            .collect();
+        values.sort();
+        values
+    }
+
+    /// `xvc file list --sort` completes through
+    /// [strum_variants_completer][xvc_core::util::completer::strum_variants_completer].
+    /// [ListSortCriteria] gives its timestamp variants three spellings (`t-asc`, `timestamp-asc`,
+    /// `ts-asc`); only one of them is offered, so this pins which.
+    #[test]
+    fn sort_criteria_complete_to_one_spelling_per_variant() {
+        assert_eq!(
+            values(strum_variants_completer::<ListSortCriteria>(OsStr::new(""))),
+            [
+                "name-asc",
+                "name-desc",
+                "none",
+                "size-asc",
+                "size-desc",
+                "timestamp-asc",
+                "timestamp-desc"
+            ]
+        );
+    }
+
+    #[test]
+    fn sort_criteria_are_filtered_by_prefix() {
+        assert_eq!(
+            values(strum_variants_completer::<ListSortCriteria>(OsStr::new(
+                "name"
+            ))),
+            ["name-asc", "name-desc"]
+        );
+        assert!(
+            values(strum_variants_completer::<ListSortCriteria>(OsStr::new(
+                "unsorted"
+            )))
+            .is_empty()
+        );
+    }
+
+    /// A completed value the command then rejects is worse than no completion at all.
+    #[test]
+    fn sort_criteria_candidates_are_accepted_by_their_parser() {
+        for value in values(strum_variants_completer::<ListSortCriteria>(OsStr::new(""))) {
+            ListSortCriteria::from_str(&value)
+                .unwrap_or_else(|e| panic!("ListSortCriteria rejects completion {value}: {e}"));
+        }
+    }
+}
