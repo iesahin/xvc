@@ -27,7 +27,7 @@ rayon = "^1.11"
 
 ## File system
 notify = "8.2"
-jwalk = "^0.8"
+jwalk = "^0.9"
 
 dashmap = "^6"
 

@@ -67,7 +67,7 @@ fern = { version = "^0.7", features = ["colored"] }
 anyhow = "^1.0"
 
 ## UI
-comfy-table = "7.2.1"
+comfy-table = "8.0.0"
 
 ## macros
 paste = "1.0"
