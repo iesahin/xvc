@@ -629,14 +629,3 @@ fn subdirectory_prefix(root: &Path, dir: &Path) -> Result<Option<String>> {
 
     Ok((!joined.is_empty()).then(|| format!("{joined}/")))
 }
-
-/// Compile-time guard for the `tree-editor` feature in `core/Cargo.toml`.
-///
-/// [`gix::Repository::edit_tree`] is gated behind it and is not enabled by any of `gix`'s default
-/// features. This function is never called; it exists so that dropping the feature fails the
-/// build here, with this explanation, rather than in the middle of step 4 above.
-#[cfg(test)]
-#[allow(dead_code)]
-fn assert_tree_editor_feature_enabled(repo: &gix::Repository, tree: gix::ObjectId) {
-    let _ = repo.edit_tree(tree);
-}

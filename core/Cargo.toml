@@ -54,10 +54,14 @@ crossbeam-channel = "^0.5"
 crossbeam = "^0.8"
 
 ## Git Operations
-# "tree-editor" is not a default feature, and Repository::edit_tree is gated behind it. It's what
-# lets us build a commit tree from HEAD^{tree} instead of from the index, so committing `.xvc/`
-# never touches the user's staging area.
-gix = { version = "^0.86", features = ["tree-editor"] }
+# Repository::edit_tree is what lets us build a commit tree from HEAD^{tree} instead of from the
+# index, so committing `.xvc/` never touches the user's staging area. Up to gix 0.86 it sat behind
+# a non-default "tree-editor" feature; 0.87 removed that gate and made it unconditional.
+#
+# 0.87 is also the floor for a resolvable dependency graph: gix 0.86 pins gix-protocol ^0.64.0,
+# whose only match needs `bisync`, and every published bisync version is yanked. gix 0.87.1 wants
+# gix-protocol ^0.65.1, which dropped that dependency.
+gix = "^0.87"
 
 ## Utilities to complete commands
 clap_complete = { version = "^4.5", features = ["unstable-dynamic"] }
