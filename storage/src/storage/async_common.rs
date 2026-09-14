@@ -291,16 +291,41 @@ pub(crate) trait XvcS3StorageOperations {
     }
 }
 
+/// Number of worker threads for the shared tokio runtime used to drive storage
+/// operations. This work is network-bound, so we don't need a thread per CPU core.
+const STORAGE_RUNTIME_WORKER_THREADS: usize = 4;
+
+fn build_runtime() -> Result<tokio::runtime::Runtime> {
+    Ok(tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(STORAGE_RUNTIME_WORKER_THREADS)
+        .enable_all()
+        .build()?)
+}
+
+/// A single tokio runtime shared by all [`XvcStorageOperations`] calls for the lifetime of the
+/// process, instead of building (and tearing down) a fresh multi-thread runtime on every call.
+///
+/// This is safe because Xvc's CLI dispatch is a one-shot process per invocation (no long-lived
+/// daemon), and every [`XvcStorageOperations`] call already runs on a plain OS thread spawned by
+/// `crossbeam::thread::scope`, so blocking that thread on `rt.block_on(...)` is exactly what
+/// happens today -- just against a reused runtime rather than a new one each time.
+static RUNTIME: std::sync::OnceLock<tokio::runtime::Runtime> = std::sync::OnceLock::new();
+
+fn runtime() -> Result<&'static tokio::runtime::Runtime> {
+    if let Some(rt) = RUNTIME.get() {
+        return Ok(rt);
+    }
+    let rt = build_runtime()?;
+    Ok(RUNTIME.get_or_init(|| rt))
+}
+
 impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
     // FIXME: Do we need xvc_root here?
     fn init(&mut self, output: &XvcOutputSender, _xvc_root: &XvcRoot) -> Result<XvcStorageInitEvent>
     where
         Self: Sized,
     {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()?;
-        rt.block_on(self.a_init(output))
+        runtime()?.block_on(self.a_init(output))
     }
 
     fn list(
@@ -308,11 +333,7 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         output: &XvcOutputSender,
         xvc_root: &xvc_core::XvcRoot,
     ) -> crate::Result<super::XvcStorageListEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_list(output, xvc_root))
+        runtime()?.block_on(self.a_list(output, xvc_root))
     }
 
     fn send(
@@ -322,11 +343,7 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         paths: &[xvc_core::XvcCachePath],
         force: bool,
     ) -> crate::Result<super::XvcStorageSendEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_send(output, xvc_root, paths, force))
+        runtime()?.block_on(self.a_send(output, xvc_root, paths, force))
     }
 
     fn receive(
@@ -337,11 +354,7 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         paths: &[xvc_core::XvcCachePath],
         force: bool,
     ) -> crate::Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_receive(output, paths, force))
+        runtime()?.block_on(self.a_receive(output, paths, force))
     }
 
     fn delete(
@@ -351,11 +364,7 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         _xvc_root: &xvc_core::XvcRoot,
         paths: &[xvc_core::XvcCachePath],
     ) -> crate::Result<super::XvcStorageDeleteEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_delete(output, paths))
+        runtime()?.block_on(self.a_delete(output, paths))
     }
 
     fn share(
@@ -366,10 +375,34 @@ impl<T: XvcS3StorageOperations> XvcStorageOperations for T {
         path: &XvcCachePath,
         duration: std::time::Duration,
     ) -> Result<XvcStorageExpiringShareEvent> {
-        let rt = tokio::runtime::Builder::new_multi_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(self.a_share(output, path, duration))
+        runtime()?.block_on(self.a_share(output, path, duration))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The shared runtime must be built once and reused across calls, not rebuilt every time.
+    #[test]
+    fn test_runtime_is_reused_across_calls() {
+        let first: *const tokio::runtime::Runtime = runtime().unwrap();
+        for _ in 0..10 {
+            let again: *const tokio::runtime::Runtime = runtime().unwrap();
+            assert_eq!(
+                first, again,
+                "runtime() should return the same shared runtime on every call"
+            );
+        }
+    }
+
+    /// A simple sanity check that the shared runtime can actually drive async work, repeatedly,
+    /// without panicking or needing to be rebuilt.
+    #[test]
+    fn test_runtime_drives_async_work_repeatedly() {
+        for i in 0..5 {
+            let result = runtime().unwrap().block_on(async move { i * 2 });
+            assert_eq!(result, i * 2);
+        }
     }
 }
