@@ -2,7 +2,7 @@
 use std::fs;
 use std::str::FromStr;
 
-use futures::StreamExt;
+use futures::stream::{self, StreamExt};
 use regex::Regex;
 use s3::Bucket;
 use s3::Region;
@@ -145,6 +145,10 @@ pub(crate) trait XvcS3StorageOperations {
     }
 
     /// Send files to S3 compatible storage
+    ///
+    /// Transfers run concurrently, up to [`DEFAULT_STORAGE_CONCURRENCY`] at a time. A failure on
+    /// one file (opening it, or the upload itself) is logged and skipped rather than aborting the
+    /// whole batch -- other files already in flight, or still queued, are unaffected.
     async fn a_send(
         &self,
         output_snd: &XvcOutputSender,
@@ -152,22 +156,29 @@ pub(crate) trait XvcS3StorageOperations {
         paths: &[xvc_core::XvcCachePath],
         _force: bool,
     ) -> crate::Result<super::XvcStorageSendEvent> {
-        let mut copied_paths = Vec::<XvcStoragePath>::new();
-
         let bucket = self.get_bucket()?;
 
-        for cache_path in paths {
-            let storage_path = self.build_storage_path(cache_path);
-            let abs_cache_path = cache_path.to_absolute_path(xvc_root);
+        let results: Vec<Result<(xvc_core::AbsolutePath, XvcStoragePath)>> = stream::iter(paths)
+            .map(|cache_path| {
+                let bucket = bucket.clone();
+                let storage_path = self.build_storage_path(cache_path);
+                let abs_cache_path = cache_path.to_absolute_path(xvc_root);
+                async move {
+                    let mut path = tokio::fs::File::open(&abs_cache_path).await?;
+                    bucket
+                        .put_object_stream(&mut path, storage_path.as_str())
+                        .await?;
+                    Ok((abs_cache_path, storage_path))
+                }
+            })
+            .buffer_unordered(storage_concurrency())
+            .collect()
+            .await;
 
-            let mut path = tokio::fs::File::open(&abs_cache_path).await?;
-
-            let res_response = bucket
-                .put_object_stream(&mut path, storage_path.as_str())
-                .await;
-
-            match res_response {
-                Ok(_) => {
+        let mut copied_paths = Vec::with_capacity(results.len());
+        for result in results {
+            match result {
+                Ok((abs_cache_path, storage_path)) => {
                     info!(
                         output_snd,
                         "{} -> {}",
@@ -176,9 +187,7 @@ pub(crate) trait XvcS3StorageOperations {
                     );
                     copied_paths.push(storage_path);
                 }
-                Err(err) => {
-                    error!(output_snd, "{}", err);
-                }
+                Err(err) => error!(output_snd, "{}", err),
             }
         }
 
@@ -189,41 +198,48 @@ pub(crate) trait XvcS3StorageOperations {
     }
 
     /// Receive files from S3 compatible storage
+    ///
+    /// Transfers run concurrently, up to [`DEFAULT_STORAGE_CONCURRENCY`] at a time. A failure on
+    /// one file is logged and skipped rather than aborting the whole batch.
     async fn a_receive(
         &self,
         output_snd: &XvcOutputSender,
         paths: &[xvc_core::XvcCachePath],
         _force: bool,
     ) -> Result<(XvcStorageTempDir, XvcStorageReceiveEvent)> {
-        let mut copied_paths = Vec::<XvcStoragePath>::new();
-
         let bucket = self.get_bucket()?;
         let temp_dir = XvcStorageTempDir::new()?;
 
-        for cache_path in paths {
-            let storage_path = self.build_storage_path(cache_path);
-            let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
-            fs::create_dir_all(&abs_cache_dir)?;
-            let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
-            let response_data_stream = bucket.get_object_stream(storage_path.as_str()).await;
+        let results: Vec<Result<XvcStoragePath>> = stream::iter(paths)
+            .map(|cache_path| {
+                let bucket = bucket.clone();
+                let temp_dir = &temp_dir;
+                let storage_path = self.build_storage_path(cache_path);
+                async move {
+                    let abs_cache_dir = temp_dir.temp_cache_dir(cache_path)?;
+                    fs::create_dir_all(&abs_cache_dir)?;
+                    let abs_cache_path = temp_dir.temp_cache_path(cache_path)?;
 
-            match response_data_stream {
-                Ok(mut response) => {
-                    info!(
-                        output_snd,
-                        "{} -> {}",
-                        storage_path.as_str(),
-                        abs_cache_path
-                    );
+                    let mut response = bucket.get_object_stream(storage_path.as_str()).await?;
                     let mut async_cache_path = tokio::fs::File::create(&abs_cache_path).await?;
                     while let Some(chunk) = response.bytes().next().await {
                         async_cache_path.write_all(&chunk?).await?;
                     }
+                    Ok(storage_path)
+                }
+            })
+            .buffer_unordered(storage_concurrency())
+            .collect()
+            .await;
+
+        let mut copied_paths = Vec::with_capacity(results.len());
+        for result in results {
+            match result {
+                Ok(storage_path) => {
+                    info!(output_snd, "received {}", storage_path.as_str());
                     copied_paths.push(storage_path);
                 }
-                Err(err) => {
-                    error!(output_snd, "{}", err);
-                }
+                Err(err) => error!(output_snd, "{}", err),
             }
         }
 
@@ -237,20 +253,38 @@ pub(crate) trait XvcS3StorageOperations {
     }
 
     /// Delete files from S3 compatible storage
+    ///
+    /// Deletions run concurrently, up to [`DEFAULT_STORAGE_CONCURRENCY`] at a time. A failure on
+    /// one file is logged and skipped rather than aborting the whole batch.
     async fn a_delete(
         &self,
         output: &XvcOutputSender,
         paths: &[XvcCachePath],
     ) -> Result<XvcStorageDeleteEvent> {
-        let mut deleted_paths = Vec::<XvcStoragePath>::new();
-
         let bucket = self.get_bucket()?;
 
-        for cache_path in paths {
-            let storage_path = self.build_storage_path(cache_path);
-            bucket.delete_object(storage_path.as_str()).await?;
-            info!(output, "[DELETE] {}", storage_path.as_str());
-            deleted_paths.push(storage_path);
+        let results: Vec<Result<XvcStoragePath>> = stream::iter(paths)
+            .map(|cache_path| {
+                let bucket = bucket.clone();
+                let storage_path = self.build_storage_path(cache_path);
+                async move {
+                    bucket.delete_object(storage_path.as_str()).await?;
+                    Ok(storage_path)
+                }
+            })
+            .buffer_unordered(storage_concurrency())
+            .collect()
+            .await;
+
+        let mut deleted_paths = Vec::with_capacity(results.len());
+        for result in results {
+            match result {
+                Ok(storage_path) => {
+                    info!(output, "[DELETE] {}", storage_path.as_str());
+                    deleted_paths.push(storage_path);
+                }
+                Err(err) => error!(output, "{}", err),
+            }
         }
 
         Ok(XvcStorageDeleteEvent {
@@ -294,6 +328,29 @@ pub(crate) trait XvcS3StorageOperations {
 /// Number of worker threads for the shared tokio runtime used to drive storage
 /// operations. This work is network-bound, so we don't need a thread per CPU core.
 const STORAGE_RUNTIME_WORKER_THREADS: usize = 4;
+
+/// Default number of file transfers to run concurrently for send/receive/delete operations
+/// against S3-compatible storage. Overridable per-process via `XVC_STORAGE_CONCURRENCY`.
+const DEFAULT_STORAGE_CONCURRENCY: usize = 8;
+
+/// Parses the `XVC_STORAGE_CONCURRENCY` environment variable's value into a concurrency level,
+/// falling back to [`DEFAULT_STORAGE_CONCURRENCY`] when it's unset, not a number, or not positive.
+///
+/// Split out from [`storage_concurrency`] so the parsing logic can be unit tested without
+/// mutating process-wide environment state (which is racy across parallel test threads).
+fn parse_storage_concurrency(value: Option<&str>) -> usize {
+    value
+        .and_then(|v| v.parse::<usize>().ok())
+        .filter(|&n| n > 0)
+        .unwrap_or(DEFAULT_STORAGE_CONCURRENCY)
+}
+
+/// Number of concurrent file transfers to use for send/receive/delete, from the
+/// `XVC_STORAGE_CONCURRENCY` environment variable if set to a positive integer, otherwise
+/// [`DEFAULT_STORAGE_CONCURRENCY`].
+fn storage_concurrency() -> usize {
+    parse_storage_concurrency(std::env::var("XVC_STORAGE_CONCURRENCY").ok().as_deref())
+}
 
 fn build_runtime() -> Result<tokio::runtime::Runtime> {
     Ok(tokio::runtime::Builder::new_multi_thread()
@@ -404,5 +461,90 @@ mod tests {
             let result = runtime().unwrap().block_on(async move { i * 2 });
             assert_eq!(result, i * 2);
         }
+    }
+
+    #[test]
+    fn test_parse_storage_concurrency_uses_default_when_unset() {
+        assert_eq!(parse_storage_concurrency(None), DEFAULT_STORAGE_CONCURRENCY);
+    }
+
+    #[test]
+    fn test_parse_storage_concurrency_uses_default_when_invalid() {
+        assert_eq!(
+            parse_storage_concurrency(Some("not-a-number")),
+            DEFAULT_STORAGE_CONCURRENCY
+        );
+        assert_eq!(
+            parse_storage_concurrency(Some("")),
+            DEFAULT_STORAGE_CONCURRENCY
+        );
+    }
+
+    #[test]
+    fn test_parse_storage_concurrency_uses_default_when_zero_or_negative() {
+        assert_eq!(
+            parse_storage_concurrency(Some("0")),
+            DEFAULT_STORAGE_CONCURRENCY
+        );
+        assert_eq!(
+            parse_storage_concurrency(Some("-1")),
+            DEFAULT_STORAGE_CONCURRENCY
+        );
+    }
+
+    #[test]
+    fn test_parse_storage_concurrency_uses_given_positive_value() {
+        assert_eq!(parse_storage_concurrency(Some("1")), 1);
+        assert_eq!(parse_storage_concurrency(Some("32")), 32);
+    }
+
+    /// Exercises the same `stream::iter(...).map(...).buffer_unordered(...).collect()` shape
+    /// used by `a_send`/`a_receive`/`a_delete`, with a mock async closure instead of real network
+    /// I/O: every item should complete, in some order, without a real backend.
+    #[test]
+    fn test_buffer_unordered_completes_all_items() {
+        let items: Vec<usize> = (0..50).collect();
+        let results: Vec<usize> = runtime().unwrap().block_on(async {
+            stream::iter(items.iter())
+                .map(|i| {
+                    let i = *i;
+                    async move { i * 2 }
+                })
+                .buffer_unordered(8)
+                .collect()
+                .await
+        });
+
+        let mut sorted = results;
+        sorted.sort_unstable();
+        let expected: Vec<usize> = items.iter().map(|i| i * 2).collect();
+        assert_eq!(sorted, expected);
+    }
+
+    /// A failure partway through the batch must not prevent the other items from completing --
+    /// mirrors the log-and-continue behavior in `a_send`/`a_receive`/`a_delete`.
+    #[test]
+    fn test_buffer_unordered_tolerates_partial_failures() {
+        let items: Vec<usize> = (0..20).collect();
+        let results: Vec<std::result::Result<usize, ()>> = runtime().unwrap().block_on(async {
+            stream::iter(items.iter())
+                .map(|i| {
+                    let i = *i;
+                    async move { if i % 3 == 0 { Err(()) } else { Ok(i) } }
+                })
+                .buffer_unordered(4)
+                .collect()
+                .await
+        });
+
+        assert_eq!(
+            results.len(),
+            items.len(),
+            "every item must be represented in the results, whether it succeeded or failed"
+        );
+        let ok_count = results.iter().filter(|r| r.is_ok()).count();
+        let err_count = results.iter().filter(|r| r.is_err()).count();
+        assert_eq!(ok_count, items.iter().filter(|&&i| i % 3 != 0).count());
+        assert_eq!(err_count, items.iter().filter(|&&i| i % 3 == 0).count());
     }
 }
