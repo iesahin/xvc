@@ -13,11 +13,11 @@ use std::{fmt::Display, fs, path::Path};
 use xvc_ecs::{Storable, persist};
 
 use crate::error::Result;
-use blake2::{Blake2s, Digest};
+use blake2::{Blake2s256, Digest};
 use relative_path::RelativePathBuf;
 
 use serde::{Deserialize, Serialize};
-use sha2::{Digest as _, Sha256};
+use sha2::Sha256;
 use sha3::Sha3_256;
 
 /// The digest length in bytes that is supposed to stay constant for a long time
@@ -109,7 +109,7 @@ impl XvcDigest {
     }
 
     fn blake2s_digest(bytes: &[u8]) -> Digest32 {
-        Blake2s::digest(bytes).into()
+        Blake2s256::digest(bytes).into()
     }
 
     fn blake3_digest(bytes: &[u8]) -> Digest32 {
