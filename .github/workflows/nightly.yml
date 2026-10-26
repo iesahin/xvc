@@ -127,9 +127,6 @@ jobs:
           sudo apt-get install -y s3cmd ripgrep tree python3 rclone
           wget https://github.com/Peltoche/lsd/releases/download/0.23.1/lsd_0.23.1_amd64.deb
           sudo dpkg -i lsd_0.23.1_amd64.deb
-          wget https://dl.min.io/client/mc/release/linux-amd64/mc
-          chmod +x mc
-          sudo mv mc /usr/local/bin/
 
       - name: Git config for automated Git tests
         run: git config --global user.name 'Xvc Rabbit' && git config --global user.email 'rabbit@xvc.dev' && git config --global init.defaultBranch main
