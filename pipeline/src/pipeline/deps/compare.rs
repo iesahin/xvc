@@ -258,6 +258,21 @@ pub fn thorough_compare_dependency(
     Ok(diff)
 }
 
+/// Returns an error if the file a dependency reads its content from is not available.
+///
+/// The digest functions of line and regex dependencies cannot report errors and panic when
+/// they cannot open their file. Checking it here turns a missing file into a broken step.
+fn ensure_dependency_file_exists(cmp_params: &StepStateParams, path: &XvcPath) -> Result<()> {
+    let abs_path = path.to_absolute_path(cmp_params.xvc_root);
+    if abs_path.is_file() {
+        Ok(())
+    } else {
+        Err(crate::Error::PathNotFound {
+            path: abs_path.as_os_str().to_owned(),
+        })
+    }
+}
+
 /// Runs the command and compares the output with the stored dependency
 fn thorough_compare_generic(record: &GenericDep) -> Result<Diff<GenericDep>> {
     let mut actual = GenericDep::new(record.generic_command.clone());
@@ -295,6 +310,7 @@ fn thorough_compare_line_items(
     cmp_params: &StepStateParams,
     record: &LineItemsDep,
 ) -> Result<Diff<LineItemsDep>> {
+    ensure_dependency_file_exists(cmp_params, &record.path)?;
     let actual = LineItemsDep::new(record.path.clone(), record.begin, record.end)
         .update_metadata(cmp_params.pmp.get(&record.path))
         .update_lines(cmp_params.xvc_root);
@@ -336,6 +352,7 @@ fn thorough_compare_regex(
     cmp_params: &StepStateParams,
     record: &RegexDep,
 ) -> Result<Diff<RegexDep>> {
+    ensure_dependency_file_exists(cmp_params, &record.path)?;
     let actual = RegexDep::new(record.path.clone(), record.regex.clone())
         .update_metadata(cmp_params.pmp.get(&record.path));
     // Short circuit if the metadata is identical
@@ -356,6 +373,7 @@ fn thorough_compare_regex_items(
     cmp_params: &StepStateParams,
     record: &RegexItemsDep,
 ) -> Result<Diff<RegexItemsDep>> {
+    ensure_dependency_file_exists(cmp_params, &record.path)?;
     let actual = RegexItemsDep::new(record.path.clone(), record.regex.clone())
         .update_metadata(cmp_params.pmp.get(&record.path));
     // Shortcircuit if the metadata is identical
@@ -376,6 +394,7 @@ fn thorough_compare_lines(
     cmp_params: &StepStateParams,
     record: &LinesDep,
 ) -> Result<Diff<LinesDep>> {
+    ensure_dependency_file_exists(cmp_params, &record.path)?;
     let actual = LinesDep::new(record.path.clone(), record.begin, record.end)
         .update_metadata(cmp_params.pmp.get(&record.path));
 
