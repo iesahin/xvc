@@ -230,10 +230,21 @@ pub fn carry_in(
 
     let path_sync = PathSync::new();
 
-    let copy_path_to_cache_and_recheck = |xe, xp| {
+    let copy_path_to_cache_and_recheck = |xe: &xvc_core::XvcEntity, xp: &XvcPath| {
         let cache_path = uwo!(cache_paths.get(xe).cloned(), output_snd);
         let abs_cache_path = cache_path.to_absolute_path(xvc_root);
-        if abs_cache_path.exists() {
+        // A workspace path rechecked as a symlink resolves to the cache file itself. Removing
+        // the cache file and moving the link in its place would destroy the only copy.
+        let is_link_to_cache = match (
+            fs::canonicalize(xp.to_absolute_path(xvc_root)),
+            fs::canonicalize(&abs_cache_path),
+        ) {
+            (Ok(actual), Ok(cached)) => actual == cached,
+            _ => false,
+        };
+        if is_link_to_cache {
+            info!(output_snd, "[EXISTS] {abs_cache_path} for {xp}");
+        } else if abs_cache_path.exists() {
             if force {
                 let cache_dir = uwo!(abs_cache_path.parent(), output_snd);
                 uwr!(set_writable(cache_dir), output_snd);
