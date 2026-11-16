@@ -444,8 +444,9 @@ pub fn recheck_from_cache(
     }
     let cache_path = cache_path.to_absolute_path(xvc_root);
     let path = xvc_path.to_absolute_path(xvc_root);
-    // If the file already exists, we delete it.
-    if path.exists() {
+    // If the file already exists, we delete it. `exists` follows symlinks and returns false for
+    // dangling ones (e.g. a symlink to a cache file that was removed), so check the link itself.
+    if path.symlink_metadata().is_ok() {
         fs::remove_file(&path)?;
     }
 
