@@ -154,10 +154,15 @@ impl XvcStorageOperations for XvcLocalStorage {
         for cache_path in paths {
             let storage_path = self.storage_path(&repo_guid, cache_path);
             let abs_storage_path = storage_path.as_ref().to_logical_path(&self.path);
-            if force && abs_storage_path.exists() {
-                fs::remove_file(abs_storage_path.clone())?;
-            } else {
-                info!(output, "[SKIPPED] {}", storage_path)
+            if abs_storage_path.exists() {
+                if force {
+                    fs::remove_file(&abs_storage_path)?;
+                } else {
+                    // Files are content addressed and read-only in the storage. There is no
+                    // need (and usually no permission) to overwrite them.
+                    info!(output, "[SKIPPED] {}", storage_path);
+                    continue;
+                }
             }
             let abs_cache_path = cache_path.to_absolute_path(xvc_root);
             let abs_storage_dir = abs_storage_path.parent().unwrap();
