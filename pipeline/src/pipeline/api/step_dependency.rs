@@ -351,6 +351,10 @@ impl<'a> XvcDependencyList<'a> {
                         .map_err(|_| Error::InvalidLinesFormat { line: line.clone() })?,
                 };
 
+                if end < begin {
+                    return Err(Error::InvalidLinesFormat { line });
+                }
+
                 let pathbuf = PathBuf::from(lines_file);
                 let path = XvcPath::new(self.xvc_root, current_dir, &pathbuf)?;
                 vec.push((path, begin, end));
