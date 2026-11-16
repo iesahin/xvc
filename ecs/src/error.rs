@@ -43,6 +43,13 @@ pub enum Error {
         #[from]
         source: serde_json::Error,
     },
+    #[error("Cannot read event log {path}: {cause}")]
+    CannotReadEventLog {
+        /// The event log file that couldn't be read or parsed
+        path: std::path::PathBuf,
+        /// Description of the underlying error
+        cause: String,
+    },
     #[error("I/O Error: {source}")]
     IoError {
         #[from]
