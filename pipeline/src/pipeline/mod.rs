@@ -711,6 +711,9 @@ fn step_state_handler(step_e: XvcEntity, params: StepThreadParams) -> Result<()>
                 BrokenState::FromHasMissingDependencies => {
                     s_broken_f_has_missing_dependencies(s, step_params)?
                 }
+                BrokenState::FromCannotCheckDependencies => {
+                    s_broken_f_has_missing_dependencies(s, step_params)?
+                }
                 BrokenState::FromDependencyStepsFinishedBroken => {
                     s_broken_f_dependency_steps_finished_broken(s, step_params)?
                 }
@@ -951,6 +954,27 @@ fn s_comparing_diffs_and_outputs_f_superficial_diffs_not_changed<'a>(
     }
 }
 
+/// Runs `compare` for all `dependencies` and collects the diffs. Returns the first error.
+fn compare_dependencies<'e>(
+    dependencies: impl Iterator<Item = &'e XvcEntity>,
+    compare: impl Fn(XvcEntity) -> Result<Diff<XvcDependency>>,
+) -> Result<HStore<Diff<XvcDependency>>> {
+    dependencies
+        .map(|dep_e| Ok((*dep_e, compare(*dep_e)?)))
+        .collect()
+}
+
+/// Tells the user why the dependencies of a step cannot be checked.
+///
+/// The step is marked as broken by the caller. Panicking here would bring down the step thread
+/// (and the output thread) and leave the steps that depend on this one waiting forever.
+fn report_dependency_error(params: &StepStateParams, err: &Error) {
+    error!(
+        params.output_snd,
+        "[{}] Cannot check dependencies: {}", params.step.name, err
+    );
+}
+
 fn s_checking_superficial_diffs<'a>(
     s: &CheckingSuperficialDiffsState,
     params: StepStateParams<'a>,
@@ -963,16 +987,15 @@ fn s_checking_superficial_diffs<'a>(
         return Ok((s.superficial_diffs_changed(), params));
     }
 
-    let step_dependency_diffs: HStore<Diff<XvcDependency>> = deps
-        .iter()
-        .map(|(dep_e, _dep)| {
-            let cmp_diff = uwr!(
-                superficial_compare_dependency(&params, *dep_e),
-                params.output_snd
-            );
-            (*dep_e, cmp_diff)
-        })
-        .collect();
+    let step_dependency_diffs = match compare_dependencies(deps.keys(), |dep_e| {
+        superficial_compare_dependency(&params, dep_e)
+    }) {
+        Ok(diffs) => diffs,
+        Err(e) => {
+            report_dependency_error(&params, &e);
+            return Ok((s.has_missing_dependencies(), params));
+        }
+    };
     let mut changed = false;
 
     {
@@ -1013,22 +1036,30 @@ fn s_checking_thorough_diffs_f_superficial_diffs_changed<'a>(
 
     // Calculate diffs for superficially changed dependencies.
     // This allows to skip thorough comparison for dependencies that haven't changed.
-    let step_dependency_diffs: HStore<Diff<XvcDependency>> = params
+    let superficial_diffs: Vec<(XvcEntity, bool)> = params
         .dependency_diffs
         .read()?
         .iter()
-        .map(|(dep_e, dep)| {
-            if dep.changed() {
-                let cmp_diff = uwr!(
-                    thorough_compare_dependency(&params, *dep_e),
-                    params.output_snd
-                );
-                (*dep_e, cmp_diff)
+        .map(|(dep_e, dep)| (*dep_e, dep.changed()))
+        .collect();
+    let step_dependency_diffs: Result<HStore<Diff<XvcDependency>>> = superficial_diffs
+        .into_iter()
+        .map(|(dep_e, superficially_changed)| {
+            if superficially_changed {
+                Ok((dep_e, thorough_compare_dependency(&params, dep_e)?))
             } else {
-                (*dep_e, Diff::Skipped)
+                Ok((dep_e, Diff::Skipped))
             }
         })
         .collect();
+    let step_dependency_diffs = match step_dependency_diffs {
+        Ok(diffs) => diffs,
+        Err(e) => {
+            report_dependency_error(&params, &e);
+            return Ok((s.cannot_check_dependencies(), params));
+        }
+    };
+
     let mut changed = false;
 
     {
@@ -1058,16 +1089,15 @@ fn s_checking_thorough_diffs_f_superficial_diffs_ignored<'a>(
     }
 
     // Calculate diffs for all dependencies as we skipped superficial comparison
-    let step_dependency_diffs: HStore<Diff<XvcDependency>> = deps
-        .iter()
-        .map(|(dep_e, _dep)| {
-            let cmp_diff = uwr!(
-                thorough_compare_dependency(&params, *dep_e),
-                params.output_snd
-            );
-            (*dep_e, cmp_diff)
-        })
-        .collect();
+    let step_dependency_diffs = match compare_dependencies(deps.keys(), |dep_e| {
+        thorough_compare_dependency(&params, dep_e)
+    }) {
+        Ok(diffs) => diffs,
+        Err(e) => {
+            report_dependency_error(&params, &e);
+            return Ok((s.cannot_check_dependencies(), params));
+        }
+    };
 
     let mut changed = false;
 
