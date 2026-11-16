@@ -186,6 +186,10 @@ pub fn cmd_carry_in(
         })
         .collect();
 
+    // Paths that are missing from the workspace are skipped above with a warning. Don't try to
+    // carry them in.
+    let xvc_paths_to_carry = xvc_paths_to_carry.subset(cache_paths_to_carry.keys().copied())?;
+
     let stored_recheck_method_store = xvc_root.load_store::<RecheckMethod>()?;
     carry_in(
         output_snd,
