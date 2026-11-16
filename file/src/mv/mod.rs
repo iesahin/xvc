@@ -140,7 +140,10 @@ pub fn get_move_source_dest_store(
         )?;
 
         let current_dir = xvc_root.current_dir();
-        let source_xe = source_xvc_paths.keys().next().unwrap();
+        let source_xe = source_xvc_paths
+            .keys()
+            .next()
+            .ok_or_else(|| anyhow!("No tracked files found to move"))?;
 
         let mut source_dest_store = HStore::<XvcPath>::with_capacity(1);
         let dest_path = XvcPath::new(xvc_root, current_dir, Path::new(destination))?;
