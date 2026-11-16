@@ -146,15 +146,24 @@ where
             value: value.clone(),
         });
 
-        match self.entity_index.get_mut(&value) {
-            Some(v) => {
-                v.push(entity);
-            }
-            None => {
-                self.entity_index.insert(value.clone(), vec![entity]);
+        let previous = self.map.insert(entity, value.clone());
+        // An overwritten value must not keep pointing to this entity in the reverse index.
+        if let Some(ref previous) = previous {
+            self.remove_from_index(previous, entity);
+        }
+        self.entity_index.entry(value).or_default().push(entity);
+        previous
+    }
+
+    /// Removes `entity` from the reverse index entry of `value`, dropping the entry when it
+    /// becomes empty.
+    fn remove_from_index(&mut self, value: &T, entity: XvcEntity) {
+        if let Some(vec_e) = self.entity_index.get_mut(value) {
+            vec_e.retain(|e| *e != entity);
+            if vec_e.is_empty() {
+                self.entity_index.remove(value);
             }
         }
-        self.map.insert(entity, value)
     }
 
     /// Updates the data associated with an entity.
@@ -172,15 +181,11 @@ where
     ///
     /// It returns the value if found, otherwise returns `None`.
     pub fn remove(&mut self, entity: XvcEntity) -> Option<T> {
-        if let Some(value) = self.map.remove(&entity) {
-            if let Some(vec_e) = self.entity_index.get_mut(&value) {
-                // Add a remove event to the current event log
-                self.current.push_event(Event::Remove { entity });
-                vec_e.retain(|e| *e != entity);
-                return Some(value);
-            }
-        }
-        Option::<T>::None
+        let value = self.map.remove(&entity)?;
+        // Add a remove event to the current event log
+        self.current.push_event(Event::Remove { entity });
+        self.remove_from_index(&value, entity);
+        Some(value)
     }
 
     fn build_map(previous: &EventLog<T>, current: &EventLog<T>) -> BTreeMap<XvcEntity, T> {
@@ -435,6 +440,23 @@ mod test {
         assert_eq!(*store.get(&XvcEntity(0, 123)).unwrap(), String::from("0"));
         assert_eq!(*store.get(&XvcEntity(1, 123)).unwrap(), String::from("1"));
         Ok(())
+    }
+
+    #[test]
+    fn index_follows_overwrites_and_removals() {
+        let mut store = XvcStore::<String>::new();
+        let e = XvcEntity(0, 123);
+        store.insert(e, "old".into());
+        store.insert(e, "new".into());
+        store.insert(e, "new".into());
+
+        assert_eq!(store.entity_by_value(&"old".to_string()), None);
+        assert_eq!(store.entities_for(&"old".to_string()), None);
+        assert_eq!(store.entities_for(&"new".to_string()), Some(&vec![e]));
+
+        store.remove(e);
+        assert_eq!(store.entities_for(&"new".to_string()), None);
+        assert!(store.index_map().unwrap().is_empty());
     }
 
     #[test]
