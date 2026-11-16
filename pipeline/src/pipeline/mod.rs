@@ -1036,12 +1036,21 @@ fn s_checking_thorough_diffs_f_superficial_diffs_changed<'a>(
 
     // Calculate diffs for superficially changed dependencies.
     // This allows to skip thorough comparison for dependencies that haven't changed.
-    let superficial_diffs: Vec<(XvcEntity, bool)> = params
-        .dependency_diffs
-        .read()?
-        .iter()
-        .map(|(dep_e, dep)| (*dep_e, dep.changed()))
-        .collect();
+    // `dependency_diffs` is shared by all steps. Only look at the dependencies of this step,
+    // otherwise a change in another step's dependency makes this step run as well.
+    let superficial_diffs: Vec<(XvcEntity, bool)> = {
+        let dependency_diffs = params.dependency_diffs.read()?;
+        deps.keys()
+            .map(|dep_e| {
+                let changed = dependency_diffs
+                    .get(dep_e)
+                    .map(|diff| diff.changed())
+                    // No superficial diff recorded, compare thoroughly to be on the safe side.
+                    .unwrap_or(true);
+                (*dep_e, changed)
+            })
+            .collect()
+    };
     let step_dependency_diffs: Result<HStore<Diff<XvcDependency>>> = superficial_diffs
         .into_iter()
         .map(|(dep_e, superficially_changed)| {
