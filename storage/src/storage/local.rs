@@ -63,6 +63,32 @@ impl XvcLocalStorage {
     fn storage_path(&self, repo_guid: &str, cache_path: &XvcCachePath) -> XvcStoragePath {
         XvcStoragePath::from(format!("{}/{}", repo_guid, cache_path))
     }
+
+    /// Lists the cache files of the repository with `repo_guid` found in the storage directory.
+    ///
+    /// Cache files are stored as `{repo_guid}/{algorithm}/{3 chars}/{3 chars}/{rest}/0.{ext}`,
+    /// and only files at that depth are returned.
+    fn list_storage_paths(&self, repo_guid: &str) -> Vec<XvcStoragePath> {
+        const CACHE_FILE_DEPTH: usize = 5;
+        let repo_dir = self.path.join(repo_guid);
+        let mut paths: Vec<XvcStoragePath> = walkdir::WalkDir::new(&repo_dir)
+            .min_depth(CACHE_FILE_DEPTH)
+            .max_depth(CACHE_FILE_DEPTH)
+            .into_iter()
+            .filter_map(|entry| entry.ok())
+            .filter(|entry| entry.file_type().is_file())
+            .filter_map(|entry| {
+                let rel = entry.path().strip_prefix(&self.path).ok()?;
+                let components: Vec<_> = rel
+                    .components()
+                    .map(|c| c.as_os_str().to_string_lossy())
+                    .collect();
+                Some(XvcStoragePath::from(components.join("/")))
+            })
+            .collect();
+        paths.sort();
+        paths
+    }
 }
 
 impl XvcStorageOperations for XvcLocalStorage {
@@ -108,8 +134,11 @@ impl XvcStorageOperations for XvcLocalStorage {
         })
     }
 
-    fn list(&self, _output: &XvcOutputSender, _xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
-        todo!()
+    fn list(&self, _output: &XvcOutputSender, xvc_root: &XvcRoot) -> Result<XvcStorageListEvent> {
+        Ok(XvcStorageListEvent {
+            guid: self.guid.clone(),
+            paths: self.list_storage_paths(&xvc_root.guid()),
+        })
     }
 
     fn send(
@@ -216,5 +245,44 @@ impl XvcStorageOperations for XvcLocalStorage {
         _period: std::time::Duration,
     ) -> Result<super::XvcStorageExpiringShareEvent> {
         Err(Error::StorageDoesNotSupportSignedUrls)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn list_storage_paths_returns_only_cache_files_of_the_repo() {
+        let dir = xvc_test_helper::random_temp_dir(Some("xvc-local-storage"));
+        let storage = XvcLocalStorage {
+            guid: XvcStorageGuid::new(),
+            name: "test".to_string(),
+            path: dir.clone(),
+        };
+        let files = [
+            "repo1/b3/abc/def/0123/0.txt",
+            "repo1/b3/abc/def/4567/0",
+            "repo2/b3/abc/def/0123/0.txt",
+            "repo1/stray-file",
+        ];
+        for f in files {
+            let path = dir.join(f);
+            fs::create_dir_all(path.parent().unwrap()).unwrap();
+            fs::write(path, "content").unwrap();
+        }
+        fs::write(dir.join(XVC_STORAGE_GUID_FILENAME), "guid").unwrap();
+
+        let paths = storage.list_storage_paths("repo1");
+        fs::remove_dir_all(&dir).unwrap();
+
+        assert_eq!(
+            paths,
+            vec![
+                XvcStoragePath::from("repo1/b3/abc/def/0123/0.txt".to_string()),
+                XvcStoragePath::from("repo1/b3/abc/def/4567/0".to_string()),
+            ]
+        );
+        assert!(storage.list_storage_paths("missing-repo").is_empty());
     }
 }
