@@ -269,7 +269,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                         XvcOutputLine::Warn(_) => {}
                         XvcOutputLine::Error(_) => {}
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
-                        XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Tick(_) => {}
                         XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Error => match output_line {
@@ -278,7 +278,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                         XvcOutputLine::Warn(_) => {}
                         XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
-                        XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Tick(_) => {}
                         XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Warn => match output_line {
@@ -287,7 +287,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                         XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
                         XvcOutputLine::Info(_) => {}
-                        XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Tick(_) => {}
                         XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Info => match output_line {
@@ -296,7 +296,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                         XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m),
                         XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
-                        XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Tick(_) => {}
                         XvcOutputLine::Debug(_) => {}
                     },
                     LevelFilter::Debug => match output_line {
@@ -305,7 +305,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                         XvcOutputLine::Warn(m) => eprintln!("[WARN] {}", m),
                         XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
-                        XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Tick(_) => {}
                         XvcOutputLine::Debug(m) => eprintln!("[DEBUG] {}", m),
                     },
                     LevelFilter::Trace => match output_line {
@@ -315,7 +315,7 @@ pub fn dispatch_with_root(cli_opts: cli::XvcCLI, xvc_root_opt: XvcRootOpt) -> Re
                         XvcOutputLine::Error(m) => eprintln!("[ERROR] {}", m),
                         XvcOutputLine::Debug(m) => eprintln!("[DEBUG] {}", m),
                         XvcOutputLine::Panic(m) => panic!("[PANIC] {}", m),
-                        XvcOutputLine::Tick(_) => todo!(),
+                        XvcOutputLine::Tick(_) => {}
                     },
                 }
             }
@@ -473,7 +473,7 @@ pub fn collect_output(
                 XvcOutputLine::Warn(_) => {}
                 XvcOutputLine::Error(_) => {}
                 XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
-                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Tick(_) => {}
                 XvcOutputLine::Debug(_) => {}
             },
             LevelFilter::Error => match output_line {
@@ -482,7 +482,7 @@ pub fn collect_output(
                 XvcOutputLine::Warn(_) => {}
                 XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
                 XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
-                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Tick(_) => {}
                 XvcOutputLine::Debug(_) => {}
             },
             LevelFilter::Warn => match output_line {
@@ -491,7 +491,7 @@ pub fn collect_output(
                 XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
                 XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
                 XvcOutputLine::Info(_) => {}
-                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Tick(_) => {}
                 XvcOutputLine::Debug(_) => {}
             },
             LevelFilter::Info => match output_line {
@@ -500,7 +500,7 @@ pub fn collect_output(
                 XvcOutputLine::Warn(m) => output_str.push_str(&format!("[WARN] {}", m)),
                 XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
                 XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
-                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Tick(_) => {}
                 XvcOutputLine::Debug(_) => {}
             },
             LevelFilter::Debug => match output_line {
@@ -510,7 +510,7 @@ pub fn collect_output(
                 XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
                 XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
                 XvcOutputLine::Debug(m) => output_str.push_str(&format!("[DEBUG] {}", m)),
-                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Tick(_) => {}
             },
             LevelFilter::Trace => match output_line {
                 XvcOutputLine::Output(m) => output_str.push_str(&m),
@@ -519,7 +519,7 @@ pub fn collect_output(
                 XvcOutputLine::Error(m) => output_str.push_str(&format!("[ERROR] {}", m)),
                 XvcOutputLine::Debug(m) => output_str.push_str(&format!("[DEBUG] {}", m)),
                 XvcOutputLine::Panic(m) => output_str.push_str(&format!("[PANIC] {}", m)),
-                XvcOutputLine::Tick(_) => todo!(),
+                XvcOutputLine::Tick(_) => {}
             },
         }
     }
