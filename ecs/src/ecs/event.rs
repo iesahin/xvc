@@ -94,16 +94,14 @@ where
     /// File contents are merged in a single event log.
     pub fn from_dir(dir: &Path) -> Result<Self> {
         let files = sorted_files(dir)?;
-        let merged = files
-            .iter()
-            .map(|f| {
-                Self::from_file(f)
-                    .unwrap_or_else(|_| panic!("Error reading event log: {}", f.to_string_lossy()))
-            })
-            .fold(Self::new(), |mut merged, new| {
-                merged.0.extend(new.0);
-                merged
-            });
+        let mut merged = Self::new();
+        for f in files.iter().filter(|f| f.is_file()) {
+            let log = Self::from_file(f).map_err(|e| Error::CannotReadEventLog {
+                path: f.clone(),
+                cause: e.to_string(),
+            })?;
+            merged.0.extend(log.0);
+        }
         Ok(merged)
     }
 
@@ -158,5 +156,21 @@ where
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempdir::TempDir;
+
+    #[test]
+    fn corrupt_event_log_is_an_error_not_a_panic() {
+        let td = TempDir::new("event-log-test").unwrap();
+        fs::write(td.path().join("1.json"), "[]").unwrap();
+        fs::write(td.path().join("2.json"), "not json").unwrap();
+
+        let res = EventLog::<String>::from_dir(td.path());
+        assert!(matches!(res, Err(Error::CannotReadEventLog { .. })));
     }
 }

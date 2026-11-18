@@ -51,7 +51,7 @@ impl LineItemsDep {
         let line_reader = io::BufReader::new(file).lines();
         let lines = line_reader
             .skip(self.begin)
-            .take(self.end - self.begin)
+            .take(self.end.saturating_sub(self.begin))
             .map(|s| s.unwrap_or("".to_string()))
             .collect();
         Self { lines, ..self }

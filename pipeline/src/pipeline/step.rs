@@ -340,6 +340,7 @@ impl XvcStep {
 //     CheckingSuperficialDiffs --> Broken: HasMissingDependencies
 //     CheckingThoroughDiffs --> ComparingDiffsAndOutputs: ThoroughDiffsNotChanged
 //     CheckingThoroughDiffs --> ComparingDiffsAndOutputs: ThoroughDiffsChanged
+//     CheckingThoroughDiffs --> Broken: CannotCheckDependencies
 //     ComparingDiffsAndOutputs --> WaitingToRun: DiffsHasChanged
 //     ComparingDiffsAndOutputs --> DoneWithoutRunning: DiffsHasNotChanged
 //     DoneWithoutRunning --> Done: CompletedWithoutRunningStep
@@ -407,6 +408,10 @@ state_machine! {
 
         HasMissingDependencies {
             CheckingSuperficialDiffs => Broken
+        }
+
+        CannotCheckDependencies {
+            CheckingThoroughDiffs => Broken
         }
 
         ThoroughDiffsNotChanged {

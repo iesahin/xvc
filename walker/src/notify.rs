@@ -54,28 +54,31 @@ impl EventHandler for PathEventHandler {
     fn handle_event(&mut self, event: notify::Result<Event>) {
         watch!(event);
         if let Ok(event) = event {
+            // Some backends may send events without paths. Don't panic on them.
+            let Some(first) = event.paths.first().cloned() else {
+                debug!("FS Notification without a path: {:?}", event);
+                return;
+            };
             match event.kind {
-                notify::EventKind::Create(_) => self.create_event(event.paths[0].clone()),
+                notify::EventKind::Create(_) => self.create_event(first),
                 notify::EventKind::Modify(mk) => match mk {
-                    notify::event::ModifyKind::Any => todo!(),
-                    notify::event::ModifyKind::Data(_) => self.write_event(event.paths[0].clone()),
-                    notify::event::ModifyKind::Metadata(_) => {
-                        self.write_event(event.paths[0].clone())
-                    }
+                    // Backends that can't tell what changed (e.g. Windows, kqueue) send `Any`.
+                    notify::event::ModifyKind::Any
+                    | notify::event::ModifyKind::Data(_)
+                    | notify::event::ModifyKind::Metadata(_) => self.write_event(first),
                     notify::event::ModifyKind::Name(rk) => match rk {
                         notify::event::RenameMode::Any => {}
-                        notify::event::RenameMode::To => self.create_event(event.paths[0].clone()),
-                        notify::event::RenameMode::From => {
-                            self.remove_event(event.paths[0].clone())
-                        }
-                        notify::event::RenameMode::Both => {
-                            self.rename_event(event.paths[0].clone(), event.paths[1].clone())
-                        }
+                        notify::event::RenameMode::To => self.create_event(first),
+                        notify::event::RenameMode::From => self.remove_event(first),
+                        notify::event::RenameMode::Both => match event.paths.get(1) {
+                            Some(to) => self.rename_event(first, to.clone()),
+                            None => self.remove_event(first),
+                        },
                         notify::event::RenameMode::Other => {}
                     },
                     notify::event::ModifyKind::Other => {}
                 },
-                notify::EventKind::Remove(_) => self.remove_event(event.paths[0].clone()),
+                notify::EventKind::Remove(_) => self.remove_event(first),
                 notify::EventKind::Any => {}
                 notify::EventKind::Access(_) => {}
                 notify::EventKind::Other => {}
@@ -92,7 +95,7 @@ impl PathEventHandler {
             MatchResult::Whitelist | MatchResult::NoMatch => {
                 if let Ok(metadata) = path.metadata() {
                     self.sender
-                        .send(Some(PathEvent::Create {
+                        .send(Some(PathEvent::Update {
                             path: path.clone(),
                             metadata,
                         }))
@@ -193,4 +196,56 @@ pub fn make_polling_watcher(
     watcher.watch(&root, RecursiveMode::Recursive)?;
     watch!(watcher);
     Ok((watcher, receiver))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use notify::event::{EventKind, ModifyKind, RenameMode};
+
+    fn handler(dir: &std::path::Path) -> (PathEventHandler, Receiver<Option<PathEvent>>) {
+        let (sender, receiver) = bounded(10);
+        (
+            PathEventHandler {
+                sender,
+                ignore_rules: IgnoreRules::empty(dir, None),
+            },
+            receiver,
+        )
+    }
+
+    #[test]
+    fn modify_any_emits_update() {
+        let dir = std::env::temp_dir();
+        let file = dir.join(format!("xvc-notify-test-{}", std::process::id()));
+        std::fs::write(&file, "content").unwrap();
+        let (mut handler, receiver) = handler(&dir);
+
+        handler.handle_event(Ok(
+            Event::new(EventKind::Modify(ModifyKind::Any)).add_path(file.clone())
+        ));
+
+        let event = receiver.try_recv().unwrap().unwrap();
+        std::fs::remove_file(&file).unwrap();
+        assert!(matches!(event, PathEvent::Update { path, .. } if path == file));
+    }
+
+    #[test]
+    fn events_with_missing_paths_do_not_panic() {
+        let dir = std::env::temp_dir();
+        let (mut handler, receiver) = handler(&dir);
+
+        handler.handle_event(Ok(Event::new(EventKind::Remove(
+            notify::event::RemoveKind::Any,
+        ))));
+        assert!(receiver.try_recv().is_err());
+
+        let from = dir.join("xvc-notify-test-renamed-from");
+        handler.handle_event(Ok(Event::new(EventKind::Modify(ModifyKind::Name(
+            RenameMode::Both,
+        )))
+        .add_path(from.clone())));
+        let event = receiver.try_recv().unwrap().unwrap();
+        assert!(matches!(event, PathEvent::Delete { path } if path == from));
+    }
 }

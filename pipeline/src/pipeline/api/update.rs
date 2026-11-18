@@ -57,6 +57,14 @@ pub fn cmd_update(xvc_root: &XvcRoot, pipeline_name: &str, opts: UpdateCLI) -> R
                         );
                     }
                     if let Some(newname) = &rename {
+                        // Two pipelines with the same name cannot be told apart by any command.
+                        if rs.left.any(|e, p| e != pipeline_e && p.name == *newname) {
+                            return Err(XvcEcsError::KeyAlreadyFound {
+                                key: newname.clone(),
+                                store: "xvc-pipeline".to_string(),
+                            }
+                            .into());
+                        }
                         pipeline.name.clone_from(newname);
                     }
 
